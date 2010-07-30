@@ -1,0 +1,24 @@
+13/07/2010
+//para relacionar una FacturaVenta con un Remito (OneToOne)
+ALTER TABLE factura_venta ADD COLUMN remito integer;
+ALTER TABLE factura_venta ADD FOREIGN KEY (remito) REFERENCES remito (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE remito ADD COLUMN factura_venta integer;
+ALTER TABLE remito ADD FOREIGN KEY (factura_venta) REFERENCES factura_venta (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+08-07
+ reporte Movimientos varios
+ reporte Movimientos entre Cajas
+01-07
+ modulo Presupuestos
+ reporte Presupuestos
+26-05
+ ALTER TABLE datos_empresa ADD COLUMN fecha_inicio_actividad date;
+-! impresión de listados VARIOS
+-> resumenes de Cta cte (cliente y proveedor)
+13-05
+-> reporte Recibo A B C
+11-05
+-> Buscador y Reporte de Cierres de Caja (parcial y definitivo)
+
+-> MovimientosVarios habilitado
+add a new caja_movimiento.tipo = 8 (MovimientosVarios)
+07-05

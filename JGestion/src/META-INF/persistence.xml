@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="1.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd">
+  <persistence-unit name="JGestionPU" transaction-type="RESOURCE_LOCAL">
+    <provider>oracle.toplink.essentials.PersistenceProvider</provider>
+    <class>entity.Proveedor</class>
+    <class>entity.Depto</class>
+    <class>entity.Municipio</class>
+    <class>entity.Contribuyente</class>
+    <class>entity.Provincia</class>
+    <class>entity.Sucursal</class>
+    <class>entity.Cliente</class>
+    <class>entity.Rubro</class>
+    <class>entity.Unidadmedida</class>
+    <class>entity.Producto</class>
+    <class>entity.Iva</class>
+    <class>entity.Marca</class>
+    <class>entity.Usuario</class>
+    <class>entity.Permisos</class>
+    <class>entity.Stock</class>
+    <class>entity.FacturaCompra</class>
+    <class>entity.DetallesCompra</class>
+    <class>entity.ListaPrecios</class>
+    <class>entity.DetalleListaPrecios</class>
+    <class>entity.FacturaVenta</class>
+    <class>entity.DetallesVenta</class>
+    <class>entity.Caja</class>
+    <class>entity.CajaMovimientos</class>
+    <class>entity.DatosEmpresa</class>
+    <class>entity.CtacteProveedor</class>
+    <class>entity.DetalleRemesa</class>
+    <class>entity.Remesa</class>
+    <class>entity.DetalleCajaMovimientos</class>
+    <class>entity.MsjInformativos</class>
+    <class>entity.Recibo</class>
+    <class>entity.CtacteCliente</class>
+    <class>entity.DetalleRecibo</class>
+    <class>entity.PermisosCaja</class>
+    <class>entity.DetallePresupuesto</class>
+    <class>entity.Presupuesto</class>
+    <class>entity.Remito</class>
+    <class>entity.DetalleRemito</class>
+    <properties>
+      <!--<property name="toplink.jdbc.user" value="jgestion"/>-->
+      <!--<property name="toplink.jdbc.password" value="jgestioncualquiera"/>-->
+      <property name="toplink.jdbc.user" value="jgestion"/>
+      <property name="toplink.jdbc.password" value="jgestioncualquiera"/>
+      <property name="toplink.jdbc.url" value="jdbc:postgresql://10.0.0.3:5432/JGESTIONX"/>
+      <!--<property name="toplink.jdbc.url" value="jdbc:postgresql://localhost/poli"/>-->
+      <property name="toplink.jdbc.driver" value="org.postgresql.Driver"/>
+    </properties>
+  </persistence-unit>
+</persistence>

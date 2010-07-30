@@ -1,0 +1,141 @@
+package controller;
+
+import entity.DatosEmpresa;
+import entity.UTIL;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperPrintManager;
+
+/**
+ *
+ * @author FiruzzZ
+ */
+public class Reportes implements Runnable {
+
+   private java.util.Map parameters;
+   private final String pathReport;
+   private final String tituloReporte;
+
+   /**
+    * sería algo así "./reportes/"
+    */
+   public static String FOLDER_REPORTES = "." + System.getProperty("file.separator") + "reportes" + System.getProperty("file.separator");
+   private final DatosEmpresa d;
+   private Boolean isViewerReport = null;
+
+   /**
+    *
+    * @param pathReport archivoReporte.jasper. <b>FOLDER_REPORTES</b> + @pathReport si el reporte se encuentra en la carpeta "reportes"
+    * @param title Título de la ventana del reporte
+    * @throws Exception Si el archivo .jasper no se encuentra
+    */
+   public Reportes(String pathReport, String title) throws Exception {
+      if (title == null || title.trim().length() < 1) {
+         throw new Exception("El título del reporte can't be NULL");
+      }
+
+      if (pathReport == null || pathReport.trim().length() < 1) {
+         throw new Exception("La ruta/URL/pathname no es válida!");
+      }
+
+      try {
+         new java.io.File(pathReport);
+      } catch (NullPointerException ex) {
+         throw new Exception("No se encontró el archivo del reporte:\n" + pathReport);
+      }
+
+      parameters = new java.util.HashMap();
+      this.pathReport = pathReport;
+      this.tituloReporte = title;
+      d = new DatosEmpresaJpaController().findDatosEmpresa(1);
+   }
+
+   public void viewReport() throws net.sf.jasperreports.engine.JRException {
+      isViewerReport = true;
+      new Thread(this).start();
+//      net.sf.jasperreports.engine.JasperPrint jPrint;
+//      jPrint = net.sf.jasperreports.engine.JasperFillManager.fillReport(pathReport, parameters, controller.DAO.getJDBCConnection());
+//      net.sf.jasperreports.view.JasperViewer jViewer = new net.sf.jasperreports.view.JasperViewer(jPrint, false);
+//      jViewer.setTitle(tituloReporte);
+//      jViewer.setExtendedState(net.sf.jasperreports.view.JasperViewer.NORMAL);
+//      jViewer.setAlwaysOnTop(true);
+//      jViewer.setVisible(true);
+   }
+
+   public void printReport() throws net.sf.jasperreports.engine.JRException {
+      isViewerReport = false;
+      new Thread(this).start();
+//      net.sf.jasperreports.engine.JasperPrint jPrint;
+//      jPrint = net.sf.jasperreports.engine.JasperFillManager.fillReport(pathReport, parameters, controller.DAO.getJDBCConnection());
+//      JasperPrintManager.printReport(jPrint, true);
+   }
+
+   public void exportPDF(String filePathSafer) throws JRException {
+      net.sf.jasperreports.engine.JasperPrint jprint;
+      jprint = net.sf.jasperreports.engine.JasperFillManager.fillReport(pathReport, parameters, controller.DAO.getJDBCConnection());
+      JasperExportManager.exportReportToPdfFile(jprint, filePathSafer);
+   }
+
+   public void addParameter(Object key, Object parametro) {
+      parameters.put(key, parametro);
+   }
+
+   public void setParameterMap(java.util.HashMap map) {
+      parameters = map;
+   }
+
+   /**
+    * Add a parameter ENTIDAD al reporte.
+    * Es decir el Nombre de la empresa, si existe
+    * @throws IOException
+    */
+   public void addEntidad() throws IOException {
+      addParameter("ENTIDAD", d.getNombre());
+   }
+
+   /**
+    * Add a parameter LOGO at the report!
+    * if a Logo has been setted
+    * @throws IOException
+    */
+   public void addLogo() throws IOException {
+      if(d.getLogo() != null)
+         addParameter("LOGO", UTIL.imageToFile(d.getLogo(), "png"));
+      else
+         addParameter("LOGO", null);
+   }
+
+   /**
+    * Add a parameter CURRENT_USER to the report
+    */
+   public void addCurrent_User() {
+      addParameter("CURRENT_USER", UsuarioJpaController.getCurrentUser().getNick());
+   }
+
+   public void run() {
+      doReport();
+   }
+
+   private synchronized void doReport() {
+      System.out.println("Running Reportes");
+      net.sf.jasperreports.engine.JasperPrint jPrint;
+      try {
+         jPrint = net.sf.jasperreports.engine.JasperFillManager.fillReport(pathReport, parameters, controller.DAO.getJDBCConnection());
+         if(isViewerReport) {
+            net.sf.jasperreports.view.JasperViewer jViewer = new net.sf.jasperreports.view.JasperViewer(jPrint, false);
+            jViewer.setTitle(tituloReporte);
+            jViewer.setExtendedState(net.sf.jasperreports.view.JasperViewer.NORMAL);
+            jViewer.setAlwaysOnTop(true);
+            jViewer.setVisible(true);
+         } else {
+            JasperPrintManager.printReport(jPrint, true);
+         }
+      } catch (JRException ex) {
+         Logger.getLogger(Reportes.class.getName()).log(Level.SEVERE, null, ex);
+      }
+      System.out.println("Finished Thread Reportes..");
+   }
+}
