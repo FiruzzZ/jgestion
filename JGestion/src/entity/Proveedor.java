@@ -45,7 +45,7 @@ public class Proveedor implements Serializable {
     private Integer interno1;
     private Integer interno2;
     private Contribuyente contribuyente;
-    private Depto departamento;
+    private Departamento departamento;
     private Municipio municipio;
     private Provincia provincia;
     private Rubro rubro;
@@ -257,11 +257,11 @@ public class Proveedor implements Serializable {
 
     @JoinColumn(name = "departamento", referencedColumnName = "iddepto")
     @ManyToOne(optional = false)
-    public Depto getDepartamento() {
+    public Departamento getDepartamento() {
         return departamento;
     }
 
-    public void setDepartamento(Depto departamento) {
+    public void setDepartamento(Departamento departamento) {
         this.departamento = departamento;
     }
 

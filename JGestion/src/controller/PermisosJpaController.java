@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
 package controller;
 
@@ -24,7 +20,7 @@ public class PermisosJpaController {
 
    public static enum PermisoDe {
       // cuando se agrega un PermisoDe hay que modificar..
-      // 0 - Agregar en PanelABMUsuarios el JCheckBox, getter/setter
+      // 0 - PanelABMUsuarios el JCheckBox, methods getter/setter
       // 1 - UsuarioJpaController.setPermisos(..)
       // 2 - UsuarioJpaController.setPanelABM(...)
       // 3 - UsuarioJpaController.checkPermisos(..)
@@ -189,8 +185,6 @@ public class PermisosJpaController {
    }// </editor-fold>
 
    Permisos getDefaultPermisos() {
-      Permisos p = new Permisos();
-
-      return p;
+      return new Permisos();
    }
 }

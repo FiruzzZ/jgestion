@@ -381,9 +381,10 @@ public class RemitoJpaController implements ActionListener, KeyListener {
       UTIL.loadComboBox(buscador.getCbSucursal(), new SucursalJpaController().findSucursalEntities(), true);
       try {
          UTIL.getDefaultTableModel(
+                 buscador.getjTable1(),
                  new String[]{"Nº " + CLASS_NAME, "Nº Factura", "Cliente", "Fecha", "Sucursal", "Usuario"},
-                 new int[]{15, 20, 50, 50, 80, 50},
-                 buscador.getjTable1());
+                 new int[]{15, 20, 50, 50, 80, 50}
+         );
       } catch (Exception ex) {
          ex.printStackTrace();
       }

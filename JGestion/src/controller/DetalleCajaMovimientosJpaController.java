@@ -1,6 +1,7 @@
 
 package controller;
 
+import controller.exceptions.MessageException;
 import controller.exceptions.NonexistentEntityException;
 import entity.DetalleCajaMovimientos;
 import java.util.List;
@@ -37,22 +38,28 @@ public class DetalleCajaMovimientosJpaController {
       return DAO.getEntityManager();
    }
 
-   public void create(DetalleCajaMovimientos detalleCajaMovimientos) {
+   public void create(DetalleCajaMovimientos detalleCajaMovimientos) throws MessageException {
       EntityManager em = null;
       try {
          em = getEntityManager();
          em.getTransaction().begin();
-//         CajaMovimientos cajaMovimientos = detalleCajaMovimientos.getCajaMovimientos();
-//         if (cajaMovimientos != null) {
-//            cajaMovimientos = em.getReference(cajaMovimientos.getClass(), cajaMovimientos.getId());
+         CajaMovimientos cajaMovimientos = detalleCajaMovimientos.getCajaMovimientos();
+         if (cajaMovimientos != null) {
+            cajaMovimientos = em.getReference(cajaMovimientos.getClass(), cajaMovimientos.getId());
 //            detalleCajaMovimientos.setCajaMovimientos(cajaMovimientos);
-//         }
+         }
          em.persist(detalleCajaMovimientos);
 //         if (cajaMovimientos != null) {
 //            cajaMovimientos.getDetalleCajaMovimientosList().add(detalleCajaMovimientos);
 //            cajaMovimientos = em.merge(cajaMovimientos);
 //         }
          em.getTransaction().commit();
+      } catch (EntityNotFoundException ex) {
+         ex.printStackTrace();
+         throw new MessageException("La Caja en la que intenta hacer el movimiento parece no estar disponible." +
+                                    "\nIntente cerrar y volver a abrir la ventana.");
+      } catch (Exception ex) {
+         throw new MessageException(ex.getMessage());
       } finally {
          if (em != null) {
             em.close();

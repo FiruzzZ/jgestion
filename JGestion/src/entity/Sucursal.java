@@ -44,7 +44,7 @@ public class Sucursal implements Serializable {
     private String email;
     @JoinColumn(name = "departamento", referencedColumnName = "iddepto", nullable = false)
     @ManyToOne(optional = false)
-    private Depto departamento;
+    private Departamento departamento;
     @JoinColumn(name = "municipio", referencedColumnName = "id")
     @ManyToOne
     private Municipio municipio;
@@ -149,11 +149,11 @@ public class Sucursal implements Serializable {
         this.email = email;
     }
 
-    public Depto getDepartamento() {
+    public Departamento getDepartamento() {
         return departamento;
     }
 
-    public void setDepartamento(Depto departamento) {
+    public void setDepartamento(Departamento departamento) {
         this.departamento = departamento;
     }
 

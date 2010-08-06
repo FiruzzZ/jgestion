@@ -8,7 +8,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import entity.Contribuyente;
-import entity.Depto;
+import entity.Departamento;
 import entity.Municipio;
 import entity.Provincia;
 import entity.Rubro;
@@ -117,6 +117,7 @@ public class ProveedorJpaController implements ActionListener, MouseListener, Ke
    }
    // </editor-fold>
 
+   @Override
    public void actionPerformed(ActionEvent e) {
       // <editor-fold defaultstate="collapsed" desc="JButton">
       if (e.getSource().getClass().equals(JButton.class)) {
@@ -185,12 +186,12 @@ public class ProveedorJpaController implements ActionListener, MouseListener, Ke
             abm = null;
             EL_OBJECT = null;
          } else if (boton.getName().equalsIgnoreCase("bDepartaMentOs")) {
-            new DeptoJpaController().initContenedor(null, true);
+            new DepartamentoJpaController().initContenedor(null, true);
             //cuando cierra el abm
             if (panel.getCbProvincias().getSelectedIndex() > 0) {
                UTIL.loadComboBox(panel.getCbDepartamentos(),
-                       new DeptoJpaController().findDeptosFromProvincia(
-                       ((Provincia) panel.getCbProvincias().getSelectedItem()).getIdprovincia()), true);
+                       new DepartamentoJpaController().findDeptosFromProvincia(
+                       ((Provincia) panel.getCbProvincias().getSelectedItem()).getId()), true);
             } else {
                UTIL.loadComboBox(panel.getCbDepartamentos(), null, true);
             }
@@ -200,7 +201,7 @@ public class ProveedorJpaController implements ActionListener, MouseListener, Ke
             if (panel.getCbDepartamentos().getSelectedIndex() > 0) {
                UTIL.loadComboBox(panel.getCbMunicipios(),
                        new MunicipioJpaController().findMunicipiosFromDepto(
-                       ((Depto) panel.getCbDepartamentos().getSelectedItem()).getIddepto()), true);
+                       ((Departamento) panel.getCbDepartamentos().getSelectedItem()).getId()), true);
             } else {
                UTIL.loadComboBox(panel.getCbMunicipios(), null, true);
             }
@@ -220,14 +221,14 @@ public class ProveedorJpaController implements ActionListener, MouseListener, Ke
          javax.swing.JComboBox combo = (javax.swing.JComboBox) e.getSource();
          if (combo.getName().equalsIgnoreCase("cbProvincias")) {
             if (combo.getSelectedIndex() > 0) {
-               UTIL.loadComboBox(panel.getCbDepartamentos(), new DeptoJpaController().findDeptosFromProvincia(((Provincia) combo.getSelectedItem()).getIdprovincia()), true);
+               UTIL.loadComboBox(panel.getCbDepartamentos(), new DepartamentoJpaController().findDeptosFromProvincia(((Provincia) combo.getSelectedItem()).getId()), true);
             } else {
                UTIL.loadComboBox(panel.getCbDepartamentos(), null, true);
             }
 
          } else if (combo.getName().equalsIgnoreCase("cbDepartamentos")) {
             if (combo.getSelectedIndex() > 0) {
-               UTIL.loadComboBox(panel.getCbMunicipios(), new MunicipioJpaController().findMunicipiosFromDepto(((Depto) combo.getSelectedItem()).getIddepto()), true);
+               UTIL.loadComboBox(panel.getCbMunicipios(), new MunicipioJpaController().findMunicipiosFromDepto(((Departamento) combo.getSelectedItem()).getId()), true);
             } else {
                UTIL.loadComboBox(panel.getCbMunicipios(), null, true);
             }
@@ -236,6 +237,7 @@ public class ProveedorJpaController implements ActionListener, MouseListener, Ke
       // </editor-fold>
    }
 
+   @Override
    public void mouseReleased(MouseEvent e) {
       Integer selectedRow = ((javax.swing.JTable) e.getSource()).getSelectedRow();
       javax.swing.table.DefaultTableModel dtm =
@@ -251,7 +253,7 @@ public class ProveedorJpaController implements ActionListener, MouseListener, Ke
       contenedor = new JDContenedor(frame, modal, "ABM - " + CLASS_NAME);
       contenedor.hideBtmEliminar();
       try {
-         UTIL.getDefaultTableModel(colsName, colsWidth, contenedor.getjTable1());
+         UTIL.getDefaultTableModel(contenedor.getjTable1(), colsName, colsWidth);
       } catch (Exception ex) {
          Logger.getLogger(ProveedorJpaController.class.getName()).log(Level.SEVERE, null, ex);
       }
@@ -400,7 +402,7 @@ public class ProveedorJpaController implements ActionListener, MouseListener, Ke
       EL_OBJECT.setNombre(panel.getTfNombre().toUpperCase());
       EL_OBJECT.setDireccion(panel.getTfDireccion());
       EL_OBJECT.setProvincia((Provincia) panel.getSelectedProvincia());
-      EL_OBJECT.setDepartamento((Depto) panel.getSelectedDepartamento());
+      EL_OBJECT.setDepartamento((Departamento) panel.getSelectedDepartamento());
       EL_OBJECT.setMunicipio((Municipio) panel.getSelectedMunicipio());
       EL_OBJECT.setContribuyente((Contribuyente) panel.getSelectedCondicIVA());
       EL_OBJECT.setCuit(new Long(panel.getTfCUIT()));

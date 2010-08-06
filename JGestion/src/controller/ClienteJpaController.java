@@ -8,7 +8,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import entity.Contribuyente;
-import entity.Depto;
+import entity.Departamento;
 import entity.Municipio;
 import entity.Provincia;
 import entity.UTIL;
@@ -141,7 +141,7 @@ public class ClienteJpaController implements ActionListener, MouseListener, KeyL
    public void initContenedor(java.awt.Frame frame, boolean modal) {
       contenedor = new JDContenedor(frame, modal, "ABM - " + CLASS_NAME + "s");
       contenedor.hideBtmEliminar();
-      UTIL.getDefaultTableModel(colsName, colsWidth, contenedor.getjTable1());
+      UTIL.getDefaultTableModel(contenedor.getjTable1(), colsName, colsWidth);
       UTIL.hideColumnTable(contenedor.getjTable1(), 0);
       cargarDTMContenedor(contenedor.getDTM(), null);
       contenedor.setListener(this);
@@ -186,12 +186,12 @@ public class ClienteJpaController implements ActionListener, MouseListener, KeyL
       UTIL.loadComboBox(panel.getCbProvincias(), new ProvinciaJpaController().findProvinciaEntities(), true);
       UTIL.loadComboBox(panel.getCbDepartamentos(), null, true);
       UTIL.loadComboBox(panel.getCbMunicipios(), null, true);
-      UTIL.loadComboBox(panel.getCbContribuyente(), new ContribuyenteJpaController().findContribuyenteEntities(), true);
+      UTIL.loadComboBox(panel.getCbContribuyente(), new ContribuyenteJpaController().findContribuyenteEntities(), false);
       panel.setListener(this);
       if (isEditing) {
          setPanel(EL_OBJECT);
-      } else // si es nuevo, agrega un código sugerido
-      {
+      } else {
+          // si es nuevo, agrega un código sugerido
          panel.setTfCodigo(String.valueOf(getClienteCount() + 1));
       }
 
@@ -273,7 +273,7 @@ public class ClienteJpaController implements ActionListener, MouseListener, KeyL
       }
    }
 
-   private void setEntity() throws MessageException {
+   private void setAndPersistEntity() throws MessageException, Exception {
       if (EL_OBJECT == null) {
          EL_OBJECT = new Cliente();
       }
@@ -363,7 +363,7 @@ public class ClienteJpaController implements ActionListener, MouseListener, KeyL
       EL_OBJECT.setNombre(panel.getTfNombre().toUpperCase());
       EL_OBJECT.setDireccion(panel.getTfDireccion());
       EL_OBJECT.setProvincia((Provincia) panel.getSelectedCbProvincias());
-      EL_OBJECT.setDepartamento((Depto) panel.getSelectedCbDepartamentos());
+      EL_OBJECT.setDepartamento((Departamento) panel.getSelectedCbDepartamentos());
       EL_OBJECT.setContribuyente((Contribuyente) panel.getSelectedCbContribuyente());
       EL_OBJECT.setTipodoc(panel.getSelectedTipDocumento() + 1);// DNI = 1 , CUIT = 2
       EL_OBJECT.setNumDoc(new Long(panel.getTfNumDoc()));
@@ -392,30 +392,25 @@ public class ClienteJpaController implements ActionListener, MouseListener, KeyL
          EL_OBJECT.setWebpage(panel.getTfWEB());
       }
 
-      Long numero = null;
-      Integer interno = null;
-
       // <editor-fold defaultstate="collapsed" desc="setter Tele1">
       if (panel.getTfTele1().length() > 0) {
-         numero = new Long(panel.getTfTele1());
+         EL_OBJECT.setTele1(new Long(panel.getTfTele1()));
          if (panel.getTfInterno1().length() > 0) {
-            interno = new Integer(panel.getTfInterno1());
+            EL_OBJECT.setInterno1(new Integer(panel.getTfInterno1()));
          }
       }
-      EL_OBJECT.setTele1(numero);
-      EL_OBJECT.setInterno1(interno);// </editor-fold>
+      // </editor-fold>
 
       // <editor-fold defaultstate="collapsed" desc="setter Tele2">
-      numero = null;
-      interno = null;
       if (panel.getTfTele2().length() > 0) {
-         numero = new Long(panel.getTfTele2());
+         EL_OBJECT.setTele2(new Long(panel.getTfTele2()));
          if (panel.getTfInterno2().length() > 0) {
-            interno = new Integer(panel.getTfInterno2());
+            EL_OBJECT.setInterno2(new Integer(panel.getTfInterno2()));
          }
       }
-      EL_OBJECT.setTele2(numero);
-      EL_OBJECT.setInterno2(interno);// </editor-fold>
+      // </editor-fold>
+
+      checkConstraints(EL_OBJECT);
    }
 
    private void checkConstraints(Cliente object) throws MessageException, Exception {
@@ -452,6 +447,7 @@ public class ClienteJpaController implements ActionListener, MouseListener, KeyL
       }
    }
 
+   @Override
    public void actionPerformed(ActionEvent e) {
       // <editor-fold defaultstate="collapsed" desc="JButton">
       if (e.getSource().getClass().equals(javax.swing.JButton.class)) {
@@ -497,8 +493,7 @@ public class ClienteJpaController implements ActionListener, MouseListener, KeyL
             contenedor = null;
          } else if (boton.getName().equalsIgnoreCase("aceptar")) {
             try {
-               setEntity();
-               checkConstraints(EL_OBJECT);
+               setAndPersistEntity();
                abm.showMessage(EL_OBJECT.getId() == null ? "Registrado" : "Modificado", CLASS_NAME, 1);
                cargarDTMContenedor(contenedor.getDTM(), "");
                if (EL_OBJECT.getId() != null) {
@@ -521,7 +516,7 @@ public class ClienteJpaController implements ActionListener, MouseListener, KeyL
             UTIL.loadComboBox(panel.getCbDepartamentos(), null, true);
             UTIL.loadComboBox(panel.getCbMunicipios(), null, true);
          } else if (boton.getName().equalsIgnoreCase("departamento")) {
-            new DeptoJpaController().initContenedor(null, true);
+            new DepartamentoJpaController().initContenedor(null, true);
             UTIL.loadComboBox(panel.getCbProvincias(), new ProvinciaJpaController().findProvinciaEntities(), true);
             UTIL.loadComboBox(panel.getCbDepartamentos(), null, true);
             UTIL.loadComboBox(panel.getCbMunicipios(), null, true);
@@ -540,13 +535,13 @@ public class ClienteJpaController implements ActionListener, MouseListener, KeyL
          javax.swing.JComboBox combo = (javax.swing.JComboBox) e.getSource();
          if (combo.getName().equalsIgnoreCase("cbProvincias")) {
             if (combo.getSelectedIndex() > 0) {
-               UTIL.loadComboBox(panel.getCbDepartamentos(), new DeptoJpaController().findDeptosFromProvincia(((Provincia) combo.getSelectedItem()).getIdprovincia()), true);
+               UTIL.loadComboBox(panel.getCbDepartamentos(), new DepartamentoJpaController().findDeptosFromProvincia(((Provincia) combo.getSelectedItem()).getId()), true);
             } else {
-               UTIL.loadComboBox(panel.getCbDepartamentos(), new DeptoJpaController().findDeptosFromProvincia(0), true);
+               UTIL.loadComboBox(panel.getCbDepartamentos(), new DepartamentoJpaController().findDeptosFromProvincia(0), true);
             }
          } else if (combo.getName().equalsIgnoreCase("cbDepartamentos")) {
             if (combo.getSelectedIndex() > 0) {
-               UTIL.loadComboBox(panel.getCbMunicipios(), new MunicipioJpaController().findMunicipiosFromDepto(((Depto) combo.getSelectedItem()).getIddepto()), true);
+               UTIL.loadComboBox(panel.getCbMunicipios(), new MunicipioJpaController().findMunicipiosFromDepto(((Departamento) combo.getSelectedItem()).getId()), true);
             } else {
                UTIL.loadComboBox(panel.getCbMunicipios(), new MunicipioJpaController().findMunicipiosFromDepto(0), true);
             }

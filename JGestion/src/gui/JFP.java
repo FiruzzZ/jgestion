@@ -9,17 +9,20 @@ package gui;
 import controller.*;
 import controller.exceptions.MessageException;
 import entity.Usuario;
-import java.io.IOException;
+import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
+import javax.swing.UnsupportedLookAndFeelException;
 
 /**
  *
  * @author FiruzzzzzZ
  */
 public class JFP extends javax.swing.JFrame {
-   private final String VERSION ="JGestion 1.3007";
+   private final String VERSION = "JGestion 1.0207";
+   private final String ICON_IMAGE = "/iconos/kf.png";
    public static Usuario CURRENT_USER;
 
    static {
@@ -27,6 +30,9 @@ public class JFP extends javax.swing.JFrame {
 //         javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
          javax.swing.UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 //         javax.swing.UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+      } catch (UnsupportedLookAndFeelException ex) {
+         JOptionPane.showMessageDialog(null, "El Sistema Operativo no soporta el L&F predeterminado de la aplicación.");
+         ex.printStackTrace();
       } catch (Exception e) {
          System.out.println("se pudrió el LookAndFeel");
       }
@@ -36,9 +42,13 @@ public class JFP extends javax.swing.JFrame {
    public JFP() {
       loginUser();
       initComponents();
-      this.jMenuItem11.setVisible(false); // Menú -> Datos Generales -> Contribuyente
+      jMenuItem11.setVisible(false); // Menú -> Datos Generales -> Contribuyente
+      // Menú -> Datos Generales -> Contribuyente
+      this.setIconImage(java.awt.Toolkit.getDefaultToolkit()
+                              .createImage(getClass().getResource(ICON_IMAGE)));
       this.setTitle(VERSION);
-      this.setLocation((int) (this.getLocation().getX() + 200), (int) (this.getLocation().getY() + 100));
+      this.setLocation((int) (this.getLocation().getX() + 200),
+                       (int) (this.getLocation().getY() + 100));
    }
 
    private void loginUser() {
@@ -494,7 +504,7 @@ public class JFP extends javax.swing.JFrame {
 
    //Datos Gral -> Ubicación
     private void jMenuItem10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem10ActionPerformed
-       new DeptoJpaController().initContenedor(this, true);
+       new DepartamentoJpaController().initContenedor(this, true);
        refreshConnectionDB();
     }//GEN-LAST:event_jMenuItem10ActionPerformed
 
@@ -740,4 +750,5 @@ public class JFP extends javax.swing.JFrame {
    private void showError(String message) {
       JOptionPane.showMessageDialog(this, message);
    }
+
 }

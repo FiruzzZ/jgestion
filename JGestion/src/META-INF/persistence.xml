@@ -3,7 +3,6 @@
   <persistence-unit name="JGestionPU" transaction-type="RESOURCE_LOCAL">
     <provider>oracle.toplink.essentials.PersistenceProvider</provider>
     <class>entity.Proveedor</class>
-    <class>entity.Depto</class>
     <class>entity.Municipio</class>
     <class>entity.Contribuyente</class>
     <class>entity.Provincia</class>
@@ -39,6 +38,7 @@
     <class>entity.Presupuesto</class>
     <class>entity.Remito</class>
     <class>entity.DetalleRemito</class>
+    <class>entity.Departamento</class>
     <properties>
       <!--<property name="toplink.jdbc.user" value="jgestion"/>-->
       <!--<property name="toplink.jdbc.password" value="jgestioncualquiera"/>-->

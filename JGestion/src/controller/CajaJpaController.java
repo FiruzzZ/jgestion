@@ -11,14 +11,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import javax.persistence.EntityNotFoundException;
-import entity.CajaMovimientos;
 import entity.UTIL;
 import entity.Usuario;
 import gui.JDMiniABM;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
-import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.NoResultException;
 import javax.swing.JOptionPane;
@@ -30,7 +27,7 @@ import javax.swing.table.DefaultTableModel;
  */
 public class CajaJpaController implements ActionListener, MouseListener {
 
-    public final String CLASS_NAME = "Caja";
+    public final String CLASS_NAME = Caja.class.getSimpleName();
     private final String[] colsName = {"Nº", "Nombre", "Habilitada", "Últ. apertura", "Eliminada"};
     private final int[] colsWidth = {20, 120, 30, 50, 20};
     private JDMiniABM abm;
@@ -94,11 +91,13 @@ public class CajaJpaController implements ActionListener, MouseListener {
     }// </editor-fold>
 
     private void checkConstraints(Caja caja) throws MessageException, Exception {
-        String idQuery="";
-        if(caja.getId() != null) idQuery="o.id!="+caja.getId()+" AND ";
+        String idQuery = "";
+        if(caja.getId() != null) 
+           idQuery = "o.id!= " + caja.getId() + " AND ";
+        
         try {
-            DAO.getEntityManager().createNativeQuery("SELECT * FROM "+CLASS_NAME+" o " +
-                    " WHERE "+idQuery+" o.nombre='"+caja.getNombre()+"'" , Caja.class)
+            DAO.getEntityManager().createNativeQuery("SELECT * FROM "+CLASS_NAME+" o "
+                    + " WHERE " + idQuery + " o.nombre='"+caja.getNombre()+"'" , Caja.class)
                     .getSingleResult();
             throw new MessageException("Ya existe otra "+CLASS_NAME+" con este nombre.");
         } catch (NoResultException ex) { }
@@ -117,13 +116,14 @@ public class CajaJpaController implements ActionListener, MouseListener {
       if(EL_OBJECT == null)
          EL_OBJECT = new Caja();
       if(abm.getTfNombre() == null || abm.getTfNombre().trim().length() < 1 )
-         throw new MessageException("Debe ingresar un nombre de "+CLASS_NAME.toLowerCase());
+         throw new MessageException("Debe ingresar un nombre de " + CLASS_NAME.toLowerCase());
         
       EL_OBJECT.setNombre(abm.getTfNombre().trim().toUpperCase());
       EL_OBJECT.setEstado(true);
       EL_OBJECT.setBaja(false);
    }
 
+   @Override
     public void actionPerformed(ActionEvent e) {
         // <editor-fold defaultstate="collapsed" desc="JButton">
         if (e.getSource().getClass().equals(javax.swing.JButton.class)) {
@@ -155,6 +155,8 @@ public class CajaJpaController implements ActionListener, MouseListener {
                     EL_OBJECT = null;
                     abm.clearPanelFields();
                     cargarDTM(abm.getDTM(), null);
+                    abm.showMessage("Las Cajas nuevas por defecto no están asignadas a ningún usuario." +
+                            "\nPara asignar permisos debe ir a Menú -> Usuarios -> ABM Usuarios -> Modificar", CLASS_NAME, 2);
                 } catch (MessageException ex) {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch(Exception ex) {
@@ -193,17 +195,14 @@ public class CajaJpaController implements ActionListener, MouseListener {
       abm.hideFieldCodigo();
       abm.hideFieldExtra();
       abm.setTitle("ABM - "+CLASS_NAME+"s");
-      try {
-         UTIL.getDefaultTableModel(colsName, colsWidth, abm.getjTable1());
+      UTIL.getDefaultTableModel(abm.getjTable1(), colsName, colsWidth);
          UTIL.hideColumnTable(abm.getjTable1(), 0);
          cargarDTM(abm.getDTM(), null);
-      } catch (Exception ex) {
-         Logger.getLogger(CajaJpaController.class.getName()).log(Level.SEVERE, null, ex);
-      }
       abm.setListeners(this);
       abm.setVisible(true);
     }
 
+   @Override
     public void mouseReleased(MouseEvent e) {
        Integer selectedRow = ((javax.swing.JTable)e.getSource()).getSelectedRow();
        DefaultTableModel dtm = (DefaultTableModel) ((javax.swing.JTable)e.getSource()).getModel();
@@ -278,24 +277,23 @@ public class CajaJpaController implements ActionListener, MouseListener {
     }
 
     /**
-     * Devuelve una lista de Caja, según los permisos del usuario
-     * @param usuario el cual tiene acceso a las Cajas
-     * @param estado estado de la Caja (si está activa o no). Si es null, trae todas
+     * Devuelve una lista de Caja permitidas a este usuario
+     * @param usuario que solicita la Lista de Cajas
+     * @param estado estado de la Caja (si está activa o no). Si es null, bring both
      * @return <code>List<Caja>, o null si no tiene permisos de Caja
      */
     public List<Caja> findCajasByUsuario(Usuario usuario, Boolean estado) {
       EntityManager em = getEntityManager();
          Query q;
          if(estado != null) {
-            q = em.createNativeQuery("SELECT c.* FROM caja c, permisos_caja pc " +
-                    "WHERE pc.caja = c.id AND pc.usuario = " + usuario.getId() + " AND c.estado = " + estado
-                    + " ORDER BY c.nombre", Caja.class);
+            q = em.createQuery("SELECT c FROM " + CLASS_NAME + " c, PermisosCaja pc "
+                    + " WHERE pc.caja.id = c.id AND pc.usuario.id = " + usuario.getId() + " AND c.estado = " + estado
+                    + " ORDER BY c.nombre");
          } else {
-            q = em.createNativeQuery("SELECT c.* FROM caja c, permisos_caja pc " +
-                    "WHERE pc.caja = c.id AND pc.usuario = " + usuario.getId()
-                    + " ORDER BY c.nombre", Caja.class);
+            q = em.createQuery("SELECT c FROM " + CLASS_NAME + " c, PermisosCaja pc "
+                    + " WHERE pc.caja.id = c.id AND pc.usuario.id = " + usuario.getId()
+                    + " ORDER BY c.nombre");
          }
-//         List<Caja> l = q.getResultList();
          return q.getResultList();
     }
 }

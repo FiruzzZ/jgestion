@@ -20,12 +20,12 @@ import javax.swing.table.DefaultTableModel;
  * @author Administrador
  */
 public class JDFacturaVenta extends javax.swing.JDialog {
-   private final int modoApertura;
+   private final int modoVista;
 
    /** Creates new form JDVenta */
    public JDFacturaVenta(java.awt.Frame parent, boolean modal, int factVenta1_Presup2_Remito3) {
       super(parent, modal);
-      modoApertura = factVenta1_Presup2_Remito3;
+      modoVista = factVenta1_Presup2_Remito3;
       initComponents();
       if (factVenta1_Presup2_Remito3 != 1) {
          this.setTitle("Remito");
@@ -191,6 +191,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
       cbSucursal.setName("sucursal"); // NOI18N
 
       cbUsuario.setEnabled(false);
+      cbUsuario.setFocusable(false);
       cbUsuario.setName("usuario"); // NOI18N
       cbUsuario.setRequestFocusEnabled(false);
 
@@ -224,7 +225,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
 
       tfRemito.setColumns(12);
       tfRemito.setEditable(false);
-      tfRemito.setFont(new java.awt.Font("Tahoma", 1, 11));
+      tfRemito.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
       tfRemito.setHorizontalAlignment(javax.swing.JTextField.CENTER);
       tfRemito.setFocusable(false);
       tfRemito.setRequestFocusEnabled(false);
@@ -497,7 +498,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
 
       tfGravado.setColumns(8);
       tfGravado.setEditable(false);
-      tfGravado.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+      tfGravado.setFont(new java.awt.Font("Tahoma", 1, 11));
       tfGravado.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
       tfGravado.setText("0.00");
 
@@ -513,7 +514,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
 
       tfTotalIVA21.setColumns(6);
       tfTotalIVA21.setEditable(false);
-      tfTotalIVA21.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+      tfTotalIVA21.setFont(new java.awt.Font("Tahoma", 1, 11));
       tfTotalIVA21.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
       tfTotalIVA21.setText("0.00");
 
@@ -521,7 +522,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
 
       tfTotalIVA105.setColumns(6);
       tfTotalIVA105.setEditable(false);
-      tfTotalIVA105.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+      tfTotalIVA105.setFont(new java.awt.Font("Tahoma", 1, 11));
       tfTotalIVA105.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
       tfTotalIVA105.setText("0.00");
 
@@ -530,7 +531,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
 
       tfTotalDesc.setColumns(6);
       tfTotalDesc.setEditable(false);
-      tfTotalDesc.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+      tfTotalDesc.setFont(new java.awt.Font("Tahoma", 1, 11));
       tfTotalDesc.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
       tfTotalDesc.setText("0.00");
 
@@ -1059,8 +1060,8 @@ public class JDFacturaVenta extends javax.swing.JDialog {
     * 1 = FacturaVenta, 2 = Presupuesto, 3 = Remito
     * @return
     */
-   public int getModoApertura() {
-      return modoApertura;
+   public int getModoVista() {
+      return modoVista;
    }
    
 

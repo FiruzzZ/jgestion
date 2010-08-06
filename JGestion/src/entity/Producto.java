@@ -55,7 +55,6 @@ public class Producto implements Serializable {
    private Integer tipomargen;
    @Column(name = "precio_venta", precision = 17, scale = 17)
    private Double precioVenta;
-   @Lob
    @Column(name = "foto")
    private byte[] foto;
    @Basic(optional = false)

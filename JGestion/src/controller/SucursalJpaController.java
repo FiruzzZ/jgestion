@@ -197,7 +197,7 @@ public class SucursalJpaController implements ActionListener, MouseListener, Key
 //        contenedor.hideBtmEliminar();
         contenedor.hideBtmImprimir();
         try {
-            UTIL.getDefaultTableModel(colsName, colsWidth, contenedor.getjTable1());
+            UTIL.getDefaultTableModel(contenedor.getjTable1(), colsName, colsWidth);
         } catch (Exception ex) {
             Logger.getLogger(SucursalJpaController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -271,7 +271,7 @@ public class SucursalJpaController implements ActionListener, MouseListener, Key
         sucursal.setNombre(panel.getTfNombre().toUpperCase());
         sucursal.setDireccion(panel.getTfDireccion());
         sucursal.setProvincia((Provincia) panel.getSelectedProvincia());
-        sucursal.setDepartamento((Depto) panel.getSelectedDepartamento());
+        sucursal.setDepartamento((Departamento) panel.getSelectedDepartamento());
         sucursal.setMunicipio((Municipio) panel.getSelectedMunicipio());
 
         //NULLABLE's
@@ -448,12 +448,12 @@ public class SucursalJpaController implements ActionListener, MouseListener, Key
             javax.swing.JComboBox combo = (javax.swing.JComboBox) e.getSource();
             if (combo.getName().equalsIgnoreCase("cbProvincias")) {
                 if(combo.getSelectedIndex() > 0)
-                    UTIL.loadComboBox(panel.getCbDepartamentos(), new DeptoJpaController().findDeptosFromProvincia(((Provincia)combo.getSelectedItem()).getIdprovincia()), true);
+                    UTIL.loadComboBox(panel.getCbDepartamentos(), new DepartamentoJpaController().findDeptosFromProvincia(((Provincia)combo.getSelectedItem()).getId()), true);
                 else
-                    UTIL.loadComboBox(panel.getCbDepartamentos(), new DeptoJpaController().findDeptosFromProvincia(0), true);
+                    UTIL.loadComboBox(panel.getCbDepartamentos(), new DepartamentoJpaController().findDeptosFromProvincia(0), true);
             } else if (combo.getName().equalsIgnoreCase("cbDepartamentos")) {
                 if(combo.getSelectedIndex() > 0)
-                    UTIL.loadComboBox(panel.getCbMunicipios(), new MunicipioJpaController().findMunicipiosFromDepto(((Depto)combo.getSelectedItem()).getIddepto()), true);
+                    UTIL.loadComboBox(panel.getCbMunicipios(), new MunicipioJpaController().findMunicipiosFromDepto(((Departamento)combo.getSelectedItem()).getId()), true);
                 else
                     UTIL.loadComboBox(panel.getCbMunicipios(), new MunicipioJpaController().findMunicipiosFromDepto(0), true);
             }

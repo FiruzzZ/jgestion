@@ -256,7 +256,7 @@ public class UnidadmedidaJpaController implements ActionListener, MouseListener 
       abm.hideFieldExtra();
       abm.setTitle("ABM - Unidades de medida");
       try {
-         UTIL.getDefaultTableModel(colsName, colsWidth, abm.getjTable1());
+         UTIL.getDefaultTableModel(abm.getjTable1(), colsName, colsWidth);
       } catch (Exception ex) {
          Logger.getLogger(UnidadmedidaJpaController.class.getName()).log(Level.SEVERE, null, ex);
       }

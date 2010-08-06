@@ -24,22 +24,28 @@ import javax.persistence.UniqueConstraint;
  */
 @Entity
 @Table(name = "provincia", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"nombre"}), @UniqueConstraint(columnNames = {"codigo"})})
-@NamedQueries({@NamedQuery(name = "Provincia.findAll", query = "SELECT p FROM Provincia p"),
-@NamedQuery(name = "Provincia.findByIdprovincia", query = "SELECT p FROM Provincia p WHERE p.idprovincia = :idprovincia"), @NamedQuery(name = "Provincia.findByNombre", query = "SELECT p FROM Provincia p WHERE p.nombre = :nombre"), @NamedQuery(name = "Provincia.findByCodigo", query = "SELECT p FROM Provincia p WHERE p.codigo = :codigo")})
+    @UniqueConstraint(columnNames = {"nombre"}),
+    @UniqueConstraint(columnNames = {"codigo"})
+})
+@NamedQueries({
+   @NamedQuery(name = "Provincia.findAll", query = "SELECT p FROM Provincia p"),
+   @NamedQuery(name = "Provincia.findById", query = "SELECT p FROM Provincia p WHERE p.id = :id"),
+   @NamedQuery(name = "Provincia.findByNombre", query = "SELECT p FROM Provincia p WHERE p.nombre = :nombre"),
+   @NamedQuery(name = "Provincia.findByCodigo", query = "SELECT p FROM Provincia p WHERE p.codigo = :codigo")
+})
 public class Provincia implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
     @Column(name = "idprovincia", nullable = false)
-    private Integer idprovincia;
+    private Integer id;
     @Basic(optional = false)
-    @Column(name = "nombre", nullable = false, length = 2147483647)
+    @Column(name = "nombre", nullable = false, length = 250)
     private String nombre;
-    @Column(name = "codigo", length = 2147483647)
+    @Column(name = "codigo", length = 250)
     private String codigo;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "provincia")
-    private List<Depto> deptoList;
+    private List<Departamento> deptoList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "provincia")
     private List<Proveedor> proveedorList;
 
@@ -47,20 +53,20 @@ public class Provincia implements Serializable {
     }
 
     public Provincia(Integer idprovincia) {
-        this.idprovincia = idprovincia;
+        this.id = idprovincia;
     }
 
-    public Provincia(Integer idprovincia, String nombre) {
-        this.idprovincia = idprovincia;
+    public Provincia(Integer id, String nombre) {
+        this.id = id;
         this.nombre = nombre;
     }
 
-    public Integer getIdprovincia() {
-        return idprovincia;
+    public Integer getId() {
+        return id;
     }
 
-    public void setIdprovincia(Integer idprovincia) {
-        this.idprovincia = idprovincia;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getNombre() {
@@ -79,11 +85,11 @@ public class Provincia implements Serializable {
         this.codigo = codigo;
     }
 
-    public List<Depto> getDeptoList() {
+    public List<Departamento> getDeptoList() {
         return deptoList;
     }
 
-    public void setDeptoList(List<Depto> deptoList) {
+    public void setDeptoList(List<Departamento> deptoList) {
         this.deptoList = deptoList;
     }
 
@@ -98,7 +104,7 @@ public class Provincia implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (idprovincia != null ? idprovincia.hashCode() : 0);
+        hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
@@ -109,7 +115,7 @@ public class Provincia implements Serializable {
             return false;
         }
         Provincia other = (Provincia) object;
-        if ((this.idprovincia == null && other.idprovincia != null) || (this.idprovincia != null && !this.idprovincia.equals(other.idprovincia))) {
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
         return true;
