@@ -8,7 +8,7 @@ import entity.Provincia;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
-import entity.Depto;
+import entity.Departamento;
 import java.util.ArrayList;
 import java.util.List;
 import entity.Proveedor;
@@ -41,13 +41,13 @@ public class ProvinciaJpaController {
          Provincia provincia;
          try {
             provincia = em.getReference(Provincia.class, id);
-            provincia.getIdprovincia();
+            provincia.getId();
          } catch (EntityNotFoundException enfe) {
             throw new NonexistentEntityException("The provincia with id " + id + " no longer exists.", enfe);
          }
          List<String> illegalOrphanMessages = null;
-         List<Depto> deptoListOrphanCheck = provincia.getDeptoList();
-         for (Depto deptoListOrphanCheckDepto : deptoListOrphanCheck) {
+         List<Departamento> deptoListOrphanCheck = provincia.getDeptoList();
+         for (Departamento deptoListOrphanCheckDepto : deptoListOrphanCheck) {
             if (illegalOrphanMessages == null) {
                illegalOrphanMessages = new ArrayList<String>();
             }

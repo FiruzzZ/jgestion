@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.NoResultException;
+import javax.swing.JFrame;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -227,9 +228,9 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
       jdCambiarPass.setVisible(true);
    }
 
-   public void initLogin(java.awt.Frame aThis) {
+   public void initLogin(JFrame frame) {
       CURRENT_USER = null;
-      jDLogin = new JDLogin(aThis, true);
+      jDLogin = new JDLogin(frame, true);
       jDLogin.setListener(this);
       jDLogin.setLocation(200, 200);
       jDLogin.setAlwaysOnTop(true);
@@ -344,10 +345,10 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
       contenedor.hideBtmEliminar();
       contenedor.hideBtmImprimir();
       try {
-         UTIL.getDefaultTableModel(colsName, colsWidth, contenedor.getjTable1());
+         UTIL.getDefaultTableModel(contenedor.getjTable1(),colsName, colsWidth);
          UTIL.hideColumnTable(contenedor.getjTable1(), 0);
       } catch (Exception ex) {
-         Logger.getLogger(DeptoJpaController.class.getName()).log(Level.SEVERE, null, ex);
+         Logger.getLogger(DepartamentoJpaController.class.getName()).log(Level.SEVERE, null, ex);
       }
       cargarDTM(contenedor.getDTM(), null);
       contenedor.setListener(this);
@@ -427,9 +428,9 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
 
       panel = new PanelABMUsuarios();
       UTIL.getDefaultTableModel(
+              panel.getTableCajas(),
               new String[]{"Caja","Estado", "Permitir"},
               new int[]{150,20, 1},
-              panel.getTableCajas(),
               new Class[]{String.class,String.class, Boolean.class},
               new int[]{2});
 

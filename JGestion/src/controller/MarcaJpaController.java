@@ -156,7 +156,7 @@ public class MarcaJpaController implements ActionListener, MouseListener {
       abm.hideFieldExtra();
       abm.setTitle("ABM - " + CLASS_NAME + "s");
       try {
-         UTIL.getDefaultTableModel(colsName, colsWidth, abm.getjTable1());
+         UTIL.getDefaultTableModel(abm.getjTable1(), colsName, colsWidth);
       } catch (Exception ex) {
          Logger.getLogger(MarcaJpaController.class.getName()).log(Level.SEVERE, null, ex);
       }

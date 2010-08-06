@@ -3,6 +3,7 @@ package entity;
 import java.util.List;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -237,7 +238,11 @@ public abstract class UTIL {
       return tabla;
    }
 
-   public static javax.swing.JTable getDefaultTableModel(String[] columnsName, javax.swing.JTable tabla) {
+   public static DefaultTableModel getDtm(JTable jtable) {
+      return (DefaultTableModel) jtable.getModel();
+   }
+
+   public static javax.swing.JTable getDefaultTableModel(javax.swing.JTable tabla, String[] columnsName) {
        javax.swing.table.DefaultTableModel dtm = new DefaultTableModelImpl();
        if(tabla.getModel() != null) {
           dtm = (javax.swing.table.DefaultTableModel) tabla.getModel();
@@ -249,9 +254,18 @@ public abstract class UTIL {
        return tabla;
    }
 
-public static javax.swing.JTable getDefaultTableModel(
-           String[] columnNames, int[] columnWidths,
-           JTable tabla, Class[] columnClassType, int[] editableColumns) {
+   /**
+    * Personaliza una DefaulTableModel
+    * @param tabla en la cual se insertará el modelo, if this is null, a new one will be initialized
+    * @param columnNames Nombre de las HeaderColumns
+    * @param columnWidths Ancho de columnas
+    * @param columnClassType Tipo de datos que va contener cada columna
+    * @param editableColumns Index de las columnas las cuales podrán ser
+    * editables ( > -1 && cantidadColumnas >= columnsCount)
+    * @return una JTable con el modelo
+    */
+   public static javax.swing.JTable getDefaultTableModel(
+           JTable tabla,String[] columnNames, int[] columnWidths, Class[] columnClassType, int[] editableColumns) {
 
       if ((columnNames.length != columnWidths.length)) {
          throw new IllegalArgumentException("los Array no tiene la misma cantidad de elementos" +
@@ -262,6 +276,11 @@ public static javax.swing.JTable getDefaultTableModel(
             throw new IllegalArgumentException("los Array no tiene la misma cantidad de " +
                     "elementos (column Names = " + columnNames.length +
                     " y ClassType = " + columnClassType.length + ")");
+      }
+      for (int i : editableColumns) {
+         if(i < 0 || i > (columnNames.length - 1) )
+            throw new IndexOutOfBoundsException("El array editableColumns[]" +
+                    " contiene un indice número de columna no válido: index = "+ i);
       }
 
       javax.swing.table.DefaultTableModel dtm;
@@ -289,12 +308,12 @@ public static javax.swing.JTable getDefaultTableModel(
    }
 
    public static javax.swing.JTable getDefaultTableModel(
-           String[] columnNames, int[] columnWidths, JTable tabla, Class[] columnClassType) {
+           JTable tabla,String[] columnNames, int[] columnWidths, Class[] columnClassType) {
 
       if ((columnNames.length != columnWidths.length)) {
          throw new IllegalArgumentException("los Array no tiene la misma cantidad de elementos" +
-                 " (Names.length = " + columnNames.length+"" +
-                 " y Widths.length = " + columnWidths.length+")");
+                 " (Names length = "+columnNames.length+"" +
+                 " y Widthslength = "+columnWidths.length+")");
       } else {
          if (columnClassType != null && (columnNames.length != columnClassType.length))
             throw new IllegalArgumentException("los Array no tiene la misma cantidad de " +
@@ -325,7 +344,7 @@ public static javax.swing.JTable getDefaultTableModel(
    }
 
    public static javax.swing.JTable getDefaultTableModel(
-           String[] columnNames, int[] columnWidths, javax.swing.JTable tabla) {
+           javax.swing.JTable tabla,String[] columnNames, int[] columnWidths) {
 
       if (columnNames.length != columnWidths.length) {
          throw new IllegalArgumentException("los columns Names y Widths no tiene la misma cantidad de elementos (length !=)");
@@ -616,17 +635,22 @@ public static javax.swing.JTable getDefaultTableModel(
     * setea como selected al item del comboBox que coincida con el <code>candidato</code>
     * @param combo El cual debe contener el item <code>candidato</code>
     * @param candidato
-    * @return a index which is the selectedItem, or <code>-1</code> if
-    * candidato == null || combo == null ||  1 > combo.getItemCount()
+    * @return a index of the selectedItem, or <code>-1</code> if
+    * 1 > combo.getItemCount() || if <code>candidato</code> is mismatch.
     */
    public static int setSelectedItem(javax.swing.JComboBox combo, Object candidato) {
-      if (candidato == null || combo == null || (combo.getItemCount() < 1)) {
+      System.out.println("Candidato.class =" + candidato.getClass());
+      if (candidato == null)
+         throw new IllegalArgumentException("El Objeto candidato == null");
+      if (combo == null)
+         throw new IllegalArgumentException("El JCombo combo == null");
+      if (combo.getItemCount() < 1) {
          return -1;
       }
 
       boolean encontrado = false;
       int index = 0;
-      while (index < combo.getItemCount() && !encontrado) {
+      while (index < combo.getItemCount() && ! encontrado) {
          if ((combo.getItemAt(index)).equals(candidato)) {
             combo.setSelectedIndex(index);
             encontrado = true;
@@ -640,11 +664,14 @@ public static javax.swing.JTable getDefaultTableModel(
    /**
     * Carga la List de objetos en el comboBox
     * @param comboBox JComboBox donde se van a cargar los Objectos
-    * @param listaDeObjectos Si la List está vacía o es null se carga un Item "Vacio"
+    * @param listaDeObjectos Si la List está vacía o es null se carga un String Item "Vacio"
     * @param Elejible Si es true, se agrega un Item "Elegir" en el index 0; sino
     * solo se cargar los objetos
     */
    public static void loadComboBox(JComboBox comboBox, List objectList, boolean Elegible) {
+      if (comboBox == null)
+         throw new IllegalArgumentException("El comboBox que intentas cargar es NULL!!! (NullPointerException) guampa!!");
+
       comboBox.removeAllItems();
       if (objectList != null && objectList.size() > 0) {
          //si se permite que NO se elija ningún elemento del combobox
@@ -661,21 +688,52 @@ public static javax.swing.JTable getDefaultTableModel(
       }
    }
 
-   public static void loadComboBox(JComboBox comboBox, List objectList, String Message1erItem) {
-      comboBox.removeAllItems();
-         if(objectList != null && objectList.size() > 0){
-            //si se permite q NO se elija ningún elemento del combobox
-            if(Message1erItem != null && Message1erItem.length() > 0) {
-                comboBox.addItem(Message1erItem);
+   /**
+    * Personaliza la carga de datos en un JComboBox, según una List y bla bla...
+    * @param comboBox
+    * @param objectList collection la cual se va cargar
+    * @param message1erItem mensaje del 1er item del combo, dejar
+    * <code>null</code> si no hay preferencia
+    * @param itemWhenIsEmpy item que se va cargar cuando el combo esté vacio. Si
+    * es == <code>null</code>, sería lo mismo que usar
+    * {@link #loadComboBox(JComboBox, List, String)}
+    */
+   public static void loadComboBox(JComboBox comboBox, List objectList, String message1erItem, String itemWhenIsEmpy) {
+      if (itemWhenIsEmpy == null) {
+         loadComboBox(comboBox, objectList, message1erItem);
+      } else {
+         comboBox.removeAllItems();
+         if (objectList != null && objectList.size() > 0) {
+
+            if (message1erItem != null && message1erItem.length() > 0) {
+                comboBox.addItem(message1erItem);
             }
+
             for (Object object : objectList) {
                 comboBox.addItem(object);
             }
          } else {
             //si la lista a cargar está vacía o es NULL
-            comboBox.addItem("<Vacio>");
+            comboBox.addItem(itemWhenIsEmpy);
+         }   
+      }
+   }
+
+   public static void loadComboBox(JComboBox comboBox, List objectList, String message1erItem) {
+      comboBox.removeAllItems();
+      if (objectList != null && objectList.size() > 0) {
+         if (message1erItem != null && message1erItem.length() > 0) {
+             comboBox.addItem(message1erItem);
          }
-    }
+
+         for (Object object : objectList) {
+             comboBox.addItem(object);
+         }
+      } else {
+         //si la lista a cargar está vacía o es NULL
+         comboBox.addItem("<Vacio>");
+      }
+   }
 
    /**
     * Agrega "0" a la <code>cadena</code> hasta que esta tenga la longitudMaxima
@@ -710,19 +768,15 @@ public static javax.swing.JTable getDefaultTableModel(
    }
 
    public static void limpiarDtm(javax.swing.table.DefaultTableModel dtm) {
-      if(dtm == null)
-         throw new IllegalArgumentException("La DefaultTableModel que se intenta limpiar can't be NULL!!!!!");
-
       for (int i = dtm.getRowCount() - 1; i > -1; i--) {
          dtm.removeRow(i);
       }
    }
 
-//    public static void loadComboBox(JComboBox cb, String[] lista) {
-//        cb.removeAllItems();
-//        if(lista!=null || lista.length < 1)
-//    }
-   ////////////////// PRIVATE CLASSES /////////////////////// ojo piojo!
+   public static Object getSelectedValue(JTable jTable, int indexColumn) {
+      return ((DefaultTableModel)jTable.getModel()).getValueAt(jTable.getSelectedRow(), indexColumn);
+   }
+
    /**
     * implementación de DefaultTableModel
     * Por default los datos de los model NO son editables

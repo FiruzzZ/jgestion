@@ -2,7 +2,7 @@ package controller;
 
 import controller.exceptions.*;
 import entity.Cliente;
-import entity.Depto;
+import entity.Departamento;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -32,15 +32,15 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author FiruzzZ
  */
-public class DeptoJpaController implements ActionListener, MouseListener, KeyListener {
+public class DepartamentoJpaController implements ActionListener, MouseListener, KeyListener {
 
-   public final String CLASS_NAME = "Depto";
+   public final String CLASS_NAME = Departamento.class.getSimpleName();
    private JDContenedor contenedor;
    private JDABM abm;
    private final String[] colsName = {"Nº", "Nombre", "Provincia", "Cód. area", "Abrev."};
    private final int[] colsWidth = {20, 120, 100, 20, 20};
    private PanelABMDeptos panel;
-   private Depto departamento;
+   private Departamento departamento;
 
    // <editor-fold defaultstate="collapsed" desc="CRUD...">
    private EntityManager getEntityManager() {
@@ -52,10 +52,10 @@ public class DeptoJpaController implements ActionListener, MouseListener, KeyLis
       try {
          em = getEntityManager();
          em.getTransaction().begin();
-         Depto depto;
+         Departamento depto;
          try {
-            depto = em.getReference(Depto.class, id);
-            depto.getIddepto();
+            depto = em.getReference(Departamento.class, id);
+            depto.getId();
          } catch (EntityNotFoundException enfe) {
             throw new NonexistentEntityException("The depto with id " + id + " no longer exists.", enfe);
          }
@@ -104,15 +104,15 @@ public class DeptoJpaController implements ActionListener, MouseListener, KeyLis
       }
    }
 
-   public List<Depto> findDeptoEntities() {
+   public List<Departamento> findDeptoEntities() {
       return findDeptoEntities(true, -1, -1);
    }
 
-   public List<Depto> findDeptoEntities(int maxResults, int firstResult) {
+   public List<Departamento> findDeptoEntities(int maxResults, int firstResult) {
       return findDeptoEntities(false, maxResults, firstResult);
    }
 
-   private List<Depto> findDeptoEntities(boolean all, int maxResults, int firstResult) {
+   private List<Departamento> findDeptoEntities(boolean all, int maxResults, int firstResult) {
       EntityManager em = getEntityManager();
       try {
          Query q = em.createQuery("select object(o) from Depto as o");
@@ -126,19 +126,19 @@ public class DeptoJpaController implements ActionListener, MouseListener, KeyLis
       }
    }
 
-   public Depto findDepto(Integer id) {
+   public Departamento findDepto(Integer id) {
       EntityManager em = getEntityManager();
       try {
-         return em.find(Depto.class, id);
+         return em.find(Departamento.class, id);
       } finally {
          em.close();
       }
    }
 
-   public Depto findDeptoByNombre(String nombreDepto) {
+   public Departamento findDeptoByNombre(String nombreDepto) {
       EntityManager em = getEntityManager();
       try {
-         return (Depto) em.createNamedQuery("Depto.findByNombre").setParameter("nombre", nombreDepto).getSingleResult();
+         return (Departamento) em.createNamedQuery("Depto.findByNombre").setParameter("nombre", nombreDepto).getSingleResult();
       } finally {
          em.close();
       }
@@ -156,11 +156,7 @@ public class DeptoJpaController implements ActionListener, MouseListener, KeyLis
    public void initContenedor(java.awt.Frame frame, boolean modal) {
       contenedor = new JDContenedor(frame, modal, "ABM - Departamentos");
       contenedor.hideBtmImprimir();
-      try {
-         UTIL.getDefaultTableModel(colsName, colsWidth, contenedor.getjTable1());
-      } catch (Exception ex) {
-         Logger.getLogger(DeptoJpaController.class.getName()).log(Level.SEVERE, null, ex);
-      }
+      UTIL.getDefaultTableModel(contenedor.getjTable1(), colsName, colsWidth);
       cargarDTM(contenedor.getDTM(), null);
       contenedor.setListener(this);
       contenedor.setVisible(true);
@@ -168,18 +164,17 @@ public class DeptoJpaController implements ActionListener, MouseListener, KeyLis
 
    private void cargarDTM(DefaultTableModel dtm, String query) {
       UTIL.limpiarDtm(dtm);
-
-      java.util.List<Depto> l;
-      if (query == null) {
+      java.util.List<Departamento> l;
+      if (query == null || query.length() < 1) {
          l = DAO.getEntityManager().createNamedQuery(CLASS_NAME + ".findAll").getResultList();
       } else {
          // para cuando se usa el Buscador del ABM
-         l = DAO.getEntityManager().createNativeQuery(query, Depto.class).getResultList();
+         l = DAO.getEntityManager().createQuery(query).getResultList();
       }
 
-      for (Depto o : l) {
+      for (Departamento o : l) {
          dtm.addRow(new Object[]{
-                    o.getIddepto(),
+                    o.getId(),
                     o.getNombre(),
                     o.getProvincia().getNombre(),
                     o.getCodigoArea(),
@@ -187,61 +182,55 @@ public class DeptoJpaController implements ActionListener, MouseListener, KeyLis
       }
    }
 
-   private void checkConstraints(Depto object) throws MessageException, Exception {
+   private void checkConstraints(Departamento entity) throws MessageException, Exception {
       EntityManager em = getEntityManager();
-      Depto OldDepto;
+      Departamento OldDepto;
       String idQuery = "";
       //check UNIQUE nombre por Provincia
-      if (object.getIddepto() != null) {
-         idQuery = "o.iddepto!=" + object.getIddepto() + " AND ";
+      if (entity.getId() != null) {
+         idQuery = "o.id <>" + entity.getId() + " AND ";
       }
 
       try {
-         OldDepto = (Depto) em.createNativeQuery("SELECT * FROM " + CLASS_NAME + " o "
-                 + " WHERE " + idQuery + " o.idprovincia=" + object.getProvincia().getCodigo()
-                 + " AND o.nombre='" + object.getNombre() + "'", Depto.class).getSingleResult();
-         if (OldDepto != null) {
-            throw new MessageException(
-                    "Ya existe un Departamento con este nombre en esta provincia.");
-         }
+         OldDepto = (Departamento) em.createQuery("SELECT o FROM " + CLASS_NAME + " o "
+                 + " WHERE " + idQuery + " o.provincia.id=" + entity.getProvincia().getId()
+                 + " AND o.nombre='" + entity.getNombre() + "'").getSingleResult();
+         throw new MessageException("Ya existe un Departamento con este nombre en esta provincia.");
       } catch (NoResultException ex) {
-         System.out.println("safó nombre....");
       }
 
-      if (object.getCodigoArea() != null) {
+      if (entity.getCodigoArea() != null) {
          try {
-            OldDepto = (Depto) em.createNativeQuery("SELECT * FROM " + CLASS_NAME + " o "
-                    + " WHERE " + idQuery + " o.idprovincia=" + object.getProvincia().getCodigo()
-                    + " AND o.codigo_area=" + object.getCodigoArea(), Depto.class).getSingleResult();
-            if (OldDepto != null) {
-               throw new MessageException("Ya existe un Departamento (" + OldDepto.getNombre() + ") con este código de area en esta Provincia.");
-            }
+            OldDepto = (Departamento) em.createQuery("SELECT o FROM " + CLASS_NAME + " o "
+                    + " WHERE " + idQuery + " o.provincia.id=" + entity.getProvincia().getId()
+                    + " AND o.codigoArea=" + entity.getCodigoArea()).getSingleResult();
+            throw new MessageException("Ya existe un Departamento con este código de area en esta Provincia.");
          } catch (NoResultException ex) {
-            System.out.println("safó codigoArea....");
          }
       }
 
-      if (object.getAbreviatura() != null) {
+      if (entity.getAbreviatura() != null) {
          try {
-            OldDepto = (Depto) em.createNativeQuery("SELECT * FROM " + CLASS_NAME + " o "
-                    + " WHERE " + idQuery + " o.idprovincia=" + object.getProvincia().getCodigo()
-                    + " AND o.nombre='" + object.getNombre() + "'", Depto.class).getSingleResult();
+            OldDepto = (Departamento) em.createQuery("SELECT o FROM " + CLASS_NAME + " o "
+                    + " WHERE " + idQuery + " o.provincia.id=" + entity.getProvincia().getId()
+                    + " AND o.nombre='" + entity.getNombre() + "'").getSingleResult();
             if (OldDepto != null) {
-               throw new MessageException("Ya existe un Departamento (" + OldDepto.getNombre() + ") con esta abreviatura.");
+               throw new MessageException("Ya existe un " + CLASS_NAME + " con esta abreviatura.");
             }
          } catch (NoResultException ex) {
-            System.out.println("safó Abreviatura....");
          }
       }
 
-      if (object.getIddepto() == null) {
-         DAO.create(object);
+      if (entity.getId() == null) {
+         DAO.create(entity);
       } else {
-         DAO.doMerge(object);
+         DAO.doMerge(entity);
       }
    }
 
+   @Override
    public void actionPerformed(ActionEvent e) {
+
       // <editor-fold defaultstate="collapsed" desc="JButton">
       if (e.getSource().getClass().equals(JButton.class)) {
          JButton boton = (JButton) e.getSource();
@@ -252,7 +241,7 @@ public class DeptoJpaController implements ActionListener, MouseListener, KeyLis
                contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
             } catch (Exception ex) {
                contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-               Logger.getLogger(DeptoJpaController.class.getName()).log(Level.SEVERE, null, ex);
+               Logger.getLogger(DepartamentoJpaController.class.getName()).log(Level.SEVERE, null, ex);
             }
          } else if (boton.getName().equalsIgnoreCase("edit")) {
             try {
@@ -261,7 +250,7 @@ public class DeptoJpaController implements ActionListener, MouseListener, KeyLis
                contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
             } catch (Exception ex) {
                contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-               Logger.getLogger(DeptoJpaController.class.getName()).log(Level.SEVERE, null, ex);
+               Logger.getLogger(DepartamentoJpaController.class.getName()).log(Level.SEVERE, null, ex);
             }
 
          } else if (boton.getName().equalsIgnoreCase("del")) {
@@ -269,16 +258,16 @@ public class DeptoJpaController implements ActionListener, MouseListener, KeyLis
                if (departamento == null) {
                   throw new MessageException("No hay departamento seleccionado");
                }
-               destroy(departamento.getIddepto());
+               destroy(departamento.getId());
             } catch (MessageException ex) {
                abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
-               Logger.getLogger(DeptoJpaController.class.getName()).log(Level.SEVERE, null, ex);
+               Logger.getLogger(DepartamentoJpaController.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IllegalOrphanException ex) {
                abm.showMessage(ex.getMessage(), CLASS_NAME, 0);
-               Logger.getLogger(DeptoJpaController.class.getName()).log(Level.SEVERE, null, ex);
+               Logger.getLogger(DepartamentoJpaController.class.getName()).log(Level.SEVERE, null, ex);
             } catch (NonexistentEntityException ex) {
                abm.showMessage(ex.getMessage(), CLASS_NAME, 0);
-               Logger.getLogger(DeptoJpaController.class.getName()).log(Level.SEVERE, null, ex);
+               Logger.getLogger(DepartamentoJpaController.class.getName()).log(Level.SEVERE, null, ex);
             }
          } else if (boton.getName().equalsIgnoreCase("Print")) {
          } else if (boton.getName().equalsIgnoreCase("exit")) {
@@ -298,7 +287,7 @@ public class DeptoJpaController implements ActionListener, MouseListener, KeyLis
                abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
             } catch (Exception ex) {
                abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
-               Logger.getLogger(DeptoJpaController.class.getName()).log(Level.SEVERE, null, ex);
+               Logger.getLogger(DepartamentoJpaController.class.getName()).log(Level.SEVERE, null, ex);
             }
          } else if (boton.getName().equalsIgnoreCase("cancelar")) {
             abm.dispose();
@@ -338,7 +327,7 @@ public class DeptoJpaController implements ActionListener, MouseListener, KeyLis
    public void mouseReleased(MouseEvent e) {
       Integer selectedRow = ((javax.swing.JTable) e.getSource()).getSelectedRow();
       if (selectedRow > -1) {
-         departamento = (Depto) DAO.getEntityManager().find(Depto.class,
+         departamento = (Departamento) DAO.getEntityManager().find(Departamento.class,
                  Integer.valueOf((((javax.swing.JTable) e.getSource()).getValueAt(selectedRow, 0)).toString()));
       }
    }
@@ -362,7 +351,7 @@ public class DeptoJpaController implements ActionListener, MouseListener, KeyLis
       abm.setVisible(true);
    }
 
-   private void setPanel(Depto departamento) {
+   private void setPanel(Departamento departamento) {
       javax.swing.JComboBox combo = panel.getCbProvincias();
       for (int i = 0; i < combo.getItemCount(); i++) {
          if ((combo.getItemAt(i).toString()).equals(departamento.getProvincia().getNombre())) {
@@ -378,7 +367,7 @@ public class DeptoJpaController implements ActionListener, MouseListener, KeyLis
 
    private void setEntity() throws MessageException {
       if (departamento == null) {
-         departamento = new Depto();
+         departamento = new Departamento();
       }
 
       departamento.setNombre(panel.getTfNombre().trim().toUpperCase());
@@ -430,12 +419,15 @@ public class DeptoJpaController implements ActionListener, MouseListener, KeyLis
    private void armarQuery(String filtro) {
       String query = null;
       if (filtro != null && filtro.length() > 0) {
-         query = "SELECT * FROM " + CLASS_NAME + " o WHERE o.nombre ILIKE '" + filtro + "%'";
+         query = "SELECT o FROM " + CLASS_NAME + " o WHERE o.nombre LIKE '" + filtro + "%' " +
+                 " ORDER BY o.provincia.nombre, o.nombre";
       }
       cargarDTM(contenedor.getDTM(), query);
    }
 
-   public List<Depto> findDeptosFromProvincia(int idProvincia) {
-      return DAO.getEntityManager().createNativeQuery("SELECT * FROM Depto o WHERE o.idprovincia =" + idProvincia, Depto.class).getResultList();
+   public List<Departamento> findDeptosFromProvincia(int provinciaID) {
+      return DAO.getEntityManager()
+              .createQuery("SELECT o FROM " + CLASS_NAME + " o WHERE o.provincia.id =" + provinciaID)
+              .getResultList();
    }
 }

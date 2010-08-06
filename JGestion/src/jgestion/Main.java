@@ -24,16 +24,6 @@ public class Main {
       try {
          if (DAO.getEntityManager().isOpen()) {
             DAO.setDefaultData();
-//            EntityManager em = null;
-//            try {
-//               em = DAO.getEntityManager();
-//               em.getTransaction().begin();
-//               em.getTransaction().commit();
-//               em.close();
-//            }catch (Exception ex) {
-//               em.getTransaction().rollback();
-//               ex.printStackTrace();
-//            }
             java.awt.EventQueue.invokeLater(new Runnable() {
                public void run() {
                   new gui.JFP().setVisible(true);

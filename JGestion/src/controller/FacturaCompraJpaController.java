@@ -144,7 +144,7 @@ public class FacturaCompraJpaController
       }// </editor-fold>
 
       contenedor = new JDFacturaCompra(frame, modal);
-      UTIL.getDefaultTableModel(colsName, colsWidth, contenedor.getjTable1());
+      UTIL.getDefaultTableModel(contenedor.getjTable1(), colsName, colsWidth);
       //esconde la columna IVA-Producto
       UTIL.hideColumnTable(contenedor.getjTable1(), 0);
       //set next nº movimiento
@@ -550,16 +550,13 @@ public class FacturaCompraJpaController
       UTIL.loadComboBox(buscador.getCbCaja(), new CajaJpaController().findCajasByUsuario(UsuarioJpaController.getCurrentUser(), true), true);
       UTIL.loadComboBox(buscador.getCbSucursal(), new SucursalJpaController().findSucursalEntities(), true);
       UTIL.loadComboBox(buscador.getCbFormasDePago(), Valores.FormaPago.getFormasDePago(), true);
-      try {
-         UTIL.getDefaultTableModel(
-                 new String[]{"facturaID", "Nº factura","Mov.", "Proveedor", "Importe", "Fecha", "Sucursal", "Caja", "Usuario", "Fecha (Sistema)"},
-                 new int[]{1, 30, 10, 50, 50, 50, 80, 80, 50, 70},
-                 buscador.getjTable1());
-         //escondiendo facturaID
-         UTIL.hideColumnTable(buscador.getjTable1(), 0);
-      } catch (Exception ex) {
-         Logger.getLogger(FacturaCompraJpaController.class.getName()).log(Level.SEVERE, null, ex);
-      }
+      UTIL.getDefaultTableModel(
+              buscador.getjTable1(),
+              new String[]{"facturaID", "Nº factura","Mov.", "Proveedor", "Importe", "Fecha", "Sucursal", "Caja", "Usuario", "Fecha (Sistema)"},
+              new int[]{1, 30, 10, 50, 50, 50, 80, 80, 50, 70}
+              );
+      //escondiendo facturaID
+      UTIL.hideColumnTable(buscador.getjTable1(), 0);
       buscador.setListeners(this);
       buscador.setLocationRelativeTo(aThis);
       buscador.setVisible(true);
@@ -655,14 +652,9 @@ public class FacturaCompraJpaController
    private void setDatosFactura() {
       contenedor = new JDFacturaCompra(null, true);
       contenedor.setLocationRelativeTo(buscador);
-      try {
-         UTIL.getDefaultTableModel(colsName, colsWidth, contenedor.getjTable1());
-         //esconde la columna IVA-Producto
-         UTIL.hideColumnTable(contenedor.getjTable1(), 0);
-      } catch (Exception ex) {
-         Logger.getLogger(FacturaCompraJpaController.class.getName()).log(Level.SEVERE, null, ex);
-      }
-
+      UTIL.getDefaultTableModel(contenedor.getjTable1(), colsName, colsWidth);
+      //esconde la columna IVA-Producto
+      UTIL.hideColumnTable(contenedor.getjTable1(), 0);
       // seteando datos de FacturaCompra
       contenedor.getCbProveedor().addItem(EL_OBJECT.getProveedor());
       contenedor.getCbSucursal().addItem(EL_OBJECT.getSucursal());

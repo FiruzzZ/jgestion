@@ -151,7 +151,7 @@ public class ListaPreciosJpaController implements ActionListener, MouseListener,
       contenedor.hideBtmImprimir();
       contenedor.setSize(570 + 80, 300 + 50);
       try {
-         UTIL.getDefaultTableModel(colsName, colsWidth, contenedor.getjTable1());
+         UTIL.getDefaultTableModel(contenedor.getjTable1(), colsName, colsWidth);
          UTIL.hideColumnTable(contenedor.getjTable1(), 0);
       } catch (Exception ex) {
          Logger.getLogger(FacturaCompraJpaController.class.getName()).log(Level.SEVERE, null, ex);
@@ -200,13 +200,17 @@ public class ListaPreciosJpaController implements ActionListener, MouseListener,
       panel.setListener(this);
 
       try {
-         UTIL.getDefaultTableModel(new String[]{"id", "Rubro"},
-                 new int[]{5, 200},
-                 panel.getjTable1());
+         UTIL.getDefaultTableModel(
+                 panel.getjTable1(),
+                 new String[]{"id", "Rubro"},
+                 new int[]{5, 200}
+                 );
          UTIL.hideColumnTable(panel.getjTable1(), 0);
-         UTIL.getDefaultTableModel(new String[]{"id", "Rubro", "Margen %"},
-                 new int[]{5, 80, 40},
-                 panel.getjTable2());
+         UTIL.getDefaultTableModel(
+                 panel.getjTable2(),
+                 new String[]{"id", "Rubro", "Margen %"},
+                 new int[]{5, 80, 40}
+                 );
          UTIL.hideColumnTable(panel.getjTable2(), 0);
       } catch (Exception ex) {
          Logger.getLogger(ListaPreciosJpaController.class.getName()).log(Level.SEVERE, null, ex);

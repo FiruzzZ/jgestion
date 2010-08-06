@@ -262,7 +262,7 @@ public class ReciboJpaController implements ActionListener, FocusListener {
       contenedor.getLabelClienteProveedor().setText("Cliente");
       // <--- seteo de GUI
       try {
-         UTIL.getDefaultTableModel(colsName, colsWidth, contenedor.getjTable1());
+         UTIL.getDefaultTableModel(contenedor.getjTable1(), colsName, colsWidth);
          //escondiendo facturaID
          UTIL.hideColumnTable(contenedor.getjTable1(), 0);
       } catch (Exception ex) {
@@ -591,9 +591,10 @@ public class ReciboJpaController implements ActionListener, FocusListener {
       UTIL.loadComboBox(buscador.getCbCaja(), new CajaJpaController().findCajasByUsuario(UsuarioJpaController.getCurrentUser(), true), true);
       UTIL.loadComboBox(buscador.getCbSucursal(), new SucursalJpaController().findSucursalEntities(), true);
       UTIL.getDefaultTableModel(
+              buscador.getjTable1(),
               new String[]{"Nº Recibo", "Monto", "Fecha", "Sucursal", "Caja", "Usuario", "Fecha/Hora (Sist)"},
-              new int[]{50, 30, 40, 50, 50, 50, 70},
-              buscador.getjTable1());
+              new int[]{50, 30, 40, 50, 50, 50, 70}
+              );
       buscador.getjTable1().addMouseListener(new MouseAdapter() {
 
          @Override

@@ -206,7 +206,7 @@ public class RubroJpaController implements ActionListener, MouseListener {
         abm.hideFieldExtra();
         abm.hideBtnLock();
         abm.setTitle("ABM - Rubros de "+rubroToString());
-        UTIL.getDefaultTableModel(colsName, colsWidth, abm.getjTable1());
+        UTIL.getDefaultTableModel(abm.getjTable1(), colsName, colsWidth);
         //oculta columna ID
         UTIL.hideColumnTable(abm.getjTable1(), 0);
         cargarDTM(abm.getDTM(), null);

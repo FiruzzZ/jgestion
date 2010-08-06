@@ -1,16 +1,10 @@
 package controller;
 
-import controller.exceptions.IllegalOrphanException;
-import controller.exceptions.MessageException;
-import controller.exceptions.NonexistentEntityException;
-import controller.exceptions.PreexistingEntityException;
+import controller.exceptions.*;
 import entity.Iva;
-import gui.JFP;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import entity.Producto;
@@ -222,7 +216,7 @@ public class IvaJpaController implements ActionListener, MouseListener {
       abm.hideFieldExtra();
       abm.setTitle("ABM - " + CLASS_NAME);
       try {
-         UTIL.getDefaultTableModel(colsName, colsWidth, abm.getjTable1());
+         UTIL.getDefaultTableModel(abm.getjTable1(), colsName, colsWidth);
       } catch (Exception ex) {
          Logger.getLogger(IvaJpaController.class.getName()).log(Level.SEVERE, null, ex);
       }

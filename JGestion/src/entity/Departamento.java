@@ -7,6 +7,8 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -25,23 +27,24 @@ import javax.persistence.UniqueConstraint;
    @UniqueConstraint(columnNames = {"idprovincia", "nombre"})
 })
 @NamedQueries({
-    @NamedQuery(name = "Depto.findAll", query = "SELECT d FROM Depto d"),
-    @NamedQuery(name = "Depto.findByIddepto", query = "SELECT d FROM Depto d WHERE d.iddepto = :iddepto")
+    @NamedQuery(name = "Departamento.findAll", query = "SELECT d FROM Departamento d"),
+    @NamedQuery(name = "Departamento.findById", query = "SELECT d FROM Departamento d WHERE d.id = :id")
 })
-public class Depto implements Serializable {
+public class Departamento implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
     @Column(name = "iddepto", nullable = false)
-    private Integer iddepto;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private Integer id;
     @Basic(optional = false)
-    @Column(name = "nombre", nullable = false, length = 2147483647)
+    @Column(name = "nombre", nullable = false, length = 250)
     private String nombre;
     @Column(name = "codigo_area")
     private Integer codigoArea;
     @Column(name = "abreviatura", length = 20)
     private String abreviatura;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "iddepto")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "departamento")
     private List<Municipio> municipioList;
     @OneToMany(mappedBy = "departamento")
     private List<Cliente> clienteList;
@@ -51,24 +54,24 @@ public class Depto implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "departamento")
     private List<Proveedor> proveedorList;
 
-    public Depto() {
+    public Departamento() {
     }
 
-    public Depto(Integer iddepto) {
-        this.iddepto = iddepto;
+    public Departamento(Integer id) {
+        this.id = id;
     }
 
-    public Depto(Integer iddepto, String nombre) {
-        this.iddepto = iddepto;
+    public Departamento(Integer id, String nombre) {
+        this.id = id;
         this.nombre = nombre;
     }
 
-    public Integer getIddepto() {
-        return iddepto;
+    public Integer getId() {
+        return id;
     }
 
-    public void setIddepto(Integer iddepto) {
-        this.iddepto = iddepto;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getNombre() {
@@ -130,18 +133,18 @@ public class Depto implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (iddepto != null ? iddepto.hashCode() : 0);
+        hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Depto)) {
+        if (!(object instanceof Departamento)) {
             return false;
         }
-        Depto other = (Depto) object;
-        if ((this.iddepto == null && other.iddepto != null) || (this.iddepto != null && !this.iddepto.equals(other.iddepto))) {
+        Departamento other = (Departamento) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
         return true;

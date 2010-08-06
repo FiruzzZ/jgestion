@@ -39,10 +39,10 @@ public class Cliente implements Serializable {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Integer id;
     @Basic(optional = false)
-    @Column(name = "nombre", nullable = false, length = 214)
+    @Column(name = "nombre", nullable = false, length = 100)
     private String nombre;
     @Basic(optional = false)
-    @Column(name = "direccion", nullable = false, length = 214)
+    @Column(name = "direccion", nullable = false, length = 150)
     private String direccion;
     @Basic(optional = false)
     @Column(name = "tipodoc", nullable = false)
@@ -58,17 +58,17 @@ public class Cliente implements Serializable {
     private Integer interno1;
     @Column(name = "interno2")
     private Integer interno2;
-    @Column(name = "email", length = 2147483647)
+    @Column(name = "email", length = 100)
     private String email;
     @Column(name = "estado", nullable = false )
     private Integer estado;
     @Column(name = "codigopostal")
     private Integer codigopostal;
-    @Column(name = "observacion", length = 300)
+    @Column(name = "observacion", length = 200)
     private String observacion;
-    @Column(name = "contacto", length = 214)
+    @Column(name = "contacto", length = 100)
     private String contacto;
-    @Column(name = "webpage", length = 214)
+    @Column(name = "webpage", length = 100)
     private String webpage;
     @Column(name = "codigo", length = 100)
     private String codigo;
@@ -77,7 +77,7 @@ public class Cliente implements Serializable {
     private Contribuyente contribuyente;
     @JoinColumn(name = "departamento", referencedColumnName = "iddepto")
     @ManyToOne
-    private Depto departamento;
+    private Departamento departamento;
     @JoinColumn(name = "provincia", referencedColumnName = "idprovincia", nullable = false)
     @ManyToOne(optional = false)
     private Provincia provincia;
@@ -225,11 +225,11 @@ public class Cliente implements Serializable {
         this.contribuyente = contribuyente;
     }
 
-    public Depto getDepartamento() {
+    public Departamento getDepartamento() {
         return departamento;
     }
 
-    public void setDepartamento(Depto departamento) {
+    public void setDepartamento(Departamento departamento) {
         this.departamento = departamento;
     }
 

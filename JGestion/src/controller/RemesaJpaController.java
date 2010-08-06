@@ -254,7 +254,7 @@ public class RemesaJpaController implements ActionListener, MouseListener, Focus
       contenedor.getLabelClienteProveedor().setText("Proveedor");
       // <--- seteo de GUI
       try {
-         UTIL.getDefaultTableModel(colsName, colsWidth, contenedor.getjTable1());
+         UTIL.getDefaultTableModel(contenedor.getjTable1(), colsName, colsWidth);
       //            UTIL.hideColumnTable(contenedor.getjTable1(), 0);
       } catch (Exception ex) {
          Logger.getLogger(FacturaCompraJpaController.class.getName())
@@ -537,9 +537,10 @@ public class RemesaJpaController implements ActionListener, MouseListener, Focus
       UTIL.loadComboBox(buscador.getCbSucursal(), new SucursalJpaController().findSucursalEntities(), true);
       try {
          UTIL.getDefaultTableModel(
+              buscador.getjTable1(),
               new String[]{"Nº","Monto","Fecha","Sucursal","Caja","Usuario","Fecha/Hora (Sist)"},
-              new int[]{50    ,30      ,40      ,50      ,50      ,50      ,70},
-              buscador.getjTable1());
+              new int[]{50    ,30      ,40      ,50      ,50      ,50      ,70}
+              );
 
       } catch (Exception ex) {
          Logger.getLogger(RemesaJpaController.class.getName()).log(Level.SEVERE, null, ex);

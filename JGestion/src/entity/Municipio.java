@@ -13,11 +13,8 @@ import javax.persistence.*;
     @UniqueConstraint(columnNames = {"iddepto", "nombre"})
 })
 @NamedQueries({
-    @NamedQuery(name = "Municipio.findAll", query = "SELECT m FROM Municipio m ORDER BY m.iddepto.nombre, m.nombre"),
-    @NamedQuery(name = "Municipio.findById", query = "SELECT m FROM Municipio m WHERE m.id = :id"),
-    @NamedQuery(name = "Municipio.findByNombre", query = "SELECT m FROM Municipio m WHERE m.nombre = :nombre"),
-    @NamedQuery(name = "Municipio.findByCodigo", query = "SELECT m FROM Municipio m WHERE m.codigo = :codigo"),
-    @NamedQuery(name = "Municipio.findByDepto", query = "SELECT m FROM Municipio m  WHERE m.iddepto.iddepto = :iddepto ORDER BY m.nombre")
+    @NamedQuery(name = "Municipio.findAll", query = "SELECT m FROM Municipio m ORDER BY m.departamento.nombre, m.nombre"),
+    @NamedQuery(name = "Municipio.findById", query = "SELECT m FROM Municipio m WHERE m.id = :id")
 })
 
 public class Municipio implements Serializable {
@@ -36,7 +33,7 @@ public class Municipio implements Serializable {
     private List<Sucursal> sucursalList;
     @JoinColumn(name = "iddepto", referencedColumnName = "iddepto", nullable = false)
     @ManyToOne(optional = false)
-    private Depto iddepto;
+    private Departamento departamento;
     @OneToMany(mappedBy = "municipio")
     private List<Proveedor> proveedorList;
 
@@ -83,12 +80,12 @@ public class Municipio implements Serializable {
         this.sucursalList = sucursalList;
     }
 
-    public Depto getIddepto() {
-        return iddepto;
+    public Departamento getDepartamento() {
+        return departamento;
     }
 
-    public void setDepto(Depto iddepto) {
-        this.iddepto = iddepto;
+    public void setDepartamento(Departamento departamento) {
+        this.departamento = departamento;
     }
 
     public List<Proveedor> getProveedorList() {

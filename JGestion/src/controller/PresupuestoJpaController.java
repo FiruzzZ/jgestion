@@ -1,22 +1,16 @@
 package controller;
 
-import controller.exceptions.IllegalOrphanException;
-import controller.exceptions.MessageException;
-import controller.exceptions.NonexistentEntityException;
-import controller.exceptions.PreexistingEntityException;
+import controller.exceptions.*;
 import entity.Cliente;
 import entity.Presupuesto;
 import entity.Sucursal;
 import entity.Usuario;
-import gui.JFP;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import entity.DetallePresupuesto;
@@ -26,7 +20,6 @@ import gui.JDBuscadorReRe;
 import gui.JDFacturaVenta;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -300,9 +293,10 @@ public class PresupuestoJpaController implements ActionListener, KeyListener {
       UTIL.loadComboBox(buscador.getCbSucursal(), new SucursalJpaController().findSucursalEntities(), true);
       try {
          UTIL.getDefaultTableModel(
+                 buscador.getjTable1(),
                  new String[]{"Nº " + CLASS_NAME, "Cliente", "Importe", "Fecha", "Sucursal", "Usuario"},
-                 new int[]{      15             , 50        , 50     , 50      , 80       , 50     },
-                 buscador.getjTable1());
+                 new int[]{      15             , 50        , 50     , 50      , 80       , 50     }
+                 );
       } catch (Exception ex) {
          ex.printStackTrace();
       }

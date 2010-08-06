@@ -1,8 +1,6 @@
 package controller;
 
-import controller.exceptions.MessageException;
-import controller.exceptions.NonexistentEntityException;
-import controller.exceptions.PreexistingEntityException;
+import controller.exceptions.*;
 import entity.Cliente;
 import entity.CtacteCliente;
 import entity.DetalleRecibo;
@@ -14,14 +12,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
-import javax.swing.JTable;
 
 /**
  *
@@ -238,14 +234,16 @@ public class CtacteClienteJpaController implements ActionListener {
       UTIL.loadComboBox(resumenCtaCtes.getCbClieProv(), new ClienteJpaController().findClienteEntities(), false);
       UTIL.loadComboBox(resumenCtaCtes.getCbReRes(), null, true);
       UTIL.getDefaultTableModel(
+              resumenCtaCtes.getjTableResumen(),
               new String[]{"ctacteClienteID", "Detalle", "Fecha", "Vencimiento", "Debe", "Haber", "Saldo", "Acumulativo"},
-              new int[]{1, 60, 50, 50, 30, 30, 30, 50},
-              resumenCtaCtes.getjTableResumen());
+              new int[]{1, 60, 50, 50, 30, 30, 30, 50}
+              );
       UTIL.hideColumnTable(resumenCtaCtes.getjTableResumen(), 0);
       UTIL.getDefaultTableModel(
+              resumenCtaCtes.getjTableDetalle(),
               new String[]{"Nº Factura", "Observación", "Monton"},
-              new int[]{60, 100, 50},
-              resumenCtaCtes.getjTableDetalle());
+              new int[]{60, 100, 50}
+              );
       resumenCtaCtes.setListener(this);
       resumenCtaCtes.setLocationByPlatform(true);
       resumenCtaCtes.setVisible(true);
@@ -260,6 +258,7 @@ public class CtacteClienteJpaController implements ActionListener {
       return saldo;
    }
 
+   @Override
    public void actionPerformed(ActionEvent e) {
       if (resumenCtaCtes != null) {
          // <editor-fold defaultstate="collapsed" desc="JButton">

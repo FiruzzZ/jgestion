@@ -48,18 +48,6 @@ public abstract class DAO {
          System.out.println("isActive:" + em.getTransaction().isActive());
          em.getTransaction().begin();
 
-         // <editor-fold defaultstate="collapsed" desc="Creación de Contribuyente">
-         if (em.createQuery("SELECT count(o) FROM Contribuyente o").getSingleResult().toString().equalsIgnoreCase("0")) {
-            System.out.println("CREANDO Contribuyentes..");
-            //FACTURAS TIPO     A     B     C     M      X
-            em.persist(new Contribuyente(1, "CONSUMIDOR FINAL", false, true, false, false, false));
-            em.persist(new Contribuyente(2, "EXENTO", false, true, false, false, false));
-            em.persist(new Contribuyente(3, "MONOTRIBUTISTA", false, true, false, false, false));
-            em.persist(new Contribuyente(4, "RESP. INSCRIP", true, false, false, false, false));
-            em.persist(new Contribuyente(5, "RESP. NO INSCRIP", false, true, false, false, false));
-         }
-         // </editor-fold>
-
          // <editor-fold defaultstate="collapsed" desc="Creación de Usuario: admin Pws: adminadmin">
          if (em.createQuery("SELECT count(o) FROM Usuario o").getSingleResult().toString().equalsIgnoreCase("0")) {
             System.out.println("CREANDO Usuario admin..");
@@ -81,11 +69,24 @@ public abstract class DAO {
             permisos.setVenta(true);
             permisos.setDatosGeneral(true);
             permisos.setTesoreria(true);
+            permisos.setCerrarCajas(true);
             em.persist(permisos);
             permisos.setUsuario(u);
             u.setPermisos(permisos);
             em.persist(u);
          }// </editor-fold>
+
+         // <editor-fold defaultstate="collapsed" desc="Creación de Contribuyente">
+         if (em.createQuery("SELECT count(o) FROM Contribuyente o").getSingleResult().toString().equalsIgnoreCase("0")) {
+            System.out.println("CREANDO Contribuyentes..");
+            //FACTURAS TIPO     A     B     C     M      X
+            em.persist(new Contribuyente(1, "CONSUMIDOR FINAL", false, true, false, false, false));
+            em.persist(new Contribuyente(2, "EXENTO", false, true, false, false, false));
+            em.persist(new Contribuyente(3, "MONOTRIBUTISTA", false, true, false, false, false));
+            em.persist(new Contribuyente(4, "RESP. INSCRIP", true, false, false, false, false));
+            em.persist(new Contribuyente(5, "RESP. NO INSCRIP", false, true, false, false, false));
+         }
+         // </editor-fold>
 
          // <editor-fold defaultstate="collapsed" desc="Creación de Iva's">
          if (em.createQuery("SELECT COUNT(o) FROM Iva o ").getSingleResult().toString().equalsIgnoreCase("0")) {
@@ -109,6 +110,40 @@ public abstract class DAO {
             em.persist(new Unidadmedida(1, "UNITARIO"));
          }// </editor-fold>
 
+         // <editor-fold defaultstate="collapsed" desc="Creanción Provincias, Departamentos (de Mnes.) y Municipios (de Mnes.)">
+         if (em.createQuery("SELECT COUNT(o) FROM Provincia o").getSingleResult().toString().equalsIgnoreCase("0")) {
+            System.out.println("Creando Provincias, Departamentos, Municipios");
+            DAO.getJDBCConnection().createStatement().execute(
+             " INSERT INTO provincia (idprovincia,nombre) VALUES "
+               +"(1,'Buenos Aires'), (2,'Catamarca'), (3,'Chaco'), (4,'Chubut'),"
+               +"(5,'Corrientes'), (6,'Córdoba'), (7,'Entre Ríos'), (8,'Formosa'),"
+               +"(9,'Jujuy'), (10,'La Pampa'), (11,'La Rioja'), (12,'Mendoza'),"
+               +"(13,'Misiones'),(14,'Neuquén'),(15,'Río Negro'),(16,'Salta'),"
+               +"(17,'San Juan'),(18,'San Luis'),(19,'Santa Cruz'),(20,'Santa Fe'),"
+               +"(21,'Sgo del Estero'),(22,'T. del Fuego'),(23,'Tucumán');"
+            +" INSERT INTO depto (iddepto, idprovincia, nombre) VALUES "
+               +"(1,5,'Corrientes'),(2,5,'Concepción'),(3,5,'Santo Tomé'),"
+               +"(4,13,'CAPITAL'), (5,13,'Concepción'), (6,13,'Eldorado'),"
+               +"(7,13,'General Manuel Belgrano'),(8,13,'Guaraní'),(9,13,'Iguazú'),"
+               +"(10,13,'Leandro N. Alem'),(11,13,'Libertador General San Martín'),"
+               +"(12,13,'Montecarlo'),(13,13,'OBERÁ'),(14,13,'San Ignacio'),"
+               +"(15,13,'San Javier'),(16,13,'San Pedro'),(17,13,'Veinticinco de Mayo'),"
+               +"(18,13,'APÓSTOLES'),(19,13,'Cainguás'),(20,13,'Candelaria');"
+            +" INSERT INTO municipio (iddepto, nombre) VALUES "
++"(4,'GARUPÁ'),(4,'POSADAS'),(4,'FACHINAL'),(5,'CONCEPCIÓN DE LA SIERRA'),(5,'SANTA MARIA'),(6,'COLONIA DELICIA'),(6,'9 DE JULIO'),"
++"(6,'EL DORADO'),(6,'COLONIA VICTORIA'),(7,'BERNARDO DE IRIGOYEN'),(7,'CMDTE ANDRESITO'),(7,'SAN ANTONIO'),(8,'SAN VICENTE'),"
++"(8,'EL SOBERBIO'),(9,'WANDA'),(9,'PUERTO LIBERTAD'),(9,'PUERTO ESPERANZA'),(9,'PUERTO IGUAZU'),(10,'ARROYO DEL MEDIO'),"
++"(10,'L.N ALEM'),(10,'DOS ARROYOS'),(10,'CAÁ-YARÍ'),(10,'OLEGARIO V. ANDRADE'),(10,'CERRO AZUL'),(10,'ALMAFUERTE'),"
++"(11,'PUERTO LEONI'),(11,'CAPIOVI'),(11,'PUERTO RICO'),(11,'RUIZ DE MONTOYA'),(12,'CARAGUATAY'),(13,'SAN MARTIN '),"
++"(13,'CAMPO VIERA'),(13,'COLONIA ALBERDI'),(13,'GRAL ALVEAR'),(13,'PANAMBI'),(13,'CAMPO RAMON'),(13,'GUARANI'),"
++"(14,'GRAL URQUIZA'),(14,'SANTO PIPO'),(14,'COLONIA POLANA'),(14,'SAN IGNACIO'),(14,'CORPUS'),(14,'JARDIN AMERICA'),"
++"(14,'HIPOLITO YRIGOYEN'),(15,'MOJON GRANDE'),(15,'SAN JAVIER'),(15,'Florentino Ameghino'),(16,'SAN PEDRO'),(17,'ALBA POSSE'),"
++"(17,'COLONIA AURORA'),(17,'25 DE MAYO'),(18,'AZARA'),(18,'APÓSTOLES'),(18,'SAN JOSE'),(18,'TRES CAPONES'),(19,'DOS DE MAYO'),"
++"(19,'CAMPO GRANDE'),(20,'MARTIRES'),(20,'BOMPLAN'),(20,'CERRO CORA'),(20,'CANDELARIA'),(20,'LORETO'),(20,'PROFUNDIDAD'),"
++"(20,'SANTA ANA');");
+//            DAO.getEntityManager().getTransaction().commit();
+         }// </editor-fold>
+
          em.getTransaction().commit();
       } catch (Exception ex) {
          if (em.getTransaction().isActive()) {
@@ -125,7 +160,13 @@ public abstract class DAO {
    }
 
    public static EntityManager getEntityManager() {
-      return emf.createEntityManager();
+      if(em != null && em.isOpen()) {
+         System.out.print("old..");
+         return em;
+      } else {
+         System.out.print("new..");
+         return emf.createEntityManager();
+      }
    }
 
    public static void closeEntityManagerFactory() {
