@@ -58,14 +58,19 @@ public class PresupuestoJpaController implements ActionListener, KeyListener {
             new DetallePresupuestoJpaController().create(detallePresupuestoListDetallePresupuesto);
          }
       } catch (Exception ex) {
-         if(em.getTransaction().isActive())
+         if (em.getTransaction().isActive()) {
             em.getTransaction().rollback();
+         }
 
-         if(findPresupuesto(presupuesto.getId()) != null) {
+         if (findPresupuesto(presupuesto.getId()) != null) {
             throw new PreexistingEntityException("Presupuesto " + presupuesto + " already exists.", ex);
          }
          throw ex;
-      } finally { if (em != null) { em.close();  }    }
+      } finally {
+         if (em != null) {
+            em.close();
+         }
+      }
 
       return presupuesto;
    }
@@ -145,6 +150,7 @@ public class PresupuestoJpaController implements ActionListener, KeyListener {
 
    public void initPresupuesto(javax.swing.JFrame frame, boolean modal, boolean setVisible) throws MessageException {
       facturaVentaController.initFacturaVenta(frame, modal, this, 2, setVisible);
+
    }
 
    public void actionPerformed(ActionEvent e) {
@@ -155,9 +161,9 @@ public class PresupuestoJpaController implements ActionListener, KeyListener {
          if (boton.getName().equalsIgnoreCase("aceptar")) {
             try {
                doPresupuesto();
-            } catch(MessageException ex) {
+            } catch (MessageException ex) {
                facturaVentaController.getContenedor().showMessage(ex.getMessage(), CLASS_NAME, 2);
-            } catch(Exception ex) {
+            } catch (Exception ex) {
                facturaVentaController.getContenedor().showMessage(ex.getMessage(), CLASS_NAME, 2);
                ex.printStackTrace();
             }
@@ -171,12 +177,14 @@ public class PresupuestoJpaController implements ActionListener, KeyListener {
                ex.printStackTrace();
             }
          } else {
-            if( ! MODO_VISTA)
-            facturaVentaController.actionPerformed(e);
+            if (!MODO_VISTA) {
+               facturaVentaController.actionPerformed(e);
+            }
          }
       } else {
-         if( ! MODO_VISTA)
+         if (!MODO_VISTA) {
             facturaVentaController.actionPerformed(e);
+         }
       }
    }
 
@@ -190,12 +198,11 @@ public class PresupuestoJpaController implements ActionListener, KeyListener {
 
    @Deprecated
    public void keyPressed(KeyEvent e) {
-
    }
 
    private void doPresupuesto() throws MessageException, Exception {
       Presupuesto newPresupuesto = selectedPresupuesto;
-      if ( !MODO_VISTA) {
+      if (!MODO_VISTA) {
          jdFacturaVenta = facturaVentaController.getContenedor();
 
          // <editor-fold defaultstate="collapsed" desc="CONTROLES">
@@ -276,9 +283,11 @@ public class PresupuestoJpaController implements ActionListener, KeyListener {
          setDatos(selectedPresupuesto);
       }
    }
+
    public void initBuscador(javax.swing.JFrame frame) {
       buscador = new JDBuscadorReRe(frame, "Buscador - " + CLASS_NAME, true, "Cliente", "Nº " + CLASS_NAME);
       buscador.getjTable1().addMouseListener(new java.awt.event.MouseAdapter() {
+
          @Override
          public void mouseClicked(java.awt.event.MouseEvent evt) {
             buscadorPresupuestoMouseClicked(evt);
@@ -291,15 +300,10 @@ public class PresupuestoJpaController implements ActionListener, KeyListener {
       buscador.getjTfOcteto().setVisible(false);
       UTIL.loadComboBox(buscador.getCbClieProv(), new ClienteJpaController().findClienteEntities(), true);
       UTIL.loadComboBox(buscador.getCbSucursal(), new SucursalJpaController().findSucursalEntities(), true);
-      try {
-         UTIL.getDefaultTableModel(
-                 buscador.getjTable1(),
-                 new String[]{"Nº " + CLASS_NAME, "Cliente", "Importe", "Fecha", "Sucursal", "Usuario"},
-                 new int[]{      15             , 50        , 50     , 50      , 80       , 50     }
-                 );
-      } catch (Exception ex) {
-         ex.printStackTrace();
-      }
+      UTIL.getDefaultTableModel(
+              buscador.getjTable1(),
+              new String[]{"Nº " + CLASS_NAME, "Cliente", "Importe", "Fecha", "Sucursal", "Usuario"},
+              new int[]{15, 50, 50, 50, 80, 50});
       MODO_VISTA = true;
       buscador.setListeners(this);
       buscador.setVisible(true);
@@ -319,7 +323,7 @@ public class PresupuestoJpaController implements ActionListener, KeyListener {
             throw new MessageException("Número de " + CLASS_NAME + " no válido.\n\n" + ex.getMessage());
          }
       }
-      
+
       if (buscador.getDcDesde() != null) {
          query += " AND o.fecha_creacion >= '" + buscador.getDcDesde() + "'";
       }
@@ -349,11 +353,14 @@ public class PresupuestoJpaController implements ActionListener, KeyListener {
                     presupuesto.getImporte(),
                     UTIL.DATE_FORMAT.format(presupuesto.getFechaCreacion()),
                     presupuesto.getSucursal(),
-                    presupuesto.getUsuario(),
-                 });
+                    presupuesto.getUsuario(),});
       }
    }
 
+   /**
+    * Cuando se selecciona una Presupuesto desde el Buscador {@link gui.JDBuscadorReRe}
+    * @param presupuesto
+    */
    private void setDatos(Presupuesto presupuesto) {
       try {
          facturaVentaController.initFacturaVenta(null, true, this, 2, false);
@@ -368,12 +375,13 @@ public class PresupuestoJpaController implements ActionListener, KeyListener {
       jdFacturaVenta.getCbUsuario().addItem(presupuesto.getUsuario());           //<---
       jdFacturaVenta.setDcFechaFactura(presupuesto.getFechaCreacion());
       for (Valores.FormaPago formaPago : Valores.FormaPago.getFormasDePago()) {
-         if(formaPago.getId() == (presupuesto.getFormaPago())) {
+         if (formaPago.getId() == (presupuesto.getFormaPago())) {
             jdFacturaVenta.getCbFormaPago().addItem(formaPago);
-            if(presupuesto.getDias() != null && presupuesto.getDias() > 0)
+            if (presupuesto.getDias() != null && presupuesto.getDias() > 0) {
                jdFacturaVenta.setTfDias(presupuesto.getDias().toString());
-            else
+            } else {
                jdFacturaVenta.setTfDias("");
+            }
          }
       }
       jdFacturaVenta.setTfNumMovimiento(String.valueOf(presupuesto.getId()));
@@ -403,6 +411,4 @@ public class PresupuestoJpaController implements ActionListener, KeyListener {
       jdFacturaVenta.setLocationByPlatform(true);
       jdFacturaVenta.setVisible(true);
    }
-
 }
-

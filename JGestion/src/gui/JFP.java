@@ -21,7 +21,7 @@ import javax.swing.UnsupportedLookAndFeelException;
  * @author FiruzzzzzZ
  */
 public class JFP extends javax.swing.JFrame {
-   private final String VERSION = "JGestion 1.0207";
+   private final String VERSION = "JGestion 1.1108";
    private final String ICON_IMAGE = "/iconos/kf.png";
    public static Usuario CURRENT_USER;
 
@@ -119,6 +119,10 @@ public class JFP extends javax.swing.JFrame {
       jSeparator1 = new javax.swing.JSeparator();
       jMenuItem10 = new javax.swing.JMenuItem();
       jMenuItem15 = new javax.swing.JMenuItem();
+      jMenu12 = new javax.swing.JMenu();
+      jMenuItem29 = new javax.swing.JMenuItem();
+      jMenuItem33 = new javax.swing.JMenuItem();
+      jMenuItem37 = new javax.swing.JMenuItem();
       jMenu4 = new javax.swing.JMenu();
       jMenuItem16 = new javax.swing.JMenuItem();
       jMenuItem24 = new javax.swing.JMenuItem();
@@ -248,7 +252,11 @@ public class JFP extends javax.swing.JFrame {
       jMenu3.add(jMenuItem1);
 
       jMenuItem3.setText("Orden de compra");
-      jMenuItem3.setEnabled(false);
+      jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+         public void actionPerformed(java.awt.event.ActionEvent evt) {
+            jMenuItem3ActionPerformed(evt);
+         }
+      });
       jMenu3.add(jMenuItem3);
 
       jMenuItem28.setText("Buscar..");
@@ -438,6 +446,20 @@ public class JFP extends javax.swing.JFrame {
 
       jMenuBar1.add(jMenu9);
 
+      jMenu12.setMnemonic('f');
+      jMenu12.setText("Financiaciones");
+
+      jMenuItem29.setText("Financiar");
+      jMenu12.add(jMenuItem29);
+
+      jMenuItem33.setText("Buscar..");
+      jMenu12.add(jMenuItem33);
+
+      jMenuItem37.setText("Refinanciar");
+      jMenu12.add(jMenuItem37);
+
+      jMenuBar1.add(jMenu12);
+
       jMenu4.setMnemonic('u');
       jMenu4.setText("Usuarios");
 
@@ -468,12 +490,12 @@ public class JFP extends javax.swing.JFrame {
          .addGroup(layout.createSequentialGroup()
             .addContainerGap()
             .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 535, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addContainerGap(42, Short.MAX_VALUE))
+            .addContainerGap(88, Short.MAX_VALUE))
       );
       layout.setVerticalGroup(
          layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-            .addContainerGap(359, Short.MAX_VALUE)
+            .addContainerGap(361, Short.MAX_VALUE)
             .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addContainerGap())
       );
@@ -683,11 +705,16 @@ public class JFP extends javax.swing.JFrame {
       new RemitoJpaController().initBuscador(this, true, true);
     }//GEN-LAST:event_jMenuItem35ActionPerformed
 
+    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+      new FacturaCompraJpaController().initOrdenDeCompra(this, true);
+    }//GEN-LAST:event_jMenuItem3ActionPerformed
+
    // Variables declaration - do not modify//GEN-BEGIN:variables
    private javax.swing.JLabel jLabel1;
    private javax.swing.JMenu jMenu1;
    private javax.swing.JMenu jMenu10;
    private javax.swing.JMenu jMenu11;
+   private javax.swing.JMenu jMenu12;
    private javax.swing.JMenu jMenu2;
    private javax.swing.JMenu jMenu3;
    private javax.swing.JMenu jMenu4;
@@ -718,13 +745,16 @@ public class JFP extends javax.swing.JFrame {
    private javax.swing.JMenuItem jMenuItem26;
    private javax.swing.JMenuItem jMenuItem27;
    private javax.swing.JMenuItem jMenuItem28;
+   private javax.swing.JMenuItem jMenuItem29;
    private javax.swing.JMenuItem jMenuItem3;
    private javax.swing.JMenuItem jMenuItem30;
    private javax.swing.JMenuItem jMenuItem31;
    private javax.swing.JMenuItem jMenuItem32;
+   private javax.swing.JMenuItem jMenuItem33;
    private javax.swing.JMenuItem jMenuItem34;
    private javax.swing.JMenuItem jMenuItem35;
    private javax.swing.JMenuItem jMenuItem36;
+   private javax.swing.JMenuItem jMenuItem37;
    private javax.swing.JMenuItem jMenuItem4;
    private javax.swing.JMenuItem jMenuItem5;
    private javax.swing.JMenuItem jMenuItem6;

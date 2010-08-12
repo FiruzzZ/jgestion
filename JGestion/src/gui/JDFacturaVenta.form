@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.1" encoding="UTF-8" ?>
 
 <Form version="1.5" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
@@ -130,18 +130,18 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="dcFechaFactura" min="-2" pref="120" max="-2" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Component id="jLabel13" min="-2" max="-2" attributes="0"/>
+                          <Component id="labelNumMovimiento" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="tfNumMovimiento" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <Group type="102" alignment="0" attributes="1">
                           <Component id="cbCaja" min="-2" pref="158" max="-2" attributes="1"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Component id="jLabel14" min="-2" max="-2" attributes="0"/>
+                          <Component id="labelFormaPago" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="cbFormaPago" min="-2" pref="140" max="-2" attributes="1"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jLabel15" min="-2" max="-2" attributes="0"/>
+                          <Component id="labelDias" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="tfDias" min="-2" max="-2" attributes="0"/>
                       </Group>
@@ -174,7 +174,7 @@
                       <Component id="cbFacturaTipo" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Group type="103" alignment="2" groupAlignment="0" attributes="0">
                           <Group type="103" alignment="0" groupAlignment="3" attributes="0">
-                              <Component id="jLabel13" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="labelNumMovimiento" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="tfNumMovimiento" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Group type="103" alignment="0" groupAlignment="2" attributes="0">
@@ -192,9 +192,9 @@
                       <Component id="labelCaja" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="cbCaja" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="cbFormaPago" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="jLabel14" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="labelFormaPago" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="tfDias" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="jLabel15" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="labelDias" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="32767" attributes="0"/>
               </Group>
@@ -267,7 +267,7 @@
             <Property name="text" type="java.lang.String" value="Caja"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JLabel" name="jLabel13">
+        <Component class="javax.swing.JLabel" name="labelNumMovimiento">
           <Properties>
             <Property name="text" type="java.lang.String" value="N&#xba;"/>
           </Properties>
@@ -362,7 +362,7 @@
             <Property name="text" type="java.lang.String" value="Operador"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JLabel" name="jLabel14">
+        <Component class="javax.swing.JLabel" name="labelFormaPago">
           <Properties>
             <Property name="text" type="java.lang.String" value="Forma Pago"/>
           </Properties>
@@ -378,7 +378,7 @@
             <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="cbFormaPagoFocusLost"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JLabel" name="jLabel15">
+        <Component class="javax.swing.JLabel" name="labelDias">
           <Properties>
             <Property name="text" type="java.lang.String" value="D&#xed;as"/>
           </Properties>
