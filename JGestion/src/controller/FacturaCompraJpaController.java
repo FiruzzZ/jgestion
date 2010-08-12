@@ -6,6 +6,7 @@ import entity.DetallesCompra;
 import entity.FacturaCompra;
 import entity.Proveedor;
 import entity.Sucursal;
+import gui.JFP;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
@@ -468,6 +469,7 @@ public class FacturaCompraJpaController
       contenedor.setTfNumMovimiento(String.valueOf(getFacturaCompraCount() + 1));
    }
 
+   @Override
    public void actionPerformed(ActionEvent e) {
       // <editor-fold defaultstate="collapsed" desc="JButton">
       if (e.getSource().getClass().equals(javax.swing.JButton.class)) {
@@ -695,7 +697,6 @@ public class FacturaCompraJpaController
 
    }
 
-
    private void imprimirFactura() {
       if(EL_OBJECT == null)
          return;
@@ -714,5 +715,36 @@ public class FacturaCompraJpaController
       p.initContenedor(null, true, true);
       producto_selected = p.getProductoSelected();
       setProducto();
+   }
+
+   public void initOrdenDeCompra(javax.swing.JFrame frame, boolean modal) {
+
+      // <editor-fold defaultstate="collapsed" desc="checking Permiso">
+      try {
+         UsuarioJpaController.checkPermisos(PermisosJpaController.PermisoDe.COMPRA);
+      } catch (MessageException ex) {
+         javax.swing.JOptionPane.showMessageDialog(null,ex.getMessage());
+         return;
+      }// </editor-fold>
+
+      contenedor = new JDFacturaCompra(frame, modal);
+      UTIL.getDefaultTableModel(contenedor.getjTable1(), colsName, colsWidth);
+      //esconde la columna IVA-Producto
+      UTIL.hideColumnTable(contenedor.getjTable1(), 0);
+      //set next nº movimiento
+      contenedor.setTfNumMovimiento(String.valueOf(getFacturaCompraCount() + 1));
+
+      UTIL.loadComboBox(contenedor.getCbProveedor(),
+              new ProveedorJpaController().findProveedorEntities(), false);
+      UTIL.loadComboBox(contenedor.getCbSucursal(),
+              new SucursalJpaController().findSucursalEntities(), false);
+      UTIL.loadComboBox(contenedor.getCbFacturaTipo(), TIPOS_FACTURA, false);
+      UTIL.loadComboBox(contenedor.getCbFormaPago(), Valores.FormaPago.getFormasDePago(), false);
+      UTIL.loadComboBox(contenedor.getCbCaja(),
+              new CajaJpaController().findCajasByUsuario(UsuarioJpaController.getCurrentUser(), true), false);
+
+      contenedor.setListener(this);
+      contenedor.setLocationByPlatform(true);
+      contenedor.setVisible(true);
    }
 }

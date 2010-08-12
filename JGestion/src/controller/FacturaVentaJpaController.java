@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -137,8 +138,7 @@ public class FacturaVentaJpaController implements ActionListener, MouseListener,
     * settean los datos correspondiendtes a la entidad que la va utilizar y
     * luego se puede hacer visible.
     */
-   public void initFacturaVenta(java.awt.Frame frame, boolean modal, Object listener,
-                         int factVenta1_Presup2_Remito3, boolean setVisible) throws MessageException {
+   public void initFacturaVenta(java.awt.Frame frame, boolean modal, Object listener, int factVenta1_Presup2_Remito3, boolean setVisible) throws MessageException {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
          UsuarioJpaController.checkPermisos(PermisosJpaController.PermisoDe.VENTA);
@@ -608,8 +608,7 @@ public class FacturaVentaJpaController implements ActionListener, MouseListener,
          throw new MessageException("La factura debe tener al menos un item.");
       }
 
-      if( remitoToFacturar != null
-         && remitoToFacturar.getFacturaVenta() != null)
+      if( remitoToFacturar != null && remitoToFacturar.getFacturaVenta() != null)
          throw new MessageException("Bravo!.. Seleccionaste un Remito que ya fue facturado.\nFactura Nº" + remitoToFacturar.getFacturaVenta().toString());
       // </editor-fold>
 
@@ -674,13 +673,15 @@ public class FacturaVentaJpaController implements ActionListener, MouseListener,
 
       // si se relacionó un Remito con la Factura
       if(newFacturaVenta.getRemito() != null) {
-         new RemitoJpaController().edit(newFacturaVenta.getRemito());
+         remitoToFacturar.setFacturaVenta(newFacturaVenta);
+         new RemitoJpaController().edit(remitoToFacturar);
       }
 
       //actualiza Stock
       new StockJpaController().updateStock(newFacturaVenta);
       //asiento en caja..
       registrarVentaSegunFormaDePago(newFacturaVenta);
+      
       return newFacturaVenta;
    }
 
@@ -1058,7 +1059,9 @@ public class FacturaVentaJpaController implements ActionListener, MouseListener,
                cambiarMovimientoInternoToFactura(EL_OBJECT);
             }
          } else {
-            jdFacturaVenta.showMessage("ERROR de proceso, ¡La Factura Nº" + EL_OBJECT.getNumero() + " ya fue impresa!", CLASS_NAME, 0);
+            if (0 == JOptionPane.showConfirmDialog(jdFacturaVenta, "La Factura Nº" + EL_OBJECT.getNumero() + " ya fue impresa.\n¿Volver a imprimir?", CLASS_NAME, JOptionPane.OK_CANCEL_OPTION)) {
+               imprimirFactura(EL_OBJECT);
+            }
          }
       }
    }

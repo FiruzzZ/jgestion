@@ -93,40 +93,8 @@ public class RemitoJpaController implements ActionListener, KeyListener {
       try {
          em = getEntityManager();
          em.getTransaction().begin();
-         Remito persistentRemito = em.find(Remito.class, remito.getId());
-//         List<DetalleRemito> detalleRemitoListOld = persistentRemito.getDetalleRemitoList();
-//         List<DetalleRemito> detalleRemitoListNew = remito.getDetalleRemitoList();
-//         List<String> illegalOrphanMessages = null;
-//         for (DetalleRemito detalleRemitoListOldDetalleRemito : detalleRemitoListOld) {
-//            if (!detalleRemitoListNew.contains(detalleRemitoListOldDetalleRemito)) {
-//               if (illegalOrphanMessages == null) {
-//                  illegalOrphanMessages = new ArrayList<String>();
-//               }
-//               illegalOrphanMessages.add("You must retain DetalleRemito " + detalleRemitoListOldDetalleRemito + " since its remito field is not nullable.");
-//            }
-//         }
-//         if (illegalOrphanMessages != null) {
-//            throw new IllegalOrphanException(illegalOrphanMessages);
-//         }
-//         List<DetalleRemito> attachedDetalleRemitoListNew = new ArrayList<DetalleRemito>();
-//         for (DetalleRemito detalleRemitoListNewDetalleRemitoToAttach : detalleRemitoListNew) {
-//            detalleRemitoListNewDetalleRemitoToAttach = em.getReference(detalleRemitoListNewDetalleRemitoToAttach.getClass(), detalleRemitoListNewDetalleRemitoToAttach.getId());
-//            attachedDetalleRemitoListNew.add(detalleRemitoListNewDetalleRemitoToAttach);
-//         }
-//         detalleRemitoListNew = attachedDetalleRemitoListNew;
-//         remito.setDetalleRemitoList(detalleRemitoListNew);
+         em.find(Remito.class, remito.getId());
          remito = em.merge(remito);
-//         for (DetalleRemito detalleRemitoListNewDetalleRemito : detalleRemitoListNew) {
-//            if (!detalleRemitoListOld.contains(detalleRemitoListNewDetalleRemito)) {
-//               Remito oldRemitoOfDetalleRemitoListNewDetalleRemito = detalleRemitoListNewDetalleRemito.getRemito();
-//               detalleRemitoListNewDetalleRemito.setRemito(remito);
-//               detalleRemitoListNewDetalleRemito = em.merge(detalleRemitoListNewDetalleRemito);
-//               if (oldRemitoOfDetalleRemitoListNewDetalleRemito != null && !oldRemitoOfDetalleRemitoListNewDetalleRemito.equals(remito)) {
-//                  oldRemitoOfDetalleRemitoListNewDetalleRemito.getDetalleRemitoList().remove(detalleRemitoListNewDetalleRemito);
-//                  oldRemitoOfDetalleRemitoListNewDetalleRemito = em.merge(oldRemitoOfDetalleRemitoListNewDetalleRemito);
-//               }
-//            }
-//         }
          em.getTransaction().commit();
       } catch (Exception ex) {
          String msg = ex.getLocalizedMessage();
@@ -225,6 +193,7 @@ public class RemitoJpaController implements ActionListener, KeyListener {
       facturaVentaController.initFacturaVenta(frame, modal, this, 3, true);
    }
 
+   @Override
    public void actionPerformed(ActionEvent e) {
       //solo se hace cargo de persistir la entity Producto
       //todo las demás acciones son manejadas (delegadas) -> FacturaVentaJpaController
@@ -271,59 +240,62 @@ public class RemitoJpaController implements ActionListener, KeyListener {
    private void doRemito() throws MessageException, Exception {
       if (MODO_VISTA) {
          doImprimir(selectedRemito);
-      }
-      contenedor = facturaVentaController.getContenedor();
-      // <editor-fold defaultstate="collapsed" desc="CONTROLES">
-      if (contenedor.getCbCliente().getSelectedIndex() == 0) {
-         throw new MessageException("Cliente no válido");
-      }
+      } else {
+         //obtiene el la Vista que contiene todos los datos
+         contenedor = facturaVentaController.getContenedor();
+         Cliente selectedCliente;
+         Sucursal selectedSucursal;
 
-      if (contenedor.getDcFechaFactura() == null) {
-         throw new MessageException("Fecha no válida");
-      }
 
-//      if (((Valores.FormaPago) contenedor.getCbFormaPago().getSelectedItem()).equals(Valores.FormaPago.CTA_CTE)) {
-//         try {
-//            if (Short.valueOf(contenedor.getTfDias()) < 1) {
-//               throw new MessageException("Cantidad de días de Cta. Cte. no válida. Debe ser mayor a 0");
-//            }
-//         } catch (NumberFormatException e) {
-//            throw new MessageException("Cantidad de días de Cta. Cte. no válida");
-//         }
-//      }
+         // <editor-fold defaultstate="collapsed" desc="CONTROLES">
+         try {
+            selectedCliente = (Cliente) contenedor.getCbCliente().getSelectedItem();
+         } catch (ClassCastException ex) {
+               throw new MessageException("Cliente no válido");
+         }
+         try {
+            selectedSucursal = (Sucursal) contenedor.getCbSucursal().getSelectedItem();
+         } catch (ClassCastException ex) {
+               throw new MessageException("Sucursal no válido");
+         }
 
-      javax.swing.table.DefaultTableModel dtm = contenedor.getDTM();
-      if (dtm.getRowCount() < 1) {
-         throw new MessageException(CLASS_NAME + " debe tener al menos un item.");
-      }
-      // </editor-fold>
+         if (contenedor.getDcFechaFactura() == null) {
+            throw new MessageException("Fecha no válida");
+         }
 
-      Remito p = new Remito();
-      p.setId(Integer.valueOf(contenedor.getTfNumMovimiento()));
-      p.setNumero(Long.valueOf(contenedor.getTfFacturaCuarto() + contenedor.getTfFacturaOcteto()));
-      p.setCliente((Cliente) contenedor.getCbCliente().getSelectedItem());
-      p.setFechaCreacion(contenedor.getDcFechaFactura());
-      p.setHoraCreacion(new java.util.Date());
-      p.setSucursal((Sucursal) contenedor.getCbSucursal().getSelectedItem());
-      p.setUsuario((Usuario) contenedor.getCbUsuario().getSelectedItem());
-      p.setDetalleRemitoList(new ArrayList<DetalleRemito>(dtm.getRowCount()));
-      // carga de detalleVenta
-      DetalleRemito detalleRemito;
-      for (int i = 0; i < dtm.getRowCount(); i++) {
-         detalleRemito = new DetalleRemito();
-         detalleRemito.setProducto(new ProductoJpaController().findProductoByCodigo(dtm.getValueAt(i, 1).toString()));
-         detalleRemito.setCantidad(Integer.valueOf(dtm.getValueAt(i, 3).toString()));
-         p.getDetalleRemitoList().add(detalleRemito);
+         javax.swing.table.DefaultTableModel dtm = contenedor.getDTM();
+         if (dtm.getRowCount() < 1) {
+            throw new MessageException(CLASS_NAME + " debe tener al menos un item.");
+         }
+         // </editor-fold>
+
+         Remito p = new Remito();
+         p.setId(Integer.valueOf(contenedor.getTfNumMovimiento()));
+         p.setNumero(Long.valueOf(contenedor.getTfFacturaCuarto() + contenedor.getTfFacturaOcteto()));
+         p.setCliente(selectedCliente);
+         p.setSucursal(selectedSucursal);
+         p.setFechaCreacion(contenedor.getDcFechaFactura());
+         p.setHoraCreacion(new java.util.Date());
+         p.setUsuario((Usuario) contenedor.getCbUsuario().getSelectedItem());
+         p.setDetalleRemitoList(new ArrayList<DetalleRemito>(dtm.getRowCount()));
+         // carga de detalleVenta
+         DetalleRemito detalleRemito;
+         for (int i = 0; i < dtm.getRowCount(); i++) {
+            detalleRemito = new DetalleRemito();
+            detalleRemito.setProducto(new ProductoJpaController().findProductoByCodigo(dtm.getValueAt(i, 1).toString()));
+            detalleRemito.setCantidad(Integer.valueOf(dtm.getValueAt(i, 3).toString()));
+            p.getDetalleRemitoList().add(detalleRemito);
+         }
+         try {
+            p = create(p);
+         } catch (PreexistingEntityException ex) {
+            Logger.getLogger(PresupuestoJpaController.class.getName()).log(Level.SEVERE, null, ex);
+         } catch (Exception ex) {
+            throw ex;
+         }
+         doImprimir(p);
+         limpiarPanel();
       }
-      try {
-         p = create(p);
-      } catch (PreexistingEntityException ex) {
-         Logger.getLogger(PresupuestoJpaController.class.getName()).log(Level.SEVERE, null, ex);
-      } catch (Exception ex) {
-         throw ex;
-      }
-      doImprimir(p);
-      limpiarPanel();
    }
 
    public Long getNextNumero() {
@@ -413,6 +385,7 @@ public class RemitoJpaController implements ActionListener, KeyListener {
          // no va saltar nunca este
       }
       jdFacturaVenta = facturaVentaController.getContenedor();
+      jdFacturaVenta.setTfNumMovimiento(remito.getId().toString());
       jdFacturaVenta.setLocationRelativeTo(buscador);
       String numFactura = UTIL.AGREGAR_CEROS(remito.getNumero(), 12);
       jdFacturaVenta.setTfFacturaCuarto(numFactura.substring(0, 4));
