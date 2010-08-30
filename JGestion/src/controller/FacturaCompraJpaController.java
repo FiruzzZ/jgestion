@@ -6,7 +6,7 @@ import entity.DetallesCompra;
 import entity.FacturaCompra;
 import entity.Proveedor;
 import entity.Sucursal;
-import gui.JFP;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
@@ -30,12 +30,11 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author FiruzzZ
  */
-public class FacturaCompraJpaController
-        implements ActionListener, MouseListener, KeyListener {
+public class FacturaCompraJpaController implements ActionListener, MouseListener, KeyListener {
 
    public static final List<String> TIPOS_FACTURA;
    public static final List<String> FORMAS_PAGO;
-   public static final String CLASS_NAME = "FacturaCompra";
+   public static final String CLASS_NAME = FacturaCompra.class.getSimpleName();
    private final String[] colsName = {"IVA", "Cód. Producto", "Producto", "Cantidad", "Precio U.", "Sub total", "Mod"};
    private final int[] colsWidth = {10, 70, 180, 10, 30, 30, 10};
    private JDFacturaCompra contenedor;
@@ -46,14 +45,10 @@ public class FacturaCompraJpaController
    static {
       String[] tipos = {"A", "B", "C", "M"};
       TIPOS_FACTURA = new ArrayList<String>();
-      for (String string : tipos) {
-         TIPOS_FACTURA.add(string);
-      }
+      TIPOS_FACTURA.addAll(Arrays.asList(tipos));
       String[] formas = {"Contado", "Cta. Cte."};
       FORMAS_PAGO = new ArrayList<String>();
-      for (String string : formas) {
-         FORMAS_PAGO.add(string);
-      }
+      FORMAS_PAGO.addAll(Arrays.asList(formas));
    }
 
    // <editor-fold defaultstate="collapsed" desc="CRUD, List's">
@@ -144,7 +139,7 @@ public class FacturaCompraJpaController
          return;
       }// </editor-fold>
 
-      contenedor = new JDFacturaCompra(frame, modal);
+      contenedor = new JDFacturaCompra(frame, modal, 1);
       UTIL.getDefaultTableModel(contenedor.getjTable1(), colsName, colsWidth);
       //esconde la columna IVA-Producto
       UTIL.hideColumnTable(contenedor.getjTable1(), 0);
@@ -158,7 +153,7 @@ public class FacturaCompraJpaController
       UTIL.loadComboBox(contenedor.getCbFacturaTipo(), TIPOS_FACTURA, false);
       UTIL.loadComboBox(contenedor.getCbFormaPago(), Valores.FormaPago.getFormasDePago(), false);
       UTIL.loadComboBox(contenedor.getCbCaja(),
-              new CajaJpaController().findCajasByUsuario(UsuarioJpaController.getCurrentUser(), true), false);
+              new CajaJpaController().findCajasPermitidasByUsuario(UsuarioJpaController.getCurrentUser(), true), false);
 
       contenedor.setListener(this);
       contenedor.setLocationByPlatform(true);
@@ -549,7 +544,7 @@ public class FacturaCompraJpaController
       }// </editor-fold>
       buscador = new JDBuscadorReRe(aThis, "Buscador - Factura compra", true, "Proveedor", "Nº Factura");
       UTIL.loadComboBox(buscador.getCbClieProv(), new ProveedorJpaController().findProveedorEntities(), true);
-      UTIL.loadComboBox(buscador.getCbCaja(), new CajaJpaController().findCajasByUsuario(UsuarioJpaController.getCurrentUser(), true), true);
+      UTIL.loadComboBox(buscador.getCbCaja(), new CajaJpaController().findCajasPermitidasByUsuario(UsuarioJpaController.getCurrentUser(), true), true);
       UTIL.loadComboBox(buscador.getCbSucursal(), new SucursalJpaController().findSucursalEntities(), true);
       UTIL.loadComboBox(buscador.getCbFormasDePago(), Valores.FormaPago.getFormasDePago(), true);
       UTIL.getDefaultTableModel(
@@ -652,7 +647,7 @@ public class FacturaCompraJpaController
    }
 
    private void setDatosFactura() {
-      contenedor = new JDFacturaCompra(null, true);
+      contenedor = new JDFacturaCompra(null, true, 1);
       contenedor.setLocationRelativeTo(buscador);
       UTIL.getDefaultTableModel(contenedor.getjTable1(), colsName, colsWidth);
       //esconde la columna IVA-Producto
@@ -717,34 +712,8 @@ public class FacturaCompraJpaController
       setProducto();
    }
 
-   public void initOrdenDeCompra(javax.swing.JFrame frame, boolean modal) {
-
-      // <editor-fold defaultstate="collapsed" desc="checking Permiso">
-      try {
-         UsuarioJpaController.checkPermisos(PermisosJpaController.PermisoDe.COMPRA);
-      } catch (MessageException ex) {
-         javax.swing.JOptionPane.showMessageDialog(null,ex.getMessage());
-         return;
-      }// </editor-fold>
-
-      contenedor = new JDFacturaCompra(frame, modal);
-      UTIL.getDefaultTableModel(contenedor.getjTable1(), colsName, colsWidth);
-      //esconde la columna IVA-Producto
-      UTIL.hideColumnTable(contenedor.getjTable1(), 0);
-      //set next nº movimiento
-      contenedor.setTfNumMovimiento(String.valueOf(getFacturaCompraCount() + 1));
-
-      UTIL.loadComboBox(contenedor.getCbProveedor(),
-              new ProveedorJpaController().findProveedorEntities(), false);
-      UTIL.loadComboBox(contenedor.getCbSucursal(),
-              new SucursalJpaController().findSucursalEntities(), false);
-      UTIL.loadComboBox(contenedor.getCbFacturaTipo(), TIPOS_FACTURA, false);
-      UTIL.loadComboBox(contenedor.getCbFormaPago(), Valores.FormaPago.getFormasDePago(), false);
-      UTIL.loadComboBox(contenedor.getCbCaja(),
-              new CajaJpaController().findCajasByUsuario(UsuarioJpaController.getCurrentUser(), true), false);
-
-      contenedor.setListener(this);
-      contenedor.setLocationByPlatform(true);
-      contenedor.setVisible(true);
+   public JDFacturaCompra getContenedor() {
+      return contenedor;
    }
+
 }

@@ -78,7 +78,6 @@ public class JDResumenCtaCtes extends javax.swing.JDialog {
       jLabel2.setText("Desde:");
 
       dcDesde.setDateFormatString(entity.UTIL.DATE_FORMAT.toPattern());
-      dcDesde.setFont(new java.awt.Font("Tahoma", 0, 10));
 
       javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
       jPanel1.setLayout(jPanel1Layout);

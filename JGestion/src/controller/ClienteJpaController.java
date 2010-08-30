@@ -30,7 +30,7 @@ import javax.persistence.NoResultException;
  */
 public class ClienteJpaController implements ActionListener, MouseListener, KeyListener {
 
-   public final String CLASS_NAME = "Cliente";
+   public final String CLASS_NAME = Cliente.class.getSimpleName();
    private final String[] colsName = {"ID", "Código", "Razón social", "Tipo", "Nº Doc.", "Teléfonos"};
    private final int[] colsWidth = {10, 20, 100, 10, 40, 80};
    private Cliente EL_OBJECT;
@@ -530,20 +530,21 @@ public class ClienteJpaController implements ActionListener, MouseListener, KeyL
          if (tf.getName().equalsIgnoreCase("tfFiltro")) {
          }
       }// </editor-fold>
+
       // <editor-fold defaultstate="collapsed" desc="ComboBox">
       else if (e.getSource().getClass().equals(javax.swing.JComboBox.class)) {
          javax.swing.JComboBox combo = (javax.swing.JComboBox) e.getSource();
          if (combo.getName().equalsIgnoreCase("cbProvincias")) {
             if (combo.getSelectedIndex() > 0) {
-               UTIL.loadComboBox(panel.getCbDepartamentos(), new DepartamentoJpaController().findDeptosFromProvincia(((Provincia) combo.getSelectedItem()).getId()), true);
+               UTIL.loadComboBox(panel.getCbDepartamentos(), ((Provincia) combo.getSelectedItem()).getDeptoList(), true);
             } else {
-               UTIL.loadComboBox(panel.getCbDepartamentos(), new DepartamentoJpaController().findDeptosFromProvincia(0), true);
+               UTIL.loadComboBox(panel.getCbDepartamentos(), null, true);
             }
          } else if (combo.getName().equalsIgnoreCase("cbDepartamentos")) {
             if (combo.getSelectedIndex() > 0) {
-               UTIL.loadComboBox(panel.getCbMunicipios(), new MunicipioJpaController().findMunicipiosFromDepto(((Departamento) combo.getSelectedItem()).getId()), true);
+               UTIL.loadComboBox(panel.getCbMunicipios(), ((Departamento) combo.getSelectedItem()).getMunicipioList(), true);
             } else {
-               UTIL.loadComboBox(panel.getCbMunicipios(), new MunicipioJpaController().findMunicipiosFromDepto(0), true);
+               UTIL.loadComboBox(panel.getCbMunicipios(), null, true);
             }
          }
       }

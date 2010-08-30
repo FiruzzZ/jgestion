@@ -71,12 +71,21 @@ public class PanelMovimientosVarios extends javax.swing.JPanel {
       tfMontoMovimiento.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
       tfMontoMovimiento.setToolTipText("Monto ($)");
       tfMontoMovimiento.addFocusListener(new java.awt.event.FocusAdapter() {
+         public void focusGained(java.awt.event.FocusEvent evt) {
+            tfMontoMovimientoFocusGained(evt);
+         }
          public void focusLost(java.awt.event.FocusEvent evt) {
             tfMontoMovimientoFocusLost(evt);
          }
       });
 
       jLabel9.setText("Descripción");
+
+      tfDescripcion.addFocusListener(new java.awt.event.FocusAdapter() {
+         public void focusGained(java.awt.event.FocusEvent evt) {
+            tfDescripcionFocusGained(evt);
+         }
+      });
 
       javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
       this.setLayout(layout);
@@ -138,19 +147,25 @@ public class PanelMovimientosVarios extends javax.swing.JPanel {
        try {
           tfMontoMovimiento.setText(UTIL.PRECIO_CON_PUNTO.format(Double.valueOf(tfMontoMovimiento.getText())));
        } catch (NumberFormatException ex) {
-          System.out.println("NumberFormatException - PanelMovimientosVarios -> tfMonto");
        }
 }//GEN-LAST:event_tfMontoMovimientoFocusLost
 
     private void radioIngresoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioIngresoActionPerformed
-       System.out.println("2 to 1");
        radioEgreso.setSelected(!radioIngreso.isSelected());
     }//GEN-LAST:event_radioIngresoActionPerformed
 
     private void radioEgresoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioEgresoActionPerformed
-       System.out.println("1 to 2");
        radioIngreso.setSelected(!radioEgreso.isSelected());
     }//GEN-LAST:event_radioEgresoActionPerformed
+
+    private void tfMontoMovimientoFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfMontoMovimientoFocusGained
+      tfMontoMovimiento.setSelectionStart(0);
+    }//GEN-LAST:event_tfMontoMovimientoFocusGained
+
+    private void tfDescripcionFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfDescripcionFocusGained
+      tfDescripcion.setSelectionStart(0);
+    }//GEN-LAST:event_tfDescripcionFocusGained
+
    // Variables declaration - do not modify//GEN-BEGIN:variables
    private javax.swing.JButton bBuscar;
    private javax.swing.JComboBox cbCaja;

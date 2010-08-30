@@ -367,7 +367,6 @@ public class CtacteClienteJpaController implements ActionListener {
       r.addParameter("SUBREPORT_DIR", Reportes.FOLDER_REPORTES);
       if(filter_date == null)
          filter_date = "";
-      System.out.println("F:" + filter_date);
       r.addParameter("FILTER_DATE", filter_date);
       r.printReport();
    }

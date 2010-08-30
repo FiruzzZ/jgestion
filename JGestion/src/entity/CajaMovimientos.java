@@ -23,8 +23,12 @@ import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 
 /**
- *
- * @author Administrador
+ * Una CajaMovimiento es una referencia a registros de movimientos contables de
+ * una {@link Caja} (Ingresos, Egresos), los cuales son agrupados por una
+ * instancia de esta clase.
+ * Debe existir una CajaMovimiento "activa" (es decir sin fechaCierre,
+ * montoCierre ni usuarioCierre) por cada Caja.estado == true.
+ * @author FiruzzZ
  */
 @Entity
 @Table(name = "caja_movimientos", uniqueConstraints = {

@@ -30,25 +30,10 @@ import javax.persistence.UniqueConstraint;
 })
 @NamedQueries({
    @NamedQuery(name = "FacturaCompra.findAll", query = "SELECT f FROM FacturaCompra f"),
+   @NamedQuery(name = "FacturaCompra.findByNumeroProveedor", query = "SELECT f FROM FacturaCompra f WHERE f.numero = :numero AND f.proveedor.id = :proveedor"),
    @NamedQuery(name = "FacturaCompra.findById", query = "SELECT f FROM FacturaCompra f WHERE f.id = :id"),
-   @NamedQuery(name = "FacturaCompra.findByNumero", query = "SELECT f FROM FacturaCompra f WHERE f.numero = :numero"),
-   @NamedQuery(name = "FacturaCompra.findByNumeroProveedor",
-   query = "SELECT f FROM FacturaCompra f WHERE f.numero = :numero AND f.proveedor.id = :proveedor"),
-   @NamedQuery(name = "FacturaCompra.findByTipo", query = "SELECT f FROM FacturaCompra f WHERE f.tipo = :tipo"),
-   @NamedQuery(name = "FacturaCompra.findByImporte", query = "SELECT f FROM FacturaCompra f WHERE f.importe = :importe"),
-   @NamedQuery(name = "FacturaCompra.findByFechaCompra", query = "SELECT f FROM FacturaCompra f WHERE f.fechaCompra = :fechaCompra"),
-   @NamedQuery(name = "FacturaCompra.findByFechaalta", query = "SELECT f FROM FacturaCompra f WHERE f.fechaalta = :fechaalta"),
-   @NamedQuery(name = "FacturaCompra.findByFormaPago", query = "SELECT f FROM FacturaCompra f WHERE f.formaPago = :formaPago"),
-   @NamedQuery(name = "FacturaCompra.findByRemito", query = "SELECT f FROM FacturaCompra f WHERE f.remito = :remito"),
-   @NamedQuery(name = "FacturaCompra.findByActualizaStock", query = "SELECT f FROM FacturaCompra f WHERE f.actualizaStock = :actualizaStock"),
-   @NamedQuery(name = "FacturaCompra.findByFacturaCuarto", query = "SELECT f FROM FacturaCompra f WHERE f.facturaCuarto = :facturaCuarto"),
-   @NamedQuery(name = "FacturaCompra.findByFacturaOcteto", query = "SELECT f FROM FacturaCompra f WHERE f.facturaOcteto = :facturaOcteto"),
-   @NamedQuery(name = "FacturaCompra.findByPercIva", query = "SELECT f FROM FacturaCompra f WHERE f.percIva = :percIva"),
-   @NamedQuery(name = "FacturaCompra.findByPercDgr", query = "SELECT f FROM FacturaCompra f WHERE f.percDgr = :percDgr"),
-   @NamedQuery(name = "FacturaCompra.findByIva10", query = "SELECT f FROM FacturaCompra f WHERE f.iva10 = :iva10"),
-   @NamedQuery(name = "FacturaCompra.findByIva21", query = "SELECT f FROM FacturaCompra f WHERE f.iva21 = :iva21"),
-   @NamedQuery(name = "FacturaCompra.findByMovimiento", query = "SELECT f FROM FacturaCompra f WHERE f.movimiento = :movimiento"),
-   @NamedQuery(name = "FacturaCompra.findByDiasCtaCte", query = "SELECT f FROM FacturaCompra f WHERE f.diasCtaCte = :diasCtaCte")})
+   @NamedQuery(name = "FacturaCompra.findByNumero", query = "SELECT f FROM FacturaCompra f WHERE f.numero = :numero")
+})
 public class FacturaCompra implements Serializable {
 
    private static final long serialVersionUID = 1L;

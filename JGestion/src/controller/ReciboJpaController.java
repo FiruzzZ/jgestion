@@ -273,7 +273,7 @@ public class ReciboJpaController implements ActionListener, FocusListener {
       UTIL.loadComboBox(contenedor.getCbSucursal(),
               new SucursalJpaController().findSucursalEntities(), false);
       UTIL.loadComboBox(contenedor.getCbCaja(),
-              new CajaJpaController().findCajasByUsuario(UsuarioJpaController.getCurrentUser(), true), false);
+              new CajaJpaController().findCajasPermitidasByUsuario(UsuarioJpaController.getCurrentUser(), true), false);
       UTIL.loadComboBox(contenedor.getCbClienteProveedor(),
               new ClienteJpaController().findClienteEntities(), true);
       UTIL.loadComboBox(contenedor.getCbCtaCtes(), null, false);
@@ -588,7 +588,7 @@ public class ReciboJpaController implements ActionListener, FocusListener {
    private void initBuscador() {
       buscador.setParaRecibos();
       UTIL.loadComboBox(buscador.getCbClieProv(), new ClienteJpaController().findClienteEntities(), true);
-      UTIL.loadComboBox(buscador.getCbCaja(), new CajaJpaController().findCajasByUsuario(UsuarioJpaController.getCurrentUser(), true), true);
+      UTIL.loadComboBox(buscador.getCbCaja(), new CajaJpaController().findCajasPermitidasByUsuario(UsuarioJpaController.getCurrentUser(), true), true);
       UTIL.loadComboBox(buscador.getCbSucursal(), new SucursalJpaController().findSucursalEntities(), true);
       UTIL.getDefaultTableModel(
               buscador.getjTable1(),

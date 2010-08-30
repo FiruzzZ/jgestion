@@ -254,4 +254,5 @@ public class StockJpaController {
               + " o.producto = " + producto.getId() + " AND o.sucursal = " + sucursal.getId(), Stock.class)
               .getSingleResult();
    }
+
 }
