@@ -220,24 +220,6 @@ public abstract class UTIL {
       }
    }
 
-//    public static Long CALCULAL_CUIL(Long dni) throws Exception{
-//        if(dni.toString().length()!=8 && dni.toString().length()!=7)
-//            throw new Exception("Longitud del DNI no válida");
-//        char[] xxx = dni.toString().toCharArray();
-//        return dni;
-//    }
-   @Deprecated
-   public static javax.swing.JTable setDtmWidth(javax.swing.table.DefaultTableModel dtm, Integer[] columnsWidth, javax.swing.JTable tabla) {
-      if (tabla == null) {
-         tabla = new javax.swing.JTable(dtm);
-      }
-      for (int i = 0; i < dtm.getColumnCount(); i++) {
-         tabla.getColumnModel().getColumn(i).setPreferredWidth(columnsWidth[i]);
-      }
-      tabla.getTableHeader().setReorderingAllowed(false);
-      return tabla;
-   }
-
    public static DefaultTableModel getDtm(JTable jtable) {
       return (DefaultTableModel) jtable.getModel();
    }
@@ -288,6 +270,8 @@ public abstract class UTIL {
          dtm = new DefaultTableModelImpl(columnClassType, editableColumns);
       } else if(columnClassType != null){
          dtm = new DefaultTableModelImpl(columnClassType);
+      } else if (editableColumns != null) {
+         dtm = new DefaultTableModelImpl(editableColumns);
       } else {
          dtm = new DefaultTableModelImpl();
       }
@@ -813,6 +797,10 @@ public abstract class UTIL {
          this.editableColumns = editableColumns;
       }
 
+      private DefaultTableModelImpl(int[] editableColumns) {
+         this.editableColumns = editableColumns;
+      }
+
       @Override
       public boolean isCellEditable(int row, int column) {
          if(editableColumns != null) {
@@ -835,6 +823,5 @@ public abstract class UTIL {
          }
       }
    }
-//   public static void controlDimentionImage(int width, int heigth) {
-//   }
+
 }

@@ -2,6 +2,9 @@ package jgestion;
 
 import controller.*;
 import entity.*;
+import java.awt.SplashScreen;
+import java.awt.Toolkit;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -25,6 +28,7 @@ public class Main {
          if (DAO.getEntityManager().isOpen()) {
             DAO.setDefaultData();
             java.awt.EventQueue.invokeLater(new Runnable() {
+               @Override
                public void run() {
                   new gui.JFP().setVisible(true);
                }

@@ -1069,6 +1069,18 @@ public class JDFacturaVenta extends javax.swing.JDialog {
    }
 
    /**
+    * Botón usado para aceptar e imprimir Comprobantes de Venta y Remitos.
+    * @return
+    */
+   public JButton getBtnAceptar() {
+      return btnAceptar;
+   }
+
+   public JButton getBtnCancelar() {
+      return btnCancelar;
+   }
+
+   /**
     * 1 = FacturaVenta, 2 = Presupuesto, 3 = Remito
     * @return
     */

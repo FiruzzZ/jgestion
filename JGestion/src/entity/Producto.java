@@ -71,8 +71,6 @@ public class Producto implements Serializable {
    @Column(name = "ultima_compra")
    @Temporal(value = TemporalType.DATE)
    private Date ultimaCompra;
-   @OneToMany(cascade = CascadeType.ALL, mappedBy = "producto")
-   private List<Stock> stockList;
    @JoinColumn(name = "iva", referencedColumnName = "id", nullable = false)
    @ManyToOne(optional = false)
    private Iva iva;
@@ -91,6 +89,8 @@ public class Producto implements Serializable {
    @JoinColumn(name = "idunidadmedida", referencedColumnName = "id", nullable = false)
    @ManyToOne(optional = false)
    private Unidadmedida idunidadmedida;
+   @OneToMany(cascade = CascadeType.ALL, mappedBy = "producto")
+   private List<Stock> stockList;
 
    public Producto() {
    }

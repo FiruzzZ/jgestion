@@ -3,6 +3,7 @@ package controller;
 
 import controller.exceptions.NonexistentEntityException;
 import entity.DetalleRemesa;
+import entity.FacturaCompra;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -153,5 +154,11 @@ public class DetalleRemesaJpaController {
             em.close();
         }
     }// </editor-fold>
+
+   List<DetalleRemesa> findDetalleRemesaByFactura(FacturaCompra factura) {
+      return getEntityManager().createQuery("SELECT o FROM DetalleRemesa o WHERE o.facturaCompra = :facturaCompra")
+              .setParameter("facturaCompra", factura)
+              .getResultList();
+   }
 
 }

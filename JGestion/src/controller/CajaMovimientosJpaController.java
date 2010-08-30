@@ -38,9 +38,7 @@ import javax.swing.table.DefaultTableModel;
  * @author FiruzzZ
  */
 public class CajaMovimientosJpaController implements ActionListener {
-//   private final String[]  colsName = {"Nº","Código","Nombre","Marca","Stock Gral."};
-//   private final int[] colsWidth = {15    ,50     ,100      ,50     ,20};
-
+   public static final String CLASS_NAME = CajaMovimientos.class.getSimpleName();
    private JDCierreCaja jdCierreCaja;
    private JDCajaToCaja JDcajaToCaja;
    private JDABM abm;
@@ -260,7 +258,7 @@ public class CajaMovimientosJpaController implements ActionListener {
          DetalleCajaMovimientos newDetalleCajaMovimiento = new DetalleCajaMovimientos();
          newDetalleCajaMovimiento.setCajaMovimientos(cajaMovimientoActual);
          newDetalleCajaMovimiento.setIngreso(false);
-         newDetalleCajaMovimiento.setMonto(-remesa.getMontoEntrega());
+         newDetalleCajaMovimiento.setMonto(-remesa.getMonto());
          newDetalleCajaMovimiento.setNumero(remesa.getId());
          newDetalleCajaMovimiento.setFecha(new Date());
          newDetalleCajaMovimiento.setHora(new Date());
@@ -366,7 +364,7 @@ public class CajaMovimientosJpaController implements ActionListener {
    private void abrirNextCajaMovimiento(CajaMovimientos cajaMovimiento) throws Exception {
       CajaMovimientos cm = new CajaMovimientos();
       cm.setCaja(cajaMovimiento.getCaja());
-      //fecha de apertura, un día después del cierre de la anterior
+      //fecha de apertura, un día después del cierre de ESTA
       cm.setFechaApertura(UTIL.customDateByDays(cajaMovimiento.getFechaCierre(), +1));
       cm.setMontoApertura(cajaMovimiento.getMontoCierre());
       cm.setSistemaFechaApertura(new Date());
@@ -385,7 +383,7 @@ public class CajaMovimientosJpaController implements ActionListener {
       create(cm);
    }
 
-   public CajaMovimientos findCajaMovimientoAbierta(Caja o) {
+   public CajaMovimientos findCajaMovimientoAbierta(Caja o) throws NoResultException, NonUniqueResultException {
       EntityManager em = getEntityManager();
       CajaMovimientos cm = null;
       try {
@@ -393,13 +391,12 @@ public class CajaMovimientosJpaController implements ActionListener {
          cm = (CajaMovimientos) em.createNativeQuery("SELECT * FROM caja_movimientos o"
                  + " where o.fecha_cierre is null AND o.caja =" + o.getId(), CajaMovimientos.class).getSingleResult();
       } catch (NoResultException ex) {
+         //cuando Ruben hace su magia pasa esto!
          System.out.println("NoResult -> findUltimaAbierta -> Caja:" + o);
-         ex.printStackTrace();
+         throw ex;
       } catch (NonUniqueResultException ex) {
-         System.out.println("HAY MAS DE 1 ABIERTA!!! -> CAJA: " + o);
-         ex.printStackTrace();
-      } catch (Exception e) {
-         e.printStackTrace();
+         System.out.println("HAY MAS DE 1 ABIERTA!!! -> CAJA: " + o +  "\n" + ex);
+         throw ex;
       } finally {
          if (em != null) {
             em.close();
@@ -520,7 +517,7 @@ public class CajaMovimientosJpaController implements ActionListener {
                try {
                   armarQueryMovimientosVarios(false);
                } catch (Exception ex) {
-                  // acá no pasa nada...
+                  ex.printStackTrace();
                }
             } else if (boton.getName().equalsIgnoreCase("imprimirBuscador")) {
                try {
@@ -622,7 +619,6 @@ public class CajaMovimientosJpaController implements ActionListener {
                                       "¿Imprimir cierre de caja?",
                                       "Cierre de Caja",
                                       javax.swing.JOptionPane.OK_CANCEL_OPTION);
-      //cerrar caja_mov (completar datos de cierre)
       cajaMovimientos.setFechaCierre(jdCierreCaja.getFechaCierre());
       cajaMovimientos.setMontoCierre(getTotal());
       //datos implicitos
@@ -653,11 +649,17 @@ public class CajaMovimientosJpaController implements ActionListener {
     */
    private List<CajaMovimientos> getCajaMovimientosActivasFromCurrentUser() {
       //get cajas permitidas para ESTE usuario
-      List<Caja> cajasPermitidasList = new CajaJpaController().findCajasByUsuario(UsuarioJpaController.getCurrentUser(), true);
+      List<Caja> cajasPermitidasList = new CajaJpaController().findCajasPermitidasByUsuario(UsuarioJpaController.getCurrentUser(), true);
       List<CajaMovimientos> cajaMovimientosAbiertasList = null;
+      CajaMovimientos cm = null;
       for (Caja caja : cajasPermitidasList) {
          //get cajaMovim abierta correspondiente a cada Caja
-         CajaMovimientos cm = new CajaMovimientosJpaController().findCajaMovimientoAbierta(caja);
+         try {
+            cm = findCajaMovimientoAbierta(caja);
+         } catch (NoResultException ex) {
+            fixCajaMalAbierta(caja);
+            cm = findCajaMovimientoAbierta(caja);
+         }
          if (cajaMovimientosAbiertasList == null) {
             cajaMovimientosAbiertasList = new ArrayList<CajaMovimientos>();
          }
@@ -891,9 +893,9 @@ public class CajaMovimientosJpaController implements ActionListener {
    private void initBuscadorCajaToCaja(javax.swing.JDialog papiComponent) {
       panelBuscadorCajaToCaja = new PanelBuscadorCajaToCaja();
       UTIL.loadComboBox(panelBuscadorCajaToCaja.getCbCajaOrigen(),
-              new CajaJpaController().findCajasByUsuario(UsuarioJpaController.getCurrentUser(), true), true);
+              new CajaJpaController().findCajasPermitidasByUsuario(UsuarioJpaController.getCurrentUser(), true), true);
       UTIL.loadComboBox(panelBuscadorCajaToCaja.getCbCajaDestino(),
-              new CajaJpaController().findCajasByUsuario(UsuarioJpaController.getCurrentUser(), true), true);
+              new CajaJpaController().findCajasPermitidasByUsuario(UsuarioJpaController.getCurrentUser(), true), true);
 
       buscador = new JDBuscador(papiComponent, false, panelBuscadorCajaToCaja, "Buscardor - Movimientos entre Cajas");
       try {
@@ -926,7 +928,7 @@ public class CajaMovimientosJpaController implements ActionListener {
             if (i > 1) {
                query += " OR ";
             }
-            query += " caja.id =" + ((Caja) panelBuscadorMovimientosVarios.getCbCaja().getItemAt(i)).getId();
+            query += " caja.id =" + ((CajaMovimientos) panelBuscadorMovimientosVarios.getCbCaja().getItemAt(i)).getCaja().getId();
          }
          query += ")";
       }
@@ -951,7 +953,7 @@ public class CajaMovimientosJpaController implements ActionListener {
          query += " AND o.fecha <='" + panelBuscadorMovimientosVarios.getDcHasta() + "'";
       }
 
-      System.out.println(query);
+//      System.out.println(query);
       cargarDtmBuscador(query);
       if (doReport) {
          doReport(query);
@@ -1016,7 +1018,7 @@ public class CajaMovimientosJpaController implements ActionListener {
       panelBuscadorCajasCerradas = new PanelBuscadorCajasCerradas();
 
       UTIL.loadComboBox(panelBuscadorCajasCerradas.getCbCaja(),
-              new CajaJpaController().findCajasByUsuario(UsuarioJpaController.getCurrentUser(), true), true);
+              new CajaJpaController().findCajasPermitidasByUsuario(UsuarioJpaController.getCurrentUser(), true), true);
       buscador = new JDBuscador(this.jdCierreCaja, true, panelBuscadorCajasCerradas, "Buscador - Cajas cerradas");
       buscador.hideImprimir();
       buscador.hideLimpiar();
@@ -1184,5 +1186,26 @@ public class CajaMovimientosJpaController implements ActionListener {
       if (doReport) {
          doReport(query);
       }
+   }
+
+   /**
+    * Abre una {@link CajaMovimientos} que ya debería haberse abierto.. pero por alguna
+    * razón fantástica, esto a veces no pasa
+    * Note: solo a Ruben le pasa esto
+    * @param caja la cual corresponde a la {@link CajaMovimientos} que debería estar
+    * abierta.
+    */
+   private void fixCajaMalAbierta(Caja caja) {
+      EntityManager em = getEntityManager();
+      Integer idLastCajaMovCerrada =  (Integer) em.createQuery("SELECT MAX(o.id) FROM " + CLASS_NAME + " o "
+              + "WHERE o.caja.id = " + caja.getId()).getSingleResult();
+      CajaMovimientos lastCajaMovCerrada = em.find(CajaMovimientos.class, idLastCajaMovCerrada);
+      System.out.println("Caja:" + caja + "-> idLast:" + idLastCajaMovCerrada);
+      try {
+         abrirNextCajaMovimiento(lastCajaMovCerrada);
+      } catch (Exception ex) {
+         Logger.getLogger(CajaMovimientosJpaController.class.getName()).log(Level.SEVERE, null, ex);
+      }
+      em.close();
    }
 }

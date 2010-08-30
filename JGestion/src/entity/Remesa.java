@@ -108,7 +108,7 @@ public class Remesa implements Serializable {
         this.horaCarga = horaCarga;
     }
 
-    public double getMontoEntrega() {
+    public double getMonto() {
         return montoEntrega;
     }
 
@@ -186,7 +186,7 @@ public class Remesa implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.Remesa[id=" + id + "]";
+        return UTIL.AGREGAR_CEROS(this.getId(), 12);
     }
 
 }

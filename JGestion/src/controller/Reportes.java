@@ -7,7 +7,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperPrintManager;
+import net.sf.jasperreports.view.JasperViewer;
 
 /**
  *
@@ -53,7 +56,7 @@ public class Reportes implements Runnable {
       d = new DatosEmpresaJpaController().findDatosEmpresa(1);
    }
 
-   public void viewReport() throws net.sf.jasperreports.engine.JRException {
+   public void viewReport() throws JRException {
       isViewerReport = true;
       new Thread(this).start();
 //      net.sf.jasperreports.engine.JasperPrint jPrint;
@@ -65,7 +68,7 @@ public class Reportes implements Runnable {
 //      jViewer.setVisible(true);
    }
 
-   public void printReport() throws net.sf.jasperreports.engine.JRException {
+   public void printReport() throws JRException {
       isViewerReport = false;
       new Thread(this).start();
 //      net.sf.jasperreports.engine.JasperPrint jPrint;
@@ -74,8 +77,8 @@ public class Reportes implements Runnable {
    }
 
    public void exportPDF(String filePathSafer) throws JRException {
-      net.sf.jasperreports.engine.JasperPrint jprint;
-      jprint = net.sf.jasperreports.engine.JasperFillManager.fillReport(pathReport, parameters, controller.DAO.getJDBCConnection());
+      JasperPrint jprint;
+      jprint = JasperFillManager.fillReport(pathReport, parameters, controller.DAO.getJDBCConnection());
       JasperExportManager.exportReportToPdfFile(jprint, filePathSafer);
    }
 
@@ -121,13 +124,13 @@ public class Reportes implements Runnable {
 
    private synchronized void doReport() {
       System.out.println("Running Reportes");
-      net.sf.jasperreports.engine.JasperPrint jPrint;
+      JasperPrint jPrint;
       try {
-         jPrint = net.sf.jasperreports.engine.JasperFillManager.fillReport(pathReport, parameters, controller.DAO.getJDBCConnection());
+         jPrint = JasperFillManager.fillReport(pathReport, parameters, controller.DAO.getJDBCConnection());
          if(isViewerReport) {
-            net.sf.jasperreports.view.JasperViewer jViewer = new net.sf.jasperreports.view.JasperViewer(jPrint, false);
+            JasperViewer jViewer = new JasperViewer(jPrint, false);
             jViewer.setTitle(tituloReporte);
-            jViewer.setExtendedState(net.sf.jasperreports.view.JasperViewer.NORMAL);
+            jViewer.setExtendedState(JasperViewer.NORMAL);
             jViewer.setAlwaysOnTop(true);
             jViewer.setVisible(true);
          } else {
