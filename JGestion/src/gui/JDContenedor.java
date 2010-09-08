@@ -9,6 +9,7 @@ package gui;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseListener;
+import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -249,5 +250,26 @@ public class JDContenedor extends javax.swing.JDialog {
     public JTextField getTfFiltro() {
         return tfFiltro;
     }
+
+   public JButton getbBorrar() {
+      return bBorrar;
+   }
+
+   public JButton getbImprimir() {
+      return bImprimir;
+   }
+
+   public JButton getbModificar() {
+      return bModificar;
+   }
+
+   public JButton getbNuevo() {
+      return bNuevo;
+   }
+
+   public JButton getbSalir() {
+      return bSalir;
+   }
+
 
 }

@@ -29,13 +29,8 @@ import javax.persistence.TemporalType;
 @Table(name = "ctacte_cliente")
 @NamedQueries({
    @NamedQuery(name = "CtacteCliente.findAll", query = "SELECT c FROM CtacteCliente c"),
-   @NamedQuery(name = "CtacteCliente.findById", query = "SELECT c FROM CtacteCliente c WHERE c.id = :id"),
-   @NamedQuery(name = "CtacteCliente.findByDias", query = "SELECT c FROM CtacteCliente c WHERE c.dias = :dias"),
-   @NamedQuery(name = "CtacteCliente.findByImporte", query = "SELECT c FROM CtacteCliente c WHERE c.importe = :importe"),
-   @NamedQuery(name = "CtacteCliente.findByEstado", query = "SELECT c FROM CtacteCliente c WHERE c.estado = :estado"),
-   @NamedQuery(name = "CtacteCliente.findByEntregado", query = "SELECT c FROM CtacteCliente c WHERE c.entregado = :entregado"),
-   @NamedQuery(name = "CtacteCliente.findByFechaCarga", query = "SELECT c FROM CtacteCliente c WHERE c.fechaCarga = :fechaCarga"),
-   @NamedQuery(name = "CtacteCliente.findByHoraCarga", query = "SELECT c FROM CtacteCliente c WHERE c.horaCarga = :horaCarga")})
+   @NamedQuery(name = "CtacteCliente.findById", query = "SELECT c FROM CtacteCliente c WHERE c.id = :id")
+})
 public class CtacteCliente implements Serializable {
    private static final long serialVersionUID = 1L;
    @Id
@@ -112,6 +107,10 @@ public class CtacteCliente implements Serializable {
       return estado;
    }
 
+   /**
+    * 1 = pendiente, 2 = pagada, 3 = anulada
+    * @param estado
+    */
    public void setEstado(short estado) {
       this.estado = estado;
    }

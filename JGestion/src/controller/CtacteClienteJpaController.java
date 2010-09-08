@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -25,6 +26,7 @@ import javax.persistence.EntityNotFoundException;
  */
 public class CtacteClienteJpaController implements ActionListener {
 
+   public static final String CLASS_NAME = CtacteCliente.class.getSimpleName();
    private JDResumenCtaCtes resumenCtaCtes;
    private double totalDebe;  //<----
    private double totalHaber; //<----
@@ -182,8 +184,8 @@ public class CtacteClienteJpaController implements ActionListener {
    }
 
    CtacteCliente findCtacteClienteByFactura(Integer id) {
-      return (CtacteCliente) DAO.getEntityManager().createNativeQuery("select * from ctacte_cliente o "
-              + " where o.factura = " + id, CtacteCliente.class).getSingleResult();
+      return (CtacteCliente) DAO.getEntityManager().createQuery("SELECT o FROM " + CLASS_NAME + " o "
+              + " where o.factura.id = " + id).getSingleResult();
    }
 
    List<CtacteCliente> findCtacteClienteByCliente(Integer clienteID, short estadoCtaCte) {
@@ -205,12 +207,6 @@ public class CtacteClienteJpaController implements ActionListener {
    }
 
    private void jTableResumenMouseReleased(MouseEvent e) {
-      Integer selectedRow = resumenCtaCtes.getjTableResumen().getSelectedRow();
-      if (selectedRow > 0) {
-         //selecciona una factura CtaCteCliente
-         cargarComboBoxRecibosDeCtaCte((CtacteCliente) DAO.getEntityManager().find(CtacteCliente.class,
-                                       Integer.valueOf((resumenCtaCtes.getDtmResumen().getValueAt(selectedRow, 0)).toString())));
-      }
    }
 
    public void initResumenCtaCte(javax.swing.JFrame frame, boolean modal) {
@@ -223,29 +219,70 @@ public class CtacteClienteJpaController implements ActionListener {
       }// </editor-fold>
 
       resumenCtaCtes = new JDResumenCtaCtes(frame, modal, true);
-      resumenCtaCtes.getjTableResumen().addMouseListener(
-              new MouseAdapter() {
+//      resumenCtaCtes.getjTableResumen().setDefaultRenderer(Object.class, new MiRender());
 
-                 @Override
-                 public void mouseReleased(MouseEvent e) {
-                    jTableResumenMouseReleased(e);
-                 }
-              });
+      resumenCtaCtes.getjTableResumen().addMouseListener(new MouseAdapter() {
+
+         @Override
+         public void mouseReleased(MouseEvent e) {
+            Integer selectedRow = resumenCtaCtes.getjTableResumen().getSelectedRow();
+            if (selectedRow > 0) {
+               //selecciona una factura (CtaCteCliente)
+               cargarComboBoxRecibosDeCtaCte((CtacteCliente) DAO.getEntityManager()
+                       .find(CtacteCliente.class,Integer.valueOf((resumenCtaCtes.getDtmResumen().getValueAt(selectedRow, 0)).toString())));
+            }
+         }
+      });
+      resumenCtaCtes.getbBuscar().addActionListener(new ActionListener() {
+
+         @Override
+         public void actionPerformed(ActionEvent e) {
+            try {
+               armarQuery(false);
+            } catch (MessageException ex) {
+               resumenCtaCtes.showMessage(ex.getMessage(), null, 2);
+            } catch (Exception ex) {
+               resumenCtaCtes.showMessage(ex.getMessage(), null, 2);
+               Logger.getLogger(CtacteClienteJpaController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+         }
+      });
+      resumenCtaCtes.getbImprimir().addActionListener(new ActionListener() {
+
+         @Override
+         public void actionPerformed(ActionEvent e) {
+            try {
+               armarQuery(true);
+            } catch (MessageException ex) {
+               resumenCtaCtes.showMessage(ex.getMessage(), null, 2);
+            } catch (Exception ex) {
+               resumenCtaCtes.showMessage(ex.getMessage(), null, 2);
+               Logger.getLogger(CtacteClienteJpaController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+         }
+      });
+      resumenCtaCtes.getCbReRes().addActionListener(new ActionListener() {
+
+         @Override
+         public void actionPerformed(ActionEvent e) {
+            if (resumenCtaCtes.getCbReRes().isFocusOwner()) {
+               setDatosReciboSelected();
+            }
+         }
+      });
       UTIL.loadComboBox(resumenCtaCtes.getCbClieProv(), new ClienteJpaController().findClienteEntities(), false);
       UTIL.loadComboBox(resumenCtaCtes.getCbReRes(), null, true);
       UTIL.getDefaultTableModel(
               resumenCtaCtes.getjTableResumen(),
-              new String[]{"ctacteClienteID", "Detalle", "Fecha", "Vencimiento", "Debe", "Haber", "Saldo", "Acumulativo"},
-              new int[]{1, 60, 50, 50, 30, 30, 30, 50}
-              );
-      UTIL.hideColumnTable(resumenCtaCtes.getjTableResumen(), 0);
+              new String[]{"ctacteClienteID", "Detalle", "Fecha", "Vencimiento", "Debe", "Haber", "Saldo", "Acumulativo", "estadoCCC"},
+              new int[]{1, 60, 50, 50, 30, 30, 30, 50, 1});
+      UTIL.hideColumnsTable(resumenCtaCtes.getjTableResumen(), new int[]{0, 8});
       UTIL.getDefaultTableModel(
               resumenCtaCtes.getjTableDetalle(),
               new String[]{"Nº Factura", "Observación", "Monton"},
-              new int[]{60, 100, 50}
-              );
+              new int[]{60, 100, 50});
       resumenCtaCtes.setListener(this);
-      resumenCtaCtes.setLocationByPlatform(true);
+//      resumenCtaCtes.setLocationByPlatform(true);
       resumenCtaCtes.setVisible(true);
    }
 
@@ -260,44 +297,7 @@ public class CtacteClienteJpaController implements ActionListener {
 
    @Override
    public void actionPerformed(ActionEvent e) {
-      if (resumenCtaCtes != null) {
-         // <editor-fold defaultstate="collapsed" desc="JButton">
-         if (e.getSource().getClass().equals(javax.swing.JButton.class)) {
-            javax.swing.JButton btn = (javax.swing.JButton) e.getSource();
-            // <editor-fold defaultstate="collapsed" desc="verResumenCCC">
-            if (btn.getName().equalsIgnoreCase("verCtactes")) {
-               try {
-                  armarQuery(false);
-               } catch (MessageException ex) {
-                  resumenCtaCtes.showMessage(ex.getMessage(), null, 2);
-               } catch (Exception ex) {
-                  resumenCtaCtes.showMessage(ex.getMessage(), null, 2);
-                  Logger.getLogger(CtacteClienteJpaController.class.getName()).log(Level.SEVERE, null, ex);
-               }
-            }// </editor-fold>
-
-            // <editor-fold defaultstate="collapsed" desc="imprimirResumenCCC">
-            else if (btn.getName().equalsIgnoreCase("print")) {
-               try {
-                  armarQuery(true);
-               } catch (MessageException ex) {
-                  resumenCtaCtes.showMessage(ex.getMessage(), null, 2);
-               } catch (Exception ex) {
-                  resumenCtaCtes.showMessage(ex.getMessage(), null, 2);
-                  Logger.getLogger(CtacteClienteJpaController.class.getName()).log(Level.SEVERE, null, ex);
-               }
-            }// </editor-fold>
-         }// </editor-fold>
-
-         // <editor-fold defaultstate="collapsed" desc="JComboBox">
-         else if (e.getSource().getClass().equals(javax.swing.JComboBox.class)) {
-            javax.swing.JComboBox combo = (javax.swing.JComboBox) e.getSource();
-            if (combo.getName().equalsIgnoreCase("cbReRes")) {
-               if (combo.isFocusOwner())
-                  setDatosReciboSelected();
-            }
-         }// </editor-fold>
-      }
+      //evoluciónnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
    }
 
    private void armarQuery(boolean imprimirResumen) throws MessageException, Exception {
@@ -323,29 +323,28 @@ public class CtacteClienteJpaController implements ActionListener {
          query += "AND ccc.fecha_carga >= '" + resumenCtaCtes.getDcDesde() + "'";
       }
 
-      //no se va usar!!! este filtro
-//      if(resumenCtaCtes.getDcHasta() != null)
-//         query += "AND ccc.fecha_carga <=" + resumenCtaCtes.getDcHasta();
       query += " ORDER BY ccc.id";
       cargarDtmResumen(query);
       if (imprimirResumen) {
-         imprimirResumenCCC(((Cliente) resumenCtaCtes.getCbClieProv().getSelectedItem())
-                 , resumenCtaCtes.getDcDesde() != null ? " AND ccc.fecha_carga >= '" + UTIL.DATE_FORMAT.format(resumenCtaCtes.getDcDesde()) + "'" : ""
-                 );
+         imprimirResumenCCC(((Cliente) resumenCtaCtes.getCbClieProv().getSelectedItem()), resumenCtaCtes.getDcDesde() != null ? " AND ccc.fecha_carga >= '" + UTIL.DATE_FORMAT.format(resumenCtaCtes.getDcDesde()) + "'" : "");
       }
    }
 
    private void cargarDtmResumen(String query) {
-      javax.swing.table.DefaultTableModel dtm = resumenCtaCtes.getDtmResumen();
+      DefaultTableModel dtm = resumenCtaCtes.getDtmResumen();
       UTIL.limpiarDtm(dtm);
-      List<CtacteCliente> lista = DAO.getEntityManager().createNativeQuery(query, CtacteCliente.class).getResultList();
+      List<CtacteCliente> cccList = DAO.getEntityManager().createNativeQuery(query, CtacteCliente.class).getResultList();
 
       //agregar la 1er fila a la tabla
       double saldoAcumulativo = (totalDebe - totalHaber);
-      dtm.addRow(new Object[]{null,"RESUMEN PREVIOS", null, null, UTIL.PRECIO_CON_PUNTO.format( totalDebe), UTIL.PRECIO_CON_PUNTO.format(totalHaber), null, UTIL.PRECIO_CON_PUNTO.format(saldoAcumulativo)});
-      for (CtacteCliente ctaCteCliente : lista) {
+      dtm.addRow(new Object[]{null, "RESUMEN PREVIO", null, null, UTIL.PRECIO_CON_PUNTO.format(totalDebe), UTIL.PRECIO_CON_PUNTO.format(totalHaber), null, UTIL.PRECIO_CON_PUNTO.format(saldoAcumulativo)});
+      for (CtacteCliente ctaCteCliente : cccList) {
          FacturaVenta facturaVenta = ctaCteCliente.getFactura();
-         saldoAcumulativo += ctaCteCliente.getImporte() - ctaCteCliente.getEntregado();
+         //checkea que no esté anulada la ccc
+         boolean isAnulada = (ctaCteCliente.getEstado() == 3);
+         if (!isAnulada) {
+            saldoAcumulativo += ctaCteCliente.getImporte() - ctaCteCliente.getEntregado();
+         }
 
          dtm.addRow(new Object[]{
                     ctaCteCliente.getId(), // <--------- No es visible desde la GUI
@@ -353,9 +352,10 @@ public class CtacteClienteJpaController implements ActionListener {
                     UTIL.DATE_FORMAT.format(facturaVenta.getFechaVenta()),
                     UTIL.DATE_FORMAT.format(UTIL.customDateByDays(facturaVenta.getFechaVenta(), ctaCteCliente.getDias())),
                     UTIL.PRECIO_CON_PUNTO.format(ctaCteCliente.getImporte()),
-                    UTIL.PRECIO_CON_PUNTO.format(ctaCteCliente.getEntregado()),
-                    UTIL.PRECIO_CON_PUNTO.format(ctaCteCliente.getImporte() - ctaCteCliente.getEntregado()),
-                    UTIL.PRECIO_CON_PUNTO.format(saldoAcumulativo)
+                    isAnulada ? "ANULADA" : UTIL.PRECIO_CON_PUNTO.format(ctaCteCliente.getEntregado()),
+                    isAnulada ? "ANULADA" : UTIL.PRECIO_CON_PUNTO.format(ctaCteCliente.getImporte() - ctaCteCliente.getEntregado()),
+                    isAnulada ? "ANULADA" : UTIL.PRECIO_CON_PUNTO.format(saldoAcumulativo),
+                    ctaCteCliente.getEstado()
                  });
       }
    }
@@ -365,8 +365,9 @@ public class CtacteClienteJpaController implements ActionListener {
       r.addCurrent_User();
       r.addParameter("CLIENTE_ID", cliente.getId());
       r.addParameter("SUBREPORT_DIR", Reportes.FOLDER_REPORTES);
-      if(filter_date == null)
+      if (filter_date == null) {
          filter_date = "";
+      }
       r.addParameter("FILTER_DATE", filter_date);
       r.printReport();
    }
@@ -384,15 +385,16 @@ public class CtacteClienteJpaController implements ActionListener {
    private void setDatosReciboSelected() {
       try {
          Recibo recibo = (Recibo) resumenCtaCtes.getCbReRes().getSelectedItem();
-//         System.out.println("R" + recibo.toString() + "->");
          resumenCtaCtes.setTfReciboFecha(UTIL.DATE_FORMAT.format(recibo.getFechaRecibo()));
          resumenCtaCtes.setTfReciboMonto(UTIL.DECIMAL_FORMAT.format(recibo.getMonto()));
+         resumenCtaCtes.getLabelReciboAnulado().setVisible(!recibo.getEstado());
          cargarDtmDetallesDeCtaCte(recibo);
       } catch (ClassCastException ex) {
          // si el comboBox está vacio
          System.out.println("Recibo NULL!");
          resumenCtaCtes.setTfReciboFecha("");
          resumenCtaCtes.setTfReciboMonto("");
+         resumenCtaCtes.getLabelReciboAnulado().setVisible(false);
          UTIL.limpiarDtm(resumenCtaCtes.getDtmDetalle());
       }
    }
@@ -418,8 +420,10 @@ public class CtacteClienteJpaController implements ActionListener {
    private void setResumenHistorial(String query) {
       List<CtacteCliente> lista = DAO.getEntityManager().createNativeQuery(query, CtacteCliente.class).getResultList();
       for (CtacteCliente ccc : lista) {
-         totalDebe += ccc.getImporte();
-         totalHaber += ccc.getEntregado();
+         if (ccc.getEstado() != 3) { // 3 == anulada
+            totalDebe += ccc.getImporte();
+            totalHaber += ccc.getEntregado();
+         }
       }
    }
 }

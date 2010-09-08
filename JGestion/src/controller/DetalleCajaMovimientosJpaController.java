@@ -18,20 +18,42 @@ import entity.CajaMovimientos;
  */
 public class DetalleCajaMovimientosJpaController {
    public final static String CLASS_NAME = "DetalleCajaMovimientos";
+   /**
+    * nº 1
+    */
    public final static short FACTU_COMPRA = 1;
+   /**
+    * nº 2
+    */
    public final static short FACTU_VENTA = 2;
+   /**
+    * nº 3
+    */
    public final static short REMESA = 3;
+   /**
+    * nº 4
+    */
    public final static short RECIBO = 4;
+   /**
+    * nº 6
+    */
    public final static short MOVIMIENTO_CAJA = 5;
+   /**
+    * nº 6
+    */
    public final static short ANULACION = 6;
+   /**
+    * nº 7
+    */
    public final static short APERTURA_CAJA = 7;
+   /**
+    * nº 8
+    */
    public final static short MOVIMIENTO_VARIOS = 8;
+   /**
+    * nº 9
+    */
    public final static short MOVIMIENTO_INTERNO = 9;
-
-//   public DetalleCajaMovimientosJpaController() {
-//      emf = Persistence.createEntityManagerFactory("JGestionPU");
-//   }
-//   private EntityManagerFactory emf = null;
 
    // <editor-fold defaultstate="collapsed" desc="CRUD...">
    public EntityManager getEntityManager() {
@@ -49,10 +71,6 @@ public class DetalleCajaMovimientosJpaController {
 //            detalleCajaMovimientos.setCajaMovimientos(cajaMovimientos);
          }
          em.persist(detalleCajaMovimientos);
-//         if (cajaMovimientos != null) {
-//            cajaMovimientos.getDetalleCajaMovimientosList().add(detalleCajaMovimientos);
-//            cajaMovimientos = em.merge(cajaMovimientos);
-//         }
          em.getTransaction().commit();
       } catch (EntityNotFoundException ex) {
          ex.printStackTrace();

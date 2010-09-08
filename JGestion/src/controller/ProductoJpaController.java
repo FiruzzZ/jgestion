@@ -11,6 +11,7 @@ import entity.Stock;
 import entity.Sucursal;
 import entity.UTIL;
 import entity.Unidadmedida;
+import gui.JFP;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -30,6 +31,7 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.NoResultException;
+import javax.swing.JFrame;
 import javax.swing.table.DefaultTableModel;
 import oracle.toplink.essentials.exceptions.DatabaseException;
 // </editor-fold>
@@ -40,8 +42,8 @@ import oracle.toplink.essentials.exceptions.DatabaseException;
  */
 public class ProductoJpaController implements ActionListener, MouseListener, KeyListener {
 
-   public final String CLASS_NAME = "Producto";
-   private JDContenedor contenedor = null;
+   public final String CLASS_NAME = Producto.class.getSimpleName();
+   private JDContenedor contenedor;
    private JDABM abm;
    private final String[] colsName = {"Nº", "Código", "Nombre", "Marca", "Stock Gral."};
    private final int[] colsWidth = {15, 50, 100, 50, 20};
@@ -193,6 +195,63 @@ public class ProductoJpaController implements ActionListener, MouseListener, Key
       contenedor = new JDContenedor(frame, modal, "ABM - " + CLASS_NAME);
       contenedor.getTfFiltro().setToolTipText("Filtra por nombre del " + CLASS_NAME);
       contenedor.setModoBuscador(modoBuscador);
+      contenedor.getbNuevo().addActionListener(new ActionListener() {
+
+         @Override
+         public void actionPerformed(ActionEvent e) {
+            try {
+               EL_OBJECT = null;
+               initABM(false);
+            } catch (MessageException ex) {
+               contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
+            } catch (Exception ex) {
+               contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
+               Logger.getLogger(DepartamentoJpaController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+         }
+      });
+      contenedor.getbModificar().addActionListener(new ActionListener() {
+
+         @Override
+         public void actionPerformed(ActionEvent e) {
+            try {
+               initABM(true);
+            } catch (MessageException ex) {
+               contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
+            } catch (Exception ex) {
+               contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
+               Logger.getLogger(DepartamentoJpaController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+         }
+      });
+      contenedor.getbBorrar().addActionListener(new ActionListener() {
+
+         @Override
+         public void actionPerformed(ActionEvent e) {
+            try {
+               eliminarProducto();
+            } catch (MessageException ex) {
+               contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
+            } catch (Exception ex) {
+               contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
+               Logger.getLogger(DepartamentoJpaController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+         }
+      });
+      contenedor.getbImprimir().addActionListener(new ActionListener() {
+
+         @Override
+         public void actionPerformed(ActionEvent e) {
+            try {
+               doReportProductList();
+            } catch (MessageException ex) {
+               contenedor.showMessage(ex.getMessage(), "Advertencia", 2);
+            } catch (Exception ex) {
+               contenedor.showMessage(ex.getMessage(), "Error REPORT!", 0);
+            }
+         }
+      });
+      
       try {
          UTIL.getDefaultTableModel(contenedor.getjTable1(), colsName, colsWidth);
          UTIL.hideColumnTable(contenedor.getjTable1(), 0);
@@ -522,43 +581,43 @@ public class ProductoJpaController implements ActionListener, MouseListener, Key
       if (e.getSource().getClass().equals(javax.swing.JButton.class)) {
          javax.swing.JButton boton = (javax.swing.JButton) e.getSource();
          if (boton.getName().equalsIgnoreCase("new")) {
-            try {
-               EL_OBJECT = null;
-               initABM(false);
-            } catch (MessageException ex) {
-               contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
-            } catch (Exception ex) {
-               contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-               Logger.getLogger(DepartamentoJpaController.class.getName()).log(Level.SEVERE, null, ex);
-            }
+//            try {
+//               EL_OBJECT = null;
+//               initABM(false);
+//            } catch (MessageException ex) {
+//               contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
+//            } catch (Exception ex) {
+//               contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
+//               Logger.getLogger(DepartamentoJpaController.class.getName()).log(Level.SEVERE, null, ex);
+//            }
          } else if (boton.getName().equalsIgnoreCase("edit")) {
-            try {
-               initABM(true);
-            } catch (MessageException ex) {
-               contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
-            } catch (Exception ex) {
-               contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-               Logger.getLogger(DepartamentoJpaController.class.getName()).log(Level.SEVERE, null, ex);
-            }
+//            try {
+//               initABM(true);
+//            } catch (MessageException ex) {
+//               contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
+//            } catch (Exception ex) {
+//               contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
+//               Logger.getLogger(DepartamentoJpaController.class.getName()).log(Level.SEVERE, null, ex);
+//            }
 
          } else if (boton.getName().equalsIgnoreCase("del")) {
-            try {
-               eliminarProducto();
-            } catch (MessageException ex) {
-               contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
-            } catch (Exception ex) {
-               contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-               Logger.getLogger(DepartamentoJpaController.class.getName()).log(Level.SEVERE, null, ex);
-            }
+//            try {
+//               eliminarProducto();
+//            } catch (MessageException ex) {
+//               contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
+//            } catch (Exception ex) {
+//               contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
+//               Logger.getLogger(DepartamentoJpaController.class.getName()).log(Level.SEVERE, null, ex);
+//            }
          } else if (boton.getName().equalsIgnoreCase("Print")) {
-            try {
-               doReportProductList();
-            } catch (MessageException ex) {
-               contenedor.showMessage(ex.getMessage(), "Advertencia", 2);
-            } catch (Exception ex) {
-               contenedor.showMessage(ex.getMessage(), "Error REPORT!", 0);
-               ex.printStackTrace();
-            }
+//            try {
+//               doReportProductList();
+//            } catch (MessageException ex) {
+//               contenedor.showMessage(ex.getMessage(), "Advertencia", 2);
+//            } catch (Exception ex) {
+//               contenedor.showMessage(ex.getMessage(), "Error REPORT!", 0);
+//               ex.printStackTrace();
+//            }
          } else if (boton.getName().equalsIgnoreCase("exit")) {
             contenedor.dispose();
             contenedor = null;
@@ -750,5 +809,9 @@ public class ProductoJpaController implements ActionListener, MouseListener, Key
       r.addCurrent_User();
       r.addParameter("SUBREPORT_DIR", Reportes.FOLDER_REPORTES);
       r.printReport();
+   }
+
+   public void initMovimientoPorProducto(JFrame frame, boolean modal) {
+      
    }
 }

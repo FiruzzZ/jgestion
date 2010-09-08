@@ -30,7 +30,7 @@ public class CajaJpaController implements ActionListener, MouseListener {
    private final String[] colsName = {"Nº", "Nombre", "Habilitada", "Últ. apertura", "Eliminada"};
    private final int[] colsWidth = {20, 120, 30, 50, 20};
    private JDMiniABM abm;
-   private Caja EL_OBJECT;
+   private Caja ELOBJECT;
 
    // <editor-fold defaultstate="collapsed" desc="CRUD..">
    public EntityManager getEntityManager() {
@@ -113,16 +113,16 @@ public class CajaJpaController implements ActionListener, MouseListener {
    }
 
    private void setEntity() throws MessageException {
-      if (EL_OBJECT == null) {
-         EL_OBJECT = new Caja();
+      if (ELOBJECT == null) {
+         ELOBJECT = new Caja();
       }
       if (abm.getTfNombre() == null || abm.getTfNombre().trim().length() < 1) {
          throw new MessageException("Debe ingresar un nombre de " + CLASS_NAME.toLowerCase());
       }
 
-      EL_OBJECT.setNombre(abm.getTfNombre().trim().toUpperCase());
-      EL_OBJECT.setEstado(true);
-      EL_OBJECT.setBaja(false);
+      ELOBJECT.setNombre(abm.getTfNombre().trim().toUpperCase());
+      ELOBJECT.setEstado(true);
+      ELOBJECT.setBaja(false);
    }
 
    @Override
@@ -131,7 +131,7 @@ public class CajaJpaController implements ActionListener, MouseListener {
       if (e.getSource().getClass().equals(javax.swing.JButton.class)) {
          javax.swing.JButton boton = (javax.swing.JButton) e.getSource();
          if (boton.getName().equalsIgnoreCase("new")) {
-            EL_OBJECT = null;
+            ELOBJECT = null;
             abm.clearPanelFields();
          } else if (boton.getName().equalsIgnoreCase("del")) {
 //                try {
@@ -148,13 +148,13 @@ public class CajaJpaController implements ActionListener, MouseListener {
 //                    ex.printStackTrace();
 //                }
          } else if (boton.getName().equalsIgnoreCase("cancelar")) {
-            EL_OBJECT = null;
+            ELOBJECT = null;
             abm.clearPanelFields();
          } else if (boton.getName().equalsIgnoreCase("guardar")) {
             try {
                setEntity();
-               checkConstraints(EL_OBJECT);
-               EL_OBJECT = null;
+               checkConstraints(ELOBJECT);
+               ELOBJECT = null;
                abm.clearPanelFields();
                cargarDTM(abm.getDTM(), null);
                abm.showMessage("Las Cajas nuevas por defecto no están asignadas a ningún usuario."
@@ -177,7 +177,7 @@ public class CajaJpaController implements ActionListener, MouseListener {
                abm.showMessage(ex.getMessage(), CLASS_NAME, 0);
                Logger.getLogger(CajaJpaController.class.getName()).log(Level.SEVERE, null, ex);
             } finally {
-               EL_OBJECT = null;
+               ELOBJECT = null;
             }
          }
          return;
@@ -209,13 +209,13 @@ public class CajaJpaController implements ActionListener, MouseListener {
       Integer selectedRow = ((javax.swing.JTable) e.getSource()).getSelectedRow();
       DefaultTableModel dtm = (DefaultTableModel) ((javax.swing.JTable) e.getSource()).getModel();
       if (selectedRow > -1) {
-         EL_OBJECT = (Caja) DAO.getEntityManager().find(Caja.class,
+         ELOBJECT = (Caja) DAO.getEntityManager().find(Caja.class,
                  Integer.valueOf((dtm.getValueAt(selectedRow, 0)).toString()));
       }
 
-      if (EL_OBJECT != null) {
-         setPanelFields(EL_OBJECT);
-         setLockIcon(EL_OBJECT.getEstado());
+      if (ELOBJECT != null) {
+         setPanelFields(ELOBJECT);
+         setLockIcon(ELOBJECT.getEstado());
       }
 
    }
@@ -260,20 +260,19 @@ public class CajaJpaController implements ActionListener, MouseListener {
    }
 
    private void eliminarCaja() throws IllegalOrphanException, NonexistentEntityException, MessageException {
-      if (EL_OBJECT == null) {
+      if (ELOBJECT == null) {
          throw new MessageException("No hay " + CLASS_NAME + " seleccionada");
       }
-      destroy(EL_OBJECT.getId());
+      destroy(ELOBJECT.getId());
       cargarDTM(abm.getDTM(), null);
    }
 
    private void cambiarEstado() throws MessageException, Exception {
-      if (EL_OBJECT == null) {
+      if (ELOBJECT == null) {
          throw new MessageException("Debe seleccionar una " + CLASS_NAME);
       }
-
-      EL_OBJECT.setEstado(!EL_OBJECT.getEstado());
-      edit(EL_OBJECT);
+      ELOBJECT.setEstado(!ELOBJECT.getEstado());
+      edit(ELOBJECT);
    }
 
    private void setLockIcon(boolean estado) {

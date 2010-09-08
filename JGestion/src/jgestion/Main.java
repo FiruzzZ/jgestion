@@ -35,7 +35,7 @@ public class Main {
             });
          }
       } catch (Exception ex) {
-         javax.swing.JOptionPane.showMessageDialog(null, "MAIN ERROR:" + ex + "\nClass:" + ex.getClass() + "\nME: " + ex.getMessage());
+         javax.swing.JOptionPane.showMessageDialog(null, "ERROR EN MAIN!!!!" + ex.getMessage());
          ex.printStackTrace();
       }
       // Si por ejemplo se produjese una excepción de este tipo

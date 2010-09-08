@@ -363,14 +363,13 @@ public class ReciboJpaController implements ActionListener, FocusListener {
             // está en la GUI limpiarVentana();
          } else if (boton.getName().equalsIgnoreCase("anular")) {
             try {
-               anularReRe(rereSelected);
+               anular(rereSelected);
                contenedor.showMessage(CLASS_NAME + " anulada!", CLASS_NAME, 1);
                resetPanel();
-
             } catch (MessageException ex) {
-               buscador.showMessage(ex.getMessage(), CLASS_NAME, 2);
+               contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
             } catch (Exception ex) {
-               buscador.showMessage(ex.getMessage(), CLASS_NAME, 2);
+               contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                ex.printStackTrace();
             }
          }
@@ -820,10 +819,10 @@ public class ReciboJpaController implements ActionListener, FocusListener {
     * @throws MessageException
     * @throws Exception si Recibo es null, o si ya está anulado
     */
-   public void anularReRe(Recibo recibo) throws MessageException, Exception {
+   public void anular(Recibo recibo) throws MessageException, Exception {
       EntityManager em = getEntityManager();
       if (recibo == null) {
-         throw new MessageException(CLASS_NAME + " is NULL");
+         throw new MessageException(CLASS_NAME + " no válido");
       }
       if (!recibo.getEstado()) {
          throw new MessageException("Este " + CLASS_NAME + " ya está anulado");
@@ -870,6 +869,12 @@ public class ReciboJpaController implements ActionListener, FocusListener {
       r.printReport();
    }
 
+   /**
+    * Retorna todos los {@link Recibo} que contengan en su {@link DetalleRecibo}
+    * a factura.
+    * @param factura que deben contenedor los Recibos en su detalle
+    * @return una lista de Recibo's
+    */
    List<Recibo> findRecibosByFactura(FacturaVenta factura) {
       List<DetalleRecibo> detalleReciboList = new DetalleReciboJpaController().findDetalleReciboEntitiesByFactura(factura);
       List recibosList = new ArrayList(detalleReciboList.size());

@@ -14,8 +14,6 @@ import javax.persistence.*;
 @NamedQueries({
    @NamedQuery(name = "Caja.findAll", query = "SELECT c FROM Caja c"),
    @NamedQuery(name = "Caja.findById", query = "SELECT c FROM Caja c WHERE c.id = :id"),
-   @NamedQuery(name = "Caja.findByNombre", query = "SELECT c FROM Caja c WHERE c.nombre = :nombre"),
-   @NamedQuery(name = "Caja.findByEstado", query = "SELECT c FROM Caja c WHERE c.estado = :estado"),
    @NamedQuery(name = "Caja.findByBaja", query = "SELECT c FROM Caja c WHERE c.baja = :baja")
 })
 public class Caja implements Serializable {

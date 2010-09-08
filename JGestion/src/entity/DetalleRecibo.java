@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
 package entity;
 
@@ -30,16 +26,17 @@ import javax.persistence.Table;
    @NamedQuery(name = "DetalleRecibo.findByFacturaVenta", query = "SELECT d FROM DetalleRecibo d WHERE d.facturaVenta = :facturaVenta")
 })
 public class DetalleRecibo implements Serializable {
+
    private static final long serialVersionUID = 1L;
    @Id
    @Basic(optional = false)
    @Column(name = "id", nullable = false)
-   @GeneratedValue(strategy=GenerationType.IDENTITY)
+   @GeneratedValue(strategy = GenerationType.IDENTITY)
    private Integer id;
    @Basic(optional = false)
    @Column(name = "monto_entrega", nullable = false)
    private double montoEntrega;
-   @Column(name = "observacion", length = 2147483647)
+   @Column(name = "observacion", length = 200)
    private String observacion;
    @JoinColumn(name = "factura_venta", referencedColumnName = "id", nullable = false)
    @ManyToOne(optional = false)
@@ -47,6 +44,8 @@ public class DetalleRecibo implements Serializable {
    @JoinColumn(name = "recibo", referencedColumnName = "id", nullable = false)
    @ManyToOne(optional = false)
    private Recibo recibo;
+   @Column(nullable = false)
+   private boolean anulado;
 
    public DetalleRecibo() {
    }
@@ -55,9 +54,10 @@ public class DetalleRecibo implements Serializable {
       this.id = id;
    }
 
-   public DetalleRecibo(Integer id, double montoEntrega) {
+   public DetalleRecibo(Integer id, double montoEntrega, boolean anulado) {
       this.id = id;
       this.montoEntrega = montoEntrega;
+      this.anulado = anulado;
    }
 
    public Integer getId() {
@@ -100,6 +100,14 @@ public class DetalleRecibo implements Serializable {
       this.recibo = recibo;
    }
 
+   public boolean isAnulado() {
+      return anulado;
+   }
+
+   public void setAnulado(boolean anulado) {
+      this.anulado = anulado;
+   }
+
    @Override
    public int hashCode() {
       int hash = 0;
@@ -124,5 +132,4 @@ public class DetalleRecibo implements Serializable {
    public String toString() {
       return "entity.DetalleRecibo[id=" + id + "]";
    }
-
 }

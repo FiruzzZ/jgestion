@@ -7,6 +7,7 @@
 package gui;
 
 import java.awt.event.ActionListener;
+import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
@@ -125,5 +126,13 @@ public class JDABM extends javax.swing.JDialog {
             return true;
         return false;
     }
+
+   public JButton getbAceptar() {
+      return bAceptar;
+   }
+
+   public JButton getbCancelar() {
+      return bCancelar;
+   }
 
 }

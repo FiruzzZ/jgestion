@@ -12,6 +12,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseListener;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTable;
@@ -64,7 +65,7 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
       this.labelReRe.setText(labelReRe);
       rootPane.setDefaultButton(bBuscar);
    }
-   
+
    /** This method is called from within the constructor to
     * initialize the form.
     * WARNING: Do NOT modify this code. The content of this method is
@@ -365,15 +366,16 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
     }//GEN-LAST:event_tfFactu8KeyTyped
 
     private void tfCuartoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfCuartoFocusLost
-      if(tfCuarto.getText().length() > 0)
-         tfCuarto.setText(UTIL.AGREGAR_CEROS(tfCuarto.getText().trim(), 4));
+       if (tfCuarto.getText().length() > 0) {
+          tfCuarto.setText(UTIL.AGREGAR_CEROS(tfCuarto.getText().trim(), 4));
+       }
     }//GEN-LAST:event_tfCuartoFocusLost
 
     private void tfOctetoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfOctetoFocusLost
-      if(tfOcteto.getText().length() > 0)
-         tfOcteto.setText(UTIL.AGREGAR_CEROS(tfOcteto.getText().trim(), 8));
+       if (tfOcteto.getText().length() > 0) {
+          tfOcteto.setText(UTIL.AGREGAR_CEROS(tfOcteto.getText().trim(), 8));
+       }
     }//GEN-LAST:event_tfOctetoFocusLost
-
    // Variables declaration - do not modify//GEN-BEGIN:variables
    private javax.swing.JButton bBuscar;
    private javax.swing.JButton bImprimir;
@@ -424,7 +426,7 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
       try {
          jTable1.addMouseListener((MouseListener) o);
       } catch (ClassCastException ex) {
-         System.out.println("No se pudo castear objecto a MouseListener");
+         System.out.println(o.getClass() + " no implementa MouseListener");
       }
       try {
 //         tfCuarto.addFocusListener((FocusListener) o);
@@ -488,6 +490,10 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
       return tfFactu8.getText().trim();
    }
 
+   public JCheckBox getCheckAnulada() {
+      return checkAnulada;
+   }
+
    public boolean isCheckAnuladaSelected() {
       return checkAnulada.isSelected();
    }// </editor-fold>
@@ -499,7 +505,8 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
       tfFactu8.setText("");
       try {
          cbCaja.setSelectedIndex(0);
-      } catch (IllegalArgumentException e) { }
+      } catch (IllegalArgumentException e) {
+      }
       cbClieProv.setSelectedIndex(0);
       cbSucursal.setSelectedIndex(0);
       dcDesde.setDate(null);
@@ -516,7 +523,7 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
    }
 
    public void dtmRemoveAll() {
-      for (int i = getDtm().getRowCount()-1; i > -1; i--) {
+      for (int i = getDtm().getRowCount() - 1; i > -1; i--) {
          getDtm().removeRow(i);
       }
    }
@@ -525,7 +532,7 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
       tfOcteto.setText(octeto);
    }
 
-   public  void hideCheckAnulado() {
+   public void hideCheckAnulado() {
       checkAnulada.setVisible(false);
    }
 
@@ -579,6 +586,4 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
       labelN_Factura.setVisible(false);
       tfFactu4.setVisible(false);
    }
-
-
 }
