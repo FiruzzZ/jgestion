@@ -11,7 +11,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseListener;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 
 /**
  * Pantalla de ABM para Rubros y Marcas, UnidadMedidas
@@ -300,4 +302,29 @@ public class JDMiniABM extends javax.swing.JDialog {
    public void hideBtnElimiar() {
       bEliminar.setVisible(false);
    }
+
+   public JButton getbAceptar() {
+      return bAceptar;
+   }
+
+   public JButton getbCancelar() {
+      return bCancelar;
+   }
+
+   public JButton getbNuevo() {
+      return bNuevo;
+   }
+
+   public JLabel getjLabel1() {
+      return jLabel1;
+   }
+
+   public JLabel getjLabelCodigo() {
+      return jLabelCodigo;
+   }
+
+   public JLabel getjLabelExtra() {
+      return jLabelExtra;
+   }
+
 }

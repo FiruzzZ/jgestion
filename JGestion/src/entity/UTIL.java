@@ -1,5 +1,6 @@
 package entity;
 
+import java.util.Arrays;
 import java.util.List;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
@@ -50,12 +51,10 @@ public abstract class UTIL {
       PRECIO_CON_PUNTO = new java.text.DecimalFormat("#######0.00", simbolos);
       String[] x = {"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
          "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"};
-      DECIMAL_FORMAT = new java.text.DecimalFormat("#,###.00");
+      DECIMAL_FORMAT = new java.text.DecimalFormat("#,###0.00");
       DATE_FORMAT = new java.text.SimpleDateFormat("dd/MM/yyyy");
       TIME_FORMAT = new java.text.SimpleDateFormat("HH:mm:ss");
-      for (String string : x) {
-         MESES.add(string);
-      }
+      MESES.addAll(Arrays.asList(x));
    }
 
    /**
@@ -570,7 +569,7 @@ public abstract class UTIL {
     * deja de ser visible para el usuario pero sigue siendo accesible desde el
     * TableModel
     * @param jTable tabla de la cual se desea sacar las columnas
-    * @param columnsIndex columnas a quitar de la vista del usuario
+    * @param columnsIndex columnas a quitar de la vista
     */
    public static void hideColumnsTable(JTable jTable, int[] columnsIndex) {
       for (int i = 0; i < columnsIndex.length; i++) {

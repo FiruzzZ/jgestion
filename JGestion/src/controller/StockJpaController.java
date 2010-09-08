@@ -255,4 +255,11 @@ public class StockJpaController {
               .getSingleResult();
    }
 
+
+   void modificarStockBySucursal(Producto producto, Sucursal sucursal, int cantidad) {
+      Stock stock = findStock(producto, sucursal);
+      stock.setStockSucu(stock.getStockSucu() + cantidad);
+      DAO.doMerge(stock);
+   }
+
 }

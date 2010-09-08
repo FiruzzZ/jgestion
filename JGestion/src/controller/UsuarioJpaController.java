@@ -114,8 +114,9 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
          em.merge(usuario);
          em.getTransaction().commit();
       } catch (Exception ex) {
-         if(em.getTransaction().isActive())
+         if (em.getTransaction().isActive()) {
             em.getTransaction().rollback();
+         }
          throw ex;
       } finally {
          if (em != null) {
@@ -135,11 +136,10 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
          } catch (EntityNotFoundException enfe) {
             throw new NonexistentEntityException("The usuario with id " + id + " no longer exists.", enfe);
          }
-         int cantBorradas = em.createQuery("" +
-                 "DELETE FROM PermisosCaja WHERE usuario.id = " + usuario.getId())
-                 .executeUpdate();
+         int cantBorradas = em.createQuery(""
+                 + "DELETE FROM PermisosCaja WHERE usuario.id = " + usuario.getId()).executeUpdate();
          System.out.println("PermisosCaja borrados:" + cantBorradas);
-         
+
          String createQuery = "UPDATE Permisos SET ";
          for (PermisoDe permisoDe : PermisoDe.values()) {
             createQuery += permisoDe + "= FALSE,";
@@ -251,7 +251,7 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
    }
 
    public void mouseReleased(MouseEvent e) {
-      if(contenedor != null) {
+      if (contenedor != null) {
 //         Integer selectedRow = ((javax.swing.JTable) e.getSource()).getSelectedRow();
          int selectedRow = contenedor.getjTable1().getSelectedRow();
 //         DefaultTableModel dtm = (DefaultTableModel) ((javax.swing.JTable) e.getSource()).getModel();
@@ -345,7 +345,7 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
       contenedor.hideBtmEliminar();
       contenedor.hideBtmImprimir();
       try {
-         UTIL.getDefaultTableModel(contenedor.getjTable1(),colsName, colsWidth);
+         UTIL.getDefaultTableModel(contenedor.getjTable1(), colsName, colsWidth);
          UTIL.hideColumnTable(contenedor.getjTable1(), 0);
       } catch (Exception ex) {
          Logger.getLogger(DepartamentoJpaController.class.getName()).log(Level.SEVERE, null, ex);
@@ -409,17 +409,17 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
    }
 
    private void initABM(boolean isEditing) throws Exception {
-     // <editor-fold defaultstate="collapsed" desc="checking Permiso">
+      // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
          UsuarioJpaController.checkPermisos(PermisosJpaController.PermisoDe.ABM_USUARIOS);
       } catch (MessageException ex) {
-         javax.swing.JOptionPane.showMessageDialog(null,ex.getMessage());
+         javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
          return;
       }// </editor-fold>
 
       if (isEditing) {
          mouseReleased(null);
-         if(EL_OBJECT == null) {
+         if (EL_OBJECT == null) {
             throw new MessageException("Debe elegir una fila");
          }
       } else {
@@ -429,9 +429,9 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
       panel = new PanelABMUsuarios();
       UTIL.getDefaultTableModel(
               panel.getTableCajas(),
-              new String[]{"Caja","Estado", "Permitir"},
-              new int[]{150,20, 1},
-              new Class[]{String.class,String.class, Boolean.class},
+              new String[]{"Caja", "Estado", "Permitir"},
+              new int[]{150, 20, 1},
+              new Class[]{String.class, String.class, Boolean.class},
               new int[]{2});
 
       cargarTablaCajas();
@@ -453,37 +453,37 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
       panel.setEnableTfNick(false);
       panel.setTfNick(u.getNick());
       panel.getCbEstado().setSelectedIndex(u.getEstado() - 1);
-      
-      panel.getCheckCajas().setSelected(        u.getPermisos().getAbmCajas());
-      panel.getCheckClientes().setSelected(     u.getPermisos().getAbmClientes());
-      panel.getCheckCompra().setSelected(       u.getPermisos().getCompra());
-      panel.getCheckDatosGeneral().setSelected( u.getPermisos().getDatosGeneral());
-      panel.getCheckListaPrecios().setSelected( u.getPermisos().getAbmListaPrecios());
-      panel.getCheckProductos().setSelected(    u.getPermisos().getAbmProductos());
-      panel.getCheckProveedores().setSelected(  u.getPermisos().getAbmProveedores());
-      panel.getCheckTesoreria().setSelected(    u.getPermisos().getTesoreria());
-      panel.getCheckUsuarios().setSelected(     u.getPermisos().getAbmUsuarios());
-      panel.getCheckVenta().setSelected(        u.getPermisos().getVenta());
-      panel.getCheckCerrarCajas().setSelected(  u.getPermisos().getCerrarCajas());
+
+      panel.getCheckCajas().setSelected(u.getPermisos().getAbmCajas());
+      panel.getCheckClientes().setSelected(u.getPermisos().getAbmClientes());
+      panel.getCheckCompra().setSelected(u.getPermisos().getCompra());
+      panel.getCheckDatosGeneral().setSelected(u.getPermisos().getDatosGeneral());
+      panel.getCheckListaPrecios().setSelected(u.getPermisos().getAbmListaPrecios());
+      panel.getCheckProductos().setSelected(u.getPermisos().getAbmProductos());
+      panel.getCheckProveedores().setSelected(u.getPermisos().getAbmProveedores());
+      panel.getCheckTesoreria().setSelected(u.getPermisos().getTesoreria());
+      panel.getCheckUsuarios().setSelected(u.getPermisos().getAbmUsuarios());
+      panel.getCheckVenta().setSelected(u.getPermisos().getVenta());
+      panel.getCheckCerrarCajas().setSelected(u.getPermisos().getCerrarCajas());
       //estableciendo permisosCajas en la tabla
       List<PermisosCaja> permisosCajaList = u.getPermisosCajaList();
       for (PermisosCaja permisosCaja : permisosCajaList) {
-         for(int i = panel.getDtm().getRowCount() -1; i > -1; i--) {
-            if( ((Caja)panel.getDtm().getValueAt(i, 0)).equals(permisosCaja.getCaja()))
+         for (int i = panel.getDtm().getRowCount() - 1; i > -1; i--) {
+            if (((Caja) panel.getDtm().getValueAt(i, 0)).equals(permisosCaja.getCaja())) {
                panel.getDtm().setValueAt(true, i, 2);
+            }
          }
       }
    }
 
    private void setAndPersistEntity() throws MessageException, PreexistingEntityException, Exception {
-      if(EL_OBJECT == null) {
+      if (EL_OBJECT == null) {
          System.out.println("null");
          EL_OBJECT = new Usuario();
          EL_OBJECT.setFechaalta(new Date());
          EL_OBJECT.setPermisosCajaList(new ArrayList<PermisosCaja>());
          EL_OBJECT.setNick(panel.getTfNick());
       } else {
-
       }
 
       if (panel.getTfNick().length() < 1) {
@@ -521,10 +521,10 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
       }// </editor-fold>
 
 
-                           // 1 activo , 2 baja
+      // 1 activo , 2 baja
       EL_OBJECT.setEstado(panel.getCbEstado().getSelectedIndex() + 1);
       EL_OBJECT.setPermisosCajaList(getPermisosCaja(EL_OBJECT.getPermisosCajaList()));
-      
+
       Permisos permisos;
       if (EL_OBJECT.getId() == null) {
          permisos = new Permisos();
@@ -539,32 +539,31 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
    }
 
    private Permisos setPermisos(Permisos permisos) {
-      permisos.setAbmCajas(      panel.getCheckCajas().isSelected());
-      permisos.setAbmClientes(   panel.getCheckClientes().isSelected());
+      permisos.setAbmCajas(panel.getCheckCajas().isSelected());
+      permisos.setAbmClientes(panel.getCheckClientes().isSelected());
       permisos.setAbmListaPrecios(panel.getCheckListaPrecios().isSelected());
-      permisos.setAbmProductos(  panel.getCheckProductos().isSelected());
+      permisos.setAbmProductos(panel.getCheckProductos().isSelected());
       permisos.setAbmProveedores(panel.getCheckProveedores().isSelected());
-      permisos.setAbmUsuarios(   panel.getCheckUsuarios().isSelected());
-      permisos.setCompra(        panel.getCheckCompra().isSelected());
-      permisos.setVenta(         panel.getCheckVenta().isSelected());
-      permisos.setDatosGeneral(  panel.getCheckDatosGeneral().isSelected());
-      permisos.setTesoreria(     panel.getCheckTesoreria().isSelected());
-      permisos.setCerrarCajas(   panel.getCheckCerrarCajas().isSelected());
+      permisos.setAbmUsuarios(panel.getCheckUsuarios().isSelected());
+      permisos.setCompra(panel.getCheckCompra().isSelected());
+      permisos.setVenta(panel.getCheckVenta().isSelected());
+      permisos.setDatosGeneral(panel.getCheckDatosGeneral().isSelected());
+      permisos.setTesoreria(panel.getCheckTesoreria().isSelected());
+      permisos.setCerrarCajas(panel.getCheckCerrarCajas().isSelected());
       return permisos;
    }
 
    private java.util.List<PermisosCaja> getPermisosCaja(List<PermisosCaja> permisosCajaList) {
-      System.out.println("perisosCajaList=" + permisosCajaList.size());
       List<Caja> cajaList = new ArrayList<Caja>();
       for (PermisosCaja permisosCaja : permisosCajaList) {
          cajaList.add(permisosCaja.getCaja());
       }
       DefaultTableModel dtm = panel.getDtm();
       PermisosCaja permisosCaja;
-      for (int i = 0 ; i <= dtm.getRowCount()-1; i++) {
+      for (int i = 0; i <= dtm.getRowCount() - 1; i++) {
          Caja cajaSelected = (Caja) dtm.getValueAt(i, 0);
-         if(dtm.getValueAt(i, 2).toString().equalsIgnoreCase("true")) {
-            if(!cajaList.contains(cajaSelected)) {
+         if (dtm.getValueAt(i, 2).toString().equalsIgnoreCase("true")) {
+            if (!cajaList.contains(cajaSelected)) {
                permisosCaja = new PermisosCaja();
                permisosCaja.setCaja(cajaSelected);
                permisosCaja.setUsuario(EL_OBJECT);
@@ -573,20 +572,21 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
             } else {
                System.out.println("Ya tiene permiso de Caja:" + cajaSelected.getNombre());
             }
-         } else if(cajaList.contains(cajaSelected)) {
+         } else if (cajaList.contains(cajaSelected)) {
             //si la Caja está DESMARCADA && está caja ESTÁ PRESENTE EN cajaList
             // es porque se QUITO el permisosCaja de esta.
             PermisosCaja permisosCajaToDelete = null;
             // así que busca el permisosCaja que contiene cajaSelected
             for (PermisosCaja permisosCaja1 : permisosCajaList) {
-               if(permisosCaja1.getCaja().equals(cajaSelected))
+               if (permisosCaja1.getCaja().equals(cajaSelected)) {
                   permisosCajaToDelete = permisosCaja1;
+               }
             }
             // y lo borramos
             permisosCajaList.remove(permisosCajaToDelete);
             System.out.println("DEL PermisosCaja nº" + permisosCajaToDelete.getId()
-                                + ", Caja:" + permisosCajaToDelete.getCaja()
-                                + ", INDEX=" +cajaList.indexOf(cajaSelected));
+                    + ", Caja:" + permisosCajaToDelete.getCaja()
+                    + ", INDEX=" + cajaList.indexOf(cajaSelected));
          } else {
             System.out.println("No tenía ni va tener Caja:" + cajaSelected.getNombre());
          }
@@ -607,22 +607,22 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
       Boolean permitido = null;
       if (PermisoDe.ABM_PRODUCTOS.equals(permisoToCheck)) {
          permitido = CURRENT_USER.getPermisos().getAbmProductos();
-      
+
       } else if (PermisoDe.ABM_PROVEEDORES.equals(permisoToCheck)) {
          permitido = CURRENT_USER.getPermisos().getAbmProveedores();
-      
+
       } else if (PermisoDe.ABM_CLIENTES.equals(permisoToCheck)) {
          permitido = CURRENT_USER.getPermisos().getAbmClientes();
-      
+
       } else if (PermisoDe.ABM_CAJAS.equals(permisoToCheck)) {
          permitido = CURRENT_USER.getPermisos().getAbmCajas();
-      
+
       } else if (PermisoDe.ABM_USUARIOS.equals(permisoToCheck)) {
          permitido = CURRENT_USER.getPermisos().getAbmUsuarios();
-      
+
       } else if (PermisoDe.ABM_LISTA_PRECIOS.equals(permisoToCheck)) {
          permitido = CURRENT_USER.getPermisos().getAbmListaPrecios();
-      
+
       } else if (PermisoDe.TESORERIA.equals(permisoToCheck)) {
          permitido = CURRENT_USER.getPermisos().getTesoreria();
 
@@ -639,7 +639,7 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
       }
       if (!permitido) {
          throw new MessageException("Acceso denegado: No tiene permiso para "
-                              + permisoToCheck.toString().replaceAll("_", " "));
+                 + permisoToCheck.toString().replaceAll("_", " "));
       }
    }
 
@@ -647,12 +647,11 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
       List<Caja> cajasList = new CajaJpaController().findCajaEntities();
       UTIL.limpiarDtm(panel.getDtm());
       for (Caja caja : cajasList) {
-         panel.getDtm().addRow(new Object[] {
-            caja,
-            caja.getEstado() ? "Activa" : "Baja",
-            false
-         });
+         panel.getDtm().addRow(new Object[]{
+                    caja,
+                    caja.getEstado() ? "Activa" : "Baja",
+                    false
+                 });
       }
    }
-
 }

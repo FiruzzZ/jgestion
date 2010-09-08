@@ -36,10 +36,9 @@ public class PermisosJpaController {
       COMPRA,
       CERRAR_CAJAS;
    }
+
    public PermisosJpaController() {
-//      emf = Persistence.createEntityManagerFactory("JGestionPU");
    }
-//   private EntityManagerFactory emf = null;
 
    public EntityManager getEntityManager() {
       return DAO.getEntityManager();

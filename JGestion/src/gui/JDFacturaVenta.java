@@ -27,6 +27,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
       super(parent, modal);
       modoVista = factVenta1_Presup2_Remito3;
       initComponents();
+      btnAnular.setVisible(false); // <--- solo visible cuando se va ANULAR ALGO
       if (factVenta1_Presup2_Remito3 != 1) {
          this.setTitle("Remito");
          labelN_factura.setText("Nº Remito");
@@ -136,6 +137,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
       jPanel4 = new javax.swing.JPanel();
       tfMonto = new javax.swing.JTextField();
       tfCambio = new javax.swing.JTextField();
+      btnAnular = new javax.swing.JButton();
 
       setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
       setTitle("Facturación - Ventas");
@@ -176,7 +178,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
 
       tfNumMovimiento.setColumns(4);
       tfNumMovimiento.setEditable(false);
-      tfNumMovimiento.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+      tfNumMovimiento.setFont(new java.awt.Font("Tahoma", 1, 11));
       tfNumMovimiento.setHorizontalAlignment(javax.swing.JTextField.CENTER);
       tfNumMovimiento.setText("XXXX");
       tfNumMovimiento.setToolTipText("Nº de movimiento interno");
@@ -359,6 +361,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
       btnAceptar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px-Crystal_Clear_action_apply.png"))); // NOI18N
       btnAceptar.setText("Aceptar");
       btnAceptar.setName("aceptar"); // NOI18N
+      btnAceptar.setPreferredSize(new java.awt.Dimension(111, 41));
 
       jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Producto"));
 
@@ -648,6 +651,10 @@ public class JDFacturaVenta extends javax.swing.JDialog {
             .addComponent(tfCambio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
       );
 
+      btnAnular.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px-Crystal_Clear_action_editdelete.png"))); // NOI18N
+      btnAnular.setText("Anular");
+      btnAnular.setName("facturar"); // NOI18N
+
       javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
       getContentPane().setLayout(layout);
       layout.setHorizontalGroup(
@@ -659,10 +666,12 @@ public class JDFacturaVenta extends javax.swing.JDialog {
                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                .addGroup(layout.createSequentialGroup()
                   .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 139, Short.MAX_VALUE)
+                  .addGap(18, 18, 18)
+                  .addComponent(btnAnular, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                   .addComponent(btnFacturar)
-                  .addGap(46, 46, 46)
-                  .addComponent(btnAceptar)
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 46, Short.MAX_VALUE)
+                  .addComponent(btnAceptar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                   .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                   .addComponent(btnCancelar))
                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -684,8 +693,9 @@ public class JDFacturaVenta extends javax.swing.JDialog {
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                  .addComponent(btnAceptar)
-                  .addComponent(btnFacturar))
+                  .addComponent(btnAceptar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                  .addComponent(btnFacturar)
+                  .addComponent(btnAnular))
                .addComponent(btnCancelar))
             .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
       );
@@ -737,6 +747,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
    private javax.swing.JButton bBuscarProducto;
    private javax.swing.JButton btnADD;
    private javax.swing.JButton btnAceptar;
+   private javax.swing.JButton btnAnular;
    private javax.swing.JButton btnBuscarRemito;
    private javax.swing.JButton btnCancelar;
    private javax.swing.JButton btnCliente;
@@ -1080,6 +1091,10 @@ public class JDFacturaVenta extends javax.swing.JDialog {
       return btnCancelar;
    }
 
+   public JButton getBtnAnular() {
+      return btnAnular;
+   }
+
    /**
     * 1 = FacturaVenta, 2 = Presupuesto, 3 = Remito
     * @return
@@ -1087,7 +1102,10 @@ public class JDFacturaVenta extends javax.swing.JDialog {
    public int getModoVista() {
       return modoVista;
    }
-   
+
+   public void hidePanelCambio() {
+      jPanel4.setVisible(false);
+   }
 
 }
 

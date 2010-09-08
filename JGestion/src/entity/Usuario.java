@@ -27,10 +27,10 @@ public class Usuario implements Serializable {
    @GeneratedValue(strategy = GenerationType.IDENTITY)
    private Integer id;
    @Basic(optional = false)
-   @Column(name = "nick", nullable = false, length = 2147483647)
+   @Column(name = "nick", nullable = false, length = 50)
    private String nick;
    @Basic(optional = false)
-   @Column(name = "pass", nullable = false, length = 2147483647)
+   @Column(name = "pass", nullable = false, length = 50)
    private String pass;
    @Basic(optional = false)
    @Column(name = "estado", nullable = false)

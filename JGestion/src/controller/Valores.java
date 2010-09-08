@@ -1,6 +1,7 @@
 package controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -40,9 +41,7 @@ public final class Valores {
       private static final List<FormaPago> formasDePago = new ArrayList<FormaPago>();
 
       static {
-         for (FormaPago formaPago : FormaPago.values()) {
-            formasDePago.add(formaPago);
-         }
+         formasDePago.addAll(Arrays.asList(FormaPago.values()));
       }
       private FormaPago(int id, String nombre) {
          System.out.println("Constructor FormaPago("+id+", "+nombre+")");

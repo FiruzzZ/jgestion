@@ -2,6 +2,8 @@ package controller;
 
 import controller.exceptions.*;
 import entity.CajaMovimientos;
+import entity.CtacteCliente;
+import entity.DetallesVenta;
 import entity.FacturaCompra;
 import entity.FacturaVenta;
 import java.awt.Component;
@@ -13,6 +15,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import entity.Caja;
 import entity.DetalleCajaMovimientos;
+import entity.DetalleRecibo;
 import entity.Recibo;
 import entity.Remesa;
 import entity.UTIL;
@@ -31,6 +34,7 @@ import java.util.Date;
 import java.util.List;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -38,6 +42,7 @@ import javax.swing.table.DefaultTableModel;
  * @author FiruzzZ
  */
 public class CajaMovimientosJpaController implements ActionListener {
+
    public static final String CLASS_NAME = CajaMovimientos.class.getSimpleName();
    private JDCierreCaja jdCierreCaja;
    private JDCajaToCaja JDcajaToCaja;
@@ -280,8 +285,6 @@ public class CajaMovimientosJpaController implements ActionListener {
       if (recibo.getEstado()) {
          throw new MessageException("No se puede anular el recibo Nº" + recibo.getId() + " porque ESTADO =" + recibo.getEstado());
       }
-
-      System.out.println("anular " + recibo.getClass());
       //caja en la q se va asentar
       CajaMovimientos cm = findCajaMovimientoAbierta(recibo.getCaja());
       EntityManager em = getEntityManager();
@@ -296,11 +299,104 @@ public class CajaMovimientosJpaController implements ActionListener {
          newDetalleCajaMovimiento.setFecha(new Date());
          newDetalleCajaMovimiento.setHora(new Date());
          newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.RECIBO);
-         newDetalleCajaMovimiento.setDescripcion("R" + UTIL.AGREGAR_CEROS(recibo.getId(), 12) + " ANULADO");
+         newDetalleCajaMovimiento.setDescripcion("R" + UTIL.AGREGAR_CEROS(recibo.getId(), 12) + " [ANULADO]");
          newDetalleCajaMovimiento.setUsuario(UsuarioJpaController.getCurrentUser());
          new DetalleCajaMovimientosJpaController().create(newDetalleCajaMovimiento);
       } catch (Exception e) {
          em.getTransaction().rollback();
+         throw e;
+      } finally {
+         if (em != null) {
+            em.close();
+         }
+      }
+   }
+
+   /**
+    * Realiza todos los procesos de anulación de una FacturaVenta/Comprobante.
+    *<html><ul>
+    * <li> Asentar el reintegro del importe de facturaVenta a la cajaMovimientoDestino.
+    * <li> Re-establece los stock de Productos involucrados.
+    * <li> Si es por CtaCte, ccc.estado = 3 (anulado), así como los posible pagos realizados.
+    * </ul></html>
+    * @param facturaVenta la cual se quiere anular
+    * @param cajaMovimientoDestino en la cual se van a registrar los movimientos contables
+    * @throws Exception
+    */
+   void anular(FacturaVenta facturaVenta, CajaMovimientos cajaMovimientoDestino) throws Exception {
+      EntityManager em = getEntityManager();
+      try {
+         em.getTransaction().begin();
+         facturaVenta = em.find(FacturaVenta.class, facturaVenta.getId());
+         cajaMovimientoDestino = em.find(CajaMovimientos.class, cajaMovimientoDestino.getId());
+         DetalleCajaMovimientos newDetalleCajaMovimiento;
+         //si fue al CONTADO...
+         if (facturaVenta.getFormaPago() == Valores.FormaPago.CONTADO.getId()) {
+            newDetalleCajaMovimiento = new DetalleCajaMovimientos();
+            newDetalleCajaMovimiento.setCajaMovimientos(cajaMovimientoDestino);
+            newDetalleCajaMovimiento.setIngreso(false);
+            newDetalleCajaMovimiento.setMonto(-facturaVenta.getImporte());
+            newDetalleCajaMovimiento.setNumero(facturaVenta.getId());
+            newDetalleCajaMovimiento.setFecha(new Date());
+            newDetalleCajaMovimiento.setHora(new Date());
+            newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.ANULACION);
+            newDetalleCajaMovimiento.setDescripcion(getDescripcion(facturaVenta) + " [ANULADA]");
+            newDetalleCajaMovimiento.setUsuario(UsuarioJpaController.getCurrentUser());
+            new DetalleCajaMovimientosJpaController().create(newDetalleCajaMovimiento);
+         } else {
+            CtacteCliente ccc = new CtacteClienteJpaController().findCtacteClienteByFactura(facturaVenta.getId());
+            if (ccc.getEntregado() > 0) {
+               List<Recibo> recibosList = new ReciboJpaController().findRecibosByFactura(facturaVenta);
+               boolean detalleUnico; //Therefore, the entire Recibo must be annulled
+               for (Recibo reciboQueEnSuDetalleContieneLaFacturaVenta : recibosList) {
+                  detalleUnico = false;
+                  if (reciboQueEnSuDetalleContieneLaFacturaVenta.getDetalleReciboList().size() == 1) {
+                     detalleUnico = true;
+                  }
+                  for (DetalleRecibo detalleRecibo : reciboQueEnSuDetalleContieneLaFacturaVenta.getDetalleReciboList()) {
+                     if (detalleRecibo.getFacturaVenta().equals(facturaVenta)) {
+                        detalleRecibo.setObservacion("ANULADO - " + detalleRecibo.getObservacion());
+                        detalleRecibo.setAnulado(true);
+                        reciboQueEnSuDetalleContieneLaFacturaVenta.setMonto(reciboQueEnSuDetalleContieneLaFacturaVenta.getMonto() - detalleRecibo.getMontoEntrega());
+                        newDetalleCajaMovimiento = new DetalleCajaMovimientos();
+                        newDetalleCajaMovimiento.setCajaMovimientos(cajaMovimientoDestino);
+                        newDetalleCajaMovimiento.setIngreso(false);
+                        newDetalleCajaMovimiento.setMonto(-detalleRecibo.getMontoEntrega());
+                        newDetalleCajaMovimiento.setNumero(facturaVenta.getId());
+                        newDetalleCajaMovimiento.setFecha(new Date());
+                        newDetalleCajaMovimiento.setHora(new Date());
+                        newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.ANULACION);
+                        newDetalleCajaMovimiento.setDescripcion(getDescripcion(facturaVenta) + " -> R" + reciboQueEnSuDetalleContieneLaFacturaVenta.getId() + " [ANULADA]");
+                        newDetalleCajaMovimiento.setUsuario(UsuarioJpaController.getCurrentUser());
+                        em.persist(newDetalleCajaMovimiento);
+                        em.merge(detalleRecibo);
+                        if (detalleUnico) {
+                           reciboQueEnSuDetalleContieneLaFacturaVenta.setEstado(false);
+                        }
+                        em.merge(reciboQueEnSuDetalleContieneLaFacturaVenta);
+                     }
+                  }
+               }
+            }
+            ccc.setEstado((short) 3);
+            em.merge(ccc);
+         }
+
+         facturaVenta.setAnulada(true);
+         em.merge(facturaVenta);
+         //re-estableciendo stock
+         List<DetallesVenta> itemList = facturaVenta.getDetallesVentaList();
+         ProductoJpaController productoCtrl = new ProductoJpaController();
+         StockJpaController stockCtrl = new StockJpaController();
+         for (DetallesVenta detallesVenta : itemList) {
+            stockCtrl.modificarStockBySucursal(detallesVenta.getProducto(), facturaVenta.getSucursal(), detallesVenta.getCantidad());
+            productoCtrl.updateStockActual(detallesVenta.getProducto(), detallesVenta.getCantidad());
+         }
+         em.getTransaction().commit();
+      } catch (Exception e) {
+         if (em.getTransaction().isActive()) {
+            em.getTransaction().rollback();
+         }
          throw e;
       } finally {
          if (em != null) {
@@ -393,9 +489,8 @@ public class CajaMovimientosJpaController implements ActionListener {
       } catch (NoResultException ex) {
          //cuando Ruben hace su magia pasa esto!
          System.out.println("NoResult -> findUltimaAbierta -> Caja:" + o);
-         throw ex;
       } catch (NonUniqueResultException ex) {
-         System.out.println("HAY MAS DE 1 ABIERTA!!! -> CAJA: " + o +  "\n" + ex);
+         System.out.println("HAY MAS DE 1 ABIERTA!!! -> CAJA: " + o + "\n" + ex);
          throw ex;
       } finally {
          if (em != null) {
@@ -417,8 +512,7 @@ public class CajaMovimientosJpaController implements ActionListener {
       UTIL.getDefaultTableModel(
               jdCierreCaja.getjTable1(),
               new String[]{"Descripción", "Monto", "Fecha (Hora)", "Usuario"},
-              new int[]{180, 20, 60, 40}
-              );
+              new int[]{180, 20, 60, 40});
       UTIL.loadComboBox(jdCierreCaja.getCbCaja(), getCajaMovimientosActivasFromCurrentUser(), true);
       jdCierreCaja.setListener(this);
       jdCierreCaja.setVisible(true);
@@ -464,7 +558,6 @@ public class CajaMovimientosJpaController implements ActionListener {
                armarQueryCierreCajas();
             }
          }// </editor-fold>
-   
          // <editor-fold defaultstate="collapsed" desc="Panel y Buscador CajaToCaja">
          else if (JDcajaToCaja != null) {
             if (boton.getName().equalsIgnoreCase("aceptar")) {
@@ -494,7 +587,6 @@ public class CajaMovimientosJpaController implements ActionListener {
                }
             }
          }// </editor-fold>
-
          // <editor-fold defaultstate="collapsed" desc="Panel MovimientosVarios y Buscador">
          else if (abm != null && panelMovVarios != null) {
             if (boton.getName().equalsIgnoreCase("aceptar")) {
@@ -531,8 +623,7 @@ public class CajaMovimientosJpaController implements ActionListener {
          }// </editor-fold>
 
       }// </editor-fold>
-      else
-      // <editor-fold defaultstate="collapsed" desc="JComboBox">
+      else // <editor-fold defaultstate="collapsed" desc="JComboBox">
       if (e.getSource().getClass().equals(javax.swing.JComboBox.class)) {
          javax.swing.JComboBox combo = (javax.swing.JComboBox) e.getSource();
          // <editor-fold defaultstate="collapsed" desc="Cierre de caja">
@@ -616,9 +707,9 @@ public class CajaMovimientosJpaController implements ActionListener {
       }
 
       int imprimir_caja_OK = javax.swing.JOptionPane.showConfirmDialog(jdCierreCaja,
-                                      "¿Imprimir cierre de caja?",
-                                      "Cierre de Caja",
-                                      javax.swing.JOptionPane.OK_CANCEL_OPTION);
+              "¿Imprimir cierre de caja?",
+              "Cierre de Caja",
+              javax.swing.JOptionPane.OK_CANCEL_OPTION);
       cajaMovimientos.setFechaCierre(jdCierreCaja.getFechaCierre());
       cajaMovimientos.setMontoCierre(getTotal());
       //datos implicitos
@@ -631,11 +722,8 @@ public class CajaMovimientosJpaController implements ActionListener {
       if (imprimir_caja_OK == 0) {
          imprimirCierreCaja(cajaMovimientos);
       }
-      //re abrir la prox...
-
       //refresh jdCierreCaja...................
       reloadJDCierreCaja();
-
    }
 
    private Double getTotal() {
@@ -659,6 +747,7 @@ public class CajaMovimientosJpaController implements ActionListener {
          } catch (NoResultException ex) {
             fixCajaMalAbierta(caja);
             cm = findCajaMovimientoAbierta(caja);
+            jdCierreCaja.showMessage("¡Ya rompiste la Caja: " + caja.getNombre() + " otra vez!", CLASS_NAME, 0);
          }
          if (cajaMovimientosAbiertasList == null) {
             cajaMovimientosAbiertasList = new ArrayList<CajaMovimientos>();
@@ -831,7 +920,7 @@ public class CajaMovimientosJpaController implements ActionListener {
     */
    public void initMovimientosVarios(javax.swing.JFrame frame, boolean modal) {
       panelMovVarios = new PanelMovimientosVarios();
-      UTIL.loadComboBox(panelMovVarios.getCbCaja(),getCajaMovimientosActivasFromCurrentUser(), false);
+      UTIL.loadComboBox(panelMovVarios.getCbCaja(), getCajaMovimientosActivasFromCurrentUser(), false);
       panelMovVarios.setListener(this);
       abm = new JDABM(frame, modal, panelMovVarios);
       abm.setTitle("Movimientos varios");
@@ -872,15 +961,18 @@ public class CajaMovimientosJpaController implements ActionListener {
 
    private void initBuscadorMovimientosVarios(javax.swing.JDialog papiComponent) {
       panelBuscadorMovimientosVarios = new PanelBuscadorMovimientosVarios();
-      UTIL.loadComboBox(panelBuscadorMovimientosVarios.getCbCaja(), getCajaMovimientosActivasFromCurrentUser(), true);
+      List<Caja> cajaList = new ArrayList<Caja>();
+      for (CajaMovimientos cajaMovimientos : getCajaMovimientosActivasFromCurrentUser()) {
+         cajaList.add(cajaMovimientos.getCaja());
+      }
+      UTIL.loadComboBox(panelBuscadorMovimientosVarios.getCbCaja(), cajaList, true);
 
       buscador = new JDBuscador(papiComponent, false, panelBuscadorMovimientosVarios, "Buscardor - Movimientos varios");
       try {
          UTIL.getDefaultTableModel(
                  buscador.getjTable1(),
                  new String[]{"Caja", "Descripción", "Monto", "Fecha (Hora)", "Usurio"},
-                 new int[]{70, 160, 20, 60, 50}
-                 );
+                 new int[]{70, 160, 20, 60, 50});
       } catch (Exception ex) {
          Logger.getLogger(CajaMovimientosJpaController.class.getName()).log(Level.SEVERE, null, ex);
       }
@@ -902,8 +994,7 @@ public class CajaMovimientosJpaController implements ActionListener {
          UTIL.getDefaultTableModel(
                  buscador.getjTable1(),
                  new String[]{"Descripción", "Monto", "Fecha (Hora)", "Usuario"},
-                 new int[]{    150,           20,       60,            50}
-                 );
+                 new int[]{150, 20, 60, 50});
       } catch (Exception ex) {
          Logger.getLogger(CajaMovimientosJpaController.class.getName()).log(Level.SEVERE, null, ex);
       }
@@ -928,7 +1019,7 @@ public class CajaMovimientosJpaController implements ActionListener {
             if (i > 1) {
                query += " OR ";
             }
-            query += " caja.id =" + ((CajaMovimientos) panelBuscadorMovimientosVarios.getCbCaja().getItemAt(i)).getCaja().getId();
+            query += " caja.id =" + ((Caja) panelBuscadorMovimientosVarios.getCbCaja().getItemAt(i)).getId();
          }
          query += ")";
       }
@@ -981,22 +1072,22 @@ public class CajaMovimientosJpaController implements ActionListener {
       UTIL.limpiarDtm(dtm);
       List<DetalleCajaMovimientos> lista = DAO.getEntityManager().createNativeQuery(query, DetalleCajaMovimientos.class).getResultList();
       for (DetalleCajaMovimientos dcm : lista) {
-      //dependiendo del buscador que esté activo..
+         //dependiendo del buscador que esté activo..
          if (panelBuscadorCajaToCaja != null) {
-            dtm.addRow(new Object[] {
-                    dcm.getDescripcion(),
-                    UTIL.PRECIO_CON_PUNTO.format(dcm.getMonto()),
-                    UTIL.DATE_FORMAT.format(dcm.getFecha()) + "(" + UTIL.TIME_FORMAT.format(dcm.getHora()) + ")",
-                    dcm.getUsuario()
-                 });
+            dtm.addRow(new Object[]{
+                       dcm.getDescripcion(),
+                       UTIL.PRECIO_CON_PUNTO.format(dcm.getMonto()),
+                       UTIL.DATE_FORMAT.format(dcm.getFecha()) + "(" + UTIL.TIME_FORMAT.format(dcm.getHora()) + ")",
+                       dcm.getUsuario()
+                    });
          } else if (panelBuscadorMovimientosVarios != null) {
-            dtm.addRow(new Object[] {
-                    dcm.getCajaMovimientos(),
-                    dcm.getDescripcion(),
-                    UTIL.PRECIO_CON_PUNTO.format(dcm.getMonto()),
-                    UTIL.DATE_FORMAT.format(dcm.getFecha()) + "(" + UTIL.TIME_FORMAT.format(dcm.getHora()) + ")",
-                    dcm.getUsuario()
-                 });
+            dtm.addRow(new Object[]{
+                       dcm.getCajaMovimientos(),
+                       dcm.getDescripcion(),
+                       UTIL.PRECIO_CON_PUNTO.format(dcm.getMonto()),
+                       UTIL.DATE_FORMAT.format(dcm.getFecha()) + "(" + UTIL.TIME_FORMAT.format(dcm.getHora()) + ")",
+                       dcm.getUsuario()
+                    });
          }
       }
    }
@@ -1033,8 +1124,7 @@ public class CajaMovimientosJpaController implements ActionListener {
          UTIL.getDefaultTableModel(
                  buscador.getjTable1(),
                  new String[]{"Caja", "F. apertura", "F. Cierre", "Total cierre", " Usuario"},
-                 new int[]{70, 50, 50, 30, 60}
-                 );
+                 new int[]{70, 50, 50, 30, 60});
       } catch (Exception ex) {
          Logger.getLogger(CajaMovimientosJpaController.class.getName()).log(Level.SEVERE, null, ex);
       }
@@ -1116,8 +1206,7 @@ public class CajaMovimientosJpaController implements ActionListener {
     * @param facturaVenta
     */
    void actualizarDescripcion(FacturaVenta facturaVenta) {
-      DetalleCajaMovimientos dcm = new DetalleCajaMovimientosJpaController()
-              .findDetalleCajaMovimientosByNumero(facturaVenta.getId(), DetalleCajaMovimientosJpaController.FACTU_VENTA);
+      DetalleCajaMovimientos dcm = new DetalleCajaMovimientosJpaController().findDetalleCajaMovimientosByNumero(facturaVenta.getId(), DetalleCajaMovimientosJpaController.FACTU_VENTA);
       dcm.setDescripcion(getDescripcion(facturaVenta));
       DAO.doMerge(dcm);
    }
@@ -1128,10 +1217,10 @@ public class CajaMovimientosJpaController implements ActionListener {
 
    private void armarQueryMovimientosCajaToCaja(boolean doReport) throws Exception {
       String query =
-      "SELECT b.*, u.nick" +
-      " FROM (SELECT oo.*"+
-		 " FROM detalle_caja_movimientos oo, caja_movimientos cm, caja"+
-		 " WHERE oo.ingreso = true AND oo.caja_movimientos = cm.id  AND cm.caja = caja.id AND oo.tipo = " + DetalleCajaMovimientosJpaController.MOVIMIENTO_CAJA;
+              "SELECT b.*, u.nick"
+              + " FROM (SELECT oo.*"
+              + " FROM detalle_caja_movimientos oo, caja_movimientos cm, caja"
+              + " WHERE oo.ingreso = true AND oo.caja_movimientos = cm.id  AND cm.caja = caja.id AND oo.tipo = " + DetalleCajaMovimientosJpaController.MOVIMIENTO_CAJA;
 
       String cajasQuery = "";
       if (panelBuscadorCajaToCaja.getCbCajaDestino().getSelectedIndex() > 0) {
@@ -1149,10 +1238,10 @@ public class CajaMovimientosJpaController implements ActionListener {
       }
       query += cajasQuery;
 
-      query += ") b," +
-		 " (SELECT oo.numero" +
-		 " FROM detalle_caja_movimientos oo, caja_movimientos cm, caja " +
-		 " WHERE oo.ingreso = false AND oo.caja_movimientos = cm.id  AND cm.caja = caja.id AND oo.tipo = " + DetalleCajaMovimientosJpaController.MOVIMIENTO_CAJA;
+      query += ") b,"
+              + " (SELECT oo.numero"
+              + " FROM detalle_caja_movimientos oo, caja_movimientos cm, caja "
+              + " WHERE oo.ingreso = false AND oo.caja_movimientos = cm.id  AND cm.caja = caja.id AND oo.tipo = " + DetalleCajaMovimientosJpaController.MOVIMIENTO_CAJA;
 
       cajasQuery = "";
       if (panelBuscadorCajaToCaja.getCbCajaOrigen().getSelectedIndex() > 0) {
@@ -1178,7 +1267,7 @@ public class CajaMovimientosJpaController implements ActionListener {
       if (panelBuscadorCajaToCaja.getDcHasta() != null) {
          query += " AND b.fecha <='" + panelBuscadorCajaToCaja.getDcHasta() + "'";
       }
-      
+
       query += " ORDER BY b.id";
 
       System.out.println(query);
@@ -1197,7 +1286,7 @@ public class CajaMovimientosJpaController implements ActionListener {
     */
    private void fixCajaMalAbierta(Caja caja) {
       EntityManager em = getEntityManager();
-      Integer idLastCajaMovCerrada =  (Integer) em.createQuery("SELECT MAX(o.id) FROM " + CLASS_NAME + " o "
+      Integer idLastCajaMovCerrada = (Integer) em.createQuery("SELECT MAX(o.id) FROM " + CLASS_NAME + " o "
               + "WHERE o.caja.id = " + caja.getId()).getSingleResult();
       CajaMovimientos lastCajaMovCerrada = em.find(CajaMovimientos.class, idLastCajaMovCerrada);
       System.out.println("Caja:" + caja + "-> idLast:" + idLastCajaMovCerrada);
