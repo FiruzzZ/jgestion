@@ -226,7 +226,7 @@ public class CtacteProveedorJpaController implements ActionListener {
       if (selectedRow > 0) {
          //selecciona una factura CtaCteCliente
          cargarComboBoxRecibosDeCtaCte((CtacteProveedor) DAO.getEntityManager().find(CtacteProveedor.class,
-                                       Integer.valueOf((resumenCtaCtes.getDtmResumen().getValueAt(selectedRow, 0)).toString())));
+                 Integer.valueOf((resumenCtaCtes.getDtmResumen().getValueAt(selectedRow, 0)).toString())));
       }
    }
 
@@ -247,7 +247,6 @@ public class CtacteProveedorJpaController implements ActionListener {
                Logger.getLogger(CtacteClienteJpaController.class.getName()).log(Level.SEVERE, null, ex);
             }
          }// </editor-fold>
-
          // <editor-fold defaultstate="collapsed" desc="imprimirResumenCCC">
          else if (btn.getName().equalsIgnoreCase("print")) {
             try {
@@ -264,8 +263,9 @@ public class CtacteProveedorJpaController implements ActionListener {
       else if (e.getSource().getClass().equals(javax.swing.JComboBox.class)) {
          javax.swing.JComboBox combo = (javax.swing.JComboBox) e.getSource();
          if (combo.getName().equalsIgnoreCase("cbReRes")) {
-            if (combo.isFocusOwner())
+            if (combo.isFocusOwner()) {
                setDatosReciboSelected();
+            }
          }
       }// </editor-fold>
    }
@@ -302,8 +302,10 @@ public class CtacteProveedorJpaController implements ActionListener {
    private void setResumenHistorial(String query) {
       List<CtacteProveedor> lista = DAO.getEntityManager().createNativeQuery(query, CtacteProveedor.class).getResultList();
       for (CtacteProveedor ccc : lista) {
-         totalDebe += ccc.getImporte();
-         totalHaber += ccc.getEntregado();
+         if (ccc.getEstado() != 3) { // 3 == anulado
+            totalDebe += ccc.getImporte();
+            totalHaber += ccc.getEntregado();
+         }
       }
    }
 
@@ -315,19 +317,24 @@ public class CtacteProveedorJpaController implements ActionListener {
       //agregar la 1er fila a la tabla
       double saldoAcumulativo = (totalDebe - totalHaber);
       dtm.addRow(new Object[]{null, "RESUMEN PREVIOS", null, null, UTIL.PRECIO_CON_PUNTO.format(totalDebe), UTIL.PRECIO_CON_PUNTO.format(totalHaber), null, UTIL.PRECIO_CON_PUNTO.format(saldoAcumulativo)});
-      for (CtacteProveedor ctacteProveedor : lista) {
-         FacturaCompra facturaVenta = ctacteProveedor.getFactura();
-         saldoAcumulativo += ctacteProveedor.getImporte() - ctacteProveedor.getEntregado();
+      for (CtacteProveedor ctaCte : lista) {
+         FacturaCompra factura = ctaCte.getFactura();
+         //checkea que no esté anulada la ccc
+         boolean isAnulada = (ctaCte.getEstado() == 3);
+         if (!isAnulada) {
+            saldoAcumulativo += ctaCte.getImporte() - ctaCte.getEntregado();
+         }
 
          dtm.addRow(new Object[]{
-                    ctacteProveedor.getId(), // <--------- No es visible desde la GUI
-                    facturaVenta.getTipo() + UTIL.AGREGAR_CEROS(facturaVenta.getNumero(), 12),
-                    UTIL.DATE_FORMAT.format(facturaVenta.getFechaCompra()),
-                    UTIL.DATE_FORMAT.format(UTIL.customDateByDays(facturaVenta.getFechaCompra(), ctacteProveedor.getDias())),
-                    UTIL.PRECIO_CON_PUNTO.format(ctacteProveedor.getImporte()),
-                    UTIL.PRECIO_CON_PUNTO.format(ctacteProveedor.getEntregado()),
-                    UTIL.PRECIO_CON_PUNTO.format(ctacteProveedor.getImporte() - ctacteProveedor.getEntregado()),
-                    UTIL.PRECIO_CON_PUNTO.format(saldoAcumulativo)
+                    ctaCte.getId(), // <--------- No es visible desde la GUI
+                    factura.getTipo() + UTIL.AGREGAR_CEROS(factura.getNumero(), 12),
+                    UTIL.DATE_FORMAT.format(factura.getFechaCompra()),
+                    UTIL.DATE_FORMAT.format(UTIL.customDateByDays(factura.getFechaCompra(), ctaCte.getDias())),
+                    UTIL.PRECIO_CON_PUNTO.format(ctaCte.getImporte()),
+                    isAnulada ? "ANULADA" : UTIL.PRECIO_CON_PUNTO.format(ctaCte.getEntregado()),
+                    isAnulada ? "ANULADA" : UTIL.PRECIO_CON_PUNTO.format(ctaCte.getImporte() - ctaCte.getEntregado()),
+                    isAnulada ? "ANULADA" : UTIL.PRECIO_CON_PUNTO.format(saldoAcumulativo),
+                    ctaCte.getEstado()
                  });
       }
    }
@@ -345,7 +352,7 @@ public class CtacteProveedorJpaController implements ActionListener {
    }
 
    private void cargarComboBoxRecibosDeCtaCte(CtacteProveedor ctacteProveedor) {
-      List<Remesa> recibosList = new RemesaJpaController().findRemesaByFactura(ctacteProveedor.getFactura());
+      List<Remesa> recibosList = new RemesaJpaController().findByFactura(ctacteProveedor.getFactura());
       UTIL.loadComboBox(resumenCtaCtes.getCbReRes(), recibosList, false);
       setDatosReciboSelected();
    }

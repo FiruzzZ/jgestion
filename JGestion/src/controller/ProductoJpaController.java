@@ -1,8 +1,6 @@
 package controller;
 
-// <editor-fold defaultstate="collapsed" desc="IMPORTS">
 import controller.exceptions.*;
-import entity.DetallesCompra;
 import entity.Iva;
 import entity.Marca;
 import entity.Producto;
@@ -11,7 +9,6 @@ import entity.Stock;
 import entity.Sucursal;
 import entity.UTIL;
 import entity.Unidadmedida;
-import gui.JFP;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -20,21 +17,23 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import gui.JDABM;
+import gui.JDBuscador;
 import gui.JDContenedor;
 import gui.JDStockGral;
 import gui.PanelABMProductos;
+import gui.PanelBuscadorMovimientosPro;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseListener;
 import java.util.Date;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.NoResultException;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-import oracle.toplink.essentials.exceptions.DatabaseException;
-// </editor-fold>
 
 /**
  *
@@ -53,6 +52,8 @@ public class ProductoJpaController implements ActionListener, MouseListener, Key
    private java.io.File fotoFile;
    /** Formas de registrar el COSTO COMPRA de los productos */
    public static final int PPP = 3, ANTIGUO = 2, ULTIMA_COMPRA = 1;
+   private PanelBuscadorMovimientosPro panelito;
+   private JDBuscador buscador;
 
    public EntityManager getEntityManager() {
       return DAO.getEntityManager();
@@ -251,7 +252,7 @@ public class ProductoJpaController implements ActionListener, MouseListener, Key
             }
          }
       });
-      
+
       try {
          UTIL.getDefaultTableModel(contenedor.getjTable1(), colsName, colsWidth);
          UTIL.hideColumnTable(contenedor.getjTable1(), 0);
@@ -288,7 +289,7 @@ public class ProductoJpaController implements ActionListener, MouseListener, Key
 //        no se va usar
 //        UTIL.loadComboBox(panel.getCbSucursal(), new SucursalJpaController().findSucursalEntities(), false);
 
-      abm = new JDABM(contenedor, true, panel);
+      abm = new JDABM(true, contenedor, panel);
       if (isEditing) {
          setPanelABM(EL_OBJECT);
       } else {
@@ -429,8 +430,8 @@ public class ProductoJpaController implements ActionListener, MouseListener, Key
       try {
          EL_OBJECT.setRubro((Rubro) panel.getCbRubro().getSelectedItem());
       } catch (ClassCastException ex) {
-         throw new MessageException("Debe crear al menos un Rubro para poder dar de alta los Productos." +
-                                    "\nMenú: Productos -> Rubros");
+         throw new MessageException("Debe crear al menos un Rubro para poder dar de alta los Productos."
+                 + "\nMenú: Productos -> Rubros");
       }
       if (panel.getCbSubrubro().getSelectedIndex() > 0) {
          EL_OBJECT.setSubrubro((Rubro) panel.getCbSubrubro().getSelectedItem());
@@ -599,7 +600,6 @@ public class ProductoJpaController implements ActionListener, MouseListener, Key
 //               contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
 //               Logger.getLogger(DepartamentoJpaController.class.getName()).log(Level.SEVERE, null, ex);
 //            }
-
          } else if (boton.getName().equalsIgnoreCase("del")) {
 //            try {
 //               eliminarProducto();
@@ -695,32 +695,37 @@ public class ProductoJpaController implements ActionListener, MouseListener, Key
 
    Producto getProductoSelected() {
       int selectedRow = contenedor.getjTable1().getSelectedRow();
-      if(selectedRow > -1)
+      if (selectedRow > -1) {
          return (Producto) DAO.getEntityManager().find(Producto.class,
-                    Integer.valueOf((contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
-      else
+                 Integer.valueOf((contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
+      } else {
          return null;
+      }
    }
 
    /**
     * Actualiza el costo de compra del producto, dependiendo del cambio q se elija
     * @param producto
-    * @param precioUnitario
+    * @param newPrecioUnitario
     * @param cantidad
     * @param costoCompra 1 = ULTIMA_COMPRA, 2 = ANTIGUO (o sea no cambia nada), 3 = PPP
     */
-   void updateCostoCompra(Producto producto, double precioUnitario, int cantidad, int costoCompra) throws Exception {
+   void updateCostoCompra(Producto producto, double newPrecioUnitario, int cantidad, int costoCompra) throws Exception {
       if (costoCompra == ULTIMA_COMPRA) {
-         producto.setCostoCompra(precioUnitario);
+         producto.setCostoCompra(newPrecioUnitario);
+
       } else if (costoCompra == PPP) {
          double ppp = ((producto.getCostoCompra() * producto.getStockactual())
-                 + (precioUnitario * cantidad));
+                 + (newPrecioUnitario * cantidad));
+         if (producto.getStockactual() < 0) {
+            throw new MessageException("No se puede hacer un cálculo de PPP siendo el stock actual del producto menor a 0\nProducto: " + producto.getNombre() + "\nStock general: " + producto.getStockactual());
+         }
          int totalStock = producto.getStockactual() + cantidad;
          ppp = (ppp / totalStock);
          producto.setCostoCompra(Double.parseDouble(UTIL.PRECIO_CON_PUNTO.format(ppp)));
 
       } else if (costoCompra == ANTIGUO) {
-         //respeta el costoCompra anterior, o sea.. no hace nada
+         //respeta el costoCompra anterior, o sea.. no hace nada     
       }
 
       producto.setUltimaCompra(new java.util.Date());
@@ -749,8 +754,7 @@ public class ProductoJpaController implements ActionListener, MouseListener, Key
          UTIL.getDefaultTableModel(
                  jdStockGral.getjTable1(),
                  new String[]{"Sucursal", "Stock", "Último movi.", "Usuario"},
-                 new int[]{50, 20, 70, 40}
-                 );
+                 new int[]{50, 20, 70, 40});
       } catch (Exception ex) {
          Logger.getLogger(ProductoJpaController.class.getName()).log(Level.SEVERE, null, ex);
       }
@@ -796,22 +800,166 @@ public class ProductoJpaController implements ActionListener, MouseListener, Key
       if (selectedRow > -1) {
          return (Producto) DAO.getEntityManager().find(Producto.class,
                  Integer.valueOf(
-                  (contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
+                 (contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
       } else {
          return null;
       }
    }
 
    private void doReportProductList() throws Exception {
-      if(getProductoCount() == 0)
-         throw new MessageException("No existen "+ CLASS_NAME +"s para imprimir un listado.");
+      if (getProductoCount() == 0) {
+         throw new MessageException("No existen " + CLASS_NAME + "s para imprimir un listado.");
+      }
       Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_ProductosList.jasper", "Listado Productos");
       r.addCurrent_User();
       r.addParameter("SUBREPORT_DIR", Reportes.FOLDER_REPORTES);
       r.printReport();
    }
 
-   public void initMovimientoPorProducto(JFrame frame, boolean modal) {
-      
+   public void initMovimientoProducto(JFrame frame, boolean modal) {
+      panelito = new PanelBuscadorMovimientosPro();
+      UTIL.loadComboBox(panelito.getCbMarcas(), new MarcaJpaController().findMarcaEntities(), "<Elegir>");
+      UTIL.loadComboBox(panelito.getCbRubros(), new RubroJpaController().findRubros(), "<Elegir>");
+      UTIL.loadComboBox(panelito.getCbSubRubro(), new RubroJpaController().findRubros(), "<Elegir>");
+      UTIL.loadComboBox(panelito.getCbSucursales(), new SucursalJpaController().findSucursalEntities(), "<Elegir>");
+      buscador = new JDBuscador(frame, modal, panelito, "Movimientos de productos");
+      buscador.agrandar(200, 0);
+      UTIL.getDefaultTableModel(
+              buscador.getjTable1(),
+              new String[]{"RAZÓN", "CÓDIGO", "NOMBRE", "MARCA", "CANTIDAD", "LETRA", "NÚMERO", "INTERNO", "FECHA (HORA)", "RUBRO/S.RUB", "SUCURSAL"},
+              new int[]{25, 50, 150, 30, 20, 10, 40, 20, 60, 30, 30});
+      buscador.getbBuscar().addActionListener(new ActionListener() {
+
+         @Override
+         public void actionPerformed(ActionEvent e) {
+            try {
+               String query = doQueryMovimientosProductos();
+               cargarTablaMovimientosProductos(query);
+            } catch (Exception ex) {
+               JOptionPane.showMessageDialog(buscador, ex.getMessage());
+            }
+
+         }
+      });
+
+      buscador.getbImprimir().addActionListener(new ActionListener() {
+
+         @Override
+         public void actionPerformed(ActionEvent e) {
+            buscador.getbImprimir().setEnabled(false);
+            try {
+               String query = doQueryMovimientosProductos();
+               cargarTablaMovimientosProductos(query);
+               Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_MovimientosProductos.jasper", "Movimientos Productos");
+               r.addCurrent_User();
+               r.addParameter("SUBREPORT_DIR", Reportes.FOLDER_REPORTES);
+               r.addParameter("QUERY", query);
+               r.printReport();
+            } catch (MessageException ex) {
+               JOptionPane.showMessageDialog(buscador, ex.getMessage());
+            } catch (Exception ex) {
+               JOptionPane.showMessageDialog(buscador, ex.getMessage());
+            } finally {
+               buscador.getbImprimir().setEnabled(true);
+            }
+         }
+      });
+      buscador.getbLimpiar().addActionListener(new ActionListener() {
+
+         @Override
+         public void actionPerformed(ActionEvent e) {
+            throw new UnsupportedOperationException("Not supported yet.");
+         }
+      });
+      buscador.setVisible(true);
+
+   }
+
+   private void cargarTablaMovimientosProductos(String query) {
+      UTIL.limpiarDtm(buscador.getjTable1());
+      List l = DAO.getEntityManager().createNativeQuery(query).getResultList();
+      for (Object object : l) {
+         Object[] o = ((Vector) object).toArray();
+         if ((Boolean) o[10]) { // es decir.. si factura.anulada == true
+            o[0] = "ANULADA " + String.valueOf(o[0]);
+            o[4] = -Integer.valueOf(o[4].toString());
+         }
+         UTIL.getDtm(buscador.getjTable1()).addRow(new Object[]{
+                    o[0],
+                    o[1], //código
+                    o[2],
+                    o[3], //marca
+                    o[4], //cantidad
+                    o[7],
+                    o[8],
+                    o[9],
+                    UTIL.DATE_FORMAT.format(((Date) o[5])) + "(" + UTIL.TIME_FORMAT.format((Date) o[6]) + ")",
+                    o[11],
+                    o[12]
+                 });
+      }
+   }
+
+   private String doQueryMovimientosProductos() {
+      String query = "SELECT * FROM ( ";
+      String queryIngreso = "SELECT 'COMPRA'::character varying(10) AS razon, p.codigo, p.nombre, marca.nombre AS marca, d.cantidad, f.fechaalta, f.horaalta, f.tipo, f.numero, f.movimiento, f.anulada, rubro.nombre AS rubro, sucursal.nombre as sucursal"
+              + " FROM producto p"
+              + " JOIN detalles_compra d ON p.id = d.producto"
+              + " JOIN factura_compra f ON f.id = d.factura"
+              + " JOIN marca ON p.marca = marca.id"
+              + " JOIN rubro ON p.rubro = rubro.idrubro"
+              + " JOIN sucursal ON f.sucursal = sucursal.id"
+              + " WHERE p.codigo IS NOT NULL";
+      String queryEgreso = "SELECT 'VENTA'::character varying(10) AS razon, p.codigo, p.nombre, marca.nombre AS marca, - d.cantidad, f.fechaalta, f.horaalta, f.tipo, f.numero, f.movimiento_interno AS movimiento, f.anulada, rubro.nombre AS rubro, sucursal.nombre as sucursal"
+              + " FROM producto p"
+              + " JOIN detalles_venta d ON p.id = d.producto"
+              + " JOIN factura_venta f ON f.id = d.factura"
+              + " JOIN marca ON p.marca = marca.id"
+              + " JOIN rubro ON p.rubro = rubro.idrubro"
+              + " JOIN sucursal ON f.sucursal = sucursal.id"
+              + " WHERE p.codigo IS NOT NULL ";
+      int ingreso_egreso = panelito.getCbIngresoEgreso().getSelectedIndex();
+      if (ingreso_egreso == 0) {
+         queryIngreso = concatQuery(queryIngreso);
+         queryEgreso = concatQuery(queryEgreso);
+         query += queryIngreso + " UNION (" + queryEgreso + ")";
+      } else if (ingreso_egreso == 1) {
+         queryIngreso = concatQuery(queryIngreso);
+         query += queryIngreso;
+      } else {
+         queryEgreso = concatQuery(queryEgreso);
+         query += queryEgreso;
+      }
+      query += ") as t ";
+      query += " ORDER BY fechaalta, horaalta";
+      return query;
+   }
+
+   private String concatQuery(String query) {
+      if (panelito.getTfCodigo().getText().trim().length() > 0) {
+         query += " AND p.codigo = '" + panelito.getTfCodigo().getText().trim() + "'";
+      }
+      if (panelito.getTfNombre().getText().trim().length() > 0) {
+         query += " AND p.nombre ILIKE '" + panelito.getTfNombre().getText().trim() + "%'";
+      }
+      if (panelito.getCbMarcas().getSelectedIndex() > 0) {
+         query += " AND p.marca = " + ((Marca) panelito.getCbMarcas().getSelectedItem()).getId();
+      }
+      if (panelito.getCbRubros().getSelectedIndex() > 0) {
+         query += " AND p.rubro = " + ((Rubro) panelito.getCbRubros().getSelectedItem()).getIdrubro();
+      }
+      if (panelito.getCbSubRubro().getSelectedIndex() > 0) {
+         query += " AND p.subrubro = " + ((Rubro) panelito.getCbSubRubro().getSelectedItem()).getIdrubro();
+      }
+      if (panelito.getCbSucursales().getSelectedIndex() > 0) {
+         query += " AND sucursal.id = " + ((Sucursal) panelito.getCbSucursales().getSelectedItem()).getId();
+      }
+      if (panelito.getDcDesde().getDate() != null) {
+         query += " AND f.fechaalta >= '" + panelito.getDcDesde().getDate() + "'";
+      }
+      if (panelito.getDcHasta().getDate() != null) {
+         query += " AND f.fechaalta <= '" + panelito.getDcHasta().getDate() + "'";
+      }
+      return query;
    }
 }

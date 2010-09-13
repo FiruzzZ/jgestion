@@ -185,7 +185,7 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItem39">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Movimiento por Producto"/>
+                <Property name="text" type="java.lang.String" value="Movimiento"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem39ActionPerformed"/>
@@ -259,7 +259,7 @@
             </MenuItem>
             <Menu class="javax.swing.JMenu" name="jMenu14">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Anular Factura"/>
+                <Property name="text" type="java.lang.String" value="Anular factura"/>
               </Properties>
               <SubComponents>
                 <MenuItem class="javax.swing.JMenuItem" name="jMenuItem3">
@@ -274,6 +274,9 @@
                   <Properties>
                     <Property name="text" type="java.lang.String" value="Compra"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem38ActionPerformed"/>
+                  </Events>
                 </MenuItem>
               </SubComponents>
             </Menu>
@@ -387,11 +390,6 @@
                 <Property name="text" type="java.lang.String" value="Financiar"/>
               </Properties>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem33">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Buscar.."/>
-              </Properties>
-            </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItem37">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Refinanciar"/>
@@ -407,11 +405,8 @@
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItem16">
               <Properties>
-                <Property name="text" type="java.lang.String" value="ABM Usuario"/>
+                <Property name="text" type="java.lang.String" value="ABM Usuarios"/>
               </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem16ActionPerformed"/>
-              </Events>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItem24">
               <Properties>
@@ -466,7 +461,7 @@
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="1" attributes="0">
-              <EmptySpace pref="363" max="32767" attributes="0"/>
+              <EmptySpace pref="365" max="32767" attributes="0"/>
               <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>

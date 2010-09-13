@@ -309,7 +309,7 @@ public class ProveedorJpaController implements ActionListener, MouseListener, Ke
       if (isEditing) {
          setPanel(EL_OBJECT);
       }
-      abm = new JDABM(((javax.swing.JDialog)contenedor), true, panel);
+      abm = new JDABM(true, ((javax.swing.JDialog) contenedor), panel);
       abm.setTitle("ABM " + CLASS_NAME + "es");
       abm.setListener(this);
       abm.setLocationRelativeTo(contenedor);

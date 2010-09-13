@@ -826,7 +826,6 @@ public class FacturaVentaJpaController implements ActionListener, KeyListener {
    }
 
    public void initBuscador(java.awt.Frame frame, final boolean modal, final boolean paraAnular) {
-
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
          UsuarioJpaController.checkPermisos(PermisosJpaController.PermisoDe.VENTA);
@@ -835,7 +834,7 @@ public class FacturaVentaJpaController implements ActionListener, KeyListener {
          return;
       }// </editor-fold>
 
-      buscador = new JDBuscadorReRe(frame, "Buscador - Facturas venta", true, "Cliente", "Nº Factura");
+      buscador = new JDBuscadorReRe(frame, "Buscador - Facturas venta", modal, "Cliente", "Nº Factura");
       UTIL.loadComboBox(buscador.getCbClieProv(), new ClienteJpaController().findClienteEntities(), true);
       UTIL.loadComboBox(buscador.getCbCaja(), new CajaJpaController().findCajasPermitidasByUsuario(UsuarioJpaController.getCurrentUser(), true), true);
       UTIL.loadComboBox(buscador.getCbSucursal(), new SucursalJpaController().findSucursalEntities(), true);
@@ -1019,7 +1018,7 @@ public class FacturaVentaJpaController implements ActionListener, KeyListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                try {
-                  if (selectedFacturaVenta.getAnulada() && paraAnular) {
+                  if (selectedFacturaVenta.getAnulada()) {
                      throw new MessageException("Ya está ANULADA!");
                   }
                   String factu_compro = selectedFacturaVenta.getMovimientoInterno() == 0 ? "Factura Venta" : "Comprobante";
@@ -1043,8 +1042,8 @@ public class FacturaVentaJpaController implements ActionListener, KeyListener {
 
    }
 
-   private void anular(FacturaVenta facturaVenta) throws MessageException {
-      Caja oldCaja = facturaVenta.getCaja();
+   private void anular(FacturaVenta factura) throws MessageException {
+      Caja oldCaja = factura.getCaja();
       List<Caja> cajasPermitidasList = new CajaJpaController().findCajasPermitidasByUsuario(UsuarioJpaController.getCurrentUser(), true);
       if (cajasPermitidasList.isEmpty()) {
          throw new MessageException("No tiene acceso a ninguna Caja del sistema");
@@ -1066,20 +1065,20 @@ public class FacturaVentaJpaController implements ActionListener, KeyListener {
          }
       }
       try {
-         cmController.anular(facturaVenta, cmAbierta);
+         cmController.anular(factura, cmAbierta);
       } catch (Exception ex) {
          Logger.getLogger(FacturaVentaJpaController.class.getName()).log(Level.SEVERE, null, ex);
       }
    }
 
-   private CajaMovimientos initReAsignacionCajaMovimiento(List<Caja> cajasPermitidasList) {
+   CajaMovimientos initReAsignacionCajaMovimiento(List<Caja> cajasPermitidasList) {
       List<CajaMovimientos> l = new ArrayList<CajaMovimientos>();
       for (Caja caja : cajasPermitidasList) {
          l.add(new CajaMovimientosJpaController().findCajaMovimientoAbierta(caja));
       }
       final PanelReasignacionDeCaja panel = new PanelReasignacionDeCaja();
       UTIL.loadComboBox(panel.getCbCaja(), l, false);
-      JDABM abm = new JDABM(jdFacturaVenta, true, panel);
+      JDABM abm = new JDABM(true, null, panel);
       abm.getbAceptar().addActionListener(new ActionListener() {
 
          @Override

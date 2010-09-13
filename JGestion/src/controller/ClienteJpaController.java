@@ -195,7 +195,7 @@ public class ClienteJpaController implements ActionListener, MouseListener, KeyL
          panel.setTfCodigo(String.valueOf(getClienteCount() + 1));
       }
 
-      abm = new JDABM(contenedor, true, panel);
+      abm = new JDABM(true, contenedor, panel);
       abm.setTitle("ABM " + CLASS_NAME + "s");
       if (e != null) {
          abm.setLocation(((java.awt.Component) e.getSource()).getLocation());

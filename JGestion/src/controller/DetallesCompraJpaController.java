@@ -14,6 +14,8 @@ import entity.FacturaCompra;
  */
 public class DetallesCompraJpaController {
 
+   public static final String CLASS_NAME = DetallesCompra.class.getSimpleName();
+
    // <editor-fold defaultstate="collapsed" desc="CRUD, List's">
    public EntityManager getEntityManager() {
       return DAO.getEntityManager();
@@ -71,8 +73,7 @@ public class DetallesCompraJpaController {
       }
    }// </editor-fold>
 
-   List<DetallesCompra> findDetallesCompraEntitiesFromFactura(int idFacturaCompra) {
-      return DAO.getEntityManager().createNativeQuery("select * from detalles_compra o"
-              + " where o.factura_compra = " + idFacturaCompra, DetallesCompra.class).getResultList();
+   List<DetallesCompra> findByFactura(FacturaCompra factura) {
+      return DAO.getEntityManager().createQuery("SELECT o FROM " + CLASS_NAME + " o WHERE o.factura.id=" + factura.getId()).getResultList();
    }
 }

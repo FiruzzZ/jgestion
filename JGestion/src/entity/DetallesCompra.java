@@ -11,9 +11,7 @@ import javax.persistence.*;
 @Table(name = "detalles_compra")
 @NamedQueries({
     @NamedQuery(name = "DetallesCompra.findAll", query = "SELECT d FROM DetallesCompra d"),
-    @NamedQuery(name = "DetallesCompra.findById", query = "SELECT d FROM DetallesCompra d WHERE d.id = :id"),
-    @NamedQuery(name = "DetallesCompra.findByCantidad", query = "SELECT d FROM DetallesCompra d WHERE d.cantidad = :cantidad"),
-    @NamedQuery(name = "DetallesCompra.findByPrecioUnitario", query = "SELECT d FROM DetallesCompra d WHERE d.precioUnitario = :precioUnitario")
+    @NamedQuery(name = "DetallesCompra.findById", query = "SELECT d FROM DetallesCompra d WHERE d.id = :id")
 })
 
 public class DetallesCompra implements Serializable {
@@ -29,9 +27,9 @@ public class DetallesCompra implements Serializable {
     @Basic(optional = false)
     @Column(name = "precio_unitario", nullable = false, precision = 9, scale = 2)
     private Double precioUnitario;
-    @JoinColumn(name = "factura_compra", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "factura", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
-    private FacturaCompra facturaCompra;
+    private FacturaCompra factura;
     @JoinColumn(name = "producto", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
     private Producto producto;
@@ -73,12 +71,12 @@ public class DetallesCompra implements Serializable {
         this.precioUnitario = precioUnitario;
     }
 
-    public FacturaCompra getFacturaCompra() {
-        return facturaCompra;
+    public FacturaCompra getFactura() {
+        return factura;
     }
 
-    public void setFacturaCompra(FacturaCompra facturaCompra) {
-        this.facturaCompra = facturaCompra;
+    public void setFactura(FacturaCompra facturaCompra) {
+        this.factura = facturaCompra;
     }
 
     public Producto getProducto() {

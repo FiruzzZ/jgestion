@@ -224,15 +224,15 @@ public abstract class UTIL {
    }
 
    public static javax.swing.JTable getDefaultTableModel(javax.swing.JTable tabla, String[] columnsName) {
-       javax.swing.table.DefaultTableModel dtm = new DefaultTableModelImpl();
-       if(tabla.getModel() != null) {
-          dtm = (javax.swing.table.DefaultTableModel) tabla.getModel();
-       }
-       for(String string : columnsName) {
-          dtm.addColumn(string);
-       }
-       tabla.getTableHeader().setReorderingAllowed(false);
-       return tabla;
+      javax.swing.table.DefaultTableModel dtm = new DefaultTableModelImpl();
+      if (tabla.getModel() != null) {
+         dtm = (javax.swing.table.DefaultTableModel) tabla.getModel();
+      }
+      for (String string : columnsName) {
+         dtm.addColumn(string);
+      }
+      tabla.getTableHeader().setReorderingAllowed(false);
+      return tabla;
    }
 
    /**
@@ -246,28 +246,30 @@ public abstract class UTIL {
     * @return una JTable con el modelo
     */
    public static javax.swing.JTable getDefaultTableModel(
-           JTable tabla,String[] columnNames, int[] columnWidths, Class[] columnClassType, int[] editableColumns) {
+           JTable tabla, String[] columnNames, int[] columnWidths, Class[] columnClassType, int[] editableColumns) {
 
       if ((columnNames.length != columnWidths.length)) {
-         throw new IllegalArgumentException("los Array no tiene la misma cantidad de elementos" +
-                 " (Names length = "+columnNames.length+"" +
-                 " y Widthslength = "+columnWidths.length+")");
+         throw new IllegalArgumentException("los Array no tiene la misma cantidad de elementos"
+                 + " (Names length = " + columnNames.length + ""
+                 + " y Widthslength = " + columnWidths.length + ")");
       } else {
-         if (columnClassType != null && (columnNames.length != columnClassType.length))
-            throw new IllegalArgumentException("los Array no tiene la misma cantidad de " +
-                    "elementos (column Names = " + columnNames.length +
-                    " y ClassType = " + columnClassType.length + ")");
+         if (columnClassType != null && (columnNames.length != columnClassType.length)) {
+            throw new IllegalArgumentException("los Array no tiene la misma cantidad de "
+                    + "elementos (column Names = " + columnNames.length
+                    + " y ClassType = " + columnClassType.length + ")");
+         }
       }
       for (int i : editableColumns) {
-         if(i < 0 || i > (columnNames.length - 1) )
-            throw new IndexOutOfBoundsException("El array editableColumns[]" +
-                    " contiene un indice número de columna no válido: index = "+ i);
+         if (i < 0 || i > (columnNames.length - 1)) {
+            throw new IndexOutOfBoundsException("El array editableColumns[]"
+                    + " contiene un indice número de columna no válido: index = " + i);
+         }
       }
 
       javax.swing.table.DefaultTableModel dtm;
-      if(columnClassType != null && editableColumns != null) {
+      if (columnClassType != null && editableColumns != null) {
          dtm = new DefaultTableModelImpl(columnClassType, editableColumns);
-      } else if(columnClassType != null){
+      } else if (columnClassType != null) {
          dtm = new DefaultTableModelImpl(columnClassType);
       } else if (editableColumns != null) {
          dtm = new DefaultTableModelImpl(editableColumns);
@@ -291,21 +293,22 @@ public abstract class UTIL {
    }
 
    public static javax.swing.JTable getDefaultTableModel(
-           JTable tabla,String[] columnNames, int[] columnWidths, Class[] columnClassType) {
+           JTable tabla, String[] columnNames, int[] columnWidths, Class[] columnClassType) {
 
       if ((columnNames.length != columnWidths.length)) {
-         throw new IllegalArgumentException("los Array no tiene la misma cantidad de elementos" +
-                 " (Names length = "+columnNames.length+"" +
-                 " y Widthslength = "+columnWidths.length+")");
+         throw new IllegalArgumentException("los Array no tiene la misma cantidad de elementos"
+                 + " (Names length = " + columnNames.length + ""
+                 + " y Widthslength = " + columnWidths.length + ")");
       } else {
-         if (columnClassType != null && (columnNames.length != columnClassType.length))
-            throw new IllegalArgumentException("los Array no tiene la misma cantidad de " +
-                    "elementos (column Names = " + columnNames.length +
-                    " y ClassType = " + columnClassType.length + ")");
+         if (columnClassType != null && (columnNames.length != columnClassType.length)) {
+            throw new IllegalArgumentException("los Array no tiene la misma cantidad de "
+                    + "elementos (column Names = " + columnNames.length
+                    + " y ClassType = " + columnClassType.length + ")");
+         }
       }
 
       javax.swing.table.DefaultTableModel dtm;
-      if(columnClassType != null) {
+      if (columnClassType != null) {
          dtm = new DefaultTableModelImpl(columnClassType);
       } else {
          dtm = new DefaultTableModelImpl();
@@ -327,7 +330,7 @@ public abstract class UTIL {
    }
 
    public static javax.swing.JTable getDefaultTableModel(
-           javax.swing.JTable tabla,String[] columnNames, int[] columnWidths) {
+           javax.swing.JTable tabla, String[] columnNames, int[] columnWidths) {
 
       if (columnNames.length != columnWidths.length) {
          throw new IllegalArgumentException("los columns Names y Widths no tiene la misma cantidad de elementos (length !=)");
@@ -396,12 +399,11 @@ public abstract class UTIL {
     * @throws Exception si month < 0 || month > 11
     */
    public static java.util.Date customDate(int year, int month, Integer day)
-         throws Exception {
+           throws Exception {
       if (month < 0 || month > 11) {
          throw new Exception("Mes (month) no válido, must be >= 0 AND <= 11");
       }
-      java.util.Calendar c = java.util.Calendar
-                        .getInstance(java.util.TimeZone.getTimeZone(TIME_ZONE));
+      java.util.Calendar c = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone(TIME_ZONE));
       if (day == null) {
          c.set(year, month, 1);
       } else if (day == -1) {
@@ -417,8 +419,7 @@ public abstract class UTIL {
     * @return customized Date!!!...
     */
    public static java.util.Date customDateByDays(java.util.Date fecha, int dias) {
-      java.util.Calendar c = java.util.Calendar
-                        .getInstance(java.util.TimeZone.getTimeZone(TIME_ZONE));
+      java.util.Calendar c = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone(TIME_ZONE));
       c.setTime(fecha);
       c.add(java.util.Calendar.DAY_OF_MONTH, dias);
       return c.getTime();
@@ -426,7 +427,7 @@ public abstract class UTIL {
 
    public static String getExtensionFile(String fileName) {
       return (fileName.lastIndexOf(".") == -1) ? ""
-        : fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length());
+              : fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length());
    }
 
    /**
@@ -506,7 +507,7 @@ public abstract class UTIL {
    }
 
    public static void solo_numeros_y_un_punto(String cadena,
-                                                java.awt.event.KeyEvent e) {
+           java.awt.event.KeyEvent e) {
       // si es != de '.'
       if ((int) e.getKeyChar() != 46) {
          soloNumeros(e);
@@ -575,8 +576,7 @@ public abstract class UTIL {
       for (int i = 0; i < columnsIndex.length; i++) {
          // se le va restando i al index real indicado, porque estos se van desplazando
          // a medida que se van eliminando las columnas
-         jTable.getColumnModel().removeColumn(jTable.getColumnModel()
-                                             .getColumn(columnsIndex[i] - i));
+         jTable.getColumnModel().removeColumn(jTable.getColumnModel().getColumn(columnsIndex[i] - i));
       }
    }
 
@@ -588,7 +588,7 @@ public abstract class UTIL {
     * @param columnIndex número de la columna a quitar de la vista del usuario
     */
    public static void hideColumnTable(JTable jTable, int columnIndex) {
-      hideColumnsTable(jTable, new int[] {columnIndex});
+      hideColumnsTable(jTable, new int[]{columnIndex});
 //      jTable.getColumnModel().removeColumn(jTable.getColumnModel()
 //                                                      .getColumn(columnIndex));
    }
@@ -623,17 +623,19 @@ public abstract class UTIL {
     */
    public static int setSelectedItem(javax.swing.JComboBox combo, Object candidato) {
       System.out.println("Candidato.class =" + candidato.getClass());
-      if (candidato == null)
+      if (candidato == null) {
          throw new IllegalArgumentException("El Objeto candidato == null");
-      if (combo == null)
+      }
+      if (combo == null) {
          throw new IllegalArgumentException("El JCombo combo == null");
+      }
       if (combo.getItemCount() < 1) {
          return -1;
       }
 
       boolean encontrado = false;
       int index = 0;
-      while (index < combo.getItemCount() && ! encontrado) {
+      while (index < combo.getItemCount() && !encontrado) {
          if ((combo.getItemAt(index)).equals(candidato)) {
             combo.setSelectedIndex(index);
             encontrado = true;
@@ -652,8 +654,9 @@ public abstract class UTIL {
     * solo se cargar los objetos
     */
    public static void loadComboBox(JComboBox comboBox, List objectList, boolean Elegible) {
-      if (comboBox == null)
+      if (comboBox == null) {
          throw new IllegalArgumentException("El comboBox que intentas cargar es NULL!!! (NullPointerException) guampa!!");
+      }
 
       comboBox.removeAllItems();
       if (objectList != null && objectList.size() > 0) {
@@ -689,16 +692,16 @@ public abstract class UTIL {
          if (objectList != null && objectList.size() > 0) {
 
             if (message1erItem != null && message1erItem.length() > 0) {
-                comboBox.addItem(message1erItem);
+               comboBox.addItem(message1erItem);
             }
 
             for (Object object : objectList) {
-                comboBox.addItem(object);
+               comboBox.addItem(object);
             }
          } else {
             //si la lista a cargar está vacía o es NULL
             comboBox.addItem(itemWhenIsEmpy);
-         }   
+         }
       }
    }
 
@@ -706,11 +709,11 @@ public abstract class UTIL {
       comboBox.removeAllItems();
       if (objectList != null && objectList.size() > 0) {
          if (message1erItem != null && message1erItem.length() > 0) {
-             comboBox.addItem(message1erItem);
+            comboBox.addItem(message1erItem);
          }
 
          for (Object object : objectList) {
-             comboBox.addItem(object);
+            comboBox.addItem(object);
          }
       } else {
          //si la lista a cargar está vacía o es NULL
@@ -725,10 +728,11 @@ public abstract class UTIL {
     * @return <code>cadena<code> overclocking..
     */
    public static String AGREGAR_CEROS(String cadena, int longitudMaxima) {
-      if( cadena != null)
-         for ( int i = cadena.length(); i < longitudMaxima; i++) {
+      if (cadena != null) {
+         for (int i = cadena.length(); i < longitudMaxima; i++) {
             cadena = "0" + cadena;
          }
+      }
       return cadena;
    }
 
@@ -756,8 +760,17 @@ public abstract class UTIL {
       }
    }
 
+   /**
+    * Obtiene la TableModel (DefaultTableModel) y elimina todas las filas
+    * @param table
+    * @see #limpiarDtm(javax.swing.table.DefaultTableModel) 
+    */
+   public static void limpiarDtm(JTable table) {
+      limpiarDtm(getDtm(table));
+   }
+
    public static Object getSelectedValue(JTable jTable, int indexColumn) {
-      return ((DefaultTableModel)jTable.getModel()).getValueAt(jTable.getSelectedRow(), indexColumn);
+      return ((DefaultTableModel) jTable.getModel()).getValueAt(jTable.getSelectedRow(), indexColumn);
    }
 
    /**
@@ -802,9 +815,9 @@ public abstract class UTIL {
 
       @Override
       public boolean isCellEditable(int row, int column) {
-         if(editableColumns != null) {
+         if (editableColumns != null) {
             boolean columnEditable = false;
-            for(int i = (editableColumns.length - 1); i > -1; i--) {
+            for (int i = (editableColumns.length - 1); i > -1; i--) {
                columnEditable = (column == editableColumns[i]);
             }
             return columnEditable;
@@ -822,5 +835,4 @@ public abstract class UTIL {
          }
       }
    }
-
 }

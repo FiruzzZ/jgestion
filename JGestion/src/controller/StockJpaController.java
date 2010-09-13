@@ -135,17 +135,18 @@ public class StockJpaController {
    /**
     * Actualiza el Stock, en base al DetallesCompra de la FacturaCompra
     * y también actualiza Producto.stockActual
-    * @param facturaCompra del cual se obtiene la List DetallesCompra para
-    * actualizar los stock
+    * @param facturaCompra ...
     */
    void updateStock(FacturaCompra facturaCompra) {
-      System.out.println("updateStock.. facturaCompra");
+      System.out.println("updateStock.. factura.id:" + facturaCompra.getId());
       EntityManager em = getEntityManager();
       try {
          em.getTransaction().begin();
-         FacturaCompra newFacturaCompra = em.find(FacturaCompra.class, facturaCompra.getId());
-         List<DetallesCompra> listaDetallesCompra;
-         listaDetallesCompra = new DetallesCompraJpaController().findDetallesCompraEntitiesFromFactura(newFacturaCompra.getId());
+         FacturaCompra newFacturaCompra = DAO.getEntityManager().find(FacturaCompra.class, facturaCompra.getId());
+         List<DetallesCompra> listaDetallesCompra = newFacturaCompra.getDetallesCompraList();
+         System.out.println("Cantidad de Items: " + listaDetallesCompra.size());
+         listaDetallesCompra = new DetallesCompraJpaController().findByFactura(newFacturaCompra);
+         System.out.println("Cantidad de Items: " + listaDetallesCompra.size());
          ProductoJpaController productoCtrl = new ProductoJpaController();
          Stock stock;
          for (DetallesCompra detallesCompra : listaDetallesCompra) {
@@ -195,16 +196,14 @@ public class StockJpaController {
       try {
          em.clear();
          em.getTransaction().begin();
-         List<DetallesVenta> detallesVentaList = new DetallesVentaJpaController().findDetallesVentaFromFactura(facturaVenta.getId());
+         List<DetallesVenta> detallesVentaList = new DetallesVentaJpaController().findByFactura(facturaVenta.getId());
          ProductoJpaController productoCtrl = new ProductoJpaController();
          Stock stock;
          for (DetallesVenta detalleVenta : detallesVentaList) {
             try {
                // checks la pre-existencia del Producto en la Sucursal
                stock = findStock(detalleVenta.getProducto(), facturaVenta.getSucursal());
-               System.out.println("-->Si existía");
             } catch (NoResultException ex) {
-               System.out.println("-->No existía");
                // quiere decir que NO había ningún registro de compra/existencia
                // de stock de ESE Producto && ESA Sucursal
                stock = new Stock();

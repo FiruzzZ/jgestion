@@ -439,7 +439,7 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
       panel.getCbEstado().addItem(ESTADO_ACTIVO);
       panel.getCbEstado().addItem(ESTADO_BAJA);
 
-      abm = new JDABM(contenedor, true, panel);
+      abm = new JDABM(true, contenedor, panel);
       if (isEditing) {
          setPanelABM(EL_OBJECT);
          panel.setEnabledPwdFields(false);

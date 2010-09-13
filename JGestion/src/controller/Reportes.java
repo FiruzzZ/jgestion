@@ -2,9 +2,11 @@ package controller;
 
 import entity.DatosEmpresa;
 import entity.UTIL;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -21,7 +23,6 @@ public class Reportes implements Runnable {
    private java.util.Map parameters;
    private final String pathReport;
    private final String tituloReporte;
-
    /**
     * sería algo así "./reportes/"
     */
@@ -44,12 +45,9 @@ public class Reportes implements Runnable {
          throw new Exception("La ruta/URL/pathname no es válida!");
       }
 
-      try {
-         new java.io.File(pathReport);
-      } catch (NullPointerException ex) {
+      if (!new java.io.File(pathReport).exists()) {
          throw new Exception("No se encontró el archivo del reporte:\n" + pathReport);
       }
-
       parameters = new java.util.HashMap();
       this.pathReport = pathReport;
       this.tituloReporte = title;
@@ -105,10 +103,11 @@ public class Reportes implements Runnable {
     * @throws IOException
     */
    public void addLogo() throws IOException {
-      if(d.getLogo() != null)
+      if (d.getLogo() != null) {
          addParameter("LOGO", UTIL.imageToFile(d.getLogo(), "png"));
-      else
+      } else {
          addParameter("LOGO", null);
+      }
    }
 
    /**
@@ -120,14 +119,15 @@ public class Reportes implements Runnable {
 
    public void run() {
       doReport();
+      System.out.println("Finished Thread Reportes..");
    }
 
    private synchronized void doReport() {
-      System.out.println("Running Reportes");
+      System.out.println("Running doReport()..");
       JasperPrint jPrint;
       try {
          jPrint = JasperFillManager.fillReport(pathReport, parameters, controller.DAO.getJDBCConnection());
-         if(isViewerReport) {
+         if (isViewerReport) {
             JasperViewer jViewer = new JasperViewer(jPrint, false);
             jViewer.setTitle(tituloReporte);
             jViewer.setExtendedState(JasperViewer.NORMAL);
@@ -139,6 +139,6 @@ public class Reportes implements Runnable {
       } catch (JRException ex) {
          Logger.getLogger(Reportes.class.getName()).log(Level.SEVERE, null, ex);
       }
-      System.out.println("Finished Thread Reportes..");
+      System.out.println("Finished synchronized doReport()");
    }
 }

@@ -163,7 +163,7 @@ public class SucursalJpaController implements ActionListener, MouseListener, Key
         panel.setListener(this);
         if(isEditting)
             setPanel(sucursal);
-        abm = new JDABM(contenedor, true, panel);
+        abm = new JDABM(true, contenedor, panel);
         abm.setTitle("ABM "+CLASS_NAME+"es");
         abm.setLocationRelativeTo(contenedor);
         abm.setListener(this);

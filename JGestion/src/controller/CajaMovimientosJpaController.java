@@ -3,6 +3,8 @@ package controller;
 import controller.exceptions.*;
 import entity.CajaMovimientos;
 import entity.CtacteCliente;
+import entity.CtacteProveedor;
+import entity.DetallesCompra;
 import entity.DetallesVenta;
 import entity.FacturaCompra;
 import entity.FacturaVenta;
@@ -16,6 +18,7 @@ import javax.persistence.Query;
 import entity.Caja;
 import entity.DetalleCajaMovimientos;
 import entity.DetalleRecibo;
+import entity.DetalleRemesa;
 import entity.Recibo;
 import entity.Remesa;
 import entity.UTIL;
@@ -405,6 +408,104 @@ public class CajaMovimientosJpaController implements ActionListener {
       }
    }
 
+   /**
+    * Realiza todos los procesos de anulación de una FacturaCompra
+    *<html><ul>
+    * <li> Asentar el reintegro del importe de facturaVenta a la cajaMovimientoDestino.
+    * <li> Re-establece los stock de Productos involucrados.
+    * <li> Si es por CtaCte, ccc.estado = 3 (anulado), así como los posible pagos realizados.
+    * </ul></html>
+    * @param facturaCompra
+    * @param cajaMovimientoDestino
+    * @throws Exception
+    */
+   void anular(FacturaCompra facturaCompra, CajaMovimientos cajaMovimientoDestino) throws Exception {
+      EntityManager em = getEntityManager();
+      try {
+         em.getTransaction().begin();
+         facturaCompra = em.find(FacturaCompra.class, facturaCompra.getId());
+         cajaMovimientoDestino = em.find(CajaMovimientos.class, cajaMovimientoDestino.getId());
+         DetalleCajaMovimientos newDetalleCajaMovimiento;
+         //si fue al CONTADO...
+         if (facturaCompra.getFormaPago() == Valores.FormaPago.CONTADO.getId()) {
+            newDetalleCajaMovimiento = new DetalleCajaMovimientos();
+            newDetalleCajaMovimiento.setCajaMovimientos(cajaMovimientoDestino);
+            newDetalleCajaMovimiento.setIngreso(true);
+            newDetalleCajaMovimiento.setMonto(facturaCompra.getImporte());
+            newDetalleCajaMovimiento.setNumero(facturaCompra.getId());
+            newDetalleCajaMovimiento.setFecha(new Date());
+            newDetalleCajaMovimiento.setHora(new Date());
+            newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.ANULACION);
+            newDetalleCajaMovimiento.setDescripcion("F" + facturaCompra.getTipo() + UTIL.AGREGAR_CEROS(facturaCompra.getNumero(), 12) + " [ANULADA]");
+            newDetalleCajaMovimiento.setUsuario(UsuarioJpaController.getCurrentUser());
+            new DetalleCajaMovimientosJpaController().create(newDetalleCajaMovimiento);
+         // o CTA CTE..
+         } else if (facturaCompra.getFormaPago() == Valores.FormaPago.CTA_CTE.getId()) {
+            CtacteProveedor ccp = new CtacteProveedorJpaController().findCtacteProveedorByFactura(facturaCompra.getId());
+            //si se hicieron REMESA's de pago de esta deuda
+            if (ccp.getEntregado() > 0) {
+               List<Remesa> remesaList = new RemesaJpaController().findByFactura(facturaCompra);
+               boolean detalleUnico; //Therefore, the entire Recibo must be annulled
+               for (Remesa remesaQueEnSuDetalleContieneLaFacturaVenta : remesaList) {
+                  detalleUnico = false;
+                  if (remesaQueEnSuDetalleContieneLaFacturaVenta.getDetalleRemesaList().size() == 1) {
+                     detalleUnico = true;
+                  }
+                  for (DetalleRemesa detalleRemesa : remesaQueEnSuDetalleContieneLaFacturaVenta.getDetalleRemesaList()) {
+                     if (detalleRemesa.getFacturaCompra().equals(facturaCompra)) {
+                        detalleRemesa.setObservacion("ANULADO - " + detalleRemesa.getObservacion());
+                        detalleRemesa.setAnulado(true);
+                        remesaQueEnSuDetalleContieneLaFacturaVenta.setMontoEntrega(remesaQueEnSuDetalleContieneLaFacturaVenta.getMonto() - detalleRemesa.getMontoEntrega());
+                        newDetalleCajaMovimiento = new DetalleCajaMovimientos();
+                        newDetalleCajaMovimiento.setCajaMovimientos(cajaMovimientoDestino);
+                        newDetalleCajaMovimiento.setIngreso(true);
+                        newDetalleCajaMovimiento.setMonto(detalleRemesa.getMontoEntrega());
+                        newDetalleCajaMovimiento.setNumero(facturaCompra.getId());
+                        newDetalleCajaMovimiento.setFecha(new Date());
+                        newDetalleCajaMovimiento.setHora(new Date());
+                        newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.ANULACION);
+                        newDetalleCajaMovimiento.setDescripcion("F" + facturaCompra.getTipo()
+                           + UTIL.AGREGAR_CEROS(facturaCompra.getNumero(), 12)
+                           + " -> R" + remesaQueEnSuDetalleContieneLaFacturaVenta.getId() + " [ANULADA]");
+                        newDetalleCajaMovimiento.setUsuario(UsuarioJpaController.getCurrentUser());
+                        em.persist(newDetalleCajaMovimiento);
+                        em.merge(detalleRemesa);
+                        if (detalleUnico) {
+                           remesaQueEnSuDetalleContieneLaFacturaVenta.setEstado(false);
+                        }
+                        em.merge(remesaQueEnSuDetalleContieneLaFacturaVenta);
+                     }
+                  }
+               }
+            }
+            ccp.setEstado((short) 3);
+            em.merge(ccp);
+         }
+
+         facturaCompra.setAnulada(true);
+         em.merge(facturaCompra);
+         //re-estableciendo stock
+         List<DetallesCompra> itemList = facturaCompra.getDetallesCompraList();
+         ProductoJpaController productoCtrl = new ProductoJpaController();
+         StockJpaController stockCtrl = new StockJpaController();
+         for (DetallesCompra detallesVenta : itemList) {
+            //resta el stock
+            stockCtrl.modificarStockBySucursal(detallesVenta.getProducto(), facturaCompra.getSucursal(), - detallesVenta.getCantidad());
+            //actualiza esa variable de mierda que no se para que creé..
+            productoCtrl.updateStockActual(detallesVenta.getProducto(), - detallesVenta.getCantidad());
+         }
+         em.getTransaction().commit();
+      } catch (Exception e) {
+         if (em.getTransaction().isActive()) {
+            em.getTransaction().rollback();
+         }
+         throw e;
+      } finally {
+         if (em != null) {
+            em.close();
+         }
+      }
+   }
    /**
     * Arma la descripción del detalleCajaMovimiento.
     * Si se imprime factura ej: F + [letra de factura] + [número de factura]
@@ -1297,4 +1398,5 @@ public class CajaMovimientosJpaController implements ActionListener {
       }
       em.close();
    }
+
 }

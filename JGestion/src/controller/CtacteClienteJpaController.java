@@ -219,8 +219,6 @@ public class CtacteClienteJpaController implements ActionListener {
       }// </editor-fold>
 
       resumenCtaCtes = new JDResumenCtaCtes(frame, modal, true);
-//      resumenCtaCtes.getjTableResumen().setDefaultRenderer(Object.class, new MiRender());
-
       resumenCtaCtes.getjTableResumen().addMouseListener(new MouseAdapter() {
 
          @Override
@@ -338,24 +336,24 @@ public class CtacteClienteJpaController implements ActionListener {
       //agregar la 1er fila a la tabla
       double saldoAcumulativo = (totalDebe - totalHaber);
       dtm.addRow(new Object[]{null, "RESUMEN PREVIO", null, null, UTIL.PRECIO_CON_PUNTO.format(totalDebe), UTIL.PRECIO_CON_PUNTO.format(totalHaber), null, UTIL.PRECIO_CON_PUNTO.format(saldoAcumulativo)});
-      for (CtacteCliente ctaCteCliente : cccList) {
-         FacturaVenta facturaVenta = ctaCteCliente.getFactura();
+      for (CtacteCliente ctaCte : cccList) {
+         FacturaVenta factura = ctaCte.getFactura();
          //checkea que no esté anulada la ccc
-         boolean isAnulada = (ctaCteCliente.getEstado() == 3);
+         boolean isAnulada = (ctaCte.getEstado() == 3);
          if (!isAnulada) {
-            saldoAcumulativo += ctaCteCliente.getImporte() - ctaCteCliente.getEntregado();
+            saldoAcumulativo += ctaCte.getImporte() - ctaCte.getEntregado();
          }
 
          dtm.addRow(new Object[]{
-                    ctaCteCliente.getId(), // <--------- No es visible desde la GUI
-                    facturaVenta.getTipo() + UTIL.AGREGAR_CEROS(facturaVenta.getNumero(), 12),
-                    UTIL.DATE_FORMAT.format(facturaVenta.getFechaVenta()),
-                    UTIL.DATE_FORMAT.format(UTIL.customDateByDays(facturaVenta.getFechaVenta(), ctaCteCliente.getDias())),
-                    UTIL.PRECIO_CON_PUNTO.format(ctaCteCliente.getImporte()),
-                    isAnulada ? "ANULADA" : UTIL.PRECIO_CON_PUNTO.format(ctaCteCliente.getEntregado()),
-                    isAnulada ? "ANULADA" : UTIL.PRECIO_CON_PUNTO.format(ctaCteCliente.getImporte() - ctaCteCliente.getEntregado()),
+                    ctaCte.getId(), // <--------- No es visible desde la GUI
+                    factura.getTipo() + UTIL.AGREGAR_CEROS(factura.getNumero(), 12),
+                    UTIL.DATE_FORMAT.format(factura.getFechaVenta()),
+                    UTIL.DATE_FORMAT.format(UTIL.customDateByDays(factura.getFechaVenta(), ctaCte.getDias())),
+                    UTIL.PRECIO_CON_PUNTO.format(ctaCte.getImporte()),
+                    isAnulada ? "ANULADA" : UTIL.PRECIO_CON_PUNTO.format(ctaCte.getEntregado()),
+                    isAnulada ? "ANULADA" : UTIL.PRECIO_CON_PUNTO.format(ctaCte.getImporte() - ctaCte.getEntregado()),
                     isAnulada ? "ANULADA" : UTIL.PRECIO_CON_PUNTO.format(saldoAcumulativo),
-                    ctaCteCliente.getEstado()
+                    ctaCte.getEstado()
                  });
       }
    }
