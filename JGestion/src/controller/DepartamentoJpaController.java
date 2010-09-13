@@ -342,7 +342,7 @@ public class DepartamentoJpaController implements ActionListener, MouseListener,
       if (isEditting) {
          setPanel(departamento);
       }
-      abm = new JDABM(contenedor, true, panel);
+      abm = new JDABM(true, contenedor, panel);
       abm.setTitle("ABM Departamentos");
       if (e != null) {
          abm.setLocationRelativeTo((java.awt.Component) e.getSource());

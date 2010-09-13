@@ -7,6 +7,7 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -94,7 +95,7 @@ public class FacturaCompra implements Serializable {
    private int movimiento;
    @Column(name = "dias_cta_cte")
    private Short diasCtaCte;
-   @OneToMany(cascade = CascadeType.ALL, mappedBy = "facturaCompra")
+   @OneToMany(cascade = CascadeType.ALL, mappedBy = "factura", fetch=FetchType.EAGER)
    private List<DetallesCompra> detallesCompraList;
    @JoinColumn(name = "proveedor", referencedColumnName = "id", nullable = false)
    @ManyToOne(optional = false)

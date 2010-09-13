@@ -1,13 +1,26 @@
-13/07/2010
+2010/09/13
+//Added GUI:
+       Menu > Productos > Movimientos
+//Added Reporte: MovimientosProductos
+2010/09/07
+//implementación de anulación de FacturaCompra
+ALTER TABLE detalle_remesa ADD COLUMN anulado boolean NOT NULL DEFAULT false;
+2010/09/09
+//para que esté == a detalles_compra
+ALTER TABLE detalles_compra RENAME factura_compra  TO factura;
+2010/09/07
+//implementación de anulación de FacturaVenta
+ALTER TABLE detalle_recibo ADD COLUMN anulado boolean NOT NULL DEFAULT false;
+2010/07/13
 //para relacionar una FacturaVenta con un Remito (OneToOne)
 ALTER TABLE factura_venta ADD COLUMN remito integer;
 ALTER TABLE factura_venta ADD FOREIGN KEY (remito) REFERENCES remito (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE remito ADD COLUMN factura_venta integer;
 ALTER TABLE remito ADD FOREIGN KEY (factura_venta) REFERENCES factura_venta (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
-08-07
+2010/07/08
  reporte Movimientos varios
  reporte Movimientos entre Cajas
-01-07
+2010/07/07
  modulo Presupuestos
  reporte Presupuestos
 26-05

@@ -29,7 +29,7 @@ public class JDABM extends javax.swing.JDialog {
         ajustarABMSizeToPanel();
     }
 
-   public JDABM(javax.swing.JDialog owner, boolean modal, javax.swing.JPanel panelNEW) {
+   public JDABM(boolean modal, javax.swing.JDialog owner, javax.swing.JPanel panelNEW) {
         super(owner, modal);
         this.panel = panelNEW;
         getContentPane().add(this.panel);

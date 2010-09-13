@@ -6,9 +6,11 @@
  */
 package gui;
 
+import java.awt.BorderLayout;
 import java.awt.Dialog;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
+import javax.swing.JButton;
 import javax.swing.JTable;
 
 /**
@@ -21,23 +23,25 @@ public class JDBuscador extends javax.swing.JDialog {
    public JDBuscador(java.awt.Frame parent, boolean modal, javax.swing.JPanel panel, String title) {
       super(parent, modal);
       this.setTitle(title);
-      this.getContentPane().add(panel, java.awt.BorderLayout.NORTH);
+      this.getContentPane().add(panel, BorderLayout.NORTH);
       pack();
       initComponents();
-      ajustarAlPanel();
+      ajustarAlPanel(panel.getWidth(), panel.getHeight());
+      this.getRootPane().setDefaultButton(bBuscar);
    }
 
    public JDBuscador(Dialog owner, boolean modal, javax.swing.JPanel panel, String title) {
       super(owner, modal);
       this.setTitle(title);
-      this.getContentPane().add(panel, java.awt.BorderLayout.NORTH);
+      this.getContentPane().add(panel);
       pack();
       initComponents();
-      ajustarAlPanel();
+      ajustarAlPanel(panel.getWidth(), panel.getHeight());
+      this.getRootPane().setDefaultButton(bBuscar);
    }
 
-   private void ajustarAlPanel() {
-      this.setSize(panel.getWidth() + 220, this.getHeight());
+   private void ajustarAlPanel(int width, int height) {
+      this.setSize(width + this.getWidth() , height + this.getHeight());
       this.setMinimumSize(new java.awt.Dimension(this.getWidth(), this.getHeight()));
    }
 
@@ -50,14 +54,21 @@ public class JDBuscador extends javax.swing.JDialog {
    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
    private void initComponents() {
 
-      bLimpiar = new javax.swing.JButton();
-      bBuscar = new javax.swing.JButton();
-      bImprimir = new javax.swing.JButton();
       jScrollPane1 = new javax.swing.JScrollPane();
       jTable1 = new javax.swing.JTable();
-      panel = new javax.swing.JPanel();
+      bImprimir = new javax.swing.JButton();
+      bLimpiar = new javax.swing.JButton();
+      bBuscar = new javax.swing.JButton();
 
       setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+
+      jTable1.setModel(new javax.swing.table.DefaultTableModel());
+      jTable1.setRequestFocusEnabled(false);
+      jScrollPane1.setViewportView(jTable1);
+
+      bImprimir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/impresora.png"))); // NOI18N
+      bImprimir.setText("Imprimir");
+      bImprimir.setName("imprimirBuscador"); // NOI18N
 
       bLimpiar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/broom32x32.png"))); // NOI18N
       bLimpiar.setText("Limpiar");
@@ -68,55 +79,31 @@ public class JDBuscador extends javax.swing.JDialog {
       bBuscar.setText("Buscar");
       bBuscar.setName("buscarBuscador"); // NOI18N
 
-      bImprimir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/impresora.png"))); // NOI18N
-      bImprimir.setText("Imprimir");
-      bImprimir.setName("imprimirBuscador"); // NOI18N
-
-      jTable1.setModel(new javax.swing.table.DefaultTableModel());
-      jScrollPane1.setViewportView(jTable1);
-
-      javax.swing.GroupLayout panelLayout = new javax.swing.GroupLayout(panel);
-      panel.setLayout(panelLayout);
-      panelLayout.setHorizontalGroup(
-         panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 359, Short.MAX_VALUE)
-      );
-      panelLayout.setVerticalGroup(
-         panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 121, Short.MAX_VALUE)
-      );
-
       javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
       getContentPane().setLayout(layout);
       layout.setHorizontalGroup(
          layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGroup(layout.createSequentialGroup()
+         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
             .addContainerGap()
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-               .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 488, Short.MAX_VALUE)
-               .addGroup(layout.createSequentialGroup()
-                  .addComponent(panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                  .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                     .addComponent(bImprimir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                     .addComponent(bBuscar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                     .addComponent(bLimpiar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+               .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 142, Short.MAX_VALUE)
+               .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                  .addComponent(bImprimir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                  .addComponent(bBuscar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                  .addComponent(bLimpiar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
             .addContainerGap())
       );
       layout.setVerticalGroup(
          layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
          .addGroup(layout.createSequentialGroup()
             .addContainerGap()
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-               .addGroup(layout.createSequentialGroup()
-                  .addComponent(bLimpiar, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                  .addComponent(bBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                  .addComponent(bImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
-               .addComponent(panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 126, Short.MAX_VALUE)
+            .addComponent(bLimpiar, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(bBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(bImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGap(18, 18, 18)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 111, Short.MAX_VALUE)
             .addContainerGap())
       );
 
@@ -128,7 +115,6 @@ public class JDBuscador extends javax.swing.JDialog {
    private javax.swing.JButton bLimpiar;
    private javax.swing.JScrollPane jScrollPane1;
    private javax.swing.JTable jTable1;
-   private javax.swing.JPanel panel;
    // End of variables declaration//GEN-END:variables
 
    public void setListener(Object o) {
@@ -138,9 +124,7 @@ public class JDBuscador extends javax.swing.JDialog {
       try {
          jTable1.addMouseListener((MouseListener) o);
       } catch (ClassCastException ex) {
-         System.out.println("ERROR: " + ex.getClass().toString().toUpperCase()
-                 + ": Culpa de ->"
-                 + o.getClass() + "\nMSG: " + ex.getMessage());
+         System.out.println(o.getClass() + " no implementa MouseListener");
       }
    }
 
@@ -158,5 +142,21 @@ public class JDBuscador extends javax.swing.JDialog {
 
    public void hideLimpiar() {
       bLimpiar.setVisible(false);
+   }
+
+   public JButton getbBuscar() {
+      return bBuscar;
+   }
+
+   public JButton getbImprimir() {
+      return bImprimir;
+   }
+
+   public JButton getbLimpiar() {
+      return bLimpiar;
+   }
+
+   public void agrandar(int width, int heigth) {
+      ajustarAlPanel(width, heigth);
    }
 }

@@ -122,7 +122,6 @@ public class JFP extends javax.swing.JFrame {
       jMenuItem15 = new javax.swing.JMenuItem();
       jMenu12 = new javax.swing.JMenu();
       jMenuItem29 = new javax.swing.JMenuItem();
-      jMenuItem33 = new javax.swing.JMenuItem();
       jMenuItem37 = new javax.swing.JMenuItem();
       jMenu4 = new javax.swing.JMenu();
       jMenuItem16 = new javax.swing.JMenuItem();
@@ -298,7 +297,7 @@ public class JFP extends javax.swing.JFrame {
       });
       jMenu5.add(jMenuItem20);
 
-      jMenuItem39.setText("Movimiento por Producto");
+      jMenuItem39.setText("Movimiento");
       jMenuItem39.addActionListener(new java.awt.event.ActionListener() {
          public void actionPerformed(java.awt.event.ActionEvent evt) {
             jMenuItem39ActionPerformed(evt);
@@ -362,7 +361,7 @@ public class JFP extends javax.swing.JFrame {
       jMenu10.add(jMenuItem32);
       jMenu10.add(jSeparator2);
 
-      jMenu14.setText("Anular Factura");
+      jMenu14.setText("Anular factura");
 
       jMenuItem3.setText("Venta");
       jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
@@ -373,6 +372,11 @@ public class JFP extends javax.swing.JFrame {
       jMenu14.add(jMenuItem3);
 
       jMenuItem38.setText("Compra");
+      jMenuItem38.addActionListener(new java.awt.event.ActionListener() {
+         public void actionPerformed(java.awt.event.ActionEvent evt) {
+            jMenuItem38ActionPerformed(evt);
+         }
+      });
       jMenu14.add(jMenuItem38);
 
       jMenu10.add(jMenu14);
@@ -475,9 +479,6 @@ public class JFP extends javax.swing.JFrame {
       jMenuItem29.setText("Financiar");
       jMenu12.add(jMenuItem29);
 
-      jMenuItem33.setText("Buscar..");
-      jMenu12.add(jMenuItem33);
-
       jMenuItem37.setText("Refinanciar");
       jMenu12.add(jMenuItem37);
 
@@ -486,12 +487,7 @@ public class JFP extends javax.swing.JFrame {
       jMenu4.setMnemonic('u');
       jMenu4.setText("Usuarios");
 
-      jMenuItem16.setText("ABM Usuario");
-      jMenuItem16.addActionListener(new java.awt.event.ActionListener() {
-         public void actionPerformed(java.awt.event.ActionEvent evt) {
-            jMenuItem16ActionPerformed(evt);
-         }
-      });
+      jMenuItem16.setText("ABM Usuarios");
       jMenu4.add(jMenuItem16);
 
       jMenuItem24.setText("Cambiar contraseña");
@@ -521,7 +517,7 @@ public class JFP extends javax.swing.JFrame {
       layout.setVerticalGroup(
          layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-            .addContainerGap(363, Short.MAX_VALUE)
+            .addContainerGap(365, Short.MAX_VALUE)
             .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addContainerGap())
       );
@@ -667,7 +663,7 @@ public class JFP extends javax.swing.JFrame {
     }//GEN-LAST:event_menuItemSalirActionPerformed
 
     private void jMenuItem28ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem28ActionPerformed
-      new FacturaCompraJpaController().initBuscador(this);
+      new FacturaCompraJpaController().initBuscador(this, true, false);
        refreshConnectionDB();
     }//GEN-LAST:event_jMenuItem28ActionPerformed
 
@@ -744,8 +740,12 @@ public class JFP extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 
     private void jMenuItem39ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem39ActionPerformed
-      new ProductoJpaController().initMovimientoPorProducto(this, false);
+      new ProductoJpaController().initMovimientoProducto(this, false);
     }//GEN-LAST:event_jMenuItem39ActionPerformed
+
+    private void jMenuItem38ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem38ActionPerformed
+      new FacturaCompraJpaController().initBuscador(this, false, true);
+    }//GEN-LAST:event_jMenuItem38ActionPerformed
 
    // Variables declaration - do not modify//GEN-BEGIN:variables
    private javax.swing.JLabel jLabel1;
@@ -790,7 +790,6 @@ public class JFP extends javax.swing.JFrame {
    private javax.swing.JMenuItem jMenuItem30;
    private javax.swing.JMenuItem jMenuItem31;
    private javax.swing.JMenuItem jMenuItem32;
-   private javax.swing.JMenuItem jMenuItem33;
    private javax.swing.JMenuItem jMenuItem34;
    private javax.swing.JMenuItem jMenuItem35;
    private javax.swing.JMenuItem jMenuItem36;

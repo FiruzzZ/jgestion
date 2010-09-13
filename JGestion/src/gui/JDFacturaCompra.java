@@ -730,7 +730,11 @@ public class JDFacturaCompra extends javax.swing.JDialog {
       bBuscarProducto.addActionListener((ActionListener) o);
       btnCancelar.addActionListener((ActionListener) o);
       btnAceptar.addActionListener((ActionListener) o);
-      jTable1.addMouseListener((MouseListener) o);
+      try {
+         jTable1.addMouseListener((MouseListener) o);
+      } catch (ClassCastException e) {
+         
+      }
       tfProductoCodigo.addKeyListener((KeyListener) o);
       tfFacturaCuarto.addKeyListener((KeyListener) o);
       tfFacturaOcteto.addKeyListener((KeyListener) o);
@@ -933,6 +937,9 @@ public class JDFacturaCompra extends javax.swing.JDialog {
    }
 
    public void modoVista(boolean enable) {
+      cbProveedor.setEnabled(enable);
+      cbSucursal.setEnabled(enable);
+      cbCaja.setEnabled(enable);
       dcFechaFactura.setEnabled(enable);
       tfFacturaCuarto.setEnabled(enable);
       tfFacturaOcteto.setEnabled(enable);
@@ -940,6 +947,10 @@ public class JDFacturaCompra extends javax.swing.JDialog {
       tfDias.setEnabled(enable);
       checkActualizaStock.setEnabled(enable);
       tfPercIVA.setEnabled(enable);
+      tfProductoCodigo.setEnabled(enable);
+      tfProductoNombre.setEnabled(enable);
+      tfCantidad.setEnabled(enable);
+      cbCambioPrecio.setEnabled(enable);
       bBuscarProducto.setEnabled(enable);
       btnADD.setEnabled(enable);
       btnDEL.setEnabled(enable);

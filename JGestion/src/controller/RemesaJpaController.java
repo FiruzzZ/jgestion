@@ -779,7 +779,7 @@ public class RemesaJpaController implements ActionListener, FocusListener {
       DAO.doMerge(remesa);
    }
 
-   List<Remesa> findRemesaByFactura(FacturaCompra factura) {
+   List<Remesa> findByFactura(FacturaCompra factura) {
       List<DetalleRemesa> detalleRemesaList = new DetalleRemesaJpaController().findDetalleRemesaByFactura(factura);
       List recibosList = new ArrayList(detalleRemesaList.size());
       for (DetalleRemesa detalleRecibo : detalleRemesaList) {
