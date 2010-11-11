@@ -7,8 +7,9 @@
 package gui;
 
 import com.toedter.calendar.JDateChooser;
-import entity.UTIL;
+import generics.UTIL;
 import java.awt.event.ActionListener;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
 
@@ -92,7 +93,7 @@ public class JDCajaToCaja extends javax.swing.JDialog {
       jLabel7.setText("Fecha Apertura");
       jLabel7.setRequestFocusEnabled(false);
 
-      dcOrigen.setDateFormatString(entity.UTIL.DATE_FORMAT.toPattern());
+      dcOrigen.setDateFormatString(generics.UTIL.DATE_FORMAT.toPattern());
       dcOrigen.setEnabled(false);
       dcOrigen.setRequestFocusEnabled(false);
 
@@ -100,7 +101,7 @@ public class JDCajaToCaja extends javax.swing.JDialog {
       jLabel1.setRequestFocusEnabled(false);
 
       tfTotalOrigen.setEditable(false);
-      tfTotalOrigen.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+      tfTotalOrigen.setFont(new java.awt.Font("Tahoma", 1, 11));
 
       jLabel16.setText("Caja destino");
 
@@ -115,7 +116,7 @@ public class JDCajaToCaja extends javax.swing.JDialog {
       jLabel10.setText("Fecha Apertura");
       jLabel10.setRequestFocusEnabled(false);
 
-      dcDestino.setDateFormatString(entity.UTIL.DATE_FORMAT.toPattern());
+      dcDestino.setDateFormatString(generics.UTIL.DATE_FORMAT.toPattern());
       dcDestino.setEnabled(false);
       dcDestino.setRequestFocusEnabled(false);
 
@@ -151,39 +152,38 @@ public class JDCajaToCaja extends javax.swing.JDialog {
                   .addComponent(bAceptar)
                   .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                   .addComponent(bCancelar))
-               .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                  .addGroup(layout.createSequentialGroup()
-                     .addComponent(labelReRe)
-                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                     .addComponent(tfMovimiento, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
-                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 234, Short.MAX_VALUE)
-                     .addComponent(bBuscar))
-                  .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 511, Short.MAX_VALUE)
-                  .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(cbCajaOrigen, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(cbCajaDestino, 0, 174, Short.MAX_VALUE)
-                        .addComponent(jLabel16)
-                        .addComponent(jLabel15))
-                     .addGap(18, 18, 18)
-                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                           .addComponent(jLabel1)
-                           .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                           .addComponent(tfTotalOrigen, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
-                           .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                           .addComponent(jLabel7)
-                           .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                           .addComponent(dcOrigen, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(layout.createSequentialGroup()
-                           .addComponent(jLabel2)
-                           .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                           .addComponent(tfTotalDestino, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
-                           .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                           .addComponent(jLabel10)
-                           .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                           .addComponent(dcDestino, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))))))
-            .addContainerGap(10, Short.MAX_VALUE))
+               .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                  .addComponent(labelReRe)
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                  .addComponent(tfMovimiento, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 234, Short.MAX_VALUE)
+                  .addComponent(bBuscar))
+               .addComponent(jSeparator1, javax.swing.GroupLayout.DEFAULT_SIZE, 511, Short.MAX_VALUE)
+               .addGroup(layout.createSequentialGroup()
+                  .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                     .addComponent(cbCajaOrigen, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                     .addComponent(cbCajaDestino, 0, 174, Short.MAX_VALUE)
+                     .addComponent(jLabel16)
+                     .addComponent(jLabel15))
+                  .addGap(18, 18, 18)
+                  .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                     .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(tfTotalOrigen, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel7)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(dcOrigen, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
+                     .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(tfTotalDestino, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel10)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(dcDestino, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+            .addContainerGap())
       );
       layout.setVerticalGroup(
          layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -226,10 +226,10 @@ public class JDCajaToCaja extends javax.swing.JDialog {
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                .addComponent(jLabel9)
                .addComponent(tfObservacion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 17, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-               .addComponent(bCancelar)
-               .addComponent(bAceptar))
+               .addComponent(bCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+               .addComponent(bAceptar, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addContainerGap())
       );
 
@@ -307,6 +307,18 @@ public class JDCajaToCaja extends javax.swing.JDialog {
 
    public JTextField getTfTotalOrigen() {
       return tfTotalOrigen;
+   }
+
+   public JButton getbAceptar() {
+      return bAceptar;
+   }
+
+   public JButton getbBuscar() {
+      return bBuscar;
+   }
+
+   public JButton getbCancelar() {
+      return bCancelar;
    }
 
    public void setListener(Object o) {

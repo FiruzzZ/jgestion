@@ -48,15 +48,11 @@ public class DetalleCajaMovimientos implements Serializable {
    @Column(name = "monto", nullable = false)
    private double monto;
    @Basic(optional = false)
-   @Column(name = "fecha", nullable = false)
-   @Temporal(TemporalType.DATE)
+   @Column(name = "fecha", nullable = false, insertable= false, updatable= false, columnDefinition="timestamp with time zone NOT NULL DEFAULT now()")
+   @Temporal(TemporalType.TIMESTAMP)
    private Date fecha;
    @Basic(optional = false)
-   @Column(name = "hora", nullable = false)
-   @Temporal(TemporalType.TIME)
-   private Date hora;
-   @Basic(optional = false)
-   @Column(name = "descripcion", nullable = false, length = 2147483647)
+   @Column(name = "descripcion", nullable = false, length = 250)
    private String descripcion;
    @JoinColumn(name = "caja_movimientos", referencedColumnName = "id", nullable = false)
    @ManyToOne(optional = false)
@@ -70,17 +66,6 @@ public class DetalleCajaMovimientos implements Serializable {
 
    public DetalleCajaMovimientos(Integer id) {
       this.id = id;
-   }
-
-   public DetalleCajaMovimientos(Integer id, boolean ingreso, short tipo, long numero, double monto, Date fecha, Date hora, String descripcion) {
-      this.id = id;
-      this.ingreso = ingreso;
-      this.tipo = tipo;
-      this.numero = numero;
-      this.monto = monto;
-      this.fecha = fecha;
-      this.hora = hora;
-      this.descripcion = descripcion;
    }
 
    public Integer getId() {
@@ -125,18 +110,6 @@ public class DetalleCajaMovimientos implements Serializable {
 
    public Date getFecha() {
       return fecha;
-   }
-
-   public void setFecha(Date fecha) {
-      this.fecha = fecha;
-   }
-
-   public Date getHora() {
-      return hora;
-   }
-
-   public void setHora(Date hora) {
-      this.hora = hora;
    }
 
    public String getDescripcion() {

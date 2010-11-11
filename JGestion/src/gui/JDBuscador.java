@@ -8,6 +8,7 @@ package gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dialog;
+import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import javax.swing.JButton;
@@ -19,7 +20,14 @@ import javax.swing.JTable;
  */
 public class JDBuscador extends javax.swing.JDialog {
 
-   /** Creates new form JDBuscador */
+   /**
+    * Inicializa el JDialog....
+    * setLocation según el owner/parent ( X + 100, Y + 50)
+    * @param parent
+    * @param modal
+    * @param panel
+    * @param title
+    */
    public JDBuscador(java.awt.Frame parent, boolean modal, javax.swing.JPanel panel, String title) {
       super(parent, modal);
       this.setTitle(title);
@@ -33,7 +41,7 @@ public class JDBuscador extends javax.swing.JDialog {
    public JDBuscador(Dialog owner, boolean modal, javax.swing.JPanel panel, String title) {
       super(owner, modal);
       this.setTitle(title);
-      this.getContentPane().add(panel);
+      this.getContentPane().add(panel, BorderLayout.NORTH);
       pack();
       initComponents();
       ajustarAlPanel(panel.getWidth(), panel.getHeight());
@@ -42,7 +50,8 @@ public class JDBuscador extends javax.swing.JDialog {
 
    private void ajustarAlPanel(int width, int height) {
       this.setSize(width + this.getWidth() , height + this.getHeight());
-      this.setMinimumSize(new java.awt.Dimension(this.getWidth(), this.getHeight()));
+      this.setMinimumSize(new Dimension(this.getWidth(), this.getHeight()));
+      this.setLocation(this.getOwner().getX() + 100, this.getOwner().getY() + 50);
    }
 
    /** This method is called from within the constructor to
@@ -56,9 +65,10 @@ public class JDBuscador extends javax.swing.JDialog {
 
       jScrollPane1 = new javax.swing.JScrollPane();
       jTable1 = new javax.swing.JTable();
-      bImprimir = new javax.swing.JButton();
+      jPanel1 = new javax.swing.JPanel();
       bLimpiar = new javax.swing.JButton();
       bBuscar = new javax.swing.JButton();
+      bImprimir = new javax.swing.JButton();
 
       setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -66,9 +76,7 @@ public class JDBuscador extends javax.swing.JDialog {
       jTable1.setRequestFocusEnabled(false);
       jScrollPane1.setViewportView(jTable1);
 
-      bImprimir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/impresora.png"))); // NOI18N
-      bImprimir.setText("Imprimir");
-      bImprimir.setName("imprimirBuscador"); // NOI18N
+      jPanel1.setMinimumSize(new java.awt.Dimension(143, 143));
 
       bLimpiar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/broom32x32.png"))); // NOI18N
       bLimpiar.setText("Limpiar");
@@ -79,31 +87,52 @@ public class JDBuscador extends javax.swing.JDialog {
       bBuscar.setText("Buscar");
       bBuscar.setName("buscarBuscador"); // NOI18N
 
-      javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-      getContentPane().setLayout(layout);
-      layout.setHorizontalGroup(
-         layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+      bImprimir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/impresora.png"))); // NOI18N
+      bImprimir.setText("Imprimir");
+      bImprimir.setName("imprimirBuscador"); // NOI18N
+
+      javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+      jPanel1.setLayout(jPanel1Layout);
+      jPanel1Layout.setHorizontalGroup(
+         jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+         .addGroup(jPanel1Layout.createSequentialGroup()
             .addContainerGap()
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-               .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 142, Short.MAX_VALUE)
-               .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                  .addComponent(bImprimir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                  .addComponent(bBuscar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                  .addComponent(bLimpiar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-            .addContainerGap())
+            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+               .addComponent(bImprimir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+               .addComponent(bBuscar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+               .addComponent(bLimpiar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
       );
-      layout.setVerticalGroup(
-         layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGroup(layout.createSequentialGroup()
+      jPanel1Layout.setVerticalGroup(
+         jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+         .addGroup(jPanel1Layout.createSequentialGroup()
             .addContainerGap()
             .addComponent(bLimpiar, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(bBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(bImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGap(18, 18, 18)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 111, Short.MAX_VALUE)
+            .addContainerGap(18, Short.MAX_VALUE))
+      );
+
+      javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+      getContentPane().setLayout(layout);
+      layout.setHorizontalGroup(
+         layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+         .addGroup(layout.createSequentialGroup()
+            .addContainerGap()
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+               .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 152, Short.MAX_VALUE)
+               .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addContainerGap())
+      );
+      layout.setVerticalGroup(
+         layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+         .addGroup(layout.createSequentialGroup()
+            .addContainerGap()
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 89, Short.MAX_VALUE)
             .addContainerGap())
       );
 
@@ -113,6 +142,7 @@ public class JDBuscador extends javax.swing.JDialog {
    private javax.swing.JButton bBuscar;
    private javax.swing.JButton bImprimir;
    private javax.swing.JButton bLimpiar;
+   private javax.swing.JPanel jPanel1;
    private javax.swing.JScrollPane jScrollPane1;
    private javax.swing.JTable jTable1;
    // End of variables declaration//GEN-END:variables
@@ -158,5 +188,17 @@ public class JDBuscador extends javax.swing.JDialog {
 
    public void agrandar(int width, int heigth) {
       ajustarAlPanel(width, heigth);
+   }
+
+   /**
+    * Cambia el estado de los 3 botones (Buscar, Imprimir, Limiar)
+    * Util para que el usuario no le de como un pelotudo al botón generando 1kk
+    * de consultas.
+    * @param bloquear <code>true</code> bloquea los botones
+    */
+   public void bloquearBotones(boolean bloquear) {
+      bBuscar.setEnabled(!bloquear);
+      bImprimir.setEnabled(!bloquear);
+      bLimpiar.setEnabled(!bloquear);
    }
 }

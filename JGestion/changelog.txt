@@ -1,3 +1,7 @@
+2010/09/27
+//Added GUI:
+   - Impl de los AutoCompleteComboBox (Facturas venta, compra y no se donde mas)
+   - Impl el Thread de checkeo de conexión con la DB (gui.JFP)
 2010/09/13
 //Added GUI:
        Menu > Productos > Movimientos

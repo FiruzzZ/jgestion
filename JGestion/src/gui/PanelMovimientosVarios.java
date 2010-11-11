@@ -6,7 +6,7 @@
  */
 package gui;
 
-import entity.UTIL;
+import generics.UTIL;
 import java.awt.event.ActionListener;
 import javax.swing.JComboBox;
 

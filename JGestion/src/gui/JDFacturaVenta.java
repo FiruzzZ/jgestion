@@ -12,7 +12,11 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -23,7 +27,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
    private final int modoVista;
 
    /** Creates new form JDVenta */
-   public JDFacturaVenta(java.awt.Frame parent, boolean modal, int factVenta1_Presup2_Remito3) {
+   public JDFacturaVenta(JFrame parent, boolean modal, int factVenta1_Presup2_Remito3) {
       super(parent, modal);
       modoVista = factVenta1_Presup2_Remito3;
       initComponents();
@@ -32,6 +36,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
          this.setTitle("Remito");
          labelN_factura.setText("Nº Remito");
          btnAceptar.setText("Aceptar");
+         btnAceptar.setMnemonic('a');
          btnFacturar.setVisible(false);
          labelLetra.setVisible(false);
          cbFacturaTipo.setVisible(false);
@@ -51,6 +56,8 @@ public class JDFacturaVenta extends javax.swing.JDialog {
          }
 
          if (factVenta1_Presup2_Remito3 == 2) {
+            labelNumMovimiento.setVisible(false);
+            tfNumMovimiento.setVisible(false);
             this.setTitle("Presupuesto de Venta");
             labelN_factura.setVisible(false);
             tfFacturaCuarto.setVisible(false);
@@ -58,9 +65,8 @@ public class JDFacturaVenta extends javax.swing.JDialog {
             labeFecha.setVisible(false);
             dcFechaFactura.setVisible(false);
             btnAceptar.setText("Presupuestar");
+            btnAceptar.setMnemonic('a');
          }
-//         jPanel2.setBounds(jPanel2.getX(), jPanel2.getY(), jPanel3.getWidth(), jPanel2.getHeight());
-//         this.getContentPane().repaint();
       }
    }
 
@@ -110,7 +116,6 @@ public class JDFacturaVenta extends javax.swing.JDialog {
       tfProductoCodigo = new javax.swing.JTextField();
       bBuscarProducto = new javax.swing.JButton();
       jLabel9 = new javax.swing.JLabel();
-      tfProductoNombre = new javax.swing.JTextField();
       jLabel10 = new javax.swing.JLabel();
       jLabel11 = new javax.swing.JLabel();
       jLabel17 = new javax.swing.JLabel();
@@ -122,6 +127,9 @@ public class JDFacturaVenta extends javax.swing.JDialog {
       jLabel21 = new javax.swing.JLabel();
       tfProductoDesc = new javax.swing.JTextField();
       cbDesc = new javax.swing.JComboBox();
+      cbProductos = new javax.swing.JComboBox();
+      labelCodigoNoRegistrado = new javax.swing.JLabel();
+      labelCodigoNoRegistrado.setVisible(false);
       jPanel6 = new javax.swing.JPanel();
       jLabel23 = new javax.swing.JLabel();
       tfGravado = new javax.swing.JTextField();
@@ -138,6 +146,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
       tfMonto = new javax.swing.JTextField();
       tfCambio = new javax.swing.JTextField();
       btnAnular = new javax.swing.JButton();
+      jCheckBox1 = new javax.swing.JCheckBox();
 
       setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
       setTitle("Facturación - Ventas");
@@ -197,7 +206,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
       cbListaPrecio.setName("listaPrecios"); // NOI18N
 
       dcFechaFactura.setDate(new java.util.Date());
-      dcFechaFactura.setDateFormatString(entity.UTIL.DATE_FORMAT.toPattern());
+      dcFechaFactura.setDateFormatString(generics.UTIL.DATE_FORMAT.toPattern());
       dcFechaFactura.setNextFocusableComponent(cbFacturaTipo);
 
       jLabel2.setText("Sucursal");
@@ -253,12 +262,11 @@ public class JDFacturaVenta extends javax.swing.JDialog {
       jPanel2Layout.setHorizontalGroup(
          jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
          .addGroup(jPanel2Layout.createSequentialGroup()
-            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-               .addComponent(jLabel3)
-               .addComponent(labelCaja)
-               .addComponent(jLabel1)
-               .addComponent(labelLetra))
+            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+               .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING)
+               .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING)
+               .addComponent(labelCaja, javax.swing.GroupLayout.Alignment.TRAILING)
+               .addComponent(labelLetra, javax.swing.GroupLayout.Alignment.TRAILING))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                .addGroup(jPanel2Layout.createSequentialGroup()
@@ -355,10 +363,12 @@ public class JDFacturaVenta extends javax.swing.JDialog {
       jScrollPane1.setViewportView(jTable1);
 
       btnCancelar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px-Crystal_Clear_action_button_cancel.png"))); // NOI18N
+      btnCancelar.setMnemonic('c');
       btnCancelar.setText("Cancelar");
       btnCancelar.setName("cancelar"); // NOI18N
 
       btnAceptar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px-Crystal_Clear_action_apply.png"))); // NOI18N
+      btnAceptar.setMnemonic('a');
       btnAceptar.setText("Aceptar");
       btnAceptar.setName("aceptar"); // NOI18N
       btnAceptar.setPreferredSize(new java.awt.Dimension(111, 41));
@@ -374,14 +384,9 @@ public class JDFacturaVenta extends javax.swing.JDialog {
       bBuscarProducto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/lupa.png"))); // NOI18N
       bBuscarProducto.setToolTipText("Buscar Producto");
       bBuscarProducto.setName("btnProducto"); // NOI18N
-      bBuscarProducto.setNextFocusableComponent(tfCantidad);
+      bBuscarProducto.setRequestFocusEnabled(false);
 
       jLabel9.setText("Nombre");
-
-      tfProductoNombre.setColumns(10);
-      tfProductoNombre.setEditable(false);
-      tfProductoNombre.setFont(new java.awt.Font("Tahoma", 1, 11));
-      tfProductoNombre.setRequestFocusEnabled(false);
 
       jLabel10.setText("Cantidad");
 
@@ -389,7 +394,8 @@ public class JDFacturaVenta extends javax.swing.JDialog {
 
       jLabel17.setText("IVA %");
 
-      tfCantidad.setColumns(4);
+      tfCantidad.setColumns(5);
+      tfCantidad.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
       tfCantidad.setName("productoCant"); // NOI18N
       tfCantidad.addFocusListener(new java.awt.event.FocusAdapter() {
          public void focusGained(java.awt.event.FocusEvent evt) {
@@ -403,6 +409,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
       });
 
       tfPrecioUnitario.setColumns(8);
+      tfPrecioUnitario.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
       tfPrecioUnitario.setToolTipText("Precio venta + Margen + Lista Precios");
       tfPrecioUnitario.setName("productoPrecio"); // NOI18N
       tfPrecioUnitario.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -413,13 +420,19 @@ public class JDFacturaVenta extends javax.swing.JDialog {
 
       tfProductoIVA.setColumns(4);
       tfProductoIVA.setEditable(false);
+      tfProductoIVA.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
       tfProductoIVA.setFocusable(false);
       tfProductoIVA.setRequestFocusEnabled(false);
 
       btnADD.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px-Crystal_Clear_action_edit_add.png"))); // NOI18N
       btnADD.setToolTipText("Agragar producto");
       btnADD.setName("add"); // NOI18N
-      btnADD.setNextFocusableComponent(tfProductoCodigo);
+      btnADD.setRequestFocusEnabled(false);
+      btnADD.addFocusListener(new java.awt.event.FocusAdapter() {
+         public void focusLost(java.awt.event.FocusEvent evt) {
+            btnADDFocusLost(evt);
+         }
+      });
 
       btnDEL.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px-Crystal_Clear_action_edit_remove.png"))); // NOI18N
       btnDEL.setToolTipText("Quitar producto");
@@ -429,13 +442,22 @@ public class JDFacturaVenta extends javax.swing.JDialog {
       jLabel21.setText("Desc");
 
       tfProductoDesc.setColumns(4);
+      tfProductoDesc.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
       tfProductoDesc.setText("0");
       tfProductoDesc.setToolTipText("Descuento sobre Precio Unitario");
       tfProductoDesc.setNextFocusableComponent(btnADD);
+      tfProductoDesc.addFocusListener(new java.awt.event.FocusAdapter() {
+         public void focusGained(java.awt.event.FocusEvent evt) {
+            tfProductoDescFocusGained(evt);
+         }
+      });
 
       cbDesc.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "%", "$" }));
-      cbDesc.setToolTipText("<html>Margen aplicado al precio\n<br>% - Porcentual\n<br>$  - Monto fijo \n</html>");
-      cbDesc.setNextFocusableComponent(tfProductoDesc);
+      cbDesc.setToolTipText("<html>Margen de descuento aplicado al precio\n<br>% - Porcentual\n<br>$  - Monto fijo \n</html>");
+
+      labelCodigoNoRegistrado.setFont(new java.awt.Font("Tahoma", 1, 12));
+      labelCodigoNoRegistrado.setForeground(new java.awt.Color(255, 51, 0));
+      labelCodigoNoRegistrado.setText("¡CÓDIGO NO REGISTRADO!");
 
       javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
       jPanel3.setLayout(jPanel3Layout);
@@ -452,7 +474,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
                .addGroup(jPanel3Layout.createSequentialGroup()
                   .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                      .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(tfCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(tfCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel11)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -467,16 +489,18 @@ public class JDFacturaVenta extends javax.swing.JDialog {
                         .addComponent(cbDesc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(tfProductoDesc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                     .addComponent(tfProductoNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 329, javax.swing.GroupLayout.PREFERRED_SIZE))
-                  .addGap(25, 25, 25)
+                     .addComponent(cbProductos, javax.swing.GroupLayout.PREFERRED_SIZE, 369, javax.swing.GroupLayout.PREFERRED_SIZE))
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                   .addComponent(btnADD, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
                   .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                   .addComponent(btnDEL, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE))
                .addGroup(jPanel3Layout.createSequentialGroup()
-                  .addComponent(tfProductoCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
+                  .addComponent(tfProductoCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
                   .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                  .addComponent(bBuscarProducto, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)))
-            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                  .addComponent(bBuscarProducto, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
+                  .addGap(18, 18, 18)
+                  .addComponent(labelCodigoNoRegistrado)))
+            .addContainerGap(163, Short.MAX_VALUE))
       );
       jPanel3Layout.setVerticalGroup(
          jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -484,11 +508,12 @@ public class JDFacturaVenta extends javax.swing.JDialog {
             .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                .addComponent(tfProductoCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                .addComponent(jLabel8)
-               .addComponent(bBuscarProducto, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+               .addComponent(bBuscarProducto, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+               .addComponent(labelCodigoNoRegistrado))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                .addComponent(jLabel9)
-               .addComponent(tfProductoNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+               .addComponent(cbProductos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
             .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                .addComponent(jLabel10)
@@ -500,11 +525,11 @@ public class JDFacturaVenta extends javax.swing.JDialog {
                .addComponent(jLabel21)
                .addComponent(tfProductoDesc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                .addComponent(cbDesc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-         .addGroup(jPanel3Layout.createSequentialGroup()
-            .addGap(47, 47, 47)
-            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-               .addComponent(btnDEL)
-               .addComponent(btnADD)))
+         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+            .addContainerGap()
+            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+               .addComponent(btnADD, javax.swing.GroupLayout.Alignment.TRAILING, 0, 30, Short.MAX_VALUE)
+               .addComponent(btnDEL, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 30, Short.MAX_VALUE)))
       );
 
       jPanel6.setBorder(javax.swing.BorderFactory.createTitledBorder("Resumen"));
@@ -606,6 +631,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
       );
 
       btnFacturar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px-Crystal_Clear_action_fileprint.png"))); // NOI18N
+      btnFacturar.setMnemonic('f');
       btnFacturar.setText("Facturar");
       btnFacturar.setName("facturar"); // NOI18N
 
@@ -655,6 +681,16 @@ public class JDFacturaVenta extends javax.swing.JDialog {
       btnAnular.setText("Anular");
       btnAnular.setName("facturar"); // NOI18N
 
+      jCheckBox1.setMnemonic('o');
+      jCheckBox1.setText("Ocultar Datos facturación");
+      jCheckBox1.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+      jCheckBox1.setRequestFocusEnabled(false);
+      jCheckBox1.addActionListener(new java.awt.event.ActionListener() {
+         public void actionPerformed(java.awt.event.ActionEvent evt) {
+            jCheckBox1ActionPerformed(evt);
+         }
+      });
+
       javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
       getContentPane().setLayout(layout);
       layout.setHorizontalGroup(
@@ -663,7 +699,6 @@ public class JDFacturaVenta extends javax.swing.JDialog {
             .addContainerGap()
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-               .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                .addGroup(layout.createSequentialGroup()
                   .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                   .addGap(18, 18, 18)
@@ -674,14 +709,18 @@ public class JDFacturaVenta extends javax.swing.JDialog {
                   .addComponent(btnAceptar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                   .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                   .addComponent(btnCancelar))
-               .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-               .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 717, Short.MAX_VALUE))
+               .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 717, Short.MAX_VALUE)
+               .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 717, Short.MAX_VALUE)
+               .addComponent(jCheckBox1, javax.swing.GroupLayout.Alignment.TRAILING)
+               .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 717, Short.MAX_VALUE))
             .addContainerGap())
       );
       layout.setVerticalGroup(
          layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
          .addGroup(layout.createSequentialGroup()
             .addContainerGap()
+            .addComponent(jCheckBox1)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -693,11 +732,11 @@ public class JDFacturaVenta extends javax.swing.JDialog {
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                  .addComponent(btnAceptar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                  .addComponent(btnFacturar)
-                  .addComponent(btnAnular))
-               .addComponent(btnCancelar))
-            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                  .addComponent(btnAceptar, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                  .addComponent(btnFacturar, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                  .addComponent(btnAnular, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+               .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addContainerGap(13, Short.MAX_VALUE))
       );
 
       pack();
@@ -743,6 +782,19 @@ public class JDFacturaVenta extends javax.swing.JDialog {
       tfCantidad.setSelectionStart(0);
     }//GEN-LAST:event_tfCantidadFocusGained
 
+    private void btnADDFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_btnADDFocusLost
+      tfProductoCodigo.requestFocus();
+    }//GEN-LAST:event_btnADDFocusLost
+
+    private void tfProductoDescFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfProductoDescFocusGained
+      tfProductoDesc.setSelectionStart(0);
+    }//GEN-LAST:event_tfProductoDescFocusGained
+
+    private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
+      jPanel2.setVisible(!jCheckBox1.isSelected());
+      pack();
+    }//GEN-LAST:event_jCheckBox1ActionPerformed
+
    // Variables declaration - do not modify//GEN-BEGIN:variables
    private javax.swing.JButton bBuscarProducto;
    private javax.swing.JButton btnADD;
@@ -759,9 +811,11 @@ public class JDFacturaVenta extends javax.swing.JDialog {
    private javax.swing.JComboBox cbFacturaTipo;
    private javax.swing.JComboBox cbFormaPago;
    private javax.swing.JComboBox cbListaPrecio;
+   private javax.swing.JComboBox cbProductos;
    private javax.swing.JComboBox cbSucursal;
    private javax.swing.JComboBox cbUsuario;
    private com.toedter.calendar.JDateChooser dcFechaFactura;
+   private javax.swing.JCheckBox jCheckBox1;
    private javax.swing.JLabel jLabel1;
    private javax.swing.JLabel jLabel10;
    private javax.swing.JLabel jLabel11;
@@ -785,6 +839,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
    private javax.swing.JTable jTable1;
    private javax.swing.JLabel labeFecha;
    private javax.swing.JLabel labelCaja;
+   private javax.swing.JLabel labelCodigoNoRegistrado;
    private javax.swing.JLabel labelDias;
    private javax.swing.JLabel labelFormaPago;
    private javax.swing.JLabel labelLetra;
@@ -803,7 +858,6 @@ public class JDFacturaVenta extends javax.swing.JDialog {
    private javax.swing.JTextField tfProductoCodigo;
    private javax.swing.JTextField tfProductoDesc;
    private javax.swing.JTextField tfProductoIVA;
-   private javax.swing.JTextField tfProductoNombre;
    private javax.swing.JTextField tfRemito;
    private javax.swing.JTextField tfTotal;
    private javax.swing.JTextField tfTotalDesc;
@@ -826,9 +880,9 @@ public class JDFacturaVenta extends javax.swing.JDialog {
    }
 
    public void setListener(Object o) {
-      btnADD.addActionListener((ActionListener) o);
-      btnDEL.addActionListener((ActionListener) o);
-      bBuscarProducto.addActionListener((ActionListener) o);
+//      btnADD.addActionListener((ActionListener) o);
+//      btnDEL.addActionListener((ActionListener) o);
+//      bBuscarProducto.addActionListener((ActionListener) o);
 //      jTable1.addMouseListener((MouseListener) o);
       btnAceptar.addActionListener((ActionListener) o);
       btnCancelar.addActionListener((ActionListener) o);
@@ -841,7 +895,12 @@ public class JDFacturaVenta extends javax.swing.JDialog {
       tfMonto.addKeyListener((KeyListener) o);
    }
 
+
    // <editor-fold defaultstate="collapsed" desc="GETTERS">
+   public JComboBox getCbProductos() {
+      return cbProductos;
+   }
+
    public JTable getjTable1() {
       return jTable1;
    }
@@ -890,8 +949,8 @@ public class JDFacturaVenta extends javax.swing.JDialog {
       return tfPrecioUnitario.getText().trim();
    }
 
-   public String getTfProductoCodigo() {
-      return tfProductoCodigo.getText().trim();
+   public JTextField getTfProductoCodigo() {
+      return tfProductoCodigo;
    }
 
    public String getTfProductoDesc() {
@@ -900,10 +959,6 @@ public class JDFacturaVenta extends javax.swing.JDialog {
 
    public String getTfProductoIVA() {
       return tfProductoIVA.getText().trim();
-   }
-
-   public String getTfProductoNombre() {
-      return tfProductoNombre.getText().trim();
    }
 
    public String getTfTotal() {
@@ -975,10 +1030,6 @@ public class JDFacturaVenta extends javax.swing.JDialog {
       this.tfProductoIVA.setText(tfProductoIVA);
    }
 
-   public void setTfProductoNombre(String tfProductoNombre) {
-      this.tfProductoNombre.setText(tfProductoNombre);
-   }
-
    public void setTfTotal(String tfTotal2) {
       this.tfTotal.setText(tfTotal2);
    }
@@ -999,8 +1050,8 @@ public class JDFacturaVenta extends javax.swing.JDialog {
       this.tfTotalDesc.setText(TotalDescuento);
    }
 
-   public String getTfCambio() {
-      return tfCambio.getText();
+   public JTextField getTfCambio() {
+      return tfCambio;
    }
 
    public void setTfCambio(String tfCambio) {
@@ -1034,8 +1085,12 @@ public class JDFacturaVenta extends javax.swing.JDialog {
       tfCantidad.requestFocus();
    }
 
-   public String getTfNumMovimiento() {
-      return tfNumMovimiento.getText();
+   public JTextField getTfNumMovimiento() {
+      return tfNumMovimiento;
+   }
+
+   public JLabel getLabelNumMovimiento() {
+      return labelNumMovimiento;
    }
 
    public void setTfNumMovimiento(String tfMovimientoInterno) {
@@ -1095,17 +1150,46 @@ public class JDFacturaVenta extends javax.swing.JDialog {
       return btnAnular;
    }
 
+   public JButton getbBuscarProducto() {
+      return bBuscarProducto;
+   }
+
+   public JButton getBtnADD() {
+      return btnADD;
+   }
+
+   public JButton getBtnBuscarRemito() {
+      return btnBuscarRemito;
+   }
+
+   public JButton getBtnCliente() {
+      return btnCliente;
+   }
+
+   public JButton getBtnDEL() {
+      return btnDEL;
+   }
+
    /**
     * 1 = FacturaVenta, 2 = Presupuesto, 3 = Remito
     * @return
     */
-   public int getModoVista() {
+   public int getModoUso() {
       return modoVista;
    }
 
    public void hidePanelCambio() {
       jPanel4.setVisible(false);
    }
+
+   public void setLabelCodigoNoRegistradoVisible(boolean visible) {
+      labelCodigoNoRegistrado.setVisible(visible);
+   }
+
+   public JPanel getjPanel2() {
+      return jPanel2;
+   }
+   
 
 }
 

@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
 package entity;
 
@@ -51,13 +47,9 @@ public class CtacteCliente implements Serializable {
    @Column(name = "entregado", nullable = false)
    private double entregado;
    @Basic(optional = false)
-   @Column(name = "fecha_carga", nullable = false)
-   @Temporal(TemporalType.DATE)
+   @Column(name = "fecha_carga", nullable = false, updatable=false, columnDefinition="timestamp with time zone NOT NULL DEFAULT now()")
+   @Temporal(TemporalType.TIMESTAMP)
    private Date fechaCarga;
-   @Basic(optional = false)
-   @Column(name = "hora_carga", nullable = false)
-   @Temporal(TemporalType.TIME)
-   private Date horaCarga;
    @JoinColumn(name = "factura", referencedColumnName = "id", nullable = false)
    @ManyToOne(optional = false)
    private FacturaVenta factura;
@@ -67,16 +59,6 @@ public class CtacteCliente implements Serializable {
 
    public CtacteCliente(Integer id) {
       this.id = id;
-   }
-
-   public CtacteCliente(Integer id, short dias, double importe, short estado, double entregado, Date fechaCarga, Date horaCarga) {
-      this.id = id;
-      this.dias = dias;
-      this.importe = importe;
-      this.estado = estado;
-      this.entregado = entregado;
-      this.fechaCarga = fechaCarga;
-      this.horaCarga = horaCarga;
    }
 
    public Integer getId() {
@@ -129,14 +111,6 @@ public class CtacteCliente implements Serializable {
 
    public void setFechaCarga(Date fechaCarga) {
       this.fechaCarga = fechaCarga;
-   }
-
-   public Date getHoraCarga() {
-      return horaCarga;
-   }
-
-   public void setHoraCarga(Date horaCarga) {
-      this.horaCarga = horaCarga;
    }
 
    public FacturaVenta getFactura() {

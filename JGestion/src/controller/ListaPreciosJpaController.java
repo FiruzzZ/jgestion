@@ -7,7 +7,7 @@ import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import entity.DetalleListaPrecios;
 import entity.Rubro;
-import entity.UTIL;
+import generics.UTIL;
 import gui.JDABM;
 import gui.JDContenedor;
 import gui.PanelABMListaPrecio;
@@ -230,21 +230,21 @@ public class ListaPreciosJpaController implements ActionListener, MouseListener,
       abm.setVisible(true);
    }
 
-   private void setPanel(ListaPrecios EL_OBJECT) {
-      System.out.println("id=" + EL_OBJECT.getId());
-      if (EL_OBJECT.getMargenGeneral()) {
-         panel.setTfMargenGeneral(String.valueOf(EL_OBJECT.getMargen()));
+   private void setPanel(ListaPrecios listaPrecios) {
+      if (listaPrecios.getMargenGeneral()) {
+         panel.setTfMargenGeneral(String.valueOf(listaPrecios.getMargen()));
       } else {
          panel.setTfMargenGeneral("");
       }
-      panel.getCheckMargenGeneral().setSelected(EL_OBJECT.getMargenGeneral());
-      panel.setTfNombre(EL_OBJECT.getNombre());
-      panel.setTfMargenGeneral(EL_OBJECT.getMargen().toString());
-      cargarRubrosAfectados(EL_OBJECT.getDetalleListaPreciosList());
+      panel.getCheckMargenGeneral().setSelected(listaPrecios.getMargenGeneral());
+      panel.setTfNombre(listaPrecios.getNombre());
+      panel.setTfMargenGeneral(listaPrecios.getMargen().toString());
+      cargarRubrosAfectados(listaPrecios.getDetalleListaPreciosList());
    }
 
    private void setEntity() throws MessageException, Exception {
-      if (panel.getTfNombre().length() < 1) {
+      String nombre = panel.getTfNombre().trim();
+      if (nombre.length() < 1) {
          throw new MessageException("Nombre no válido");
       }
 
@@ -265,11 +265,10 @@ public class ListaPreciosJpaController implements ActionListener, MouseListener,
 
       ////////////////////////////////////////////////////////
       if (EL_OBJECT == null) {
-         System.out.println("es null");
          EL_OBJECT = new ListaPrecios();
       }
 
-      EL_OBJECT.setNombre(panel.getTfNombre().toUpperCase());
+      EL_OBJECT.setNombre(nombre.toUpperCase());
       EL_OBJECT.setMargenGeneral(panel.getCheckMargenGeneral().isSelected());
       //si elegió margen general
       if (EL_OBJECT.getMargenGeneral()) {
@@ -294,24 +293,20 @@ public class ListaPreciosJpaController implements ActionListener, MouseListener,
          EL_OBJECT.setDetalleListaPreciosList(new ArrayList<DetalleListaPrecios>());
 
          for (int i = dtm.getRowCount() - 1; i >= 0; i--) {
-            System.out.println("cargando detalle");
             detalle = new DetalleListaPrecios();
             detalle.setListaPrecio(EL_OBJECT);
             detalle.setRubro((Rubro) dtm.getValueAt(i, 1));
             detalle.setMargen(Double.valueOf(dtm.getValueAt(i, 2).toString()));
             EL_OBJECT.getDetalleListaPreciosList().add(detalle);
          }
-
       }
-
    }
 
    private void removeDetallesListaPrecios(int id) throws Exception {
       EntityManager em = getEntityManager();
       try {
          em.getTransaction().begin();
-         int i = em.createNativeQuery("delete from detalle_lista_precios o where o.lista_precio = " + id).executeUpdate();
-         System.out.println("cant detalle_ borrado: " + i);
+         em.createNativeQuery("delete from detalle_lista_precios o where o.lista_precio = " + id).executeUpdate();
          em.getTransaction().commit();
       } catch (Exception e) {
          throw e;

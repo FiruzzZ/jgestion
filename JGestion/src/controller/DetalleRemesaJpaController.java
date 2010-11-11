@@ -34,7 +34,7 @@ public class DetalleRemesaJpaController {
             em.getTransaction().begin();
             Remesa remesa = detalleRemesa.getRemesa();
             if (remesa != null) {
-                remesa = em.getReference(remesa.getClass(), remesa.getId());
+                remesa = em.getReference(remesa.getClass(), remesa.getNumero());
                 detalleRemesa.setRemesa(remesa);
             }
             em.persist(detalleRemesa);
@@ -59,7 +59,7 @@ public class DetalleRemesaJpaController {
             Remesa remesaOld = persistentDetalleRemesa.getRemesa();
             Remesa remesaNew = detalleRemesa.getRemesa();
             if (remesaNew != null) {
-                remesaNew = em.getReference(remesaNew.getClass(), remesaNew.getId());
+                remesaNew = em.getReference(remesaNew.getClass(), remesaNew.getNumero());
                 detalleRemesa.setRemesa(remesaNew);
             }
             detalleRemesa = em.merge(detalleRemesa);

@@ -8,13 +8,13 @@ import javax.persistence.*;
  * @author FiruzzzZ
  */
 @Entity
-@Table(name = "detalles_compra")
+@Table(name = "detalle_compra")
 @NamedQueries({
-    @NamedQuery(name = "DetallesCompra.findAll", query = "SELECT d FROM DetallesCompra d"),
-    @NamedQuery(name = "DetallesCompra.findById", query = "SELECT d FROM DetallesCompra d WHERE d.id = :id")
+    @NamedQuery(name = "DetalleCompra.findAll", query = "SELECT d FROM DetalleCompra d"),
+    @NamedQuery(name = "DetalleCompra.findById", query = "SELECT d FROM DetalleCompra d WHERE d.id = :id")
 })
 
-public class DetallesCompra implements Serializable {
+public class DetalleCompra implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
@@ -34,14 +34,14 @@ public class DetallesCompra implements Serializable {
     @ManyToOne(optional = false)
     private Producto producto;
 
-    public DetallesCompra() {
+    public DetalleCompra() {
     }
 
-    public DetallesCompra(Integer id) {
+    public DetalleCompra(Integer id) {
         this.id = id;
     }
 
-    public DetallesCompra(Integer id, int cantidad, Double precioUnitario) {
+    public DetalleCompra(Integer id, int cantidad, Double precioUnitario) {
         this.id = id;
         this.cantidad = cantidad;
         this.precioUnitario = precioUnitario;
@@ -97,10 +97,10 @@ public class DetallesCompra implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof DetallesCompra)) {
+        if (!(object instanceof DetalleCompra)) {
             return false;
         }
-        DetallesCompra other = (DetallesCompra) object;
+        DetalleCompra other = (DetalleCompra) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }

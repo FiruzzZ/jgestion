@@ -91,6 +91,7 @@
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
           <Image iconType="3" name="/iconos/add.png"/>
         </Property>
+        <Property name="mnemonic" type="int" value="110"/>
         <Property name="text" type="java.lang.String" value="Nuevo"/>
         <Property name="name" type="java.lang.String" value="new" noResource="true"/>
       </Properties>
@@ -100,6 +101,7 @@
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
           <Image iconType="3" name="/iconos/32px_configure.png"/>
         </Property>
+        <Property name="mnemonic" type="int" value="109"/>
         <Property name="text" type="java.lang.String" value="Modificar"/>
         <Property name="name" type="java.lang.String" value="edit" noResource="true"/>
       </Properties>
@@ -112,6 +114,7 @@
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
           <Image iconType="3" name="/iconos/32px-Crystal_Clear_action_edit_remove.png"/>
         </Property>
+        <Property name="mnemonic" type="int" value="98"/>
         <Property name="text" type="java.lang.String" value="Borrar"/>
         <Property name="name" type="java.lang.String" value="del" noResource="true"/>
       </Properties>
@@ -156,6 +159,7 @@
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
           <Image iconType="3" name="/iconos/32px-Crystal_Clear_action_fileprint.png"/>
         </Property>
+        <Property name="mnemonic" type="int" value="105"/>
         <Property name="text" type="java.lang.String" value="Imprimir"/>
         <Property name="name" type="java.lang.String" value="print" noResource="true"/>
       </Properties>

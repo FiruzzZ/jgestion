@@ -11,7 +11,7 @@ import entity.Contribuyente;
 import entity.Departamento;
 import entity.Municipio;
 import entity.Provincia;
-import entity.UTIL;
+import generics.UTIL;
 import gui.JDABM;
 import gui.JDContenedor;
 import gui.PanelABMClientes;
@@ -23,6 +23,8 @@ import java.awt.event.MouseListener;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.NoResultException;
+import javax.swing.JFrame;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -138,7 +140,7 @@ public class ClienteJpaController implements ActionListener, MouseListener, KeyL
    }
    // </editor-fold>
 
-   public void initContenedor(java.awt.Frame frame, boolean modal) {
+   public void initContenedor(JFrame frame, boolean modal) {
       contenedor = new JDContenedor(frame, modal, "ABM - " + CLASS_NAME + "s");
       contenedor.hideBtmEliminar();
       UTIL.getDefaultTableModel(contenedor.getjTable1(), colsName, colsWidth);
@@ -148,7 +150,7 @@ public class ClienteJpaController implements ActionListener, MouseListener, KeyL
       contenedor.setVisible(true);
    }
 
-   private void cargarDTMContenedor(javax.swing.table.DefaultTableModel dtm, String query) {
+   private void cargarDTMContenedor(DefaultTableModel dtm, String query) {
       UTIL.limpiarDtm(dtm);
       java.util.List<Cliente> l;
       if (query == null || query.length() < 1) {

@@ -14,12 +14,14 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import entity.Permisos;
-import entity.UTIL;
+import generics.UTIL;
 import gui.JDABM;
 import gui.JDContenedor;
 import gui.JDLogin;
 import gui.JDcambiarPass;
 import gui.PanelABMUsuarios;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseListener;
@@ -29,6 +31,7 @@ import java.util.List;
 import javax.persistence.NoResultException;
 import javax.swing.JFrame;
 import javax.swing.table.DefaultTableModel;
+import oracle.toplink.essentials.exceptions.DatabaseException;
 
 /**
  *
@@ -201,17 +204,14 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
 
    public Usuario chechLoginUser(String nick, String pwd) throws MessageException, Exception {
       try {
-         CURRENT_USER = (Usuario) DAO.getEntityManager().createNativeQuery("SELECT u.* FROM Usuario u"
-                 + " WHERE u.nick ='" + nick + "' AND u.pass = '" + pwd + "' ", Usuario.class).getSingleResult();
+         CURRENT_USER = (Usuario) DAO.getNativeQuerySingleResult("SELECT u.* FROM Usuario u"
+                 + " WHERE u.nick ='" + nick + "' AND u.pass = '" + pwd + "' ", Usuario.class);
          if (CURRENT_USER != null && CURRENT_USER.getEstado() != 1) {
             CURRENT_USER = null;
             throw new MessageException("Usuario deshabilitado");
          }
       } catch (NoResultException ex) {
-         System.out.println("NoResult");
          throw new MessageException("Usuario/Contraseña no válido");
-      } catch (Exception ex) {
-         throw ex;
       }
       return CURRENT_USER;
    }
@@ -229,10 +229,10 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
    }
 
    public void initLogin(JFrame frame) {
-      CURRENT_USER = null;
       jDLogin = new JDLogin(frame, true);
       jDLogin.setListener(this);
-      jDLogin.setLocation(200, 200);
+      Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+      jDLogin.setLocation((screenSize.width - jDLogin.getWidth()) / 2, (screenSize.height - jDLogin.getHeight()) / 2);
       jDLogin.setAlwaysOnTop(true);
       jDLogin.setVisible(true);
 
@@ -357,9 +357,9 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
 
    private void cargarDTM(DefaultTableModel dtm, String query) {
       UTIL.limpiarDtm(dtm);
-      java.util.List<Usuario> l;
+      List<Usuario> l;
       if (query == null) {
-         l = DAO.getEntityManager().createNamedQuery(CLASS_NAME + ".findAll").getResultList();
+         l = DAO.getEntityManager().createNamedQuery(CLASS_NAME + ".findAll").setHint("toplink.refresh", true).getResultList();
       } else { // para cuando se usa el Buscador del ABM
          l = DAO.getEntityManager().createNativeQuery(query, Usuario.class).getResultList();
       }
@@ -374,6 +374,7 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
       }
    }
 
+   @Override
    public void actionPerformed(ActionEvent e) {
       try {
          if (e.getSource().getClass().equals(javax.swing.JButton.class)) {
@@ -478,9 +479,7 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
 
    private void setAndPersistEntity() throws MessageException, PreexistingEntityException, Exception {
       if (EL_OBJECT == null) {
-         System.out.println("null");
          EL_OBJECT = new Usuario();
-         EL_OBJECT.setFechaalta(new Date());
          EL_OBJECT.setPermisosCajaList(new ArrayList<PermisosCaja>());
          EL_OBJECT.setNick(panel.getTfNick());
       } else {
@@ -531,9 +530,7 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
          EL_OBJECT.setPermisos(setPermisos(permisos));
          create(EL_OBJECT);
       } else {
-//         permisos =
          setPermisos(EL_OBJECT.getPermisos());
-//         EL_OBJECT.setPermisos(setPermisos(permisos));
          edit(EL_OBJECT);
       }
    }
@@ -553,7 +550,7 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
       return permisos;
    }
 
-   private java.util.List<PermisosCaja> getPermisosCaja(List<PermisosCaja> permisosCajaList) {
+   private List<PermisosCaja> getPermisosCaja(List<PermisosCaja> permisosCajaList) {
       List<Caja> cajaList = new ArrayList<Caja>();
       for (PermisosCaja permisosCaja : permisosCajaList) {
          cajaList.add(permisosCaja.getCaja());
@@ -597,12 +594,20 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
 
    public static void cerrarSessionActual() {
       System.out.println("cerrando session:" + getCurrentUser());
+      CURRENT_USER = null;
    }
 
+   /**
+    * Verifica si el Usuario (actualmente logeado) tiene permiso para realizar
+    * la acción.
+    * @param permisoToCheck Permiso a checkear.
+    * @throws MessageException Si no tiene permiso o si no se pudo conectarse
+    * con la base de datos para checkear el permiso.
+    */
    public static void checkPermisos(PermisoDe permisoToCheck) throws MessageException {
       CURRENT_USER = DAO.getEntityManager().find(Usuario.class, CURRENT_USER.getId());
       if (CURRENT_USER == null) {
-         throw new MessageException("Error getting refreshed Usuario entity.");
+         throw new MessageException("Error chequeando los permisos del usuario.\nVerificar conexión con la Base de datos");
       }
       Boolean permitido = null;
       if (PermisoDe.ABM_PRODUCTOS.equals(permisoToCheck)) {

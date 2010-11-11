@@ -163,7 +163,7 @@ public class JDDatosEmpresa extends javax.swing.JDialog {
 
       jLabel12.setText("Inicio Actv.");
 
-      dcInicioActividad.setDateFormatString(entity.UTIL.DATE_FORMAT.toPattern());
+      dcInicioActividad.setDateFormatString(generics.UTIL.DATE_FORMAT.toPattern());
 
       javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
       getContentPane().setLayout(layout);

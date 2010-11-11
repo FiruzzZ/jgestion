@@ -56,9 +56,9 @@ public class PanelBuscadorMovimientosPro extends javax.swing.JPanel {
 
       jLabel7.setText("Hasta");
 
-      dcDesde.setDateFormatString(entity.UTIL.DATE_FORMAT.toPattern());
+      dcDesde.setDateFormatString(generics.UTIL.DATE_FORMAT.toPattern());
 
-      dcHasta.setDateFormatString(entity.UTIL.DATE_FORMAT.toPattern());
+      dcHasta.setDateFormatString(generics.UTIL.DATE_FORMAT.toPattern());
 
       jLabel8.setText("Desde");
 
@@ -242,7 +242,7 @@ public class PanelBuscadorMovimientosPro extends javax.swing.JPanel {
       return cbRubros;
    }
 
-   public JComboBox getCbSubRubro() {
+   public JComboBox getCbSubRubros() {
       return cbSubRubro;
    }
 

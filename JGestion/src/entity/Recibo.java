@@ -1,6 +1,7 @@
 
 package entity;
 
+import generics.UTIL;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -28,12 +29,9 @@ import javax.persistence.TemporalType;
 @Table(name = "recibo")
 @NamedQueries({
    @NamedQuery(name = "Recibo.findAll", query = "SELECT r FROM Recibo r"),
-   @NamedQuery(name = "Recibo.findByFechaCarga", query = "SELECT r FROM Recibo r WHERE r.fechaCarga = :fechaCarga"),
-   @NamedQuery(name = "Recibo.findByHoraCarga", query = "SELECT r FROM Recibo r WHERE r.horaCarga = :horaCarga"),
-   @NamedQuery(name = "Recibo.findByMonto", query = "SELECT r FROM Recibo r WHERE r.monto = :monto"),
-   @NamedQuery(name = "Recibo.findByFechaRecibo", query = "SELECT r FROM Recibo r WHERE r.fechaRecibo = :fechaRecibo"),
-   @NamedQuery(name = "Recibo.findByEstado", query = "SELECT r FROM Recibo r WHERE r.estado = :estado"),
-   @NamedQuery(name = "Recibo.findById", query = "SELECT r FROM Recibo r WHERE r.id = :id")})
+   @NamedQuery(name = "Recibo.findById", query = "SELECT r FROM Recibo r WHERE r.id = :id"),
+   @NamedQuery(name = "Recibo.findByEstado", query = "SELECT r FROM Recibo r WHERE r.estado = :estado")
+})
 public class Recibo implements Serializable {
    private static final long serialVersionUID = 1L;
    @Id
@@ -42,13 +40,9 @@ public class Recibo implements Serializable {
 //   @GeneratedValue(strategy = GenerationType.IDENTITY) <-- NO ES AUTOGENERADO!
    private Long id;
    @Basic(optional = false)
-   @Column(name = "fecha_carga", nullable = false)
-   @Temporal(TemporalType.DATE)
+   @Column(name = "fecha_carga", nullable = false, insertable=false, updatable=false, columnDefinition="timestamp with time zone NOT NULL DEFAULT now()")
+   @Temporal(TemporalType.TIMESTAMP)
    private Date fechaCarga;
-   @Basic(optional = false)
-   @Column(name = "hora_carga", nullable = false)
-   @Temporal(TemporalType.TIME)
-   private Date horaCarga;
    @Basic(optional = false)
    @Column(name = "monto", nullable = false)
    private double monto;
@@ -78,29 +72,8 @@ public class Recibo implements Serializable {
       this.id = id;
    }
 
-   public Recibo(Long id, Date fechaCarga, Date horaCarga, double monto, Date fechaRecibo, boolean estado) {
-      this.id = id;
-      this.fechaCarga = fechaCarga;
-      this.horaCarga = horaCarga;
-      this.monto = monto;
-      this.fechaRecibo = fechaRecibo;
-      this.estado = estado;
-   }
-
    public Date getFechaCarga() {
       return fechaCarga;
-   }
-
-   public void setFechaCarga(Date fechaCarga) {
-      this.fechaCarga = fechaCarga;
-   }
-
-   public Date getHoraCarga() {
-      return horaCarga;
-   }
-
-   public void setHoraCarga(Date horaCarga) {
-      this.horaCarga = horaCarga;
    }
 
    public double getMonto() {

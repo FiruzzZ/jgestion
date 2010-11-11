@@ -15,7 +15,7 @@ import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import entity.DetallePresupuesto;
 import entity.ListaPrecios;
-import entity.UTIL;
+import generics.UTIL;
 import gui.JDBuscadorReRe;
 import gui.JDFacturaVenta;
 import java.awt.event.ActionListener;
@@ -148,9 +148,33 @@ public class PresupuestoJpaController implements ActionListener, KeyListener {
       }
    }// </editor-fold>
 
+   /**
+    * Inicializa una {@link gui.JDFacturaVenta} con un Object listener <code>this</code>.
+    * Implementa la actionListener del botón Aceptar
+    * @param frame
+    * @param modal to be or not to be...
+    * @param setVisible cuando se va levantar la gui desde el buscador es <code>false</code>
+    * @throws MessageException
+    */
    public void initPresupuesto(javax.swing.JFrame frame, boolean modal, boolean setVisible) throws MessageException {
       facturaVentaController.initFacturaVenta(frame, modal, this, 2, setVisible);
+      facturaVentaController.getContenedor().getBtnAceptar().addActionListener(new ActionListener() {
 
+         @Override
+         public void actionPerformed(ActionEvent e) {
+            try {
+               facturaVentaController.getContenedor().getBtnAceptar().setEnabled(false);
+               doPresupuesto();
+            } catch (MessageException ex) {
+               facturaVentaController.getContenedor().showMessage(ex.getMessage(), CLASS_NAME, 2);
+            } catch (Exception ex) {
+               facturaVentaController.getContenedor().showMessage(ex.getMessage(), CLASS_NAME, 2);
+               ex.printStackTrace();
+            } finally {
+               facturaVentaController.getContenedor().getBtnAceptar().setEnabled(true);
+            }
+         }
+      });
    }
 
    public void actionPerformed(ActionEvent e) {
@@ -158,16 +182,7 @@ public class PresupuestoJpaController implements ActionListener, KeyListener {
       //todo las demás acciones son manejadas (delegadas) -> FacturaVentaJpaController
       if (e.getSource().getClass().equals(javax.swing.JButton.class)) {
          javax.swing.JButton boton = (javax.swing.JButton) e.getSource();
-         if (boton.getName().equalsIgnoreCase("aceptar")) {
-            try {
-               doPresupuesto();
-            } catch (MessageException ex) {
-               facturaVentaController.getContenedor().showMessage(ex.getMessage(), CLASS_NAME, 2);
-            } catch (Exception ex) {
-               facturaVentaController.getContenedor().showMessage(ex.getMessage(), CLASS_NAME, 2);
-               ex.printStackTrace();
-            }
-         } else if (boton.getName().equalsIgnoreCase("filtrarReRe")) {
+         if (boton.getName().equalsIgnoreCase("filtrarReRe")) {
             try {
                armarQuery();
             } catch (MessageException ex) {
@@ -200,7 +215,14 @@ public class PresupuestoJpaController implements ActionListener, KeyListener {
    public void keyPressed(KeyEvent e) {
    }
 
-   private void doPresupuesto() throws MessageException, Exception {
+   /**
+    * Control que la {@link entity.Presupuesto} esté necesariamente setteada,
+    * persiste y realiza el reporte.
+    * @return <code>true</code> si la creación del reporte finalizó correctamente.
+    * @throws MessageException
+    * @throws Exception
+    */
+   private boolean doPresupuesto() throws MessageException, Exception {
       Presupuesto newPresupuesto = selectedPresupuesto;
       if (!MODO_VISTA) {
          jdFacturaVenta = facturaVentaController.getContenedor();
@@ -264,17 +286,19 @@ public class PresupuestoJpaController implements ActionListener, KeyListener {
             throw ex;
          }
       }
-      doReport(newPresupuesto);
+      return doReport(newPresupuesto);
    }
 
-   private void doReport(Presupuesto p) {
+   private boolean doReport(Presupuesto p) {
       try {
          Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_Presupuesto.jasper", "Presupuesto");
          r.addParameter("PRESUPUESTO_ID", p.getId());
-         r.printReport();
+         r.printReport(true);
+         return r.isReporteFinalizado();
       } catch (Exception ex) {
          Logger.getLogger(PresupuestoJpaController.class.getName()).log(Level.SEVERE, null, ex);
       }
+      return false;
    }
 
    private void buscadorPresupuestoMouseClicked(MouseEvent evt) {
@@ -353,7 +377,7 @@ public class PresupuestoJpaController implements ActionListener, KeyListener {
                     presupuesto.getImporte(),
                     UTIL.DATE_FORMAT.format(presupuesto.getFechaCreacion()),
                     presupuesto.getSucursal(),
-                    presupuesto.getUsuario(),});
+                    presupuesto.getUsuario()});
       }
    }
 
@@ -363,7 +387,7 @@ public class PresupuestoJpaController implements ActionListener, KeyListener {
     */
    private void setDatos(Presupuesto presupuesto) {
       try {
-         facturaVentaController.initFacturaVenta(null, true, this, 2, false);
+         initPresupuesto(null, true, false);
       } catch (MessageException ex) {
          Logger.getLogger(PresupuestoJpaController.class.getName()).log(Level.SEVERE, null, ex);
       }

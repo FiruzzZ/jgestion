@@ -13,7 +13,7 @@ import entity.Cliente;
 import java.util.ArrayList;
 import java.util.List;
 import entity.Proveedor;
-import entity.UTIL;
+import generics.UTIL;
 import gui.JDMiniABM;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
@@ -59,14 +59,14 @@ public class ContribuyenteJpaController implements ActionListener, MouseListener
             throw new NonexistentEntityException("The contribuyente with id " + id + " no longer exists.", enfe);
          }
          List<String> illegalOrphanMessages = null;
-         List<Cliente> clienteListOrphanCheck = contribuyente.getClienteList();
+         List<Cliente> clienteListOrphanCheck = DAO.getEntityManager().createQuery("SELECT o FROM " + Cliente.class.getSimpleName() + " o WHERE o.contribuyente.id = " + contribuyente.getId()).getResultList();
          for (Cliente clienteListOrphanCheckCliente : clienteListOrphanCheck) {
             if (illegalOrphanMessages == null) {
                illegalOrphanMessages = new ArrayList<String>();
             }
             illegalOrphanMessages.add("This Contribuyente (" + contribuyente + ") no puede ser borrado porque el Cliente " + clienteListOrphanCheckCliente + " está ligado.");
          }
-         List<Proveedor> proveedorListOrphanCheck = contribuyente.getProveedorList();
+         List<Proveedor> proveedorListOrphanCheck = DAO.getEntityManager().createQuery("SELECT o FROM " + Proveedor.class.getSimpleName() + " o WHERE o.contribuyente.id = " + contribuyente.getId()).getResultList();
          for (Proveedor proveedorListOrphanCheckProveedor : proveedorListOrphanCheck) {
             if (illegalOrphanMessages == null) {
                illegalOrphanMessages = new ArrayList<String>();
@@ -169,7 +169,6 @@ public class ContribuyenteJpaController implements ActionListener, MouseListener
          } else if (boton.getName().equalsIgnoreCase("guardar")) {
             try {
                setEntity();
-
                checkConstraints(contribuyente);
                contribuyente = null;
                abm.clearPanelFields();

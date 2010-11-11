@@ -16,7 +16,7 @@ import entity.Municipio;
 import java.util.ArrayList;
 import java.util.List;
 import entity.Proveedor;
-import entity.UTIL;
+import generics.UTIL;
 import gui.JDABM;
 import gui.JDContenedor;
 import gui.PanelABMDeptos;
@@ -25,6 +25,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseListener;
 import javax.persistence.NoResultException;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
@@ -333,6 +334,13 @@ public class DepartamentoJpaController implements ActionListener, MouseListener,
    }
 
    private void initABM(boolean isEditting, ActionEvent e) throws Exception {
+      // <editor-fold defaultstate="collapsed" desc="checking Permiso">
+      try {
+         UsuarioJpaController.checkPermisos(PermisosJpaController.PermisoDe.DATOS_GENERAL);
+      } catch (MessageException ex) {
+         JOptionPane.showMessageDialog(null, ex.getMessage());
+         return;
+      }// </editor-fold>
       if (isEditting && departamento == null) {
          throw new MessageException("Debe elegir una fila");
       }
@@ -419,15 +427,13 @@ public class DepartamentoJpaController implements ActionListener, MouseListener,
    private void armarQuery(String filtro) {
       String query = null;
       if (filtro != null && filtro.length() > 0) {
-         query = "SELECT o FROM " + CLASS_NAME + " o WHERE o.nombre LIKE '" + filtro + "%' " +
-                 " ORDER BY o.provincia.nombre, o.nombre";
+         query = "SELECT o FROM " + CLASS_NAME + " o WHERE o.nombre LIKE '" + filtro + "%' "
+                 + " ORDER BY o.provincia.nombre, o.nombre";
       }
       cargarDTM(contenedor.getDTM(), query);
    }
 
    public List<Departamento> findDeptosFromProvincia(int provinciaID) {
-      return DAO.getEntityManager()
-              .createQuery("SELECT o FROM " + CLASS_NAME + " o WHERE o.provincia.id =" + provinciaID)
-              .getResultList();
+      return DAO.getEntityManager().createQuery("SELECT o FROM " + CLASS_NAME + " o WHERE o.provincia.id =" + provinciaID).getResultList();
    }
 }

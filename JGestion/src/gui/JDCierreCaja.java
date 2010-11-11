@@ -24,8 +24,8 @@ public class JDCierreCaja extends javax.swing.JDialog {
     /** Creates new form JDCierreCaja */
     public JDCierreCaja(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
-        this.setLocationRelativeTo(parent);
         initComponents();
+        this.setLocationRelativeTo(parent);
         labelCAJACERRADA.setVisible(false);
     }
 
@@ -60,10 +60,10 @@ public class JDCierreCaja extends javax.swing.JDialog {
 
       cbCaja.setName("caja"); // NOI18N
 
-      dcApertura.setDateFormatString(entity.UTIL.DATE_FORMAT.toPattern());
+      dcApertura.setDateFormatString(generics.UTIL.DATE_FORMAT.toPattern());
       dcApertura.setEnabled(false);
 
-      dcCierre.setDateFormatString(entity.UTIL.DATE_FORMAT.toPattern());
+      dcCierre.setDateFormatString(generics.UTIL.DATE_FORMAT.toPattern());
 
       jLabel16.setText("Fecha apertura");
 
@@ -233,5 +233,12 @@ public class JDCierreCaja extends javax.swing.JDialog {
       return labelCAJACERRADA;
    }
 
+   public JButton getbBuscar() {
+      return bBuscar;
+   }
+
+   public JButton getbImprimir() {
+      return bImprimir;
+   }
 
 }

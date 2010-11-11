@@ -3,7 +3,7 @@ package controller;
 import controller.exceptions.IllegalOrphanException;
 import controller.exceptions.MessageException;
 import controller.exceptions.NonexistentEntityException;
-import entity.UTIL;
+import generics.UTIL;
 import entity.Unidadmedida;
 import gui.JDMiniABM;
 import java.awt.event.ActionEvent;

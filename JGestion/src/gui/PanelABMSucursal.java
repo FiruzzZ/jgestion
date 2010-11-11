@@ -7,7 +7,7 @@
 
 package gui;
 
-import entity.UTIL;
+import generics.UTIL;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import javax.swing.JComboBox;

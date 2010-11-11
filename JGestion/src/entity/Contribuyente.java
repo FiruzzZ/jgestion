@@ -21,10 +21,9 @@ public class Contribuyente implements Serializable {
     @Id
     @Basic(optional = false)
     @Column(name = "id", nullable = false)
-//    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Integer id;
     @Basic(optional = false)
-    @Column(name = "nombre", nullable = false, length = 2147483647)
+    @Column(name = "nombre", nullable = false, length = 200)
     private String nombre;
     @Basic(optional = false)
     @Column(name = "factu_a", nullable = false)
@@ -41,10 +40,6 @@ public class Contribuyente implements Serializable {
     @Basic(optional = false)
     @Column(name = "factu_x", nullable = false)
     private boolean factuX;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "contribuyente", fetch=FetchType.LAZY)
-    private List<Cliente> clienteList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "contribuyente", fetch=FetchType.LAZY)
-    private List<Proveedor> proveedorList;
 
     public Contribuyente() {
     }
@@ -117,22 +112,6 @@ public class Contribuyente implements Serializable {
 
     public void setFactuX(boolean factuX) {
         this.factuX = factuX;
-    }
-
-    public List<Cliente> getClienteList() {
-        return clienteList;
-    }
-
-    public void setClienteList(List<Cliente> clienteList) {
-        this.clienteList = clienteList;
-    }
-
-    public List<Proveedor> getProveedorList() {
-        return proveedorList;
-    }
-
-    public void setProveedorList(List<Proveedor> proveedorList) {
-        this.proveedorList = proveedorList;
     }
 
     @Override

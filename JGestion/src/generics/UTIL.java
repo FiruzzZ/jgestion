@@ -1,6 +1,7 @@
-package entity;
+package generics;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
@@ -32,7 +33,7 @@ public abstract class UTIL {
     * a double.
     * Es decir que usa el punto (.) como separador decimal y sin separadores
     * de millares
-    * Formato "########.##"
+    * Formato "#######0.##"
     */
    public final static java.text.DecimalFormat PRECIO_CON_PUNTO;
    /**
@@ -51,7 +52,7 @@ public abstract class UTIL {
       PRECIO_CON_PUNTO = new java.text.DecimalFormat("#######0.00", simbolos);
       String[] x = {"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
          "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"};
-      DECIMAL_FORMAT = new java.text.DecimalFormat("#,###0.00");
+      DECIMAL_FORMAT = new java.text.DecimalFormat("#,##0.00");
       DATE_FORMAT = new java.text.SimpleDateFormat("dd/MM/yyyy");
       TIME_FORMAT = new java.text.SimpleDateFormat("HH:mm:ss");
       MESES.addAll(Arrays.asList(x));
@@ -403,7 +404,7 @@ public abstract class UTIL {
       if (month < 0 || month > 11) {
          throw new Exception("Mes (month) no válido, must be >= 0 AND <= 11");
       }
-      java.util.Calendar c = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone(TIME_ZONE));
+      Calendar c = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone(TIME_ZONE));
       if (day == null) {
          c.set(year, month, 1);
       } else if (day == -1) {
@@ -495,9 +496,9 @@ public abstract class UTIL {
    }
 
    /**
-    * Ctrla que sea un caracter numérico el apretado
+    * Ctrla que sea un caracter numérico el apretado.
+    * Si no es ignora el evento
     * @param KeyEvent evt!!
-    * @return true si es un caracter numérico [1234567890], otherwise will return false.
     */
    public static void soloNumeros(java.awt.event.KeyEvent evt) {
       int k = evt.getKeyChar();
@@ -621,8 +622,7 @@ public abstract class UTIL {
     * @return a index of the selectedItem, or <code>-1</code> if
     * 1 > combo.getItemCount() || if <code>candidato</code> is mismatch.
     */
-   public static int setSelectedItem(javax.swing.JComboBox combo, Object candidato) {
-      System.out.println("Candidato.class =" + candidato.getClass());
+   public static int setSelectedItem(JComboBox combo, Object candidato) {
       if (candidato == null) {
          throw new IllegalArgumentException("El Objeto candidato == null");
       }
@@ -643,7 +643,7 @@ public abstract class UTIL {
             index++;
          }
       }
-      return index;
+      return encontrado ? index : -1;
    }
 
    /**
@@ -769,6 +769,12 @@ public abstract class UTIL {
       limpiarDtm(getDtm(table));
    }
 
+   /**
+    * Get object from selected row and indexColumn
+    * @param jTable
+    * @param indexColumn
+    * @return a Object from the cell
+    */
    public static Object getSelectedValue(JTable jTable, int indexColumn) {
       return ((DefaultTableModel) jTable.getModel()).getValueAt(jTable.getSelectedRow(), indexColumn);
    }
@@ -819,6 +825,9 @@ public abstract class UTIL {
             boolean columnEditable = false;
             for (int i = (editableColumns.length - 1); i > -1; i--) {
                columnEditable = (column == editableColumns[i]);
+               if (columnEditable) {
+                  break;
+               }
             }
             return columnEditable;
          } else {

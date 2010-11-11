@@ -10,25 +10,27 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import entity.UTIL;
+import generics.UTIL;
 import entity.Usuario;
 import gui.JDMiniABM;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseListener;
 import java.util.List;
 import javax.persistence.NoResultException;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 /**
  *
  * @author Administrador
  */
-public class CajaJpaController implements ActionListener, MouseListener {
+public class CajaJpaController implements ActionListener {
 
    public final String CLASS_NAME = Caja.class.getSimpleName();
-   private final String[] colsName = {"Nº", "Nombre", "Habilitada", "Últ. apertura", "Eliminada"};
-   private final int[] colsWidth = {20, 120, 30, 50, 20};
    private JDMiniABM abm;
    private Caja ELOBJECT;
 
@@ -184,7 +186,7 @@ public class CajaJpaController implements ActionListener, MouseListener {
       }// </editor-fold>
    }
 
-   public void initABM(java.awt.Frame frame, boolean modal) {
+   public void initABM(JFrame frame, boolean modal) {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
          UsuarioJpaController.checkPermisos(PermisosJpaController.PermisoDe.ABM_CAJAS);
@@ -197,48 +199,38 @@ public class CajaJpaController implements ActionListener, MouseListener {
       abm.hideFieldCodigo();
       abm.hideFieldExtra();
       abm.setTitle("ABM - " + CLASS_NAME + "s");
-      UTIL.getDefaultTableModel(abm.getjTable1(), colsName, colsWidth);
+      UTIL.getDefaultTableModel(abm.getjTable1(),
+              new String[]{"Nº", "Nombre", "Habilitada", "Últ. apertura", "Eliminada"},
+              new int[]{20, 120, 30, 50, 20});
       UTIL.hideColumnTable(abm.getjTable1(), 0);
       cargarDTM(abm.getDTM(), null);
+      abm.getjTable1().addMouseListener(new MouseAdapter() {
+
+         @Override
+         public void mouseReleased(MouseEvent e) {
+            int selectedRow = abm.getjTable1().getSelectedRow();
+            if (selectedRow > -1) {
+               ELOBJECT = (Caja) DAO.getEntityManager().find(Caja.class,
+                       Integer.valueOf((abm.getjTable1().getModel().getValueAt(selectedRow, 0)).toString()));
+            }
+
+            if (ELOBJECT != null) {
+               setPanelFields(ELOBJECT);
+               setLockIcon(ELOBJECT.getEstado());
+            }
+         }
+      });
       abm.setListeners(this);
       abm.setVisible(true);
    }
 
-   @Override
-   public void mouseReleased(MouseEvent e) {
-      Integer selectedRow = ((javax.swing.JTable) e.getSource()).getSelectedRow();
-      DefaultTableModel dtm = (DefaultTableModel) ((javax.swing.JTable) e.getSource()).getModel();
-      if (selectedRow > -1) {
-         ELOBJECT = (Caja) DAO.getEntityManager().find(Caja.class,
-                 Integer.valueOf((dtm.getValueAt(selectedRow, 0)).toString()));
-      }
-
-      if (ELOBJECT != null) {
-         setPanelFields(ELOBJECT);
-         setLockIcon(ELOBJECT.getEstado());
-      }
-
-   }
-
-   public void mouseClicked(MouseEvent e) {
-   }
-
-   public void mousePressed(MouseEvent e) {
-   }
-
-   public void mouseEntered(MouseEvent e) {
-   }
-
-   public void mouseExited(MouseEvent e) {
-   }
-
    private void cargarDTM(DefaultTableModel dtm, String query) {
       UTIL.limpiarDtm(dtm);
-      java.util.List<Caja> cajasList;
+      List<Caja> cajasList;
       if (query == null || query.length() < 10) {
          cajasList = DAO.getEntityManager().createNamedQuery(CLASS_NAME + ".findByBaja").setParameter("baja", false).getResultList();
-      } else // para cuando se usa el Buscador del ABM
-      {
+      } else {
+         // para cuando se usa el Buscador del ABM
          cajasList = DAO.getEntityManager().createNativeQuery(query, Caja.class).getResultList();
       }
 
@@ -277,10 +269,10 @@ public class CajaJpaController implements ActionListener, MouseListener {
 
    private void setLockIcon(boolean estado) {
       if (estado) {
-         abm.getBtnLock().setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/lock.png"))); //
+         abm.getBtnLock().setIcon(new ImageIcon(getClass().getResource("/iconos/lock.png"))); //
          abm.getBtnLock().setText("Baja");
       } else {
-         abm.getBtnLock().setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/unlock.png"))); //
+         abm.getBtnLock().setIcon(new ImageIcon(getClass().getResource("/iconos/unlock.png"))); //
          abm.getBtnLock().setText("Activar");
       }
    }
@@ -297,11 +289,11 @@ public class CajaJpaController implements ActionListener, MouseListener {
       if (estado != null) {
          q = em.createQuery("SELECT c FROM " + CLASS_NAME + " c, PermisosCaja pc "
                  + " WHERE pc.caja.id = c.id AND pc.usuario.id = " + usuario.getId() + " AND c.estado = " + estado
-                 + " ORDER BY c.nombre");
+                 + " ORDER BY c.nombre").setHint("toplink.refresh", true);
       } else {
          q = em.createQuery("SELECT c FROM " + CLASS_NAME + " c, PermisosCaja pc "
                  + " WHERE pc.caja.id = c.id AND pc.usuario.id = " + usuario.getId()
-                 + " ORDER BY c.nombre");
+                 + " ORDER BY c.nombre").setHint("toplink.refresh", true);
       }
       return q.getResultList();
    }

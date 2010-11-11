@@ -62,10 +62,12 @@ public class JDABM extends javax.swing.JDialog {
       setResizable(false);
 
       bCancelar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px-Crystal_Clear_action_button_cancel.png"))); // NOI18N
+      bCancelar.setMnemonic('c');
       bCancelar.setText("Cancelar");
       bCancelar.setName("cancelar"); // NOI18N
 
       bAceptar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px-Crystal_Clear_action_apply.png"))); // NOI18N
+      bAceptar.setMnemonic('a');
       bAceptar.setText("Aceptar");
       bAceptar.setName("aceptar"); // NOI18N
 

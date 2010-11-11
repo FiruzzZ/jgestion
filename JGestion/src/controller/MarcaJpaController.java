@@ -13,7 +13,7 @@ import javax.persistence.Persistence;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import entity.Producto;
-import entity.UTIL;
+import generics.UTIL;
 import gui.JDMiniABM;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -68,7 +68,7 @@ public class MarcaJpaController implements ActionListener, MouseListener {
             throw new NonexistentEntityException("The marca with id " + id + " no longer exists.", enfe);
          }
          List<String> illegalOrphanMessages = null;
-         int cantProductos = marca.getProductoList().size();
+         Long cantProductos = (Long) em.createQuery("SELECT COUNT(o) FROM Producto o WHERE o.marca.id=" + marca.getId()).getSingleResult();
          if (cantProductos > 0) {
             if (illegalOrphanMessages == null) {
                illegalOrphanMessages = new ArrayList<String>();
@@ -132,7 +132,7 @@ public class MarcaJpaController implements ActionListener, MouseListener {
       try {
          UsuarioJpaController.checkPermisos(PermisosJpaController.PermisoDe.DATOS_GENERAL);
       } catch (MessageException ex) {
-         javax.swing.JOptionPane.showMessageDialog(null,ex.getMessage());
+         javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
          return;
       }// </editor-fold>
       abm = new JDMiniABM(frame, modal);
@@ -144,7 +144,7 @@ public class MarcaJpaController implements ActionListener, MouseListener {
       try {
          UsuarioJpaController.checkPermisos(PermisosJpaController.PermisoDe.DATOS_GENERAL);
       } catch (MessageException ex) {
-         javax.swing.JOptionPane.showMessageDialog(null,ex.getMessage());
+         javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
          return;
       }// </editor-fold>
       abm = new JDMiniABM(dialog, modal);
@@ -294,6 +294,10 @@ public class MarcaJpaController implements ActionListener, MouseListener {
       if (abm.getTfNombre() == null || abm.getTfNombre().trim().length() < 1) {
          throw new MessageException("Debe ingresar un nombre de " + CLASS_NAME.toLowerCase());
       }
+      if (abm.getTfNombre().length() > 50) {
+         throw new MessageException("Nombre no puede superar los 50 caracteres");
+      }
+      
       marca.setNombre(abm.getTfNombre().trim().toUpperCase());
       try {
          marca.setCodigo(abm.getTfCodigo().trim().toUpperCase());

@@ -9,13 +9,13 @@ import javax.persistence.*;
  * @author Administrador
  */
 @Entity
-@Table(name = "detalles_venta")
+@Table(name = "detalle_venta")
 @NamedQueries({
-    @NamedQuery(name = "DetallesVenta.findAll", query = "SELECT d FROM DetallesVenta d"),
-    @NamedQuery(name = "DetallesVenta.findById", query = "SELECT d FROM DetallesVenta d WHERE d.id = :id")
+    @NamedQuery(name = "DetalleVenta.findAll", query = "SELECT d FROM DetalleVenta d"),
+    @NamedQuery(name = "DetalleVenta.findById", query = "SELECT d FROM DetalleVenta d WHERE d.id = :id")
 })
 
-public class DetallesVenta implements Serializable {
+public class DetalleVenta implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private Integer id;
@@ -26,19 +26,11 @@ public class DetallesVenta implements Serializable {
     private FacturaVenta factura;
     private Producto producto;
 
-    public DetallesVenta() {
+    public DetalleVenta() {
     }
 
-    public DetallesVenta(Integer id) {
+    public DetalleVenta(Integer id) {
         this.id = id;
-    }
-
-    public DetallesVenta(Integer id, int cantidad, Double precioUnitario, int tipoDesc, Double descuento) {
-        this.id = id;
-        this.cantidad = cantidad;
-        this.precioUnitario = precioUnitario;
-        this.tipoDesc = tipoDesc;
-        this.descuento = descuento;
     }
 
     @Id
@@ -123,10 +115,10 @@ public class DetallesVenta implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof DetallesVenta)) {
+        if (!(object instanceof DetalleVenta)) {
             return false;
         }
-        DetallesVenta other = (DetallesVenta) object;
+        DetalleVenta other = (DetalleVenta) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }

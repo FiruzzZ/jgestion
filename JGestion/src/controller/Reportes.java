@@ -1,12 +1,14 @@
 package controller;
 
+import controller.exceptions.MissingReportException;
 import entity.DatosEmpresa;
-import entity.UTIL;
-import java.io.FileNotFoundException;
+import generics.UTIL;
+import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JOptionPane;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -20,58 +22,79 @@ import net.sf.jasperreports.view.JasperViewer;
  */
 public class Reportes implements Runnable {
 
-   private java.util.Map parameters;
+   private Map parameters;
    private final String pathReport;
    private final String tituloReporte;
    /**
     * sería algo así "./reportes/"
     */
    public static String FOLDER_REPORTES = "." + System.getProperty("file.separator") + "reportes" + System.getProperty("file.separator");
-   private final DatosEmpresa d;
+   private final DatosEmpresa datosEmpresaController;
    private Boolean isViewerReport = null;
+   /**
+    * Para saber si la ventana de impresión ya sucedió.
+    * (No si aceptó o canceló)
+    */
+   private boolean reporteFinalizado;
+   /**
+    * Si aparece el PrintDialog
+    * Default = true
+    */
+   private boolean withPrintDialog;
 
    /**
     *
-    * @param pathReport archivoReporte.jasper. <b>FOLDER_REPORTES</b> + @pathReport si el reporte se encuentra en la carpeta "reportes"
+    * @param pathReport ruta absoluta del archivo .JASPER o
+    * solo el nombre del archivo .JASPER  si se encuentra en {@link Reportes#FOLDER_REPORTES} + @pathReport
     * @param title Título de la ventana del reporte
     * @throws Exception Si el archivo .jasper no se encuentra
     */
-   public Reportes(String pathReport, String title) throws Exception {
+   public Reportes(String pathReport, String title) throws MissingReportException, Exception {
       if (title == null || title.trim().length() < 1) {
          throw new Exception("El título del reporte can't be NULL");
       }
 
-      if (pathReport == null || pathReport.trim().length() < 1) {
+      if (pathReport == null) {
          throw new Exception("La ruta/URL/pathname no es válida!");
       }
 
-      if (!new java.io.File(pathReport).exists()) {
-         throw new Exception("No se encontró el archivo del reporte:\n" + pathReport);
+      if (!new File(pathReport).exists()) {
+         System.out.println("FileNotFound = " + pathReport);
+         if (!new File(FOLDER_REPORTES + pathReport).exists()) {
+            throw new MissingReportException("No se encontró el archivo del reporte: " + pathReport
+                    + "\n" + FOLDER_REPORTES + pathReport);
+         }
+         pathReport = FOLDER_REPORTES + pathReport;
       }
       parameters = new java.util.HashMap();
       this.pathReport = pathReport;
       this.tituloReporte = title;
-      d = new DatosEmpresaJpaController().findDatosEmpresa(1);
+      reporteFinalizado = false;
+      withPrintDialog = true;
+      datosEmpresaController = new DatosEmpresaJpaController().findDatosEmpresa(1);
    }
 
    public void viewReport() throws JRException {
       isViewerReport = true;
       new Thread(this).start();
-//      net.sf.jasperreports.engine.JasperPrint jPrint;
-//      jPrint = net.sf.jasperreports.engine.JasperFillManager.fillReport(pathReport, parameters, controller.DAO.getJDBCConnection());
-//      net.sf.jasperreports.view.JasperViewer jViewer = new net.sf.jasperreports.view.JasperViewer(jPrint, false);
-//      jViewer.setTitle(tituloReporte);
-//      jViewer.setExtendedState(net.sf.jasperreports.view.JasperViewer.NORMAL);
-//      jViewer.setAlwaysOnTop(true);
-//      jViewer.setVisible(true);
+   }
+
+   /**
+    * Bla bla...
+    * @param withPrintDialog si aparece el PrintDialog o imprime directamente.
+    * @throws JRException
+    */
+   public boolean printReport(boolean withPrintDialog) throws JRException {
+      isViewerReport = false;
+      this.withPrintDialog = withPrintDialog;
+      doReport();
+      reporteFinalizado = true;
+      return reporteFinalizado;
    }
 
    public void printReport() throws JRException {
       isViewerReport = false;
       new Thread(this).start();
-//      net.sf.jasperreports.engine.JasperPrint jPrint;
-//      jPrint = net.sf.jasperreports.engine.JasperFillManager.fillReport(pathReport, parameters, controller.DAO.getJDBCConnection());
-//      JasperPrintManager.printReport(jPrint, true);
    }
 
    public void exportPDF(String filePathSafer) throws JRException {
@@ -94,7 +117,7 @@ public class Reportes implements Runnable {
     * @throws IOException
     */
    public void addEntidad() throws IOException {
-      addParameter("ENTIDAD", d.getNombre());
+      addParameter("ENTIDAD", datosEmpresaController.getNombre());
    }
 
    /**
@@ -103,8 +126,8 @@ public class Reportes implements Runnable {
     * @throws IOException
     */
    public void addLogo() throws IOException {
-      if (d.getLogo() != null) {
-         addParameter("LOGO", UTIL.imageToFile(d.getLogo(), "png"));
+      if (datosEmpresaController.getLogo() != null) {
+         addParameter("LOGO", UTIL.imageToFile(datosEmpresaController.getLogo(), "png"));
       } else {
          addParameter("LOGO", null);
       }
@@ -117,8 +140,19 @@ public class Reportes implements Runnable {
       addParameter("CURRENT_USER", UsuarioJpaController.getCurrentUser().getNick());
    }
 
+   @Override
    public void run() {
-      doReport();
+      System.out.println("Initializing Thread Reportes..");
+      try {
+         doReport();
+      } catch (Exception ex) {
+         System.out.println("Error en Report, reset JDBC Connection..");
+         try {
+            DAO.getJDBCConnection().close();
+         } catch (SQLException ex1) {
+            Logger.getLogger(Reportes.class.getName()).log(Level.SEVERE, null, ex1);
+         }
+      }
       System.out.println("Finished Thread Reportes..");
    }
 
@@ -134,11 +168,15 @@ public class Reportes implements Runnable {
             jViewer.setAlwaysOnTop(true);
             jViewer.setVisible(true);
          } else {
-            JasperPrintManager.printReport(jPrint, true);
+            JasperPrintManager.printReport(jPrint, withPrintDialog);
          }
       } catch (JRException ex) {
          Logger.getLogger(Reportes.class.getName()).log(Level.SEVERE, null, ex);
       }
-      System.out.println("Finished synchronized doReport()");
+      System.out.println("Finished doReport()");
+   }
+
+   public boolean isReporteFinalizado() {
+      return reporteFinalizado;
    }
 }

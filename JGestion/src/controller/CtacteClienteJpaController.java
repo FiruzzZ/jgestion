@@ -5,19 +5,28 @@ import entity.Cliente;
 import entity.CtacteCliente;
 import entity.DetalleRecibo;
 import entity.FacturaVenta;
+import entity.Proveedor;
 import entity.Recibo;
-import entity.UTIL;
+import generics.UTIL;
+import gui.JDBuscador;
 import gui.JDResumenCtaCtes;
+import gui.PanelCtaCteCheckVencimientos;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Date;
 import java.util.List;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -30,6 +39,8 @@ public class CtacteClienteJpaController implements ActionListener {
    private JDResumenCtaCtes resumenCtaCtes;
    private double totalDebe;  //<----
    private double totalHaber; //<----
+   private PanelCtaCteCheckVencimientos panelCCCheck;
+   private JDBuscador buscador;
 
    // <editor-fold defaultstate="collapsed" desc="CRUD...">
    public EntityManager getEntityManager() {
@@ -139,14 +150,13 @@ public class CtacteClienteJpaController implements ActionListener {
    }// </editor-fold>
 
    void nuevaCtaCte(FacturaVenta facturaVenta) throws Exception {
-      System.out.println("Nueva CtaCte Cliente " + facturaVenta);
+      System.out.println("adding CCC Nº" + facturaVenta);
       CtacteCliente ccp = new CtacteCliente();
       ccp.setDias((short) facturaVenta.getDiasCtaCte());
       ccp.setEntregado(0.0); //monto $$
       ccp.setEstado((Valores.CtaCteEstado.PENDIENTE.getEstado()));
       ccp.setFactura(facturaVenta);
       ccp.setFechaCarga(facturaVenta.getFechaalta());
-      ccp.setHoraCarga(new java.util.Date());
       ccp.setImporte(facturaVenta.getImporte());
       create(ccp);
    }
@@ -206,10 +216,7 @@ public class CtacteClienteJpaController implements ActionListener {
       return listaCtaCteCliente;
    }
 
-   private void jTableResumenMouseReleased(MouseEvent e) {
-   }
-
-   public void initResumenCtaCte(javax.swing.JFrame frame, boolean modal) {
+   public void initResumenCtaCte(JFrame frame, boolean modal) {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
          UsuarioJpaController.checkPermisos(PermisosJpaController.PermisoDe.TESORERIA);
@@ -225,9 +232,8 @@ public class CtacteClienteJpaController implements ActionListener {
          public void mouseReleased(MouseEvent e) {
             Integer selectedRow = resumenCtaCtes.getjTableResumen().getSelectedRow();
             if (selectedRow > 0) {
-               //selecciona una factura (CtaCteCliente)
-               cargarComboBoxRecibosDeCtaCte((CtacteCliente) DAO.getEntityManager()
-                       .find(CtacteCliente.class,Integer.valueOf((resumenCtaCtes.getDtmResumen().getValueAt(selectedRow, 0)).toString())));
+               //selecciona una factura (a CtaCteCliente)
+               cargarComboBoxRecibosDeCtaCte((CtacteCliente) DAO.getEntityManager().find(CtacteCliente.class, Integer.valueOf((resumenCtaCtes.getDtmResumen().getValueAt(selectedRow, 0)).toString())));
             }
          }
       });
@@ -280,13 +286,13 @@ public class CtacteClienteJpaController implements ActionListener {
               new String[]{"Nº Factura", "Observación", "Monton"},
               new int[]{60, 100, 50});
       resumenCtaCtes.setListener(this);
-//      resumenCtaCtes.setLocationByPlatform(true);
+      resumenCtaCtes.setLocation(resumenCtaCtes.getOwner().getX() + 100, resumenCtaCtes.getY() + 100);
       resumenCtaCtes.setVisible(true);
    }
 
    private double getSaldoAcumulado() {
       double saldo = 0.0;
-      javax.swing.table.DefaultTableModel dtm = resumenCtaCtes.getDtmResumen();
+      DefaultTableModel dtm = resumenCtaCtes.getDtmResumen();
       for (int i = dtm.getRowCount() - 1; i > -1; i--) {
          saldo += Double.parseDouble(dtm.getValueAt(i, 6).toString());
       }
@@ -321,14 +327,15 @@ public class CtacteClienteJpaController implements ActionListener {
          query += "AND ccc.fecha_carga >= '" + resumenCtaCtes.getDcDesde() + "'";
       }
 
-      query += " ORDER BY ccc.id";
-      cargarDtmResumen(query);
+      query += " ORDER BY fv.numero";
+      cargarTablaResumen(query);
       if (imprimirResumen) {
-         imprimirResumenCCC(((Cliente) resumenCtaCtes.getCbClieProv().getSelectedItem()), resumenCtaCtes.getDcDesde() != null ? " AND ccc.fecha_carga >= '" + UTIL.DATE_FORMAT.format(resumenCtaCtes.getDcDesde()) + "'" : "");
+         doReportResumenCCC(((Cliente) resumenCtaCtes.getCbClieProv().getSelectedItem()),
+                 resumenCtaCtes.getDcDesde() != null ? " AND ccc.fecha_carga >= '" + UTIL.DATE_FORMAT.format(resumenCtaCtes.getDcDesde()) + "'" : "");
       }
    }
 
-   private void cargarDtmResumen(String query) {
+   private void cargarTablaResumen(String query) {
       DefaultTableModel dtm = resumenCtaCtes.getDtmResumen();
       UTIL.limpiarDtm(dtm);
       List<CtacteCliente> cccList = DAO.getEntityManager().createNativeQuery(query, CtacteCliente.class).getResultList();
@@ -358,7 +365,7 @@ public class CtacteClienteJpaController implements ActionListener {
       }
    }
 
-   private void imprimirResumenCCC(Cliente cliente, String filter_date) throws Exception {
+   private void doReportResumenCCC(Cliente cliente, String filter_date) throws Exception {
       Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_ResumenCCC.jasper", "Resumen CCC");
       r.addCurrent_User();
       r.addParameter("CLIENTE_ID", cliente.getId());
@@ -367,7 +374,7 @@ public class CtacteClienteJpaController implements ActionListener {
          filter_date = "";
       }
       r.addParameter("FILTER_DATE", filter_date);
-      r.printReport();
+      r.printReport(true);
    }
 
    /**
@@ -386,7 +393,7 @@ public class CtacteClienteJpaController implements ActionListener {
          resumenCtaCtes.setTfReciboFecha(UTIL.DATE_FORMAT.format(recibo.getFechaRecibo()));
          resumenCtaCtes.setTfReciboMonto(UTIL.DECIMAL_FORMAT.format(recibo.getMonto()));
          resumenCtaCtes.getLabelReciboAnulado().setVisible(!recibo.getEstado());
-         cargarDtmDetallesDeCtaCte(recibo);
+         cargarTablaDetallesDeCtaCte(recibo);
       } catch (ClassCastException ex) {
          // si el comboBox está vacio
          System.out.println("Recibo NULL!");
@@ -397,7 +404,7 @@ public class CtacteClienteJpaController implements ActionListener {
       }
    }
 
-   private void cargarDtmDetallesDeCtaCte(Recibo recibo) {
+   private void cargarTablaDetallesDeCtaCte(Recibo recibo) {
       javax.swing.table.DefaultTableModel dtm = resumenCtaCtes.getDtmDetalle();
       UTIL.limpiarDtm(dtm);
       List<DetalleRecibo> detalleReciboList = recibo.getDetalleReciboList();
@@ -422,6 +429,154 @@ public class CtacteClienteJpaController implements ActionListener {
             totalDebe += ccc.getImporte();
             totalHaber += ccc.getEntregado();
          }
+      }
+   }
+
+   public void initCheckVencimientos(JFrame owner) {
+      panelCCCheck = new PanelCtaCteCheckVencimientos();
+      panelCCCheck.getCbEntidadElegida().addActionListener(new ActionListener() {
+
+         @Override
+         public void actionPerformed(ActionEvent e) {
+            int index = panelCCCheck.getCbEntidadElegida().getSelectedIndex();
+            if (index == 0) {
+               panelCCCheck.getCbClientesProveedores().removeAllItems();
+            } else if (index == 1) {
+               UTIL.loadComboBox(panelCCCheck.getCbClientesProveedores(), new ClienteJpaController().findClienteEntities(), "<Todos>");
+            } else if (index == 2) {
+               UTIL.loadComboBox(panelCCCheck.getCbClientesProveedores(), new ProveedorJpaController().findProveedorEntities(), "<Todos>");
+            }
+         }
+      });
+      buscador = new JDBuscador(owner, true, panelCCCheck, "Ctas. Ctes. vencimientos");
+      UTIL.getDefaultTableModel(
+              buscador.getjTable1(),
+              new String[]{"C/P", "Cliente", "Tipo", "Nº factura", "Importe", "Saldo", "Fecha", "Vto."},
+              new int[]{5, 100, 6, 60, 60, 60, 45, 45},
+              new Class[]{Object.class, Object.class, Object.class, Object.class, String.class, String.class, String.class, String.class});
+      DefaultTableCellRenderer defaultTableCellRender = new DefaultTableCellRenderer();
+      defaultTableCellRender.setHorizontalAlignment(JLabel.RIGHT);
+      buscador.getjTable1().setDefaultRenderer(buscador.getjTable1().getColumnClass(4), defaultTableCellRender);
+      buscador.getbBuscar().addActionListener(new ActionListener() {
+
+         @Override
+         public void actionPerformed(ActionEvent e) {
+            try {
+               buscador.bloquearBotones(true);
+               armarQueryVencimientos(false);
+            } catch (MissingReportException ex) {
+               JOptionPane.showMessageDialog(buscador, ex.getMessage(), "ERROR", 0);
+            } catch (Exception ex) {
+               JOptionPane.showMessageDialog(buscador, ex.getMessage(), "ERROR CRÍTICO", 0);
+               Logger.getLogger(CtacteClienteJpaController.class.getName()).log(Level.SEVERE, null, ex);
+            } finally {
+               buscador.bloquearBotones(false);
+            }
+         }
+      });
+      buscador.getbImprimir().addActionListener(new ActionListener() {
+
+         @Override
+         public void actionPerformed(ActionEvent e) {
+            try {
+               buscador.bloquearBotones(true);
+               armarQueryVencimientos(true);
+            } catch (MissingReportException ex) {
+               JOptionPane.showMessageDialog(buscador, ex.getMessage(), "ERROR", 0);
+            } catch (Exception ex) {
+               JOptionPane.showMessageDialog(buscador, ex.getMessage(), "ERROR CRÍTICO", 0);
+               Logger.getLogger(CtacteClienteJpaController.class.getName()).log(Level.SEVERE, null, ex);
+            } finally {
+               buscador.bloquearBotones(false);
+            }
+         }
+      });
+      //agranda un poco el buscador.. porque se quedo chico
+      buscador.setSize(buscador.getWidth() + 200, buscador.getHeight());
+      buscador.setVisible(true);
+   }
+
+   private void armarQueryVencimientos(boolean imprimirReporte) throws MissingReportException, Exception {
+      String query = "SELECT * FROM ";
+      String sub_titulo_entidad = null;
+      String sub_titulo_fecha = null;
+      int index = panelCCCheck.getCbEntidadElegida().getSelectedIndex();
+      if (index == 0) {
+         query += " ((SELECT 'C' as cp, c.nombre, fv.tipo, fv.numero, fv.importe, (ccc.importe - ccc.entregado) as saldo, fv.fecha_venta as fecha, (fv.fecha_venta + fv.dias_cta_cte) as vto"
+                 + " FROM ctacte_cliente ccc JOIN factura_venta fv ON ccc.factura = fv.id JOIN cliente c ON fv.cliente = c.id"
+                 + " WHERE ccc.estado = 1) "
+                 + " UNION (SELECT 'P' as cp , c.nombre, fv.tipo, fv.numero, fv.importe, (ccc.importe - ccc.entregado) as saldo, fv.fecha_compra as fecha, (fv.fecha_compra + fv.dias_cta_cte) as vto"
+                 + " FROM ctacte_proveedor ccc JOIN factura_compra fv ON ccc.factura = fv.id JOIN proveedor c ON fv.proveedor = c.id"
+                 + " WHERE ccc.estado = 1) ) as c";
+         sub_titulo_entidad = "CLIENTES Y PROVEEDORES";
+      } else if (index == 1) {
+         query += " (SELECT 'C' as cp, c.nombre, fv.tipo, fv.numero, fv.importe, (ccc.importe - ccc.entregado) as saldo, fv.fecha_venta as fecha, (fv.fecha_venta + fv.dias_cta_cte) as vto"
+                 + " FROM ctacte_cliente ccc JOIN factura_venta fv ON ccc.factura = fv.id JOIN cliente c ON fv.cliente = c.id"
+                 + " WHERE ccc.estado = 1";
+         if (panelCCCheck.getCbClientesProveedores().getSelectedIndex() > 0) {
+            Cliente c = (Cliente) panelCCCheck.getCbClientesProveedores().getSelectedItem();
+            query += " AND c.id= " + c.getId();
+            sub_titulo_entidad = "Cliente: (" + c.getCodigo() + ") " + c.getNombre();
+         }
+         query += ") as c";
+      } else {
+         query += " (SELECT 'P' as cp , c.nombre, fv.tipo, fv.numero, fv.importe, (ccc.importe - ccc.entregado) as saldo, fv.fecha_compra as fecha, (fv.fecha_compra + fv.dias_cta_cte) as vto"
+                 + " FROM ctacte_proveedor ccc JOIN factura_compra fv ON ccc.factura = fv.id JOIN proveedor c ON fv.proveedor = c.id"
+                 + " WHERE ccc.estado = 1";
+         if (panelCCCheck.getCbClientesProveedores().getSelectedIndex() > 0) {
+            Proveedor p = (Proveedor) panelCCCheck.getCbClientesProveedores().getSelectedItem();
+            query += " AND c.id= " + p.getId();
+            sub_titulo_entidad = "Proveedor: (" + p.getCodigo() + ") " + p.getNombre();
+
+         }
+         query += ") as c";
+      }
+      query += " WHERE vto IS NOT NULL";
+      if (panelCCCheck.getDcDesde().getDate() != null) {
+         query += " AND vto >= '" + panelCCCheck.getDcDesde().getDate() + "'";
+         //dato para el reporte
+         sub_titulo_fecha = "DESDE: " + UTIL.DATE_FORMAT.format(panelCCCheck.getDcDesde().getDate());
+      }
+      if (panelCCCheck.getDcHasta().getDate() != null) {
+         query += " AND vto <= '" + panelCCCheck.getDcHasta().getDate() + "'";
+         //dato para el reporte
+         if (sub_titulo_fecha == null) {
+            sub_titulo_fecha = "HASTA: " + UTIL.DATE_FORMAT.format(panelCCCheck.getDcHasta().getDate());
+         } else {
+            sub_titulo_fecha += "HASTA: " + UTIL.DATE_FORMAT.format(panelCCCheck.getDcHasta().getDate());
+         }
+      }
+      query += " ORDER BY vto";
+      cargarTablaVencimientosCC(DAO.getEntityManager().createNativeQuery(query).getResultList());
+      if (imprimirReporte) {
+         doReporteVencimientosCC(query, sub_titulo_entidad, sub_titulo_fecha);
+      }
+   }
+
+   private void doReporteVencimientosCC(String query, String sub_titulo_entidad, String sub_titulo_fecha) throws MissingReportException, Exception {
+      Reportes r = new Reportes("JGestion_VencimientosCC.jasper", "Vencimientos de Ctas. Ctes.");
+      r.addCurrent_User();
+      r.addParameter("SUBREPORT_DIR", Reportes.FOLDER_REPORTES);
+      r.addParameter("SUB_TITULO_ENTIDAD", sub_titulo_entidad);
+      r.addParameter("SUB_TITULO_FECHA", sub_titulo_fecha);
+      r.addParameter("QUERY", query);
+      r.viewReport();
+   }
+
+   private void cargarTablaVencimientosCC(List resultList) {
+      UTIL.limpiarDtm(buscador.getjTable1());
+      for (Object object : resultList) {
+         Object[] o = ((Vector) object).toArray();
+         UTIL.getDtm(buscador.getjTable1()).addRow(new Object[]{
+                    o[0],
+                    o[1],
+                    o[2],
+                    UTIL.AGREGAR_CEROS(((Object) o[3]).toString(), 12),
+                    UTIL.PRECIO_CON_PUNTO.format(o[4]),
+                    UTIL.PRECIO_CON_PUNTO.format(o[5]),
+                    UTIL.DATE_FORMAT.format(((Date) o[6])),
+                    UTIL.DATE_FORMAT.format(((Date) o[7]))
+                 });
       }
    }
 }

@@ -210,8 +210,12 @@ public class JDMiniABM extends javax.swing.JDialog {
       bEliminar.addActionListener((ActionListener) o);
       bAceptar.addActionListener((ActionListener) o);
       bCancelar.addActionListener((ActionListener) o);
-      jTable1.addMouseListener((MouseListener) o);
       btnLock.addActionListener((ActionListener) o);
+      try {
+         jTable1.addMouseListener((MouseListener) o);
+      } catch (ClassCastException ex) {
+         
+      }
    }
 
    public String getTfCodigo() {
@@ -326,5 +330,4 @@ public class JDMiniABM extends javax.swing.JDialog {
    public JLabel getjLabelExtra() {
       return jLabelExtra;
    }
-
 }

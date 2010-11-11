@@ -1,8 +1,8 @@
 package controller;
 
 import controller.exceptions.*;
-import entity.DetallesCompra;
-import entity.DetallesVenta;
+import entity.DetalleCompra;
+import entity.DetalleVenta;
 import entity.FacturaCompra;
 import entity.FacturaVenta;
 import entity.Producto;
@@ -20,7 +20,7 @@ import javax.persistence.NoResultException;
  */
 public class StockJpaController {
 
-   public static final String CLASS_NAME = "Stock";
+   public static final String CLASS_NAME = Stock.class.getSimpleName();
 
    public StockJpaController() {
    }
@@ -138,44 +138,43 @@ public class StockJpaController {
     * @param facturaCompra ...
     */
    void updateStock(FacturaCompra facturaCompra) {
-      System.out.println("updateStock.. factura.id:" + facturaCompra.getId());
+      System.out.println("updateStock::facturaCompra.id=" + facturaCompra.getId());
       EntityManager em = getEntityManager();
       try {
          em.getTransaction().begin();
-         FacturaCompra newFacturaCompra = DAO.getEntityManager().find(FacturaCompra.class, facturaCompra.getId());
-         List<DetallesCompra> listaDetallesCompra = newFacturaCompra.getDetallesCompraList();
-         System.out.println("Cantidad de Items: " + listaDetallesCompra.size());
-         listaDetallesCompra = new DetallesCompraJpaController().findByFactura(newFacturaCompra);
-         System.out.println("Cantidad de Items: " + listaDetallesCompra.size());
+//         facturaCompra = DAO.getEntityManager().find(FacturaCompra.class, facturaCompra.getId());
+         List<DetalleCompra> listaDetalleCompra = new DetalleCompraJpaController().findByFactura(facturaCompra);
+         System.out.println("Cantidad de Items: " + listaDetalleCompra.size());
          ProductoJpaController productoCtrl = new ProductoJpaController();
          Stock stock;
-         for (DetallesCompra detallesCompra : listaDetallesCompra) {
+         for (DetalleCompra detalleCompra : listaDetalleCompra) {
             try {
                // checks la pre-existencia del Producto EN ESTA Sucursal
-               stock = findStock(detallesCompra.getProducto(), newFacturaCompra.getSucursal());
+               stock = findStock(detalleCompra.getProducto(), facturaCompra.getSucursal());
             } catch (NoResultException ex) {
                // por lo visto no existe
                stock = new Stock();
-               stock.setProducto(detallesCompra.getProducto());
-               stock.setSucursal(newFacturaCompra.getSucursal());
-               stock.setUsuario(newFacturaCompra.getUsuario());
+               stock.setProducto(detalleCompra.getProducto());
+               stock.setSucursal(facturaCompra.getSucursal());
+               stock.setUsuario(facturaCompra.getUsuario());
             }
             // sets la fecha de carga de la factura al stock para evitar desfasajes de tiempo y ...!!!
-            stock.setFechaCarga(newFacturaCompra.getFechaalta());
-            stock.setHoraCarga(newFacturaCompra.getHoraalta());
+            stock.setFechaCarga(facturaCompra.getFechaalta());
             // stockActual + stock del nuevo facturaCompra ->
-            stock.setStockSucu(stock.getStockSucu() + detallesCompra.getCantidad());
+            stock.setStockSucu(stock.getStockSucu() + detalleCompra.getCantidad());
 
             if (stock.getId() == null) {
                em.persist(stock);
             } else {
                em.merge(stock);
             }
-            productoCtrl.updateStockActual(stock.getProducto(),  detallesCompra.getCantidad());
+            productoCtrl.updateStockActual(stock.getProducto(), detalleCompra.getCantidad());
          }
          em.getTransaction().commit();
       } catch (Exception ex) {
-         em.getTransaction().rollback();
+         if (em.getTransaction().isActive()) {
+            em.getTransaction().rollback();
+         }
          ex.printStackTrace();
       } finally {
          if (em != null) {
@@ -190,16 +189,16 @@ public class StockJpaController {
     * @param facturaVenta del cual se obtiene la List DetallesVenta
     */
    void updateStock(FacturaVenta facturaVenta) throws Exception {
-      System.out.println("updating Stock: FROM FacturaVenta.id=" + facturaVenta.getId());
-      System.out.println("-------------------------------------------");
+
       EntityManager em = getEntityManager();
       try {
          em.clear();
          em.getTransaction().begin();
-         List<DetallesVenta> detallesVentaList = new DetallesVentaJpaController().findByFactura(facturaVenta.getId());
+         facturaVenta = em.find(FacturaVenta.class, facturaVenta.getId());
+         List<DetalleVenta> detallesVentaList = new DetalleVentaJpaController().findByFactura(facturaVenta.getId());
          ProductoJpaController productoCtrl = new ProductoJpaController();
          Stock stock;
-         for (DetallesVenta detalleVenta : detallesVentaList) {
+         for (DetalleVenta detalleVenta : detallesVentaList) {
             try {
                // checks la pre-existencia del Producto en la Sucursal
                stock = findStock(detalleVenta.getProducto(), facturaVenta.getSucursal());
@@ -214,10 +213,11 @@ public class StockJpaController {
             // sets la fecha de carga de la factura al stock para evitar desfasajes de tiempo y ****!!
             stock.setUsuario(facturaVenta.getUsuario());
             stock.setFechaCarga(facturaVenta.getFechaalta());
-            stock.setHoraCarga(facturaVenta.getFechaalta());
+            if (stock.getFechaCarga() == null) {
+               stock.setFechaCarga(facturaVenta.getFechaalta());
+            }
             // stock de Sucursal - stock vendido ->
             stock.setStockSucu(stock.getStockSucu() - detalleVenta.getCantidad());
-            System.out.println("--->Stock: id=" + stock.getId() + ", Producto=" + stock.getProducto() + ", Sucu=" + stock.getSucursal() + ", cant=" + stock.getStockSucu());
             if (stock.getId() == null) {
                em.persist(stock);
             } else {
@@ -229,7 +229,7 @@ public class StockJpaController {
          em.getTransaction().commit();
       } catch (Exception ex) {
          if (em.getTransaction().isActive()) {
-             em.getTransaction().rollback();
+            em.getTransaction().rollback();
          }
          throw ex;
       } finally {
@@ -248,17 +248,13 @@ public class StockJpaController {
     * @exception Lanza un NoResultException si no existe el Producto en la Sucursal.
     */
    private Stock findStock(Producto producto, Sucursal sucursal) {
-      return (Stock) DAO.getEntityManager()
-              .createNativeQuery("SELECT * FROM " + CLASS_NAME + " o WHERE "
-              + " o.producto = " + producto.getId() + " AND o.sucursal = " + sucursal.getId(), Stock.class)
-              .getSingleResult();
+      return (Stock) DAO.getEntityManager().createNativeQuery("SELECT * FROM " + CLASS_NAME + " o WHERE "
+              + " o.producto = " + producto.getId() + " AND o.sucursal = " + sucursal.getId(), Stock.class).getSingleResult();
    }
-
 
    void modificarStockBySucursal(Producto producto, Sucursal sucursal, int cantidad) {
       Stock stock = findStock(producto, sucursal);
       stock.setStockSucu(stock.getStockSucu() + cantidad);
       DAO.doMerge(stock);
    }
-
 }
