@@ -3,7 +3,7 @@ package controller;
 import controller.exceptions.MessageException;
 import controller.exceptions.NonexistentEntityException;
 import entity.DatosEmpresa;
-import entity.UTIL;
+import generics.UTIL;
 import gui.JDDatosEmpresa;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -222,6 +222,8 @@ public class DatosEmpresaJpaController implements ActionListener {
       try {
          if (jd.getTfTele2().length() > 0) {
             EL_OBJECT.setTele2(Long.valueOf(jd.getTfTele2()));
+         } else {
+            EL_OBJECT.setTele2(null);
          }
       } catch (NumberFormatException e) {
          throw new MessageException("Teléfono 2 no válido (Solo números");

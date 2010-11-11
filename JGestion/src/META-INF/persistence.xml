@@ -17,32 +17,39 @@
     <class>entity.Permisos</class>
     <class>entity.Stock</class>
     <class>entity.FacturaCompra</class>
-    <class>entity.DetallesCompra</class>
     <class>entity.ListaPrecios</class>
-    <class>entity.DetalleListaPrecios</class>
     <class>entity.FacturaVenta</class>
-    <class>entity.DetallesVenta</class>
     <class>entity.Caja</class>
     <class>entity.CajaMovimientos</class>
     <class>entity.DatosEmpresa</class>
     <class>entity.CtacteProveedor</class>
-    <class>entity.DetalleRemesa</class>
     <class>entity.Remesa</class>
-    <class>entity.DetalleCajaMovimientos</class>
     <class>entity.MsjInformativos</class>
     <class>entity.Recibo</class>
     <class>entity.CtacteCliente</class>
-    <class>entity.DetalleRecibo</class>
     <class>entity.PermisosCaja</class>
-    <class>entity.DetallePresupuesto</class>
     <class>entity.Presupuesto</class>
     <class>entity.Remito</class>
-    <class>entity.DetalleRemito</class>
     <class>entity.Departamento</class>
+    <class>entity.Orden</class>
+    <class>entity.TiposDocumentos</class>
+    <class>entity.DetalleCajaMovimientos</class>
+    <class>entity.DetalleCompra</class>
+    <class>entity.DetalleListaPrecios</class>
+    <class>entity.DetalleOrden</class>
+    <class>entity.DetallePresupuesto</class>
+    <class>entity.DetalleRecibo</class>
+    <class>entity.DetalleRemesa</class>
+    <class>entity.DetalleRemito</class>
+    <class>entity.DetalleVenta</class>
     <properties>
-      <!--<property name="toplink.jdbc.user" value="jgestion"/>-->
-      <!--<property name="toplink.jdbc.password" value="jgestioncualquiera"/>-->
-      <!--<property name="toplink.jdbc.url" value="jdbc:postgresql://localhost/poli"/>-->
+<!--            <property name="toplink.jdbc.user" value="jgestion"/>
+            <property name="toplink.jdbc.password" value="jgestioncualquiera"/>
+            <property name="toplink.jdbc.url" value="jdbc:postgresql://localhost:5432/JGESTION"/>-->
+
+<!--            <property name="toplink.ddl-generation" value="create-tables"/>-->
+
+<!--      <property name="toplink.jdbc.url" value="jdbc:postgresql://localhost/poli"/>-->
       <property name="toplink.jdbc.user" value="postgres"/>
       <property name="toplink.jdbc.password" value="juajua"/>
       <property name="toplink.jdbc.url" value="jdbc:postgresql://10.0.0.3:5432/JGESTIONX"/>

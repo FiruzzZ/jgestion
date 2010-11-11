@@ -12,7 +12,7 @@ import entity.Departamento;
 import entity.Municipio;
 import entity.Provincia;
 import entity.Rubro;
-import entity.UTIL;
+import generics.UTIL;
 import gui.JDABM;
 import gui.JDContenedor;
 import gui.PanelABMProveedores;
@@ -33,11 +33,11 @@ import javax.swing.table.DefaultTableModel;
  */
 public class ProveedorJpaController implements ActionListener, MouseListener, KeyListener {
 
-   public final String CLASS_NAME = "Proveedor";
-   private JDContenedor contenedor = null;
-   private JDABM abm;
+   public final String CLASS_NAME = Proveedor.class.getSimpleName();
    private final String[] colsName = {"ID", "Código", "Razón social", "CUIT", "Teléfonos"};
    private final int[] colsWidth = {10, 20, 120, 40, 90};
+   private JDContenedor contenedor;
+   private JDABM abm;
    private Proveedor EL_OBJECT;
    private PanelABMProveedores panel;
 
@@ -252,11 +252,7 @@ public class ProveedorJpaController implements ActionListener, MouseListener, Ke
       //init contenedor
       contenedor = new JDContenedor(frame, modal, "ABM - " + CLASS_NAME);
       contenedor.hideBtmEliminar();
-      try {
-         UTIL.getDefaultTableModel(contenedor.getjTable1(), colsName, colsWidth);
-      } catch (Exception ex) {
-         Logger.getLogger(ProveedorJpaController.class.getName()).log(Level.SEVERE, null, ex);
-      }
+      UTIL.getDefaultTableModel(contenedor.getjTable1(), colsName, colsWidth);
       //esconde el ID column
       UTIL.hideColumnTable(contenedor.getjTable1(), 0);
       cargarDTM(contenedor.getDTM(), null);

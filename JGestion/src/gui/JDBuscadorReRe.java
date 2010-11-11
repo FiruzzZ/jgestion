@@ -5,13 +5,14 @@
  */
 package gui;
 
-import entity.UTIL;
+import generics.UTIL;
 import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseListener;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -64,6 +65,8 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
       this.labelClieProv.setText(labelClieProv);
       this.labelReRe.setText(labelReRe);
       rootPane.setDefaultButton(bBuscar);
+      setLocation(getOwner().getX() + 100, getY() + 50);
+
    }
 
    /** This method is called from within the constructor to
@@ -114,11 +117,11 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
 
       jLabel2.setText("Desde:");
 
-      dcDesde.setDateFormatString(entity.UTIL.DATE_FORMAT.toPattern());
+      dcDesde.setDateFormatString(generics.UTIL.DATE_FORMAT.toPattern());
 
       jLabel3.setText("Hasta:");
 
-      dcHasta.setDateFormatString(entity.UTIL.DATE_FORMAT.toPattern());
+      dcHasta.setDateFormatString(generics.UTIL.DATE_FORMAT.toPattern());
 
       tfOcteto.setColumns(8);
       tfOcteto.setName("tfocteto"); // NOI18N
@@ -164,7 +167,7 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
          }
       });
 
-      checkAnulada.setText("Anuladas");
+      checkAnulada.setText("Solo anuladas");
 
       labelFormasDePago.setText("Forma pago");
 
@@ -334,7 +337,7 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
 }//GEN-LAST:event_bLimpiarActionPerformed
 
     private void tfCuartoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfCuartoKeyTyped
-       if (tfOcteto.getText().trim().length() < 4) {
+       if (tfCuarto.getText().trim().length() < 4) {
           soloNumeros(evt);       // TODO add your handling code here:
        } else {
           evt.setKeyChar((char) java.awt.event.KeyEvent.VK_CLEAR);
@@ -354,7 +357,7 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
     }//GEN-LAST:event_bImprimirActionPerformed
 
     private void tfFactu4KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfFactu4KeyTyped
-       if (tfOcteto.getText().trim().length() <= 6) {
+       if (tfFactu4.getText().trim().length() <= 6) {
           soloNumeros(evt);       // TODO add your handling code here:
        } else {
           evt.setKeyChar((char) java.awt.event.KeyEvent.VK_CLEAR);
@@ -432,11 +435,23 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
 //         tfCuarto.addFocusListener((FocusListener) o);
          tfOcteto.addFocusListener((FocusListener) o);
       } catch (ClassCastException ex) {
-         System.out.println("No se pudo castear objecto a FocusListener");
+         System.out.println(o.getClass() + " no implementa FocusListener");
       }
    }
 
    // <editor-fold defaultstate="collapsed" desc="GETTERS">
+   public JButton getbBuscar() {
+      return bBuscar;
+   }
+
+   public JButton getbImprimir() {
+      return bImprimir;
+   }
+
+   public JButton getbLimpiar() {
+      return bLimpiar;
+   }
+
    public javax.swing.table.DefaultTableModel getDtm() {
       return (javax.swing.table.DefaultTableModel) jTable1.getModel();
    }
@@ -579,10 +594,15 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
       cbFormasDePago.addItem("Si");
    }
 
+   /**
+    * esconde:
+    * label y combo FormaDePago
+    * label Nº Factura
+    * TextField tfFactu4
+    */
    public void setParaRecibos() {
       labelFormasDePago.setVisible(false);
       cbFormasDePago.setVisible(false);
-
       labelN_Factura.setVisible(false);
       tfFactu4.setVisible(false);
    }

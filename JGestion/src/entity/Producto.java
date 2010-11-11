@@ -15,10 +15,25 @@ import javax.persistence.*;
    @UniqueConstraint(columnNames = {"codigo"})
 })
 @NamedQueries({
-   @NamedQuery(name = "Producto.findAll", query = "SELECT p FROM Producto p ORDER BY p.nombre"),
-   @NamedQuery(name = "Producto.findById", query = "SELECT p FROM Producto p WHERE p.id = :id"),
-   @NamedQuery(name = "Producto.findByCodigo", query = "SELECT p FROM Producto p WHERE p.codigo = :codigo"),
+   @NamedQuery(name = "Producto.findAll", query = "SELECT p FROM Producto p ORDER BY p.nombre",
+   hints =
+   @QueryHint(name = "toplink.refresh", value = "true")),
+   @NamedQuery(name = "Producto.findById", query = "SELECT p FROM Producto p WHERE p.id = :id",
+   hints =
+   @QueryHint(name = "toplink.refresh", value = "true")),
+   @NamedQuery(name = "Producto.findByCodigo", query = "SELECT p FROM Producto p WHERE p.codigo = :codigo",
+   hints =
+   @QueryHint(name = "toplink.refresh", value = "true")),
    @NamedQuery(name = "Producto.findByNombre", query = "SELECT p FROM Producto p WHERE p.nombre = :nombre")
+})
+@SqlResultSetMappings({
+   @SqlResultSetMapping(name = "ProductoToBuscador", entities = {
+      @EntityResult(entityClass = Producto.class, fields = {
+         @FieldResult(name = "id", column = "id"),
+         @FieldResult(name = "codigo", column = "codigo"),
+         @FieldResult(name = "nombre", column = "nombre")
+      })
+   })
 })
 public class Producto implements Serializable {
 
@@ -30,7 +45,7 @@ public class Producto implements Serializable {
    private Integer id;
    @Column(name = "codigo", length = 50)
    private String codigo;
-   @Column(name = "nombre", length = 2147483647)
+   @Column(name = "nombre", length = 250)
    private String nombre;
    @Basic(optional = false)
    @Column(name = "stockmaximo", nullable = false)
@@ -45,29 +60,24 @@ public class Producto implements Serializable {
    private Integer deposito;
    @Column(name = "ubicacion", length = 50)
    private String ubicacion;
-   @Column(name = "costo_compra", precision = 17, scale = 17)
+   @Column(name = "costo_compra", precision = 2, scale = 2)
    private Double costoCompra;
-   @Column(name = "descripcion", length = 2147483647)
+   @Column(name = "descripcion", length = 250)
    private String descripcion;
-   @Column(name = "margen", precision = 17, scale = 17)
+   @Column(name = "margen", precision = 2, scale = 2)
    private Double margen;
    @Column(name = "tipomargen")
    private Integer tipomargen;
-   @Column(name = "precio_venta", precision = 17, scale = 17)
+   @Column(name = "precio_venta", precision = 2, scale = 2)
    private Double precioVenta;
    @Column(name = "foto")
    private byte[] foto;
-   @Basic(optional = false)
    @Column(name = "remunerativo", nullable = false)
    private boolean remunerativo;
    @Basic(optional = false)
-   @Column(name = "fecha_alta", nullable = false)
-   @Temporal(value = TemporalType.DATE)
+   @Column(name = "fecha_alta", nullable = false, insertable = false, updatable=false, columnDefinition = "timestamp with time zone NOT NULL DEFAULT now()")
+   @Temporal(value = TemporalType.TIMESTAMP)
    private Date fechaAlta;
-   @Basic(optional = false)
-   @Column(name = "hora_alta", nullable = false)
-   @Temporal(value = TemporalType.TIME)
-   private Date horaAlta;
    @Column(name = "ultima_compra")
    @Temporal(value = TemporalType.DATE)
    private Date ultimaCompra;
@@ -83,9 +93,6 @@ public class Producto implements Serializable {
    @JoinColumn(name = "subrubro", referencedColumnName = "idrubro")
    @ManyToOne
    private Rubro subrubro;
-   @JoinColumn(name = "sucursal", referencedColumnName = "id")
-   @ManyToOne
-   private Sucursal sucursal;
    @JoinColumn(name = "idunidadmedida", referencedColumnName = "id", nullable = false)
    @ManyToOne(optional = false)
    private Unidadmedida idunidadmedida;
@@ -97,16 +104,6 @@ public class Producto implements Serializable {
 
    public Producto(Integer id) {
       this.id = id;
-   }
-
-   public Producto(Integer id, int stockmaximo, int stockactual, int stockminimo, boolean remunerativo, Date fechaAlta, Date horaAlta) {
-      this.id = id;
-      this.stockmaximo = stockmaximo;
-      this.stockactual = stockactual;
-      this.stockminimo = stockminimo;
-      this.remunerativo = remunerativo;
-      this.fechaAlta = fechaAlta;
-      this.horaAlta = horaAlta;
    }
 
    public Integer getId() {
@@ -237,14 +234,7 @@ public class Producto implements Serializable {
       this.fechaAlta = fechaAlta;
    }
 
-   public Date getHoraAlta() {
-      return horaAlta;
-   }
-
-   public void setHoraAlta(Date horaAlta) {
-      this.horaAlta = horaAlta;
-   }
-
+   
    public Date getUltimaCompra() {
       return ultimaCompra;
    }
@@ -291,14 +281,6 @@ public class Producto implements Serializable {
 
    public void setSubrubro(Rubro subrubro) {
       this.subrubro = subrubro;
-   }
-
-   public Sucursal getSucursal() {
-      return sucursal;
-   }
-
-   public void setSucursal(Sucursal sucursal) {
-      this.sucursal = sucursal;
    }
 
    public Unidadmedida getIdunidadmedida() {

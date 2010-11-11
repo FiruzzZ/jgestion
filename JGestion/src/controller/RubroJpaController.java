@@ -4,7 +4,7 @@ import controller.exceptions.IllegalOrphanException;
 import controller.exceptions.MessageException;
 import controller.exceptions.NonexistentEntityException;
 import entity.Rubro;
-import entity.UTIL;
+import generics.UTIL;
 import gui.JDMiniABM;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
 package entity;
 
@@ -24,8 +20,7 @@ import javax.persistence.UniqueConstraint;
  */
 @Entity
 @Table(name = "provincia", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"nombre"}),
-    @UniqueConstraint(columnNames = {"codigo"})
+    @UniqueConstraint(columnNames = {"nombre"})
 })
 @NamedQueries({
    @NamedQuery(name = "Provincia.findAll", query = "SELECT p FROM Provincia p"),

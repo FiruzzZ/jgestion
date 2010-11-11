@@ -1,4 +1,3 @@
-
 package entity;
 
 import java.io.Serializable;
@@ -10,94 +9,86 @@ import javax.persistence.*;
  * @author FiruzzZ
  */
 @Entity
-@Table(name = "marca", uniqueConstraints = {@UniqueConstraint(columnNames = {"nombre"})})
+@Table(name = "marca", uniqueConstraints = {
+   @UniqueConstraint(columnNames = {"nombre"})})
 @NamedQueries({
-    @NamedQuery(name = "Marca.findAll", query = "SELECT m FROM Marca m ORDER BY m.nombre"),
-    @NamedQuery(name = "Marca.findById", query = "SELECT m FROM Marca m WHERE m.id = :id"),
-    @NamedQuery(name = "Marca.findByCodigo", query = "SELECT m FROM Marca m WHERE m.codigo = :codigo"),
-    @NamedQuery(name = "Marca.findByNombre", query = "SELECT m FROM Marca m WHERE m.nombre = :nombre")
+   @NamedQuery(name = "Marca.findAll", query = "SELECT m FROM Marca m ORDER BY m.nombre"),
+   @NamedQuery(name = "Marca.findById", query = "SELECT m FROM Marca m WHERE m.id = :id"),
+   @NamedQuery(name = "Marca.findByCodigo", query = "SELECT m FROM Marca m WHERE m.codigo = :codigo"),
+   @NamedQuery(name = "Marca.findByNombre", query = "SELECT m FROM Marca m WHERE m.nombre = :nombre")
 })
 public class Marca implements Serializable {
-    private static final long serialVersionUID = 1L;
-    @Id
-    @Basic(optional = false)
-    @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private Integer id;
-    @Column(name = "codigo", length = 50)
-    private String codigo;
-    @Basic(optional = false)
-    @Column(name = "nombre", nullable = false, length = 50)
-    private String nombre;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "marca")
-    private List<Producto> productoList;
 
-    public Marca() {    }
+   private static final long serialVersionUID = 1L;
+   @Id
+   @Basic(optional = false)
+   @Column(name = "id", nullable = false)
+   @GeneratedValue(strategy = GenerationType.IDENTITY)
+   private Integer id;
+   @Column(name = "codigo", length = 50)
+   private String codigo;
+   @Basic(optional = false)
+   @Column(name = "nombre", nullable = false, length = 50)
+   private String nombre;
 
-    public Marca(Integer id) {
-        this.id = id;
-    }
+   public Marca() {
+   }
 
-    public Marca(Integer id, String nombre) {
-        this.id = id;
-        this.nombre = nombre;
-    }
+   public Marca(Integer id) {
+      this.id = id;
+   }
 
-    public Integer getId() {
-        return id;
-    }
+   public Marca(Integer id, String nombre) {
+      this.id = id;
+      this.nombre = nombre;
+   }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+   public Integer getId() {
+      return id;
+   }
 
-    public String getCodigo() {
-        return codigo;
-    }
+   public void setId(Integer id) {
+      this.id = id;
+   }
 
-    public void setCodigo(String codigo) {
-        this.codigo = codigo;
-    }
+   public String getCodigo() {
+      return codigo;
+   }
 
-    public String getNombre() {
-        return nombre;
-    }
+   public void setCodigo(String codigo) {
+      this.codigo = codigo;
+   }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
+   public String getNombre() {
+      return nombre;
+   }
 
-    public List<Producto> getProductoList() {
-        return productoList;
-    }
+   public void setNombre(String nombre) {
+      this.nombre = nombre;
+   }
 
-    public void setProductoList(List<Producto> productoList) {
-        this.productoList = productoList;
-    }
+   @Override
+   public int hashCode() {
+      int hash = 0;
+      hash += (id != null ? id.hashCode() : 0);
+      return hash;
+   }
 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
-    }
+   @Override
+   public boolean equals(Object object) {
+      // TODO: Warning - this method won't work in the case the id fields are not set
+      if (!(object instanceof Marca)) {
+         return false;
+      }
+      Marca other = (Marca) object;
+      if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+         return false;
+      }
+      return true;
+   }
 
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Marca)) {
-            return false;
-        }
-        Marca other = (Marca) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return this.getNombre();
-    }
-
+   @Override
+   public String toString() {
+      return this.getNombre();
+   }
 }

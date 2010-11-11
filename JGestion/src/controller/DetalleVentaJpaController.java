@@ -1,7 +1,7 @@
 package controller;
 
 import controller.exceptions.NonexistentEntityException;
-import entity.DetallesVenta;
+import entity.DetalleVenta;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -12,19 +12,15 @@ import entity.FacturaVenta;
  *
  * @author Administrador
  */
-public class DetallesVentaJpaController {
+public class DetalleVentaJpaController {
 
-   public static final String CLASS_NAME = DetallesVenta.class.getSimpleName();
+   public static final String CLASS_NAME = DetalleVenta.class.getSimpleName();
 
    // <editor-fold defaultstate="collapsed" desc="CRUD...">
-   public EntityManager getEntityManager() {
-      return DAO.getEntityManager();
-   }
-
-   public void create(DetallesVenta detallesVenta) {
+   public void create(DetalleVenta detallesVenta) {
       EntityManager em = null;
       try {
-         em = getEntityManager();
+         em = DAO.getEntityManager();
          em.getTransaction().begin();
          FacturaVenta factura = detallesVenta.getFactura();
          if (factura != null) {
@@ -44,12 +40,12 @@ public class DetallesVentaJpaController {
       }
    }
 
-   public void edit(DetallesVenta detallesVenta) throws NonexistentEntityException, Exception {
+   public void edit(DetalleVenta detallesVenta) throws NonexistentEntityException, Exception {
       EntityManager em = null;
       try {
-         em = getEntityManager();
+         em = DAO.getEntityManager();
          em.getTransaction().begin();
-         DetallesVenta persistentDetallesVenta = em.find(DetallesVenta.class, detallesVenta.getId());
+         DetalleVenta persistentDetallesVenta = em.find(DetalleVenta.class, detallesVenta.getId());
          FacturaVenta facturaOld = persistentDetallesVenta.getFactura();
          FacturaVenta facturaNew = detallesVenta.getFactura();
          if (facturaNew != null) {
@@ -71,7 +67,7 @@ public class DetallesVentaJpaController {
          if (msg == null || msg.length() == 0) {
             Integer id = detallesVenta.getId();
             if (findDetallesVenta(id) == null) {
-               throw new NonexistentEntityException("The detallesVenta with id " + id + " no longer exists.");
+               throw new NonexistentEntityException("The detalleVenta with id " + id + " no longer exists.");
             }
          }
          throw ex;
@@ -85,14 +81,14 @@ public class DetallesVentaJpaController {
    public void destroy(Integer id) throws NonexistentEntityException {
       EntityManager em = null;
       try {
-         em = getEntityManager();
+         em = DAO.getEntityManager();
          em.getTransaction().begin();
-         DetallesVenta detallesVenta;
+         DetalleVenta detallesVenta;
          try {
-            detallesVenta = em.getReference(DetallesVenta.class, id);
+            detallesVenta = em.getReference(DetalleVenta.class, id);
             detallesVenta.getId();
          } catch (EntityNotFoundException enfe) {
-            throw new NonexistentEntityException("The detallesVenta with id " + id + " no longer exists.", enfe);
+            throw new NonexistentEntityException("The detalleVenta with id " + id + " no longer exists.", enfe);
          }
          FacturaVenta factura = detallesVenta.getFactura();
          if (factura != null) {
@@ -108,18 +104,18 @@ public class DetallesVentaJpaController {
       }
    }
 
-   public List<DetallesVenta> findDetallesVentaEntities() {
+   public List<DetalleVenta> findDetallesVentaEntities() {
       return findDetallesVentaEntities(true, -1, -1);
    }
 
-   public List<DetallesVenta> findDetallesVentaEntities(int maxResults, int firstResult) {
+   public List<DetalleVenta> findDetallesVentaEntities(int maxResults, int firstResult) {
       return findDetallesVentaEntities(false, maxResults, firstResult);
    }
 
-   private List<DetallesVenta> findDetallesVentaEntities(boolean all, int maxResults, int firstResult) {
-      EntityManager em = getEntityManager();
+   private List<DetalleVenta> findDetallesVentaEntities(boolean all, int maxResults, int firstResult) {
+      EntityManager em = DAO.getEntityManager();
       try {
-         Query q = em.createQuery("select object(o) from DetallesVenta as o");
+         Query q = em.createQuery("select object(o) from " + CLASS_NAME + " as o");
          if (!all) {
             q.setMaxResults(maxResults);
             q.setFirstResult(firstResult);
@@ -130,25 +126,25 @@ public class DetallesVentaJpaController {
       }
    }
 
-   public DetallesVenta findDetallesVenta(Integer id) {
-      EntityManager em = getEntityManager();
+   public DetalleVenta findDetallesVenta(Integer id) {
+      EntityManager em = DAO.getEntityManager();
       try {
-         return em.find(DetallesVenta.class, id);
+         return em.find(DetalleVenta.class, id);
       } finally {
          em.close();
       }
    }
 
    public int getDetallesVentaCount() {
-      EntityManager em = getEntityManager();
+      EntityManager em = DAO.getEntityManager();
       try {
-         return ((Long) em.createQuery("select count(o) from DetallesVenta as o").getSingleResult()).intValue();
+         return ((Long) em.createQuery("select count(o) from " + CLASS_NAME + " as o").getSingleResult()).intValue();
       } finally {
          em.close();
       }
    }// </editor-fold>
 
-   List<DetallesVenta> findByFactura(int facturaVentaID) {
+   List<DetalleVenta> findByFactura(int facturaVentaID) {
       return DAO.getEntityManager().createQuery("SELECT o FROM " + CLASS_NAME + " o WHERE o.factura.id = " + facturaVentaID).getResultList();
    }
 }

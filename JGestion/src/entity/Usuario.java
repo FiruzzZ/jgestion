@@ -35,19 +35,15 @@ public class Usuario implements Serializable {
    @Basic(optional = false)
    @Column(name = "estado", nullable = false)
    private int estado;
-//    @Basic(optional = true)
-   @Column(name = "fechaalta", nullable = false)
-   @Temporal(TemporalType.DATE)
+   @Basic(optional = false)
+   @Column(name = "fechaalta", nullable = false, insertable = false, updatable = false, columnDefinition = "timestamp with time zone NOT NULL DEFAULT now()")
+   @Temporal(TemporalType.TIMESTAMP)
    private Date fechaalta;
    @JoinColumn(name = "permisos", referencedColumnName = "id")
    @OneToOne
    private Permisos permisos;
-   @OneToMany(cascade = CascadeType.ALL, mappedBy = "usuario")
-   private List<FacturaVenta> facturaVentaList;
    @OneToMany(mappedBy = "usuario")
    private List<Stock> stockList;
-   @OneToMany(cascade = CascadeType.ALL, mappedBy = "usuario")
-   private List<FacturaCompra> facturaCompraList;
    @OneToMany(cascade = CascadeType.ALL, mappedBy = "usuario")
    private List<PermisosCaja> permisosCajaList;
 
@@ -56,15 +52,6 @@ public class Usuario implements Serializable {
 
    public Usuario(Integer id) {
       this.id = id;
-   }
-
-   public Usuario(Integer id, String nick, String pass, int estado, Date fechaalta, Permisos permisos) {
-      this.id = id;
-      this.nick = nick;
-      this.pass = pass;
-      this.estado = estado;
-      this.fechaalta = fechaalta;
-      this.permisos = permisos;
    }
 
    public Integer getId() {
@@ -115,28 +102,12 @@ public class Usuario implements Serializable {
       this.permisos = permisos;
    }
 
-   public List<FacturaVenta> getFacturaVentaList() {
-      return facturaVentaList;
-   }
-
-   public void setFacturaVentaList(List<FacturaVenta> facturaVentaList) {
-      this.facturaVentaList = facturaVentaList;
-   }
-
    public List<Stock> getStockList() {
       return stockList;
    }
 
    public void setStockList(List<Stock> stockList) {
       this.stockList = stockList;
-   }
-
-   public List<FacturaCompra> getFacturaCompraList() {
-      return facturaCompraList;
-   }
-
-   public void setFacturaCompraList(List<FacturaCompra> facturaCompraList) {
-      this.facturaCompraList = facturaCompraList;
    }
 
    public List<PermisosCaja> getPermisosCajaList() {

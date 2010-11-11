@@ -3,21 +3,26 @@ package controller;
 import controller.exceptions.*;
 import entity.Caja;
 import entity.CajaMovimientos;
-import entity.DetallesCompra;
+import entity.DetalleCompra;
 import entity.FacturaCompra;
 import entity.Proveedor;
 import entity.Sucursal;
+import gui.JFP;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import entity.Producto;
-import entity.UTIL;
+import generics.AutoCompleteComboBox;
+import generics.UTIL;
 import gui.JDBuscadorReRe;
 import gui.JDFacturaCompra;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
@@ -30,6 +35,7 @@ import javax.persistence.NoResultException;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.JTextComponent;
 
 /**
  *
@@ -62,19 +68,19 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
    }
 
    public void create(FacturaCompra facturaCompra) throws Exception {
-      if (facturaCompra.getDetallesCompraList() == null) {
+      if (facturaCompra.getDetalleCompraList() == null) {
          //nunca debería pasar esto....
       }
       EntityManager em = null;
       try {
          em = getEntityManager();
          em.getTransaction().begin();
-         List<DetallesCompra> detallesCompraListToPersist = facturaCompra.getDetallesCompraList();
-         facturaCompra.setDetallesCompraList(new ArrayList<DetallesCompra>());
+         List<DetalleCompra> detallesCompraListToPersist = facturaCompra.getDetalleCompraList();
+         facturaCompra.setDetalleCompraList(new ArrayList<DetalleCompra>());
          em.persist(facturaCompra);
          em.getTransaction().commit();
-         DetallesCompraJpaController dcController = new DetallesCompraJpaController();
-         for (DetallesCompra detallesCompra : detallesCompraListToPersist) {
+         DetalleCompraJpaController dcController = new DetalleCompraJpaController();
+         for (DetalleCompra detallesCompra : detallesCompraListToPersist) {
             detallesCompra.setFactura(facturaCompra);
             dcController.create(detallesCompra);
          }
@@ -85,7 +91,9 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
          throw ex;
       } finally {
          if (em != null) {
-            em.close();
+            if (em.isOpen()) {
+               em.close();
+            }
          }
       }
    }
@@ -138,13 +146,13 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
       }
    }// </editor-fold>
 
-   public void initJDFacturaCompra(java.awt.Frame frame, boolean modal) {
+   public void initJDFacturaCompra(JFrame frame, boolean modal) throws MessageException {
 
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
          UsuarioJpaController.checkPermisos(PermisosJpaController.PermisoDe.COMPRA);
       } catch (MessageException ex) {
-         javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
+         JOptionPane.showMessageDialog(null, ex.getMessage());
          return;
       }// </editor-fold>
 
@@ -154,16 +162,60 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
       UTIL.hideColumnTable(jdFactura.getjTable1(), 0);
       //set next nº movimiento
       jdFactura.setTfNumMovimiento(String.valueOf(getFacturaCompraCount() + 1));
-
-      UTIL.loadComboBox(jdFactura.getCbProveedor(),
-              new ProveedorJpaController().findProveedorEntities(), false);
-      UTIL.loadComboBox(jdFactura.getCbSucursal(),
-              new SucursalJpaController().findSucursalEntities(), false);
+      UTIL.loadComboBox(jdFactura.getCbProveedor(), new ProveedorJpaController().findProveedorEntities(), false);
+      UTIL.loadComboBox(jdFactura.getCbSucursal(), new SucursalJpaController().findSucursalEntities(), false);
       UTIL.loadComboBox(jdFactura.getCbFacturaTipo(), TIPOS_FACTURA, false);
       UTIL.loadComboBox(jdFactura.getCbFormaPago(), Valores.FormaPago.getFormasDePago(), false);
-      UTIL.loadComboBox(jdFactura.getCbCaja(),
-              new CajaJpaController().findCajasPermitidasByUsuario(UsuarioJpaController.getCurrentUser(), true), false);
+      UTIL.loadComboBox(jdFactura.getCbCaja(), new CajaJpaController().findCajasPermitidasByUsuario(UsuarioJpaController.getCurrentUser(), true), false);
+      UTIL.loadComboBox(jdFactura.getCbProductos(), new ProductoJpaController().findProductoToCombo(), false);
 
+      jdFactura.getCbProductos().setEditable(true);
+      JTextComponent editor = (JTextComponent) jdFactura.getCbProductos().getEditor().getEditorComponent();
+      // change the editor's documenteishon
+      editor.setDocument(new AutoCompleteComboBox(jdFactura.getCbProductos()));
+      editor.addFocusListener(new FocusListener() {
+
+         @Override
+         public void focusGained(FocusEvent e) {
+         }
+
+         @Override
+         public void focusLost(FocusEvent e) {
+            try {
+               buscarProducto(((Producto) jdFactura.getCbProductos().getSelectedItem()).getCodigo());
+            } catch (ClassCastException ex) {
+               //cuando no seleccionó ningún Producto del combo
+               jdFactura.setTfPrecioUnitario("");
+               jdFactura.setTfProductoIVA("");
+            }
+         }
+      });
+      editor.addKeyListener(new KeyAdapter() {
+
+         @Override
+         public void keyReleased(KeyEvent e) {
+            if (e.getKeyCode() == 10) {
+               System.out.println("keyReleased.ENTER");
+               try {
+                  buscarProducto(((Producto) jdFactura.getCbProductos().getSelectedItem()).getCodigo());
+               } catch (ClassCastException ex) {
+                  jdFactura.setTfProductoPrecioActual("");
+                  jdFactura.setTfPrecioUnitario("");
+                  jdFactura.setTfProductoIVA("");
+               }
+            }
+         }
+      });
+      jdFactura.getTfProductoCodigo().addKeyListener(new KeyAdapter() {
+
+         @Override
+         public void keyReleased(KeyEvent e) {
+            if (e.getKeyCode() == 10) {
+               producto_selected = new ProductoJpaController().findProductoByCodigo(jdFactura.getTfProductoCodigo().getText());
+               setProducto(producto_selected);
+            }
+         }
+      });
       jdFactura.setListener(this);
       jdFactura.setLocationByPlatform(true);
       jdFactura.setVisible(true);
@@ -171,7 +223,7 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
 
    private void buscarProducto(String codigoProducto) {
       producto_selected = new ProductoJpaController().findProductoByCodigo(codigoProducto);
-      setProducto();
+      setProducto(producto_selected);
    }
 
    private void addProductoToList() throws MessageException {
@@ -182,7 +234,7 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
       int cantidad;
       double precioUnitario;
       try {
-         cantidad = Integer.valueOf(jdFactura.getTfCantidad());
+         cantidad = Integer.valueOf(jdFactura.getTfCantidad().getText());
          if (cantidad < 1) {
             throw new MessageException("La cantidad no puede ser menor a 1");
          }
@@ -220,16 +272,18 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
       }
    }
 
-   private void setProducto() {
-      if (producto_selected != null) {
-         jdFactura.setTfProductoCodigo(producto_selected.getCodigo());
-         jdFactura.setTfProductoNombre(producto_selected.getNombre());
-         jdFactura.setTfProductoIVA(producto_selected.getIva().getIva().toString());
-         jdFactura.setTfProductoPrecioActual(UTIL.PRECIO_CON_PUNTO.format(producto_selected.getCostoCompra()));
+   private void setProducto(Producto producto) {
+      if (producto != null) {
+         jdFactura.labelCodigoNoRegistrado(false);
+         jdFactura.setTfProductoCodigo(producto.getCodigo());
+         UTIL.setSelectedItem(jdFactura.getCbProductos(), producto.getNombre());
+         jdFactura.setTfProductoIVA(producto.getIva().getIva().toString());
+         jdFactura.setTfProductoPrecioActual(UTIL.PRECIO_CON_PUNTO.format(producto.getCostoCompra()));
+         jdFactura.getTfCantidad().requestFocus();
       } else {
-         jdFactura.setTfProductoNombre("- producto no encontrado -");
-         jdFactura.setTfProductoIVA("");
+         jdFactura.labelCodigoNoRegistrado(true);
          jdFactura.setTfProductoPrecioActual("");
+         jdFactura.setTfProductoIVA("");
       }
    }
 
@@ -253,17 +307,22 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
       jdFactura.setTfTotal(UTIL.PRECIO_CON_PUNTO.format((gravado + iva10 + iva21)));
    }
 
+   @Override
    public void keyTyped(KeyEvent e) {
       if (e.getComponent().getClass().equals(javax.swing.JTextField.class)) {
          javax.swing.JTextField tf = (javax.swing.JTextField) e.getComponent();
          if (tf.getName().equalsIgnoreCase("cuarteto")) {
             if (tf.getText().length() < 4) {
                UTIL.soloNumeros(e);
+            } else if (tf.getSelectedText() != null && tf.getSelectedText().length() == tf.getText().length()) {
+               UTIL.soloNumeros(e);
             } else {
                e.setKeyChar((char) KeyEvent.VK_CLEAR);
             }
          } else if (tf.getName().equalsIgnoreCase("octeto")) {
             if (tf.getText().length() < 8) {
+               UTIL.soloNumeros(e);
+            } else if (tf.getSelectedText() != null && tf.getSelectedText().length() == tf.getText().length()) {
                UTIL.soloNumeros(e);
             } else {
                e.setKeyChar((char) KeyEvent.VK_CLEAR);
@@ -277,60 +336,50 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
    }
 
    public void keyReleased(KeyEvent e) {
-      if (e.getComponent().getClass().equals(javax.swing.JTextField.class)) {
-         javax.swing.JTextField tf = (javax.swing.JTextField) e.getComponent();
-         if (tf.getName().equalsIgnoreCase("productoCodigo") && tf.isFocusOwner()) {
-            if (tf.getText().length() > 0 && e.getKeyCode() == 10) {
-               buscarProducto(tf.getText());
-            }
-         }
-      }
    }
 
    public void keyPressed(KeyEvent e) {
    }
 
    private void setEntityAndPersist() throws Exception {
-      EL_OBJECT = new FacturaCompra();
-      EL_OBJECT.setFacturaCuarto(Short.valueOf(jdFactura.getTfFacturaCuarto()));
-      EL_OBJECT.setFacturaOcteto(Integer.valueOf(jdFactura.getTfFacturaOcteto()));
-      EL_OBJECT.setFechaCompra(jdFactura.getDcFechaFactura());
-      EL_OBJECT.setFechaalta(new java.util.Date());
-      EL_OBJECT.setHoraalta(new java.util.Date());
-      EL_OBJECT.setAnulada(false);
+      FacturaCompra newFacturaCompra = new FacturaCompra();
+      newFacturaCompra.setFacturaCuarto(Short.valueOf(jdFactura.getTfFacturaCuarto()));
+      newFacturaCompra.setFacturaOcteto(Integer.valueOf(jdFactura.getTfFacturaOcteto()));
+      newFacturaCompra.setFechaCompra(jdFactura.getDcFechaFactura());
+      newFacturaCompra.setAnulada(false);
       //set entities
-      EL_OBJECT.setProveedor((Proveedor) jdFactura.getCbProveedor().getSelectedItem());
-      EL_OBJECT.setSucursal((Sucursal) jdFactura.getCbSucursal().getSelectedItem());
-      EL_OBJECT.setUsuario(UsuarioJpaController.getCurrentUser());
-      EL_OBJECT.setCaja((Caja) jdFactura.getCbCaja().getSelectedItem());
+      newFacturaCompra.setProveedor((Proveedor) jdFactura.getCbProveedor().getSelectedItem());
+      newFacturaCompra.setSucursal((Sucursal) jdFactura.getCbSucursal().getSelectedItem());
+      newFacturaCompra.setUsuario(UsuarioJpaController.getCurrentUser());
+      newFacturaCompra.setCaja((Caja) jdFactura.getCbCaja().getSelectedItem());
 
-      EL_OBJECT.setImporte(Double.valueOf(jdFactura.getTfTotal()));
-      EL_OBJECT.setIva10(Double.valueOf(jdFactura.getTfTotalIVA105()));
-      EL_OBJECT.setIva21(Double.valueOf(jdFactura.getTfTotalIVA21()));
-      EL_OBJECT.setPercDgr(0.0); // <--- no corresponde en la COMPRA ..BURRO!!
-      EL_OBJECT.setPercIva(Double.valueOf(jdFactura.getTfPercIVA()));
-      EL_OBJECT.setRemito(0L);
-      EL_OBJECT.setTipo(jdFactura.getCbFacturaTipo().getSelectedItem().toString().charAt(0));
-      EL_OBJECT.setNumero(Long.valueOf(
+      newFacturaCompra.setImporte(Double.valueOf(jdFactura.getTfTotal()));
+      newFacturaCompra.setIva10(Double.valueOf(jdFactura.getTfTotalIVA105()));
+      newFacturaCompra.setIva21(Double.valueOf(jdFactura.getTfTotalIVA21()));
+      newFacturaCompra.setPercDgr(0.0); // <--- no corresponde en la COMPRA ..BURRO!!
+      newFacturaCompra.setPercIva(Double.valueOf(jdFactura.getTfPercIVA()));
+      newFacturaCompra.setRemito(0L);
+      newFacturaCompra.setTipo(jdFactura.getCbFacturaTipo().getSelectedItem().toString().charAt(0));
+      newFacturaCompra.setNumero(Long.valueOf(
               jdFactura.getTfFacturaCuarto() + jdFactura.getTfFacturaOcteto()));
-      EL_OBJECT.setActualizaStock(jdFactura.getCheckActualizaStock().isSelected());
-      EL_OBJECT.setFormaPago((short) ((Valores.FormaPago) jdFactura.getCbFormaPago().getSelectedItem()).getId());
-      if (EL_OBJECT.getFormaPago() == Valores.FormaPago.CTA_CTE.getId()) {
-         EL_OBJECT.setDiasCtaCte(Short.valueOf(jdFactura.getTfDias()));
+      newFacturaCompra.setActualizaStock(jdFactura.getCheckActualizaStock().isSelected());
+      newFacturaCompra.setFormaPago((short) ((Valores.FormaPago) jdFactura.getCbFormaPago().getSelectedItem()).getId());
+      if (newFacturaCompra.getFormaPago() == Valores.FormaPago.CTA_CTE.getId()) {
+         newFacturaCompra.setDiasCtaCte(Short.valueOf(jdFactura.getTfDias()));
       }
-      EL_OBJECT.setMovimiento(Integer.valueOf(jdFactura.getTfNumMovimiento()));
-      EL_OBJECT.setDetallesCompraList(new ArrayList<DetallesCompra>());
+      newFacturaCompra.setMovimiento(Integer.valueOf(jdFactura.getTfNumMovimiento().getText()));
+      newFacturaCompra.setDetalleCompraList(new ArrayList<DetalleCompra>());
 
       //carga detalleCompra
-      DetallesCompra detalleCompra;
+      DetalleCompra detalleCompra;
       DefaultTableModel dtm = jdFactura.getDTM();
       ProductoJpaController productoCtrl = new ProductoJpaController();
       for (int i = 0; i < dtm.getRowCount(); i++) {
-         detalleCompra = new DetallesCompra();
+         detalleCompra = new DetalleCompra();
          detalleCompra.setProducto(new ProductoJpaController().findProductoByCodigo(dtm.getValueAt(i, 1).toString()));
          detalleCompra.setCantidad(Integer.valueOf(dtm.getValueAt(i, 3).toString()));
          detalleCompra.setPrecioUnitario(Double.valueOf(dtm.getValueAt(i, 4).toString()));
-         EL_OBJECT.getDetallesCompraList().add(detalleCompra);
+         newFacturaCompra.getDetalleCompraList().add(detalleCompra);
          productoCtrl.updateCostoCompra(detalleCompra.getProducto(),
                  detalleCompra.getPrecioUnitario(),
                  detalleCompra.getCantidad(),
@@ -340,30 +389,34 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
       // 1- PERSIST, 2- UPDATE STOCK, 3- UPDATE CAJA
       try {
          //persistiendo
-         create(EL_OBJECT);
-
+         create(newFacturaCompra);
+            newFacturaCompra = (FacturaCompra) DAO.findEntity(FacturaCompra.class,newFacturaCompra.getId());
          //actualiza Stock
          //y también la variable Producto.stockActual
-         if (EL_OBJECT.getActualizaStock()) {
-            new StockJpaController().updateStock(EL_OBJECT);
+         if (newFacturaCompra.getActualizaStock()) {
+            new StockJpaController().updateStock(newFacturaCompra);
          }
 
-         //asiento en caja..
-         asentarSegunFormaDePago(EL_OBJECT.getFormaPago());
-
+         asentarSegunFormaDePago(newFacturaCompra);
       } catch (Exception ex) {
          throw ex;
       }
    }
 
-   private void asentarSegunFormaDePago(int formaPago) throws Exception {
+   /**
+    * Asienta en Caja o no .. según la forma de pago ({@link FacturaCompra#formaPago})
+    * @param facturaCompra
+    * @throws Exception
+    */
+   private void asentarSegunFormaDePago(FacturaCompra facturaCompra) throws Exception {
+      int formaPago = facturaCompra.getFormaPago();
       switch (formaPago) {
          case 1: { // CONTADO
-            new CajaMovimientosJpaController().asentarMovimiento(EL_OBJECT);
+            new CajaMovimientosJpaController().asentarMovimiento(facturaCompra);
             break;
          }
          case 2: { // CTA CTE Proveedor (NO HAY NINGÚN MOVIMIENTO DE CAJA)
-            new CtacteProveedorJpaController().nuevaCtaCte(EL_OBJECT);
+            new CtacteProveedorJpaController().nuevaCtaCte(facturaCompra);
             break;
          }
          case 3: { // CHEQUE
@@ -400,11 +453,11 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
 
       try {
          if (Long.valueOf(jdFactura.getTfFacturaCuarto() + jdFactura.getTfFacturaOcteto()) < 100000001) {
-            throw new MessageException("Número de factura no válido");
+            throw new MessageException("Número de factura no válido (no puede ser menor a 0001-00000001");
          }
 
       } catch (NumberFormatException e) {
-         throw new MessageException("Los primeros 4 números de la factura no válido");
+         throw new MessageException("Los primeros 4 números de la factura no son válido");
       }
       try {
          if (Integer.valueOf(jdFactura.getTfFacturaOcteto()) < 1) {
@@ -478,7 +531,6 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
                jdFactura.showMessage(ex.getMessage(), CLASS_NAME, 0);
                Logger.getLogger(SucursalJpaController.class.getName()).log(Level.SEVERE, null, ex);
             }
-
          } else if (boton.getName().equalsIgnoreCase("del")) {
             deleteProductoFromLista();
 
@@ -501,8 +553,6 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
       // <editor-fold defaultstate="collapsed" desc="JTextField">
       if (e.getSource().equals(javax.swing.JTextField.class)) {
          javax.swing.JTextField tf = (javax.swing.JTextField) e.getSource();
-         if (tf.getName().equalsIgnoreCase("productoCodigo")) {
-         }
       }// </editor-fold>
 
    }
@@ -539,7 +589,7 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
       UTIL.getDefaultTableModel(
               buscador.getjTable1(),
               new String[]{"facturaID", "Nº factura", "Mov.", "Proveedor", "Importe", "Fecha", "Sucursal", "Caja", "Usuario", "Fecha (Sistema)"},
-              new int[]{1, 30, 10, 50, 50, 50, 80, 80, 50, 70});
+              new int[]{1, 60, 10, 50, 50, 50, 80, 80, 50, 70});
       //escondiendo facturaID
       UTIL.hideColumnTable(buscador.getjTable1(), 0);
       buscador.getjTable1().addMouseListener(new MouseAdapter() {
@@ -578,7 +628,7 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
                     facturaCompra.getSucursal(),
                     facturaCompra.getCaja(),
                     facturaCompra.getUsuario(),
-                    UTIL.DATE_FORMAT.format(facturaCompra.getFechaalta()) + " (" + UTIL.TIME_FORMAT.format(facturaCompra.getHoraalta()) + ")"
+                    UTIL.DATE_FORMAT.format(facturaCompra.getFechaalta()) + " (" + UTIL.TIME_FORMAT.format(facturaCompra.getFechaalta()) + ")"
                  });
       }
    }
@@ -680,9 +730,9 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
       UTIL.loadComboBox(jdFactura.getCbFormaPago(), Valores.FormaPago.getFormasDePago(), false);
 
       jdFactura.getCbFormaPago().setSelectedIndex(factura.getFormaPago() - 1);
-      List<DetallesCompra> lista = new DetallesCompraJpaController().findByFactura(factura);
+      List<DetalleCompra> lista = new DetalleCompraJpaController().findByFactura(factura);
       DefaultTableModel dtm = jdFactura.getDTM();
-      for (DetallesCompra detallesCompra : lista) {
+      for (DetalleCompra detallesCompra : lista) {
          //"IVA", "Cód. Producto", "Producto", "Cantidad", "Precio U.", "Sub total", "Mod
          dtm.addRow(new Object[]{
                     null,
@@ -755,8 +805,7 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
    private void initBuscadorProducto() {
       ProductoJpaController p = new ProductoJpaController();
       p.initContenedor(null, true, true);
-      producto_selected = p.getProductoSelected();
-      setProducto();
+      UTIL.loadComboBox(jdFactura.getCbProductos(), new ProductoJpaController().findProductoToCombo(), false);
    }
 
    public JDFacturaCompra getContenedor() {

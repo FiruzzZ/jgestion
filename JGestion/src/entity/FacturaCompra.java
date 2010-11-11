@@ -3,23 +3,7 @@ package entity;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-import javax.persistence.Basic;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.*;
 
 /**
  *
@@ -57,13 +41,9 @@ public class FacturaCompra implements Serializable {
    @Temporal(TemporalType.DATE)
    private Date fechaCompra;
    @Basic(optional = false)
-   @Column(name = "fechaalta", nullable = false)
-   @Temporal(TemporalType.DATE)
+   @Column(name = "fechaalta", nullable = false, insertable=false, updatable=false, columnDefinition="timestamp with time zone DEFAULT now()")
+   @Temporal(TemporalType.TIMESTAMP)
    private Date fechaalta;
-   @Basic(optional = false)
-   @Column(name = "horaalta", nullable = false)
-   @Temporal(TemporalType.TIME)
-   private Date horaalta;
    @Basic(optional = false)
    @Column(name = "forma_pago", nullable = false)
    private short formaPago;
@@ -96,7 +76,7 @@ public class FacturaCompra implements Serializable {
    @Column(name = "dias_cta_cte")
    private Short diasCtaCte;
    @OneToMany(cascade = CascadeType.ALL, mappedBy = "factura", fetch=FetchType.EAGER)
-   private List<DetallesCompra> detallesCompraList;
+   private List<DetalleCompra> detalleCompraList;
    @JoinColumn(name = "proveedor", referencedColumnName = "id", nullable = false)
    @ManyToOne(optional = false)
    private Proveedor proveedor;
@@ -118,27 +98,6 @@ public class FacturaCompra implements Serializable {
 
    public FacturaCompra(Integer id) {
       this.id = id;
-   }
-
-   public FacturaCompra(Integer id, long numero, char tipo, double importe, Date fechaCompra, Date fechaalta, Date horaalta, short formaPago, boolean actualizaStock, short facturaCuarto, int facturaOcteto, double percIva, double percDgr, double iva10, double iva21, int movimiento, Caja caja, boolean anulada) {
-      this.id = id;
-      this.numero = numero;
-      this.tipo = tipo;
-      this.importe = importe;
-      this.fechaCompra = fechaCompra;
-      this.fechaalta = fechaalta;
-      this.horaalta = horaalta;
-      this.formaPago = formaPago;
-      this.actualizaStock = actualizaStock;
-      this.facturaCuarto = facturaCuarto;
-      this.facturaOcteto = facturaOcteto;
-      this.percIva = percIva;
-      this.percDgr = percDgr;
-      this.iva10 = iva10;
-      this.iva21 = iva21;
-      this.movimiento = movimiento;
-      this.caja = caja;
-      this.anulada = anulada;
    }
 
    public Integer getId() {
@@ -183,18 +142,6 @@ public class FacturaCompra implements Serializable {
 
    public Date getFechaalta() {
       return fechaalta;
-   }
-
-   public void setFechaalta(Date fechaalta) {
-      this.fechaalta = fechaalta;
-   }
-
-   public Date getHoraalta() {
-      return horaalta;
-   }
-
-   public void setHoraalta(Date horaalta) {
-      this.horaalta = horaalta;
    }
 
    public int getFormaPago() {
@@ -285,12 +232,12 @@ public class FacturaCompra implements Serializable {
       this.diasCtaCte = diasCtaCte;
    }
 
-   public List<DetallesCompra> getDetallesCompraList() {
-      return detallesCompraList;
+   public List<DetalleCompra> getDetalleCompraList() {
+      return detalleCompraList;
    }
 
-   public void setDetallesCompraList(List<DetallesCompra> detallesCompraList) {
-      this.detallesCompraList = detallesCompraList;
+   public void setDetalleCompraList(List<DetalleCompra> detalleCompraList) {
+      this.detalleCompraList = detalleCompraList;
    }
 
    public Proveedor getProveedor() {

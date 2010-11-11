@@ -26,7 +26,7 @@ public class ListaPrecios implements Serializable {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Integer id;
     @Basic(optional = false)
-    @Column(name = "nombre", nullable = false, length = 2147483647)
+    @Column(name = "nombre", nullable = false, length = 100)
     private String nombre;
     @Basic(optional = false)
     @Column(name = "margen", nullable = false, precision = 5, scale = 2)

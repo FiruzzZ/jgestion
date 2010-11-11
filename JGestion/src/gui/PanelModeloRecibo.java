@@ -42,7 +42,7 @@ public class PanelModeloRecibo extends javax.swing.JPanel {
 
       jLabel2.setText("Fecha");
 
-      dcFecha.setDateFormatString(entity.UTIL.DATE_FORMAT.toPattern());
+      dcFecha.setDateFormatString(generics.UTIL.DATE_FORMAT.toPattern());
 
       jLabel3.setText("Cliente");
 

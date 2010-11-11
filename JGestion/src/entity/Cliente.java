@@ -20,15 +20,14 @@ import javax.persistence.UniqueConstraint;
  * @author FiruzzZ
  */
 @Entity
-@Table(name = "cliente", uniqueConstraints = {@UniqueConstraint(columnNames = {"tipodoc", "num_doc"}), @UniqueConstraint(columnNames = {"codigo"})})
+@Table(name = "cliente", uniqueConstraints = {
+   @UniqueConstraint(columnNames = {"tipodoc", "num_doc"}),
+   @UniqueConstraint(columnNames = {"codigo"})
+})
 @NamedQueries({
     @NamedQuery(name = "Cliente.findAll", query = "SELECT c FROM Cliente c order by c.nombre"),
     @NamedQuery(name = "Cliente.findById", query = "SELECT c FROM Cliente c WHERE c.id = :id"),
-    @NamedQuery(name = "Cliente.findByTele1", query = "SELECT c FROM Cliente c WHERE c.tele1 = :tele1"),
-    @NamedQuery(name = "Cliente.findByTele2", query = "SELECT c FROM Cliente c WHERE c.tele2 = :tele2"),
-    @NamedQuery(name = "Cliente.findByEmail", query = "SELECT c FROM Cliente c WHERE c.email = :email"),
-    @NamedQuery(name = "Cliente.findByEstado", query = "SELECT c FROM Cliente c WHERE c.estado = :estado"),
-    @NamedQuery(name = "Cliente.findByCodigopostal", query = "SELECT c FROM Cliente c WHERE c.codigopostal = :codigopostal"), @NamedQuery(name = "Cliente.findByObservacion", query = "SELECT c FROM Cliente c WHERE c.observacion = :observacion"), @NamedQuery(name = "Cliente.findByContacto", query = "SELECT c FROM Cliente c WHERE c.contacto = :contacto"), @NamedQuery(name = "Cliente.findByWebpage", query = "SELECT c FROM Cliente c WHERE c.webpage = :webpage"), @NamedQuery(name = "Cliente.findByCodigo", query = "SELECT c FROM Cliente c WHERE c.codigo = :codigo")
+    @NamedQuery(name = "Cliente.findByCodigo", query = "SELECT c FROM Cliente c WHERE c.codigo = :codigo")
 })
 
 public class Cliente implements Serializable {
@@ -87,7 +86,7 @@ public class Cliente implements Serializable {
     @JoinColumn(name = "rubro", referencedColumnName = "idrubro")
     @ManyToOne
     private Rubro rubro;
-    @JoinColumn(name = "sucursal", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "sucursal", referencedColumnName = "id" )
     @ManyToOne(optional = false)
     private Sucursal sucursal;
 
@@ -96,13 +95,6 @@ public class Cliente implements Serializable {
 
     public Cliente(Integer id) {
         this.id = id;
-    }
-
-    public Cliente(Integer id, String nombre, int tipodoc, long numDoc) {
-        this.id = id;
-        this.nombre = nombre;
-        this.tipodoc = tipodoc;
-        this.numDoc = numDoc;
     }
 
     public Integer getId() {

@@ -8,7 +8,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import entity.Producto;
-import entity.UTIL;
+import generics.UTIL;
 import gui.JDMiniABM;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

@@ -7,7 +7,7 @@ import entity.DetalleRemesa;
 import entity.FacturaCompra;
 import entity.Proveedor;
 import entity.Remesa;
-import entity.UTIL;
+import generics.UTIL;
 import gui.JDResumenCtaCtes;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -145,14 +145,13 @@ public class CtacteProveedorJpaController implements ActionListener {
       ccp.setEstado(Valores.CtaCteEstado.PENDIENTE.getEstado());
       ccp.setFactura(facturaCompra);
       ccp.setFechaCarga(facturaCompra.getFechaalta());
-      ccp.setHoraCarga(new java.util.Date());
       ccp.setImporte(facturaCompra.getImporte());
       create(ccp);
    }
 
    List<CtacteProveedor> findCtacteProveedorByProveedor(Integer idProveedor, int estadoCtaCte) {
       EntityManager em = getEntityManager();
-      em.getTransaction().begin();
+//      em.getTransaction().begin();
       List<CtacteProveedor> listaCtaCteProveedor = null;
       try {
          listaCtaCteProveedor = em.createNativeQuery(
@@ -348,7 +347,7 @@ public class CtacteProveedorJpaController implements ActionListener {
          filter_date = "";
       }
       r.addParameter("FILTER_DATE", filter_date);
-      r.printReport();
+      r.printReport(true);
    }
 
    private void cargarComboBoxRecibosDeCtaCte(CtacteProveedor ctacteProveedor) {

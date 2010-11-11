@@ -1,10 +1,6 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package entity;
 
+import generics.UTIL;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -12,6 +8,8 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -22,24 +20,27 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.UniqueConstraint;
 
 /**
  *
  * @author Administrador
  */
 @Entity
-@Table(name = "remito")
+@Table(name = "remito", uniqueConstraints =
+@UniqueConstraint(columnNames = {"numero"}))
 @NamedQueries({
    @NamedQuery(name = "Remito.findAll", query = "SELECT r FROM Remito r"),
    @NamedQuery(name = "Remito.findById", query = "SELECT r FROM Remito r WHERE r.id = :id"),
-   @NamedQuery(name = "Remito.findByNumero", query = "SELECT r FROM Remito r WHERE r.numero = :numero"),
-   @NamedQuery(name = "Remito.findByFechaCreacion", query = "SELECT r FROM Remito r WHERE r.fechaCreacion = :fechaCreacion"),
-   @NamedQuery(name = "Remito.findByHoraCreacion", query = "SELECT r FROM Remito r WHERE r.horaCreacion = :horaCreacion")})
+   @NamedQuery(name = "Remito.findByNumero", query = "SELECT r FROM Remito r WHERE r.numero = :numero")
+})
 public class Remito implements Serializable {
+
    private static final long serialVersionUID = 1L;
    @Id
    @Basic(optional = false)
    @Column(name = "id", nullable = false)
+   @GeneratedValue(strategy = GenerationType.IDENTITY)
    private Integer id;
    @Basic(optional = false)
    @Column(name = "numero", nullable = false)
@@ -47,9 +48,6 @@ public class Remito implements Serializable {
    @Column(name = "fecha_creacion")
    @Temporal(TemporalType.DATE)
    private Date fechaCreacion;
-   @Column(name = "hora_creacion")
-   @Temporal(TemporalType.TIME)
-   private Date horaCreacion;
    @OneToMany(cascade = CascadeType.ALL, mappedBy = "remito")
    private List<DetalleRemito> detalleRemitoList;
    @JoinColumn(name = "cliente", referencedColumnName = "id", nullable = false)
@@ -99,14 +97,6 @@ public class Remito implements Serializable {
 
    public void setFechaCreacion(Date fechaCreacion) {
       this.fechaCreacion = fechaCreacion;
-   }
-
-   public Date getHoraCreacion() {
-      return horaCreacion;
-   }
-
-   public void setHoraCreacion(Date horaCreacion) {
-      this.horaCreacion = horaCreacion;
    }
 
    public List<DetalleRemito> getDetalleRemitoList() {
@@ -173,5 +163,4 @@ public class Remito implements Serializable {
    public String toString() {
       return UTIL.AGREGAR_CEROS(this.getNumero(), 12);
    }
-
 }

@@ -1,4 +1,3 @@
-
 package entity;
 
 import java.io.Serializable;
@@ -40,6 +39,7 @@ import javax.persistence.UniqueConstraint;
    @NamedQuery(name = "CajaMovimientos.findById", query = "SELECT c FROM CajaMovimientos c WHERE c.id = :id")
 })
 public class CajaMovimientos implements Serializable {
+
    private static final long serialVersionUID = 1L;
    @Id
    @Basic(optional = false)
@@ -54,23 +54,20 @@ public class CajaMovimientos implements Serializable {
    @Temporal(TemporalType.DATE)
    private Date fechaCierre;
    @Basic(optional = false)
-   @Column(name = "sistema_fecha_apertura", nullable = false)
-   @Temporal(TemporalType.DATE)
+   @Column(name = "sistema_fecha_apertura", nullable = false, insertable = false, updatable = false, columnDefinition = "timestamp with time zone NOT NULL DEFAULT now()")
+   @Temporal(TemporalType.TIMESTAMP)
    private Date sistemaFechaApertura;
-   @Column(name = "sistema_fecha_cierre")
-   @Temporal(TemporalType.DATE)
+   @Column(name = "sistema_fecha_cierre", insertable = false, columnDefinition = "timestamp with time zone")
+   @Temporal(TemporalType.TIMESTAMP)
    private Date sistemaFechaCierre;
    @Basic(optional = false)
    @Column(name = "monto_apertura", nullable = false)
    private double montoApertura;
    @Column(name = "monto_cierre", precision = 17, scale = 17)
    private Double montoCierre;
-   @JoinColumn( name = "usuario_cierre", referencedColumnName= "id")
+   @JoinColumn(name = "usuario_cierre", referencedColumnName = "id")
    @ManyToOne
    private Usuario usuarioCierre;
-   @Column(name = "hora_cierre")
-   @Temporal(TemporalType.TIME)
-   private Date horaCierre;
    @JoinColumn(name = "caja", referencedColumnName = "id", nullable = false)
    @ManyToOne(optional = false)
    private Caja caja;
@@ -82,13 +79,6 @@ public class CajaMovimientos implements Serializable {
 
    public CajaMovimientos(Integer id) {
       this.id = id;
-   }
-
-   public CajaMovimientos(Integer id, Date fechaApertura, Date sistemaFechaApertura, double montoApertura) {
-      this.id = id;
-      this.fechaApertura = fechaApertura;
-      this.sistemaFechaApertura = sistemaFechaApertura;
-      this.montoApertura = montoApertura;
    }
 
    public Integer getId() {
@@ -155,14 +145,6 @@ public class CajaMovimientos implements Serializable {
       this.usuarioCierre = usuarioCierre;
    }
 
-   public Date getHoraCierre() {
-      return horaCierre;
-   }
-
-   public void setHoraCierre(Date horaCierre) {
-      this.horaCierre = horaCierre;
-   }
-
    public Caja getCaja() {
       return caja;
    }
@@ -208,5 +190,4 @@ public class CajaMovimientos implements Serializable {
    public String toString() {
       return this.getCaja().getNombre() + " (" + this.getId() + ")";
    }
-
 }

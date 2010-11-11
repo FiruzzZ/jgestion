@@ -31,7 +31,7 @@ public class MsjInformativos implements Serializable {
    @Column(name = "abm_caja", nullable = false)
    private boolean abmCaja;
    @Basic(optional = false)
-   @Column(name = "abm_caja_msj", nullable = false, length = 2147483647)
+   @Column(name = "abm_caja_msj", nullable = false, length = 250)
    private String abmCajaMsj;
 
    public MsjInformativos() {

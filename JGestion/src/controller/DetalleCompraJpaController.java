@@ -1,7 +1,7 @@
 package controller;
 
 import controller.exceptions.NonexistentEntityException;
-import entity.DetallesCompra;
+import entity.DetalleCompra;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -12,20 +12,20 @@ import entity.FacturaCompra;
  *
  * @author FiruzzZ
  */
-public class DetallesCompraJpaController {
+public class DetalleCompraJpaController {
 
-   public static final String CLASS_NAME = DetallesCompra.class.getSimpleName();
+   public static final String CLASS_NAME = DetalleCompra.class.getSimpleName();
 
    // <editor-fold defaultstate="collapsed" desc="CRUD, List's">
    public EntityManager getEntityManager() {
       return DAO.getEntityManager();
    }
 
-   public void create(DetallesCompra detallesCompra) throws Exception {
+   public void create(DetalleCompra detallesCompra) throws Exception {
       DAO.create(detallesCompra);
    }
 
-   public void edit(DetallesCompra detallesCompra) throws NonexistentEntityException, Exception {
+   public void edit(DetalleCompra detallesCompra) throws NonexistentEntityException, Exception {
       throw new UnsupportedOperationException();
    }
 
@@ -33,18 +33,18 @@ public class DetallesCompraJpaController {
       throw new UnsupportedOperationException();
    }
 
-   public List<DetallesCompra> findDetallesCompraEntities() {
+   public List<DetalleCompra> findDetallesCompraEntities() {
       return findDetallesCompraEntities(true, -1, -1);
    }
 
-   public List<DetallesCompra> findDetallesCompraEntities(int maxResults, int firstResult) {
+   public List<DetalleCompra> findDetallesCompraEntities(int maxResults, int firstResult) {
       return findDetallesCompraEntities(false, maxResults, firstResult);
    }
 
-   private List<DetallesCompra> findDetallesCompraEntities(boolean all, int maxResults, int firstResult) {
+   private List<DetalleCompra> findDetallesCompraEntities(boolean all, int maxResults, int firstResult) {
       EntityManager em = getEntityManager();
       try {
-         Query q = em.createQuery("select object(o) from DetallesCompra as o");
+         Query q = em.createQuery("select object(o) from " + CLASS_NAME + " as o");
          if (!all) {
             q.setMaxResults(maxResults);
             q.setFirstResult(firstResult);
@@ -55,10 +55,10 @@ public class DetallesCompraJpaController {
       }
    }
 
-   public DetallesCompra findDetallesCompra(Integer id) {
+   public DetalleCompra findDetallesCompra(Integer id) {
       EntityManager em = getEntityManager();
       try {
-         return em.find(DetallesCompra.class, id);
+         return em.find(DetalleCompra.class, id);
       } finally {
          em.close();
       }
@@ -67,13 +67,13 @@ public class DetallesCompraJpaController {
    public int getDetallesCompraCount() {
       EntityManager em = getEntityManager();
       try {
-         return ((Long) em.createQuery("select count(o) from DetallesCompra as o").getSingleResult()).intValue();
+         return ((Long) em.createQuery("select count(o) from "+CLASS_NAME+" as o").getSingleResult()).intValue();
       } finally {
          em.close();
       }
    }// </editor-fold>
 
-   List<DetallesCompra> findByFactura(FacturaCompra factura) {
+   List<DetalleCompra> findByFactura(FacturaCompra factura) {
       return DAO.getEntityManager().createQuery("SELECT o FROM " + CLASS_NAME + " o WHERE o.factura.id=" + factura.getId()).getResultList();
    }
 }

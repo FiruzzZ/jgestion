@@ -42,7 +42,7 @@ public class PanelBuscadorMovimientosVarios extends javax.swing.JPanel {
 
       jLabel9.setText("Caja");
 
-      dcDesde.setDateFormatString(entity.UTIL.DATE_FORMAT.toPattern());
+      dcDesde.setDateFormatString(generics.UTIL.DATE_FORMAT.toPattern());
 
       jLabel3.setText("Desde");
 
@@ -52,7 +52,7 @@ public class PanelBuscadorMovimientosVarios extends javax.swing.JPanel {
 
       jLabel4.setText("Hasta");
 
-      dcHasta.setDateFormatString(entity.UTIL.DATE_FORMAT.toPattern());
+      dcHasta.setDateFormatString(generics.UTIL.DATE_FORMAT.toPattern());
 
       labelReRe3.setText("Estado de caja");
 

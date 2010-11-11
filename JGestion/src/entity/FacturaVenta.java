@@ -1,5 +1,6 @@
 package entity;
 
+import generics.UTIL;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -14,10 +15,9 @@ import javax.persistence.*;
 )
 @NamedQueries({
    @NamedQuery(name = "FacturaVenta.findAll", query = "SELECT f FROM FacturaVenta f"),
-   @NamedQuery(name = "FacturaVenta.findById", query = "SELECT f FROM FacturaVenta f WHERE f.id = :id"),
-   @NamedQuery(name = "FacturaVenta.findByNumero", query = "SELECT f FROM FacturaVenta f WHERE f.numero = :numero"),
-   @NamedQuery(name = "FacturaVenta.findBySucursal", query = "SELECT f FROM FacturaVenta f WHERE f.sucursal = :sucursal"),
-   @NamedQuery(name = "FacturaVenta.findByCaja", query = "SELECT f FROM FacturaVenta f WHERE f.caja = :caja")
+   @NamedQuery(name = "FacturaVenta.findById", query = "SELECT f FROM FacturaVenta f WHERE f.id = :id", hints =
+   @QueryHint(name = "toplink.refresh", value = "true")),
+   @NamedQuery(name = "FacturaVenta.findByNumero", query = "SELECT f FROM FacturaVenta f WHERE f.numero = :numero")
 })
 public class FacturaVenta implements Serializable {
 
@@ -37,13 +37,10 @@ public class FacturaVenta implements Serializable {
    @Basic(optional = false)
    @Column(name = "importe", nullable = false, precision = 9, scale = 2)
    private Double importe;
-   @Column(name = "fechaalta")
-   @Temporal(TemporalType.DATE)
-   private Date fechaalta;
    @Basic(optional = false)
-   @Column(name = "horaalta", nullable = false)
-   @Temporal(TemporalType.TIME)
-   private Date horaalta;
+   @Column(name = "fechaalta", nullable = false, insertable = false, updatable = false, columnDefinition = "timestamp with time zone NOT NULL DEFAULT now()")
+   @Temporal(TemporalType.TIMESTAMP)
+   private Date fechaalta;
    @Column(name = "descuento", precision = 9, scale = 2)
    private Double descuento;
    @Basic(optional = false)
@@ -65,8 +62,8 @@ public class FacturaVenta implements Serializable {
    @Basic(optional = false)
    @Column(name = "movimiento_interno", nullable = false)
    private int movimientoInterno;
-   @OneToMany(cascade = CascadeType.ALL, mappedBy = "factura", fetch=FetchType.EAGER)
-   private List<DetallesVenta> detallesVentaList;
+   @OneToMany(cascade = CascadeType.ALL, mappedBy = "factura", fetch = FetchType.EAGER)
+   private List<DetalleVenta> detallesVentaList;
    @JoinColumn(name = "cliente", referencedColumnName = "id", nullable = false)
    @ManyToOne(optional = false)
    private Cliente cliente;
@@ -85,7 +82,8 @@ public class FacturaVenta implements Serializable {
    @Basic(optional = false)
    @Column(name = "forma_pago", nullable = false)
    private short formaPago;
-   @Column(name = "dias_cta_cte")
+   @Basic(optional = false)
+   @Column(name = "dias_cta_cte", nullable = false)
    private Short diasCtaCte;
    @Basic(optional = false)
    @Column(name = "anulada", nullable = false)
@@ -99,24 +97,6 @@ public class FacturaVenta implements Serializable {
 
    public FacturaVenta(Integer id) {
       this.id = id;
-   }
-
-   public FacturaVenta(Integer id, char tipo, Date fechaVenta, Double importe, long numero, Sucursal sucursal, double iva10, double iva21, int movimientoInterno, Caja caja, double gravado, short formaPago, Date fechaalta, Date horaalta, boolean anulada) {
-      this.id = id;
-      this.tipo = tipo;
-      this.fechaVenta = fechaVenta;
-      this.importe = importe;
-      this.numero = numero;
-      this.sucursal = sucursal;
-      this.iva10 = iva10;
-      this.iva21 = iva21;
-      this.movimientoInterno = movimientoInterno;
-      this.caja = caja;
-      this.gravado = gravado;
-      this.formaPago = formaPago;
-      this.fechaalta = fechaalta;
-      this.horaalta = horaalta;
-      this.anulada = anulada;
    }
 
    public Integer getId() {
@@ -153,18 +133,6 @@ public class FacturaVenta implements Serializable {
 
    public Date getFechaalta() {
       return fechaalta;
-   }
-
-   public void setFechaalta(Date fechaalta) {
-      this.fechaalta = fechaalta;
-   }
-
-   public Date getHoraalta() {
-      return horaalta;
-   }
-
-   public void setHoraalta(Date horaalta) {
-      this.horaalta = horaalta;
    }
 
    public Double getDescuento() {
@@ -231,11 +199,11 @@ public class FacturaVenta implements Serializable {
       this.movimientoInterno = movimientoInterno;
    }
 
-   public List<DetallesVenta> getDetallesVentaList() {
+   public List<DetalleVenta> getDetallesVentaList() {
       return detallesVentaList;
    }
 
-   public void setDetallesVentaList(List<DetallesVenta> detallesVentaList) {
+   public void setDetallesVentaList(List<DetalleVenta> detallesVentaList) {
       this.detallesVentaList = detallesVentaList;
    }
 
@@ -326,7 +294,7 @@ public class FacturaVenta implements Serializable {
    @Override
    public String toString() {
       if (this.getMovimientoInterno() == 0) {
-         return String.valueOf(this.getNumero());
+         return UTIL.AGREGAR_CEROS(String.valueOf(this.getNumero()), 12);
       } else {
          return "I" + String.valueOf(this.getMovimientoInterno());
       }

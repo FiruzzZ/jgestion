@@ -239,7 +239,7 @@
         <Component class="com.toedter.calendar.JDateChooser" name="dcDesde">
           <Properties>
             <Property name="dateFormatString" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-              <Connection code="entity.UTIL.DATE_FORMAT.toPattern()" type="code"/>
+              <Connection code="generics.UTIL.DATE_FORMAT.toPattern()" type="code"/>
             </Property>
           </Properties>
         </Component>
@@ -251,7 +251,7 @@
         <Component class="com.toedter.calendar.JDateChooser" name="dcHasta">
           <Properties>
             <Property name="dateFormatString" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-              <Connection code="entity.UTIL.DATE_FORMAT.toPattern()" type="code"/>
+              <Connection code="generics.UTIL.DATE_FORMAT.toPattern()" type="code"/>
             </Property>
           </Properties>
         </Component>
@@ -303,7 +303,7 @@
         </Component>
         <Component class="javax.swing.JCheckBox" name="checkAnulada">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Anuladas"/>
+            <Property name="text" type="java.lang.String" value="Solo anuladas"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="labelFormasDePago">

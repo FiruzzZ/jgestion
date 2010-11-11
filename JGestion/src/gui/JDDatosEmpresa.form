@@ -346,7 +346,7 @@
     </Component>
     <Component class="com.toedter.calendar.JDateChooser" name="dcInicioActividad">
       <AuxValues>
-        <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="dcInicioActividad.setDateFormatString(entity.UTIL.DATE_FORMAT.toPattern());"/>
+        <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="dcInicioActividad.setDateFormatString(generics.UTIL.DATE_FORMAT.toPattern());"/>
       </AuxValues>
     </Component>
   </SubComponents>

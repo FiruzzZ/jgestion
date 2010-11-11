@@ -7,7 +7,7 @@ import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import entity.Departamento;
 import entity.Provincia;
-import entity.UTIL;
+import generics.UTIL;
 import gui.JDABM;
 import gui.JDContenedor;
 import gui.PanelABMDeptos;
@@ -24,6 +24,7 @@ import java.util.logging.Logger;
 import javax.persistence.NoResultException;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -227,14 +228,12 @@ public class MunicipioJpaController implements ActionListener, MouseListener, Ke
          }
          return;
       } // </editor-fold>
-
       // <editor-fold defaultstate="collapsed" desc="JTextField">
       else if (e.getSource().getClass().equals(javax.swing.JTextField.class)) {
          javax.swing.JTextField tf = (javax.swing.JTextField) e.getSource();
          if (tf.getName().equalsIgnoreCase("tfFiltro")) {
          }
       } // </editor-fold>
-
       // <editor-fold defaultstate="collapsed" desc="ComboBox">
       else if (e.getSource().getClass().equals(javax.swing.JComboBox.class)) {
          javax.swing.JComboBox combo = (JComboBox) e.getSource();
@@ -255,8 +254,7 @@ public class MunicipioJpaController implements ActionListener, MouseListener, Ke
    private void setComboBoxDepartamentos(int idProvincia) {
       if (idProvincia != 0) {
          UTIL.loadComboBox(panel.getCbDepartamentos(),
-                           new DepartamentoJpaController()
-                                   .findDeptosFromProvincia(idProvincia), true);
+                 new DepartamentoJpaController().findDeptosFromProvincia(idProvincia), true);
       } else {
          UTIL.loadComboBox(panel.getCbDepartamentos(), null, true);
       }
@@ -273,6 +271,7 @@ public class MunicipioJpaController implements ActionListener, MouseListener, Ke
    }
 
    private void initABM(boolean isEditting, ActionEvent e) throws Exception {
+      UsuarioJpaController.checkPermisos(PermisosJpaController.PermisoDe.TESORERIA);
       if (isEditting && municipio == null) {
          throw new MessageException("Debe elegir una fila");
       }
@@ -369,8 +368,8 @@ public class MunicipioJpaController implements ActionListener, MouseListener, Ke
    private void armarQuery(String filtro) {
       String query = null;
       if (filtro != null && filtro.length() > 0) {
-         query = "SELECT o FROM " + CLASS_NAME + " o WHERE o.nombre LIKE '" + filtro + "%' " +
-                 " ORDER BY o.departamento.nombre, o.nombre";
+         query = "SELECT o FROM " + CLASS_NAME + " o WHERE o.nombre LIKE '" + filtro + "%' "
+                 + " ORDER BY o.departamento.nombre, o.nombre";
       }
       cargarDTM(contenedor.getDTM(), query);
    }
@@ -393,8 +392,7 @@ public class MunicipioJpaController implements ActionListener, MouseListener, Ke
       try {
          em.createQuery("SELECT o FROM " + CLASS_NAME + " o "
                  + " WHERE " + idQuery + " o.departamento.nombre= '" + object.getDepartamento().getNombre() + "'"
-                 + " AND o.nombre='" + object.getNombre() + "'")
-                 .getSingleResult();
+                 + " AND o.nombre='" + object.getNombre() + "'").getSingleResult();
          throw new MessageException("Ya existe un Municipio con este nombre en este Departamento.");
       } catch (NoResultException ex) {
       }
@@ -402,8 +400,6 @@ public class MunicipioJpaController implements ActionListener, MouseListener, Ke
    }
 
    public List<Municipio> findMunicipiosFromDepto(int departamentoID) {
-      return DAO.getEntityManager()
-              .createQuery("SELECT o FROM " + CLASS_NAME + " o WHERE o.departamento.id=" + departamentoID)
-              .getResultList();
+      return DAO.getEntityManager().createQuery("SELECT o FROM " + CLASS_NAME + " o WHERE o.departamento.id=" + departamentoID).getResultList();
    }
 }

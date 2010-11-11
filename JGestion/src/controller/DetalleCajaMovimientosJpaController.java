@@ -207,6 +207,7 @@ public class DetalleCajaMovimientosJpaController {
                .createQuery("SELECT o FROM " + CLASS_NAME + " o" +
                " WHERE o.cajaMovimientos.id =" + cajaMovimientosID +
                " ORDER BY o.id")
+               .setHint("toplink.refresh", true)
                .getResultList();
    }
 
