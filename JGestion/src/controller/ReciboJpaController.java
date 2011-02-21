@@ -5,12 +5,9 @@ import controller.exceptions.MessageException;
 import controller.exceptions.NonexistentEntityException;
 import controller.exceptions.PreexistingEntityException;
 import entity.Caja;
-import entity.CajaMovimientos;
 import entity.Cliente;
 import entity.CtacteCliente;
-import entity.DetalleCajaMovimientos;
 import entity.Recibo;
-import gui.JFP;
 import java.text.ParseException;
 import java.util.Iterator;
 import javax.persistence.EntityManager;
@@ -22,14 +19,12 @@ import entity.Sucursal;
 import generics.UTIL;
 import gui.JDBuscadorReRe;
 import gui.JDReRe;
-import gui.PanelModeloRecibo;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -54,9 +49,9 @@ public class ReciboJpaController implements ActionListener, FocusListener {
    private JDBuscadorReRe buscador;
    private Recibo rereSelected;
 
-//   public ReciboJpaController() {
+   public ReciboJpaController() {
 //      emf = Persistence.createEntityManagerFactory("JGestionPU");
-//   }
+   }
 //   private EntityManagerFactory emf = null;
    public EntityManager getEntityManager() {
       return DAO.getEntityManager();
@@ -256,7 +251,7 @@ public class ReciboJpaController implements ActionListener, FocusListener {
    public void initRecibos(JFrame frame, boolean modal, boolean setVisible) {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioJpaController.checkPermisos(PermisosJpaController.PermisoDe.VENTA);
+         UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.VENTA);
       } catch (MessageException ex) {
          javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
          return;
@@ -404,7 +399,7 @@ public class ReciboJpaController implements ActionListener, FocusListener {
          }
       });
       jdReRe.setListener(this);
-      jdReRe.setLocation(jdReRe.getOwner().getY() + 100, jdReRe.getOwner().getX() + 50);
+      jdReRe.setLocationRelativeTo(frame);
       jdReRe.setVisible(setVisible);
    }
 
@@ -572,7 +567,7 @@ public class ReciboJpaController implements ActionListener, FocusListener {
    private void initBuscador(JDialog dialog, boolean modal) {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioJpaController.checkPermisos(PermisosJpaController.PermisoDe.VENTA);
+         UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.VENTA);
       } catch (MessageException ex) {
          javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
          return;
@@ -584,7 +579,7 @@ public class ReciboJpaController implements ActionListener, FocusListener {
    public void initBuscador(JFrame frame, boolean modal) {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioJpaController.checkPermisos(PermisosJpaController.PermisoDe.VENTA);
+         UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.VENTA);
       } catch (MessageException ex) {
          javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
          return;
@@ -617,8 +612,6 @@ public class ReciboJpaController implements ActionListener, FocusListener {
                armarQuery();
             } catch (MessageException ex) {
                buscador.showMessage(ex.getMessage(), CLASS_NAME, 2);
-            } catch (Exception ex) {
-               buscador.showMessage(ex.getMessage(), CLASS_NAME, 2);
             }
          }
       });
@@ -647,21 +640,21 @@ public class ReciboJpaController implements ActionListener, FocusListener {
    }
 
    private void armarQuery() throws MessageException {
-      String query = "SELECT o.* FROM recibo o, cliente p , caja c, detalle_recibo dr, factura_venta f, usuario u, sucursal s  "
+      StringBuilder query = new StringBuilder("SELECT o.* FROM recibo o, cliente p , caja c, detalle_recibo dr, factura_venta f, usuario u, sucursal s  "
               + " WHERE o.id = dr.recibo "
               + "   AND o.caja = c.id "
               + "   AND o.usuario = u.id "
               + "   AND o.sucursal = s.id "
               + "   AND f.id = dr.factura_venta "
               + "   AND p.id = f.cliente"
-              + "   ";
+              + "   ");
 
       long numero;
       //filtro por nº de ReRe
       if (buscador.getTfCuarto().length() > 0 && buscador.getTfOcteto().length() > 0) {
          try {
             numero = Long.parseLong(buscador.getTfCuarto() + buscador.getTfOcteto());
-            query += " AND o.id = " + numero;
+            query.append(" AND o.id = ").append(numero) ;
          } catch (NumberFormatException ex) {
             throw new MessageException("Número de " + CLASS_NAME + " no válido");
          }
@@ -671,49 +664,49 @@ public class ReciboJpaController implements ActionListener, FocusListener {
       if (buscador.getTfFactu4().length() > 0 && buscador.getTfFactu8().length() > 0) {
          try {
             numero = Long.parseLong(buscador.getTfFactu4() + buscador.getTfFactu8());
-            query += " AND f.numero = " + numero;
+            query.append(" AND f.numero = ").append(numero);
          } catch (NumberFormatException ex) {
             throw new MessageException("Número de " + CLASS_NAME + " no válido");
          }
       }
       if (buscador.getDcDesde() != null) {
-         query += " AND o.fecha_recibo >= '" + buscador.getDcDesde() + "'";
+         query.append(" AND o.fecha_recibo >= '").append(buscador.getDcDesde()).append("'");
       }
       if (buscador.getDcHasta() != null) {
-         query += " AND o.fecha_recibo <= '" + buscador.getDcHasta() + "'";
+         query.append(" AND o.fecha_recibo <= '").append(buscador.getDcHasta()).append("'");
       }
       if (buscador.getCbCaja().getSelectedIndex() > 0) {
-         query += " AND o.caja = " + ((Caja) buscador.getCbCaja().getSelectedItem()).getId();
+         query.append(" AND o.caja = ").append(((Caja) buscador.getCbCaja().getSelectedItem()).getId());
       }
       if (buscador.getCbSucursal().getSelectedIndex() > 0) {
-         query += " AND o.sucursal = " + ((Sucursal) buscador.getCbSucursal().getSelectedItem()).getId();
+         query.append(" AND o.sucursal = ").append(((Sucursal) buscador.getCbSucursal().getSelectedItem()).getId());
       }
       if (buscador.isCheckAnuladaSelected()) {
-         query += " AND o.estado = false";
+         query.append(" AND o.estado = false");
       }
       if (buscador.getCbClieProv().getSelectedIndex() > 0) {
-         query += " AND p.id = " + ((Cliente) buscador.getCbClieProv().getSelectedItem()).getId();
+         query.append(" AND p.id = ").append(((Cliente) buscador.getCbClieProv().getSelectedItem()).getId());
       }
 
-      query += " GROUP BY o.id, o.fecha_carga, o.monto, o.usuario, o.caja, o.sucursal, o.fecha_recibo, o.estado"
-              + " ORDER BY o.id";
+      query.append(" GROUP BY o.id, o.fecha_carga, o.monto, o.usuario, o.caja, o.sucursal, o.fecha_recibo, o.estado"
+                  + " ORDER BY o.id");
       System.out.println("QUERY: " + query);
-      cargarBuscador(query);
+      cargarBuscador(query.toString());
    }
 
    private void cargarBuscador(String query) {
       buscador.dtmRemoveAll();
       DefaultTableModel dtm = buscador.getDtm();
-      List<Recibo> l = DAO.getEntityManager().createNativeQuery(query, Recibo.class).getResultList();
-      for (Recibo re : l) {
+      List<Recibo> l = DAO.getEntityManager().createNativeQuery(query, Recibo.class).setHint("toplink.refresh", true).getResultList();
+      for (Recibo o : l) {
          dtm.addRow(new Object[]{
-                    re.toString(),
-                    re.getMonto(),
-                    UTIL.DATE_FORMAT.format(re.getFechaRecibo()),
-                    re.getSucursal(),
-                    re.getCaja(),
-                    re.getUsuario(),
-                    UTIL.DATE_FORMAT.format(re.getFechaCarga()) + " (" + UTIL.TIME_FORMAT.format(re.getFechaCarga() + ")")
+                    o.toString(),
+                    o.getMonto(),
+                    UTIL.DATE_FORMAT.format(o.getFechaRecibo()),
+                    o.getSucursal(),
+                    o.getCaja(),
+                    o.getUsuario(),
+                    UTIL.TIMESTAMP_FORMAT.format(o.getFechaCarga())
                  });
       }
    }

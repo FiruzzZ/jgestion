@@ -3,6 +3,7 @@ package controller;
 import controller.exceptions.*;
 import entity.Cliente;
 import entity.CtacteCliente;
+import entity.CtacteProveedor;
 import entity.DetalleRecibo;
 import entity.FacturaVenta;
 import entity.Proveedor;
@@ -219,7 +220,7 @@ public class CtacteClienteJpaController implements ActionListener {
    public void initResumenCtaCte(JFrame frame, boolean modal) {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioJpaController.checkPermisos(PermisosJpaController.PermisoDe.TESORERIA);
+         UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.TESORERIA);
       } catch (MessageException ex) {
          javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
          return;
@@ -324,10 +325,11 @@ public class CtacteClienteJpaController implements ActionListener {
          // anterior a la fecha desde la cual se eligió en el buscador
          setResumenHistorial(query + "AND ccc.fecha_carga < '" + resumenCtaCtes.getDcDesde() + "'");
 
-         query += "AND ccc.fecha_carga >= '" + resumenCtaCtes.getDcDesde() + "'";
+         query += " AND ccc.fecha_carga >= '" + resumenCtaCtes.getDcDesde() + "'";
       }
 
       query += " ORDER BY fv.numero";
+      System.out.println(query);
       cargarTablaResumen(query);
       if (imprimirResumen) {
          doReportResumenCCC(((Cliente) resumenCtaCtes.getCbClieProv().getSelectedItem()),
@@ -432,6 +434,11 @@ public class CtacteClienteJpaController implements ActionListener {
       }
    }
 
+   /**
+    * Inicia una UI de busqueda y chequeo de vencimientos de {@link CtacteCliente}
+    *  y {@link CtacteProveedor}
+    * @param owner el papi de la ventana
+    */
    public void initCheckVencimientos(JFrame owner) {
       panelCCCheck = new PanelCtaCteCheckVencimientos();
       panelCCCheck.getCbEntidadElegida().addActionListener(new ActionListener() {
@@ -452,11 +459,12 @@ public class CtacteClienteJpaController implements ActionListener {
       UTIL.getDefaultTableModel(
               buscador.getjTable1(),
               new String[]{"C/P", "Cliente", "Tipo", "Nº factura", "Importe", "Saldo", "Fecha", "Vto."},
-              new int[]{5, 100, 6, 60, 60, 60, 45, 45},
+              new int[]{5, 150, 6, 60, 30, 30, 45, 45},
               new Class[]{Object.class, Object.class, Object.class, Object.class, String.class, String.class, String.class, String.class});
+      //alineando las columnas Importe y Saldo to RIGHT!!
       DefaultTableCellRenderer defaultTableCellRender = new DefaultTableCellRenderer();
       defaultTableCellRender.setHorizontalAlignment(JLabel.RIGHT);
-      buscador.getjTable1().setDefaultRenderer(buscador.getjTable1().getColumnClass(4), defaultTableCellRender);
+      buscador.getjTable1().setDefaultRenderer(String.class, defaultTableCellRender);
       buscador.getbBuscar().addActionListener(new ActionListener() {
 
          @Override

@@ -8,6 +8,7 @@ import entity.FacturaVenta;
 import entity.Producto;
 import entity.Stock;
 import entity.Sucursal;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -255,6 +256,7 @@ public class StockJpaController {
    void modificarStockBySucursal(Producto producto, Sucursal sucursal, int cantidad) {
       Stock stock = findStock(producto, sucursal);
       stock.setStockSucu(stock.getStockSucu() + cantidad);
+      stock.setFechaCarga(new Date());
       DAO.doMerge(stock);
    }
 }

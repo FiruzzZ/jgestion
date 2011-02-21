@@ -42,14 +42,14 @@ public abstract class DAO implements Runnable {
    private static Connection connection;
 
    static {
-      try {
-         emf = Persistence.createEntityManagerFactory("JGestionPU");
-         getJDBCConnection();
-      } catch (Exception ex) {
-      }
+      //.......................
    }
 
    public static EntityManager getEntityManager() {
+      if (emf == null) {
+         emf = Persistence.createEntityManagerFactory("JGestionPU");
+         getJDBCConnection();
+      }
       return emf.createEntityManager();
    }
 
@@ -67,7 +67,7 @@ public abstract class DAO implements Runnable {
          entityManagerForJDBC.close();
 
       }
-      if (emf.isOpen()) {
+      if (emf != null && emf.isOpen()) {
          System.out.println("Closing EntityManagerFactory..");
          emf.close();
       }
@@ -131,18 +131,27 @@ public abstract class DAO implements Runnable {
       }
    }
 
-   static void remove(Object o) {
+   /**
+    * Como no se puede borrar una detached entity,
+    * @param classType
+    * @param id can't be nul!!
+    */
+   static void remove(Class classType, Integer id) throws Exception {
+      if (id == null) {
+         throw new IllegalArgumentException("id can not be NULL!!");
+      }
       EntityManager em = null;
       em = getEntityManager();
       try {
          em.getTransaction().begin();
+         Object o = em.find(classType, id);
          em.remove(o);
          em.getTransaction().commit();
-      } catch (Exception e) {
+      } catch (Exception ex) {
          if (em.getTransaction().isActive()) {
             em.getTransaction().rollback();
          }
-         e.printStackTrace();
+         throw ex;
       } finally {
          if (em != null) {
             em.close();
@@ -174,7 +183,9 @@ public abstract class DAO implements Runnable {
       try {
          return em.createNativeQuery(sqlString, resultClass).getSingleResult();
       } catch (DatabaseException e) {
+         e.printStackTrace();
          throw new DatabaseErrorException();
+
       } finally {
          em.close();
       }
@@ -207,7 +218,7 @@ public abstract class DAO implements Runnable {
    static List<?> getNativeQueryResultList(String sqlString, String resultSetMapping) throws DatabaseErrorException {
       EntityManager em = getEntityManager();
       try {
-         return em.createNativeQuery(sqlString, resultSetMapping).getResultList();
+         return em.createNativeQuery(sqlString, resultSetMapping).setHint("toplink.refresh", true).getResultList();
       } catch (DatabaseException e) {
          throw new DatabaseErrorException();
       } finally {
@@ -223,7 +234,7 @@ public abstract class DAO implements Runnable {
     * @param id valor único identificador
     * @return Una instacia del tipo <code>object</code>
     */
-   static Object findEntity(Class object, Integer id) {
+   public static Object findEntity(Class object, Integer id) {
       if (object == null) {
          throw new IllegalArgumentException("El parámetro object can not be NULL");
       }

@@ -44,16 +44,17 @@ public class Orden implements Serializable {
    @Basic(optional = false)
    @Column(name = "numero", nullable = false)
    private int numero;
-   @Column(name = "fecha", nullable= false, insertable=false, updatable=false, columnDefinition="timestamp with time zone DEFAULT now()")
+   @Basic(optional = false)
+   @Column(name = "fecha", nullable = false, insertable = false, updatable = false, columnDefinition = "timestamp with time zone DEFAULT now()")
    @Temporal(TemporalType.TIMESTAMP)
    private Date fecha;
    @OneToMany(cascade = CascadeType.ALL, mappedBy = "orden")
    private List<DetalleOrden> detalleOrdenList;
-   @JoinColumn(name="usuario", referencedColumnName="id", nullable=false)
-   @ManyToOne(optional=false)
+   @JoinColumn(name = "usuario", referencedColumnName = "id", nullable = false)
+   @ManyToOne(optional = false)
    private Usuario usuario;
-   @JoinColumn(name="sucursal", referencedColumnName="id", nullable=false)
-   @ManyToOne(optional=false)
+   @JoinColumn(name = "sucursal", referencedColumnName = "id", nullable = false)
+   @ManyToOne(optional = false)
    private Sucursal sucursal;
 
    public Orden() {
@@ -116,7 +117,6 @@ public class Orden implements Serializable {
       this.usuario = usuario;
    }
 
-   
    @Override
    public int hashCode() {
       int hash = 0;

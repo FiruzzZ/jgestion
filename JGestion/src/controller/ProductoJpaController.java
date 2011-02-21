@@ -2,6 +2,7 @@ package controller;
 
 import controller.exceptions.*;
 import entity.Iva;
+import entity.ListaPrecios;
 import entity.Marca;
 import entity.Producto;
 import entity.Rubro;
@@ -10,6 +11,7 @@ import entity.Sucursal;
 import generics.UTIL;
 import entity.Unidadmedida;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -19,23 +21,31 @@ import gui.JDABM;
 import gui.JDBuscador;
 import gui.JDContenedor;
 import gui.JDStockGral;
-import gui.JDcambiarHora;
 import gui.PanelABMProductos;
 import gui.PanelBuscadorMovimientosPro;
 import gui.PanelProductoListados;
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
 import java.io.File;
-import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.NoResultException;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+import net.atlanticbb.tantlinger.shef.HTMLEditorPane;
+import net.sf.jasperreports.engine.JRException;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -57,6 +67,8 @@ public class ProductoJpaController implements ActionListener, KeyListener {
    private PanelBuscadorMovimientosPro panelito;
    private JDBuscador buscador;
    private PanelProductoListados panelProductoListados;
+   private HTMLEditorPane editor;
+   private JDialog xxx;
 
    public EntityManager getEntityManager() {
       return DAO.getEntityManager();
@@ -184,7 +196,7 @@ public class ProductoJpaController implements ActionListener, KeyListener {
    }
    // </editor-fold>
 
-   public void initContenedor(JFrame owner, boolean modal, boolean modoBuscador) {
+   public void initContenedor(JFrame owner, boolean modal, boolean modoBuscador) throws DatabaseErrorException {
       contenedor = new JDContenedor(owner, modal, "ABM - " + CLASS_NAME);
       contenedor.getTfFiltro().setToolTipText("Filtra por nombre del " + CLASS_NAME);
       contenedor.setModoBuscador(modoBuscador);
@@ -195,11 +207,10 @@ public class ProductoJpaController implements ActionListener, KeyListener {
             try {
                EL_OBJECT = null;
                initABM(false);
+            } catch (IOException ex) {
+               Logger.getLogger(ProductoJpaController.class.getName()).log(Level.ERROR, null, ex);
             } catch (MessageException ex) {
                contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
-            } catch (Exception ex) {
-               contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-               Logger.getLogger(DepartamentoJpaController.class.getName()).log(Level.SEVERE, null, ex);
             }
          }
       });
@@ -213,7 +224,7 @@ public class ProductoJpaController implements ActionListener, KeyListener {
                contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
             } catch (Exception ex) {
                contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-               Logger.getLogger(DepartamentoJpaController.class.getName()).log(Level.SEVERE, null, ex);
+               Logger.getLogger(DepartamentoJpaController.class.getName()).log(Level.ERROR, null, ex);
             }
          }
       });
@@ -223,12 +234,15 @@ public class ProductoJpaController implements ActionListener, KeyListener {
          public void actionPerformed(ActionEvent e) {
             try {
                eliminarProducto();
-               contenedor.showMessage("Eliminado..", CLASS_NAME, 1);
+               contenedor.showMessage("Producto eliminado..", CLASS_NAME, 1);
+            } catch (NonexistentEntityException ex) {
+               Logger.getLogger(DepartamentoJpaController.class.getName()).log(Level.ERROR, null, ex);
+               contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
+            } catch (DatabaseErrorException ex) {
+               Logger.getLogger(DepartamentoJpaController.class.getName()).log(Level.ERROR, null, ex);
+               contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
             } catch (MessageException ex) {
                contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
-            } catch (Exception ex) {
-               contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-               Logger.getLogger(DepartamentoJpaController.class.getName()).log(Level.SEVERE, null, ex);
             }
          }
       });
@@ -252,12 +266,12 @@ public class ProductoJpaController implements ActionListener, KeyListener {
       contenedor.setVisible(true);
    }
 
-   private void initABM(boolean isEditing) throws Exception {
+   private void initABM(boolean isEditing) throws MessageException, IOException {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioJpaController.checkPermisos(PermisosJpaController.PermisoDe.ABM_PRODUCTOS);
+         UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.ABM_PRODUCTOS);
       } catch (MessageException ex) {
-         javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
+         JOptionPane.showMessageDialog(null, ex.getMessage());
          return;
       }// </editor-fold>
       if (isEditing) {
@@ -266,6 +280,15 @@ public class ProductoJpaController implements ActionListener, KeyListener {
             throw new MessageException("Debe elegir una fila");
          }
       }
+      settingABM(isEditing);
+   }
+
+   public void initABM(Producto producto) throws IOException, Exception {
+      EL_OBJECT = producto;
+      settingABM(true);
+   }
+
+   private void settingABM(boolean isEditing) throws IOException {
       panel = new PanelABMProductos();
       panel.hideSucursal();
       panel.setListeners(this);
@@ -276,6 +299,15 @@ public class ProductoJpaController implements ActionListener, KeyListener {
             panel.getjLabelFoto().setText("[ Sin imagen ]");
             panel.getjLabelFoto().setIcon(null);
             fotoFile = null;
+         }
+      });
+      panel.getTaDescripcion().addMouseListener(new MouseAdapter() {
+
+         @Override
+         public void mouseClicked(MouseEvent e) {
+            if (e.getClickCount() >= 2) {
+               initHTMLEditorPane();
+            }
          }
       });
       UTIL.loadComboBox(panel.getCbIVA(), new IvaJpaController().findIvaEntities(), false);
@@ -296,15 +328,48 @@ public class ProductoJpaController implements ActionListener, KeyListener {
       abm.setVisible(true);
    }
 
-   private void cargarDTMContenedor(String query) {
-      try {
+   private void initHTMLEditorPane() {
+      editor = new HTMLEditorPane();
+      xxx = new JDialog(abm, true);
+      xxx.setLocationRelativeTo(abm);
+      JButton bAceptar = new javax.swing.JButton();
+      bAceptar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px-Crystal_Clear_action_apply.png")));
+      bAceptar.setMnemonic('a');
+      bAceptar.setText("Aceptar");
+      bAceptar.setName("aceptar");
+      xxx.setTitle("Editor de Descripción del Producto");
+      xxx.getContentPane().add(editor);
+      xxx.add(bAceptar, BorderLayout.PAGE_END);
+      bAceptar.addActionListener(new ActionListener() {
+
+         @Override
+         public void actionPerformed(ActionEvent e) {
+            String descripcion = editor.getText();
+            System.out.println(descripcion);
+            if (descripcion.trim().length() != 0) {
+               panel.getTaDescripcion().setText(descripcion);
+            } else {
+               panel.getTaDescripcion().setText("<p style=\"margin-top: 0\"><p align=\"center\"><b>[Doble click para editar]</b></p></p>");
+            }
+            xxx.dispose();
+         }
+      });
+      xxx.setSize(650, 400);
+      xxx.setVisible(true);
+   }
+
+   private void cargarDTMContenedor(String query) throws DatabaseErrorException {
+      if (contenedor != null) {
          DefaultTableModel dtm = contenedor.getDTM();
          UTIL.limpiarDtm(dtm);
          List<Producto> l;
          if (query == null) {
-            l = DAO.getEntityManager().createQuery("SELECT o FROM " + CLASS_NAME + " o ORDER BY o.codigo").setHint("toplink.refresh", true).getResultList();
+//            l = DAO.getEntityManager().createNamedQuery("SELECT o FROM " + CLASS_NAME + " o ORDER BY o.codigo").setHint("toplink.refresh", true).getResultList();
+            l = (List<Producto>) DAO.getNativeQueryResultList(
+                    "SELECT o.* FROM " + CLASS_NAME + " o ORDER BY o.codigo",
+                    "ProductoToContenedor");
          } else {
-            l = (List<Producto>) DAO.getNativeQueryResultList(query, Producto.class);
+            l = (List<Producto>) DAO.getNativeQueryResultList(query, "ProductoToContenedor");
          }
          for (Producto o : l) {
             dtm.addRow(new Object[]{
@@ -315,32 +380,37 @@ public class ProductoJpaController implements ActionListener, KeyListener {
                        o.getStockactual()
                     });
          }
-      } catch (Exception ex) {
-         ex.printStackTrace();
       }
    }
 
-   private void setPanelABM(Producto m) throws IOException, Exception {
-      UTIL.setSelectedItem(panel.getCbMarcas(), m.getMarca().getNombre());
-      UTIL.setSelectedItem(panel.getCbIVA(), m.getIva().getIva().toString());
-      UTIL.setSelectedItem(panel.getCbMedicion(), m.getIdunidadmedida().getNombre());
-      UTIL.setSelectedItem(panel.getCbRubro(), m.getRubro().getNombre());
-      if (m.getSubrubro() != null) {
-         UTIL.setSelectedItem(panel.getCbSubRubro(), m.getSubrubro().getNombre());
+   private void setPanelABM(Producto producto) throws IOException {
+      UTIL.setSelectedItem(panel.getCbMarcas(), producto.getMarca().getNombre());
+      UTIL.setSelectedItem(panel.getCbIVA(), producto.getIva().getIva().toString());
+      UTIL.setSelectedItem(panel.getCbMedicion(), producto.getIdunidadmedida().getNombre());
+      UTIL.setSelectedItem(panel.getCbRubro(), producto.getRubro().getNombre());
+      if (producto.getSubrubro() != null) {
+         UTIL.setSelectedItem(panel.getCbSubRubro(), producto.getSubrubro().getNombre());
       }
-      panel.setTfCodigo(m.getCodigo());
-      panel.setTfNombre(m.getNombre());
-      panel.getCbTipoMargen().setSelectedIndex(m.getTipomargen() - 1);
-      panel.setTfMargen(String.valueOf(m.getMargen()));
-      panel.setTfStockMinimo(String.valueOf(m.getStockminimo()));
-      panel.setTfStockMax(String.valueOf(m.getStockmaximo()));
-      panel.setTfStockActual(String.valueOf(m.getStockactual()));
-      panel.setTfPrecio(UTIL.PRECIO_CON_PUNTO.format(m.getPrecioVenta()));
-      panel.setTfCostoCompra(UTIL.PRECIO_CON_PUNTO.format(m.getCostoCompra()));
-      panel.setDateUltimaCompra(m.getUltimaCompra());
-      if (m.getFoto() != null) {
-         if (m.getFoto().length > 0) {
-            UTIL.setImageAsIconLabel(panel.getjLabelFoto(), UTIL.imageToFile(m.getFoto(), null));
+      panel.setTfCodigo(producto.getCodigo());
+      panel.setTfNombre(producto.getNombre());
+      panel.getCbTipoMargen().setSelectedIndex(producto.getTipomargen() - 1);
+      panel.setTfMargen(String.valueOf(producto.getMargen()));
+      panel.setTfStockMinimo(String.valueOf(producto.getStockminimo()));
+      panel.setTfStockMax(String.valueOf(producto.getStockmaximo()));
+      panel.setTfStockActual(String.valueOf(producto.getStockactual()));
+      if (producto.getPrecioVenta() != null) {
+         panel.setTfPrecio(UTIL.PRECIO_CON_PUNTO.format(producto.getPrecioVenta()));
+      }
+      if(producto.getDescripcion() != null) {
+         panel.getTaDescripcion().setText(producto.getDescripcion());
+      } else {
+         panel.getTaDescripcion().setText("<p style=\"margin-top: 0\"><p align=\"center\"><b>[Doble click para editar]</b></p></p>");
+      }
+      panel.setTfCostoCompra(UTIL.PRECIO_CON_PUNTO.format(producto.getCostoCompra()));
+      panel.setDateUltimaCompra(producto.getUltimaCompra());
+      if (producto.getFoto() != null) {
+         if (producto.getFoto().length > 0) {
+            UTIL.setImageAsIconLabel(panel.getjLabelFoto(), UTIL.imageToFile(producto.getFoto(), null));
          }
       }
    }
@@ -361,6 +431,7 @@ public class ProductoJpaController implements ActionListener, KeyListener {
       }
       String codigo = panel.getTfCodigo().trim();
       String nombre = panel.getTfNombre().trim();
+      Rubro rubro;
       // <editor-fold defaultstate="collapsed" desc="CTRL restrictions......">
       if (codigo.length() < 1) {
          throw new MessageException("Código no válido");
@@ -419,19 +490,26 @@ public class ProductoJpaController implements ActionListener, KeyListener {
          EL_OBJECT.setIdunidadmedida((Unidadmedida) panel.getCbMedicion().getSelectedItem());
       } catch (ClassCastException ex) {
          throw new MessageException("Debe especificar una Unidad de medida");
-      }// </editor-fold>
+      }
+      try {
+         rubro = (Rubro) panel.getCbRubro().getSelectedItem();
+         if (panel.getCbSubRubro().getSelectedIndex() > 0) {
+            if (rubro.equals((Rubro) panel.getCbSubRubro().getSelectedItem())) {
+               throw new MessageException("El Rubro y Subrubro no pueden ser iguales");
+            }
+         }
+      } catch (ClassCastException ex) {
+         throw new MessageException("Debe crear al menos un Rubro para poder dar de alta los Productos."
+                 + "\nMenú: Productos -> Rubros");
+      }
+      // </editor-fold>
 
       // NOT NULL's
       EL_OBJECT.setCodigo(codigo);
       EL_OBJECT.setNombre(nombre);
       EL_OBJECT.setStockminimo(Integer.valueOf(panel.getTfStockMinimo()));
       EL_OBJECT.setStockmaximo(Integer.valueOf(panel.getTfStockMax()));
-      try {
-         EL_OBJECT.setRubro((Rubro) panel.getCbRubro().getSelectedItem());
-      } catch (ClassCastException ex) {
-         throw new MessageException("Debe crear al menos un Rubro para poder dar de alta los Productos."
-                 + "\nMenú: Productos -> Rubros");
-      }
+      EL_OBJECT.setRubro(rubro);
       if (panel.getCbSubRubro().getSelectedIndex() > 0) {
          EL_OBJECT.setSubrubro((Rubro) panel.getCbSubRubro().getSelectedItem());
       } else {
@@ -483,7 +561,11 @@ public class ProductoJpaController implements ActionListener, KeyListener {
       if (e.getComponent().getClass().equals(javax.swing.JTextField.class)) {
          javax.swing.JTextField tf = (javax.swing.JTextField) e.getComponent();
          if (tf.getName().equalsIgnoreCase("tfFiltro")) {
-            armarQuery(tf.getText().trim());
+            try {
+               armarQuery(tf.getText().trim());
+            } catch (DatabaseErrorException ex) {
+               JOptionPane.showMessageDialog(null, ex);
+            }
          }
       }
    }
@@ -492,7 +574,7 @@ public class ProductoJpaController implements ActionListener, KeyListener {
     * Arma la query, la cual va filtrar los datos en el JDContenedor
     * @param filtro
     */
-   private void armarQuery(String filtro) {
+   private void armarQuery(String filtro) throws DatabaseErrorException {
       String query = null;
       if (filtro != null && filtro.length() > 0) {
          query = "SELECT * FROM " + CLASS_NAME + " o WHERE o.nombre LIKE '" + filtro + "%' ORDER BY o.codigo";
@@ -528,12 +610,12 @@ public class ProductoJpaController implements ActionListener, KeyListener {
    }
 
    private void cargarImagen() throws IOException, Exception {
-      javax.swing.JFileChooser filec = new javax.swing.JFileChooser();
-      javax.swing.filechooser.FileNameExtensionFilter filter = new javax.swing.filechooser.FileNameExtensionFilter("Imagenes", "jpg", "bmp", "jpeg", "png");
+      JFileChooser filec = new javax.swing.JFileChooser();
+      FileNameExtensionFilter filter = new FileNameExtensionFilter("Imagenes", "jpg", "bmp", "jpeg", "png");
       filec.setFileFilter(filter);
       filec.addChoosableFileFilter(filter);
       int val = filec.showOpenDialog(null);
-      if (val == javax.swing.JFileChooser.APPROVE_OPTION) {
+      if (val == JFileChooser.APPROVE_OPTION) {
          fotoFile = filec.getSelectedFile();
          if (UTIL.isImagenExtension(fotoFile)) {
             panel.getjLabelFoto().setText(null);
@@ -544,8 +626,9 @@ public class ProductoJpaController implements ActionListener, KeyListener {
       }
    }
 
+   @Override
    public void actionPerformed(ActionEvent e) {
-      // <editor-fold defaultstate="collapsed" desc="JButton">
+      // <editor-fold defaultstate="collapsed" desc="Button">
       if (e.getSource().getClass().equals(javax.swing.JButton.class)) {
          javax.swing.JButton boton = (javax.swing.JButton) e.getSource();
          if (boton.getName().equalsIgnoreCase("exit")) {
@@ -570,7 +653,7 @@ public class ProductoJpaController implements ActionListener, KeyListener {
                abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
             } catch (Exception ex) {
                abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
-               Logger.getLogger(DepartamentoJpaController.class.getName()).log(Level.SEVERE, null, ex);
+               Logger.getLogger(DepartamentoJpaController.class.getName()).log(Level.ERROR, null, ex);
             }
          } else if (boton.getName().equalsIgnoreCase("cancelar")) {
             abm.dispose();
@@ -583,10 +666,10 @@ public class ProductoJpaController implements ActionListener, KeyListener {
                cargarImagen();
             } catch (IOException ex) {
                abm.showMessage(ex.getMessage(), CLASS_NAME, 0);
-               Logger.getLogger(ProductoJpaController.class.getName()).log(Level.SEVERE, null, ex);
+               Logger.getLogger(ProductoJpaController.class.getName()).log(Level.ERROR, null, ex);
             } catch (Exception ex) {
                abm.showMessage(ex.getMessage(), CLASS_NAME, 0);
-               Logger.getLogger(ProductoJpaController.class.getName()).log(Level.SEVERE, null, ex);
+               Logger.getLogger(ProductoJpaController.class.getName()).log(Level.ERROR, null, ex);
             }
          } else if (boton.getName().equalsIgnoreCase("marcas")) {
             new MarcaJpaController().initJD(abm, true);
@@ -595,7 +678,7 @@ public class ProductoJpaController implements ActionListener, KeyListener {
             try {
                initStockGral(EL_OBJECT);
             } catch (MessageException ex) {
-               Logger.getLogger(ProductoJpaController.class.getName()).log(Level.SEVERE, null, ex);
+               Logger.getLogger(ProductoJpaController.class.getName()).log(Level.ERROR, null, ex);
             }
          }
          return;
@@ -667,9 +750,9 @@ public class ProductoJpaController implements ActionListener, KeyListener {
       try {
          edit(producto);
       } catch (NonexistentEntityException ex) {
-         Logger.getLogger(ProductoJpaController.class.getName()).log(Level.SEVERE, null, ex);
+         Logger.getLogger(ProductoJpaController.class.getName()).log(Level.ERROR, null, ex);
       } catch (Exception ex) {
-         Logger.getLogger(ProductoJpaController.class.getName()).log(Level.SEVERE, null, ex);
+         Logger.getLogger(ProductoJpaController.class.getName()).log(Level.ERROR, null, ex);
       }
    }
 
@@ -686,7 +769,7 @@ public class ProductoJpaController implements ActionListener, KeyListener {
                  new String[]{"Sucursal", "Stock", "Último movi.", "Usuario"},
                  new int[]{50, 20, 70, 40});
       } catch (Exception ex) {
-         Logger.getLogger(ProductoJpaController.class.getName()).log(Level.SEVERE, null, ex);
+         Logger.getLogger(ProductoJpaController.class.getName()).log(Level.ERROR, null, ex);
       }
       List<Stock> stockList = new StockJpaController().findStocksByProducto(p.getId());
       DefaultTableModel dtm = jdStockGral.getDtm();
@@ -702,17 +785,22 @@ public class ProductoJpaController implements ActionListener, KeyListener {
 
    }
 
-   private void eliminarProducto() throws MessageException, NonexistentEntityException {
+   private void eliminarProducto() throws MessageException, NonexistentEntityException, DatabaseErrorException {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioJpaController.checkPermisos(PermisosJpaController.PermisoDe.ABM_PRODUCTOS);
+         UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.ABM_PRODUCTOS);
       } catch (MessageException ex) {
          javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
          return;
       }// </editor-fold>
 
       if (EL_OBJECT == null) {
-         throw new MessageException("No hay " + CLASS_NAME + " seleccionado");
+         if (contenedor != null && contenedor.getjTable1().getSelectedRow() != -1) {
+            EL_OBJECT = findProducto((Integer) contenedor.getSelectedValue(0));
+         }
+         if (EL_OBJECT == null) {
+            throw new MessageException("No hay " + CLASS_NAME + " seleccionado");
+         }
       }
       destroy(EL_OBJECT.getId());
       EL_OBJECT = null;
@@ -770,8 +858,8 @@ public class ProductoJpaController implements ActionListener, KeyListener {
 
          @Override
          public void actionPerformed(ActionEvent e) {
-            buscador.getbImprimir().setEnabled(false);
             try {
+               buscador.getbImprimir().setEnabled(false);
                String query = armarQueryMovimientosProductos();
                cargarTablaMovimientosProductos(query);
                Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_MovimientosProductos.jasper", "Movimientos Productos");
@@ -779,9 +867,9 @@ public class ProductoJpaController implements ActionListener, KeyListener {
                r.addParameter("SUBREPORT_DIR", Reportes.FOLDER_REPORTES);
                r.addParameter("QUERY", query);
                r.printReport(true);
-            } catch (MessageException ex) {
+            } catch (JRException ex) {
                JOptionPane.showMessageDialog(buscador, ex.getMessage());
-            } catch (Exception ex) {
+            } catch (MissingReportException ex) {
                JOptionPane.showMessageDialog(buscador, ex.getMessage());
             } finally {
                buscador.getbImprimir().setEnabled(true);
@@ -825,8 +913,8 @@ public class ProductoJpaController implements ActionListener, KeyListener {
    }
 
    private String armarQueryMovimientosProductos() {
-      String query = "SELECT * FROM ( ";
-      String queryIngreso = "SELECT 'COMPRA'::character varying(10) AS razon, p.codigo, p.nombre, marca.nombre AS marca, d.cantidad, f.fechaalta, f.tipo, f.numero, f.movimiento, f.anulada, rubro.nombre AS rubro, sucursal.nombre as sucursal"
+      String mainQuery = "SELECT * FROM ( ";
+      String ingresoQuery = "SELECT 'COMPRA'::character varying(10) AS razon, p.codigo, p.nombre, marca.nombre AS marca, d.cantidad, f.fechaalta, f.tipo, f.numero, f.movimiento_interno as movimiento, f.anulada, rubro.nombre AS rubro, sucursal.nombre as sucursal"
               + " FROM producto p"
               + " JOIN detalle_compra d ON p.id = d.producto"
               + " JOIN factura_compra f ON f.id = d.factura"
@@ -834,7 +922,7 @@ public class ProductoJpaController implements ActionListener, KeyListener {
               + " JOIN rubro ON p.rubro = rubro.idrubro"
               + " JOIN sucursal ON f.sucursal = sucursal.id"
               + " WHERE p.codigo IS NOT NULL";
-      String queryEgreso = "SELECT 'VENTA'::character varying(10) AS razon, p.codigo, p.nombre, marca.nombre AS marca, - d.cantidad, f.fechaalta, f.tipo, f.numero, f.movimiento_interno AS movimiento, f.anulada, rubro.nombre AS rubro, sucursal.nombre as sucursal"
+      String egresoQuery = "SELECT 'VENTA'::character varying(10) AS razon, p.codigo, p.nombre, marca.nombre AS marca, - d.cantidad, f.fechaalta, f.tipo, f.numero, f.movimiento_interno AS movimiento, f.anulada, rubro.nombre AS rubro, sucursal.nombre as sucursal"
               + " FROM producto p"
               + " JOIN detalle_venta d ON p.id = d.producto"
               + " JOIN factura_venta f ON f.id = d.factura"
@@ -844,55 +932,59 @@ public class ProductoJpaController implements ActionListener, KeyListener {
               + " WHERE p.codigo IS NOT NULL ";
       int ingreso_egreso = panelito.getCbIngresoEgreso().getSelectedIndex();
       if (ingreso_egreso == 0) {
-         queryIngreso = concatQuery(queryIngreso);
-         queryEgreso = concatQuery(queryEgreso);
-         query += queryIngreso + " UNION (" + queryEgreso + ")";
+         ingresoQuery = concatQuery(ingresoQuery);
+         egresoQuery = concatQuery(egresoQuery);
+         mainQuery += ingresoQuery + " UNION (" + egresoQuery + ")";
       } else if (ingreso_egreso == 1) {
-         queryIngreso = concatQuery(queryIngreso);
-         query += queryIngreso;
+         ingresoQuery = concatQuery(ingresoQuery);
+         mainQuery += ingresoQuery;
       } else {
-         queryEgreso = concatQuery(queryEgreso);
-         query += queryEgreso;
+         egresoQuery = concatQuery(egresoQuery);
+         mainQuery += egresoQuery;
       }
-      query += ") as t ";
-      query += " ORDER BY fechaalta";
-      System.out.println(query);
-      return query;
+      mainQuery += ") as t ";
+      mainQuery += " ORDER BY fechaalta";
+      org.apache.log4j.Logger.getLogger(Producto.class).log(org.apache.log4j.Level.TRACE, "SQL-QUERY");
+      return mainQuery;
    }
 
    private String concatQuery(String query) {
+      StringBuilder sb = new StringBuilder(query);
       if (panelito.getTfCodigo().getText().trim().length() > 0) {
-         query += " AND p.codigo = '" + panelito.getTfCodigo().getText().trim() + "'";
+         sb.append(" AND p.codigo = '").append(panelito.getTfCodigo().getText().trim()).append("'");
       }
       if (panelito.getTfNombre().getText().trim().length() > 0) {
-         query += " AND p.nombre ILIKE '" + panelito.getTfNombre().getText().trim() + "%'";
+         sb.append(" AND p.nombre ILIKE '").append(panelito.getTfNombre().getText().trim()).append("%'");
       }
       if (panelito.getCbMarcas().getSelectedIndex() > 0) {
-         query += " AND p.marca = " + ((Marca) panelito.getCbMarcas().getSelectedItem()).getId();
+         sb.append(" AND p.marca = ").append(((Marca) panelito.getCbMarcas().getSelectedItem()).getId());
       }
       if (panelito.getCbRubros().getSelectedIndex() > 0) {
-         query += " AND p.rubro = " + ((Rubro) panelito.getCbRubros().getSelectedItem()).getIdrubro();
+         sb.append(" AND p.rubro = ").append(((Rubro) panelito.getCbRubros().getSelectedItem()).getIdrubro());
       }
       if (panelito.getCbSubRubros().getSelectedIndex() > 0) {
-         query += " AND p.subrubro = " + ((Rubro) panelito.getCbSubRubros().getSelectedItem()).getIdrubro();
+         sb.append(" AND p.subrubro = ").append(((Rubro) panelito.getCbSubRubros().getSelectedItem()).getIdrubro());
       }
       if (panelito.getCbSucursales().getSelectedIndex() > 0) {
-         query += " AND sucursal.id = " + ((Sucursal) panelito.getCbSucursales().getSelectedItem()).getId();
+         sb.append(" AND sucursal.id = ").append(((Sucursal) panelito.getCbSucursales().getSelectedItem()).getId());
       }
       if (panelito.getDcDesde().getDate() != null) {
-         query += " AND f.fechaalta >= '" + panelito.getDcDesde().getDate() + "'";
+         sb.append(" AND f.fechaalta >= '").append(panelito.getDcDesde().getDate()).append("'");
       }
       if (panelito.getDcHasta().getDate() != null) {
-         query += " AND f.fechaalta <= '" + panelito.getDcHasta().getDate() + "'";
+         sb.append(" AND f.fechaalta <= '").append(panelito.getDcHasta().getDate()).append("'");
       }
-      return query;
+      return sb.toString();
    }
 
    public List<Producto> findProductoToCombo() {
       try {
-         return (List<Producto>) DAO.getNativeQueryResultList("SELECT p.id, p.codigo, p.nombre, p.remunerativo FROM Producto p ORDER BY p.nombre, p.codigo", "ProductoToBuscador");
+         return (List<Producto>) DAO.getNativeQueryResultList(
+                 "SELECT p.id, p.codigo, p.nombre, p.remunerativo "
+                 + "FROM Producto p "
+                 + "ORDER BY p.nombre, p.codigo", "ProductoToBuscador");
       } catch (DatabaseErrorException ex) {
-         Logger.getLogger(ProductoJpaController.class.getName()).log(Level.SEVERE, null, ex);
+         Logger.getLogger(ProductoJpaController.class.getName()).log(Level.ERROR, null, ex);
       }
       return null;
    }
@@ -915,7 +1007,7 @@ public class ProductoJpaController implements ActionListener, KeyListener {
       UTIL.getDefaultTableModel(
               buscador.getjTable1(),
               new String[]{"NOMBRE", "CÓDIGO", "MARCA", "RUBRO", "SUB RUBRO"},
-              new int[]{250,           60,          60,     50,          50});
+              new int[]{250, 60, 60, 50, 50});
       buscador.getbBuscar().addActionListener(new ActionListener() {
 
          @Override
@@ -958,7 +1050,6 @@ public class ProductoJpaController implements ActionListener, KeyListener {
 //         Logger.getLogger(ProductoJpaController.class.getName()).log(Level.SEVERE, null, ex);
 //      }
 //   }
-   
    private void armarQueryProductosListado(boolean imprimirReport) throws DatabaseErrorException, Exception {
       String query = "SELECT p.*, marca.nombre as marca_nombre, r.nombre as rubro_nombre, sr.nombre as subrubro_nombre "
               + " FROM producto p"
@@ -1011,11 +1102,11 @@ public class ProductoJpaController implements ActionListener, KeyListener {
 //         r.addParameter("SUBREPORT_DIR", Reportes.FOLDER_REPORTES);
 //         r.viewReport();
 //      } else {
-         Reportes r = new Reportes("JGestion_ProductosListado.jasper", "Productos - Listado");
-         r.addCurrent_User();
-         r.addParameter("QUERY", query);
-         r.addParameter("SUBREPORT_DIR", Reportes.FOLDER_REPORTES);
-         r.viewReport();
+      Reportes r = new Reportes("JGestion_ProductosListado.jasper", "Productos - Listado");
+      r.addCurrent_User();
+      r.addParameter("QUERY", query);
+      r.addParameter("SUBREPORT_DIR", Reportes.FOLDER_REPORTES);
+      r.viewReport();
 //      }
    }
 }

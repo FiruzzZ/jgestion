@@ -1,5 +1,6 @@
 package entity;
 
+import generics.UTIL;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -71,8 +72,8 @@ public class FacturaCompra implements Serializable {
    @Column(name = "iva21", nullable = false)
    private double iva21;
    @Basic(optional = false)
-   @Column(name = "movimiento", nullable = false)
-   private int movimiento;
+   @Column(name = "movimiento_interno", nullable = false)
+   private int movimientoInterno;
    @Column(name = "dias_cta_cte")
    private Short diasCtaCte;
    @OneToMany(cascade = CascadeType.ALL, mappedBy = "factura", fetch=FetchType.EAGER)
@@ -216,12 +217,12 @@ public class FacturaCompra implements Serializable {
       this.iva21 = iva21;
    }
 
-   public int getMovimiento() {
-      return movimiento;
+   public int getMovimientoInterno() {
+      return movimientoInterno;
    }
 
-   public void setMovimiento(int movimiento) {
-      this.movimiento = movimiento;
+   public void setMovimientoInterno(int movimientoInterno) {
+      this.movimientoInterno = movimientoInterno;
    }
 
    public Short getDiasCtaCte() {
@@ -302,6 +303,6 @@ public class FacturaCompra implements Serializable {
 
    @Override
    public String toString() {
-      return String.valueOf(this.getNumero());
+      return UTIL.AGREGAR_CEROS(String.valueOf(this.getNumero()), 12);
    }
 }

@@ -11,7 +11,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
-import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -55,6 +55,8 @@ public class PanelABMUsuarios extends javax.swing.JPanel {
       checkCompra = new javax.swing.JCheckBox();
       checkDatosGeneral = new javax.swing.JCheckBox();
       checkCerrarCajas = new javax.swing.JCheckBox();
+      checkABMCatalogoweb = new javax.swing.JCheckBox();
+      checkABMOfertas = new javax.swing.JCheckBox();
       jScrollPane1 = new javax.swing.JScrollPane();
       tableCajas = new javax.swing.JTable();
       jLabel8 = new javax.swing.JLabel();
@@ -110,8 +112,12 @@ public class PanelABMUsuarios extends javax.swing.JPanel {
       checkDatosGeneral.setText("Datos general");
       checkDatosGeneral.setToolTipText("Información general usada por el sistema");
 
-      checkCerrarCajas.setText("Cerrar cajas");
+      checkCerrarCajas.setText("Cierre de cajas");
       checkCerrarCajas.setToolTipText("Información general usada por el sistema");
+
+      checkABMCatalogoweb.setText("ABM Catálogo we");
+
+      checkABMOfertas.setText("ABM Ofertas");
 
       javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
       jPanel1.setLayout(jPanel1Layout);
@@ -126,17 +132,17 @@ public class PanelABMUsuarios extends javax.swing.JPanel {
                .addComponent(checkVenta))
             .addGap(18, 18, 18)
             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-               .addComponent(checkCompra)
-               .addGroup(jPanel1Layout.createSequentialGroup()
-                  .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                     .addComponent(checkListaPrecios)
-                     .addComponent(checkUsuarios)
-                     .addComponent(checkCajas))
-                  .addGap(18, 18, 18)
-                  .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                     .addComponent(checkCerrarCajas)
-                     .addComponent(checkDatosGeneral)
-                     .addComponent(checkTesoreria))))
+               .addComponent(checkListaPrecios)
+               .addComponent(checkUsuarios)
+               .addComponent(checkCajas)
+               .addComponent(checkCompra))
+            .addGap(18, 18, 18)
+            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+               .addComponent(checkABMOfertas)
+               .addComponent(checkCerrarCajas)
+               .addComponent(checkDatosGeneral)
+               .addComponent(checkTesoreria)
+               .addComponent(checkABMCatalogoweb))
             .addContainerGap(7, Short.MAX_VALUE))
       );
       jPanel1Layout.setVerticalGroup(
@@ -159,8 +165,12 @@ public class PanelABMUsuarios extends javax.swing.JPanel {
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                .addComponent(checkVenta)
-               .addComponent(checkCompra))
-            .addContainerGap(17, Short.MAX_VALUE))
+               .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                  .addComponent(checkCompra)
+                  .addComponent(checkABMCatalogoweb, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(checkABMOfertas)
+            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
       );
 
       tableCajas.setModel(new javax.swing.table.DefaultTableModel(
@@ -234,7 +244,7 @@ public class PanelABMUsuarios extends javax.swing.JPanel {
                   .addGap(93, 93, 93)
                   .addComponent(jLabel7)))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 57, Short.MAX_VALUE)
             .addContainerGap())
       );
    }// </editor-fold>//GEN-END:initComponents
@@ -260,6 +270,8 @@ public class PanelABMUsuarios extends javax.swing.JPanel {
    // Variables declaration - do not modify//GEN-BEGIN:variables
    private javax.swing.JButton bResetPass;
    private javax.swing.JComboBox cbEstado;
+   private javax.swing.JCheckBox checkABMCatalogoweb;
+   private javax.swing.JCheckBox checkABMOfertas;
    private javax.swing.JCheckBox checkCajas;
    private javax.swing.JCheckBox checkCerrarCajas;
    private javax.swing.JCheckBox checkClientes;
@@ -318,8 +330,8 @@ public class PanelABMUsuarios extends javax.swing.JPanel {
       return tableCajas;
    }
 
-   public javax.swing.table.DefaultTableModel getDtm() {
-      return (javax.swing.table.DefaultTableModel) tableCajas.getModel();
+   public DefaultTableModel getDtm() {
+      return (DefaultTableModel) tableCajas.getModel();
    }
 
    public JCheckBox getCheckUsuarios() {
@@ -364,6 +376,14 @@ public class PanelABMUsuarios extends javax.swing.JPanel {
 
    public JCheckBox getCheckCerrarCajas() {
       return checkCerrarCajas;
+   }
+
+   public JCheckBox getCheckABMCatalogoweb() {
+      return checkABMCatalogoweb;
+   }
+
+   public JCheckBox getCheckABMOfertas() {
+      return checkABMOfertas;
    }
 
    public void setEnableTfNick(boolean habilitar) {

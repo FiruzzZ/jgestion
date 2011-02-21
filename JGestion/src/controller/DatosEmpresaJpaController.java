@@ -165,7 +165,7 @@ public class DatosEmpresaJpaController implements ActionListener {
    public void initJD(java.awt.Frame frame, boolean modal) throws Exception {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioJpaController.checkPermisos(PermisosJpaController.PermisoDe.DATOS_GENERAL);
+         UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.DATOS_GENERAL);
       } catch (MessageException ex) {
          javax.swing.JOptionPane.showMessageDialog(null,ex.getMessage());
          return;
@@ -187,7 +187,7 @@ public class DatosEmpresaJpaController implements ActionListener {
       }
 
       try {
-         UTIL.CONTROLAR_CUIL(jd.getTfCUIT().trim());
+         UTIL.VALIDAR_CUIL(jd.getTfCUIT().trim());
       } catch (Exception ex) {
          throw new MessageException(ex.getMessage());
       }

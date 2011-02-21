@@ -6,17 +6,18 @@
 package gui;
 
 import controller.*;
+import controller.exceptions.DatabaseErrorException;
 import controller.exceptions.MessageException;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.UnsupportedLookAndFeelException;
 import oracle.toplink.essentials.exceptions.DatabaseException;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -24,7 +25,7 @@ import oracle.toplink.essentials.exceptions.DatabaseException;
  */
 public class JFP extends javax.swing.JFrame implements Runnable {
 
-   public static final String VERSION = "1.11.10";
+   public static final String VERSION = "1.02.17";
    private final String ICON_IMAGE = "/iconos/kf.png";
 
    static {
@@ -116,6 +117,9 @@ public class JFP extends javax.swing.JFrame implements Runnable {
       jMenuItem25 = new javax.swing.JMenuItem();
       jMenuItem26 = new javax.swing.JMenuItem();
       jMenuItem32 = new javax.swing.JMenuItem();
+      jMenu8 = new javax.swing.JMenu();
+      jMenuItem44 = new javax.swing.JMenuItem();
+      jMenuItem46 = new javax.swing.JMenuItem();
       jSeparator2 = new javax.swing.JPopupMenu.Separator();
       jMenu14 = new javax.swing.JMenu();
       jMenuItem3 = new javax.swing.JMenuItem();
@@ -145,6 +149,9 @@ public class JFP extends javax.swing.JFrame implements Runnable {
       jMenuItem24 = new javax.swing.JMenuItem();
       jMenu13 = new javax.swing.JMenu();
       jMenuItem33 = new javax.swing.JMenuItem();
+      jMenu10 = new javax.swing.JMenu();
+      jMenuItemCatalogoWeb = new javax.swing.JMenuItem();
+      jMenuItemOfertas = new javax.swing.JMenuItem();
 
       setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
       setTitle("JGestion");
@@ -164,7 +171,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
       jMenu1.setText("Archivo");
 
       jMenuItem23.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F3, java.awt.event.InputEvent.ALT_MASK));
-      jMenuItem23.setText("Cerrar sesión");
+      jMenuItem23.setText("Cerrar sesión                 ");
       jMenuItem23.addActionListener(new java.awt.event.ActionListener() {
          public void actionPerformed(java.awt.event.ActionEvent evt) {
             jMenuItem23ActionPerformed(evt);
@@ -172,6 +179,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
       });
       jMenu1.add(jMenuItem23);
 
+      menuItemSalir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/application-exit.png"))); // NOI18N
       menuItemSalir.setText("Salir");
       menuItemSalir.addActionListener(new java.awt.event.ActionListener() {
          public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -210,7 +218,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
       jMenu2.add(jMenuItem5);
 
       jMenuItem6.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F2, 0));
-      jMenuItem6.setText("Presupuesto");
+      jMenuItem6.setText("Presupuesto                         ");
       jMenuItem6.addActionListener(new java.awt.event.ActionListener() {
          public void actionPerformed(java.awt.event.ActionEvent evt) {
             jMenuItem6ActionPerformed(evt);
@@ -218,6 +226,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
       });
       jMenu2.add(jMenuItem6);
 
+      jMenu11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/lupa-simple.png"))); // NOI18N
       jMenu11.setText("Buscar..");
 
       jMenuItem18.setText("Facturas");
@@ -275,6 +284,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
       });
       jMenu3.add(jMenuItem1);
 
+      jMenuItem28.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/lupa-simple.png"))); // NOI18N
       jMenuItem28.setText("Buscar..");
       jMenuItem28.addActionListener(new java.awt.event.ActionListener() {
          public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -328,6 +338,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
       });
       jMenu5.add(jMenuItem39);
 
+      jMenuItem43.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/lupa-simple.png"))); // NOI18N
       jMenuItem43.setText("Listados..");
       jMenuItem43.addActionListener(new java.awt.event.ActionListener() {
          public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -390,8 +401,29 @@ public class JFP extends javax.swing.JFrame implements Runnable {
          }
       });
       menuTesoreria.add(jMenuItem32);
+
+      jMenu8.setText("Contabilidad");
+
+      jMenuItem44.setText("Balance general");
+      jMenuItem44.addActionListener(new java.awt.event.ActionListener() {
+         public void actionPerformed(java.awt.event.ActionEvent evt) {
+            jMenuItem44ActionPerformed(evt);
+         }
+      });
+      jMenu8.add(jMenuItem44);
+
+      jMenuItem46.setText("Facturas Compra/Venta");
+      jMenuItem46.addActionListener(new java.awt.event.ActionListener() {
+         public void actionPerformed(java.awt.event.ActionEvent evt) {
+            jMenuItem46ActionPerformed(evt);
+         }
+      });
+      jMenu8.add(jMenuItem46);
+
+      menuTesoreria.add(jMenu8);
       menuTesoreria.add(jSeparator2);
 
+      jMenu14.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/lupa-simple.png"))); // NOI18N
       jMenu14.setText("Anular factura");
 
       jMenuItem3.setText("Venta");
@@ -412,8 +444,10 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
       menuTesoreria.add(jMenu14);
 
+      menuCtaCte.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/lupa-simple.png"))); // NOI18N
       menuCtaCte.setText("Cta. Cte.");
 
+      jMenuItem30.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/appfinder.png"))); // NOI18N
       jMenuItem30.setText("Clientes");
       jMenuItem30.addActionListener(new java.awt.event.ActionListener() {
          public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -422,6 +456,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
       });
       menuCtaCte.add(jMenuItem30);
 
+      jMenuItem31.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/appfinder.png"))); // NOI18N
       jMenuItem31.setText("Proveedores");
       jMenuItem31.addActionListener(new java.awt.event.ActionListener() {
          public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -430,6 +465,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
       });
       menuCtaCte.add(jMenuItem31);
 
+      jMenuItem42.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/appfinder.png"))); // NOI18N
       jMenuItem42.setText("Vencimientos");
       jMenuItem42.addActionListener(new java.awt.event.ActionListener() {
          public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -555,6 +591,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
       });
       jMenu4.add(jMenuItem16);
 
+      jMenuItem24.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/candadito.png"))); // NOI18N
       jMenuItem24.setText("Cambiar contraseña");
       jMenuItem24.addActionListener(new java.awt.event.ActionListener() {
          public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -576,6 +613,28 @@ public class JFP extends javax.swing.JFrame implements Runnable {
       jMenu13.add(jMenuItem33);
 
       jMenuBar1.add(jMenu13);
+
+      jMenu10.setMnemonic('w');
+      jMenu10.setText("WEB");
+
+      jMenuItemCatalogoWeb.setText("Catálogo Web");
+      jMenuItemCatalogoWeb.addActionListener(new java.awt.event.ActionListener() {
+         public void actionPerformed(java.awt.event.ActionEvent evt) {
+            jMenuItemCatalogoWebActionPerformed(evt);
+         }
+      });
+      jMenu10.add(jMenuItemCatalogoWeb);
+
+      jMenuItemOfertas.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/16px_star_offer.png"))); // NOI18N
+      jMenuItemOfertas.setText("ABM Ofertas");
+      jMenuItemOfertas.addActionListener(new java.awt.event.ActionListener() {
+         public void actionPerformed(java.awt.event.ActionEvent evt) {
+            jMenuItemOfertasActionPerformed(evt);
+         }
+      });
+      jMenu10.add(jMenuItemOfertas);
+
+      jMenuBar1.add(jMenu10);
 
       setJMenuBar(jMenuBar1);
 
@@ -604,7 +663,11 @@ public class JFP extends javax.swing.JFrame implements Runnable {
    }// </editor-fold>//GEN-END:initComponents
 
     private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
-       new ProductoJpaController().initContenedor(this, true, false);
+      try {
+         new ProductoJpaController().initContenedor(this, true, false);
+      } catch (DatabaseErrorException ex) {
+         JOptionPane.showMessageDialog(this, ex.getMessage());
+      }
        refreshConnectionDB();
     }//GEN-LAST:event_jMenuItem7ActionPerformed
 
@@ -614,7 +677,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
           refreshConnectionDB();
        } catch (Exception ex) {
           JOptionPane.showMessageDialog(this, ex.getMessage());
-          Logger.getLogger(JFP.class.getName()).log(Level.SEVERE, null, ex);
+          Logger.getLogger(JFP.class.getName()).log(Level.ERROR, null, ex);
        }
 
     }//GEN-LAST:event_jMenuItem9ActionPerformed
@@ -624,7 +687,6 @@ public class JFP extends javax.swing.JFrame implements Runnable {
           new FacturaCompraJpaController().initJDFacturaCompra(this, true);
        } catch (MessageException ex) {
           showError(ex.getMessage());
-          Logger.getLogger(JFP.class.getName()).log(Level.SEVERE, null, ex);
        }
        refreshConnectionDB();
     }//GEN-LAST:event_jMenuItem4ActionPerformed
@@ -653,7 +715,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
           refreshConnectionDB();
        } catch (Exception ex) {
           JOptionPane.showMessageDialog(this, ex.getMessage());
-          Logger.getLogger(JFP.class.getName()).log(Level.SEVERE, null, ex);
+          Logger.getLogger(JFP.class.getName()).log(Level.ERROR, null, ex);
        }
     }//GEN-LAST:event_jMenuItem13ActionPerformed
 
@@ -706,7 +768,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
           new DatosEmpresaJpaController().initJD(this, true);
           refreshConnectionDB();
        } catch (Exception ex) {
-          Logger.getLogger(JFP.class.getName()).log(Level.SEVERE, null, ex);
+          Logger.getLogger(JFP.class.getName()).log(Level.ERROR, null, ex);
        }
     }//GEN-LAST:event_jMenuItem22ActionPerformed
 
@@ -855,12 +917,37 @@ public class JFP extends javax.swing.JFrame implements Runnable {
     }//GEN-LAST:event_jMenuItem43ActionPerformed
 
     private void jMenuItem42ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem42ActionPerformed
-      new CtacteClienteJpaController().initCheckVencimientos((JFrame)this);
+       new CtacteClienteJpaController().initCheckVencimientos((JFrame) this);
     }//GEN-LAST:event_jMenuItem42ActionPerformed
+
+    private void jMenuItem44ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem44ActionPerformed
+       new Contabilidad().initBalanceGeneralUI((JFrame) this);
+    }//GEN-LAST:event_jMenuItem44ActionPerformed
+
+    private void jMenuItem46ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem46ActionPerformed
+       new Contabilidad().initBalanceCompraVentaUI((JFrame) this);
+    }//GEN-LAST:event_jMenuItem46ActionPerformed
+
+    private void jMenuItemOfertasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemOfertasActionPerformed
+      try {
+         new ProductosWebJpaController().initOfertasUI((JFrame) this);
+      } catch (MessageException ex) {
+         JOptionPane.showMessageDialog(this, ex.getMessage(), null, 2);
+      }
+    }//GEN-LAST:event_jMenuItemOfertasActionPerformed
+
+    private void jMenuItemCatalogoWebActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCatalogoWebActionPerformed
+      try {
+         new ProductosWebJpaController().initCatalogoGUI((JFrame) this);
+      } catch (MessageException ex) {
+         JOptionPane.showMessageDialog(this, ex.getMessage(), "Advertencia de Uso", 2);
+      }
+    }//GEN-LAST:event_jMenuItemCatalogoWebActionPerformed
 
    // Variables declaration - do not modify//GEN-BEGIN:variables
    private javax.swing.JLabel jLabel1;
    private javax.swing.JMenu jMenu1;
+   private javax.swing.JMenu jMenu10;
    private javax.swing.JMenu jMenu11;
    private javax.swing.JMenu jMenu12;
    private javax.swing.JMenu jMenu13;
@@ -872,6 +959,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
    private javax.swing.JMenu jMenu5;
    private javax.swing.JMenu jMenu6;
    private javax.swing.JMenu jMenu7;
+   private javax.swing.JMenu jMenu8;
    private javax.swing.JMenu jMenu9;
    private javax.swing.JMenuBar jMenuBar1;
    private javax.swing.JMenuItem jMenuItem1;
@@ -912,11 +1000,15 @@ public class JFP extends javax.swing.JFrame implements Runnable {
    private javax.swing.JMenuItem jMenuItem41;
    private javax.swing.JMenuItem jMenuItem42;
    private javax.swing.JMenuItem jMenuItem43;
+   private javax.swing.JMenuItem jMenuItem44;
+   private javax.swing.JMenuItem jMenuItem46;
    private javax.swing.JMenuItem jMenuItem5;
    private javax.swing.JMenuItem jMenuItem6;
    private javax.swing.JMenuItem jMenuItem7;
    private javax.swing.JMenuItem jMenuItem8;
    private javax.swing.JMenuItem jMenuItem9;
+   private javax.swing.JMenuItem jMenuItemCatalogoWeb;
+   private javax.swing.JMenuItem jMenuItemOfertas;
    private javax.swing.JSeparator jSeparator1;
    private javax.swing.JPopupMenu.Separator jSeparator2;
    private javax.swing.JLabel labelConnetionState;
@@ -928,7 +1020,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
    private CajaMovimientosJpaController cajaMovimientoController;
 
    private void refreshConnectionDB() {
-      System.out.println("refreshing (clear) .......................................DB");
+      System.out.println("refreshing (clear) ..........................DB");
       DAO.getEntityManager().clear();
    }
 
@@ -966,7 +1058,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
                labelConnetionState.setText("¡ERROR DE CONEXIÓN!");
                labelConnetionState.setForeground(Color.RED);
                labelConnetionState.setToolTipText("¡ERROR DE CONEXIÓN!");
-               e.printStackTrace();
+               Logger.getLogger(JFP.class).log(Level.ERROR, "Error en Thread de Chequeo de conexión con DB", e);
                activa = false;
             } finally {
                try {
@@ -974,7 +1066,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
                   em = null;
                   Thread.sleep(3000);
                } catch (InterruptedException ex) {
-                  Logger.getLogger(JFP.class.getName()).log(Level.SEVERE, null, ex);
+                  Logger.getLogger(JFP.class.getName()).log(Level.ERROR, null, ex);
                   JOptionPane.showMessageDialog(this, "Sucedió un error en el hilo de conexión, para asegurar un correcto funcionamiento del sistema, cierre y vuelva a abrirlo");
                }
             }

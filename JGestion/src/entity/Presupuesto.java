@@ -1,4 +1,3 @@
-
 package entity;
 
 import java.io.Serializable;
@@ -8,7 +7,6 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -20,7 +18,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Transient;
 
 /**
  *
@@ -33,15 +30,17 @@ import javax.persistence.Transient;
    @NamedQuery(name = "Presupuesto.findById", query = "SELECT p FROM Presupuesto p WHERE p.id = :id")
 })
 public class Presupuesto implements Serializable {
+
    private static final long serialVersionUID = 1L;
    @Id
    @Basic(optional = false)
    @Column(name = "id", nullable = false)
    @GeneratedValue(strategy = GenerationType.IDENTITY)
    private Integer id;
-   @Column(name = "fecha_creacion")
-   @Temporal(TemporalType.DATE)
-   private Date fechaCreacion;
+   @Basic(optional = false)
+   @Column(name = "fechaalta", nullable = false, insertable = false, updatable = false, columnDefinition = "timestamp with time zone NOT NULL DEFAULT now()")
+   @Temporal(TemporalType.TIMESTAMP)
+   private Date fechaalta;
    @Basic(optional = false)
    @Column(name = "importe", nullable = false)
    private double importe;
@@ -54,15 +53,12 @@ public class Presupuesto implements Serializable {
    @Basic(optional = false)
    @Column(name = "iva21", nullable = false)
    private double iva21;
-   @Column(name = "hora_creacion")
-   @Temporal(TemporalType.TIME)
-   private Date horaCreacion;
    @Basic(optional = false)
    @Column(name = "forma_pago", nullable = false)
    private short formaPago;
    @Column(name = "dias")
    private Short dias;
-   @JoinColumn(name="lista_precios", referencedColumnName= "id", nullable = false)
+   @JoinColumn(name = "lista_precios", referencedColumnName = "id", nullable = false)
    @ManyToOne(optional = false)
    private ListaPrecios listaPrecios;
    @JoinColumn(name = "cliente", referencedColumnName = "id", nullable = false)
@@ -84,16 +80,6 @@ public class Presupuesto implements Serializable {
       this.id = id;
    }
 
-   public Presupuesto(Integer id, double importe, double descuento, double iva10, double iva21) {
-      this.id = id;
-//      this.fechaCreacion = fechaCreacion;
-      this.importe = importe;
-      this.descuento = descuento;
-      this.iva10 = iva10;
-      this.iva21 = iva21;
-//      this.horaCreacion = horaCreacion;
-   }
-
    public Integer getId() {
       return id;
    }
@@ -102,12 +88,12 @@ public class Presupuesto implements Serializable {
       this.id = id;
    }
 
-   public Date getFechaCreacion() {
-      return fechaCreacion;
+   public Date getFechaalta() {
+      return fechaalta;
    }
 
-   public void setFechaCreacion(Date fechaCreacion) {
-      this.fechaCreacion = fechaCreacion;
+   public void setFechaalta(Date fechaCreacion) {
+      this.fechaalta = fechaCreacion;
    }
 
    public double getImporte() {
@@ -148,14 +134,6 @@ public class Presupuesto implements Serializable {
 
    public void setListaPrecios(ListaPrecios listaPrecios) {
       this.listaPrecios = listaPrecios;
-   }
-   
-   public Date getHoraCreacion() {
-      return horaCreacion;
-   }
-
-   public void setHoraCreacion(Date horaCreacion) {
-      this.horaCreacion = horaCreacion;
    }
 
    public Cliente getCliente() {

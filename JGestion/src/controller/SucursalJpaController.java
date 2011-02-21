@@ -2,13 +2,15 @@ package controller;
 
 import generics.UTIL;
 import controller.exceptions.*;
-import entity.*;
+import entity.Departamento;
+import entity.Municipio;
+import entity.Provincia;
+import entity.Sucursal;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
-import java.util.ArrayList;
 import java.util.List;
 import gui.JDABM;
 import gui.JDContenedor;
@@ -135,7 +137,7 @@ public class SucursalJpaController implements ActionListener, MouseListener, Key
    private void initABM(boolean isEditting, ActionEvent e) throws MessageException {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioJpaController.checkPermisos(PermisosJpaController.PermisoDe.DATOS_GENERAL);
+         UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.DATOS_GENERAL);
       } catch (MessageException ex) {
          javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
          return;
@@ -255,6 +257,7 @@ public class SucursalJpaController implements ActionListener, MouseListener, Key
          ELOBJECT = new Sucursal();
       }
 
+      // <editor-fold defaultstate="collapsed" desc="CTRLS">
       if (panel.getTfNombre() == null || panel.getTfNombre().length() < 1) {
          throw new MessageException("Debe ingresar un nombre");
       }
@@ -276,16 +279,8 @@ public class SucursalJpaController implements ActionListener, MouseListener, Key
       if ((panel.getTfInterno2() != null && panel.getTfInterno2().length() > 0)
               && (panel.getTfTele2() == null || panel.getTfTele2().length() < 1)) {
          throw new MessageException("Especifique un número de teléfono 2 para el interno 2");
-      }
-
-      // NOT NULLABLE's
-      ELOBJECT.setNombre(panel.getTfNombre().toUpperCase());
-      ELOBJECT.setDireccion(panel.getTfDireccion());
-      ELOBJECT.setProvincia((Provincia) panel.getSelectedProvincia());
-      ELOBJECT.setDepartamento((Departamento) panel.getSelectedDepartamento());
-      ELOBJECT.setMunicipio((Municipio) panel.getSelectedMunicipio());
-
-      //NULLABLE's
+      }// </editor-fold>
+      // <editor-fold defaultstate="collapsed" desc="NULLable's">
       if (panel.getTfEncargado() != null) {
          ELOBJECT.setEncargado(panel.getTfEncargado().toUpperCase());
       }
@@ -305,8 +300,13 @@ public class SucursalJpaController implements ActionListener, MouseListener, Key
          if (panel.getTfInterno2().length() > 0) {
             ELOBJECT.setInterno2(new Integer(panel.getTfInterno2()));
          }
-      }
-      System.out.println("->" + ELOBJECT.getNombre() + ELOBJECT.getProvincia() + ELOBJECT.getDepartamento() + ELOBJECT.getMunicipio());
+      }// </editor-fold>
+      // NOT NULLABLE's
+      ELOBJECT.setNombre(panel.getTfNombre().toUpperCase());
+      ELOBJECT.setDireccion(panel.getTfDireccion());
+      ELOBJECT.setProvincia((Provincia) panel.getSelectedProvincia());
+      ELOBJECT.setDepartamento((Departamento) panel.getSelectedDepartamento());
+      ELOBJECT.setMunicipio((Municipio) panel.getSelectedMunicipio());
    }
 
    private void checkConstraints(Sucursal object) throws MessageException, IllegalOrphanException, NonexistentEntityException, Exception {
@@ -320,8 +320,6 @@ public class SucursalJpaController implements ActionListener, MouseListener, Key
          throw new MessageException("Ya existe otra " + CLASS_NAME + " con este nombre.");
       } catch (NoResultException ex) {
       }
-
-
       //persistiendo......
       if (object.getId() == null) {
          create(object);
@@ -440,11 +438,13 @@ public class SucursalJpaController implements ActionListener, MouseListener, Key
             contenedor = null;
          } else if (boton.getName().equalsIgnoreCase("aceptar")) {
             try {
+               String msg = ELOBJECT == null ? "Registrado" : "Modificado";
                setEntity();
                checkConstraints(ELOBJECT);
-               abm.showMessage(ELOBJECT.getId() == null ? "Registrado" : "Modificado", CLASS_NAME, 1);
+               abm.showMessage(msg, CLASS_NAME, 1);
                ELOBJECT = null;
                cargarDTM(contenedor.getDTM(), "");
+               abm.dispose();
             } catch (MessageException ex) {
                abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
             } catch (Exception ex) {

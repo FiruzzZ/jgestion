@@ -1,6 +1,7 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.*;
 
 /**
@@ -50,7 +51,7 @@ public class DatosEmpresa implements Serializable {
    @Basic(optional = false)
    @Column(name = "fecha_inicio_actividad", nullable = false)
    @Temporal(TemporalType.DATE)
-   private java.util.Date fechaInicioActividad;
+   private Date fechaInicioActividad;
 
    public DatosEmpresa() {
    }
@@ -59,6 +60,7 @@ public class DatosEmpresa implements Serializable {
       this.id = id;
    }
 
+   //NO BORRAR!!!
    public DatosEmpresa(Integer id, String nombre, long cuit, String direccion, long tele1, java.util.Date fechaInicioActividad) {
       this.id = id;
       this.nombre = nombre;
@@ -156,11 +158,11 @@ public class DatosEmpresa implements Serializable {
       this.logo = logo;
    }
 
-   public java.util.Date getFechaInicioActividad() {
+   public Date getFechaInicioActividad() {
       return fechaInicioActividad;
    }
 
-   public void setFechaInicioActividad(java.util.Date fechaInicioActividad) {
+   public void setFechaInicioActividad(Date fechaInicioActividad) {
       this.fechaInicioActividad = fechaInicioActividad;
    }
 
