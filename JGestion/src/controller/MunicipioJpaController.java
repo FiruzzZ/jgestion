@@ -271,7 +271,7 @@ public class MunicipioJpaController implements ActionListener, MouseListener, Ke
    }
 
    private void initABM(boolean isEditting, ActionEvent e) throws Exception {
-      UsuarioJpaController.checkPermisos(PermisosJpaController.PermisoDe.TESORERIA);
+      UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.TESORERIA);
       if (isEditting && municipio == null) {
          throw new MessageException("Debe elegir una fila");
       }

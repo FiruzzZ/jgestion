@@ -27,11 +27,22 @@ import javax.persistence.*;
    @NamedQuery(name = "Producto.findByNombre", query = "SELECT p FROM Producto p WHERE p.nombre = :nombre")
 })
 @SqlResultSetMappings({
+   //para los ComboBox
    @SqlResultSetMapping(name = "ProductoToBuscador", entities = {
       @EntityResult(entityClass = Producto.class, fields = {
          @FieldResult(name = "id", column = "id"),
          @FieldResult(name = "codigo", column = "codigo"),
          @FieldResult(name = "nombre", column = "nombre")
+      })
+   }),
+//para la GUI de Contenedor de Productos...
+   @SqlResultSetMapping(name = "ProductoToContenedor", entities = {
+      @EntityResult(entityClass = Producto.class, fields = {
+         @FieldResult(name = "id", column = "id"),
+         @FieldResult(name = "codigo", column = "codigo"),
+         @FieldResult(name = "nombre", column = "nombre"),
+         @FieldResult(name = "marca", column = "marca"),
+         @FieldResult(name = "stockactual", column = "stockactual")
       })
    })
 })
@@ -61,21 +72,26 @@ public class Producto implements Serializable {
    @Column(name = "ubicacion", length = 50)
    private String ubicacion;
    @Column(name = "costo_compra", precision = 2, scale = 2)
+   /**
+    * Precio del costo, cuando se crea el producto es setteado a 0.
+    * Después es modificado por las Factuas de compra.
+    */
    private Double costoCompra;
-   @Column(name = "descripcion", length = 250)
+   @Column(name = "descripcion", length = 2000)
    private String descripcion;
    @Column(name = "margen", precision = 2, scale = 2)
    private Double margen;
    @Column(name = "tipomargen")
    private Integer tipomargen;
-   @Column(name = "precio_venta", precision = 2, scale = 2)
+   @Basic(optional = false)
+   @Column(name = "precio_venta", precision = 2, scale = 2, nullable= false)
    private Double precioVenta;
    @Column(name = "foto")
    private byte[] foto;
    @Column(name = "remunerativo", nullable = false)
    private boolean remunerativo;
    @Basic(optional = false)
-   @Column(name = "fecha_alta", nullable = false, insertable = false, updatable=false, columnDefinition = "timestamp with time zone NOT NULL DEFAULT now()")
+   @Column(name = "fecha_alta", nullable = false, insertable = false, updatable = false, columnDefinition = "timestamp with time zone NOT NULL DEFAULT now()")
    @Temporal(value = TemporalType.TIMESTAMP)
    private Date fechaAlta;
    @Column(name = "ultima_compra")
@@ -234,7 +250,6 @@ public class Producto implements Serializable {
       this.fechaAlta = fechaAlta;
    }
 
-   
    public Date getUltimaCompra() {
       return ultimaCompra;
    }
@@ -314,5 +329,46 @@ public class Producto implements Serializable {
    @Override
    public String toString() {
       return this.getNombre();
+   }
+
+   /**
+    * Retorna el mínimo valor (monetario) al cual se podrá vender este.
+    * <ol>
+    * Por prioridad:
+    *  <li> {@link Producto#precioVenta} si está setteado.</li>
+    *  <li> {@link Producto#costoCompra} cuando {@link Producto#precioVenta} <code> == null</code>.</li>
+    * </ol>
+    * @return precio mínimo.
+    */
+   public Double getMinimoPrecioDeVenta() {
+      return this.precioVenta != null ? this.precioVenta : this.costoCompra;
+   }
+
+   /**
+    * Calcula el margen de ganancia/descuento de ganancia/perdida sobre el monto
+    * - monto cantidad monetaria sobre la cual se harán los cálculos
+    * - tipoDeMargen Indica como se aplicará el margen al monto. 1 = % (porcentaje), 2 = $ (monto fijo), if (tipo > 2 || 1 > tipo) RETURN null!
+    * - margen monto fijo o porcentual
+    * @return adiviná!
+    */
+   public Double getMargenDeGananciaIndividual() {
+      if (this.margen == 0) {
+         return 0.0;
+      }
+
+      double total = 0.0;
+      switch (this.tipomargen) {
+         case 1: { // margen en %
+            total = ((getMinimoPrecioDeVenta() * margen) / 100);
+            break;
+         }
+         case 2: {  // margen en $ (monto fijo).. no hay mucha science...
+            total = margen;
+            break;
+         }
+         default:
+            return null;
+      }
+      return total;
    }
 }

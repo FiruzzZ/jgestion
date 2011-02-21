@@ -8,8 +8,6 @@ import entity.Usuario;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
@@ -26,12 +24,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import javax.persistence.NoResultException;
 import javax.swing.JFrame;
 import javax.swing.table.DefaultTableModel;
-import oracle.toplink.essentials.exceptions.DatabaseException;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -41,7 +39,10 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
 
    public static final String ESTADO_ACTIVO = "Activo";
    public static final String ESTADO_BAJA = "Baja";
-   private static Usuario CURRENT_USER; // <--- de uso global por toda la app
+   /**
+    * Usuario loggeado en la instancia de la app
+    */
+   private static Usuario CURRENT_USER;
    private JDLogin jDLogin;
    private final String[] colsName = {"Nº", "Nombre", "Estado", "Fecha Alta"};
    private final int[] colsWidth = {15, 50, 30, 50};
@@ -202,10 +203,19 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
       }
    }// </editor-fold>
 
-   public Usuario chechLoginUser(String nick, String pwd) throws MessageException, Exception {
+   /**
+    *
+    * @param nick
+    * @param pwd
+    * @return
+    * @throws MessageException
+    * @throws Exception
+    */
+   public Usuario checkLoginUser(String nick, String pwd) throws MessageException, Exception {
       try {
-         CURRENT_USER = (Usuario) DAO.getNativeQuerySingleResult("SELECT u.* FROM Usuario u"
-                 + " WHERE u.nick ='" + nick + "' AND u.pass = '" + pwd + "' ", Usuario.class);
+         CURRENT_USER = (Usuario) getEntityManager()
+                 .createQuery("SELECT u FROM Usuario u WHERE u.nick ='" + nick + "' AND u.pass = '" + pwd + "' ")
+                 .getSingleResult();
          if (CURRENT_USER != null && CURRENT_USER.getEstado() != 1) {
             CURRENT_USER = null;
             throw new MessageException("Usuario deshabilitado");
@@ -235,7 +245,6 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
       jDLogin.setLocation((screenSize.width - jDLogin.getWidth()) / 2, (screenSize.height - jDLogin.getHeight()) / 2);
       jDLogin.setAlwaysOnTop(true);
       jDLogin.setVisible(true);
-
    }
 
    public void mouseClicked(MouseEvent e) {
@@ -274,17 +283,15 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
          // <editor-fold defaultstate="collapsed" desc="JDLogin">
          if (tf.getName().equalsIgnoreCase("ulogin") && (e.getKeyCode() == 10)) {
             try {
-               CURRENT_USER = chechLoginUser(jDLogin.getTfU(), jDLogin.getPass());
+               CURRENT_USER = checkLoginUser(jDLogin.getTfU(), jDLogin.getPass());
                if (CURRENT_USER != null) {
                   jDLogin.dispose();
                }
             } catch (MessageException ex) {
-               System.out.println("Messageexcep.......");
                jDLogin.getjLabel3().setText(ex.getMessage());
             } catch (Exception ex) {
-               System.out.println("Excep.......");
                jDLogin.showMessage(ex.getMessage(), "Error Login usuario", 0);
-               Logger.getLogger(UsuarioJpaController.class.getName()).log(Level.SEVERE, null, ex);
+               Logger.getLogger(UsuarioJpaController.class.getName()).log(Level.FATAL, null, ex);
             }
          }// </editor-fold>
       } else if (e.getComponent().getClass().equals(javax.swing.JPasswordField.class)) {
@@ -292,7 +299,7 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
          // <editor-fold defaultstate="collapsed" desc="JDLogin">
          if (tf.getName().equalsIgnoreCase("plogin") && (e.getKeyCode() == 10)) {
             try {
-               CURRENT_USER = chechLoginUser(jDLogin.getTfU(), jDLogin.getPass());
+               CURRENT_USER = checkLoginUser(jDLogin.getTfU(), jDLogin.getPass());
                if (CURRENT_USER != null) {
                   System.out.println("Usuario " + CURRENT_USER + "logeado.");
                   jDLogin.dispose();
@@ -303,7 +310,7 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
             } catch (Exception ex) {
                System.out.println("Excep.......");
                jDLogin.showMessage(ex.getMessage(), "Error Login usuario", 0);
-               Logger.getLogger(UsuarioJpaController.class.getName()).log(Level.SEVERE, null, ex);
+               Logger.getLogger(UsuarioJpaController.class.getName()).log(Level.FATAL, null, ex);
             }
          }// </editor-fold>
          // <editor-fold defaultstate="collapsed" desc="JDCambiarPass">
@@ -344,12 +351,8 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
       contenedor.setModoBuscador(false);
       contenedor.hideBtmEliminar();
       contenedor.hideBtmImprimir();
-      try {
-         UTIL.getDefaultTableModel(contenedor.getjTable1(), colsName, colsWidth);
-         UTIL.hideColumnTable(contenedor.getjTable1(), 0);
-      } catch (Exception ex) {
-         Logger.getLogger(DepartamentoJpaController.class.getName()).log(Level.SEVERE, null, ex);
-      }
+      UTIL.getDefaultTableModel(contenedor.getjTable1(), colsName, colsWidth);
+      UTIL.hideColumnTable(contenedor.getjTable1(), 0);
       cargarDTM(contenedor.getDTM(), null);
       contenedor.setListener(this);
       contenedor.setVisible(true);
@@ -412,7 +415,7 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
    private void initABM(boolean isEditing) throws Exception {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioJpaController.checkPermisos(PermisosJpaController.PermisoDe.ABM_USUARIOS);
+         UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.ABM_USUARIOS);
       } catch (MessageException ex) {
          javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
          return;
@@ -466,6 +469,8 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
       panel.getCheckUsuarios().setSelected(u.getPermisos().getAbmUsuarios());
       panel.getCheckVenta().setSelected(u.getPermisos().getVenta());
       panel.getCheckCerrarCajas().setSelected(u.getPermisos().getCerrarCajas());
+      panel.getCheckABMCatalogoweb().setSelected(u.getPermisos().getAbmCatalogoweb());
+      panel.getCheckABMOfertas().setSelected(u.getPermisos().getAbmOfertasweb());
       //estableciendo permisosCajas en la tabla
       List<PermisosCaja> permisosCajaList = u.getPermisosCajaList();
       for (PermisosCaja permisosCaja : permisosCajaList) {
@@ -547,6 +552,8 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
       permisos.setDatosGeneral(panel.getCheckDatosGeneral().isSelected());
       permisos.setTesoreria(panel.getCheckTesoreria().isSelected());
       permisos.setCerrarCajas(panel.getCheckCerrarCajas().isSelected());
+      permisos.setAbmCatalogoweb(panel.getCheckABMCatalogoweb().isSelected());
+      permisos.setAbmOfertasweb(panel.getCheckABMOfertas().isSelected());
       return permisos;
    }
 
@@ -604,7 +611,7 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
     * @throws MessageException Si no tiene permiso o si no se pudo conectarse
     * con la base de datos para checkear el permiso.
     */
-   public static void checkPermisos(PermisoDe permisoToCheck) throws MessageException {
+   public static void CHECK_PERMISO(PermisoDe permisoToCheck) throws MessageException {
       CURRENT_USER = DAO.getEntityManager().find(Usuario.class, CURRENT_USER.getId());
       if (CURRENT_USER == null) {
          throw new MessageException("Error chequeando los permisos del usuario.\nVerificar conexión con la Base de datos");
@@ -641,6 +648,10 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
          permitido = CURRENT_USER.getPermisos().getCompra();
       } else if (PermisoDe.CERRAR_CAJAS.equals(permisoToCheck)) {
          permitido = CURRENT_USER.getPermisos().getCerrarCajas();
+      } else if( PermisoDe.ABM_CATALOGOWEB.equals(permisoToCheck)) {
+         permitido = CURRENT_USER.getPermisos().getAbmCatalogoweb();
+      } else if( PermisoDe.ABM_OFERTASWEB.equals(permisoToCheck)) {
+         permitido = CURRENT_USER.getPermisos().getAbmOfertasweb();
       }
       if (!permitido) {
          throw new MessageException("Acceso denegado: No tiene permiso para "

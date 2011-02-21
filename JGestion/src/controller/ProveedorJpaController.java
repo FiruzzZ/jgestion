@@ -288,7 +288,7 @@ public class ProveedorJpaController implements ActionListener, MouseListener, Ke
    private void initABM(boolean isEditing, ActionEvent e) throws MessageException {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioJpaController.checkPermisos(PermisosJpaController.PermisoDe.ABM_PROVEEDORES);
+         UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.ABM_PROVEEDORES);
       } catch (MessageException ex) {
          javax.swing.JOptionPane.showMessageDialog(null,ex.getMessage());
          return;
@@ -368,7 +368,7 @@ public class ProveedorJpaController implements ActionListener, MouseListener, Ke
          throw new MessageException("Debe ingresar un nombre");
       }
       try {
-         UTIL.CONTROLAR_CUIL(panel.getTfCUIT());
+         UTIL.VALIDAR_CUIL(panel.getTfCUIT());
          panel.setIconoValidadorCUIT(true, "CUIT válido");
       } catch (NumberFormatException ex) {
          throw new MessageException(ex.getMessage());

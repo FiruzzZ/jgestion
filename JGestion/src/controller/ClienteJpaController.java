@@ -175,7 +175,7 @@ public class ClienteJpaController implements ActionListener, MouseListener, KeyL
    private void initABM(boolean isEditing, ActionEvent e) throws MessageException {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioJpaController.checkPermisos(PermisosJpaController.PermisoDe.ABM_CLIENTES);
+         UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.ABM_CLIENTES);
       } catch (MessageException ex) {
          javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
          return;
@@ -354,7 +354,7 @@ public class ClienteJpaController implements ActionListener, MouseListener, KeyL
 
       } else {
          try {
-            UTIL.CONTROLAR_CUIL(panel.getTfNumDoc());
+            UTIL.VALIDAR_CUIL(panel.getTfNumDoc());
          } catch (Exception ex) {
             throw new MessageException(ex.getMessage());
          }
@@ -495,8 +495,9 @@ public class ClienteJpaController implements ActionListener, MouseListener, KeyL
             contenedor = null;
          } else if (boton.getName().equalsIgnoreCase("aceptar")) {
             try {
+               String msg = EL_OBJECT == null ? "Registrado" : "Modificado";
                setAndPersistEntity();
-               abm.showMessage(EL_OBJECT.getId() == null ? "Registrado" : "Modificado", CLASS_NAME, 1);
+               abm.showMessage(msg, CLASS_NAME, 1);
                cargarDTMContenedor(contenedor.getDTM(), "");
                if (EL_OBJECT.getId() != null) {
                   abm.dispose();

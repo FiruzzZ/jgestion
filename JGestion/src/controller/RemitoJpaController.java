@@ -243,7 +243,7 @@ public class RemitoJpaController implements ActionListener, KeyListener {
          newRemito.setCliente(selectedCliente);
          newRemito.setSucursal(selectedSucursal);
          newRemito.setFechaCreacion(contenedor.getDcFechaFactura());
-         newRemito.setUsuario((Usuario) contenedor.getCbUsuario().getSelectedItem());
+         newRemito.setUsuario(UsuarioJpaController.getCurrentUser());
          newRemito.setDetalleRemitoList(new ArrayList<DetalleRemito>(dtm.getRowCount()));
          // carga de detalleVenta
          DetalleRemito detalleRemito;
@@ -361,7 +361,7 @@ public class RemitoJpaController implements ActionListener, KeyListener {
       jdFacturaVenta.getCbCliente().addItem(remito.getCliente());
       jdFacturaVenta.getCbSucursal().removeAllItems();
       jdFacturaVenta.getCbSucursal().addItem(remito.getSucursal());
-      jdFacturaVenta.getCbUsuario().addItem(remito.getUsuario());
+//      jdFacturaVenta.getCbUsuario().addItem(remito.getUsuario());
       jdFacturaVenta.setDcFechaFactura(remito.getFechaCreacion());
 
       List<DetalleRemito> lista = remito.getDetalleRemitoList();

@@ -31,8 +31,9 @@ import javax.swing.table.DefaultTableModel;
 public class ListaPreciosJpaController implements ActionListener, MouseListener, KeyListener {
 
    public static final String CLASS_NAME = "ListaPrecios";
-   private final String[] colsName = {"id", "Nombre", "M. General", "Margen (%)"};
-   private final int[] colsWidth = {10, 150, 20, 20};
+   private final String[] colsName = {"id", "Nombre", "M. General", "Margen (%)", "Cat. Web"};
+   private final int[] colsWidth = {10, 150, 20, 20, 20};
+   private final Class[] colsClass = {Object.class, Object.class, Object.class, Object.class, Boolean.class};
    private JDContenedor contenedor = null;
    private JDABM abm;
    private PanelABMListaPrecio panel;
@@ -142,7 +143,7 @@ public class ListaPreciosJpaController implements ActionListener, MouseListener,
    public void initContenedor(java.awt.Frame frame, boolean modal) {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioJpaController.checkPermisos(PermisosJpaController.PermisoDe.ABM_LISTA_PRECIOS);
+         UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.ABM_LISTA_PRECIOS);
       } catch (MessageException ex) {
          javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
          return;
@@ -151,7 +152,7 @@ public class ListaPreciosJpaController implements ActionListener, MouseListener,
       contenedor.hideBtmImprimir();
       contenedor.setSize(570 + 80, 300 + 50);
       try {
-         UTIL.getDefaultTableModel(contenedor.getjTable1(), colsName, colsWidth);
+         UTIL.getDefaultTableModel(contenedor.getjTable1(), colsName, colsWidth, colsClass);
          UTIL.hideColumnTable(contenedor.getjTable1(), 0);
       } catch (Exception ex) {
          Logger.getLogger(FacturaCompraJpaController.class.getName()).log(Level.SEVERE, null, ex);
@@ -162,10 +163,9 @@ public class ListaPreciosJpaController implements ActionListener, MouseListener,
       contenedor.setVisible(true);
    }
 
-   private void cargarDTM(javax.swing.table.DefaultTableModel dtm,
-           String query) {
+   private void cargarDTM(DefaultTableModel dtm, String query) {
       UTIL.limpiarDtm(dtm);
-      java.util.List<ListaPrecios> l;
+      List<ListaPrecios> l;
       if (query == null || query.length() < 1) {
          l = DAO.getEntityManager().createNamedQuery(CLASS_NAME + ".findAll").getResultList();
       } else {
@@ -177,7 +177,8 @@ public class ListaPreciosJpaController implements ActionListener, MouseListener,
                     o.getId(),
                     o.getNombre(),
                     o.getMargenGeneral() ? "Si" : "No",
-                    o.getMargen().toString()
+                    o.getMargen().toString(),
+                    o.getParaCatalogoWeb()
                  });
       }
    }
@@ -185,9 +186,9 @@ public class ListaPreciosJpaController implements ActionListener, MouseListener,
    private void initABM(boolean isEditing, ActionEvent e) throws MessageException {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioJpaController.checkPermisos(PermisosJpaController.PermisoDe.ABM_LISTA_PRECIOS);
+         UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.ABM_LISTA_PRECIOS);
       } catch (MessageException ex) {
-         javax.swing.JOptionPane.showMessageDialog(null,ex.getMessage());
+         javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
          return;
       }// </editor-fold>
       if (isEditing && EL_OBJECT == null) {
@@ -198,23 +199,16 @@ public class ListaPreciosJpaController implements ActionListener, MouseListener,
       listaDeRubros = new RubroJpaController().findRubros();
       panel = new PanelABMListaPrecio();
       panel.setListener(this);
-
-      try {
-         UTIL.getDefaultTableModel(
-                 panel.getjTable1(),
-                 new String[]{"id", "Rubro"},
-                 new int[]{5, 200}
-                 );
-         UTIL.hideColumnTable(panel.getjTable1(), 0);
-         UTIL.getDefaultTableModel(
-                 panel.getjTable2(),
-                 new String[]{"id", "Rubro", "Margen %"},
-                 new int[]{5, 80, 40}
-                 );
-         UTIL.hideColumnTable(panel.getjTable2(), 0);
-      } catch (Exception ex) {
-         Logger.getLogger(ListaPreciosJpaController.class.getName()).log(Level.SEVERE, null, ex);
-      }
+      UTIL.getDefaultTableModel(
+              panel.getjTable1(),
+              new String[]{"id", "Rubro"},
+              new int[]{5, 200});
+      UTIL.hideColumnTable(panel.getjTable1(), 0);
+      UTIL.getDefaultTableModel(
+              panel.getjTable2(),
+              new String[]{"id", "Rubro", "Margen %"},
+              new int[]{5, 80, 40});
+      UTIL.hideColumnTable(panel.getjTable2(), 0);
 
       if (isEditing) {
          setPanel(EL_OBJECT);
@@ -239,6 +233,7 @@ public class ListaPreciosJpaController implements ActionListener, MouseListener,
       panel.getCheckMargenGeneral().setSelected(listaPrecios.getMargenGeneral());
       panel.setTfNombre(listaPrecios.getNombre());
       panel.setTfMargenGeneral(listaPrecios.getMargen().toString());
+      panel.setCheckCatalagoWEB(listaPrecios.getParaCatalogoWeb());
       cargarRubrosAfectados(listaPrecios.getDetalleListaPreciosList());
    }
 
@@ -263,22 +258,30 @@ public class ListaPreciosJpaController implements ActionListener, MouseListener,
          }
       }
 
+      if (panel.getCheckCatalagoWEB().isSelected()) {
+         ListaPrecios uniqueCatalogo = findListaPreciosParaCatalogo();
+         if (EL_OBJECT != null && uniqueCatalogo != null) {
+            if (!EL_OBJECT.equals(uniqueCatalogo)) {
+               throw new MessageException("Ya existe una Lista de Precios de referencia para el Catlálogo Web.\n"
+                       + uniqueCatalogo.getNombre());
+            }
+         }
+      }
       ////////////////////////////////////////////////////////
       if (EL_OBJECT == null) {
          EL_OBJECT = new ListaPrecios();
       }
 
       EL_OBJECT.setNombre(nombre.toUpperCase());
+      EL_OBJECT.setParaCatalogoWeb(panel.getCheckCatalagoWEB().isSelected());
       EL_OBJECT.setMargenGeneral(panel.getCheckMargenGeneral().isSelected());
       //si elegió margen general
       if (EL_OBJECT.getMargenGeneral()) {
          EL_OBJECT.setMargen(Double.valueOf(panel.getTfMargenGeneral()));
-
          //se borran los posibles detalles_lista_precios
          if (EL_OBJECT.getId() != null) {
             removeDetallesListaPrecios(EL_OBJECT.getId());
          }
-
          EL_OBJECT.setDetalleListaPreciosList(new ArrayList<DetalleListaPrecios>());
       } else {
          EL_OBJECT.setMargen(0.0);
@@ -291,7 +294,6 @@ public class ListaPreciosJpaController implements ActionListener, MouseListener,
             removeDetallesListaPrecios(EL_OBJECT.getId());
          }
          EL_OBJECT.setDetalleListaPreciosList(new ArrayList<DetalleListaPrecios>());
-
          for (int i = dtm.getRowCount() - 1; i >= 0; i--) {
             detalle = new DetalleListaPrecios();
             detalle.setListaPrecio(EL_OBJECT);
@@ -306,7 +308,7 @@ public class ListaPreciosJpaController implements ActionListener, MouseListener,
       EntityManager em = getEntityManager();
       try {
          em.getTransaction().begin();
-         em.createNativeQuery("delete from detalle_lista_precios o where o.lista_precio = " + id).executeUpdate();
+         em.createNativeQuery("DELETE FROM detalle_lista_precios o where o.lista_precio = " + id).executeUpdate();
          em.getTransaction().commit();
       } catch (Exception e) {
          throw e;
@@ -479,8 +481,9 @@ public class ListaPreciosJpaController implements ActionListener, MouseListener,
             contenedor = null;
          } else if (boton.getName().equalsIgnoreCase("aceptar")) {
             try {
+               String msg = EL_OBJECT == null ? "creada." : "modificada.";
                setEntity();
-               String msj = "Lista de precios " + EL_OBJECT.getId() == null ? "Registrada" : "Modificada";
+               String msj = "Lista de precios " + msg;
                checkConstraints(EL_OBJECT);
                abm.showMessage(msj, CLASS_NAME, 1);
                cargarDTM(contenedor.getDTM(), null);
@@ -533,5 +536,20 @@ public class ListaPreciosJpaController implements ActionListener, MouseListener,
 //                armarQuery(tf.getText().trim());
          }
       }
+   }
+
+   /**
+    * Retorna la ListaPrecio marcada como referencia para el Catalogo Web or <code>null</code>
+    * if there is noone.
+    * @return una instancia de {@link ListaPrecios}
+    */
+   public ListaPrecios findListaPreciosParaCatalogo() {
+      ListaPrecios o;
+      try {
+         o = (ListaPrecios) DAO.getEntityManager().createQuery("SELECT o FROM " + ListaPrecios.class.getSimpleName() + " o WHERE o.paraCatalogoWeb = TRUE").getSingleResult();
+      } catch (NoResultException e) {
+         o = null;
+      }
+      return o;
    }
 }

@@ -49,7 +49,7 @@ public class JDBuscador extends javax.swing.JDialog {
    }
 
    private void ajustarAlPanel(int width, int height) {
-      this.setSize(width + this.getWidth() , height + this.getHeight());
+      this.setSize(width + this.getWidth(), height + this.getHeight());
       this.setMinimumSize(new Dimension(this.getWidth(), this.getHeight()));
       this.setLocation(this.getOwner().getX() + 100, this.getOwner().getY() + 50);
    }
@@ -69,11 +69,17 @@ public class JDBuscador extends javax.swing.JDialog {
       bLimpiar = new javax.swing.JButton();
       bBuscar = new javax.swing.JButton();
       bImprimir = new javax.swing.JButton();
+      jLabel1 = new javax.swing.JLabel();
 
       setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
       jTable1.setModel(new javax.swing.table.DefaultTableModel());
       jTable1.setRequestFocusEnabled(false);
+      jTable1.addComponentListener(new java.awt.event.ComponentAdapter() {
+         public void componentResized(java.awt.event.ComponentEvent evt) {
+            jTable1ComponentResized(evt);
+         }
+      });
       jScrollPane1.setViewportView(jTable1);
 
       jPanel1.setMinimumSize(new java.awt.Dimension(143, 143));
@@ -115,6 +121,9 @@ public class JDBuscador extends javax.swing.JDialog {
             .addContainerGap(18, Short.MAX_VALUE))
       );
 
+      jLabel1.setFont(new java.awt.Font("Tahoma", 1, 10)); // NOI18N
+      jLabel1.setText("Nº Registros: 0");
+
       javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
       getContentPane().setLayout(layout);
       layout.setHorizontalGroup(
@@ -122,8 +131,9 @@ public class JDBuscador extends javax.swing.JDialog {
          .addGroup(layout.createSequentialGroup()
             .addContainerGap()
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-               .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 152, Short.MAX_VALUE)
-               .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+               .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 181, Short.MAX_VALUE)
+               .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+               .addComponent(jLabel1))
             .addContainerGap())
       );
       layout.setVerticalGroup(
@@ -132,16 +142,22 @@ public class JDBuscador extends javax.swing.JDialog {
             .addContainerGap()
             .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 89, Short.MAX_VALUE)
-            .addContainerGap())
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(jLabel1))
       );
 
       pack();
    }// </editor-fold>//GEN-END:initComponents
+
+   private void jTable1ComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_jTable1ComponentResized
+      jLabel1.setText("Nº Registros: " + getDtm().getRowCount());
+   }//GEN-LAST:event_jTable1ComponentResized
    // Variables declaration - do not modify//GEN-BEGIN:variables
    private javax.swing.JButton bBuscar;
    private javax.swing.JButton bImprimir;
    private javax.swing.JButton bLimpiar;
+   private javax.swing.JLabel jLabel1;
    private javax.swing.JPanel jPanel1;
    private javax.swing.JScrollPane jScrollPane1;
    private javax.swing.JTable jTable1;

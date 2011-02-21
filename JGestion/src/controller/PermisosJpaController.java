@@ -34,7 +34,9 @@ public class PermisosJpaController {
       DATOS_GENERAL,
       VENTA,
       COMPRA,
-      CERRAR_CAJAS;
+      CERRAR_CAJAS,
+      ABM_CATALOGOWEB,
+      ABM_OFERTASWEB;
    }
 
    public PermisosJpaController() {

@@ -1,3 +1,27 @@
+2011/02/17
+//Edit GUI:
+   - Agregaron permisos correspondientes a ProdudosWeb y Oferas.
+ALTER TABLE permisos ADD COLUMN abm_catalogoweb boolean NOT NULL DEFAULT false;
+ALTER TABLE permisos ADD COLUMN abm_ofertasweb boolean NOT NULL DEFAULT false;
+2011/02/14
+//Edit GUI:
+   - JDFacturaVenta -> Detección de Productos en oferta
+//DB Modif.
+ALTER TABLE detalle_venta ADD COLUMN oferta integer;
+ALTER TABLE detalle_venta ADD FOREIGN KEY (oferta) REFERENCES historial_ofertas (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+2011/02/11
+//DB Modif:
+CREATE TABLE historial_ofertas
+2011/02/10
+//Integrando con la Web
+// Added GUI:
+   - Ventana de asignación de productos al catálogo.
+   - Ventana de creación de ofertas/destacados.
+//Modif:
+   - Class ListaPrecios, se le agregó el atributo paraCatalogoWeb.
+ALTER TABLE lista_precios ADD COLUMN para_catalogo_web BOOLEAN NOT NULL DEFAULT FALSE
+2010/10/??
+CREATE TABLE productos_web
 2010/09/27
 //Added GUI:
    - Impl de los AutoCompleteComboBox (Facturas venta, compra y no se donde mas)

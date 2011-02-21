@@ -246,7 +246,7 @@ public class ContribuyenteJpaController implements ActionListener, MouseListener
    public void initABM(java.awt.Frame frame, boolean modal) {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioJpaController.checkPermisos(PermisosJpaController.PermisoDe.DATOS_GENERAL);
+         UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.DATOS_GENERAL);
       } catch (MessageException ex) {
          javax.swing.JOptionPane.showMessageDialog(null,ex.getMessage());
          return;

@@ -35,7 +35,8 @@ public class DetalleCajaMovimientosJpaController {
     */
    public final static short RECIBO = 4;
    /**
-    * nº 6
+    * nº 5, son los movimientos monetarios entre Cajas (tipo de mov. interno).
+    * No son un INGRESO o EGRESO real 
     */
    public final static short MOVIMIENTO_CAJA = 5;
    /**

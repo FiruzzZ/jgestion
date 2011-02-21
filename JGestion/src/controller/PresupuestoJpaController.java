@@ -4,7 +4,6 @@ import controller.exceptions.*;
 import entity.Cliente;
 import entity.Presupuesto;
 import entity.Sucursal;
-import entity.Usuario;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -22,6 +21,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JFrame;
 
 /**
  *
@@ -156,7 +156,7 @@ public class PresupuestoJpaController implements ActionListener, KeyListener {
     * @param setVisible cuando se va levantar la gui desde el buscador es <code>false</code>
     * @throws MessageException
     */
-   public void initPresupuesto(javax.swing.JFrame frame, boolean modal, boolean setVisible) throws MessageException {
+   public void initPresupuesto(JFrame frame, boolean modal, boolean setVisible) throws MessageException {
       facturaVentaController.initFacturaVenta(frame, modal, this, 2, setVisible);
       facturaVentaController.getContenedor().getBtnAceptar().addActionListener(new ActionListener() {
 
@@ -169,7 +169,6 @@ public class PresupuestoJpaController implements ActionListener, KeyListener {
                facturaVentaController.getContenedor().showMessage(ex.getMessage(), CLASS_NAME, 2);
             } catch (Exception ex) {
                facturaVentaController.getContenedor().showMessage(ex.getMessage(), CLASS_NAME, 2);
-               ex.printStackTrace();
             } finally {
                facturaVentaController.getContenedor().getBtnAceptar().setEnabled(true);
             }
@@ -177,6 +176,7 @@ public class PresupuestoJpaController implements ActionListener, KeyListener {
       });
    }
 
+   @Override
    public void actionPerformed(ActionEvent e) {
       //solo se hace cargo de persistir la entity Presupuesto
       //todo las demás acciones son manejadas (delegadas) -> FacturaVentaJpaController
@@ -258,14 +258,12 @@ public class PresupuestoJpaController implements ActionListener, KeyListener {
             newPresupuesto.setDias(Short.parseShort(jdFacturaVenta.getTfDias()));
          }
          newPresupuesto.setDescuento(Double.valueOf(jdFacturaVenta.getTfTotalDesc()));
-         newPresupuesto.setFechaCreacion(null);
-         newPresupuesto.setHoraCreacion(null);
          newPresupuesto.setImporte(Double.valueOf(jdFacturaVenta.getTfTotal()));
          newPresupuesto.setIva10(Double.valueOf(jdFacturaVenta.getTfTotalIVA105()));
          newPresupuesto.setIva21(Double.valueOf(jdFacturaVenta.getTfTotalIVA21()));
          newPresupuesto.setListaPrecios((ListaPrecios) jdFacturaVenta.getCbListaPrecio().getSelectedItem());
          newPresupuesto.setSucursal((Sucursal) jdFacturaVenta.getCbSucursal().getSelectedItem());
-         newPresupuesto.setUsuario((Usuario) jdFacturaVenta.getCbUsuario().getSelectedItem());
+         newPresupuesto.setUsuario(UsuarioJpaController.getCurrentUser());
          newPresupuesto.setDetallePresupuestoList(new ArrayList<DetallePresupuesto>(dtm.getRowCount()));
          // carga de detalleVenta
          DetallePresupuesto detallePresupuesto;
@@ -289,10 +287,10 @@ public class PresupuestoJpaController implements ActionListener, KeyListener {
       return doReport(newPresupuesto);
    }
 
-   private boolean doReport(Presupuesto p) {
+   private boolean doReport(Presupuesto presupuesto) {
       try {
          Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_Presupuesto.jasper", "Presupuesto");
-         r.addParameter("PRESUPUESTO_ID", p.getId());
+         r.addParameter("PRESUPUESTO_ID", presupuesto.getId());
          r.printReport(true);
          return r.isReporteFinalizado();
       } catch (Exception ex) {
@@ -334,8 +332,7 @@ public class PresupuestoJpaController implements ActionListener, KeyListener {
    }
 
    private void armarQuery() throws MessageException {
-      String query = "SELECT o.* FROM presupuesto o"
-              + " WHERE o.id > -1";
+      String query = "SELECT o.* FROM " + CLASS_NAME + " o WHERE o.id > -1";
 
       long presupuestoID;
       //filtro por nº de ReRe
@@ -362,7 +359,6 @@ public class PresupuestoJpaController implements ActionListener, KeyListener {
          query += " AND o.cliente = " + ((Cliente) buscador.getCbClieProv().getSelectedItem()).getId();
       }
       query += " ORDER BY o.id";
-      System.out.println("QUERY: " + query);
       cargarDtmBuscador(query);
    }
 
@@ -375,7 +371,7 @@ public class PresupuestoJpaController implements ActionListener, KeyListener {
                     presupuesto, // <--- no es visible
                     presupuesto.getCliente(),
                     presupuesto.getImporte(),
-                    UTIL.DATE_FORMAT.format(presupuesto.getFechaCreacion()),
+                    UTIL.TIMESTAMP_FORMAT.format(presupuesto.getFechaalta()),
                     presupuesto.getSucursal(),
                     presupuesto.getUsuario()});
       }
@@ -396,8 +392,8 @@ public class PresupuestoJpaController implements ActionListener, KeyListener {
       jdFacturaVenta.getCbCliente().addItem(presupuesto.getCliente());
       jdFacturaVenta.getCbSucursal().addItem(presupuesto.getSucursal());
       jdFacturaVenta.getCbListaPrecio().addItem(presupuesto.getListaPrecios());  //<---
-      jdFacturaVenta.getCbUsuario().addItem(presupuesto.getUsuario());           //<---
-      jdFacturaVenta.setDcFechaFactura(presupuesto.getFechaCreacion());
+//      jdFacturaVenta.getCbUsuario().addItem(presupuesto.getUsuario());           //<---
+      jdFacturaVenta.setDcFechaFactura(presupuesto.getFechaalta());
       for (Valores.FormaPago formaPago : Valores.FormaPago.getFormasDePago()) {
          if (formaPago.getId() == (presupuesto.getFormaPago())) {
             jdFacturaVenta.getCbFormaPago().addItem(formaPago);
@@ -419,15 +415,14 @@ public class PresupuestoJpaController implements ActionListener, KeyListener {
                     detallesPresupuesto.getProducto().getCodigo(),
                     detallesPresupuesto.getProducto(),
                     detallesPresupuesto.getCantidad(),
-                    detallesPresupuesto.getPrecioUnitario(),
+                    UTIL.PRECIO_CON_PUNTO.format(detallesPresupuesto.getPrecioUnitario()),
                     productoConIVA,
                     detallesPresupuesto.getDescuento(),
-                    ((detallesPresupuesto.getCantidad() * productoConIVA) - detallesPresupuesto.getDescuento())
+                    UTIL.PRECIO_CON_PUNTO.format((detallesPresupuesto.getCantidad() * productoConIVA) - detallesPresupuesto.getDescuento())
                  });
       }
       //totales
-      jdFacturaVenta.setTfGravado(
-              UTIL.PRECIO_CON_PUNTO.format(presupuesto.getImporte() - (presupuesto.getIva10() + presupuesto.getIva21())));
+      jdFacturaVenta.setTfGravado(UTIL.PRECIO_CON_PUNTO.format(presupuesto.getImporte() - (presupuesto.getIva10() + presupuesto.getIva21())));
       jdFacturaVenta.setTfTotalIVA105(UTIL.PRECIO_CON_PUNTO.format(presupuesto.getIva10()));
       jdFacturaVenta.setTfTotalIVA21(UTIL.PRECIO_CON_PUNTO.format(presupuesto.getIva21()));
       jdFacturaVenta.setTfTotal(UTIL.PRECIO_CON_PUNTO.format(presupuesto.getImporte()));

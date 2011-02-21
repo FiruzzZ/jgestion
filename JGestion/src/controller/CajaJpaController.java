@@ -189,7 +189,7 @@ public class CajaJpaController implements ActionListener {
    public void initABM(JFrame frame, boolean modal) {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioJpaController.checkPermisos(PermisosJpaController.PermisoDe.ABM_CAJAS);
+         UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.ABM_CAJAS);
       } catch (MessageException ex) {
          JOptionPane.showMessageDialog(null, ex.getMessage());
          return;

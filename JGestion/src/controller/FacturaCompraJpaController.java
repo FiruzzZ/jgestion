@@ -150,7 +150,7 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
 
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioJpaController.checkPermisos(PermisosJpaController.PermisoDe.COMPRA);
+         UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.COMPRA);
       } catch (MessageException ex) {
          JOptionPane.showMessageDialog(null, ex.getMessage());
          return;
@@ -367,7 +367,7 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
       if (newFacturaCompra.getFormaPago() == Valores.FormaPago.CTA_CTE.getId()) {
          newFacturaCompra.setDiasCtaCte(Short.valueOf(jdFactura.getTfDias()));
       }
-      newFacturaCompra.setMovimiento(Integer.valueOf(jdFactura.getTfNumMovimiento().getText()));
+      newFacturaCompra.setMovimientoInterno(Integer.valueOf(jdFactura.getTfNumMovimiento().getText()));
       newFacturaCompra.setDetalleCompraList(new ArrayList<DetalleCompra>());
 
       //carga detalleCompra
@@ -538,7 +538,11 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
             jdFactura = null;
             EL_OBJECT = null;
          } else if (boton.getName().equalsIgnoreCase("buscarProducto")) {
-            initBuscadorProducto();
+            try {
+               initBuscadorProducto();
+            } catch (DatabaseErrorException ex) {
+               JOptionPane.showMessageDialog(null, ex.getMessage());
+            }
          } else if (boton.getName().equalsIgnoreCase("filtrarReRe")) {
             try {
                armarQuery();
@@ -575,7 +579,7 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
    public void initBuscador(JFrame frame, final boolean modal, final boolean paraAnular) {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioJpaController.checkPermisos(PermisosJpaController.PermisoDe.COMPRA);
+         UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.COMPRA);
       } catch (MessageException ex) {
          javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
          return;
@@ -621,7 +625,7 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
          dtm.addRow(new Object[]{
                     facturaCompra.getId(),
                     UTIL.AGREGAR_CEROS(facturaCompra.getNumero(), 12),
-                    facturaCompra.getMovimiento(),
+                    facturaCompra.getMovimientoInterno(),
                     facturaCompra.getProveedor(),
                     facturaCompra.getImporte(),
                     UTIL.DATE_FORMAT.format(facturaCompra.getFechaCompra()),
@@ -723,7 +727,7 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
       String numFactura = UTIL.AGREGAR_CEROS(factura.getNumero(), 12);
       jdFactura.setTfFacturaCuarto(numFactura.substring(0, 4));
       jdFactura.setTfFacturaOcteto(numFactura.substring(4));
-      jdFactura.setTfNumMovimiento(String.valueOf(factura.getMovimiento()));
+      jdFactura.setTfNumMovimiento(String.valueOf(factura.getMovimientoInterno()));
 
       jdFactura.getCbFacturaTipo().addItem(factura.getTipo());
       jdFactura.getCbCaja().addItem(factura.getCaja());
@@ -795,14 +799,14 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
       try {
          Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_FacturaCompra.jasper", "Factura compra");
          r.addParameter("FACTURA_ID", EL_OBJECT.getId());
-         r.addParameter("FORMA_PAGO", Valores.FormaPago.getFormasDePago(EL_OBJECT.getFormaPago()).getNombre());
+         r.addParameter("FORMA_PAGO", Valores.FormaPago.getFormaPago(EL_OBJECT.getFormaPago()).getNombre());
          r.viewReport();
       } catch (Exception ex) {
          Logger.getLogger(FacturaCompraJpaController.class.getName()).log(Level.SEVERE, null, ex);
       }
    }
 
-   private void initBuscadorProducto() {
+   private void initBuscadorProducto() throws DatabaseErrorException {
       ProductoJpaController p = new ProductoJpaController();
       p.initContenedor(null, true, true);
       UTIL.loadComboBox(jdFactura.getCbProductos(), new ProductoJpaController().findProductoToCombo(), false);

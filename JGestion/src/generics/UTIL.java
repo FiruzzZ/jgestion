@@ -1,9 +1,37 @@
 package generics;
 
-import java.util.Arrays;
+import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.IllegalFormatException;
 import java.util.List;
+import java.util.TimeZone;
+import java.util.regex.Pattern;
+import javax.imageio.ImageIO;
+import javax.imageio.stream.FileImageInputStream;
+import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
@@ -13,64 +41,110 @@ import javax.swing.table.DefaultTableModel;
  */
 public abstract class UTIL {
 
+   public final static String EMAIL_REGEX = "^[\\w\\-]([\\.\\w])+[\\w]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
+   /**
+    * Regular expression para validar cadenas que:
+    * <UL>
+    * <LI>Empiece con un caracter alfabético.
+    * <LI>Seguidos de 0..* caracteres alfabeticos y espacios.
+    * <LI>Termine en un caracter alfabético.
+    * </UL>
+    * Ejemplos válidos: "a", "a b", "a  B cd".
+    */
+   public final static String REGEX_ALFA_TEXT_WITH_WHITE =
+           "^[a-zA-Z][a-zA-Z\\s]*[a-zA-Z]$|"
+           + "^[a-zA-Z]+[a-zA-Z]*$|"
+           + "^[a-zA-Z]$";
+   public final static Pattern email = Pattern.compile("");
+   /**
+    * [a-zA-Z]?
+    */
+   public final static Pattern azAZ = Pattern.compile("[a-zA-Z]?");
+   /**
+    * [0-9]?
+    */
+   public final static Pattern _09 = Pattern.compile("[0-9]?");
+   /**
+    * [a-zA-Z_0-9]?
+    */
+   public final static Pattern azAZ09 = Pattern.compile("[a-zA-Z_0-9]?");
+   /**
+    * Límite de filas que se cargan en una Tabla
+    */
+   public final static int ROW_LIMIT = 1000;
    public final static String TIME_ZONE = "GMT-03:00";
-   // parámetros mucho muy usefull.. ojo con tocar!
+   /**
+    * Porque a la poronga de MySql solo le gusta así yyyy/MM/dd
+    */
+   public final static SimpleDateFormat yyyy_MM_dd;
    /**
     * formato de salida de la fecha dd/MM/yyyy
     */
-   public final static java.text.SimpleDateFormat DATE_FORMAT;
+   public final static SimpleDateFormat DATE_FORMAT;
    /**
     * formato de salida del Time -> String HH:mm:ss
     */
-   public final static java.text.SimpleDateFormat TIME_FORMAT;
+   public final static SimpleDateFormat TIME_FORMAT;
+   /**
+    * formato de salida Timestamp dd/MM/yyyy HH:mm:ss
+    */
+   public final static SimpleDateFormat TIMESTAMP_FORMAT;
    /**
     * formato de salida del <code>double</code> -> #,###.00
     * Con separador de millares y COMA de separador decimal
     */
-   public final static java.text.DecimalFormat DECIMAL_FORMAT;
+   public final static DecimalFormat DECIMAL_FORMAT;
    /**
     * formato de salida del <code>double</code> a un String casteable nuavamente
     * a double.
     * Es decir que usa el punto (.) como separador decimal y sin separadores
     * de millares
-    * Formato "#######0.##"
+    * Formato "########.##"
     */
-   public final static java.text.DecimalFormat PRECIO_CON_PUNTO;
+   public final static DecimalFormat PRECIO_CON_PUNTO;
    /**
     * Extensiones de imagenes permitidas: "jpeg", "jpg", "gif", "tiff", "tif", "png", "bmp"
     */
    public final static String[] IMAGEN_EXTENSION = {"jpeg", "jpg", "gif", "tiff", "tif", "png", "bmp"};
-   public final static java.util.List MESES = new java.util.ArrayList();
    /**
     * Tamaño máximo de las imagenes que se puede guardar: 1.048.576 bytes
     */
    public final static int MAX_IMAGEN_FILE_SIZE = 1048576; // en bytes (1Mb/1024Kb/...)
 
    static {
-      java.text.DecimalFormatSymbols simbolos = new java.text.DecimalFormatSymbols();
+      DecimalFormatSymbols simbolos = new DecimalFormatSymbols();
       simbolos.setDecimalSeparator('.');
-      PRECIO_CON_PUNTO = new java.text.DecimalFormat("#######0.00", simbolos);
-      String[] x = {"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-         "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"};
-      DECIMAL_FORMAT = new java.text.DecimalFormat("#,##0.00");
-      DATE_FORMAT = new java.text.SimpleDateFormat("dd/MM/yyyy");
-      TIME_FORMAT = new java.text.SimpleDateFormat("HH:mm:ss");
-      MESES.addAll(Arrays.asList(x));
+      PRECIO_CON_PUNTO = new DecimalFormat("#######0.00", simbolos);
+      DECIMAL_FORMAT = new DecimalFormat("#,###.00");
+      DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
+      yyyy_MM_dd = new SimpleDateFormat("yyyy/MM/dd");
+      TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
+      TIMESTAMP_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+   }
+
+   public static SimpleDateFormat instanceOfDATE_FORMAT() {
+      return new SimpleDateFormat("dd/MM/yyyy");
+   }
+
+   public static SimpleDateFormat instanceOfTIME_FORMAT() {
+      return new SimpleDateFormat("HH:mm:ss");
    }
 
    /**
     * Returns the contents of the file in a byte array
     * @param file File this method should read
     * @return byte[] Returns a byte[] array of the contents of the file
+    * @throws IOException
+    * @throws Exception
     */
-   public static byte[] getBytesFromFile(java.io.File file) throws java.io.IOException, Exception {
-      java.io.InputStream is = new java.io.FileInputStream(file);
+   public static byte[] getBytesFromFile(File file) throws IOException {
+      BufferedInputStream is = new BufferedInputStream(new FileInputStream(file));
+//      InputStream is = new BufferedInputStream(new FileInputStream(file));
       long length = file.length();
       controlSizeFile(file, MAX_IMAGEN_FILE_SIZE);
 
       // Create the byte array to hold the data
       byte[] bytes = new byte[(int) length];
-
       // Read in the bytes
       int offset = 0;
       int numRead = 0;
@@ -82,86 +156,101 @@ public abstract class UTIL {
 
       // Ensure all the bytes have been read in
       if (offset < bytes.length) {
-         throw new java.io.IOException("Could not completely read file " + file.getName());
+         throw new IOException("Could not completely read file " + file.getName());
       }
 
       is.close();
       return bytes;
    }
 
+   public static void setImageAsIconLabel(JLabel label, byte[] imageInByte) throws IOException {
+      ByteArrayInputStream bais = new ByteArrayInputStream(imageInByte);
+      BufferedImage bufferedImage = ImageIO.read(bais);
+      int labelWidth = label.getWidth();
+      int labelHeight = label.getHeight();
+      // Get a transform...
+      AffineTransform trans = AffineTransform.getScaleInstance(
+              (double) labelWidth / bufferedImage.getWidth(), (double) labelHeight / bufferedImage.getHeight());
+      Graphics2D g = (Graphics2D) label.getGraphics();
+      GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+      GraphicsDevice gd = ge.getDefaultScreenDevice();
+      GraphicsConfiguration cg = gd.getDefaultConfiguration();
+      int transparency = bufferedImage.getColorModel().getTransparency();
+      BufferedImage dest = cg.createCompatibleImage(labelWidth, labelHeight, transparency);
+      g = dest.createGraphics();
+      g.drawRenderedImage(bufferedImage, trans);
+      g.dispose();
+      label.setIcon(new ImageIcon(dest)); // <-- si hace resize()
+      label.setText(null);
+   }
+
    /**
     * Ajusta la imagen al size de la jLabel, también deja <code>null</code> el texto de la label
-    * @param jLabel
+    * @param label
     * @param imageFile File de una imagen, la cual se va ajustar al tamaño de la jLabel.
     * @return el jLabel con la imagen ajustada..
     * @exception  java.io.IOException si no puede leer el <code>imageFile</code>
     * @exception Exception si el tamaño del archivo supera el configurado permitido (default is Integer.MAX_VALUE).
     */
-   public static javax.swing.JLabel setImageAsIconLabel(javax.swing.JLabel jLabel, java.io.File imageFile)
-           throws java.io.IOException, Exception {
+   public static JLabel setImageAsIconLabel(JLabel label, File imageFile)
+           throws IOException {
       controlSizeFile(imageFile, MAX_IMAGEN_FILE_SIZE);
-      java.awt.image.BufferedImage bufferedImage = javax.imageio.ImageIO.read(imageFile);
-      int labelWidth = jLabel.getWidth();
-      int labelHeight = jLabel.getHeight();
-//        System.out.println("Label size: "+width+"/"+height+"\nImage size: "+bufferedImage.getWidth()+"/"+bufferedImage.getHeight());
+      BufferedImage bufferedImage = ImageIO.read(imageFile);
+      int labelWidth = label.getWidth();
+      int labelHeight = label.getHeight();
       // Get a transform...
-      java.awt.geom.AffineTransform trans = java.awt.geom.AffineTransform.getScaleInstance(
+      AffineTransform trans = AffineTransform.getScaleInstance(
               (double) labelWidth / bufferedImage.getWidth(), (double) labelHeight / bufferedImage.getHeight());
 
-      java.awt.Graphics2D g = (java.awt.Graphics2D) jLabel.getGraphics();
+      Graphics2D g = (Graphics2D) label.getGraphics();
 //        g.drawRenderedImage(src, trans);
 //        jLabel.setIcon(new ImageIcon(src)); // <-- no resizea la img en la label
       //----------------------------
-      java.awt.GraphicsEnvironment ge = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment();
-      java.awt.GraphicsDevice gd = ge.getDefaultScreenDevice();
-      java.awt.GraphicsConfiguration cg = gd.getDefaultConfiguration();
+      GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+      GraphicsDevice gd = ge.getDefaultScreenDevice();
+      GraphicsConfiguration cg = gd.getDefaultConfiguration();
       int transparency = bufferedImage.getColorModel().getTransparency();
-      java.awt.image.BufferedImage dest = cg.createCompatibleImage(labelWidth, labelHeight, transparency);
+      BufferedImage dest = cg.createCompatibleImage(labelWidth, labelHeight, transparency);
       g = dest.createGraphics();
       g.drawRenderedImage(bufferedImage, trans);
       g.dispose();
-      jLabel.setIcon(new javax.swing.ImageIcon(dest)); // <-- si hace resize()
-      jLabel.setText(null);
-      return jLabel;
+      label.setIcon(new ImageIcon(dest)); // <-- si hace resize()
+      label.setText(null);
+      return label;
    }
 
-   public static void controlSizeFile(java.io.File file, int size) throws Exception {
+   public static void controlSizeFile(File file, int size) {
       // Get the size of the file
       long length = file.length();
-      System.out.println("Length of " + file.getName() + ", size:" + file.length()
-              + " (" + (length / 1024) + "Kb) is " + length + "b\n");
-
       if (length > size) {
-         throw new Exception("La imagen seleccionada es demasiado grande.\n"
+         throw new IllegalArgumentException("La imagen seleccionada es demasiado grande.\n"
                  + "El tamaño no debe superar los " + size + " bytes (tamaño actual: " + length + "b)");
       }
    }
 
    /**
     * Transforma una IMAGEN de tipo bytea (postgre) a un java.io.File
-    * @param img, tipo de dato almacenado en la DB (debe ser una imagen)
-    * @param extension, la extension de la imagen, sinó se le asigna "png"
+    * @param img tipo de dato almacenado en la DB (debe ser una imagen)
+    * @param extension la extensión de la imagen. if == null, se le asigna "png"
     * @return el archivo de la imagen que fue creado en el disco
     * @throws IOException
     */
-   public static java.io.File imageToFile(byte[] img, String extension)
-           throws java.io.IOException {
-      java.awt.Toolkit.getDefaultToolkit().createImage(img);
+   public static File imageToFile(byte[] img, String extension)
+           throws IOException {
+//      Toolkit.getDefaultToolkit().createImage(img);
 //        java.awt.image.BufferedImage src = new java.awt.image.BufferedImage(0, 0, 0);
       if (extension == null || extension.length() < 1) {
          extension = "png";
       }
 
-      java.io.File file = new java.io.File("./reportes/img." + extension);
+      File file = new File("./reportes/img." + extension);
       file.createNewFile();
-//        java.io.FileInputStream fileInputStream = new java.io.FileInputStream(file);
-      java.io.ByteArrayInputStream byteArrayInputStream = new java.io.ByteArrayInputStream(img);
-      java.io.OutputStream outputStream = new java.io.FileOutputStream(file);
+      ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(img);
+      OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file));
       int data;
       while ((data = byteArrayInputStream.read()) != -1) {
          outputStream.write(data);
       }
-//        fileInputStream.close();
       outputStream.close();
       return file;
    }
@@ -171,7 +260,7 @@ public abstract class UTIL {
     * @param imageFile
     * @return si la extesión del archivo es de algún tipo de imagen.
     */
-   public static boolean isImagenExtension(java.io.File imageFile) {
+   public static boolean isImagenExtension(File imageFile) {
       String extension = UTIL.getExtensionFile(imageFile.getName());
       if (extension != null) {
          for (String string : IMAGEN_EXTENSION) {
@@ -191,21 +280,21 @@ public abstract class UTIL {
     * @throws Exception3 si el dígito identificador (el último) no se corresponde al cálculo.
     * @throws NumberFormatException if can not be castable to a Long type.
     */
-   public static void CONTROLAR_CUIL(String cuil) throws NumberFormatException, Exception {
+   public static void VALIDAR_CUIL(String cuil) throws NumberFormatException {
       String c = cuil.trim();
       try {
          Long.valueOf(cuil);
       } catch (NumberFormatException e) {
-         throw new Exception("La CUIT/CUIL no es válida (ingrese solo números)");
+         throw new IllegalArgumentException("La CUIT/CUIL no es válida (ingrese solo números)");
       }
       if (c.length() != 11) {
-         throw new Exception("Longitud de la CUIT/CUIL no es correcta (" + c.length() + ")");
+         throw new IllegalArgumentException("Longitud de la CUIT/CUIL no es correcta (" + c.length() + ")");
       }
       //ctrl de los 1ros 2 dígitos...//
       String x = c.substring(0, 2);
       int xx = Integer.parseInt(x);
       if ((xx != 20) && (xx != 23) && (xx != 24) && (xx != 27) && (xx != 30) && (xx != 33) && (xx != 34)) {
-         throw new Exception("Los primeros 2 dígitos de la CUIT/CUIL no corresponden a ningún tipo."
+         throw new IllegalArgumentException("Los primeros 2 dígitos de la CUIT/CUIL no corresponden a ningún tipo."
                  + "\nHombres: 20, 23 o 24; Mujeres: 27; Empresas: 30, 33, 34");
       }
       //ctrl del verificador...//
@@ -216,7 +305,7 @@ public abstract class UTIL {
          suma += digito * codigo[index];
       }
       if (Integer.parseInt(cuil.substring(10, 11)) != (11 - (suma % 11))) {
-         throw new Exception("El dígito verificador de la CUIT/CUIL no es correcto");
+         throw new IllegalArgumentException("El dígito verificador de la CUIT/CUIL no es correcto");
       }
    }
 
@@ -224,10 +313,10 @@ public abstract class UTIL {
       return (DefaultTableModel) jtable.getModel();
    }
 
-   public static javax.swing.JTable getDefaultTableModel(javax.swing.JTable tabla, String[] columnsName) {
-      javax.swing.table.DefaultTableModel dtm = new DefaultTableModelImpl();
+   public static JTable getDefaultTableModel(JTable tabla, String[] columnsName) {
+      DefaultTableModel dtm = new DefaultTableModelImpl();
       if (tabla.getModel() != null) {
-         dtm = (javax.swing.table.DefaultTableModel) tabla.getModel();
+         dtm = (DefaultTableModel) tabla.getModel();
       }
       for (String string : columnsName) {
          dtm.addColumn(string);
@@ -246,8 +335,9 @@ public abstract class UTIL {
     * editables ( > -1 && cantidadColumnas >= columnsCount)
     * @return una JTable con el modelo
     */
-   public static javax.swing.JTable getDefaultTableModel(
-           JTable tabla, String[] columnNames, int[] columnWidths, Class[] columnClassType, int[] editableColumns) {
+   public static JTable getDefaultTableModel(JTable tabla,
+           String[] columnNames, int[] columnWidths, Class[] columnClassType,
+           int[] editableColumns) {
 
       if ((columnNames.length != columnWidths.length)) {
          throw new IllegalArgumentException("los Array no tiene la misma cantidad de elementos"
@@ -260,14 +350,16 @@ public abstract class UTIL {
                     + " y ClassType = " + columnClassType.length + ")");
          }
       }
-      for (int i : editableColumns) {
-         if (i < 0 || i > (columnNames.length - 1)) {
-            throw new IndexOutOfBoundsException("El array editableColumns[]"
-                    + " contiene un indice número de columna no válido: index = " + i);
+      if (editableColumns != null) {
+         for (int i : editableColumns) {
+            if (i < 0 || i > (columnNames.length - 1)) {
+               throw new IndexOutOfBoundsException("El array editableColumns[]"
+                       + " contiene un indice número de columna no válido: index = " + i);
+            }
          }
       }
 
-      javax.swing.table.DefaultTableModel dtm;
+      DefaultTableModel dtm;
       if (columnClassType != null && editableColumns != null) {
          dtm = new DefaultTableModelImpl(columnClassType, editableColumns);
       } else if (columnClassType != null) {
@@ -281,7 +373,7 @@ public abstract class UTIL {
          dtm.addColumn(string);
       }
       if (tabla == null) {
-         tabla = new javax.swing.JTable(dtm);
+         tabla = new JTable(dtm);
       } else {
          tabla.setModel(dtm);
       }
@@ -293,7 +385,7 @@ public abstract class UTIL {
       return tabla;
    }
 
-   public static javax.swing.JTable getDefaultTableModel(
+   public static JTable getDefaultTableModel(
            JTable tabla, String[] columnNames, int[] columnWidths, Class[] columnClassType) {
 
       if ((columnNames.length != columnWidths.length)) {
@@ -308,7 +400,7 @@ public abstract class UTIL {
          }
       }
 
-      javax.swing.table.DefaultTableModel dtm;
+      DefaultTableModel dtm;
       if (columnClassType != null) {
          dtm = new DefaultTableModelImpl(columnClassType);
       } else {
@@ -318,7 +410,7 @@ public abstract class UTIL {
          dtm.addColumn(string);
       }
       if (tabla == null) {
-         tabla = new javax.swing.JTable(dtm);
+         tabla = new JTable(dtm);
       } else {
          tabla.setModel(dtm);
       }
@@ -330,18 +422,17 @@ public abstract class UTIL {
       return tabla;
    }
 
-   public static javax.swing.JTable getDefaultTableModel(
-           javax.swing.JTable tabla, String[] columnNames, int[] columnWidths) {
+   public static JTable getDefaultTableModel(JTable tabla, String[] columnNames, int[] columnWidths) {
 
       if (columnNames.length != columnWidths.length) {
          throw new IllegalArgumentException("los columns Names y Widths no tiene la misma cantidad de elementos (length !=)");
       }
-      javax.swing.table.DefaultTableModel dtm = new DefaultTableModelImpl();
+      DefaultTableModel dtm = new DefaultTableModelImpl();
       for (String string : columnNames) {
          dtm.addColumn(string);
       }
       if (tabla == null) {
-         tabla = new javax.swing.JTable(dtm);
+         tabla = new JTable(dtm);
       } else {
          tabla.setModel(dtm);
       }
@@ -355,11 +446,12 @@ public abstract class UTIL {
 
    /**
     * Devuelve un dtm con los nombres de las columnas
-    * @param dtm if it NULL a new instance will be created.
-    * @param columnNames un String[] con los nombres de las respectivas columns que va tener la tabla. if it NULL a DefaultTableModel is returned
-    * @return a DefaultTableModel.
+    * @param dtm if == null a new instance of a PRIVATE implementation of will be created.
+    * @param columnNames los nombres de las respectivas columns que va tener la tabla.
+    * @return a DefaultTableModel with column names setted.
+    * @exception NullPointerException if columnNames is null.
     */
-   public static javax.swing.table.DefaultTableModel getDtm(javax.swing.table.DefaultTableModel dtm, String[] columnNames) {
+   public static DefaultTableModel setColumnNames(DefaultTableModel dtm, String[] columnNames) {
       if (dtm == null) {
          dtm = new DefaultTableModelImpl();
       }
@@ -399,12 +491,12 @@ public abstract class UTIL {
     * @return java.util.Date inicializado con la fecha.
     * @throws Exception si month < 0 || month > 11
     */
-   public static java.util.Date customDate(int year, int month, Integer day)
+   public static Date customDate(int year, int month, Integer day)
            throws Exception {
       if (month < 0 || month > 11) {
          throw new Exception("Mes (month) no válido, must be >= 0 AND <= 11");
       }
-      Calendar c = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone(TIME_ZONE));
+      Calendar c = Calendar.getInstance(TimeZone.getTimeZone(TIME_ZONE));
       if (day == null) {
          c.set(year, month, 1);
       } else if (day == -1) {
@@ -414,15 +506,33 @@ public abstract class UTIL {
    }
 
    /**
+    * Personaliza una fecha según los parámetros. <code>fecha</code> no debe ser
+    * <code>null</code>.
+    * @param fecha un java.util.Date como punto de referencia inicial
+    * @param year años por adicionar o restar
+    * @param month meses por adicionar o restar
+    * @param days días por adicionar o restar
+    * @return a customized Date
+    */
+   public static Date customDate(Date fecha, int year, int month, int days) {
+      Calendar c = Calendar.getInstance(TimeZone.getTimeZone(TIME_ZONE));
+      c.setTime(fecha);
+      c.add(Calendar.YEAR, year);
+      c.add(Calendar.MONTH, month);
+      c.add(Calendar.DAY_OF_MONTH, days);
+      return c.getTime();
+   }
+
+   /**
     * Devuelte un Date modificada según los <code>dias</code>
     * @param fecha Date base sobre el cual se va trabajar. If <code>fecha</code> is <code>null</code> will return null Date
     * @param dias cantidad de días por adicionar o restar a <code>fecha</code>
     * @return customized Date!!!...
     */
-   public static java.util.Date customDateByDays(java.util.Date fecha, int dias) {
-      java.util.Calendar c = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone(TIME_ZONE));
+   public static Date customDateByDays(java.util.Date fecha, int dias) {
+      Calendar c = Calendar.getInstance(TimeZone.getTimeZone(TIME_ZONE));
       c.setTime(fecha);
-      c.add(java.util.Calendar.DAY_OF_MONTH, dias);
+      c.add(Calendar.DAY_OF_MONTH, dias);
       return c.getTime();
    }
 
@@ -437,12 +547,12 @@ public abstract class UTIL {
     * en /reportes/
     */
    public static void borrarFile(String pathName) {
-      java.io.File f = null;
+      File f = null;
       if (pathName != null && pathName.length() > 0) {
          if (pathName.equals("777")) {
             for (String string : IMAGEN_EXTENSION) {
                try {
-                  f = new java.io.File("./reportes/img." + string);
+                  f = new File("./reportes/img." + string);
                   if (f.delete()) {
                      System.out.println("borrado..." + string);
                   } else {
@@ -452,12 +562,10 @@ public abstract class UTIL {
                   System.out.println("Exception.. no existía ->" + string);
                } catch (SecurityException e) {
                   System.out.println("SECURITY EXCEPTION!!!");
-                  e.printStackTrace();
                }
-
             }
          } else {
-            f = new java.io.File(pathName);
+            f = new File(pathName);
             if (f.delete()) {
                System.out.println("borrado...pathName=" + pathName);
             } else {
@@ -466,7 +574,7 @@ public abstract class UTIL {
          }
          //pathName==null
       } else {
-         f = new java.io.File("./reportes/img.png");
+         f = new File("./reportes/img.png");
       }
 
    }
@@ -496,19 +604,18 @@ public abstract class UTIL {
    }
 
    /**
-    * Ctrla que sea un caracter numérico el apretado.
-    * Si no es ignora el evento
+    * Ctrla que sea un caracter numérico el apretado
     * @param KeyEvent evt!!
+    * @return true si es un caracter numérico [1234567890], otherwise will return false.
     */
-   public static void soloNumeros(java.awt.event.KeyEvent evt) {
+   public static void soloNumeros(KeyEvent evt) {
       int k = evt.getKeyChar();
       if (k < 48 || k > 57) {
-         evt.setKeyChar((char) java.awt.event.KeyEvent.VK_CLEAR);
+         evt.setKeyChar((char) KeyEvent.VK_CLEAR);
       }
    }
 
-   public static void solo_numeros_y_un_punto(String cadena,
-           java.awt.event.KeyEvent e) {
+   public static void solo_numeros_y_un_punto(String cadena, KeyEvent e) {
       // si es != de '.'
       if ((int) e.getKeyChar() != 46) {
          soloNumeros(e);
@@ -517,10 +624,10 @@ public abstract class UTIL {
       if (SOLO_UN_PUNTO(cadena)) {
          int k = e.getKeyChar();
          if ((k < 48 || k > 57) && (k != 46)) {
-            e.setKeyChar((char) java.awt.event.KeyEvent.VK_CLEAR);
+            e.setKeyChar((char) KeyEvent.VK_CLEAR);
          }
       } else {
-         e.setKeyChar((char) java.awt.event.KeyEvent.VK_CLEAR);
+         e.setKeyChar((char) KeyEvent.VK_CLEAR);
       }
    }
 
@@ -571,7 +678,7 @@ public abstract class UTIL {
     * deja de ser visible para el usuario pero sigue siendo accesible desde el
     * TableModel
     * @param jTable tabla de la cual se desea sacar las columnas
-    * @param columnsIndex columnas a quitar de la vista
+    * @param columnsIndex columnas a quitar de la vista del usuario
     */
    public static void hideColumnsTable(JTable jTable, int[] columnsIndex) {
       for (int i = 0; i < columnsIndex.length; i++) {
@@ -616,13 +723,14 @@ public abstract class UTIL {
    }
 
    /**
-    * setea como selected al item del comboBox que coincida con el <code>candidato</code>
-    * @param combo El cual debe contener el item <code>candidato</code>
+    * Setea como selected al item del comboBox que coincida con el <code>candidato</code>
+    * Este método utiliza <code>equals</code> para la comparación
+    * @param combo El cual podría contener el item <code>candidato</code>
     * @param candidato
     * @return a index of the selectedItem, or <code>-1</code> if
-    * 1 > combo.getItemCount() || if <code>candidato</code> is mismatch.
+    * 1 > combo.getItemCount() || if <code>candidato</code> does not match any item
     */
-   public static int setSelectedItem(JComboBox combo, Object candidato) {
+   public static int setSelectedItem(javax.swing.JComboBox combo, Object candidato) {
       if (candidato == null) {
          throw new IllegalArgumentException("El Objeto candidato == null");
       }
@@ -643,25 +751,25 @@ public abstract class UTIL {
             index++;
          }
       }
-      return encontrado ? index : -1;
+      return index;
    }
 
    /**
     * Carga la List de objetos en el comboBox
     * @param comboBox JComboBox donde se van a cargar los Objectos
-    * @param listaDeObjectos Si la List está vacía o es null se carga un String Item "Vacio"
-    * @param Elejible Si es true, se agrega un Item "Elegir" en el index 0; sino
+    * @param objectList Si la List está vacía o es null se carga un String Item "Vacio"
+    * @param elegible Si es true, se agrega un Item "Elegir" en el index 0; sino
     * solo se cargar los objetos
     */
-   public static void loadComboBox(JComboBox comboBox, List objectList, boolean Elegible) {
+   public static void loadComboBox(JComboBox comboBox, List objectList, boolean elegible) {
       if (comboBox == null) {
-         throw new IllegalArgumentException("El comboBox que intentas cargar es NULL!!! (NullPointerException) guampa!!");
+         throw new IllegalArgumentException("El Objecto comboBox que intentas cargar es NULL!!! (NullPointerException) guampa!!");
       }
 
       comboBox.removeAllItems();
       if (objectList != null && objectList.size() > 0) {
          //si se permite que NO se elija ningún elemento del combobox
-         if (Elegible) {
+         if (elegible) {
             comboBox.addItem("<Elegir>");
          }
 
@@ -678,11 +786,8 @@ public abstract class UTIL {
     * Personaliza la carga de datos en un JComboBox, según una List y bla bla...
     * @param comboBox
     * @param objectList collection la cual se va cargar
-    * @param message1erItem mensaje del 1er item del combo, dejar
-    * <code>null</code> si no hay preferencia
-    * @param itemWhenIsEmpy item que se va cargar cuando el combo esté vacio. Si
-    * es == <code>null</code>, sería lo mismo que usar
-    * {@link #loadComboBox(JComboBox, List, String)}
+    * @param message1erItem mensaje del 1er item del combo, dejar <code>null</code> si no hay preferencia
+    * @param itemWhenIsEmpy item que se va cargar cuando el combo esté vacio
     */
    public static void loadComboBox(JComboBox comboBox, List objectList, String message1erItem, String itemWhenIsEmpy) {
       if (itemWhenIsEmpy == null) {
@@ -705,6 +810,13 @@ public abstract class UTIL {
       }
    }
 
+   /**
+    * Personaliza la carga de datos en un JComboBox, según una List y bla bla...
+    * Si no hay elementos para cargar al comboBox, retor
+    * @param comboBox
+    * @param objectList collection la cual se va cargar
+    * @param message1erItem mensaje del 1er item del combo, dejar <code>null</code> si no hay preferencia
+    */
    public static void loadComboBox(JComboBox comboBox, List objectList, String message1erItem) {
       comboBox.removeAllItems();
       if (objectList != null && objectList.size() > 0) {
@@ -728,12 +840,14 @@ public abstract class UTIL {
     * @return <code>cadena<code> overclocking..
     */
    public static String AGREGAR_CEROS(String cadena, int longitudMaxima) {
-      if (cadena != null) {
-         for (int i = cadena.length(); i < longitudMaxima; i++) {
-            cadena = "0" + cadena;
-         }
+      if (cadena == null) {
+         throw new NullPointerException("El parámetro cadena es NULL!!!");
       }
-      return cadena;
+      StringBuilder newCadena = new StringBuilder(cadena);
+      for (int i = newCadena.toString().length(); i < longitudMaxima; i++) {
+         newCadena.insert(0, "0");
+      }
+      return newCadena.toString();
    }
 
    public static String AGREGAR_CEROS(long numero, int longitudMaxima) {
@@ -744,52 +858,56 @@ public abstract class UTIL {
     * Devuelte el % del monto
     * @param monto sobre el cual se calcula el %
     * @param porcentaje
-    * @return El porcentaje del monto, if 0 >= <code>monto</conde> o  0 >= <code>porcentaje</code> retorna 0.0!
+    * @return El porcentaje (%) del monto, being <code>0 >= monto</conde> or  0 >= <code>porcentaje</code>, otherwise will return 0.0!
     */
    public static Double getPorcentaje(double monto, double porcentaje) {
       if (monto <= 0 || porcentaje <= 0) {
          return 0.0;
       }
-
       return (porcentaje * (monto / 100));
    }
 
-   public static void limpiarDtm(javax.swing.table.DefaultTableModel dtm) {
+   /**
+    * Obtiene la TableModel (DefaultTableModel) y elimina todas las filas
+    * @param table
+    * @see #limpiarDtm(javax.swing.table.DefaultTableModel)
+    */
+   public static void limpiarDtm(JTable table) {
+      limpiarDtm((DefaultTableModel) table.getModel());
+   }
+
+   public static void limpiarDtm(DefaultTableModel dtm) {
       for (int i = dtm.getRowCount() - 1; i > -1; i--) {
          dtm.removeRow(i);
       }
    }
 
    /**
-    * Obtiene la TableModel (DefaultTableModel) y elimina todas las filas
-    * @param table
-    * @see #limpiarDtm(javax.swing.table.DefaultTableModel) 
-    */
-   public static void limpiarDtm(JTable table) {
-      limpiarDtm(getDtm(table));
-   }
-
-   /**
-    * Get object from selected row and indexColumn
-    * @param jTable
-    * @param indexColumn
-    * @return a Object from the cell
+    * Devuelve el Objeto en la celda de la fila selecciada y la columna indicada
+    * @param jTable De la cual se va obtener el DefaultTableModel y la selectedRow.
+    * @param indexColumn La columna de la que se solicita el Object
+    * @return the value Object at the specified cell, or <code>null</code> if no row is selected
     */
    public static Object getSelectedValue(JTable jTable, int indexColumn) {
-      return ((DefaultTableModel) jTable.getModel()).getValueAt(jTable.getSelectedRow(), indexColumn);
+      if (jTable.getSelectedRow() != -1) {
+         return ((DefaultTableModel) jTable.getModel()).getValueAt(jTable.getSelectedRow(), indexColumn);
+      } else {
+         return null;
+      }
    }
 
    /**
-    * implementación de DefaultTableModel
-    * Por default los datos de los model NO son editables
+    * Implementación de DefaultTableModel
+    * By default editableColumns = false
     */
-   private static class DefaultTableModelImpl extends javax.swing.table.DefaultTableModel {
+   private static class DefaultTableModelImpl extends DefaultTableModel {
 
       private Class[] columnTypes = null;
       private int[] editableColumns = null;
 
       /**
        * Constructor por defecto igual al javax.swing.table.DefaultTableModel
+       * Me parece que está alpedo..
        */
       public DefaultTableModelImpl() {
       }
@@ -797,7 +915,7 @@ public abstract class UTIL {
       /**
        * Este constructor permite especificar a que class pertenecen los datos
        * que se van a insertar en cada columna
-       * @param columnTypes un Array de Classes que contendrá cada columna.
+       * @param columnTypes tipo de objeto que contendrá cada columna
        */
       public DefaultTableModelImpl(Class[] columnTypes) {
          this.columnTypes = columnTypes;
@@ -806,8 +924,8 @@ public abstract class UTIL {
       /**
        * Este constructor permite especificar a que class pertenecen los datos
        * que se van a insertar en cada columna y cuales será editables
-       * @param columnTypes un Array de Classes que contendrá cada columna
-       * @param editableColumns debe contenedor el index de las columnas que se
+       * @param columnTypes tipo de objecto que contendrá cada columna
+       * @param editableColumns debe contenedor los números (index de las columnas) que se
        * desea que puedan ser editables.
        */
       public DefaultTableModelImpl(Class[] columnTypes, int[] editableColumns) {
@@ -843,5 +961,18 @@ public abstract class UTIL {
             return super.getColumnClass(columnIndex);
          }
       }
+   }
+
+   /**
+    * Valida si es un email
+    * @param email String to validate
+    * @return return <code>true</code> si es una dirección de email
+    */
+   public static boolean VALIDAR_EMAIL(String email) {
+      return UTIL.email.matcher(email).find();
+   }
+
+   public static boolean VALIDAR_REGEX(String regex, String stringToEvaluate) {
+      return Pattern.compile(regex).matcher(stringToEvaluate).find();
    }
 }

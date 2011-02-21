@@ -357,7 +357,7 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
     }//GEN-LAST:event_bImprimirActionPerformed
 
     private void tfFactu4KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfFactu4KeyTyped
-       if (tfFactu4.getText().trim().length() <= 6) {
+       if (tfFactu4.getText().trim().length() <= 4) {
           soloNumeros(evt);       // TODO add your handling code here:
        } else {
           evt.setKeyChar((char) java.awt.event.KeyEvent.VK_CLEAR);
@@ -379,6 +379,7 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
           tfOcteto.setText(UTIL.AGREGAR_CEROS(tfOcteto.getText().trim(), 8));
        }
     }//GEN-LAST:event_tfOctetoFocusLost
+
    // Variables declaration - do not modify//GEN-BEGIN:variables
    private javax.swing.JButton bBuscar;
    private javax.swing.JButton bImprimir;
@@ -606,4 +607,5 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
       labelN_Factura.setVisible(false);
       tfFactu4.setVisible(false);
    }
+   
 }

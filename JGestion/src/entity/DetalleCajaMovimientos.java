@@ -1,21 +1,8 @@
-
 package entity;
 
 import java.io.Serializable;
 import java.util.Date;
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 
 /**
  *
@@ -27,8 +14,21 @@ import javax.persistence.TemporalType;
    @NamedQuery(name = "DetalleCajaMovimientos.findAll", query = "SELECT d FROM DetalleCajaMovimientos d"),
    @NamedQuery(name = "DetalleCajaMovimientos.findById", query = "SELECT d FROM DetalleCajaMovimientos d WHERE d.id = :id")
 })
+@SqlResultSetMappings({
+   @SqlResultSetMapping(name = "DetalleCajaMovimientos.BalanceGeneral", entities = {
+      @EntityResult(entityClass = DetalleCajaMovimientos.class, fields = {
+         @FieldResult(name = "id", column = "id"),
+         @FieldResult(name = "ingreso", column = "ingreso"),
+         @FieldResult(name = "tipo", column = "tipo"),
+         @FieldResult(name = "monto", column = "monto"),
+         @FieldResult(name = "fecha", column = "fecha"),
+         @FieldResult(name = "descripcion", column = "descripcion")
+      })
+   })
+})
 
 public class DetalleCajaMovimientos implements Serializable {
+
    private static final long serialVersionUID = 1L;
    @Id
    @Basic(optional = false)
@@ -40,6 +40,9 @@ public class DetalleCajaMovimientos implements Serializable {
    private boolean ingreso;
    @Basic(optional = false)
    @Column(name = "tipo", nullable = false)
+   /**
+    * 1 factu_compra, 2 factu_venta, 3 remesa, 4 recibo, 5 movimiento caja, 6 devolucion (anulacion), 7 apertura caja, 8 mov. varios, 9 mov interno (MVI)
+    */
    private short tipo;
    @Basic(optional = false)
    @Column(name = "numero", nullable = false)
@@ -48,7 +51,7 @@ public class DetalleCajaMovimientos implements Serializable {
    @Column(name = "monto", nullable = false)
    private double monto;
    @Basic(optional = false)
-   @Column(name = "fecha", nullable = false, insertable= false, updatable= false, columnDefinition="timestamp with time zone NOT NULL DEFAULT now()")
+   @Column(name = "fecha", nullable = false, insertable = false, updatable = false, columnDefinition = "timestamp with time zone NOT NULL DEFAULT now()")
    @Temporal(TemporalType.TIMESTAMP)
    private Date fecha;
    @Basic(optional = false)
@@ -160,5 +163,4 @@ public class DetalleCajaMovimientos implements Serializable {
    public String toString() {
       return this.getDescripcion();
    }
-
 }

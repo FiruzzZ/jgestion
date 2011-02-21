@@ -7,14 +7,14 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperPrintManager;
 import net.sf.jasperreports.view.JasperViewer;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -47,19 +47,16 @@ public class Reportes implements Runnable {
     * @param pathReport ruta absoluta del archivo .JASPER o
     * solo el nombre del archivo .JASPER  si se encuentra en {@link Reportes#FOLDER_REPORTES} + @pathReport
     * @param title Título de la ventana del reporte
+    * @throws MissingReportException
     * @throws Exception Si el archivo .jasper no se encuentra
     */
-   public Reportes(String pathReport, String title) throws MissingReportException, Exception {
-      if (title == null || title.trim().length() < 1) {
-         throw new Exception("El título del reporte can't be NULL");
-      }
+   public Reportes(String pathReport, String title) throws MissingReportException {
 
       if (pathReport == null) {
-         throw new Exception("La ruta/URL/pathname no es válida!");
+         throw new NullPointerException("pathReport CAN'T BE NULL....no es válida!");
       }
 
       if (!new File(pathReport).exists()) {
-         System.out.println("FileNotFound = " + pathReport);
          if (!new File(FOLDER_REPORTES + pathReport).exists()) {
             throw new MissingReportException("No se encontró el archivo del reporte: " + pathReport
                     + "\n" + FOLDER_REPORTES + pathReport);
@@ -82,12 +79,13 @@ public class Reportes implements Runnable {
    /**
     * Bla bla...
     * @param withPrintDialog si aparece el PrintDialog o imprime directamente.
+    * @return
     * @throws JRException
     */
    public boolean printReport(boolean withPrintDialog) throws JRException {
       isViewerReport = false;
       this.withPrintDialog = withPrintDialog;
-      doReport();
+      new Thread(this).start();
       reporteFinalizado = true;
       return reporteFinalizado;
    }
@@ -142,22 +140,23 @@ public class Reportes implements Runnable {
 
    @Override
    public void run() {
-      System.out.println("Initializing Thread Reportes..");
+      Logger.getLogger(Reportes.class).trace("Initializing Thread Reportes..");
       try {
          doReport();
       } catch (Exception ex) {
-         System.out.println("Error en Report, reset JDBC Connection..");
+         Logger.getLogger(Reportes.class).trace("Error en Report, trying to close JDBC Connection..");
          try {
             DAO.getJDBCConnection().close();
          } catch (SQLException ex1) {
-            Logger.getLogger(Reportes.class.getName()).log(Level.SEVERE, null, ex1);
+            Logger.getLogger(Reportes.class).log(Level.ERROR, null, ex1);
          }
+         Logger.getLogger(Reportes.class).log(Level.ERROR, null, ex);
       }
-      System.out.println("Finished Thread Reportes..");
+      Logger.getLogger(Reportes.class).trace("Finished Thread Reportes..");
    }
 
    private synchronized void doReport() {
-      System.out.println("Running doReport()..");
+      Logger.getLogger(Reportes.class).trace("Running doReport()..");
       JasperPrint jPrint;
       try {
          jPrint = JasperFillManager.fillReport(pathReport, parameters, controller.DAO.getJDBCConnection());
@@ -171,9 +170,9 @@ public class Reportes implements Runnable {
             JasperPrintManager.printReport(jPrint, withPrintDialog);
          }
       } catch (JRException ex) {
-         Logger.getLogger(Reportes.class.getName()).log(Level.SEVERE, null, ex);
+         Logger.getLogger(Reportes.class).log(Level.ERROR, "Se pudrió todo con el reporte", ex);
       }
-      System.out.println("Finished doReport()");
+      Logger.getLogger(Reportes.class).trace("Finished doReport()");
    }
 
    public boolean isReporteFinalizado() {

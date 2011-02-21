@@ -1,4 +1,3 @@
-
 package entity;
 
 import java.io.Serializable;
@@ -24,11 +23,12 @@ import javax.persistence.Table;
    @NamedQuery(name = "Permisos.findById", query = "SELECT p FROM Permisos p WHERE p.id = :id")
 })
 public class Permisos implements Serializable {
+
    private static final long serialVersionUID = 1L;
    @Id
    @Basic(optional = false)
    @Column(name = "id", nullable = false)
-   @GeneratedValue(strategy= GenerationType.IDENTITY)
+   @GeneratedValue(strategy = GenerationType.IDENTITY)
    private Integer id;
    @Basic(optional = false)
    @Column(name = "abm_productos", nullable = false)
@@ -63,6 +63,12 @@ public class Permisos implements Serializable {
    @Basic(optional = false)
    @Column(name = "cerrar_cajas", nullable = false)
    private boolean cerrarCajas;
+   @Basic(optional = false)
+   @Column(name = "abm_catalogoweb", nullable = false)
+   private boolean abmCatalogoweb;
+   @Basic(optional = false)
+   @Column(name = "abm_ofertasweb", nullable = false)
+   private boolean abmOfertasweb;
    @OneToOne(mappedBy = "permisos")
    private Usuario usuario;
 
@@ -71,21 +77,6 @@ public class Permisos implements Serializable {
 
    public Permisos(Integer id) {
       this.id = id;
-   }
-
-   public Permisos(Integer id, boolean abmProductos, boolean abmProveedores, boolean abmClientes, boolean abmCajas, boolean abmUsuarios, boolean abmListaPrecios, boolean tesoreria, boolean datosGeneral, boolean venta, boolean compra, boolean cerrarCajas) {
-      this.id = id;
-      this.abmProductos = abmProductos;
-      this.abmProveedores = abmProveedores;
-      this.abmClientes = abmClientes;
-      this.abmCajas = abmCajas;
-      this.abmUsuarios = abmUsuarios;
-      this.abmListaPrecios = abmListaPrecios;
-      this.tesoreria = tesoreria;
-      this.datosGeneral = datosGeneral;
-      this.venta = venta;
-      this.compra = compra;
-      this.cerrarCajas = cerrarCajas;
    }
 
    public Integer getId() {
@@ -184,6 +175,22 @@ public class Permisos implements Serializable {
       this.cerrarCajas = cerrarCajas;
    }
 
+   public boolean getAbmCatalogoweb() {
+      return abmCatalogoweb;
+   }
+
+   public boolean getAbmOfertasweb() {
+      return abmOfertasweb;
+   }
+
+   public void setAbmCatalogoweb(boolean abmCatalogoweb) {
+      this.abmCatalogoweb = abmCatalogoweb;
+   }
+
+   public void setAbmOfertasweb(boolean abmOfertasweb) {
+      this.abmOfertasweb = abmOfertasweb;
+   }
+
    /**
     * Usuario al que pertenece estos Permisos
     * @return a entity Usuario.
@@ -220,5 +227,4 @@ public class Permisos implements Serializable {
    public String toString() {
       return "entity.Permisos[id=" + id + "]";
    }
-
 }

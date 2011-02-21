@@ -6,7 +6,7 @@
 package controller.exceptions;
 
 /**
- * Clase usada para indicar que no se pudo hallar el archivo del reporte
+ * Usada para indicar que no se pudo hallar el archivo del reporte
  * @author FiruzzZ
  */
 public class MissingReportException extends Exception {

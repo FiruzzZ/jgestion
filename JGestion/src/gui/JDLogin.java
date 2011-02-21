@@ -86,7 +86,6 @@ public class JDLogin extends javax.swing.JDialog {
 
       pack();
    }// </editor-fold>//GEN-END:initComponents
-
    // Variables declaration - do not modify//GEN-BEGIN:variables
    private javax.swing.JLabel jLabel1;
    private javax.swing.JLabel jLabel2;
@@ -112,19 +111,22 @@ public class JDLogin extends javax.swing.JDialog {
       tfPwd.addKeyListener((KeyListener) o);
    }
 
-       /**
-     * Setea un mensaje de salida para el usuario.
-     * Si @param messageType < -1 || > 3 no hace NADA.
-     * @param msg,.. mensaje.
-     * @param titulo (puede tener título o no).
-     * @param messageType =3 (sin título), sino -1=PLAIN,0=ERROR, 1=INFO,2=WARRNING.
-     */
-    public void showMessage(String msg, String titulo, int messageType) {
-        if(messageType <-1 || messageType >3) return;
-        if(messageType==3)
-            javax.swing.JOptionPane.showMessageDialog(this, msg);
-        else
-            javax.swing.JOptionPane.showMessageDialog(this, msg, titulo, messageType);
+   /**
+    * Setea un mensaje de salida para el usuario.
+    * Si messageType < -1 || > 3 no hace NADA.
+    * @param msg ,.. mensaje.
+    * @param titulo (puede tener título o no).
+    * @param messageType =3 (sin título), sino -1=PLAIN,0=ERROR, 1=INFO,2=WARRNING.
+    */
+   public void showMessage(String msg, String titulo, int messageType) {
+      if (messageType < -1 || messageType > 3) {
+         return;
+      }
+      if (messageType == 3) {
+         javax.swing.JOptionPane.showMessageDialog(this, msg);
+      } else {
+         javax.swing.JOptionPane.showMessageDialog(this, msg, titulo, messageType);
+      }
 
-    }
+   }
 }

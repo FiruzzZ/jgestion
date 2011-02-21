@@ -24,29 +24,28 @@ public final class Valores {
 //    ,CHEQUE (3, "CHEQUE")
       ;
 
-      static FormaPago getFormasDePago(int formaPagoID) {
+      private final int id;
+      private final String nombre;
+
+      private FormaPago(int id, String nombre) {
+         this.id = id;
+         this.nombre = nombre;
+      }
+
+      public static FormaPago getFormaPago(int formaPagoID) {
          FormaPago fp = null;
-         for (FormaPago formaPago : formasDePago) {
+         for (FormaPago formaPago : FormaPago.values()) {
             if(formaPago.getId() == formaPagoID) {
-               System.out.println("1er return..");
                return formaPago;
             }
          }
-         System.out.println("2do return...");
          return fp;
       }
 
-      private final int id;
-      private final String nombre;
       private static final List<FormaPago> formasDePago = new ArrayList<FormaPago>();
 
       static {
          formasDePago.addAll(Arrays.asList(FormaPago.values()));
-      }
-      private FormaPago(int id, String nombre) {
-         System.out.println("Constructor FormaPago("+id+", "+nombre+")");
-         this.id = id;
-         this.nombre = nombre;
       }
 
       public int getId() {
@@ -105,5 +104,8 @@ public final class Valores {
 //
 
    }//Enum CtaCteEstado
+
+   private Valores() {
+   }
 
 }
