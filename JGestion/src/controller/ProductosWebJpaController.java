@@ -150,12 +150,25 @@ public class ProductosWebJpaController {
       if (new ListaPreciosJpaController().findListaPreciosParaCatalogo() != null) {
          try {
             jDCatalogoWEB = new JDCatalogoWEB(owner, true);
+            jDCatalogoWEB.setLocationRelativeTo(owner);
             jDCatalogoWEB.setVisible(true);
          } catch (SQLException ex) {
             Logger.getLogger(ProductosWebJpaController.class.getName()).log(Level.ERROR, null, ex);
          }
       } else {
          throw new MessageException("Para poder Administrar el Catálogo Web, primero debe designar una Lista de Precios."
+                 + "\nMenú -> Productos -> Lista Precios (eligir una) -> Modificar -> y tildar la opción \"para catálogo web\".");
+      }
+   }
+
+   public void initOfertasUI(JFrame owner) throws MessageException {
+      UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.ABM_OFERTASWEB);
+      if (new ListaPreciosJpaController().findListaPreciosParaCatalogo() != null) {
+         jdOfertas = new JDOfertas(owner, true);
+         jdOfertas.setLocationRelativeTo(owner);
+         jdOfertas.setVisible(true);
+      } else {
+         throw new MessageException("Para poder Administrar ofertas, primero debe designar una Lista de Precios."
                  + "\nMenú -> Productos -> Lista Precios (eligir una) -> Modificar -> y tildar la opción \"para catálogo web\".");
       }
    }
@@ -216,17 +229,6 @@ public class ProductosWebJpaController {
       productosWeb.setInicioOferta(null);
       productosWeb.setFinOferta(null);
       edit(productosWeb);
-   }
-
-   public void initOfertasUI(JFrame owner) throws MessageException {
-      UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.ABM_OFERTASWEB);
-      if (new ListaPreciosJpaController().findListaPreciosParaCatalogo() != null) {
-         jdOfertas = new JDOfertas(owner, true);
-         jdOfertas.setVisible(true);
-      } else {
-         throw new MessageException("Para poder Administrar ofertas, primero debe designar una Lista de Precios."
-                 + "\nMenú -> Productos -> Lista Precios (eligir una) -> Modificar -> y tildar la opción \"para catálogo web\".");
-      }
    }
 
    /**

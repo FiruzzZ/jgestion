@@ -13,17 +13,16 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.Persistence;
-import javax.swing.JOptionPane;
 import oracle.toplink.essentials.exceptions.DatabaseException;
 import oracle.toplink.essentials.internal.ejb.cmp3.EntityManagerImpl;
 import oracle.toplink.essentials.internal.sessions.UnitOfWorkImpl;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -40,13 +39,11 @@ public abstract class DAO implements Runnable {
     */
    private static EntityManager entityManagerForJDBC;
    private static Connection connection;
-
-   static {
-      //.......................
-   }
+   private static int instanceOfJDBCCreated = 0;
 
    public static EntityManager getEntityManager() {
       if (emf == null) {
+         Logger.getLogger(DAO.class).log(Level.DEBUG, "EntityMAnager == null");
          emf = Persistence.createEntityManagerFactory("JGestionPU");
          getJDBCConnection();
       }
@@ -60,7 +57,7 @@ public abstract class DAO implements Runnable {
          }
       } catch (SQLException ex) {
          System.out.println("Error closing JDBC connection!");
-         Logger.getLogger(DAO.class.getName()).log(Level.SEVERE, null, ex);
+         Logger.getLogger(DAO.class).log(Level.ERROR, null, ex);
       }
       if (entityManagerForJDBC != null && entityManagerForJDBC.isOpen()) {
          System.out.println("Closing EntityManager for JDBC conn..");
@@ -81,17 +78,18 @@ public abstract class DAO implements Runnable {
     */
    public static Connection getJDBCConnection() {
       try {
-         if (connection != null && !connection.isClosed()) {
-            return connection;
+         if (connection == null || connection.isClosed()) {
+            instanceOfJDBCCreated++;
+            Logger.getLogger(DAO.class).log(Level.DEBUG, "Creating(" + instanceOfJDBCCreated + ") a new JDBC..");
+            entityManagerForJDBC = emf.createEntityManager();
+            entityManagerForJDBC.getTransaction().begin();
+            UnitOfWorkImpl unitOfWorkImpl = (UnitOfWorkImpl) ((EntityManagerImpl) entityManagerForJDBC.getDelegate()).getActiveSession();
+            unitOfWorkImpl.beginEarlyTransaction();
+            connection = unitOfWorkImpl.getAccessor().getConnection();
          }
       } catch (SQLException ex) {
-         Logger.getLogger(DAO.class.getName()).log(Level.SEVERE, null, ex);
+         Logger.getLogger(DAO.class).log(Level.ERROR, ex.getMessage(), ex);
       }
-      entityManagerForJDBC = emf.createEntityManager();
-      entityManagerForJDBC.getTransaction().begin();
-      UnitOfWorkImpl unitOfWorkImpl = (UnitOfWorkImpl) ((EntityManagerImpl) entityManagerForJDBC.getDelegate()).getActiveSession();
-      unitOfWorkImpl.beginEarlyTransaction();
-      connection = unitOfWorkImpl.getAccessor().getConnection();
       return connection;
    }
 
@@ -220,7 +218,7 @@ public abstract class DAO implements Runnable {
       try {
          return em.createNativeQuery(sqlString, resultSetMapping).setHint("toplink.refresh", true).getResultList();
       } catch (DatabaseException e) {
-         throw new DatabaseErrorException();
+         throw new DatabaseErrorException(e);
       } finally {
          em.close();
       }
@@ -391,7 +389,7 @@ public abstract class DAO implements Runnable {
          if (em.getTransaction().isActive()) {
             em.getTransaction().rollback();
          }
-         Logger.getLogger(DAO.class.getName()).log(Level.SEVERE, null, ex);
+         Logger.getLogger(DAO.class.getName()).log(Level.ERROR, null, ex);
          throw ex;
       } finally {
          if (em != null) {
