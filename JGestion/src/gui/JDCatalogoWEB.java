@@ -410,10 +410,10 @@ public class JDCatalogoWEB extends javax.swing.JDialog {
 
    private void filtrarTablaProductos() throws SQLException {
       String query = null;
-      query = "select o.id from producto o "
+      query = "SELECT o.id from producto o "
               + "where o.id not in (select pw.producto from productos_web pw WHERE pw.estado <> " + ProductosWeb.BAJA + ")"
               + (tfFiltroProductos.getText().trim().length() > 0 ? " AND o.nombre ILIKE '" + tfFiltroProductos.getText().trim() + "%'" : "")
-              + (checkSoloHabilitados.isSelected() ? " AND o.subrubro IS NOT NULL AND o.foto IS NOT NULL " : "")
+              + (checkSoloHabilitados.isSelected() ? " AND o.subrubro IS NOT NULL AND o.foto IS NOT NULL AND o.descripcion IS NOT NULL " : "")
               + " ORDER BY o.nombre";
       cargarTablaProductos(query);
    }
@@ -433,8 +433,7 @@ public class JDCatalogoWEB extends javax.swing.JDialog {
       for (int rowIndex : tableProductos.getSelectedRows()) {
          if ((model.getValueAt(rowIndex, 4) == null) //si no tiene subRu
                  || !(Boolean) model.getValueAt(rowIndex, 5) // o foto
-                 //                 || !(Boolean) model.getValueAt(rowIndex, 6)
-                 ) { // o descrip
+                 || !(Boolean) model.getValueAt(rowIndex, 6)) { // o descrip
             throw new MessageException("Ha seleccionado Producto/s que no cumple/n los requisitos para formar parte del Catálogo.");
          }
       }
@@ -466,9 +465,9 @@ public class JDCatalogoWEB extends javax.swing.JDialog {
 
    private Double getPrecioFinal(Producto producto, ListaPrecios listaPrecios) {
 //      try {
-         Double precioFinal = producto.getPrecioVenta() + FacturaVentaJpaController.GET_MARGEN_SEGUN_LISTAPRECIOS(listaPrecios, producto, null);
-         Double iva = UTIL.getPorcentaje(precioFinal, producto.getIva().getIva());
-         return precioFinal + iva;
+      Double precioFinal = producto.getPrecioVenta() + FacturaVentaJpaController.GET_MARGEN_SEGUN_LISTAPRECIOS(listaPrecios, producto, null);
+      Double iva = UTIL.getPorcentaje(precioFinal, producto.getIva().getIva());
+      return precioFinal + iva;
 //      } catch (NullPointerException ex) {
 //         Logger.getLogger(JDCatalogoWEB.class).log(Level.TRACE, "Producto.id=" + producto + ", precioVenta=" + producto.getPrecioVenta());
 //      }

@@ -350,6 +350,7 @@ public class JDOfertas extends javax.swing.JDialog {
       btnModificarProducto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/16px_white_page_edit.png"))); // NOI18N
       btnModificarProducto.setMnemonic('m');
       btnModificarProducto.setText("Modificar Producto");
+      btnModificarProducto.setEnabled(false);
       btnModificarProducto.setFocusable(false);
       btnModificarProducto.setRequestFocusEnabled(false);
       btnModificarProducto.addActionListener(new java.awt.event.ActionListener() {
@@ -585,6 +586,7 @@ public class JDOfertas extends javax.swing.JDialog {
              }
           }
           //indica que no se encontró el código insertado
+          btnModificarProducto.setEnabled(Boolean.FALSE);
           limpiarFields();
           labelCodigoNoRegistrado.setForeground(new java.awt.Color(255, 51, 0));
           labelCodigoNoRegistrado.setText("¡CÓDIGO NO REGISTRADO!");
@@ -619,7 +621,6 @@ public class JDOfertas extends javax.swing.JDialog {
              JOptionPane.showMessageDialog(this, "Algo salió mal....Culpa de Carlos"
                      + "\n" + ex.getMessage(), "Error", 2);
              Logger.getLogger(JDOfertas.class).log(Level.ERROR, ex);
-             ex.printStackTrace();
           }
        } else {
           JOptionPane.showMessageDialog(this, "Seleccione el producto en Oferta/Destacado que desea quitar", null, JOptionPane.WARNING_MESSAGE);
@@ -648,8 +649,9 @@ public class JDOfertas extends javax.swing.JDialog {
           productoCtrller.initABM(selectedProducto);
           UTIL.loadComboBox(cbProductos, productoCtrller.findProductoToCombo(), false);
           setProducto(selectedProducto);
+          UTIL.setSelectedItem(cbProductos, selectedProducto);
        } catch (Exception ex) {
-          Logger.getLogger(JDOfertas.class.getName()).log(Level.ERROR, null, ex);
+          Logger.getLogger(JDOfertas.class).log(Level.ERROR, null, ex);
        }
     }//GEN-LAST:event_btnModificarProductoActionPerformed
    // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -718,6 +720,7 @@ public class JDOfertas extends javax.swing.JDialog {
     */
    private void setProducto(Producto producto) {
       if (producto != null) {
+         btnModificarProducto.setEnabled(Boolean.TRUE);
          selectedProducto = (Producto) DAO.findEntity(Producto.class, producto.getId());
          tfProductoCodigo.setText(selectedProducto.getCodigo());
          tfRubro.setText(selectedProducto.getRubro().getNombre());
@@ -725,6 +728,11 @@ public class JDOfertas extends javax.swing.JDialog {
          tfCostoCompra.setText(selectedProducto.getCostoCompra().toString());
          tfProductoIVA.setText(selectedProducto.getIva().getIva().toString());
          tfPrecioVenta.setText(selectedProducto.getPrecioVenta().toString());
+         if (selectedProducto.getDescripcion() != null) {
+            jEditorPane1.setText(selectedProducto.getDescripcion());
+         } else {
+            jEditorPane1.setText("[ Producto sin Descripción ]");
+         }
          if (selectedProducto.getFoto() != null && selectedProducto.getFoto().length > 0) {
             try {
                UTIL.setImageAsIconLabel(labelFoto, selectedProducto.getFoto());
@@ -737,7 +745,6 @@ public class JDOfertas extends javax.swing.JDialog {
             labelFoto.setText("[ Sin imagen ]");
          }
          calcularPrecioFinal();
-
          if (productosWebCtrller.isInCatalogoWeb(selectedProducto)) {
             labelCodigoNoRegistrado.setForeground(new java.awt.Color(255, 115, 0));
             labelCodigoNoRegistrado.setText("EN CATÁLOGO WEB");
@@ -746,6 +753,7 @@ public class JDOfertas extends javax.swing.JDialog {
             labelCodigoNoRegistrado.setVisible(Boolean.FALSE);
          }
       } else {
+         btnModificarProducto.setEnabled(Boolean.FALSE);
          limpiarFields();
       }
    }
