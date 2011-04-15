@@ -30,6 +30,7 @@ import javax.persistence.NoResultException;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
+import org.apache.log4j.Priority;
 
 /**
  *
@@ -240,9 +241,7 @@ public class RemesaJpaController implements ActionListener, FocusListener {
    public void initRemesa(JFrame frame, boolean modal) throws MessageException {
       UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.COMPRA);
       jdReRe = new JDReRe(frame, modal);
-      jdReRe.setTitle(CLASS_NAME);
-      jdReRe.hideNumeracion();
-      jdReRe.getLabelClienteProveedor().setText("Proveedor");
+      jdReRe.setUIForRemesas();
       UTIL.getDefaultTableModel(jdReRe.getjTable1(), colsName, colsWidth);
       UTIL.loadComboBox(jdReRe.getCbSucursal(), new SucursalJpaController().findSucursalEntities(), false);
       UTIL.loadComboBox(jdReRe.getCbCaja(), new CajaJpaController().findCajasPermitidasByUsuario(UsuarioJpaController.getCurrentUser(), true), false);
@@ -301,16 +300,6 @@ public class RemesaJpaController implements ActionListener, FocusListener {
          @Override
          public void actionPerformed(ActionEvent e) {
             delEntragaFromDetalle();
-         }
-      });
-      jdReRe.getbBuscar().addActionListener(new ActionListener() {
-
-         @Override
-         public void actionPerformed(ActionEvent e) {
-            initBuscador(jdReRe, true);
-            if (rereSelected != null) {
-               setDatosCtaCte(rereSelected);
-            }
          }
       });
       jdReRe.getCbClienteProveedor().addActionListener(new ActionListener() {
@@ -406,7 +395,7 @@ public class RemesaJpaController implements ActionListener, FocusListener {
 
    private void actualizarMontoEntrega(FacturaCompra factu, double monto) {
       CtacteProveedor ctacte = new CtacteProveedorJpaController().findCtacteProveedorByFactura(factu.getId());
-      System.out.println("updatingMontoEntrega: CtaCte=" + ctacte.getId()
+      org.apache.log4j.Logger.getLogger(this.getClass()).log(org.apache.log4j.Level.TRACE, "updatingMontoEntrega: CtaCte=" + ctacte.getId()
               + " -> Importe= $" + ctacte.getImporte() + " Entregado= $" + ctacte.getEntregado() + " + " + monto);
 
       ctacte.setEntregado(ctacte.getEntregado() + monto);

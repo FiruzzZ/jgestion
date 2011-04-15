@@ -12,6 +12,7 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -224,9 +225,9 @@ public class JDContenedor extends javax.swing.JDialog {
          return;
       }
       if (messageType == 3) {
-         javax.swing.JOptionPane.showMessageDialog(this, msg);
+         JOptionPane.showMessageDialog(this, msg);
       } else {
-         javax.swing.JOptionPane.showMessageDialog(this, msg, titulo, messageType);
+         JOptionPane.showMessageDialog(this, msg, titulo, messageType);
       }
 
    }
@@ -243,8 +244,8 @@ public class JDContenedor extends javax.swing.JDialog {
       return JOptionPane.showOptionDialog(this, msj, titulo, JOptionPane.YES_NO_OPTION, 2, null, null, null);
    }
 
-   public javax.swing.table.DefaultTableModel getDTM() {
-      return (javax.swing.table.DefaultTableModel) jTable1.getModel();
+   public DefaultTableModel getDTM() {
+      return (DefaultTableModel) jTable1.getModel();
    }
 
    public void hideBtmEliminar() {

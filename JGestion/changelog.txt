@@ -1,17 +1,31 @@
+2011/04/12
+|->DB
+   |-ALTER TABLE remito ADD COLUMN fecha_remito date NOT NULL DEFAULT now();
+2011/04/05
+--Added new feat!! "Nota de crédito"
+|->new Entity NotaCredito
+|->GUI ABM NotaCredito
+|->DB
+|  |-CREATE TABLE nota_credito
+|  |-CREATE TABLE detalle_nota_credito
+|->Report JGestion_NotaCredito
+
+
 2011/02/17
 //Edit GUI:
    - Agregaron permisos correspondientes a ProdudosWeb y Oferas.
-ALTER TABLE permisos ADD COLUMN abm_catalogoweb boolean NOT NULL DEFAULT false;
-ALTER TABLE permisos ADD COLUMN abm_ofertasweb boolean NOT NULL DEFAULT false;
+|->DB
+   |-ALTER TABLE permisos ADD COLUMN abm_catalogoweb boolean NOT NULL DEFAULT false;
+   |-ALTER TABLE permisos ADD COLUMN abm_ofertasweb boolean NOT NULL DEFAULT false;
 2011/02/14
 //Edit GUI:
    - JDFacturaVenta -> Detección de Productos en oferta
-//DB Modif.
-ALTER TABLE detalle_venta ADD COLUMN oferta integer;
-ALTER TABLE detalle_venta ADD FOREIGN KEY (oferta) REFERENCES historial_ofertas (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+|->DB
+   |-ALTER TABLE detalle_venta ADD COLUMN oferta integer;
+   |-ALTER TABLE detalle_venta ADD FOREIGN KEY (oferta) REFERENCES historial_ofertas (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
 2011/02/11
-//DB Modif:
-CREATE TABLE historial_ofertas
+|->DB Modif:
+   |-CREATE TABLE historial_ofertas
 2011/02/10
 //Integrando con la Web
 // Added GUI:

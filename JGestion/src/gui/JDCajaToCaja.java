@@ -67,10 +67,12 @@ public class JDCajaToCaja extends javax.swing.JDialog {
       bBuscar.setName("buscar"); // NOI18N
 
       bAceptar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px-Crystal_Clear_action_apply.png"))); // NOI18N
+      bAceptar.setMnemonic('a');
       bAceptar.setText("Aceptar");
       bAceptar.setName("aceptar"); // NOI18N
 
       bCancelar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/cancelar.png"))); // NOI18N
+      bCancelar.setMnemonic('c');
       bCancelar.setText("Cancelar");
       bCancelar.setName("cancelar"); // NOI18N
       bCancelar.addActionListener(new java.awt.event.ActionListener() {

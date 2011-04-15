@@ -41,10 +41,16 @@ public abstract class DAO implements Runnable {
    private static Connection connection;
    private static int instanceOfJDBCCreated = 0;
 
+   private DAO() {
+      //singleton..
+   }
+
    public static EntityManager getEntityManager() {
       if (emf == null) {
-         Logger.getLogger(DAO.class).log(Level.DEBUG, "EntityMAnager == null");
-         emf = Persistence.createEntityManagerFactory("JGestionPU");
+         Logger.getLogger(DAO.class).log(Level.DEBUG, "EntityManager == null");
+//         emf = Persistence.createEntityManagerFactory("JGestionPU");
+         emf = Persistence.createEntityManagerFactory("JGestionTest");
+//         emf = Persistence.createEntityManagerFactory("JGestionPUWorldPrint");
          getJDBCConnection();
       }
       return emf.createEntityManager();
@@ -56,7 +62,6 @@ public abstract class DAO implements Runnable {
             connection.close();
          }
       } catch (SQLException ex) {
-         System.out.println("Error closing JDBC connection!");
          Logger.getLogger(DAO.class).log(Level.ERROR, null, ex);
       }
       if (entityManagerForJDBC != null && entityManagerForJDBC.isOpen()) {
@@ -80,7 +85,7 @@ public abstract class DAO implements Runnable {
       try {
          if (connection == null || connection.isClosed()) {
             instanceOfJDBCCreated++;
-            Logger.getLogger(DAO.class).log(Level.DEBUG, "Creating(" + instanceOfJDBCCreated + ") a new JDBC..");
+            Logger.getLogger(DAO.class).log(Level.TRACE, "Creating a new JDBC #" + instanceOfJDBCCreated);
             entityManagerForJDBC = emf.createEntityManager();
             entityManagerForJDBC.getTransaction().begin();
             UnitOfWorkImpl unitOfWorkImpl = (UnitOfWorkImpl) ((EntityManagerImpl) entityManagerForJDBC.getDelegate()).getActiveSession();
@@ -112,23 +117,6 @@ public abstract class DAO implements Runnable {
       }
    }
 
-   static void update(Object o) {
-      EntityManager em = null;
-      em = getEntityManager();
-      try {
-         em.getTransaction().begin();
-         em.refresh(o);
-         em.getTransaction().commit();
-      } catch (Exception e) {
-         if (em.getTransaction().isActive()) {
-            em.getTransaction().rollback();
-         }
-         e.printStackTrace();
-      } finally {
-         em.close();
-      }
-   }
-
    /**
     * Como no se puede borrar una detached entity,
     * @param classType
@@ -157,23 +145,32 @@ public abstract class DAO implements Runnable {
       }
    }
 
-   static void doMerge(Object o) {
-      EntityManager em = null;
-      em = getEntityManager();
+   /**
+    * Merge the state of the given entity into the current persistence context.
+    * If any exception occurs, a rollback action on the current transaction is
+    * launched.
+    * @param o entity instance
+    * @return the managed instance that the state was merged to or
+    * <code>null</code> if a exception occurs
+    */
+   static <T extends Object> T doMerge(T o) {
+      EntityManager em = getEntityManager();
       try {
          em.getTransaction().begin();
-         o = em.merge(o);
+         T merge = em.merge(o);
          em.getTransaction().commit();
+         return merge;
       } catch (Exception e) {
          if (em.getTransaction().isActive()) {
             em.getTransaction().rollback();
          }
-         e.printStackTrace();
+         Logger.getLogger(DAO.class).log(Level.ERROR, e);
       } finally {
          if (em != null) {
             em.close();
          }
       }
+      return null;
    }
 
    static Object getNativeQuerySingleResult(String sqlString, Class<?> resultClass) throws DatabaseErrorException {
@@ -181,9 +178,8 @@ public abstract class DAO implements Runnable {
       try {
          return em.createNativeQuery(sqlString, resultClass).getSingleResult();
       } catch (DatabaseException e) {
-         e.printStackTrace();
+         Logger.getLogger(DAO.class).log(Level.FATAL, e);
          throw new DatabaseErrorException();
-
       } finally {
          em.close();
       }

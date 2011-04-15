@@ -55,7 +55,7 @@ public class Main {
          JOptionPane.showMessageDialog(null, ex.getMessage(), "MessageException on PSVM", 2);
       } catch (DatabaseException ex) {
          JOptionPane.showMessageDialog(null,
-                 "No se pudo conectar con la base de datos.\nVerifique el estado del servidor.\nMsg:" + ex.getMessage(),
+                 "Error de conexión con la base de datos.\nMsg:" + ex.getMessage(),
                  "DatabaseException", 0);
          log.fatal("DataBase Error!!", ex);
          OCURRIO_ERROR = true;
@@ -67,6 +67,11 @@ public class Main {
          JOptionPane.showMessageDialog(null, "ERROR CRÍTICO!\n" + ex.getMessage(), "EN MAIN", 0);
          log.fatal("Error fatal..!", ex);
          OCURRIO_ERROR = true;
+      } finally {
+         if(OCURRIO_ERROR) {
+            System.out.println("Finalizando por las malas!!!");
+            System.exit(1);
+         }
       }
       // Si por ejemplo se produciera una excepción de este tipo
       // se ejecutará el thread antes de que la máquina virtual finalice:

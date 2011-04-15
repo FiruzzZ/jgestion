@@ -540,7 +540,7 @@ public class ListaPreciosJpaController implements ActionListener, MouseListener,
 
    /**
     * Retorna la ListaPrecio marcada como referencia para el Catalogo Web or <code>null</code>
-    * if there is noone.
+    * if there is not.
     * @return una instancia de {@link ListaPrecios}
     */
    public ListaPrecios findListaPreciosParaCatalogo() {

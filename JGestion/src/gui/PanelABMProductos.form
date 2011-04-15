@@ -506,7 +506,7 @@
         <Component class="javax.swing.JButton" name="bStockGral">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/iconos/32px-Crystal_Clear_filesystem_folder_yellow.png"/>
+              <Image iconType="3" name="/iconos/view_detail_16x.png"/>
             </Property>
             <Property name="toolTipText" type="java.lang.String" value="Ver stock gral. (Sucursales)"/>
             <Property name="name" type="java.lang.String" value="bstockGral" noResource="true"/>

@@ -45,8 +45,12 @@ public class Remito implements Serializable {
    @Basic(optional = false)
    @Column(name = "numero", nullable = false)
    private long numero;
-   @Column(name = "fecha_creacion")
+   @Basic(optional = false)
+   @Column(name = "fecha_remito", nullable = false)
    @Temporal(TemporalType.DATE)
+   private Date fechaRemito;
+   @Column(name = "fecha_creacion", nullable = false, insertable = false, updatable = false)
+   @Temporal(TemporalType.TIMESTAMP)
    private Date fechaCreacion;
    @OneToMany(cascade = CascadeType.ALL, mappedBy = "remito")
    private List<DetalleRemito> detalleRemitoList;
@@ -70,11 +74,6 @@ public class Remito implements Serializable {
       this.id = id;
    }
 
-   public Remito(Integer id, long numero) {
-      this.id = id;
-      this.numero = numero;
-   }
-
    public Integer getId() {
       return id;
    }
@@ -89,6 +88,14 @@ public class Remito implements Serializable {
 
    public void setNumero(long numero) {
       this.numero = numero;
+   }
+
+   public Date getFechaRemito() {
+      return fechaRemito;
+   }
+
+   public void setFechaRemito(Date fechaRemito) {
+      this.fechaRemito = fechaRemito;
    }
 
    public Date getFechaCreacion() {
