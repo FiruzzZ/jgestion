@@ -9,15 +9,19 @@ import controller.*;
 import controller.exceptions.DatabaseErrorException;
 import controller.exceptions.MessageException;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import javax.persistence.EntityManager;
+import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
 import javax.swing.UnsupportedLookAndFeelException;
 import oracle.toplink.essentials.exceptions.DatabaseException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 
 /**
  *
@@ -25,7 +29,7 @@ import org.apache.log4j.Logger;
  */
 public class JFP extends javax.swing.JFrame implements Runnable {
 
-   public static final String VERSION = "1.02.17";
+   public static final String VERSION = "1.03.21";
    private final String ICON_IMAGE = "/iconos/kf.png";
 
    static {
@@ -93,11 +97,13 @@ public class JFP extends javax.swing.JFrame implements Runnable {
       jMenuItem14 = new javax.swing.JMenuItem();
       jMenuItem5 = new javax.swing.JMenuItem();
       jMenuItem6 = new javax.swing.JMenuItem();
+      jMenuItem47 = new javax.swing.JMenuItem();
       jMenu11 = new javax.swing.JMenu();
       jMenuItem18 = new javax.swing.JMenuItem();
       jMenuItem34 = new javax.swing.JMenuItem();
       jMenuItem35 = new javax.swing.JMenuItem();
       jMenuItem36 = new javax.swing.JMenuItem();
+      jMenuItem48 = new javax.swing.JMenuItem();
       jMenu3 = new javax.swing.JMenu();
       jMenuItem4 = new javax.swing.JMenuItem();
       jMenuItem1 = new javax.swing.JMenuItem();
@@ -141,6 +147,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
       jSeparator1 = new javax.swing.JSeparator();
       jMenuItem10 = new javax.swing.JMenuItem();
       jMenuItem15 = new javax.swing.JMenuItem();
+      jMenuItem45 = new javax.swing.JMenuItem();
       jMenu12 = new javax.swing.JMenu();
       jMenuItem29 = new javax.swing.JMenuItem();
       jMenuItem37 = new javax.swing.JMenuItem();
@@ -226,6 +233,14 @@ public class JFP extends javax.swing.JFrame implements Runnable {
       });
       jMenu2.add(jMenuItem6);
 
+      jMenuItem47.setText("Nota de crédito");
+      jMenuItem47.addActionListener(new java.awt.event.ActionListener() {
+         public void actionPerformed(java.awt.event.ActionEvent evt) {
+            jMenuItem47ActionPerformed(evt);
+         }
+      });
+      jMenu2.add(jMenuItem47);
+
       jMenu11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/lupa-simple.png"))); // NOI18N
       jMenu11.setText("Buscar..");
 
@@ -260,6 +275,14 @@ public class JFP extends javax.swing.JFrame implements Runnable {
          }
       });
       jMenu11.add(jMenuItem36);
+
+      jMenuItem48.setText("Notas de crédito");
+      jMenuItem48.addActionListener(new java.awt.event.ActionListener() {
+         public void actionPerformed(java.awt.event.ActionEvent evt) {
+            jMenuItem48ActionPerformed(evt);
+         }
+      });
+      jMenu11.add(jMenuItem48);
 
       jMenu2.add(jMenu11);
 
@@ -567,6 +590,14 @@ public class JFP extends javax.swing.JFrame implements Runnable {
       });
       jMenu9.add(jMenuItem15);
 
+      jMenuItem45.setText("Configuración General");
+      jMenuItem45.addActionListener(new java.awt.event.ActionListener() {
+         public void actionPerformed(java.awt.event.ActionEvent evt) {
+            jMenuItem45ActionPerformed(evt);
+         }
+      });
+      jMenu9.add(jMenuItem45);
+
       jMenuBar1.add(jMenu9);
 
       jMenu12.setMnemonic('f');
@@ -645,14 +676,14 @@ public class JFP extends javax.swing.JFrame implements Runnable {
          .addGroup(layout.createSequentialGroup()
             .addContainerGap()
             .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 535, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 131, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 269, Short.MAX_VALUE)
             .addComponent(labelConnetionState)
             .addContainerGap())
       );
       layout.setVerticalGroup(
          layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-            .addContainerGap(347, Short.MAX_VALUE)
+            .addContainerGap(385, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                .addComponent(labelConnetionState)
                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -663,11 +694,13 @@ public class JFP extends javax.swing.JFrame implements Runnable {
    }// </editor-fold>//GEN-END:initComponents
 
     private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
-      try {
-         new ProductoJpaController().initContenedor(this, true, false);
-      } catch (DatabaseErrorException ex) {
-         JOptionPane.showMessageDialog(this, ex.getMessage());
-      }
+       try {
+          new ProductoJpaController().initContenedor(this, true, false);
+       } catch (DatabaseErrorException ex) {
+          JOptionPane.showMessageDialog(this, ex.getMessage());
+       } catch (Exception ex) {
+          JOptionPane.showMessageDialog(this, ex.getMessage(), "ERROR CRÍTICO", JOptionPane.ERROR_MESSAGE);
+       }
        refreshConnectionDB();
     }//GEN-LAST:event_jMenuItem7ActionPerformed
 
@@ -751,7 +784,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
        try {
-          new FacturaVentaJpaController().initFacturaVenta(this, true, null, 1, true);
+          new FacturaVentaJpaController().initFacturaVenta(this, true, null, 1, true, true);
        } catch (MessageException ex) {
           showError(ex.getMessage());
        }
@@ -847,7 +880,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
     private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
        try {
-          new PresupuestoJpaController().initPresupuesto(this, false, true);
+          new PresupuestoJpaController().initPresupuesto(this, false, true, true);
        } catch (MessageException ex) {
           showError(ex.getMessage());
        }
@@ -856,7 +889,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
     private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
        try {
-          new RemitoJpaController().initRemito(this, false, true);
+          new RemitoJpaController().initRemito(this, false, true, true);
        } catch (MessageException ex) {
           showError(ex.getMessage());
        }
@@ -929,20 +962,36 @@ public class JFP extends javax.swing.JFrame implements Runnable {
     }//GEN-LAST:event_jMenuItem46ActionPerformed
 
     private void jMenuItemOfertasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemOfertasActionPerformed
-      try {
-         new ProductosWebJpaController().initOfertasUI((JFrame) this);
-      } catch (MessageException ex) {
-         JOptionPane.showMessageDialog(this, ex.getMessage(), null, 2);
-      }
+       try {
+          new ProductosWebJpaController().initOfertasUI((JFrame) this);
+       } catch (MessageException ex) {
+          JOptionPane.showMessageDialog(this, ex.getMessage(), null, 2);
+       }
     }//GEN-LAST:event_jMenuItemOfertasActionPerformed
 
     private void jMenuItemCatalogoWebActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCatalogoWebActionPerformed
+       try {
+          new ProductosWebJpaController().initCatalogoGUI((JFrame) this);
+       } catch (MessageException ex) {
+          JOptionPane.showMessageDialog(this, ex.getMessage(), "Advertencia de Uso", 2);
+       }
+    }//GEN-LAST:event_jMenuItemCatalogoWebActionPerformed
+
+    private void jMenuItem45ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem45ActionPerformed
+      new JDConfiguracionGeneral(this, true).setVisible(true);
+    }//GEN-LAST:event_jMenuItem45ActionPerformed
+
+    private void jMenuItem47ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem47ActionPerformed
       try {
-         new ProductosWebJpaController().initCatalogoGUI((JFrame) this);
+         new NotaCreditoJpaController().initABMNotaCredito(this, Boolean.TRUE, true, true);
       } catch (MessageException ex) {
          JOptionPane.showMessageDialog(this, ex.getMessage(), "Advertencia de Uso", 2);
       }
-    }//GEN-LAST:event_jMenuItemCatalogoWebActionPerformed
+    }//GEN-LAST:event_jMenuItem47ActionPerformed
+
+    private void jMenuItem48ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem48ActionPerformed
+      new NotaCreditoJpaController().initBuscador(this, false);
+    }//GEN-LAST:event_jMenuItem48ActionPerformed
 
    // Variables declaration - do not modify//GEN-BEGIN:variables
    private javax.swing.JLabel jLabel1;
@@ -1001,7 +1050,10 @@ public class JFP extends javax.swing.JFrame implements Runnable {
    private javax.swing.JMenuItem jMenuItem42;
    private javax.swing.JMenuItem jMenuItem43;
    private javax.swing.JMenuItem jMenuItem44;
+   private javax.swing.JMenuItem jMenuItem45;
    private javax.swing.JMenuItem jMenuItem46;
+   private javax.swing.JMenuItem jMenuItem47;
+   private javax.swing.JMenuItem jMenuItem48;
    private javax.swing.JMenuItem jMenuItem5;
    private javax.swing.JMenuItem jMenuItem6;
    private javax.swing.JMenuItem jMenuItem7;
@@ -1020,8 +1072,8 @@ public class JFP extends javax.swing.JFrame implements Runnable {
    private CajaMovimientosJpaController cajaMovimientoController;
 
    private void refreshConnectionDB() {
-      System.out.println("refreshing (clear) ..........................DB");
-      DAO.getEntityManager().clear();
+//      System.out.println("refreshing (clear) ..........................DB");
+//      DAO.getEntityManager().clear();
    }
 
    private void cerrandoAplicacion() {
@@ -1053,6 +1105,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
                labelConnetionState.setToolTipText("¡ERROR DE CONEXIÓN!");
                labelConnetionState.setText("¡ERROR DE CONEXIÓN!");
                labelConnetionState.setForeground(Color.RED);
+               Logger.getLogger(this.getClass()).log(Level.ERROR, e);
             } catch (Exception e) {
                labelConnetionState.setEnabled(false);
                labelConnetionState.setText("¡ERROR DE CONEXIÓN!");
@@ -1072,6 +1125,6 @@ public class JFP extends javax.swing.JFrame implements Runnable {
             }
          }
       }
-      System.out.println("Connectivity Thread end..");
+      System.out.println("Connectivity Thread finished..");
    }
 }

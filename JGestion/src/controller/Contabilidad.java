@@ -41,7 +41,7 @@ public class Contabilidad {
    private static final Class[] columnClassBalanceCompraVenta = {Object.class, Object.class, String.class, String.class, String.class, String.class};
 
    /**
-    * GUI para visualización de los movimientos INGRESOS/EGRESOS.
+    * GUI para ver de los movimientos INGRESOS/EGRESOS.
     * @param parent
     */
    public void initBalanceGeneralUI(JFrame parent) {
@@ -171,7 +171,7 @@ public class Contabilidad {
    }
 
    /**
-    * Ventana para ver los registros de venta (Facturas [Contado, Cta. Cte.]),
+    * UI para ver los registros de venta (Facturas [Contado, Cta. Cte.]),
     * Mov. internos, etc..
     * @param parent papi frame
     */

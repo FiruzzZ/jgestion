@@ -42,6 +42,7 @@ import javax.swing.table.DefaultTableModel;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 
 /**
  * Encargada de registrar todos los asientos (ingresos/egresos) de las cajas..
@@ -225,7 +226,6 @@ public class CajaMovimientosJpaController implements ActionListener {
    }
 
    void asentarMovimiento(Recibo recibo) throws Exception {
-      System.out.println("asentarMovimiento (Recibo)");
       //caja en la q se va asentar
       CajaMovimientos cm = findCajaMovimientoAbierta(recibo.getCaja());
       EntityManager em = getEntityManager();
@@ -573,24 +573,24 @@ public class CajaMovimientosJpaController implements ActionListener {
     */
    public CajaMovimientos findCajaMovimientoAbierta(Caja cajaCandidata) throws NoResultException, NonUniqueResultException {
       EntityManager em = getEntityManager();
-      CajaMovimientos cm = null;
+      CajaMovimientos cajaMovimiento = null;
       try {
          //busca la cajaMovimiento cuya fechaCierre != NULL (debería haber solo UNA)
-         cm = (CajaMovimientos) em.createQuery("SELECT o FROM " + CLASS_NAME + " o"
-                 + " where o.fechaCierre is null AND o.caja.id =" + cajaCandidata.getId()).getSingleResult();
+         cajaMovimiento = (CajaMovimientos) em.createQuery("SELECT o FROM " + CLASS_NAME + " o"
+                 + " where o.fechaCierre is null AND o.caja.id =" + cajaCandidata.getId()).setHint("refresh.toplink", true).getSingleResult();
       } catch (NoResultException ex) {
          //cuando Ruben hace su magia pasa esto!
          throw ex;
       } catch (NonUniqueResultException ex) {
          //esto ya sería el colmo...!!
-         System.out.println("HAY MAS DE 1 ABIERTA!!! -> CAJA: " + cajaCandidata + "\n" + ex);
+         Logger.getLogger(this.getClass()).log(Level.FATAL, "HAY MAS DE 1 ABIERTA!!! -> CAJA: " + cajaCandidata, ex);
          throw ex;
       } finally {
          if (em != null) {
             em.close();
          }
       }
-      return cm;
+      return cajaMovimiento;
    }
 
    public void initCierreCaja(JFrame frame, boolean modal) {
@@ -722,18 +722,15 @@ public class CajaMovimientosJpaController implements ActionListener {
          }// </editor-fold>
 
       }// </editor-fold>
-      else // <editor-fold defaultstate="collapsed" desc="JComboBox">
-      if (e.getSource().getClass().equals(javax.swing.JComboBox.class)) {
+      // <editor-fold defaultstate="collapsed" desc="JComboBox">
+      else if (e.getSource().getClass().equals(javax.swing.JComboBox.class)) {
          javax.swing.JComboBox combo = (javax.swing.JComboBox) e.getSource();
          // <editor-fold defaultstate="collapsed" desc="Cierre de caja">
          if (combo.getName().equalsIgnoreCase("caja")) {
          } // </editor-fold>
          // <editor-fold defaultstate="collapsed" desc="Panel CajaToCaja">
          else if (combo.getName().equalsIgnoreCase("cajaOrigen")) {
-            setDatosCajaToCajaCombo("cajaOrigen");
-
          } else if (combo.getName().equalsIgnoreCase("cajaDestino")) {
-            setDatosCajaToCajaCombo("y si no es origen tiene q ser destino.. no ?");
          }// </editor-fold>
       }// </editor-fold>
    }
@@ -890,6 +887,20 @@ public class CajaMovimientosJpaController implements ActionListener {
             initBuscadorCajaToCaja(jdCajaToCaja);
          }
       });
+      jdCajaToCaja.getCbCajaOrigen().addActionListener(new ActionListener() {
+
+         @Override
+         public void actionPerformed(ActionEvent e) {
+            setDatosCajaToCajaCombo("cajaOrigen");
+         }
+      });
+      jdCajaToCaja.getCbCajaDestino().addActionListener(new ActionListener() {
+
+         @Override
+         public void actionPerformed(ActionEvent e) {
+            setDatosCajaToCajaCombo("y si no es origen tiene q ser destino.. no ?");
+         }
+      });
       jdCajaToCaja.setListener(this);
       jdCajaToCaja.setVisible(true);
       jdCajaToCaja.dispose();
@@ -1001,6 +1012,8 @@ public class CajaMovimientosJpaController implements ActionListener {
             cajaMovimientos = (CajaMovimientos) jdCajaToCaja.getCbCajaDestino().getSelectedItem();
          }
          //si no saltó la ClassCastException...
+         cajaMovimientos = findCajaMovimientos(cajaMovimientos.getId());
+//         getEntityManager().refresh(cajaMovimientos);
          fechaApertura = cajaMovimientos.getFechaApertura();
 
          Double totalIngresos = 0.0; // VA INCLUIR monto de apertura
@@ -1016,7 +1029,6 @@ public class CajaMovimientosJpaController implements ActionListener {
          }
          balanceCajaActual = UTIL.PRECIO_CON_PUNTO.format(totalIngresos + totalEgresos);
       } catch (ClassCastException e) {
-         System.out.println(e.getClass() + " .....CajaToCaja");
       }
 
       if (name.equalsIgnoreCase("CajaOrigen")) {
@@ -1320,7 +1332,6 @@ public class CajaMovimientosJpaController implements ActionListener {
       DefaultTableModel dtm = buscador.getDtm();
       UTIL.limpiarDtm(dtm);
       List<CajaMovimientos> cajaMovimientosList = DAO.getEntityManager().createNativeQuery(query, CajaMovimientos.class).getResultList();
-
       for (CajaMovimientos cajaMovimientos : cajaMovimientosList) {
          dtm.addRow(new Object[]{
                     cajaMovimientos,
@@ -1429,12 +1440,11 @@ public class CajaMovimientosJpaController implements ActionListener {
     * abierta.
     */
    private void fixCajaMalAbierta(Caja caja) {
-      System.out.println("Entró al putisimo fixCajaMalAbierta()!");
       EntityManager em = getEntityManager();
       Integer lastIDCajaMovimientoCerrada = (Integer) em.createQuery("SELECT MAX(o.id) FROM " + CLASS_NAME + " o "
               + "WHERE o.caja.id = " + caja.getId()).getSingleResult();
       CajaMovimientos lastCajaMovCerrada = em.find(CajaMovimientos.class, lastIDCajaMovimientoCerrada);
-      System.out.println("Caja:" + caja + "-> idLast:" + lastIDCajaMovimientoCerrada);
+      Logger.getLogger(CajaMovimientosJpaController.class.getName()).log(Level.WARN, "Corrigiendo error en creación de caja. fixCaja()\nCaja:" + caja + "-> lastID:" + lastIDCajaMovimientoCerrada);
       try {
          abrirNextCajaMovimiento(lastCajaMovCerrada);
       } catch (Exception ex) {

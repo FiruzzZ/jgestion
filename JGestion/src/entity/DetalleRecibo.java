@@ -1,4 +1,3 @@
-
 package entity;
 
 import java.io.Serializable;
@@ -46,18 +45,10 @@ public class DetalleRecibo implements Serializable {
    private Recibo recibo;
    @Column(nullable = false)
    private boolean anulado;
+   @Column(name = "acreditado", insertable = true, updatable = false, nullable = false)
+   private boolean acreditado;
 
    public DetalleRecibo() {
-   }
-
-   public DetalleRecibo(Integer id) {
-      this.id = id;
-   }
-
-   public DetalleRecibo(Integer id, double montoEntrega, boolean anulado) {
-      this.id = id;
-      this.montoEntrega = montoEntrega;
-      this.anulado = anulado;
    }
 
    public Integer getId() {
@@ -106,6 +97,14 @@ public class DetalleRecibo implements Serializable {
 
    public void setAnulado(boolean anulado) {
       this.anulado = anulado;
+   }
+
+   public void setAcreditado(boolean acreditado) {
+      this.acreditado = acreditado;
+   }
+
+   public boolean isAcreditado() {
+      return acreditado;
    }
 
    @Override

@@ -2,7 +2,6 @@ package controller;
 
 import controller.exceptions.*;
 import entity.Iva;
-import entity.ListaPrecios;
 import entity.Marca;
 import entity.Producto;
 import entity.Rubro;
@@ -33,16 +32,15 @@ import java.io.File;
 import java.util.Date;
 import java.util.Vector;
 import javax.persistence.NoResultException;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
-import net.atlanticbb.tantlinger.shef.HTMLEditorPane;
+//import net.atlanticbb.tantlinger.shef.HTMLEditorPane;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -67,8 +65,9 @@ public class ProductoJpaController implements ActionListener, KeyListener {
    private PanelBuscadorMovimientosPro panelito;
    private JDBuscador buscador;
    private PanelProductoListados panelProductoListados;
-   private HTMLEditorPane editor;
+//   private HTMLEditorPane editor;
    private JDialog xxx;
+   private boolean permitirFiltroVacio;
 
    public EntityManager getEntityManager() {
       return DAO.getEntityManager();
@@ -261,6 +260,8 @@ public class ProductoJpaController implements ActionListener, KeyListener {
       });
       UTIL.getDefaultTableModel(contenedor.getjTable1(), colsName, colsWidth);
       UTIL.hideColumnTable(contenedor.getjTable1(), 0);
+      //no permite filtro de vacio en el inicio
+      permitirFiltroVacio = false;
       cargarDTMContenedor(null);
       contenedor.setListener(this);
       contenedor.setVisible(true);
@@ -329,33 +330,33 @@ public class ProductoJpaController implements ActionListener, KeyListener {
    }
 
    private void initHTMLEditorPane() {
-      editor = new HTMLEditorPane();
-      xxx = new JDialog(abm, true);
-      xxx.setLocationRelativeTo(abm);
-      JButton bAceptar = new javax.swing.JButton();
-      bAceptar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px-Crystal_Clear_action_apply.png")));
-      bAceptar.setMnemonic('a');
-      bAceptar.setText("Aceptar");
-      bAceptar.setName("aceptar");
-      xxx.setTitle("Editor de Descripción del Producto");
-      xxx.getContentPane().add(editor);
-      xxx.add(bAceptar, BorderLayout.PAGE_END);
-      bAceptar.addActionListener(new ActionListener() {
-
-         @Override
-         public void actionPerformed(ActionEvent e) {
-            String descripcion = editor.getText();
-            System.out.println(descripcion);
-            if (descripcion.trim().length() != 0) {
-               panel.getTaDescripcion().setText(descripcion);
-            } else {
-               panel.getTaDescripcion().setText("<p style=\"margin-top: 0\"><p align=\"center\"><b>[Doble click para editar]</b></p></p>");
-            }
-            xxx.dispose();
-         }
-      });
-      xxx.setSize(650, 400);
-      xxx.setVisible(true);
+//      editor = new HTMLEditorPane();
+//      xxx = new JDialog(abm, true);
+//      xxx.setLocationRelativeTo(abm);
+//      JButton bAceptar = new javax.swing.JButton();
+//      bAceptar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px-Crystal_Clear_action_apply.png")));
+//      bAceptar.setMnemonic('a');
+//      bAceptar.setText("Aceptar");
+//      bAceptar.setName("aceptar");
+//      xxx.setTitle("Editor de Descripción del Producto");
+//      xxx.getContentPane().add(editor);
+//      xxx.add(bAceptar, BorderLayout.PAGE_END);
+//      bAceptar.addActionListener(new ActionListener() {
+//
+//         @Override
+//         public void actionPerformed(ActionEvent e) {
+//            String descripcion = editor.getText();
+//            System.out.println(descripcion);
+//            if (descripcion.trim().length() != 0) {
+//               panel.getTaDescripcion().setText(descripcion);
+//            } else {
+//               panel.getTaDescripcion().setText("<p style=\"margin-top: 0\"><p align=\"center\"><b>[Doble click para editar]</b></p></p>");
+//            }
+//            xxx.dispose();
+//         }
+//      });
+//      xxx.setSize(650, 400);
+//      xxx.setVisible(true);
    }
 
    private void cargarDTMContenedor(String query) throws DatabaseErrorException {
@@ -364,14 +365,17 @@ public class ProductoJpaController implements ActionListener, KeyListener {
          UTIL.limpiarDtm(dtm);
          List<Producto> l;
          if (query == null) {
-//            l = DAO.getEntityManager().createNamedQuery("SELECT o FROM " + CLASS_NAME + " o ORDER BY o.codigo").setHint("toplink.refresh", true).getResultList();
             l = (List<Producto>) DAO.getNativeQueryResultList(
-                    "SELECT o.* FROM " + CLASS_NAME + " o ORDER BY o.codigo",
-                    "ProductoToContenedor");
+                    "SELECT o.* FROM " + CLASS_NAME + " o ORDER BY o.codigo", "ProductoToContenedor");
          } else {
             l = (List<Producto>) DAO.getNativeQueryResultList(query, "ProductoToContenedor");
          }
+         EntityManager entityManager = DAO.getEntityManager();
          for (Producto o : l) {
+            if(o.getMarca() == null) {
+               o.setMarca((Marca)entityManager.createQuery("SELECT o from Marca o, Producto p where o.id = p.marca.id AND p.id=" + o.getId()).getSingleResult());
+               Logger.getLogger(this.getClass()).log(Level.DEBUG, "Producto.id=" + o.getId() + " Marca.id" + o.getMarca().getId());
+            }
             dtm.addRow(new Object[]{
                        o.getId(),
                        o.getCodigo(),
@@ -401,7 +405,7 @@ public class ProductoJpaController implements ActionListener, KeyListener {
       if (producto.getPrecioVenta() != null) {
          panel.setTfPrecio(UTIL.PRECIO_CON_PUNTO.format(producto.getPrecioVenta()));
       }
-      if(producto.getDescripcion() != null) {
+      if (producto.getDescripcion() != null) {
          panel.getTaDescripcion().setText(producto.getDescripcion());
       } else {
          panel.getTaDescripcion().setText("<p style=\"margin-top: 0\"><p align=\"center\"><b>[Doble click para editar]</b></p></p>");
@@ -559,12 +563,25 @@ public class ProductoJpaController implements ActionListener, KeyListener {
 
    public void keyReleased(KeyEvent e) {
       if (e.getComponent().getClass().equals(javax.swing.JTextField.class)) {
-         javax.swing.JTextField tf = (javax.swing.JTextField) e.getComponent();
+         JTextField tf = (JTextField) e.getComponent();
          if (tf.getName().equalsIgnoreCase("tfFiltro")) {
-            try {
-               armarQuery(tf.getText().trim());
-            } catch (DatabaseErrorException ex) {
-               JOptionPane.showMessageDialog(null, ex);
+            if (tf.getText().trim().length() > 0) {
+               permitirFiltroVacio = true;
+               try {
+                  armarQuery(tf.getText().trim());
+               } catch (DatabaseErrorException ex) {
+                  JOptionPane.showMessageDialog(null, ex);
+               }
+            } else {
+               if (permitirFiltroVacio) {
+                  permitirFiltroVacio = false;
+                  try {
+                     armarQuery(tf.getText().trim());
+                  } catch (DatabaseErrorException ex) {
+                     JOptionPane.showMessageDialog(null, ex);
+                  }
+
+               }
             }
          }
       }
@@ -577,7 +594,7 @@ public class ProductoJpaController implements ActionListener, KeyListener {
    private void armarQuery(String filtro) throws DatabaseErrorException {
       String query = null;
       if (filtro != null && filtro.length() > 0) {
-         query = "SELECT * FROM " + CLASS_NAME + " o WHERE o.nombre LIKE '" + filtro + "%' ORDER BY o.codigo";
+         query = "SELECT * FROM " + CLASS_NAME + " o WHERE o.nombre ILIKE '" + filtro + "%' ORDER BY o.codigo";
       }
       cargarDTMContenedor(query);
    }
@@ -587,17 +604,25 @@ public class ProductoJpaController implements ActionListener, KeyListener {
       String idQuery = "";
       if (object.getId() != null) {
          idQuery = "o.id!=" + object.getId() + " AND ";
+
+
       }
       try {
          em.createNativeQuery("SELECT * FROM " + CLASS_NAME + " o "
                  + " WHERE " + idQuery + "  " + " o.codigo='" + object.getCodigo() + "'", Producto.class).getSingleResult();
-         throw new MessageException("Ya existe un " + CLASS_NAME + " con este codigo.");
+
+
+         throw new MessageException(
+                 "Ya existe un " + CLASS_NAME + " con este codigo.");
       } catch (NoResultException ex) {
       }
       try {
          em.createNativeQuery("SELECT * FROM " + CLASS_NAME + " o "
                  + " WHERE " + idQuery + "  " + " o.nombre='" + object.getNombre() + "'", Producto.class).getSingleResult();
-         throw new MessageException("Ya existe un " + CLASS_NAME + " con este nombre.");
+
+
+         throw new MessageException(
+                 "Ya existe un " + CLASS_NAME + " con este nombre.");
       } catch (NoResultException ex) {
       }
 
@@ -631,6 +656,8 @@ public class ProductoJpaController implements ActionListener, KeyListener {
       // <editor-fold defaultstate="collapsed" desc="Button">
       if (e.getSource().getClass().equals(javax.swing.JButton.class)) {
          javax.swing.JButton boton = (javax.swing.JButton) e.getSource();
+
+
          if (boton.getName().equalsIgnoreCase("exit")) {
             contenedor.dispose();
             if (!contenedor.isModoBuscador()) {
@@ -681,6 +708,8 @@ public class ProductoJpaController implements ActionListener, KeyListener {
                Logger.getLogger(ProductoJpaController.class.getName()).log(Level.ERROR, null, ex);
             }
          }
+
+
          return;
       } // </editor-fold>
 
@@ -698,6 +727,10 @@ public class ProductoJpaController implements ActionListener, KeyListener {
       } catch (NoResultException ex) {
          return null;
       }
+   }
+
+   Producto findProductoById(Integer id) {
+      return (Producto) DAO.getEntityManager().createNamedQuery(CLASS_NAME + ".findById").setParameter("id", id).getSingleResult();
    }
 
    Producto getProductoSelected() {
@@ -749,6 +782,8 @@ public class ProductoJpaController implements ActionListener, KeyListener {
       producto.setStockactual(producto.getStockactual() + cantidad);
       try {
          edit(producto);
+
+
       } catch (NonexistentEntityException ex) {
          Logger.getLogger(ProductoJpaController.class.getName()).log(Level.ERROR, null, ex);
       } catch (Exception ex) {
@@ -768,6 +803,8 @@ public class ProductoJpaController implements ActionListener, KeyListener {
                  jdStockGral.getjTable1(),
                  new String[]{"Sucursal", "Stock", "Último movi.", "Usuario"},
                  new int[]{50, 20, 70, 40});
+
+
       } catch (Exception ex) {
          Logger.getLogger(ProductoJpaController.class.getName()).log(Level.ERROR, null, ex);
       }
@@ -809,6 +846,8 @@ public class ProductoJpaController implements ActionListener, KeyListener {
 
    private Producto getSelectedFromContenedor() {
       Integer selectedRow = contenedor.getjTable1().getSelectedRow();
+
+
       if (selectedRow > -1) {
          return (Producto) DAO.getEntityManager().find(Producto.class,
                  Integer.valueOf(
@@ -945,6 +984,7 @@ public class ProductoJpaController implements ActionListener, KeyListener {
       mainQuery += ") as t ";
       mainQuery += " ORDER BY fechaalta";
       org.apache.log4j.Logger.getLogger(Producto.class).log(org.apache.log4j.Level.TRACE, "SQL-QUERY");
+
       return mainQuery;
    }
 
@@ -983,6 +1023,8 @@ public class ProductoJpaController implements ActionListener, KeyListener {
                  "SELECT p.id, p.codigo, p.nombre, p.remunerativo "
                  + "FROM Producto p "
                  + "ORDER BY p.nombre, p.codigo", "ProductoToBuscador");
+
+
       } catch (DatabaseErrorException ex) {
          Logger.getLogger(ProductoJpaController.class.getName()).log(Level.ERROR, null, ex);
       }
@@ -1074,8 +1116,11 @@ public class ProductoJpaController implements ActionListener, KeyListener {
          query += " ORDER BY p.fecha_alta ASC";
       } else {
          query += " ORDER BY p.nombre";
+
+
       }
       cargarTablaProductosListado((List<Producto>) DAO.getNativeQueryResultList(query, Producto.class));
+
       if (imprimirReport) {
          doReportProductosListado(query);
       }
@@ -1109,4 +1154,5 @@ public class ProductoJpaController implements ActionListener, KeyListener {
       r.viewReport();
 //      }
    }
+
 }

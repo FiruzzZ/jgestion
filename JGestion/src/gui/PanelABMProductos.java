@@ -216,7 +216,7 @@ public class PanelABMProductos extends javax.swing.JPanel {
 
       checkBoxSucursalTodas.setText("Todas");
 
-      bStockGral.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px-Crystal_Clear_filesystem_folder_yellow.png"))); // NOI18N
+      bStockGral.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/view_detail_16x.png"))); // NOI18N
       bStockGral.setToolTipText("Ver stock gral. (Sucursales)");
       bStockGral.setName("bstockGral"); // NOI18N
       bStockGral.addActionListener(new java.awt.event.ActionListener() {

@@ -42,20 +42,17 @@ public class PresupuestoJpaController implements ActionListener, KeyListener {
 
    // <editor-fold defaultstate="collapsed" desc="CRUD..">
    private Presupuesto create(Presupuesto presupuesto) throws PreexistingEntityException, Exception {
-      if (presupuesto.getDetallePresupuestoList() == null) {
-         presupuesto.setDetallePresupuestoList(new ArrayList<DetallePresupuesto>());
-      }
+      List<DetallePresupuesto> toAttach = presupuesto.getDetallePresupuestoList();
+      presupuesto.setDetallePresupuestoList(new ArrayList<DetallePresupuesto>());
       EntityManager em = null;
       try {
          em = DAO.getEntityManager();
          em.getTransaction().begin();
-         List<DetallePresupuesto> toPers = presupuesto.getDetallePresupuestoList();
-         presupuesto.setDetallePresupuestoList(new ArrayList<DetallePresupuesto>());
          em.persist(presupuesto);
          em.getTransaction().commit();
-         for (DetallePresupuesto detallePresupuestoListDetallePresupuesto : toPers) {
+         for (DetallePresupuesto detallePresupuestoListDetallePresupuesto : toAttach) {
             detallePresupuestoListDetallePresupuesto.setPresupuesto(presupuesto);
-            new DetallePresupuestoJpaController().create(detallePresupuestoListDetallePresupuesto);
+            DAO.create(detallePresupuestoListDetallePresupuesto);
          }
       } catch (Exception ex) {
          if (em.getTransaction().isActive()) {
@@ -154,10 +151,11 @@ public class PresupuestoJpaController implements ActionListener, KeyListener {
     * @param frame
     * @param modal to be or not to be...
     * @param setVisible cuando se va levantar la gui desde el buscador es <code>false</code>
+    * @param loadDefaultData
     * @throws MessageException
     */
-   public void initPresupuesto(JFrame frame, boolean modal, boolean setVisible) throws MessageException {
-      facturaVentaController.initFacturaVenta(frame, modal, this, 2, setVisible);
+   public void initPresupuesto(JFrame frame, boolean modal, boolean setVisible, boolean loadDefaultData) throws MessageException {
+      facturaVentaController.initFacturaVenta(frame, modal, this, 2, setVisible, loadDefaultData);
       facturaVentaController.getContenedor().getBtnAceptar().addActionListener(new ActionListener() {
 
          @Override
@@ -383,7 +381,7 @@ public class PresupuestoJpaController implements ActionListener, KeyListener {
     */
    private void setDatos(Presupuesto presupuesto) {
       try {
-         initPresupuesto(null, true, false);
+         initPresupuesto(null, true, false, false);
       } catch (MessageException ex) {
          Logger.getLogger(PresupuestoJpaController.class.getName()).log(Level.SEVERE, null, ex);
       }

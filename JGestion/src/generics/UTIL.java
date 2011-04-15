@@ -101,7 +101,7 @@ public abstract class UTIL {
     * de millares
     * Formato "########.##"
     */
-   public final static DecimalFormat PRECIO_CON_PUNTO;
+   public static DecimalFormat PRECIO_CON_PUNTO;
    /**
     * Extensiones de imagenes permitidas: "jpeg", "jpg", "gif", "tiff", "tif", "png", "bmp"
     */
@@ -115,7 +115,7 @@ public abstract class UTIL {
       DecimalFormatSymbols simbolos = new DecimalFormatSymbols();
       simbolos.setDecimalSeparator('.');
       PRECIO_CON_PUNTO = new DecimalFormat("#######0.00", simbolos);
-      DECIMAL_FORMAT = new DecimalFormat("#,###.00");
+      DECIMAL_FORMAT = new DecimalFormat("#,###.000");
       DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
       yyyy_MM_dd = new SimpleDateFormat("yyyy/MM/dd");
       TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
@@ -702,13 +702,15 @@ public abstract class UTIL {
    }
 
    /**
-    * setea como selected al item del comboBox que coincida con el <code>candidato</code>
+    * Setea como selected al item del comboBox que coincida con el <code>candidato</code>
     * @param combo if is null or combo<code>.getItemCount() </code> is less than 1, no selectedItem
     * @param candidato if this is <code>null</code>, no habrá selectedItem
+    * @return an index of the selectedItem, or <code>-1</code> if
+    * 1 > combo.getItemCount() || if <code>candidato</code> does not match any item
     */
-   public static void setSelectedItem(JComboBox combo, String candidato) {
+   public static int setSelectedItem(JComboBox combo, String candidato) {
       if (candidato == null || candidato.length() < 1 || combo == null) {
-         return;
+         return -1;
       }
 
       boolean encontrado = false;
@@ -720,6 +722,7 @@ public abstract class UTIL {
          }
          index++;
       }
+      return index;
    }
 
    /**
@@ -727,7 +730,7 @@ public abstract class UTIL {
     * Este método utiliza <code>equals</code> para la comparación
     * @param combo El cual podría contener el item <code>candidato</code>
     * @param candidato
-    * @return a index of the selectedItem, or <code>-1</code> if
+    * @return an index of the selectedItem, or <code>-1</code> if
     * 1 > combo.getItemCount() || if <code>candidato</code> does not match any item
     */
    public static int setSelectedItem(javax.swing.JComboBox combo, Object candidato) {
@@ -975,4 +978,13 @@ public abstract class UTIL {
    public static boolean VALIDAR_REGEX(String regex, String stringToEvaluate) {
       return Pattern.compile(regex).matcher(stringToEvaluate).find();
    }
+
+   public static synchronized DecimalFormat setPRECIO_CON_PUNTO(String format) {
+      DecimalFormatSymbols simbolos = new DecimalFormatSymbols();
+      simbolos.setDecimalSeparator('.');
+      PRECIO_CON_PUNTO = new DecimalFormat(format, simbolos);
+      return PRECIO_CON_PUNTO;
+   }
+
+
 }

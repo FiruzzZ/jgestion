@@ -84,7 +84,7 @@ public class Producto implements Serializable {
    @Column(name = "tipomargen")
    private Integer tipomargen;
    @Basic(optional = false)
-   @Column(name = "precio_venta", precision = 2, scale = 2, nullable= false)
+   @Column(name = "precio_venta", precision = 2, scale = 2, nullable = false)
    private Double precioVenta;
    @Column(name = "foto")
    private byte[] foto;

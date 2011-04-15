@@ -151,17 +151,12 @@ public class CtacteProveedorJpaController implements ActionListener {
 
    List<CtacteProveedor> findCtacteProveedorByProveedor(Integer idProveedor, int estadoCtaCte) {
       EntityManager em = getEntityManager();
-//      em.getTransaction().begin();
       List<CtacteProveedor> listaCtaCteProveedor = null;
-      try {
-         listaCtaCteProveedor = em.createNativeQuery(
-                 "SELECT o.* FROM ctacte_proveedor o, factura_compra f, proveedor p"
-                 + " WHERE p.id = f.proveedor AND f.id = o.factura "
-                 + " AND o.estado = " + estadoCtaCte + " AND p.id =" + idProveedor,
-                 CtacteProveedor.class).getResultList();
-      } catch (Exception ex) {
-         ex.printStackTrace();
-      }
+      listaCtaCteProveedor = em.createNativeQuery(
+              "SELECT o.* FROM ctacte_proveedor o, factura_compra f, proveedor p"
+              + " WHERE p.id = f.proveedor AND f.id = o.factura "
+              + " AND o.estado = " + estadoCtaCte + " AND p.id =" + idProveedor,
+              CtacteProveedor.class).getResultList();
       return listaCtaCteProveedor;
    }
 
@@ -169,15 +164,11 @@ public class CtacteProveedorJpaController implements ActionListener {
       EntityManager em = getEntityManager();
       em.getTransaction().begin();
       List<CtacteProveedor> listaCtaCteProveedor = null;
-      try {
-         listaCtaCteProveedor = em.createNativeQuery(
-                 "SELECT o.* FROM ctacte_proveedor o, factura_compra f, proveedor p"
-                 + " WHERE p.id = f.proveedor AND f.id = o.factura "
-                 + " AND p.id =" + idProveedor,
-                 CtacteProveedor.class).getResultList();
-      } catch (Exception ex) {
-         ex.printStackTrace();
-      }
+      listaCtaCteProveedor = em.createNativeQuery(
+              "SELECT o.* FROM ctacte_proveedor o, factura_compra f, proveedor p"
+              + " WHERE p.id = f.proveedor AND f.id = o.factura "
+              + " AND p.id =" + idProveedor,
+              CtacteProveedor.class).getResultList();
       return listaCtaCteProveedor;
    }
 
