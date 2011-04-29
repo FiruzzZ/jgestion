@@ -20,7 +20,7 @@ import entity.Producto;
 import entity.Stock;
 import entity.Sucursal;
 import generics.AutoCompleteComboBox;
-import generics.UTIL;
+import utilities.general.UTIL;
 import gui.JDBuscador;
 import gui.JDFacturaCompra;
 import gui.PanelBuscadorOrdenes;

@@ -16,7 +16,7 @@ import entity.Municipio;
 import java.util.ArrayList;
 import java.util.List;
 import entity.Proveedor;
-import generics.UTIL;
+import utilities.general.UTIL;
 import gui.JDABM;
 import gui.JDContenedor;
 import gui.PanelABMDeptos;
@@ -336,7 +336,7 @@ public class DepartamentoJpaController implements ActionListener, MouseListener,
    private void initABM(boolean isEditting, ActionEvent e) throws Exception {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.DATOS_GENERAL);
+         UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.DATOS_GENERAL);
       } catch (MessageException ex) {
          JOptionPane.showMessageDialog(null, ex.getMessage());
          return;

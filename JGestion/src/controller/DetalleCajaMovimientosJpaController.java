@@ -1,9 +1,9 @@
-
 package controller;
 
 import controller.exceptions.MessageException;
 import controller.exceptions.NonexistentEntityException;
 import entity.DetalleCajaMovimientos;
+import entity.MovimientoConcepto;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -17,6 +17,7 @@ import entity.CajaMovimientos;
  * @author Administrador
  */
 public class DetalleCajaMovimientosJpaController {
+
    public final static String CLASS_NAME = "DetalleCajaMovimientos";
    /**
     * nº 1
@@ -69,14 +70,13 @@ public class DetalleCajaMovimientosJpaController {
          CajaMovimientos cajaMovimientos = detalleCajaMovimientos.getCajaMovimientos();
          if (cajaMovimientos != null) {
             cajaMovimientos = em.getReference(cajaMovimientos.getClass(), cajaMovimientos.getId());
-//            detalleCajaMovimientos.setCajaMovimientos(cajaMovimientos);
+            detalleCajaMovimientos.setCajaMovimientos(cajaMovimientos);
          }
          em.persist(detalleCajaMovimientos);
          em.getTransaction().commit();
       } catch (EntityNotFoundException ex) {
-         ex.printStackTrace();
-         throw new MessageException("La Caja en la que intenta hacer el movimiento parece no estar disponible." +
-                                    "\nIntente cerrar y volver a abrir la ventana.");
+         throw new MessageException("La Caja en la que intenta hacer el movimiento no está mas disponible."
+                 + "\nIntente cerrar y volver a abrir la ventana.");
       } catch (Exception ex) {
          throw new MessageException(ex.getMessage());
       } finally {
@@ -86,68 +86,8 @@ public class DetalleCajaMovimientosJpaController {
       }
    }
 
-   public void edit(DetalleCajaMovimientos detalleCajaMovimientos) throws NonexistentEntityException, Exception {
-      EntityManager em = null;
-      try {
-         em = getEntityManager();
-         em.getTransaction().begin();
-         DetalleCajaMovimientos persistentDetalleCajaMovimientos = em.find(DetalleCajaMovimientos.class, detalleCajaMovimientos.getId());
-         CajaMovimientos cajaMovimientosOld = persistentDetalleCajaMovimientos.getCajaMovimientos();
-         CajaMovimientos cajaMovimientosNew = detalleCajaMovimientos.getCajaMovimientos();
-         if (cajaMovimientosNew != null) {
-            cajaMovimientosNew = em.getReference(cajaMovimientosNew.getClass(), cajaMovimientosNew.getId());
-            detalleCajaMovimientos.setCajaMovimientos(cajaMovimientosNew);
-         }
-         detalleCajaMovimientos = em.merge(detalleCajaMovimientos);
-         if (cajaMovimientosOld != null && !cajaMovimientosOld.equals(cajaMovimientosNew)) {
-            cajaMovimientosOld.getDetalleCajaMovimientosList().remove(detalleCajaMovimientos);
-            cajaMovimientosOld = em.merge(cajaMovimientosOld);
-         }
-         if (cajaMovimientosNew != null && !cajaMovimientosNew.equals(cajaMovimientosOld)) {
-            cajaMovimientosNew.getDetalleCajaMovimientosList().add(detalleCajaMovimientos);
-            cajaMovimientosNew = em.merge(cajaMovimientosNew);
-         }
-         em.getTransaction().commit();
-      } catch (Exception ex) {
-         String msg = ex.getLocalizedMessage();
-         if (msg == null || msg.length() == 0) {
-            Integer id = detalleCajaMovimientos.getId();
-            if (findDetalleCajaMovimientos(id) == null) {
-               throw new NonexistentEntityException("The detalleCajaMovimientos with id " + id + " no longer exists.");
-            }
-         }
-         throw ex;
-      } finally {
-         if (em != null) {
-            em.close();
-         }
-      }
-   }
-
-   public void destroy(Integer id) throws NonexistentEntityException {
-      EntityManager em = null;
-      try {
-         em = getEntityManager();
-         em.getTransaction().begin();
-         DetalleCajaMovimientos detalleCajaMovimientos;
-         try {
-            detalleCajaMovimientos = em.getReference(DetalleCajaMovimientos.class, id);
-            detalleCajaMovimientos.getId();
-         } catch (EntityNotFoundException enfe) {
-            throw new NonexistentEntityException("The detalleCajaMovimientos with id " + id + " no longer exists.", enfe);
-         }
-         CajaMovimientos cajaMovimientos = detalleCajaMovimientos.getCajaMovimientos();
-         if (cajaMovimientos != null) {
-            cajaMovimientos.getDetalleCajaMovimientosList().remove(detalleCajaMovimientos);
-            cajaMovimientos = em.merge(cajaMovimientos);
-         }
-         em.remove(detalleCajaMovimientos);
-         em.getTransaction().commit();
-      } finally {
-         if (em != null) {
-            em.close();
-         }
-      }
+   void edit(DetalleCajaMovimientos detalleCajaMovimientos) throws NonexistentEntityException, Exception {
+      DAO.doMerge(detalleCajaMovimientos);
    }
 
    public List<DetalleCajaMovimientos> findDetalleCajaMovimientosEntities() {
@@ -192,10 +132,8 @@ public class DetalleCajaMovimientosJpaController {
    }// </editor-fold>
 
    DetalleCajaMovimientos findDetalleCajaMovimientosByNumero(Integer numero, short tipoMovimiento) {
-      return (DetalleCajaMovimientos) DAO.getEntityManager()
-               .createQuery("SELECT o FROM " + CLASS_NAME + " o" +
-               " WHERE o.numero =" + numero + " AND o.tipo =" + tipoMovimiento)
-               .getSingleResult();
+      return (DetalleCajaMovimientos) DAO.getEntityManager().createQuery("SELECT o FROM " + CLASS_NAME + " o"
+              + " WHERE o.numero =" + numero + " AND o.tipo =" + tipoMovimiento).getSingleResult();
    }
 
    /**
@@ -204,12 +142,13 @@ public class DetalleCajaMovimientosJpaController {
     * @return List de DetalleCajaMovimientos ordenado por DetalleCajaMovimientos.id
     */
    List<DetalleCajaMovimientos> getDetalleCajaMovimientosByCajaMovimiento(int cajaMovimientosID) {
-      return (List<DetalleCajaMovimientos>) DAO.getEntityManager()
-               .createQuery("SELECT o FROM " + CLASS_NAME + " o" +
-               " WHERE o.cajaMovimientos.id =" + cajaMovimientosID +
-               " ORDER BY o.id")
-               .setHint("toplink.refresh", true)
-               .getResultList();
+      return (List<DetalleCajaMovimientos>) DAO.getEntityManager().createQuery("SELECT o FROM " + CLASS_NAME + " o"
+              + " WHERE o.cajaMovimientos.id =" + cajaMovimientosID
+              + " ORDER BY o.id").setHint("toplink.refresh", true).getResultList();
    }
 
+   List<MovimientoConcepto> findDetalleCajaMovimientosBy(MovimientoConcepto movimientoConcepto) {
+      return getEntityManager().createQuery("SELECT o FROM " + CLASS_NAME + " o WHERE o.movimientoConcepto.id=" + movimientoConcepto.getId()).getResultList();
+   }
+   
 }

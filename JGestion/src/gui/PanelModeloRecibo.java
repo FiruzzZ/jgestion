@@ -42,8 +42,6 @@ public class PanelModeloRecibo extends javax.swing.JPanel {
 
       jLabel2.setText("Fecha");
 
-      dcFecha.setDateFormatString(generics.UTIL.DATE_FORMAT.toPattern());
-
       jLabel3.setText("Cliente");
 
       labelMensaje.setForeground(new java.awt.Color(255, 51, 51));
@@ -70,11 +68,10 @@ public class PanelModeloRecibo extends javax.swing.JPanel {
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(dcFecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                     .addComponent(cbCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE))
-                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                     .addComponent(cbCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)))
                .addGroup(layout.createSequentialGroup()
                   .addContainerGap()
-                  .addComponent(labelMensaje, javax.swing.GroupLayout.DEFAULT_SIZE, 390, Short.MAX_VALUE)))
+                  .addComponent(labelMensaje, javax.swing.GroupLayout.DEFAULT_SIZE, 380, Short.MAX_VALUE)))
             .addContainerGap())
       );
       layout.setVerticalGroup(

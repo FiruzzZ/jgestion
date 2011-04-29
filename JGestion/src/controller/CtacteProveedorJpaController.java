@@ -7,7 +7,7 @@ import entity.DetalleRemesa;
 import entity.FacturaCompra;
 import entity.Proveedor;
 import entity.Remesa;
-import generics.UTIL;
+import utilities.general.UTIL;
 import gui.JDResumenCtaCtes;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -181,7 +181,7 @@ public class CtacteProveedorJpaController implements ActionListener {
    public void iniResumenCtaCte(JFrame frame, boolean modal) {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.TESORERIA);
+         UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
       } catch (MessageException ex) {
          javax.swing.JOptionPane.showMessageDialog(frame, ex.getMessage());
          return;

@@ -10,15 +10,13 @@ import java.text.ParseException;
 import java.util.Iterator;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import javax.persistence.EntityNotFoundException;
 import entity.DetalleRecibo;
 import entity.FacturaVenta;
 import entity.Sucursal;
-import generics.UTIL;
+import utilities.general.UTIL;
 import gui.JDBuscadorReRe;
 import gui.JDReRe;
 import gui.generics.JDialogTable;
-import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -28,15 +26,13 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.NoResultException;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -152,7 +148,7 @@ public class ReciboJpaController implements ActionListener, FocusListener {
    public void initRecibos(JFrame frame, boolean modal, boolean setVisible) {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.VENTA);
+         UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.VENTA);
       } catch (MessageException ex) {
          javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
          return;
@@ -196,7 +192,7 @@ public class ReciboJpaController implements ActionListener, FocusListener {
                jdReRe.showMessage(ex.getMessage(), CLASS_NAME, 2);
             } catch (Exception ex) {
                jdReRe.showMessage(ex.getMessage(), CLASS_NAME, 0);
-               Logger.getLogger(SucursalJpaController.class.getName()).log(Level.SEVERE, null, ex);
+               Logger.getLogger(ReciboJpaController.class).log(Level.ERROR, null, ex);
             }
          }
       });
@@ -210,7 +206,7 @@ public class ReciboJpaController implements ActionListener, FocusListener {
                jdReRe.showMessage(ex.getMessage(), CLASS_NAME, 2);
             } catch (Exception ex) {
                jdReRe.showMessage(ex.getMessage(), CLASS_NAME, 0);
-               Logger.getLogger(SucursalJpaController.class.getName()).log(Level.SEVERE, null, ex);
+               Logger.getLogger(ReciboJpaController.class).log(org.apache.log4j.Level.ERROR, null, ex);
             }
          }
       });
@@ -241,7 +237,7 @@ public class ReciboJpaController implements ActionListener, FocusListener {
                jdReRe.showMessage(ex.getMessage(), CLASS_NAME, 2);
             } catch (Exception ex) {
                jdReRe.showMessage(ex.getMessage(), CLASS_NAME, 0);
-               Logger.getLogger(SucursalJpaController.class.getName()).log(Level.SEVERE, null, ex);
+               Logger.getLogger(ReciboJpaController.class).log(org.apache.log4j.Level.ERROR, null, ex);
             }
          }
       });
@@ -372,7 +368,6 @@ public class ReciboJpaController implements ActionListener, FocusListener {
          dr.setAcreditado((Boolean) dtm.getValueAt(i, 4));
          dr.setRecibo(recibo);
          recibo.getDetalleReciboList().add(dr);
-
          if (dr.isAcreditado()) {
             montoParaDesacreditar += dr.getMontoEntrega();
          }
@@ -388,18 +383,19 @@ public class ReciboJpaController implements ActionListener, FocusListener {
       }
       //registrando pago en CAJA
       new CajaMovimientosJpaController().asentarMovimiento(recibo);
-      double desacreditado = new NotaCreditoJpaController().desacreditar((Cliente) jdReRe.getCbClienteProveedor().getSelectedItem(), montoParaDesacreditar);
-      System.out.println("DESACREDITADO=" + desacreditado);
+      if (montoParaDesacreditar > 0) {
+         new NotaCreditoJpaController().desacreditar(recibo, (Cliente) jdReRe.getCbClienteProveedor().getSelectedItem(), montoParaDesacreditar);
+      }
    }
 
    private void actualizarMontoEntrega(FacturaVenta factu, double monto) {
       CtacteCliente ctacte = new CtacteClienteJpaController().findCtacteClienteByFactura(factu.getId());
-      System.out.println("updatingMontoEntrega: CtaCte:" + ctacte.getId() + " -> Importe: " + ctacte.getImporte() + " Entregado:" + ctacte.getEntregado() + " + " + monto);
+      Logger.getLogger(ReciboJpaController.class).debug("updatingMontoEntrega: CtaCte:" + ctacte.getId() + " -> Importe: " + ctacte.getImporte() + " Entregado:" + ctacte.getEntregado() + " + " + monto);
 
       ctacte.setEntregado(ctacte.getEntregado() + monto);
       if (ctacte.getImporte() == ctacte.getEntregado()) {
          ctacte.setEstado(Valores.CtaCteEstado.PAGADA.getEstado());
-         System.out.println("CtaCte Nº:" + ctacte.getId() + " SALDADA");
+         Logger.getLogger(ReciboJpaController.class).debug("CtaCte Nº:" + ctacte.getId() + " PAGADA");
       }
       DAO.doMerge(ctacte);
    }
@@ -539,7 +535,7 @@ public class ReciboJpaController implements ActionListener, FocusListener {
    public void initBuscador(JFrame frame, boolean modal) {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.VENTA);
+         UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.VENTA);
       } catch (MessageException ex) {
          javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
          return;
@@ -836,7 +832,9 @@ public class ReciboJpaController implements ActionListener, FocusListener {
       List<DetalleRecibo> detalleReciboList = new DetalleReciboJpaController().findDetalleReciboEntitiesByFactura(factura);
       List recibosList = new ArrayList(detalleReciboList.size());
       for (DetalleRecibo detalleRecibo : detalleReciboList) {
-         recibosList.add(detalleRecibo.getRecibo());
+         if (!recibosList.contains(detalleRecibo.getRecibo())) {
+            recibosList.add(detalleRecibo.getRecibo());
+         }
       }
       return recibosList;
    }

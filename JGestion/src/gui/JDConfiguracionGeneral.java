@@ -10,7 +10,7 @@
  */
 package gui;
 
-import generics.UTIL;
+import utilities.general.UTIL;
 import java.text.DecimalFormat;
 
 /**

@@ -3,7 +3,7 @@ package controller;
 import controller.exceptions.IllegalOrphanException;
 import controller.exceptions.MessageException;
 import controller.exceptions.NonexistentEntityException;
-import generics.UTIL;
+import utilities.general.UTIL;
 import entity.Unidadmedida;
 import gui.JDMiniABM;
 import java.awt.event.ActionEvent;
@@ -246,7 +246,7 @@ public class UnidadmedidaJpaController implements ActionListener, MouseListener 
    public void initABM(java.awt.Frame frame, boolean modal) {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.DATOS_GENERAL);
+         UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.DATOS_GENERAL);
       } catch (MessageException ex) {
          javax.swing.JOptionPane.showMessageDialog(null,ex.getMessage());
          return;

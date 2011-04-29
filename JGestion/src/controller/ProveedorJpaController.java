@@ -12,7 +12,7 @@ import entity.Departamento;
 import entity.Municipio;
 import entity.Provincia;
 import entity.Rubro;
-import generics.UTIL;
+import utilities.general.UTIL;
 import gui.JDABM;
 import gui.JDContenedor;
 import gui.PanelABMProveedores;
@@ -288,7 +288,7 @@ public class ProveedorJpaController implements ActionListener, MouseListener, Ke
    private void initABM(boolean isEditing, ActionEvent e) throws MessageException {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.ABM_PROVEEDORES);
+         UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.ABM_PROVEEDORES);
       } catch (MessageException ex) {
          javax.swing.JOptionPane.showMessageDialog(null,ex.getMessage());
          return;

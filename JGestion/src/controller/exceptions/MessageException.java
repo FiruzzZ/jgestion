@@ -2,7 +2,7 @@
 package controller.exceptions;
 
 /**
- *
+ * End-user messages
  * @author FiruzzZ
  */
 public class MessageException extends Exception {

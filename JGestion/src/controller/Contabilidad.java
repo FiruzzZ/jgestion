@@ -6,7 +6,7 @@ import controller.exceptions.MissingReportException;
 import entity.DetalleCajaMovimientos;
 import entity.FacturaCompra;
 import entity.FacturaVenta;
-import generics.UTIL;
+import utilities.general.UTIL;
 import gui.JDBalance;
 import gui.PanelBalanceComprasVentas;
 import gui.PanelBalanceGeneral;

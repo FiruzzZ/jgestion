@@ -30,6 +30,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
    private final int modoVista;
    private DecimalFormatSymbols decimalFormatSymbols;
    private DecimalFormat decimalFormat;
+   private boolean viewMode;
 
    /** Creates new form JDVenta */
    public JDFacturaVenta(JFrame parent, boolean modal, int factVenta1_Presup2_Remito3) {
@@ -101,7 +102,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
       labelCaja = new javax.swing.JLabel();
       labelNumMovimiento = new javax.swing.JLabel();
       tfNumMovimiento = new javax.swing.JTextField();
-      jLabel3 = new javax.swing.JLabel();
+      labelListaPrecios = new javax.swing.JLabel();
       jLabel1 = new javax.swing.JLabel();
       cbCliente = new javax.swing.JComboBox();
       btnCliente = new javax.swing.JButton();
@@ -207,7 +208,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
       tfNumMovimiento.setFocusable(false);
       tfNumMovimiento.setRequestFocusEnabled(false);
 
-      jLabel3.setText("Lista Precios");
+      labelListaPrecios.setText("Lista Precios");
 
       jLabel1.setText("Cliente");
 
@@ -218,8 +219,6 @@ public class JDFacturaVenta extends javax.swing.JDialog {
 
       cbListaPrecio.setName("listaPrecios"); // NOI18N
 
-      dcFechaFactura.setDate(new java.util.Date());
-      dcFechaFactura.setDateFormatString(generics.UTIL.DATE_FORMAT.toPattern());
       dcFechaFactura.setNextFocusableComponent(cbFacturaTipo);
 
       jLabel2.setText("Sucursal");
@@ -290,7 +289,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
          .addGroup(panelDatosFacturacionLayout.createSequentialGroup()
             .addGroup(panelDatosFacturacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                .addComponent(labelObservacion)
-               .addComponent(jLabel3)
+               .addComponent(labelListaPrecios)
                .addComponent(jLabel1)
                .addComponent(labelCaja)
                .addComponent(labelLetra))
@@ -361,7 +360,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
                .addComponent(btnCliente))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addGroup(panelDatosFacturacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-               .addComponent(jLabel3)
+               .addComponent(labelListaPrecios)
                .addComponent(jLabel2)
                .addComponent(cbSucursal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                .addComponent(labelListaPrecioParaCatalogo)
@@ -885,7 +884,6 @@ public class JDFacturaVenta extends javax.swing.JDialog {
    private javax.swing.JLabel jLabel25;
    private javax.swing.JLabel jLabel26;
    private javax.swing.JLabel jLabel27;
-   private javax.swing.JLabel jLabel3;
    private javax.swing.JLabel jLabel8;
    private javax.swing.JLabel jLabel9;
    private javax.swing.JPanel jPanel4;
@@ -901,6 +899,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
    private javax.swing.JLabel labelIsInOferta;
    private javax.swing.JLabel labelLetra;
    private javax.swing.JLabel labelListaPrecioParaCatalogo;
+   private javax.swing.JLabel labelListaPrecios;
    private javax.swing.JLabel labelN_factura;
    private javax.swing.JLabel labelNumMovimiento;
    private javax.swing.JLabel labelObservacion;
@@ -1170,6 +1169,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
       cbCaja.setEnabled(false);
       cbFormaPago.setEnabled(false);
       tfDias.setEnabled(false);
+      tfObservacion.setEnabled(false);
       //////////////////
       tfProductoCodigo.setEnabled(false);
       bBuscarProducto.setEnabled(false);
@@ -1303,7 +1303,9 @@ public class JDFacturaVenta extends javax.swing.JDialog {
       labelCaja.setVisible(false);
       cbCaja.setVisible(false);
       //no descuentos
+      labelDescuento.setVisible(false);
       cbDesc.setVisible(false);
+      tfProductoDesc.setVisible(false);
       pack();
    }
 
@@ -1315,4 +1317,26 @@ public class JDFacturaVenta extends javax.swing.JDialog {
          tfObservacion.setBackground(null);
       }
    }
+
+   /**
+    * Sirve de guia para saber si la ventana se está utilizando en modo vista
+    * @param viewMode 
+    */
+   public void setViewMode(boolean viewMode) {
+      this.viewMode = viewMode;
+   }
+
+   /**
+    * @see JDFacturaVenta#setViewMode(boolean)}
+    * @return 
+    */
+   public boolean isViewMode() {
+      return viewMode;
+   }
+
+   public void setVisibleListaPrecio(boolean b) {
+      cbListaPrecio.setVisible(b);
+      labelListaPrecios.setVisible(b);
+   }
+   
 }

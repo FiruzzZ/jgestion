@@ -39,10 +39,10 @@ public class PanelBuscadorMovimientosVarios extends javax.swing.JPanel {
       dcHasta = new com.toedter.calendar.JDateChooser();
       labelReRe3 = new javax.swing.JLabel();
       cbEstadoCaja = new javax.swing.JComboBox();
+      labelReRe4 = new javax.swing.JLabel();
+      cbMovimientoConceptos = new javax.swing.JComboBox();
 
       jLabel9.setText("Caja");
-
-      dcDesde.setDateFormatString(generics.UTIL.DATE_FORMAT.toPattern());
 
       jLabel3.setText("Desde");
 
@@ -52,39 +52,41 @@ public class PanelBuscadorMovimientosVarios extends javax.swing.JPanel {
 
       jLabel4.setText("Hasta");
 
-      dcHasta.setDateFormatString(generics.UTIL.DATE_FORMAT.toPattern());
-
       labelReRe3.setText("Estado de caja");
 
       cbEstadoCaja.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Abierta", "Cerrada", "Ambas" }));
+
+      labelReRe4.setText("Mov. Concepto");
 
       javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
       this.setLayout(layout);
       layout.setHorizontalGroup(
          layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
          .addGroup(layout.createSequentialGroup()
-            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addContainerGap()
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+               .addGroup(layout.createSequentialGroup()
+                  .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                     .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.TRAILING)
+                     .addComponent(labelReRe2, javax.swing.GroupLayout.Alignment.TRAILING))
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                  .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                     .addComponent(cbCaja, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                     .addComponent(cbIngresoEgreso, javax.swing.GroupLayout.Alignment.TRAILING, 0, 179, Short.MAX_VALUE)))
+               .addGroup(layout.createSequentialGroup()
+                  .addComponent(labelReRe4)
+                  .addGap(2, 2, 2)
+                  .addComponent(cbMovimientoConceptos, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+            .addGap(4, 4, 4)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-               .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                  .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                     .addComponent(jLabel9)
-                     .addComponent(labelReRe2))
-                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                  .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                     .addComponent(cbCaja, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
-                     .addComponent(cbIngresoEgreso, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE))
-                  .addGap(18, 18, 18)
-                  .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                     .addComponent(labelReRe3)
-                     .addComponent(jLabel3))
-                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                  .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                     .addComponent(cbEstadoCaja, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
-                     .addComponent(dcDesde, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))
-               .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                  .addComponent(jLabel4)
-                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                  .addComponent(dcHasta, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))
+               .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING)
+               .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING)
+               .addComponent(labelReRe3, javax.swing.GroupLayout.Alignment.TRAILING))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+               .addComponent(cbEstadoCaja, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
+               .addComponent(dcDesde, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+               .addComponent(dcHasta, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addContainerGap())
       );
       layout.setVerticalGroup(
@@ -101,16 +103,17 @@ public class PanelBuscadorMovimientosVarios extends javax.swing.JPanel {
                   .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                   .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                      .addComponent(labelReRe2)
-                     .addComponent(cbIngresoEgreso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                     .addComponent(cbIngresoEgreso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                     .addComponent(jLabel3))
                   .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                   .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                     .addComponent(jLabel4)
-                     .addComponent(dcHasta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                     .addComponent(dcHasta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                     .addComponent(labelReRe4)
+                     .addComponent(cbMovimientoConceptos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                     .addComponent(jLabel4)))
                .addGroup(layout.createSequentialGroup()
                   .addGap(37, 37, 37)
-                  .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                     .addComponent(dcDesde, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                     .addComponent(jLabel3))))
+                  .addComponent(dcDesde, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
             .addContainerGap(16, Short.MAX_VALUE))
       );
    }// </editor-fold>//GEN-END:initComponents
@@ -120,6 +123,7 @@ public class PanelBuscadorMovimientosVarios extends javax.swing.JPanel {
    private javax.swing.JComboBox cbCaja;
    private javax.swing.JComboBox cbEstadoCaja;
    private javax.swing.JComboBox cbIngresoEgreso;
+   private javax.swing.JComboBox cbMovimientoConceptos;
    private com.toedter.calendar.JDateChooser dcDesde;
    private com.toedter.calendar.JDateChooser dcHasta;
    private javax.swing.JLabel jLabel3;
@@ -127,6 +131,7 @@ public class PanelBuscadorMovimientosVarios extends javax.swing.JPanel {
    private javax.swing.JLabel jLabel9;
    private javax.swing.JLabel labelReRe2;
    private javax.swing.JLabel labelReRe3;
+   private javax.swing.JLabel labelReRe4;
    // End of variables declaration//GEN-END:variables
 
    public JComboBox getCbCaja() {
@@ -149,6 +154,10 @@ public class PanelBuscadorMovimientosVarios extends javax.swing.JPanel {
       return cbEstadoCaja;
    }
 
+   public JComboBox getCbMovimientoConceptos() {
+      return cbMovimientoConceptos;
+   }
+   
    public void setDatesToNull() {
       dcDesde.setDate(null);
       dcHasta.setDate(null);

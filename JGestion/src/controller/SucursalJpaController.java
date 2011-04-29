@@ -1,6 +1,6 @@
 package controller;
 
-import generics.UTIL;
+import utilities.general.UTIL;
 import controller.exceptions.*;
 import entity.Departamento;
 import entity.Municipio;
@@ -137,7 +137,7 @@ public class SucursalJpaController implements ActionListener, MouseListener, Key
    private void initABM(boolean isEditting, ActionEvent e) throws MessageException {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.DATOS_GENERAL);
+         UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.DATOS_GENERAL);
       } catch (MessageException ex) {
          javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
          return;

@@ -8,7 +8,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import entity.Producto;
-import generics.UTIL;
+import utilities.general.UTIL;
 import gui.JDMiniABM;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -203,7 +203,7 @@ public class IvaJpaController implements ActionListener, MouseListener {
    public void initABM(java.awt.Frame frame, boolean modal) {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.DATOS_GENERAL);
+         UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.DATOS_GENERAL);
       } catch (MessageException ex) {
          javax.swing.JOptionPane.showMessageDialog(null,ex.getMessage());
          return;

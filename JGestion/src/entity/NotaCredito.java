@@ -231,6 +231,6 @@ public class NotaCredito implements Serializable {
 
    @Override
    public String toString() {
-      return "entity.NotaCredito[id=" + id + ", número=" + numero + ", importe=" + importe + ", fechaNotaCredito=" + fechaNotaCredito + ", fechaCarga=" + fechaCarga + ", Cliente=" + cliente + ", Usuario=" + usuario + ", Sucursal=" + sucursal + ", detalle.size=" + detalleNotaCreditoCollection.size() + "]";
+      return "entity.NotaCredito[id=" + id + ", número=" + numero + ", importe=" + importe + ",desacreditado=" + desacreditado + ", fechaNotaCredito=" + fechaNotaCredito + ", fechaCarga=" + fechaCarga + ", Cliente=" + cliente + ", Usuario=" + usuario + ", Sucursal=" + sucursal + ", detalle.size=" + detalleNotaCreditoCollection.size() + "]";
    }
 }

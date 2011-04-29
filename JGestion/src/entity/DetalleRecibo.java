@@ -1,17 +1,7 @@
 package entity;
 
 import java.io.Serializable;
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  *
@@ -82,7 +72,7 @@ public class DetalleRecibo implements Serializable {
    public void setFacturaVenta(FacturaVenta facturaVenta) {
       this.facturaVenta = facturaVenta;
    }
-
+   
    public Recibo getRecibo() {
       return recibo;
    }
@@ -129,6 +119,7 @@ public class DetalleRecibo implements Serializable {
 
    @Override
    public String toString() {
-      return "entity.DetalleRecibo[id=" + id + "]";
+      return "entity.DetalleRecibo[id=" + id + ", monto=" + montoEntrega + ", acreditado=" + acreditado + "]";
    }
+
 }

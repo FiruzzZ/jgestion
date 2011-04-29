@@ -38,13 +38,9 @@ public class PanelBalanceGeneral extends javax.swing.JPanel {
       cbIngresosEgresos = new javax.swing.JComboBox();
       jLabel6 = new javax.swing.JLabel();
 
-      dcDesde.setDateFormatString(generics.UTIL.DATE_FORMAT.toPattern());
-
       jLabel3.setText("Desde");
 
       jLabel4.setText("Hasta");
-
-      dcHasta.setDateFormatString(generics.UTIL.DATE_FORMAT.toPattern());
 
       checkMovEntreCajas.setText("Incluir Mov. entre Cajas");
       checkMovEntreCajas.setToolTipText("No afecta los totales de INGRESOS y EGRESOS");

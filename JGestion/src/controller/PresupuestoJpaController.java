@@ -14,7 +14,7 @@ import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import entity.DetallePresupuesto;
 import entity.ListaPrecios;
-import generics.UTIL;
+import utilities.general.UTIL;
 import gui.JDBuscadorReRe;
 import gui.JDFacturaVenta;
 import java.awt.event.ActionListener;

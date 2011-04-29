@@ -17,34 +17,36 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" attributes="0">
-              <EmptySpace max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                  <Group type="102" alignment="1" attributes="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="jLabel9" alignment="1" min="-2" max="-2" attributes="0"/>
+                          <Component id="labelReRe2" alignment="1" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                          <Component id="cbCaja" alignment="1" max="32767" attributes="1"/>
+                          <Component id="cbIngresoEgreso" alignment="1" pref="179" max="32767" attributes="1"/>
+                      </Group>
+                  </Group>
+                  <Group type="102" alignment="1" attributes="1">
+                      <Component id="labelReRe4" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="2" max="-2" attributes="0"/>
+                      <Component id="cbMovimientoConceptos" max="32767" attributes="1"/>
+                  </Group>
+              </Group>
+              <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="1" attributes="0">
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jLabel9" min="-2" max="-2" attributes="0"/>
-                          <Component id="labelReRe2" alignment="0" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="cbCaja" min="-2" pref="138" max="-2" attributes="1"/>
-                          <Component id="cbIngresoEgreso" alignment="0" min="-2" pref="108" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="1" attributes="0">
-                          <Component id="labelReRe3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="cbEstadoCaja" min="-2" pref="108" max="-2" attributes="0"/>
-                          <Component id="dcDesde" alignment="0" min="-2" pref="120" max="-2" attributes="1"/>
-                      </Group>
-                  </Group>
-                  <Group type="102" alignment="1" attributes="0">
-                      <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="dcHasta" min="-2" pref="120" max="-2" attributes="1"/>
-                  </Group>
+                  <Component id="jLabel4" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel3" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Component id="labelReRe3" alignment="1" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="cbEstadoCaja" alignment="0" min="-2" pref="108" max="-2" attributes="0"/>
+                  <Component id="dcDesde" alignment="0" min="-2" pref="120" max="-2" attributes="1"/>
+                  <Component id="dcHasta" alignment="0" min="-2" pref="120" max="-2" attributes="1"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -66,19 +68,19 @@
                       <Group type="103" groupAlignment="2" attributes="0">
                           <Component id="labelReRe2" alignment="2" min="-2" max="-2" attributes="0"/>
                           <Component id="cbIngresoEgreso" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel3" alignment="2" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="2" attributes="0">
-                          <Component id="jLabel4" alignment="2" min="-2" max="-2" attributes="0"/>
                           <Component id="dcHasta" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="labelReRe4" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="cbMovimientoConceptos" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel4" alignment="2" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                   <Group type="102" attributes="0">
                       <EmptySpace min="37" pref="37" max="37" attributes="0"/>
-                      <Group type="103" groupAlignment="2" attributes="0">
-                          <Component id="dcDesde" alignment="2" min="-2" max="-2" attributes="0"/>
-                          <Component id="jLabel3" alignment="2" min="-2" max="-2" attributes="0"/>
-                      </Group>
+                      <Component id="dcDesde" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace pref="16" max="32767" attributes="0"/>
@@ -93,18 +95,8 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JComboBox" name="cbCaja">
-      <Properties>
-        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-          <StringArray count="0"/>
-        </Property>
-      </Properties>
     </Component>
     <Component class="com.toedter.calendar.JDateChooser" name="dcDesde">
-      <Properties>
-        <Property name="dateFormatString" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="generics.UTIL.DATE_FORMAT.toPattern()" type="code"/>
-        </Property>
-      </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel3">
       <Properties>
@@ -133,11 +125,6 @@
       </Properties>
     </Component>
     <Component class="com.toedter.calendar.JDateChooser" name="dcHasta">
-      <Properties>
-        <Property name="dateFormatString" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="generics.UTIL.DATE_FORMAT.toPattern()" type="code"/>
-        </Property>
-      </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="labelReRe3">
       <Properties>
@@ -154,6 +141,13 @@
           </StringArray>
         </Property>
       </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="labelReRe4">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Mov. Concepto"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="cbMovimientoConceptos">
     </Component>
   </SubComponents>
 </Form>

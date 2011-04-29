@@ -5,7 +5,7 @@
  */
 package gui;
 
-import generics.UTIL;
+import utilities.general.UTIL;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -141,8 +141,6 @@ public class JDFacturaCompra extends javax.swing.JDialog {
             tfDiasKeyTyped(evt);
          }
       });
-
-      dcFechaFactura.setDateFormatString(generics.UTIL.DATE_FORMAT.toPattern());
 
       labelFacturaNumero.setText("Nº");
 

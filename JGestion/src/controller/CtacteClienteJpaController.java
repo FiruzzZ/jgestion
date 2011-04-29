@@ -8,7 +8,7 @@ import entity.DetalleRecibo;
 import entity.FacturaVenta;
 import entity.Proveedor;
 import entity.Recibo;
-import generics.UTIL;
+import utilities.general.UTIL;
 import gui.JDBuscador;
 import gui.JDResumenCtaCtes;
 import gui.PanelCtaCteCheckVencimientos;
@@ -220,7 +220,7 @@ public class CtacteClienteJpaController implements ActionListener {
    public void initResumenCtaCte(JFrame frame, boolean modal) {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.TESORERIA);
+         UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
       } catch (MessageException ex) {
          javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
          return;

@@ -47,14 +47,11 @@ public class PanelCtaCteCheckVencimientos extends javax.swing.JPanel {
 
       jLabel2.setText("Lista");
 
-      dcDesde.setDateFormatString(generics.UTIL.DATE_FORMAT.toPattern());
       dcDesde.setMinSelectableDate(new java.util.Date(-62135755115000L));
 
       jLabel3.setText("Desde");
 
       jLabel4.setText("Hasta");
-
-      dcHasta.setDateFormatString(generics.UTIL.DATE_FORMAT.toPattern());
 
       jLabel5.setText("Fecha de vencimiento");
 

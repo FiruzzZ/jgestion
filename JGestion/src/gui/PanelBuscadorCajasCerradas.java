@@ -46,10 +46,6 @@ public class PanelBuscadorCajasCerradas extends javax.swing.JPanel {
 
       jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Fecha de cierre", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 11), new java.awt.Color(0, 0, 0))); // NOI18N
 
-      dcHasta.setDateFormatString(generics.UTIL.DATE_FORMAT.toPattern());
-
-      dcDesde.setDateFormatString(generics.UTIL.DATE_FORMAT.toPattern());
-
       jLabel3.setText("Desde");
 
       jLabel4.setText("Hasta");

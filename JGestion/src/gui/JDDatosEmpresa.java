@@ -48,8 +48,8 @@ public class JDDatosEmpresa extends javax.swing.JDialog {
       tfEmail = new javax.swing.JTextField();
       jLabel8 = new javax.swing.JLabel();
       tfCUIT = new javax.swing.JTextField();
-      bNuevo = new javax.swing.JButton();
-      bNuevo1 = new javax.swing.JButton();
+      btnGuardar = new javax.swing.JButton();
+      btnSalir = new javax.swing.JButton();
       jLabel9 = new javax.swing.JLabel();
       jLabel10 = new javax.swing.JLabel();
       tfWeb = new javax.swing.JTextField();
@@ -64,7 +64,7 @@ public class JDDatosEmpresa extends javax.swing.JDialog {
 
       setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-      jLabel1.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+      jLabel1.setFont(new java.awt.Font("Tahoma", 1, 11));
       jLabel1.setText("DATOS DE LA EMPRESA");
 
       jLabel2.setText("Nombre");
@@ -106,13 +106,13 @@ public class JDDatosEmpresa extends javax.swing.JDialog {
          }
       });
 
-      bNuevo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px-Crystal_Clear_action_apply.png"))); // NOI18N
-      bNuevo.setText("Guardar");
-      bNuevo.setName("bGuardar"); // NOI18N
+      btnGuardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px-Crystal_Clear_action_apply.png"))); // NOI18N
+      btnGuardar.setText("Guardar");
+      btnGuardar.setName("bGuardar"); // NOI18N
 
-      bNuevo1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px-Crystal_Clear_action_editdelete.png"))); // NOI18N
-      bNuevo1.setText("Salir");
-      bNuevo1.setName("bSalir"); // NOI18N
+      btnSalir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px-Crystal_Clear_action_editdelete.png"))); // NOI18N
+      btnSalir.setText("Salir");
+      btnSalir.setName("bSalir"); // NOI18N
 
       jLabel9.setForeground(new java.awt.Color(51, 51, 255));
       jLabel9.setText("Esta información será usada para los reportes del sistema");
@@ -163,8 +163,6 @@ public class JDDatosEmpresa extends javax.swing.JDialog {
 
       jLabel12.setText("Inicio Actv.");
 
-      dcInicioActividad.setDateFormatString(generics.UTIL.DATE_FORMAT.toPattern());
-
       javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
       getContentPane().setLayout(layout);
       layout.setHorizontalGroup(
@@ -202,9 +200,9 @@ public class JDDatosEmpresa extends javax.swing.JDialog {
                   .addGap(18, 18, 18)
                   .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                      .addGroup(layout.createSequentialGroup()
-                        .addComponent(bNuevo)
+                        .addComponent(btnGuardar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(bNuevo1, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(btnSalir, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE))
                      .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                .addGroup(layout.createSequentialGroup()
                   .addGap(20, 20, 20)
@@ -263,8 +261,8 @@ public class JDDatosEmpresa extends javax.swing.JDialog {
                   .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                      .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                      .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(bNuevo)
-                        .addComponent(bNuevo1)))
+                        .addComponent(btnGuardar)
+                        .addComponent(btnSalir)))
                   .addContainerGap())
                .addGroup(layout.createSequentialGroup()
                   .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -295,9 +293,9 @@ public class JDDatosEmpresa extends javax.swing.JDialog {
 
    // Variables declaration - do not modify//GEN-BEGIN:variables
    private javax.swing.JButton bBuscarFoto;
-   private javax.swing.JButton bNuevo;
-   private javax.swing.JButton bNuevo1;
    private javax.swing.JButton bQuitarFoto;
+   private javax.swing.JButton btnGuardar;
+   private javax.swing.JButton btnSalir;
    private com.toedter.calendar.JDateChooser dcInicioActividad;
    private javax.swing.JLabel jLabel1;
    private javax.swing.JLabel jLabel10;
@@ -436,8 +434,8 @@ public class JDDatosEmpresa extends javax.swing.JDialog {
 
     public void setListener(Object o) {
         bBuscarFoto.addActionListener((ActionListener) o);
-        bNuevo.addActionListener((ActionListener) o);
-        bNuevo1.addActionListener((ActionListener) o);
+        btnGuardar.addActionListener((ActionListener) o);
+        btnSalir.addActionListener((ActionListener) o);
         bQuitarFoto.addActionListener((ActionListener) o);
     }
 
