@@ -9,7 +9,7 @@ import entity.Sucursal;
 import gui.JDFacturaVenta;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import generics.UTIL;
+import utilities.general.UTIL;
 import gui.JDBuscadorReRe;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

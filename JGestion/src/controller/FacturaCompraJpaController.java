@@ -15,7 +15,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import entity.Producto;
 import generics.AutoCompleteComboBox;
-import generics.UTIL;
+import utilities.general.UTIL;
 import gui.JDBuscadorReRe;
 import gui.JDFacturaCompra;
 import java.awt.event.ActionEvent;
@@ -150,7 +150,7 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
 
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.COMPRA);
+         UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.COMPRA);
       } catch (MessageException ex) {
          JOptionPane.showMessageDialog(null, ex.getMessage());
          return;
@@ -579,7 +579,7 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
    public void initBuscador(JFrame frame, final boolean modal, final boolean paraAnular) {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.COMPRA);
+         UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.COMPRA);
       } catch (MessageException ex) {
          javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
          return;

@@ -15,7 +15,7 @@ import controller.exceptions.NonexistentEntityException;
 import entity.ListaPrecios;
 import entity.Producto;
 import entity.ProductosWeb;
-import generics.UTIL;
+import utilities.general.UTIL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;

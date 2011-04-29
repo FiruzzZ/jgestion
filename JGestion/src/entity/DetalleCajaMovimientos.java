@@ -26,7 +26,6 @@ import javax.persistence.*;
       })
    })
 })
-
 public class DetalleCajaMovimientos implements Serializable {
 
    private static final long serialVersionUID = 1L;
@@ -63,6 +62,9 @@ public class DetalleCajaMovimientos implements Serializable {
    @JoinColumn(name = "usuario", referencedColumnName = "id", nullable = false)
    @ManyToOne(optional = false)
    private Usuario usuario;
+   @JoinColumn(name = "movimiento_concepto", referencedColumnName = "id", nullable = false)
+   @ManyToOne(optional = false)
+   private MovimientoConcepto movimientoConcepto;
 
    public DetalleCajaMovimientos() {
    }
@@ -137,6 +139,14 @@ public class DetalleCajaMovimientos implements Serializable {
 
    public void setUsuario(Usuario usuario) {
       this.usuario = usuario;
+   }
+
+   public MovimientoConcepto getMovimientoConcepto() {
+      return movimientoConcepto;
+   }
+
+   public void setMovimientoConcepto(MovimientoConcepto movimientoConcepto) {
+      this.movimientoConcepto = movimientoConcepto;
    }
 
    @Override

@@ -40,11 +40,7 @@ public class PanelBuscadorOrdenes extends javax.swing.JPanel {
 
       jLabel3.setText("Desde");
 
-      dcDesde.setDateFormatString(generics.UTIL.DATE_FORMAT.toPattern());
-
       jLabel4.setText("Hasta");
-
-      dcHasta.setDateFormatString(generics.UTIL.DATE_FORMAT.toPattern());
 
       javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
       this.setLayout(layout);

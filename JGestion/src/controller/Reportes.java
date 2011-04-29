@@ -2,7 +2,7 @@ package controller;
 
 import controller.exceptions.MissingReportException;
 import entity.DatosEmpresa;
-import generics.UTIL;
+import utilities.general.UTIL;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;

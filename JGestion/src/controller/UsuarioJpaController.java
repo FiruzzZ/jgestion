@@ -12,7 +12,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import entity.Permisos;
-import generics.UTIL;
+import utilities.general.UTIL;
 import gui.JDABM;
 import gui.JDContenedor;
 import gui.JDLogin;
@@ -415,7 +415,7 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
    private void initABM(boolean isEditing) throws Exception {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.ABM_USUARIOS);
+         UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.ABM_USUARIOS);
       } catch (MessageException ex) {
          javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
          return;
@@ -611,7 +611,7 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
     * @throws MessageException Si no tiene permiso o si no se pudo conectarse
     * con la base de datos para checkear el permiso.
     */
-   public static void CHECK_PERMISO(PermisoDe permisoToCheck) throws MessageException {
+   public static void checkPermiso(PermisoDe permisoToCheck) throws MessageException {
       CURRENT_USER = DAO.getEntityManager().find(Usuario.class, CURRENT_USER.getId());
       if (CURRENT_USER == null) {
          throw new MessageException("Error chequeando los permisos del usuario.\nVerificar conexión con la Base de datos");

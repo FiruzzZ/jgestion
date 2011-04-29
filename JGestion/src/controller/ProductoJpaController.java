@@ -7,7 +7,7 @@ import entity.Producto;
 import entity.Rubro;
 import entity.Stock;
 import entity.Sucursal;
-import generics.UTIL;
+import utilities.general.UTIL;
 import entity.Unidadmedida;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -270,7 +270,7 @@ public class ProductoJpaController implements ActionListener, KeyListener {
    private void initABM(boolean isEditing) throws MessageException, IOException {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.ABM_PRODUCTOS);
+         UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.ABM_PRODUCTOS);
       } catch (MessageException ex) {
          JOptionPane.showMessageDialog(null, ex.getMessage());
          return;
@@ -825,7 +825,7 @@ public class ProductoJpaController implements ActionListener, KeyListener {
    private void eliminarProducto() throws MessageException, NonexistentEntityException, DatabaseErrorException {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.ABM_PRODUCTOS);
+         UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.ABM_PRODUCTOS);
       } catch (MessageException ex) {
          javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
          return;

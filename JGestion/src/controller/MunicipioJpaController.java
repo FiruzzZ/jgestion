@@ -7,7 +7,7 @@ import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import entity.Departamento;
 import entity.Provincia;
-import generics.UTIL;
+import utilities.general.UTIL;
 import gui.JDABM;
 import gui.JDContenedor;
 import gui.PanelABMDeptos;
@@ -271,7 +271,7 @@ public class MunicipioJpaController implements ActionListener, MouseListener, Ke
    }
 
    private void initABM(boolean isEditting, ActionEvent e) throws Exception {
-      UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.TESORERIA);
+      UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
       if (isEditting && municipio == null) {
          throw new MessageException("Debe elegir una fila");
       }

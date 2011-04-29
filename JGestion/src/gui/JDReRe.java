@@ -128,7 +128,6 @@ public class JDReRe extends javax.swing.JDialog {
       cbSucursal.setName("cbSucursal"); // NOI18N
 
       dcFechaReRe.setDate(new java.util.Date());
-      dcFechaReRe.setDateFormatString(generics.UTIL.DATE_FORMAT.toPattern());
       dcFechaReRe.setNextFocusableComponent(cbSucursal);
 
       jLabel4.setText("Fecha");
@@ -145,7 +144,6 @@ public class JDReRe extends javax.swing.JDialog {
       jLabel15.setText("Caja");
 
       dcFechaCarga.setDate(new java.util.Date());
-      dcFechaCarga.setDateFormatString(generics.UTIL.DATE_FORMAT.toPattern());
       dcFechaCarga.setEnabled(false);
 
       jLabel7.setText("Fecha carga");

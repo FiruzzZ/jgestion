@@ -157,8 +157,6 @@ public class JDResumenCtaCtes extends javax.swing.JDialog {
 
       jLabel2.setText("Desde:");
 
-      dcDesde.setDateFormatString(generics.UTIL.DATE_FORMAT.toPattern());
-
       javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
       getContentPane().setLayout(layout);
       layout.setHorizontalGroup(

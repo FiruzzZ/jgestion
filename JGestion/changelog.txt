@@ -1,6 +1,63 @@
+2011/04/27
+|->DB
+|  |-CREATE TABLE movimiento_concepto (
+      id serial NOT NULL, 
+      nombre character varying(30) NOT NULL, 
+      PRIMARY KEY (id), 
+      UNIQUE (nombre)
+     ) WITH ( OIDS = FALSE );
+      INSERT INTO movimiento_concepto VALUES (1,'efectivo');
+      ALTER TABLE detalle_caja_movimientos ADD COLUMN movimiento_concepto INTEGER NOT NULL DEFAULT 1;
+      ALTER TABLE detalle_caja_movimientos ADD FOREIGN KEY (movimiento_concepto) REFERENCES movimiento_concepto (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+2011/04/18
+|->DB
+|  |-CREATE TABLE detalle_acreditacion
+   |-ALTER COLUMNS TYPE double precision to NUMERIC(12,3)..
+      ALTER TABLE caja_movimientos ALTER monto_apertura TYPE numeric(12,3);
+      ALTER TABLE caja_movimientos ALTER monto_cierre TYPE numeric(12,3);
+      ALTER TABLE ctacte_cliente ALTER entregado TYPE numeric(12,3);
+      ALTER TABLE ctacte_cliente ALTER importe TYPE numeric(12,3);
+      ALTER TABLE ctacte_proveedor ALTER entregado TYPE numeric(12,3);
+      ALTER TABLE ctacte_proveedor ALTER importe TYPE numeric(12,3);
+      ALTER TABLE detalle_acreditacion ALTER monto TYPE numeric(12,3);
+      ALTER TABLE detalle_caja_movimientos ALTER monto TYPE numeric(12,3);
+      ALTER TABLE detalle_compra ALTER precio_unitario TYPE numeric(12,3);
+      ALTER TABLE detalle_lista_precios ALTER margen TYPE numeric(12,3);
+      ALTER TABLE detalle_nota_credito ALTER precio_unitario TYPE numeric(12,3);
+      ALTER TABLE detalle_presupuesto ALTER descuento TYPE numeric(12,3);
+      ALTER TABLE detalle_presupuesto ALTER precio_unitario TYPE numeric(12,3);
+      ALTER TABLE detalle_recibo ALTER monto_entrega TYPE numeric(12,3);
+      ALTER TABLE detalle_remesa ALTER monto_entrega TYPE numeric(12,3);
+      ALTER TABLE detalle_venta ALTER descuento TYPE numeric(12,3);
+      ALTER TABLE detalle_venta ALTER precio_unitario TYPE numeric(12,3);
+      ALTER TABLE factura_compra ALTER perc_iva TYPE numeric(12,3);
+      ALTER TABLE factura_compra ALTER perc_dgr TYPE numeric(12,3);
+      ALTER TABLE factura_compra ALTER importe TYPE numeric(12,3);
+      ALTER TABLE factura_compra ALTER iva10 TYPE numeric(12,3);
+      ALTER TABLE factura_compra ALTER iva21 TYPE numeric(12,3);
+      ALTER TABLE factura_venta ALTER importe TYPE numeric(12,3);
+      ALTER TABLE factura_venta ALTER descuento TYPE numeric(12,3);
+      ALTER TABLE factura_venta ALTER iva10 TYPE numeric(12,3);
+      ALTER TABLE factura_venta ALTER iva21 TYPE numeric(12,3);
+      ALTER TABLE factura_venta ALTER gravado TYPE numeric(12,3);
+      ALTER TABLE nota_credito ALTER importe TYPE numeric(12,3);
+      ALTER TABLE nota_credito ALTER gravado TYPE numeric(12,3);
+      ALTER TABLE nota_credito ALTER iva10 TYPE numeric(12,3);
+      ALTER TABLE nota_credito ALTER iva21 TYPE numeric(12,3);
+      ALTER TABLE nota_credito ALTER desacreditado TYPE numeric(12,3);
+      ALTER TABLE presupuesto ALTER importe TYPE numeric(12,3);
+      ALTER TABLE presupuesto ALTER descuento TYPE numeric(12,3);
+      ALTER TABLE presupuesto ALTER iva10 TYPE numeric(12,3);
+      ALTER TABLE presupuesto ALTER iva21 TYPE numeric(12,3);
+      ALTER TABLE producto ALTER costo_compra TYPE numeric(12,3);
+      ALTER TABLE producto ALTER precio_venta TYPE numeric(12,3);
+      ALTER TABLE productos_web ALTER precio TYPE numeric(12,3);
+      ALTER TABLE recibo ALTER monto TYPE numeric(12,3);
+      ALTER TABLE remesa ALTER monto_entrega TYPE numeric(12,3);
 2011/04/12
 |->DB
    |-ALTER TABLE remito ADD COLUMN fecha_remito date NOT NULL DEFAULT now();
+   |-ALTER TABLE remito ALTER COLUMN fecha_remito DROP DEFAULT;
 2011/04/05
 --Added new feat!! "Nota de crédito"
 |->new Entity NotaCredito

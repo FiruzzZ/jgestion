@@ -7,7 +7,7 @@
 package gui;
 
 import com.toedter.calendar.JDateChooser;
-import generics.UTIL;
+import utilities.general.UTIL;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JComboBox;

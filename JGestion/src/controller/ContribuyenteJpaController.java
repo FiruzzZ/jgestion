@@ -13,7 +13,7 @@ import entity.Cliente;
 import java.util.ArrayList;
 import java.util.List;
 import entity.Proveedor;
-import generics.UTIL;
+import utilities.general.UTIL;
 import gui.JDMiniABM;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
@@ -246,7 +246,7 @@ public class ContribuyenteJpaController implements ActionListener, MouseListener
    public void initABM(java.awt.Frame frame, boolean modal) {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.DATOS_GENERAL);
+         UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.DATOS_GENERAL);
       } catch (MessageException ex) {
          javax.swing.JOptionPane.showMessageDialog(null,ex.getMessage());
          return;

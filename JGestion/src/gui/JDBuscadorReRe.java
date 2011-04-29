@@ -5,7 +5,7 @@
  */
 package gui;
 
-import generics.UTIL;
+import utilities.general.UTIL;
 import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.event.ActionListener;
@@ -118,11 +118,7 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
 
       jLabel2.setText("Desde");
 
-      dcDesde.setDateFormatString(generics.UTIL.DATE_FORMAT.toPattern());
-
       jLabel3.setText("Hasta");
-
-      dcHasta.setDateFormatString(generics.UTIL.DATE_FORMAT.toPattern());
 
       tfOcteto.setColumns(8);
       tfOcteto.setName("tfocteto"); // NOI18N
@@ -298,7 +294,7 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
          }
       });
 
-      jLabel1.setFont(new java.awt.Font("Tahoma", 1, 10)); // NOI18N
+      jLabel1.setFont(new java.awt.Font("Tahoma", 1, 10));
       jLabel1.setText("Nº Registros: 0");
 
       javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());

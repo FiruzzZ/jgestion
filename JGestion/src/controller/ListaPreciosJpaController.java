@@ -7,7 +7,7 @@ import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import entity.DetalleListaPrecios;
 import entity.Rubro;
-import generics.UTIL;
+import utilities.general.UTIL;
 import gui.JDABM;
 import gui.JDContenedor;
 import gui.PanelABMListaPrecio;
@@ -143,7 +143,7 @@ public class ListaPreciosJpaController implements ActionListener, MouseListener,
    public void initContenedor(java.awt.Frame frame, boolean modal) {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.ABM_LISTA_PRECIOS);
+         UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.ABM_LISTA_PRECIOS);
       } catch (MessageException ex) {
          javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
          return;
@@ -186,7 +186,7 @@ public class ListaPreciosJpaController implements ActionListener, MouseListener,
    private void initABM(boolean isEditing, ActionEvent e) throws MessageException {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.ABM_LISTA_PRECIOS);
+         UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.ABM_LISTA_PRECIOS);
       } catch (MessageException ex) {
          javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
          return;

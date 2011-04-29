@@ -49,13 +49,17 @@ public abstract class DAO implements Runnable {
       if (emf == null) {
          Logger.getLogger(DAO.class).log(Level.DEBUG, "EntityManager == null");
 //         emf = Persistence.createEntityManagerFactory("JGestionPU");
-         emf = Persistence.createEntityManagerFactory("JGestionTest");
+//         emf = Persistence.createEntityManagerFactory("JGestionTest");
 //         emf = Persistence.createEntityManagerFactory("JGestionPUWorldPrint");
          getJDBCConnection();
       }
       return emf.createEntityManager();
    }
 
+   static EntityManagerFactory getEntityManagerFactory(String string) {
+      return Persistence.createEntityManagerFactory(string);
+   }
+   
    public static void closeAllConnections() {
       try {
          if (connection != null && !connection.isClosed()) {

@@ -10,18 +10,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import generics.UTIL;
+import utilities.general.UTIL;
 import entity.Usuario;
 import gui.JDMiniABM;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
-import java.awt.event.MouseListener;
 import java.util.List;
 import javax.persistence.NoResultException;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -94,7 +92,7 @@ public class CajaJpaController implements ActionListener {
    private void checkConstraints(Caja caja) throws MessageException, Exception {
       String idQuery = "";
       if (caja.getId() != null) {
-         idQuery = "o.id!= " + caja.getId() + " AND ";
+         idQuery = "o.id <> " + caja.getId() + " AND ";
       }
 
       try {
@@ -189,15 +187,17 @@ public class CajaJpaController implements ActionListener {
    public void initABM(JFrame frame, boolean modal) {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.ABM_CAJAS);
+         UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.ABM_CAJAS);
       } catch (MessageException ex) {
          JOptionPane.showMessageDialog(null, ex.getMessage());
          return;
       }// </editor-fold>
       abm = new JDMiniABM(frame, modal);
+      abm.setListeners(this);
       abm.hideBtnElimiar();
       abm.hideFieldCodigo();
       abm.hideFieldExtra();
+      abm.pack();
       abm.setTitle("ABM - " + CLASS_NAME + "s");
       UTIL.getDefaultTableModel(abm.getjTable1(),
               new String[]{"Nº", "Nombre", "Habilitada", "Últ. apertura", "Eliminada"},
@@ -220,7 +220,6 @@ public class CajaJpaController implements ActionListener {
             }
          }
       });
-      abm.setListeners(this);
       abm.setVisible(true);
    }
 

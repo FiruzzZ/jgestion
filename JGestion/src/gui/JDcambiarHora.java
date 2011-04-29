@@ -9,7 +9,7 @@ package gui;
 
 import controller.ProductoJpaController;
 import entity.Producto;
-import generics.UTIL;
+import utilities.general.UTIL;
 import java.util.Calendar;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;

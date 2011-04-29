@@ -18,7 +18,7 @@ import entity.HistorialOfertas;
 import entity.ListaPrecios;
 import entity.Producto;
 import entity.ProductosWeb;
-import generics.UTIL;
+import utilities.general.UTIL;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;

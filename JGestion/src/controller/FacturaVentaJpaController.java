@@ -1,6 +1,6 @@
 package controller;
 
-import generics.UTIL;
+import utilities.general.UTIL;
 import controller.exceptions.*;
 import entity.*;
 import java.awt.event.FocusEvent;
@@ -160,7 +160,7 @@ public class FacturaVentaJpaController implements ActionListener, KeyListener {
     * para el usuario.
     */
    public void initFacturaVenta(JFrame frame, boolean modal, Object listener, int factVenta1_Presup2_Remito3, boolean setVisible, boolean loadDefaultData) throws MessageException {
-      UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.VENTA);
+      UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.VENTA);
       jdFacturaVenta = new JDFacturaVenta(frame, modal, factVenta1_Presup2_Remito3);
       UTIL.getDefaultTableModel(jdFacturaVenta.getjTable1(),
               columnNames,
@@ -243,7 +243,7 @@ public class FacturaVentaJpaController implements ActionListener, KeyListener {
          }
       });
 
-      //porque cuando es FALSE, se va usar en MODO_VISTA (Factura, Remito o Presupuesto, NotaCredito)
+      //porque cuando es FALSE, se va usar en MODO VISTA (Factura, Remito o Presupuesto, NotaCredito)
       //por lo tanto no es necesario cargar todos los combos
       if (loadDefaultData) {
          // <editor-fold defaultstate="collapsed" desc="AutoCompleteComboBox">
@@ -999,7 +999,7 @@ public class FacturaVentaJpaController implements ActionListener, KeyListener {
    public void initBuscador(JFrame frame, final boolean modal, final boolean paraAnular) {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.VENTA);
+         UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.VENTA);
       } catch (MessageException ex) {
          javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
          return;

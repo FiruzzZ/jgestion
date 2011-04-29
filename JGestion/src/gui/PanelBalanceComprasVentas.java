@@ -41,13 +41,9 @@ public class PanelBalanceComprasVentas extends javax.swing.JPanel {
       jLabel1 = new javax.swing.JLabel();
       cbComprasVentas = new javax.swing.JComboBox();
 
-      dcDesde.setDateFormatString(generics.UTIL.DATE_FORMAT.toPattern());
-
       jLabel3.setText("Desde");
 
       jLabel4.setText("Hasta");
-
-      dcHasta.setDateFormatString(generics.UTIL.DATE_FORMAT.toPattern());
 
       checkCtaCte.setSelected(true);
       checkCtaCte.setText("a Ctas. Ctes.");

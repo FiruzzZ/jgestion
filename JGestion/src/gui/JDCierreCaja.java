@@ -60,10 +60,7 @@ public class JDCierreCaja extends javax.swing.JDialog {
 
       cbCaja.setName("caja"); // NOI18N
 
-      dcApertura.setDateFormatString(generics.UTIL.DATE_FORMAT.toPattern());
       dcApertura.setEnabled(false);
-
-      dcCierre.setDateFormatString(generics.UTIL.DATE_FORMAT.toPattern());
 
       jLabel16.setText("Fecha apertura");
 
@@ -85,7 +82,7 @@ public class JDCierreCaja extends javax.swing.JDialog {
       bBuscar.setToolTipText("Buscar Cajas Cerradas");
       bBuscar.setName("buscar"); // NOI18N
 
-      labelCAJACERRADA.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+      labelCAJACERRADA.setFont(new java.awt.Font("Tahoma", 1, 14));
       labelCAJACERRADA.setForeground(new java.awt.Color(255, 51, 51));
       labelCAJACERRADA.setText("CAJA CERRADA");
 

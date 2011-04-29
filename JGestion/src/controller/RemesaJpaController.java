@@ -13,7 +13,7 @@ import javax.persistence.EntityNotFoundException;
 import entity.DetalleRemesa;
 import entity.FacturaCompra;
 import entity.Proveedor;
-import generics.UTIL;
+import utilities.general.UTIL;
 import gui.JDBuscadorReRe;
 import gui.JDReRe;
 import java.awt.event.ActionListener;
@@ -239,7 +239,7 @@ public class RemesaJpaController implements ActionListener, FocusListener {
    }
 
    public void initRemesa(JFrame frame, boolean modal) throws MessageException {
-      UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.COMPRA);
+      UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.COMPRA);
       jdReRe = new JDReRe(frame, modal);
       jdReRe.setUIForRemesas();
       UTIL.getDefaultTableModel(jdReRe.getjTable1(), colsName, colsWidth);
@@ -493,7 +493,7 @@ public class RemesaJpaController implements ActionListener, FocusListener {
    private void initBuscador(javax.swing.JDialog dialog, boolean modal) {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.COMPRA);
+         UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.COMPRA);
       } catch (MessageException ex) {
          javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
          return;

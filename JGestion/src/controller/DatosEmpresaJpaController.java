@@ -3,7 +3,7 @@ package controller;
 import controller.exceptions.MessageException;
 import controller.exceptions.NonexistentEntityException;
 import entity.DatosEmpresa;
-import generics.UTIL;
+import utilities.general.UTIL;
 import gui.JDDatosEmpresa;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -165,7 +165,7 @@ public class DatosEmpresaJpaController implements ActionListener {
    public void initJD(java.awt.Frame frame, boolean modal) throws Exception {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.DATOS_GENERAL);
+         UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.DATOS_GENERAL);
       } catch (MessageException ex) {
          javax.swing.JOptionPane.showMessageDialog(null,ex.getMessage());
          return;

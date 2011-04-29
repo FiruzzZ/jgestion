@@ -37,13 +37,9 @@ public class PanelBuscadorCajaToCaja extends javax.swing.JPanel {
       jLabel10 = new javax.swing.JLabel();
       cbCajaDestino = new javax.swing.JComboBox();
 
-      dcHasta.setDateFormatString(generics.UTIL.DATE_FORMAT.toPattern());
-
       jLabel3.setText("Desde");
 
       jLabel4.setText("Hasta");
-
-      dcDesde.setDateFormatString(generics.UTIL.DATE_FORMAT.toPattern());
 
       jLabel9.setText("Caja Origen");
 

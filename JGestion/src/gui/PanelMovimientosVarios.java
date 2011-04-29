@@ -6,8 +6,8 @@
  */
 package gui;
 
-import generics.UTIL;
-import java.awt.event.ActionListener;
+import utilities.general.UTIL;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 
 /**
@@ -30,6 +30,7 @@ public class PanelMovimientosVarios extends javax.swing.JPanel {
    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
    private void initComponents() {
 
+      buttonGroupIngresoEgreso = new javax.swing.ButtonGroup();
       bBuscar = new javax.swing.JButton();
       radioIngreso = new javax.swing.JRadioButton();
       radioEgreso = new javax.swing.JRadioButton();
@@ -40,12 +41,22 @@ public class PanelMovimientosVarios extends javax.swing.JPanel {
       jLabel9 = new javax.swing.JLabel();
       tfDescripcion = new javax.swing.JTextField();
       jSeparator1 = new javax.swing.JSeparator();
+      labelResponsables = new javax.swing.JLabel();
+      cbResponsable = new javax.swing.JComboBox();
+      jLabel10 = new javax.swing.JLabel();
+      jLabel11 = new javax.swing.JLabel();
+      cbConcepto = new javax.swing.JComboBox();
+
+      buttonGroupIngresoEgreso.add(radioIngreso);
+      buttonGroupIngresoEgreso.add(radioEgreso);
 
       bBuscar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/lupa.png"))); // NOI18N
+      bBuscar.setMnemonic('b');
       bBuscar.setText("Buscar");
       bBuscar.setToolTipText("Buscar comprobante");
       bBuscar.setName("buscar"); // NOI18N
 
+      radioIngreso.setMnemonic('i');
       radioIngreso.setSelected(true);
       radioIngreso.setText("Ingreso");
       radioIngreso.addActionListener(new java.awt.event.ActionListener() {
@@ -54,6 +65,7 @@ public class PanelMovimientosVarios extends javax.swing.JPanel {
          }
       });
 
+      radioEgreso.setMnemonic('e');
       radioEgreso.setText("Egreso");
       radioEgreso.addActionListener(new java.awt.event.ActionListener() {
          public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -87,33 +99,48 @@ public class PanelMovimientosVarios extends javax.swing.JPanel {
          }
       });
 
+      labelResponsables.setText("Responsble");
+
+      cbResponsable.setToolTipText("Responsable del movimiento (habilitados tesorería)");
+
+      jLabel10.setText("Concepto");
+
+      jLabel11.setText("Tipo");
+
+      cbConcepto.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Efectivo", "Combustible" }));
+
       javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
       this.setLayout(layout);
       layout.setHorizontalGroup(
          layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
          .addGroup(layout.createSequentialGroup()
-            .addContainerGap()
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                .addGroup(layout.createSequentialGroup()
+                  .addContainerGap()
                   .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                     .addComponent(jLabel9)
-                     .addComponent(jLabel8))
+                     .addComponent(jLabel11, javax.swing.GroupLayout.Alignment.TRAILING)
+                     .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.TRAILING)
+                     .addComponent(labelResponsables, javax.swing.GroupLayout.Alignment.TRAILING)
+                     .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.TRAILING)
+                     .addComponent(jLabel15, javax.swing.GroupLayout.Alignment.TRAILING)
+                     .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.TRAILING))
                   .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                   .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                     .addComponent(tfMontoMovimiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                     .addComponent(tfDescripcion, javax.swing.GroupLayout.PREFERRED_SIZE, 271, javax.swing.GroupLayout.PREFERRED_SIZE)))
-               .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                  .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.LEADING)
-                  .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                     .addComponent(jLabel15)
-                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                     .addComponent(cbCaja, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
-                     .addGap(18, 18, 18)
-                     .addComponent(radioIngreso)
-                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                     .addComponent(radioEgreso))
-                  .addComponent(bBuscar)))
-            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                     .addComponent(cbConcepto, javax.swing.GroupLayout.PREFERRED_SIZE, 271, javax.swing.GroupLayout.PREFERRED_SIZE)
+                     .addComponent(cbResponsable, 0, 271, Short.MAX_VALUE)
+                     .addComponent(tfDescripcion, javax.swing.GroupLayout.DEFAULT_SIZE, 271, Short.MAX_VALUE)
+                     .addComponent(cbCaja, 0, 271, Short.MAX_VALUE)
+                     .addGroup(layout.createSequentialGroup()
+                        .addComponent(radioIngreso)
+                        .addGap(4, 4, 4)
+                        .addComponent(radioEgreso))
+                     .addComponent(tfMontoMovimiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+               .addGroup(layout.createSequentialGroup()
+                  .addGap(10, 10, 10)
+                  .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                     .addComponent(bBuscar)
+                     .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 330, javax.swing.GroupLayout.PREFERRED_SIZE))))
+            .addContainerGap())
       );
       layout.setVerticalGroup(
          layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -123,23 +150,31 @@ public class PanelMovimientosVarios extends javax.swing.JPanel {
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-               .addGroup(layout.createSequentialGroup()
-                  .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                     .addComponent(jLabel15)
-                     .addComponent(cbCaja, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                  .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                     .addComponent(tfMontoMovimiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                     .addComponent(jLabel8)))
-               .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                  .addComponent(radioIngreso)
-                  .addComponent(radioEgreso)))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+               .addComponent(cbCaja, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+               .addComponent(jLabel15))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+               .addComponent(radioIngreso)
+               .addComponent(jLabel11)
+               .addComponent(radioEgreso))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+               .addComponent(jLabel10)
+               .addComponent(cbConcepto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+               .addComponent(tfMontoMovimiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+               .addComponent(jLabel8))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                .addComponent(jLabel9)
                .addComponent(tfDescripcion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addContainerGap(12, Short.MAX_VALUE))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+               .addComponent(labelResponsables)
+               .addComponent(cbResponsable, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
       );
    }// </editor-fold>//GEN-END:initComponents
 
@@ -168,20 +203,22 @@ public class PanelMovimientosVarios extends javax.swing.JPanel {
 
    // Variables declaration - do not modify//GEN-BEGIN:variables
    private javax.swing.JButton bBuscar;
+   private javax.swing.ButtonGroup buttonGroupIngresoEgreso;
    private javax.swing.JComboBox cbCaja;
+   private javax.swing.JComboBox cbConcepto;
+   private javax.swing.JComboBox cbResponsable;
+   private javax.swing.JLabel jLabel10;
+   private javax.swing.JLabel jLabel11;
    private javax.swing.JLabel jLabel15;
    private javax.swing.JLabel jLabel8;
    private javax.swing.JLabel jLabel9;
    private javax.swing.JSeparator jSeparator1;
+   private javax.swing.JLabel labelResponsables;
    private javax.swing.JRadioButton radioEgreso;
    private javax.swing.JRadioButton radioIngreso;
    private javax.swing.JTextField tfDescripcion;
    private javax.swing.JTextField tfMontoMovimiento;
    // End of variables declaration//GEN-END:variables
-
-   public void setListener(Object o) {
-      bBuscar.addActionListener((ActionListener) o);
-   }
 
    public JComboBox getCbCaja() {
       return cbCaja;
@@ -206,4 +243,45 @@ public class PanelMovimientosVarios extends javax.swing.JPanel {
    public void setTfDescripcion(String descripcion) {
       tfDescripcion.setText(descripcion);
    }
+
+   public JButton getbBuscar() {
+      return bBuscar;
+   }
+
+   public JComboBox getCbResponsable() {
+      return cbResponsable;
+   }
+
+   public JComboBox getCbConcepto() {
+      return cbConcepto;
+   }
+
+   /**
+    * Settea la UI para su visualización y uso
+    * @param b if is TRUE, disable the swing components (cbCaja, radio ingreso y
+    * egreso, tfMonto).
+    */
+   public void modoEdicion(boolean b) {
+      cbCaja.setEnabled(!b);
+      radioIngreso.setEnabled(!b);
+      radioEgreso.setEnabled(!b);
+      tfMontoMovimiento.setEditable(!b);
+   }
+
+   public void setUI(int cbCajasIndex, boolean ingreso, String monto, int cbConceptoIndex, String descripcion, int cbResponsableIndex) {
+      cbCaja.setSelectedIndex(cbCajasIndex);
+      radioIngreso.setSelected(ingreso);
+      radioEgreso.setSelected(!ingreso);
+      tfMontoMovimiento.setText(monto);
+      cbConcepto.setSelectedIndex(cbConceptoIndex);
+      tfDescripcion.setText(descripcion);
+      cbResponsable.setSelectedIndex(cbResponsableIndex);
+   }
+
+   public void setVisibleResponsables(boolean b) {
+      labelResponsables.setVisible(b);
+      cbResponsable.setVisible(b);
+   }
+   
+   
 }

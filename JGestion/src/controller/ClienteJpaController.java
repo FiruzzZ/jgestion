@@ -11,7 +11,7 @@ import entity.Contribuyente;
 import entity.Departamento;
 import entity.Municipio;
 import entity.Provincia;
-import generics.UTIL;
+import utilities.general.UTIL;
 import gui.JDABM;
 import gui.JDContenedor;
 import gui.PanelABMClientes;
@@ -175,7 +175,7 @@ public class ClienteJpaController implements ActionListener, MouseListener, KeyL
    private void initABM(boolean isEditing, ActionEvent e) throws MessageException {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioJpaController.CHECK_PERMISO(PermisosJpaController.PermisoDe.ABM_CLIENTES);
+         UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.ABM_CLIENTES);
       } catch (MessageException ex) {
          javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
          return;

@@ -56,10 +56,6 @@ public class PanelBuscadorMovimientosPro extends javax.swing.JPanel {
 
       jLabel7.setText("Hasta");
 
-      dcDesde.setDateFormatString(generics.UTIL.DATE_FORMAT.toPattern());
-
-      dcHasta.setDateFormatString(generics.UTIL.DATE_FORMAT.toPattern());
-
       jLabel8.setText("Desde");
 
       cbIngresoEgreso.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Ingresos/Egresos", "Ingresos", "Egresos" }));
