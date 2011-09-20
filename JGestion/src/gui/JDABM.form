@@ -37,7 +37,7 @@
           <Group type="102" alignment="1" attributes="0">
               <EmptySpace pref="63" max="32767" attributes="0"/>
               <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                  <Component id="bAceptar" alignment="1" min="0" pref="0" max="32767" attributes="1"/>
+                  <Component id="bAceptar" alignment="1" min="0" pref="25" max="32767" attributes="1"/>
                   <Component id="bCancelar" alignment="1" pref="25" max="32767" attributes="1"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>

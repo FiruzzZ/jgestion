@@ -62,9 +62,9 @@
               <Component id="panelResumen" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="btnAceptar" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                  <Component id="btnCancelar" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                  <Component id="btnAnular" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                  <Component id="btnAceptar" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
+                  <Component id="btnCancelar" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
+                  <Component id="btnAnular" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
               </Group>
               <EmptySpace min="-2" max="-2" attributes="0"/>
           </Group>
@@ -171,7 +171,7 @@
                       <Component id="cbFormaPago" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="labelDias" alignment="2" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace max="32767" attributes="0"/>
+                  <EmptySpace pref="11" max="32767" attributes="0"/>
                   <Group type="103" groupAlignment="2" attributes="0">
                       <Component id="labelMovimiento" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="tfNumMovimiento" alignment="2" min="-2" max="-2" attributes="0"/>
@@ -525,7 +525,7 @@
                       <Component id="jLabel17" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="tfPercIVA" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace pref="60" max="32767" attributes="0"/>
+                  <EmptySpace pref="65" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -576,28 +576,24 @@
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" alignment="0" attributes="0">
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Group type="102" alignment="0" attributes="1">
-                                  <Component id="tfCantidad" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="labelPrecioUnit" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="tfPrecioUnitario" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="labelIVA" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="tfProductoIVA" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="cbCambioPrecio" min="-2" pref="101" max="-2" attributes="0"/>
-                              </Group>
-                              <Component id="cbProductos" min="-2" pref="341" max="-2" attributes="0"/>
-                          </Group>
+                      <Group type="102" alignment="0" attributes="1">
+                          <Component id="tfCantidad" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="labelPrecioUnit" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="tfPrecioUnitario" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="labelIVA" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="tfProductoIVA" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="cbCambioPrecio" min="-2" pref="101" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="btnADD" min="-2" pref="48" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="btnDEL" min="-2" pref="48" max="-2" attributes="0"/>
                       </Group>
+                      <Component id="cbProductos" min="-2" pref="341" max="-2" attributes="0"/>
                       <Group type="102" alignment="0" attributes="1">
                           <Component id="tfProductoCodigo" min="-2" pref="142" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
@@ -642,11 +638,11 @@
                               <Component id="tfProductoIVA" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="cbCambioPrecio" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace max="-2" attributes="0"/>
                       </Group>
-                      <Component id="btnADD" min="-2" max="-2" attributes="0"/>
-                      <Component id="btnDEL" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnADD" min="-2" pref="25" max="-2" attributes="0"/>
+                      <Component id="btnDEL" min="-2" pref="25" max="-2" attributes="0"/>
                   </Group>
+                  <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -728,7 +724,7 @@
         <Component class="javax.swing.JButton" name="btnADD">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/iconos/32px-Crystal_Clear_action_edit_add.png"/>
+              <Image iconType="3" name="/iconos/add.png"/>
             </Property>
             <Property name="toolTipText" type="java.lang.String" value="Agregar producto"/>
             <Property name="name" type="java.lang.String" value="add" noResource="true"/>
@@ -755,7 +751,7 @@
         <Component class="javax.swing.JButton" name="btnDEL">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/iconos/32px-Crystal_Clear_action_edit_remove.png"/>
+              <Image iconType="3" name="/iconos/delete.png"/>
             </Property>
             <Property name="toolTipText" type="java.lang.String" value="Quitar producto"/>
             <Property name="name" type="java.lang.String" value="del" noResource="true"/>

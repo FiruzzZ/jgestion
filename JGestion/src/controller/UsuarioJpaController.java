@@ -471,6 +471,7 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
       panel.getCheckCerrarCajas().setSelected(u.getPermisos().getCerrarCajas());
       panel.getCheckABMCatalogoweb().setSelected(u.getPermisos().getAbmCatalogoweb());
       panel.getCheckABMOfertas().setSelected(u.getPermisos().getAbmOfertasweb());
+      panel.getCheckOrdenesES().setSelected(u.getPermisos().getOrdenesES());
       //estableciendo permisosCajas en la tabla
       List<PermisosCaja> permisosCajaList = u.getPermisosCajaList();
       for (PermisosCaja permisosCaja : permisosCajaList) {
@@ -529,9 +530,8 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
       EL_OBJECT.setEstado(panel.getCbEstado().getSelectedIndex() + 1);
       EL_OBJECT.setPermisosCajaList(getPermisosCaja(EL_OBJECT.getPermisosCajaList()));
 
-      Permisos permisos;
       if (EL_OBJECT.getId() == null) {
-         permisos = new Permisos();
+         Permisos permisos = new Permisos();
          EL_OBJECT.setPermisos(setPermisos(permisos));
          create(EL_OBJECT);
       } else {
@@ -554,6 +554,7 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
       permisos.setCerrarCajas(panel.getCheckCerrarCajas().isSelected());
       permisos.setAbmCatalogoweb(panel.getCheckABMCatalogoweb().isSelected());
       permisos.setAbmOfertasweb(panel.getCheckABMOfertas().isSelected());
+      permisos.setOrdenesES(panel.getCheckOrdenesES().isSelected());
       return permisos;
    }
 
@@ -652,6 +653,8 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
          permitido = CURRENT_USER.getPermisos().getAbmCatalogoweb();
       } else if( PermisoDe.ABM_OFERTASWEB.equals(permisoToCheck)) {
          permitido = CURRENT_USER.getPermisos().getAbmOfertasweb();
+      } else if( PermisoDe.ORDENES_IO.equals(permisoToCheck)) {
+         permitido = CURRENT_USER.getPermisos().getOrdenesES();
       }
       if (!permitido) {
          throw new MessageException("Acceso denegado: No tiene permiso para "

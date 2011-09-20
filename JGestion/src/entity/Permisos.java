@@ -71,12 +71,10 @@ public class Permisos implements Serializable {
    private boolean abmOfertasweb;
    @OneToOne(mappedBy = "permisos")
    private Usuario usuario;
+   @Column(name = "ordenes_es", nullable = false)
+   private boolean ordenesES;
 
    public Permisos() {
-   }
-
-   public Permisos(Integer id) {
-      this.id = id;
    }
 
    public Integer getId() {
@@ -189,6 +187,14 @@ public class Permisos implements Serializable {
 
    public void setAbmOfertasweb(boolean abmOfertasweb) {
       this.abmOfertasweb = abmOfertasweb;
+   }
+
+   public boolean getOrdenesES() {
+      return ordenesES;
+   }
+
+   public void setOrdenesES(boolean ordenesES) {
+      this.ordenesES = ordenesES;
    }
 
    /**

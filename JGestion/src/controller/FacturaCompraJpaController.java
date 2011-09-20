@@ -68,9 +68,6 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
    }
 
    public void create(FacturaCompra facturaCompra) throws Exception {
-      if (facturaCompra.getDetalleCompraList() == null) {
-         //nunca debería pasar esto....
-      }
       EntityManager em = null;
       try {
          em = getEntityManager();
@@ -391,12 +388,10 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
          //persistiendo
          create(newFacturaCompra);
             newFacturaCompra = (FacturaCompra) DAO.findEntity(FacturaCompra.class,newFacturaCompra.getId());
-         //actualiza Stock
-         //y también la variable Producto.stockActual
          if (newFacturaCompra.getActualizaStock()) {
+            //y también la variable Producto.stockActual
             new StockJpaController().updateStock(newFacturaCompra);
          }
-
          asentarSegunFormaDePago(newFacturaCompra);
       } catch (Exception ex) {
          throw ex;

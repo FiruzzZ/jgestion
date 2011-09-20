@@ -16,6 +16,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.NoResultException;
 import gui.JDABM;
 import gui.JDBuscador;
 import gui.JDContenedor;
@@ -31,7 +32,7 @@ import java.awt.event.MouseAdapter;
 import java.io.File;
 import java.util.Date;
 import java.util.Vector;
-import javax.persistence.NoResultException;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -40,7 +41,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
-//import net.atlanticbb.tantlinger.shef.HTMLEditorPane;
+import net.atlanticbb.tantlinger.shef.HTMLEditorPane;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -51,7 +52,7 @@ import org.apache.log4j.Logger;
  */
 public class ProductoJpaController implements ActionListener, KeyListener {
 
-   public final String CLASS_NAME = Producto.class.getSimpleName();
+   public static final String CLASS_NAME = Producto.class.getSimpleName();
    private JDContenedor contenedor;
    private JDABM abm;
    private final String[] colsName = {"Nº", "Código", "Nombre", "Marca", "Stock Gral."};
@@ -65,8 +66,7 @@ public class ProductoJpaController implements ActionListener, KeyListener {
    private PanelBuscadorMovimientosPro panelito;
    private JDBuscador buscador;
    private PanelProductoListados panelProductoListados;
-//   private HTMLEditorPane editor;
-   private JDialog xxx;
+   private HTMLEditorPane editor;
    private boolean permitirFiltroVacio;
 
    public EntityManager getEntityManager() {
@@ -330,33 +330,40 @@ public class ProductoJpaController implements ActionListener, KeyListener {
    }
 
    private void initHTMLEditorPane() {
-//      editor = new HTMLEditorPane();
-//      xxx = new JDialog(abm, true);
-//      xxx.setLocationRelativeTo(abm);
-//      JButton bAceptar = new javax.swing.JButton();
-//      bAceptar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px-Crystal_Clear_action_apply.png")));
-//      bAceptar.setMnemonic('a');
-//      bAceptar.setText("Aceptar");
-//      bAceptar.setName("aceptar");
-//      xxx.setTitle("Editor de Descripción del Producto");
-//      xxx.getContentPane().add(editor);
-//      xxx.add(bAceptar, BorderLayout.PAGE_END);
-//      bAceptar.addActionListener(new ActionListener() {
-//
-//         @Override
-//         public void actionPerformed(ActionEvent e) {
-//            String descripcion = editor.getText();
-//            System.out.println(descripcion);
-//            if (descripcion.trim().length() != 0) {
-//               panel.getTaDescripcion().setText(descripcion);
-//            } else {
-//               panel.getTaDescripcion().setText("<p style=\"margin-top: 0\"><p align=\"center\"><b>[Doble click para editar]</b></p></p>");
-//            }
-//            xxx.dispose();
-//         }
-//      });
-//      xxx.setSize(650, 400);
-//      xxx.setVisible(true);
+      if (editor == null) {
+         editor = new HTMLEditorPane();
+      }
+      if (EL_OBJECT != null && EL_OBJECT.getDescripcion() != null) {
+         editor.setText(EL_OBJECT.getDescripcion());
+      }
+      final JDialog jdialog = new JDialog(abm, true);
+      jdialog.setLocationRelativeTo(abm);
+      JButton bAceptar = new JButton();
+      bAceptar.setIcon(new ImageIcon(getClass().getResource("/iconos/32px-Crystal_Clear_action_apply.png")));
+      bAceptar.setMnemonic('a');
+      bAceptar.setText("Aceptar");
+      bAceptar.setName("Aceptar");
+      jdialog.setTitle("Editor de Descripción del Producto");
+      jdialog.getContentPane().add(editor);
+      jdialog.add(bAceptar, BorderLayout.PAGE_END);
+      bAceptar.addActionListener(new ActionListener() {
+
+         @Override
+         public void actionPerformed(ActionEvent e) {
+            String descripcion = editor.getText();
+            if (EL_OBJECT != null) {
+               EL_OBJECT.setDescripcion(descripcion);
+            }
+            if (descripcion.trim().length() != 0) {
+               panel.getTaDescripcion().setText(EL_OBJECT.getDescripcion());
+            } else {
+               panel.getTaDescripcion().setText("<p style=\"margin-top: 0\"><p align=\"center\"><b>[Doble click para editar]</b></p></p>");
+            }
+            jdialog.dispose();
+         }
+      });
+      jdialog.setSize(650, 400);
+      jdialog.setVisible(true);
    }
 
    private void cargarDTMContenedor(String query) throws DatabaseErrorException {
@@ -372,8 +379,8 @@ public class ProductoJpaController implements ActionListener, KeyListener {
          }
          EntityManager entityManager = DAO.getEntityManager();
          for (Producto o : l) {
-            if(o.getMarca() == null) {
-               o.setMarca((Marca)entityManager.createQuery("SELECT o from Marca o, Producto p where o.id = p.marca.id AND p.id=" + o.getId()).getSingleResult());
+            if (o.getMarca() == null) {
+               o.setMarca((Marca) entityManager.createQuery("SELECT o from Marca o, Producto p where o.id = p.marca.id AND p.id=" + o.getId()).getSingleResult());
                Logger.getLogger(this.getClass()).log(Level.DEBUG, "Producto.id=" + o.getId() + " Marca.id" + o.getMarca().getId());
             }
             dtm.addRow(new Object[]{
@@ -1017,13 +1024,16 @@ public class ProductoJpaController implements ActionListener, KeyListener {
       return sb.toString();
    }
 
+   /**
+    * Retrieve a lightweigth List of Product (id, codigo, nombre, remunerativo)
+    * @return a List of  {@link Producto} or <tt>null</tt> if something goes wrong.
+    */
    public List<Producto> findProductoToCombo() {
       try {
          return (List<Producto>) DAO.getNativeQueryResultList(
                  "SELECT p.id, p.codigo, p.nombre, p.remunerativo "
                  + "FROM Producto p "
                  + "ORDER BY p.nombre, p.codigo", "ProductoToBuscador");
-
 
       } catch (DatabaseErrorException ex) {
          Logger.getLogger(ProductoJpaController.class.getName()).log(Level.ERROR, null, ex);
@@ -1033,15 +1043,6 @@ public class ProductoJpaController implements ActionListener, KeyListener {
 
    public void initListadoProducto(JFrame owner) {
       panelProductoListados = new PanelProductoListados();
-//      panelProductoListados.getbAcomodar().addActionListener(new ActionListener() {
-//
-//         @Override
-//         public void actionPerformed(ActionEvent e) {
-//            if(buscador.getjTable1().getSelectedRow() > -1) {
-//               cambiarHora((Producto)UTIL.getSelectedValue(buscador.getjTable1(), 0));
-//            }
-//         }
-//      });
       buscador = new JDBuscador(owner, false, panelProductoListados, "Productos - Listados");
       UTIL.loadComboBox(panelProductoListados.getCbMarcas(), new MarcaJpaController().findMarcaEntities(), "<Todas>");
       UTIL.loadComboBox(panelProductoListados.getCbRubros(), new RubroJpaController().findRubros(), "<Todos>");
@@ -1068,7 +1069,7 @@ public class ProductoJpaController implements ActionListener, KeyListener {
             try {
                armarQueryProductosListado(true);
             } catch (Exception ex) {
-               ex.printStackTrace();
+               Logger.getLogger(ProductoJpaController.class).error(ex);
                JOptionPane.showMessageDialog(buscador, ex.getMessage());
             }
          }
@@ -1076,22 +1077,6 @@ public class ProductoJpaController implements ActionListener, KeyListener {
       buscador.setVisible(true);
    }
 
-//   private void cambiarHora(Producto producto) {
-//      JDcambiarHora jj = new JDcambiarHora(null, true);
-//      jj.p = producto;
-//      jj.getTfHora().setText(UTIL.TIME_FORMAT.format(producto.getFechaAlta()).substring(0, 2));
-//      jj.getTfMin().setText(UTIL.TIME_FORMAT.format(producto.getFechaAlta()).substring(3, 5));
-//      jj.getTfSec().setText(UTIL.TIME_FORMAT.format(producto.getFechaAlta()).substring(6));
-//      jj.setLocationRelativeTo(buscador);
-//      jj.setVisible(true);
-//      try {
-//         armarQueryProductosListado(false);
-//      } catch (DatabaseErrorException ex) {
-//         Logger.getLogger(ProductoJpaController.class.getName()).log(Level.SEVERE, null, ex);
-//      } catch (Exception ex) {
-//         Logger.getLogger(ProductoJpaController.class.getName()).log(Level.SEVERE, null, ex);
-//      }
-//   }
    private void armarQueryProductosListado(boolean imprimirReport) throws DatabaseErrorException, Exception {
       String query = "SELECT p.*, marca.nombre as marca_nombre, r.nombre as rubro_nombre, sr.nombre as subrubro_nombre "
               + " FROM producto p"
@@ -1154,5 +1139,4 @@ public class ProductoJpaController implements ActionListener, KeyListener {
       r.viewReport();
 //      }
    }
-
 }

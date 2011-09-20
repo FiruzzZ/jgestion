@@ -5,6 +5,7 @@
  */
 package gui;
 
+import controller.Contabilidad;
 import controller.DAO;
 import controller.FacturaVentaJpaController;
 import controller.HistorialOfertasJpaController;
@@ -744,7 +745,7 @@ public class JDOfertas extends javax.swing.JDialog {
             labelFoto.setIcon(null);
             labelFoto.setText("[ Sin imagen ]");
          }
-         calcularPrecioFinal();
+         tfPrecioVentaActual.setText(UTIL.PRECIO_CON_PUNTO.format(getPrecioFinalOferta()));
          if (productosWebCtrller.isInCatalogoWeb(selectedProducto)) {
             labelCodigoNoRegistrado.setForeground(new java.awt.Color(255, 115, 0));
             labelCodigoNoRegistrado.setText("EN CATÁLOGO WEB");
@@ -886,7 +887,7 @@ public class JDOfertas extends javax.swing.JDialog {
       productosWeb.setOferta(false);
       productosWeb.setDestacado(false);
       ListaPrecios listaPrecios = new ListaPreciosJpaController().findListaPreciosParaCatalogo();
-      Double precioFinal = producto.getPrecioVenta() + FacturaVentaJpaController.GET_MARGEN_SEGUN_LISTAPRECIOS(listaPrecios, producto, null);
+      Double precioFinal = producto.getPrecioVenta() + Contabilidad.GET_MARGEN_SEGUN_LISTAPRECIOS(listaPrecios, producto, null);
       Double iva = UTIL.getPorcentaje(precioFinal, producto.getIva().getIva());
       //seteando precio de venta ACTUAL
       productosWeb.setPrecio(new Double(UTIL.PRECIO_CON_PUNTO.format(precioFinal + iva)));
@@ -900,7 +901,7 @@ public class JDOfertas extends javax.swing.JDialog {
       try {
          if (tfOfertaDesc.getText().trim().length() > 0) {
             Double precioVentaActual = Double.valueOf(tfPrecioVenta.getText());
-            precioVentaActual += FacturaVentaJpaController.GET_MARGEN_SEGUN_LISTAPRECIOS(listaPreciosParaCatalogo, selectedProducto, precioVentaActual);
+            precioVentaActual += Contabilidad.GET_MARGEN_SEGUN_LISTAPRECIOS(listaPreciosParaCatalogo, selectedProducto, precioVentaActual);
             Double precioOferta;
             if (cbOfertaTipoMargen.getSelectedIndex() == 0) {
                Double descuento = UTIL.getPorcentaje(precioVentaActual, Double.valueOf(tfOfertaDesc.getText()));
@@ -908,7 +909,7 @@ public class JDOfertas extends javax.swing.JDialog {
             } else {
                precioOferta = precioVentaActual - Double.valueOf(tfOfertaDesc.getText());
             }
-            precioOferta += UTIL.getPorcentaje(precioOferta, Double.valueOf(selectedProducto.getIva().getIva()));
+            precioOferta += UTIL.getPorcentaje(precioOferta, selectedProducto.getIva().getIva());
             tfPrecioOferta.setText(UTIL.PRECIO_CON_PUNTO.format(precioOferta));
          } else {
             tfPrecioOferta.setText(null);
@@ -918,10 +919,11 @@ public class JDOfertas extends javax.swing.JDialog {
       }
    }
 
-   private void calcularPrecioFinal() {
-      Double precioFinal = selectedProducto.getPrecioVenta() + FacturaVentaJpaController.GET_MARGEN_SEGUN_LISTAPRECIOS(listaPreciosParaCatalogo, selectedProducto, null);
-      Double iva = FacturaVentaJpaController.GET_MARGEN(precioFinal, 1, selectedProducto.getIva().getIva());
-      tfPrecioVentaActual.setText(UTIL.PRECIO_CON_PUNTO.format(precioFinal + iva));
+   private Double getPrecioFinalOferta() {
+      Double precioFinal = selectedProducto.getPrecioVenta() 
+              + Contabilidad.GET_MARGEN_SEGUN_LISTAPRECIOS(listaPreciosParaCatalogo, selectedProducto, null);
+      Double iva = UTIL.getPorcentaje(precioFinal, selectedProducto.getIva().getIva());
+      return precioFinal + iva;
    }
 
    /**

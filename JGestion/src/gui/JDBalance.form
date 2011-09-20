@@ -25,22 +25,22 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane1" alignment="1" pref="586" max="32767" attributes="2"/>
+                  <Component id="jScrollPane1" alignment="1" pref="724" max="32767" attributes="2"/>
                   <Group type="103" alignment="1" groupAlignment="1" max="-2" attributes="0">
                       <Component id="bBuscar" max="32767" attributes="1"/>
                       <Component id="bImprimir" alignment="1" min="-2" max="-2" attributes="1"/>
                   </Group>
                   <Group type="102" alignment="1" attributes="0">
                       <Component id="jLabel7" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="88" max="32767" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="labelTotalAux" min="-2" max="-2" attributes="0"/>
-                          <Component id="tfTotalAux" min="-2" pref="100" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="226" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Component id="labelTotalAux" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="tfTotalAux" alignment="0" min="-2" pref="100" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="tfIngresos" min="-2" pref="100" max="-2" attributes="0"/>
                           <Component id="labelTotalIngresos" min="-2" max="-2" attributes="0"/>
-                          <Component id="tfIngresos" alignment="0" min="-2" pref="100" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
@@ -50,7 +50,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="tfTotal" min="-2" pref="100" max="-2" attributes="0"/>
-                          <Component id="labelTotalTotal" min="-2" max="-2" attributes="0"/>
+                          <Component id="labelTotal" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
                   </Group>
@@ -70,18 +70,18 @@
               <Component id="jScrollPane1" pref="224" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="labelTotalIngresos" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="labelTotalAux" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="labelTotalEgresos" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="labelTotalTotal" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel7" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="labelTotalAux" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="labelTotalIngresos" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="labelTotalEgresos" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="labelTotal" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="tfTotalAux" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="tfIngresos" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="tfEgresos" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="tfTotal" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="tfEgresos" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="tfIngresos" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="tfTotalAux" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -145,7 +145,7 @@
         <Property name="horizontalAlignment" type="int" value="4"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JLabel" name="labelTotalTotal">
+    <Component class="javax.swing.JLabel" name="labelTotal">
       <Properties>
         <Property name="text" type="java.lang.String" value="TOTAL"/>
       </Properties>

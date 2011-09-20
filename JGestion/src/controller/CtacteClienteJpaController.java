@@ -3,7 +3,6 @@ package controller;
 import controller.exceptions.*;
 import entity.Cliente;
 import entity.CtacteCliente;
-import entity.CtacteProveedor;
 import entity.DetalleRecibo;
 import entity.FacturaVenta;
 import entity.Proveedor;
@@ -19,8 +18,6 @@ import java.awt.event.MouseEvent;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
@@ -29,6 +26,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -155,7 +153,7 @@ public class CtacteClienteJpaController implements ActionListener {
       CtacteCliente ccp = new CtacteCliente();
       ccp.setDias((short) facturaVenta.getDiasCtaCte());
       ccp.setEntregado(0.0); //monto $$
-      ccp.setEstado((Valores.CtaCteEstado.PENDIENTE.getEstado()));
+      ccp.setEstado((Valores.CtaCteEstado.PENDIENTE.getId()));
       ccp.setFactura(facturaVenta);
       ccp.setFechaCarga(facturaVenta.getFechaalta());
       ccp.setImporte(facturaVenta.getImporte());
@@ -212,7 +210,7 @@ public class CtacteClienteJpaController implements ActionListener {
                  + " ORDER BY o.id",
                  CtacteCliente.class).getResultList();
       } catch (Exception ex) {
-         ex.printStackTrace();
+         
       }
       return listaCtaCteCliente;
    }
@@ -248,7 +246,7 @@ public class CtacteClienteJpaController implements ActionListener {
                resumenCtaCtes.showMessage(ex.getMessage(), null, 2);
             } catch (Exception ex) {
                resumenCtaCtes.showMessage(ex.getMessage(), null, 2);
-               Logger.getLogger(CtacteClienteJpaController.class.getName()).log(Level.SEVERE, null, ex);
+               Logger.getLogger(CtacteClienteJpaController.class.getName()).error(ex);
             }
          }
       });
@@ -262,7 +260,7 @@ public class CtacteClienteJpaController implements ActionListener {
                resumenCtaCtes.showMessage(ex.getMessage(), null, 2);
             } catch (Exception ex) {
                resumenCtaCtes.showMessage(ex.getMessage(), null, 2);
-               Logger.getLogger(CtacteClienteJpaController.class.getName()).log(Level.SEVERE, null, ex);
+               Logger.getLogger(CtacteClienteJpaController.class.getName()).error(ex);
             }
          }
       });
@@ -476,7 +474,7 @@ public class CtacteClienteJpaController implements ActionListener {
                JOptionPane.showMessageDialog(buscador, ex.getMessage(), "ERROR", 0);
             } catch (Exception ex) {
                JOptionPane.showMessageDialog(buscador, ex.getMessage(), "ERROR CRÍTICO", 0);
-               Logger.getLogger(CtacteClienteJpaController.class.getName()).log(Level.SEVERE, null, ex);
+               Logger.getLogger(CtacteClienteJpaController.class.getName()).error(ex);
             } finally {
                buscador.bloquearBotones(false);
             }
@@ -493,7 +491,7 @@ public class CtacteClienteJpaController implements ActionListener {
                JOptionPane.showMessageDialog(buscador, ex.getMessage(), "ERROR", 0);
             } catch (Exception ex) {
                JOptionPane.showMessageDialog(buscador, ex.getMessage(), "ERROR CRÍTICO", 0);
-               Logger.getLogger(CtacteClienteJpaController.class.getName()).log(Level.SEVERE, null, ex);
+               Logger.getLogger(CtacteClienteJpaController.class.getName()).error(ex);
             } finally {
                buscador.bloquearBotones(false);
             }

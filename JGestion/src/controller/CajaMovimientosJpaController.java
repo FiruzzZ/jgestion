@@ -67,7 +67,6 @@ public class CajaMovimientosJpaController implements ActionListener {
 
    // <editor-fold defaultstate="collapsed" desc="CRUD..">
    public EntityManager getEntityManager() {
-//      return emf.createEntityManager();
       return DAO.getEntityManager();
    }
 
@@ -85,9 +84,9 @@ public class CajaMovimientosJpaController implements ActionListener {
             cajaMovimientos.setCaja(caja);
          }
          List<DetalleCajaMovimientos> attachedDetalleCajaMovimientosList = new ArrayList<DetalleCajaMovimientos>();
-         for (DetalleCajaMovimientos detalleCajaMovimientosListDetalleCajaMovimientosToAttach : cajaMovimientos.getDetalleCajaMovimientosList()) {
-            detalleCajaMovimientosListDetalleCajaMovimientosToAttach = em.merge(detalleCajaMovimientosListDetalleCajaMovimientosToAttach);//.getClass(), detalleCajaMovimientosListDetalleCajaMovimientosToAttach.getId());
-            attachedDetalleCajaMovimientosList.add(detalleCajaMovimientosListDetalleCajaMovimientosToAttach);
+         for (DetalleCajaMovimientos dcmToAttach : cajaMovimientos.getDetalleCajaMovimientosList()) {
+            dcmToAttach = em.merge(dcmToAttach);
+            attachedDetalleCajaMovimientosList.add(dcmToAttach);
          }
          cajaMovimientos.setDetalleCajaMovimientosList(attachedDetalleCajaMovimientosList);
          em.persist(cajaMovimientos);
@@ -96,12 +95,12 @@ public class CajaMovimientosJpaController implements ActionListener {
             caja = em.merge(caja);
          }
          for (DetalleCajaMovimientos detalleCajaMovimientosListDetalleCajaMovimientos : cajaMovimientos.getDetalleCajaMovimientosList()) {
-            CajaMovimientos oldCajaMovimientosOfDetalleCajaMovimientosListDetalleCajaMovimientos = detalleCajaMovimientosListDetalleCajaMovimientos.getCajaMovimientos();
+            CajaMovimientos oldCajaMovimientos = detalleCajaMovimientosListDetalleCajaMovimientos.getCajaMovimientos();
             detalleCajaMovimientosListDetalleCajaMovimientos.setCajaMovimientos(cajaMovimientos);
             detalleCajaMovimientosListDetalleCajaMovimientos = em.merge(detalleCajaMovimientosListDetalleCajaMovimientos);
-            if (oldCajaMovimientosOfDetalleCajaMovimientosListDetalleCajaMovimientos != null) {
-               oldCajaMovimientosOfDetalleCajaMovimientosListDetalleCajaMovimientos.getDetalleCajaMovimientosList().remove(detalleCajaMovimientosListDetalleCajaMovimientos);
-               oldCajaMovimientosOfDetalleCajaMovimientosListDetalleCajaMovimientos = em.merge(oldCajaMovimientosOfDetalleCajaMovimientosListDetalleCajaMovimientos);
+            if (oldCajaMovimientos != null) {
+               oldCajaMovimientos.getDetalleCajaMovimientosList().remove(detalleCajaMovimientosListDetalleCajaMovimientos);
+               oldCajaMovimientos = em.merge(oldCajaMovimientos);
             }
          }
          em.getTransaction().commit();
@@ -560,6 +559,10 @@ public class CajaMovimientosJpaController implements ActionListener {
       dcm.setNumero(-1); //meaningless yet...
       dcm.setTipo(DetalleCajaMovimientosJpaController.APERTURA_CAJA);
       dcm.setUsuario(UsuarioJpaController.getCurrentUser());
+      if (dcm.getMovimientoConcepto() == null) {
+         //default value
+         dcm.setMovimientoConcepto(MovimientoConceptoJpaController.EFECTIVO);
+      }
       cm.getDetalleCajaMovimientosList().add(dcm);
       create(cm);
    }
@@ -1219,7 +1222,7 @@ public class CajaMovimientosJpaController implements ActionListener {
       if (panelBuscadorMovimientosVarios.getDcHasta() != null) {
          query += " AND o.fecha <='" + panelBuscadorMovimientosVarios.getDcHasta() + "'";
       }
-      if(panelBuscadorMovimientosVarios.getCbMovimientoConceptos().getSelectedIndex() > 0) {
+      if (panelBuscadorMovimientosVarios.getCbMovimientoConceptos().getSelectedIndex() > 0) {
          query += " AND o.movimiento_concepto = " + ((MovimientoConcepto) panelBuscadorMovimientosVarios.getCbMovimientoConceptos().getSelectedItem()).getId();
       }
       Logger.getLogger(this.getClass()).debug(query);
@@ -1473,7 +1476,7 @@ public class CajaMovimientosJpaController implements ActionListener {
       Integer lastIDCajaMovimientoCerrada = (Integer) em.createQuery("SELECT MAX(o.id) FROM " + CLASS_NAME + " o "
               + "WHERE o.caja.id = " + caja.getId()).getSingleResult();
       CajaMovimientos lastCajaMovCerrada = em.find(CajaMovimientos.class, lastIDCajaMovimientoCerrada);
-      Logger.getLogger(CajaMovimientosJpaController.class.getName()).log(Level.WARN, "Corrigiendo error en creación de caja. fixCaja()\nCaja:" + caja + "-> lastID:" + lastIDCajaMovimientoCerrada);
+      Logger.getLogger(CajaMovimientosJpaController.class.getName()).log(Level.WARN, "Corrigiendo error en creación de caja. fixCaja()\n\túltima Caja cerrada: id=" + caja.getId() + ", nombre=" + caja.getNombre() + "-> lastID:" + lastIDCajaMovimientoCerrada);
       try {
          abrirNextCajaMovimiento(lastCajaMovCerrada);
       } catch (Exception ex) {
