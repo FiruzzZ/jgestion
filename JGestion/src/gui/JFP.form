@@ -200,6 +200,22 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem12ActionPerformed"/>
               </Events>
             </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem27">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="ABM IVAs"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem27ActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem13">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="ABM Unidades de medici&#xf3;n"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem13ActionPerformed"/>
+              </Events>
+            </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItem20">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Lista de Precios"/>
@@ -243,6 +259,14 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem8ActionPerformed"/>
               </Events>
             </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem45">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Cliente a Proveedor"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem45ActionPerformed"/>
+              </Events>
+            </MenuItem>
           </SubComponents>
         </Menu>
         <Menu class="javax.swing.JMenu" name="jMenu7">
@@ -257,6 +281,14 @@
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem9ActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem54">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Proveedor a Cliente"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem54ActionPerformed"/>
               </Events>
             </MenuItem>
           </SubComponents>
@@ -321,7 +353,7 @@
               <SubComponents>
                 <MenuItem class="javax.swing.JMenuItem" name="jMenuItem40">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="Orden de .....?"/>
+                    <Property name="text" type="java.lang.String" value="Orden de Entrada/Salida"/>
                     <Property name="actionCommand" type="java.lang.String" value="Orden de ....?"/>
                   </Properties>
                   <Events>
@@ -457,22 +489,6 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem19ActionPerformed"/>
               </Events>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem27">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="IVAs"/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem27ActionPerformed"/>
-              </Events>
-            </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem13">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Unidades de medici&#xf3;n"/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem13ActionPerformed"/>
-              </Events>
-            </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItem11">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Contribuyentes"/>
@@ -497,14 +513,6 @@
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem15ActionPerformed"/>
-              </Events>
-            </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem45">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Configuraci&#xf3;n General"/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem45ActionPerformed"/>
               </Events>
             </MenuItem>
           </SubComponents>
@@ -561,7 +569,7 @@
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItem33">
               <Properties>
-                <Property name="text" type="java.lang.String" value="jMenuItem33"/>
+                <Property name="text" type="java.lang.String" value="Sobre.."/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem33ActionPerformed"/>
@@ -596,6 +604,34 @@
             </MenuItem>
           </SubComponents>
         </Menu>
+        <Menu class="javax.swing.JMenu" name="jMenu16">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="WS-AFIP"/>
+          </Properties>
+          <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem53">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Certificaci&#xf3;n"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem53ActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem51">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Facturaci&#xf3;n Electr&#xf3;nica (FE)"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem51ActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem52">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Preexistente"/>
+              </Properties>
+            </MenuItem>
+          </SubComponents>
+        </Menu>
       </SubComponents>
     </Menu>
   </NonVisualComponents>
@@ -625,42 +661,40 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="1" attributes="0">
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="jLabel1" min="-2" pref="535" max="-2" attributes="0"/>
-              <EmptySpace pref="269" max="32767" attributes="0"/>
-              <Component id="labelConnetionState" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
-          </Group>
+          <Component id="jDesktopPane1" alignment="0" pref="856" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="1" attributes="0">
-              <EmptySpace pref="385" max="32767" attributes="0"/>
-              <Group type="103" groupAlignment="1" attributes="0">
-                  <Component id="jLabel1" alignment="1" min="-2" max="-2" attributes="0"/>
-                  <Component id="labelConnetionState" alignment="1" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace max="-2" attributes="0"/>
-          </Group>
+          <Component id="jDesktopPane1" alignment="0" pref="428" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Component class="javax.swing.JLabel" name="jLabel1">
+    <Container class="javax.swing.JDesktopPane" name="jDesktopPane1">
       <Properties>
-        <Property name="text" type="java.lang.String" value="&lt;html&gt; &lt;b&gt;F2&lt;/b&gt;- Venta &lt;b&gt;Alt + F3&lt;/b&gt; - Cerrar sesi&#xf3;n &lt;/html&gt;"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="labelConnetionState">
-      <Properties>
-        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/iconos/database_32.png"/>
+        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="dc" green="dc" red="dc" type="rgb"/>
         </Property>
-        <Property name="toolTipText" type="java.lang.String" value="Conexi&#xf3;n establecida y funcionando"/>
-        <Property name="horizontalTextPosition" type="int" value="2"/>
       </Properties>
-    </Component>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JLayeredPaneSupportLayout"/>
+      <SubComponents>
+        <Component class="javax.swing.JLabel" name="labelConnetionState">
+          <Properties>
+            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/iconos/database_32.png"/>
+            </Property>
+            <Property name="toolTipText" type="java.lang.String" value="Conexi&#xf3;n establecida y funcionando"/>
+            <Property name="horizontalTextPosition" type="int" value="2"/>
+          </Properties>
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JLayeredPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JLayeredPaneSupportLayout$JLayeredPaneConstraintsDescription">
+              <JLayeredPaneConstraints x="820" y="390" width="-1" height="-1" layer="0" position="-1"/>
+            </Constraint>
+          </Constraints>
+        </Component>
+      </SubComponents>
+    </Container>
   </SubComponents>
 </Form>

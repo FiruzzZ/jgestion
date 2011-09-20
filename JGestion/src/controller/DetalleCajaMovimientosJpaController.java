@@ -67,6 +67,11 @@ public class DetalleCajaMovimientosJpaController {
       try {
          em = getEntityManager();
          em.getTransaction().begin();
+
+         //default MovimientoConcepto.EFECTIVO
+         if (detalleCajaMovimientos.getMovimientoConcepto() == null) {
+            detalleCajaMovimientos.setMovimientoConcepto(MovimientoConceptoJpaController.EFECTIVO);
+         }
          CajaMovimientos cajaMovimientos = detalleCajaMovimientos.getCajaMovimientos();
          if (cajaMovimientos != null) {
             cajaMovimientos = em.getReference(cajaMovimientos.getClass(), cajaMovimientos.getId());
@@ -150,5 +155,4 @@ public class DetalleCajaMovimientosJpaController {
    List<MovimientoConcepto> findDetalleCajaMovimientosBy(MovimientoConcepto movimientoConcepto) {
       return getEntityManager().createQuery("SELECT o FROM " + CLASS_NAME + " o WHERE o.movimientoConcepto.id=" + movimientoConcepto.getId()).getResultList();
    }
-   
 }

@@ -521,8 +521,8 @@ public class ListaPreciosJpaController implements ActionListener, MouseListener,
 
    public void mouseReleased(MouseEvent e) {
       Integer selectedRow = ((javax.swing.JTable) e.getSource()).getSelectedRow();
-      javax.swing.table.DefaultTableModel dtm =
-              (javax.swing.table.DefaultTableModel) ((javax.swing.JTable) e.getSource()).getModel();
+      DefaultTableModel dtm =
+              (DefaultTableModel) ((javax.swing.JTable) e.getSource()).getModel();
       if (selectedRow > -1) {
          EL_OBJECT = DAO.getEntityManager().find(ListaPrecios.class,
                  Integer.valueOf((dtm.getValueAt(selectedRow, 0)).toString()));

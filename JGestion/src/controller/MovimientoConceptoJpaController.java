@@ -39,6 +39,11 @@ public class MovimientoConceptoJpaController implements Serializable {
    private JDMiniABM abm;
    private MovimientoConcepto ELOBJECT;
    private EntityManagerFactory emf = null;
+   public static final MovimientoConcepto EFECTIVO;
+   
+   static {
+      EFECTIVO = DAO.getEntityManager().find(MovimientoConcepto.class, 1);
+   }
 
    public MovimientoConceptoJpaController(EntityManagerFactory emf) {
       this.emf = emf;
@@ -254,7 +259,7 @@ public class MovimientoConceptoJpaController implements Serializable {
       UTIL.limpiarDtm(dtm);
       List<MovimientoConcepto> list;
       if (query == null || query.length() < 10) {
-         list = DAO.getEntityManager().createQuery("SELECT o FROM " + CLASS_NAME + " o ORDER BY o.id").getResultList();
+         list = DAO.getEntityManager().createQuery("SELECT o FROM " + CLASS_NAME + " o WHERE o.id > 1 ORDER BY o.id").getResultList();
       } else {
          // para cuando se usa el Buscador del ABM
          list = DAO.getEntityManager().createNativeQuery(query, MovimientoConcepto.class).getResultList();
@@ -280,4 +285,5 @@ public class MovimientoConceptoJpaController implements Serializable {
       } catch (NoResultException ex) {
       }
    }
+
 }

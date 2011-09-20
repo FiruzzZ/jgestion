@@ -63,24 +63,24 @@
                           <Component id="tfFiltro" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
-                  <Component id="labelMensaje" min="-2" pref="22" max="-2" attributes="0"/>
+                  <Component id="labelMensaje" min="-2" pref="40" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="1" attributes="0">
-                  <Component id="jScrollPane1" alignment="0" pref="305" max="32767" attributes="0"/>
-                  <Group type="102" alignment="1" attributes="0">
-                      <Component id="bNuevo" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="bModificar" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="bBorrar" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="bImprimir" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="82" max="32767" attributes="0"/>
-                      <Component id="bSalir" min="-2" max="-2" attributes="0"/>
-                  </Group>
-              </Group>
+              <Component id="bNuevo" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
+              <Component id="bModificar" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="bBorrar" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="bImprimir" min="-2" max="-2" attributes="0"/>
+              <EmptySpace pref="82" max="32767" attributes="0"/>
+              <Component id="bSalir" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+          </Group>
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace min="46" pref="46" max="46" attributes="0"/>
+              <Component id="jScrollPane1" pref="305" max="32767" attributes="0"/>
+              <EmptySpace pref="11" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>

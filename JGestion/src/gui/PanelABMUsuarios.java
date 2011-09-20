@@ -57,6 +57,7 @@ public class PanelABMUsuarios extends javax.swing.JPanel {
       checkCerrarCajas = new javax.swing.JCheckBox();
       checkABMCatalogoweb = new javax.swing.JCheckBox();
       checkABMOfertas = new javax.swing.JCheckBox();
+      checkOrdenesES = new javax.swing.JCheckBox();
       jScrollPane1 = new javax.swing.JScrollPane();
       tableCajas = new javax.swing.JTable();
       jLabel8 = new javax.swing.JLabel();
@@ -119,6 +120,8 @@ public class PanelABMUsuarios extends javax.swing.JPanel {
 
       checkABMOfertas.setText("ABM Ofertas");
 
+      checkOrdenesES.setText("Ordenes ES");
+
       javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
       jPanel1.setLayout(jPanel1Layout);
       jPanel1Layout.setHorizontalGroup(
@@ -135,7 +138,8 @@ public class PanelABMUsuarios extends javax.swing.JPanel {
                .addComponent(checkListaPrecios)
                .addComponent(checkUsuarios)
                .addComponent(checkCajas)
-               .addComponent(checkCompra))
+               .addComponent(checkCompra)
+               .addComponent(checkOrdenesES))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                .addComponent(checkABMOfertas)
@@ -165,7 +169,9 @@ public class PanelABMUsuarios extends javax.swing.JPanel {
                   .addComponent(checkCerrarCajas)
                   .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                   .addComponent(checkABMCatalogoweb, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                  .addComponent(checkABMOfertas))
+                  .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                     .addComponent(checkABMOfertas)
+                     .addComponent(checkOrdenesES)))
                .addGroup(jPanel1Layout.createSequentialGroup()
                   .addComponent(checkUsuarios, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                   .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -282,6 +288,7 @@ public class PanelABMUsuarios extends javax.swing.JPanel {
    private javax.swing.JCheckBox checkCompra;
    private javax.swing.JCheckBox checkDatosGeneral;
    private javax.swing.JCheckBox checkListaPrecios;
+   private javax.swing.JCheckBox checkOrdenesES;
    private javax.swing.JCheckBox checkProductos;
    private javax.swing.JCheckBox checkProveedores;
    private javax.swing.JCheckBox checkTesoreria;
@@ -390,6 +397,10 @@ public class PanelABMUsuarios extends javax.swing.JPanel {
       return checkABMOfertas;
    }
 
+   public JCheckBox getCheckOrdenesES() {
+      return checkOrdenesES;
+   }
+   
    public void setEnableTfNick(boolean habilitar) {
       tfNick.setEnabled(habilitar);
    }

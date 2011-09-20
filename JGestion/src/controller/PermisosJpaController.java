@@ -20,7 +20,7 @@ public class PermisosJpaController {
 
    public static enum PermisoDe {
       // cuando se agrega un PermisoDe hay que modificar..
-      // 0 - PanelABMUsuarios el JCheckBox, methods getter/setter
+      // 0 - PanelABMUsuarios > GUI > add JCheckBox, methods getter/setter
       // 1 - UsuarioJpaController.setPermisos(..)
       // 2 - UsuarioJpaController.setPanelABM(...)
       // 3 - UsuarioJpaController.checkPermisos(..)
@@ -36,7 +36,8 @@ public class PermisosJpaController {
       COMPRA,
       CERRAR_CAJAS,
       ABM_CATALOGOWEB,
-      ABM_OFERTASWEB;
+      ABM_OFERTASWEB,
+      ORDENES_IO;
    }
 
    public PermisosJpaController() {

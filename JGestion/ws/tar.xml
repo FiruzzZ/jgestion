@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<loginTicketResponse version="1">
+    <header>
+        <source>CN=wsaahomo, O=AFIP, C=AR, SERIALNUMBER=CUIT 33693450239</source>
+        <destination>C=ar, O=aya, SERIALNUMBER=CUIT 30710552904, CN=velazquezalejandro</destination>
+        <uniqueId>2346360105</uniqueId>
+        <generationTime>2011-07-25T12:24:36.282-03:00</generationTime>
+        <expirationTime>2011-07-26T00:24:36.282-03:00</expirationTime>
+    </header>
+    <credentials>
+        <token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgdW5pcXVlX2lkPSIzMTc2OTE2Nzg2IiBzcmM9IkNOPXdzYWFob21vLCBPPUFGSVAsIEM9QVIsIFNFUklBTE5VTUJFUj1DVUlUIDMzNjkzNDUwMjM5IiBnZW5fdGltZT0iMTMxMTYwNzQxNiIgZXhwX3RpbWU9IjEzMTE2NTA2NzYiIGRzdD0iQ049d3NmZSwgTz1BRklQLCBDPUFSIi8+CiAgICA8b3BlcmF0aW9uIHZhbHVlPSJncmFudGVkIiB0eXBlPSJsb2dpbiI+CiAgICAgICAgPGxvZ2luIHVpZD0iQz1hciwgTz1heWEsIFNFUklBTE5VTUJFUj1DVUlUIDMwNzEwNTUyOTA0LCBDTj12ZWxhenF1ZXphbGVqYW5kcm8iIHNlcnZpY2U9IndzZmUiIHJlZ21ldGhvZD0iMjIiIGVudGl0eT0iMzM2OTM0NTAyMzkiIGF1dGhtZXRob2Q9ImNtcyI+CiAgICAgICAgICAgIDxyZWxhdGlvbnM+CiAgICAgICAgICAgICAgICA8cmVsYXRpb24gcmVsdHlwZT0iNCIga2V5PSIzMDcxMDU1MjkwNCIvPgogICAgICAgICAgICA8L3JlbGF0aW9ucz4KICAgICAgICA8L2xvZ2luPgogICAgPC9vcGVyYXRpb24+Cjwvc3NvPgoK</token>
+        <sign>Og77fzdeifU/RIdK93Nn0KaCO+W/ybTcOqrVrJEC01lAWnB6CAi5SyJs31XJkzE3jegI7viusXF69syAttnzEpbM8pxcJ44Ghb2B/1X4brPNtm2sl7eky72KzQyC97hFHDj48YHXrgNVjWpoCjIBSZbttAHjNAxNvceIG22KboM=</sign>
+    </credentials>
+</loginTicketResponse>
+

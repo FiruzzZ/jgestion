@@ -1,6 +1,47 @@
+
+2011/08/08
+Se agregó facturación electrónica
+|->DB
+    CREATE TABLE documento_tipo
+    (
+      id serial NOT NULL,
+      nombre character varying(50),
+      CONSTRAINT documento_tipo_pkey PRIMARY KEY (id),
+      CONSTRAINT unq_documento_tipo_0 UNIQUE (nombre)
+    )
+    WITH (
+      OIDS=FALSE
+    );
+    ALTER TABLE documento_tipo OWNER TO postgres;
+
+    CREATE TABLE factura_electronica
+    (
+      id serial NOT NULL,
+      fecha_proceso character varying(14) NOT NULL,
+      resultado character varying(1) NOT NULL,
+      concepto integer NOT NULL,
+      cbte_tipo integer NOT NULL, -- según AFIP: Facturas: 1= "A", 6= "B", 11= "C"
+      cbte_numero integer NOT NULL,
+      cae character varying(14),
+      cae_fecha_vto date,
+      observaciones text, -- eventos relacionados a la obtención del CAE
+      fecha_serv_desde date,
+      fecha_serv_hasta date,
+      CONSTRAINT factura_electronica_pkey PRIMARY KEY (id),
+      CONSTRAINT factura_electronica_cbte_numero_key UNIQUE (cbte_numero),
+      CONSTRAINT unq_factura_electronica_0 UNIQUE (cbte_numero)
+    )
+    WITH (
+      OIDS=FALSE
+    );
+    ALTER TABLE factura_electronica OWNER TO postgres;
+    COMMENT ON TABLE factura_electronica IS 'Datos relacionados a la facturación electrónica de la AFIP.';
+    COMMENT ON COLUMN factura_electronica.cbte_tipo IS 'según AFIP: Facturas: 1= "A", 6= "B", 11= "C"';
+    COMMENT ON COLUMN factura_electronica.observaciones IS 'eventos relacionados a la obtención del CAE';
+
 2011/04/27
 |->DB
-|  |-CREATE TABLE movimiento_concepto (
+    CREATE TABLE movimiento_concepto (
       id serial NOT NULL, 
       nombre character varying(30) NOT NULL, 
       PRIMARY KEY (id), 

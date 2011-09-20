@@ -142,7 +142,7 @@ public class CtacteProveedorJpaController implements ActionListener {
       CtacteProveedor ccp = new CtacteProveedor();
       ccp.setDias(facturaCompra.getDiasCtaCte());
       ccp.setEntregado(0.0); //monto $$
-      ccp.setEstado(Valores.CtaCteEstado.PENDIENTE.getEstado());
+      ccp.setEstado(Valores.CtaCteEstado.PENDIENTE.getId());
       ccp.setFactura(facturaCompra);
       ccp.setFechaCarga(facturaCompra.getFechaalta());
       ccp.setImporte(facturaCompra.getImporte());

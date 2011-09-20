@@ -394,7 +394,7 @@ public class ReciboJpaController implements ActionListener, FocusListener {
 
       ctacte.setEntregado(ctacte.getEntregado() + monto);
       if (ctacte.getImporte() == ctacte.getEntregado()) {
-         ctacte.setEstado(Valores.CtaCteEstado.PAGADA.getEstado());
+         ctacte.setEstado(Valores.CtaCteEstado.PAGADA.getId());
          Logger.getLogger(ReciboJpaController.class).debug("CtaCte Nº:" + ctacte.getId() + " PAGADA");
       }
       DAO.doMerge(ctacte);
@@ -576,7 +576,7 @@ public class ReciboJpaController implements ActionListener, FocusListener {
 
    private void cargarCtaCtes(Cliente cliente) {
       limpiarDetalle();
-      List<CtacteCliente> ctacteClientePendientesList = new CtacteClienteJpaController().findCtacteClienteByCliente(cliente.getId(), Valores.PENDIENTE);
+      List<CtacteCliente> ctacteClientePendientesList = new CtacteClienteJpaController().findCtacteClienteByCliente(cliente.getId(), Valores.CtaCteEstado.PENDIENTE.getId());
       UTIL.loadComboBox(jdReRe.getCbCtaCtes(), ctacteClientePendientesList, false);
    }
 
@@ -790,8 +790,8 @@ public class ReciboJpaController implements ActionListener, FocusListener {
             ctaCteCliente = new CtacteClienteJpaController().findCtacteClienteByFactura(dr.getFacturaVenta().getId());
             ctaCteCliente.setEntregado(ctaCteCliente.getEntregado() - dr.getMontoEntrega());
             // y si había sido pagada en su totalidad..
-            if (ctaCteCliente.getEstado() == Valores.CtaCteEstado.PAGADA.getEstado()) {
-               ctaCteCliente.setEstado(Valores.CtaCteEstado.PENDIENTE.getEstado());
+            if (ctaCteCliente.getEstado() == Valores.CtaCteEstado.PAGADA.getId()) {
+               ctaCteCliente.setEstado(Valores.CtaCteEstado.PENDIENTE.getId());
             }
             em.merge(ctaCteCliente);
          }

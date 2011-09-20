@@ -163,6 +163,7 @@
                       <Component id="checkUsuarios" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Component id="checkCajas" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Component id="checkCompra" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Component id="checkOrdenesES" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
@@ -197,7 +198,10 @@
                           <Component id="checkCerrarCajas" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="checkABMCatalogoweb" min="-2" pref="23" max="-2" attributes="0"/>
-                          <Component id="checkABMOfertas" min="-2" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="checkABMOfertas" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="checkOrdenesES" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
                       </Group>
                       <Group type="102" alignment="0" attributes="0">
                           <Component id="checkUsuarios" min="-2" pref="23" max="-2" attributes="0"/>
@@ -284,6 +288,11 @@
         <Component class="javax.swing.JCheckBox" name="checkABMOfertas">
           <Properties>
             <Property name="text" type="java.lang.String" value="ABM Ofertas"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="checkOrdenesES">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Ordenes ES"/>
           </Properties>
         </Component>
       </SubComponents>

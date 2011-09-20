@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.1" encoding="UTF-8" ?>
 
 <Form version="1.3" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
   <AuxValues>
@@ -16,110 +16,92 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="0" max="-2" attributes="0">
+          <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="1" attributes="0">
-                  <Component id="jLabel3" alignment="1" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel1" alignment="1" min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="jLabel4" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel12" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel14" alignment="1" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel5" alignment="1" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel17" alignment="1" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel6" alignment="1" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel9" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel1" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel17" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel11" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel7" alignment="1" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel8" alignment="1" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel12" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel9" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel10" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel18" alignment="1" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace min="-2" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="cbCondicIVA" min="-2" pref="182" max="-2" attributes="0"/>
+                  <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
+                      <Group type="102" alignment="0" attributes="1">
+                          <Component id="tfDireccion" min="-2" pref="238" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jLabel13" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="tfCP" max="32767" attributes="0"/>
+                      </Group>
+                      <Group type="102" alignment="0" attributes="0">
+                          <Component id="tfCodigo" min="-2" pref="79" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="tfNombre" min="-2" pref="235" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="checkRetencionDGR" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
                       <Component id="checkRetencionIVA" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <Group type="102" alignment="0" attributes="1">
-                      <Component id="tfCodigo" min="-2" pref="63" max="-2" attributes="0"/>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="tfNombre" min="-2" pref="275" max="-2" attributes="0"/>
-                  </Group>
-                  <Component id="tfDireccion" alignment="0" min="-2" pref="314" max="-2" attributes="0"/>
-                  <Group type="102" alignment="1" max="-2" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                          <Group type="102" alignment="0" attributes="0">
-                              <Component id="tfCUIT" min="-2" pref="94" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="labelCUITValidador" min="-2" pref="18" max="-2" attributes="0"/>
-                          </Group>
-                          <Component id="tfTele2" alignment="0" pref="116" max="32767" attributes="1"/>
-                          <Component id="tfTele1" alignment="0" min="-2" pref="116" max="-2" attributes="1"/>
+                          <Component id="tfTele2" alignment="0" max="32767" attributes="1"/>
+                          <Component id="tfTele1" alignment="0" min="-2" pref="150" max="-2" attributes="1"/>
                       </Group>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" attributes="0">
-                              <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="jLabel16" alignment="1" min="-2" max="-2" attributes="0"/>
-                                  <Component id="jLabel15" alignment="1" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="tfInterno2" alignment="0" min="-2" pref="41" max="-2" attributes="0"/>
-                                  <Component id="tfInterno1" alignment="0" min="-2" pref="41" max="-2" attributes="0"/>
-                              </Group>
-                          </Group>
-                          <Group type="102" alignment="0" attributes="0">
-                              <EmptySpace min="-2" pref="16" max="-2" attributes="0"/>
-                              <Component id="jLabel11" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="cbCondicIVA" pref="184" max="32767" attributes="0"/>
-                          </Group>
-                      </Group>
-                  </Group>
-                  <Group type="102" alignment="0" attributes="1">
-                      <Component id="tfEmail" min="-2" pref="142" max="-2" attributes="0"/>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="tfContacto" max="32767" attributes="0"/>
-                  </Group>
-                  <Group type="102" alignment="0" max="-2" attributes="0">
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="cbMunicipios" min="-2" pref="127" max="-2" attributes="1"/>
-                          <Component id="cbProvincias" alignment="1" min="-2" pref="127" max="-2" attributes="1"/>
-                      </Group>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Group type="102" alignment="0" attributes="0">
-                              <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
-                              <Component id="jLabel7" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="cbDepartamentos" min="-2" pref="134" max="-2" attributes="0"/>
-                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                              <Component id="bDepartamentos" min="-2" pref="28" max="-2" attributes="0"/>
+                          <Component id="jLabel16" max="32767" attributes="1"/>
+                          <Component id="jLabel15" alignment="0" min="-2" max="-2" attributes="1"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                          <Component id="tfInterno1" max="32767" attributes="1"/>
+                          <Component id="tfInterno2" alignment="1" min="-2" pref="67" max="-2" attributes="1"/>
+                      </Group>
+                  </Group>
+                  <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
+                      <Component id="tfWEB" alignment="0" max="32767" attributes="1"/>
+                      <Component id="tfEmail" alignment="0" max="32767" attributes="1"/>
+                      <Component id="tfContacto" alignment="0" max="32767" attributes="1"/>
+                      <Group type="102" alignment="0" attributes="0">
+                          <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                              <Component id="cbMunicipios" alignment="1" max="32767" attributes="1"/>
+                              <Component id="cbDepartamentos" alignment="1" max="32767" attributes="1"/>
+                              <Component id="cbProvincias" alignment="1" min="-2" pref="272" max="-2" attributes="1"/>
                           </Group>
-                          <Group type="102" alignment="0" max="-2" attributes="0">
-                              <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                                  <Group type="102" alignment="0" attributes="1">
-                                      <EmptySpace min="-2" pref="191" max="-2" attributes="0"/>
-                                      <Component id="jLabel13" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="tfCP" max="32767" attributes="0"/>
-                                  </Group>
-                                  <Group type="102" alignment="1" attributes="0">
-                                      <Component id="bMunicipios" min="-2" pref="28" max="-2" attributes="0"/>
-                                      <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
-                                      <Component id="jLabel14" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="tfWEB" min="-2" pref="176" max="-2" attributes="0"/>
-                                  </Group>
-                              </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="bMunicipios" min="-2" pref="28" max="-2" attributes="0"/>
+                              <Component id="bDepartamentos" alignment="0" min="-2" pref="28" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
-                  <Component id="jScrollPane1" alignment="0" pref="389" max="32767" attributes="1"/>
+                  <Component id="jScrollPane1" alignment="0" pref="359" max="32767" attributes="1"/>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="cbTipoDocumento" min="-2" pref="141" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="tfNumDocumento" min="-2" pref="103" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="labelCUITValidador" min="-2" pref="18" max="-2" attributes="0"/>
+                  </Group>
               </Group>
-              <EmptySpace min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -141,74 +123,92 @@
                   <Component id="tfCP" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="1" attributes="0">
-                  <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="tfCUIT" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="labelCUITValidador" alignment="3" min="-2" pref="20" max="-2" attributes="0"/>
-                  </Group>
-                  <Group type="103" alignment="1" groupAlignment="3" attributes="0">
-                      <Component id="cbCondicIVA" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="jLabel11" alignment="3" min="-2" max="-2" attributes="0"/>
-                  </Group>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="jLabel11" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="cbCondicIVA" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="1" attributes="0">
-                  <Group type="102" alignment="1" attributes="0">
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="jLabel18" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="cbTipoDocumento" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <Component id="labelCUITValidador" alignment="1" min="-2" pref="20" max="-2" attributes="0"/>
+                  <Group type="103" alignment="1" groupAlignment="3" attributes="0">
+                      <Component id="tfNumDocumento" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="jLabel4" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="tfTele1" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jLabel15" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="tfInterno1" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="jLabel5" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="tfTele2" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="tfInterno1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel15" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="jLabel16" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="tfInterno2" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jLabel6" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="cbProvincias" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jLabel7" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="cbDepartamentos" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
                   </Group>
-                  <Component id="bDepartamentos" alignment="1" min="-2" pref="20" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="1" attributes="0">
-                  <Group type="103" alignment="1" groupAlignment="3" attributes="0">
-                      <Component id="jLabel17" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="cbMunicipios" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="jLabel14" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="tfWEB" alignment="3" min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <Component id="bMunicipios" min="-2" pref="20" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="jLabel9" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="tfEmail" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel10" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="tfContacto" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel6" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="cbProvincias" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="2" attributes="0">
+                  <Component id="cbDepartamentos" alignment="2" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel7" alignment="2" min="-2" max="-2" attributes="0"/>
+                  <Component id="bDepartamentos" alignment="2" min="-2" pref="20" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace min="-2" pref="7" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="checkRetencionDGR" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="checkRetencionIVA" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="cbMunicipios" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel17" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jScrollPane1" min="-2" pref="61" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="tfContacto" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel14" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
                   </Group>
-                  <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
-                      <Component id="jLabel12" min="-2" max="-2" attributes="0"/>
-                  </Group>
+                  <Component id="bMunicipios" min="-2" pref="20" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace min="-2" pref="7" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="jLabel9" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="tfEmail" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="jLabel10" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="tfWEB" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="checkRetencionDGR" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="checkRetencionIVA" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="jLabel12" min="-2" max="-2" attributes="0"/>
+                  <Component id="jScrollPane1" min="-2" pref="61" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="32767" attributes="0"/>
           </Group>
@@ -236,7 +236,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel3">
       <Properties>
-        <Property name="text" type="java.lang.String" value="CUIT"/>
+        <Property name="text" type="java.lang.String" value="N&#xba; Doc."/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="tfEmail">
@@ -289,7 +289,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel16">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Int."/>
+        <Property name="text" type="java.lang.String" value="Interno 2"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="tfInterno2">
@@ -309,6 +309,9 @@
         </Property>
         <Property name="name" type="java.lang.String" value="cbProvincia" noResource="true"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cbMunicipiosActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JComboBox" name="cbDepartamentos">
       <Properties>
@@ -335,9 +338,9 @@
         <Property name="text" type="java.lang.String" value="Retenci&#xf3;n IVA"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JTextField" name="tfCUIT">
+    <Component class="javax.swing.JTextField" name="tfNumDocumento">
       <Events>
-        <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="tfCUITKeyTyped"/>
+        <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="tfNumDocumentoKeyTyped"/>
       </Events>
     </Component>
     <Component class="javax.swing.JTextField" name="tfTele2">
@@ -394,7 +397,7 @@
           <Properties>
             <Property name="columns" type="int" value="20"/>
             <Property name="lineWrap" type="boolean" value="true"/>
-            <Property name="rows" type="int" value="4"/>
+            <Property name="rows" type="int" value="3"/>
             <Property name="requestFocusEnabled" type="boolean" value="false"/>
           </Properties>
         </Component>
@@ -409,7 +412,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel15">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Int."/>
+        <Property name="text" type="java.lang.String" value="Interno 1"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="bDepartamentos">
@@ -435,10 +438,26 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel11">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Contribuyente"/>
+        <Property name="text" type="java.lang.String" value="Condic. IVA"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="labelCUITValidador">
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel18">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Tipo Doc."/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="cbTipoDocumento">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="2">
+            <StringItem index="0" value="DNI"/>
+            <StringItem index="1" value="CUIT"/>
+          </StringArray>
+        </Property>
+        <Property name="selectedIndex" type="int" value="1"/>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>

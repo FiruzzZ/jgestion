@@ -1,0 +1,270 @@
+<?xml version="1.1" encoding="UTF-8" ?>
+
+<Form version="1.3" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+  </AuxValues>
+
+  <Layout>
+    <DimensionLayout dim="0">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="1" attributes="0">
+                  <Component id="jLabel2" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel1" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel4" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Component id="labelReceptor" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Component id="labelIssuer" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel3" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel9" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel7" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="tfEstado" min="-2" pref="99" max="-2" attributes="0"/>
+                              <EmptySpace min="17" pref="17" max="-2" attributes="0"/>
+                              <Component id="checkCruzado" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="checkEndosado" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <Component id="tfImporte" alignment="0" min="-2" pref="114" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="-2" pref="79" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="1" max="-2" attributes="0">
+                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                          <Component id="cbReceptor" alignment="0" min="-2" pref="305" max="-2" attributes="0"/>
+                          <Component id="checkAlPortador" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="cbPlazas" alignment="0" pref="305" max="32767" attributes="1"/>
+                          <Component id="tfNumero" alignment="0" pref="305" max="32767" attributes="1"/>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="dcIssued" min="-2" pref="120" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="dcExpiration" min="-2" pref="120" max="-2" attributes="0"/>
+                          </Group>
+                          <Component id="cbBancos" alignment="0" pref="305" max="32767" attributes="1"/>
+                          <Component id="checkPropio" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="cbIssuer" alignment="0" min="-2" pref="305" max="-2" attributes="1"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="bAddBanco" min="-2" pref="22" max="-2" attributes="0"/>
+                          <Component id="bAddPlaza" min="-2" pref="22" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+              </Group>
+              <EmptySpace max="32767" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+    <DimensionLayout dim="1">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="tfNumero" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="103" alignment="0" groupAlignment="3" attributes="0">
+                      <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="cbBancos" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <Component id="bAddBanco" alignment="0" min="-2" pref="22" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="cbPlazas" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="2" attributes="0">
+                          <Component id="jLabel4" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="dcExpiration" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel5" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="dcIssued" alignment="2" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="labelIssuer" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="checkPropio" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="cbIssuer" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="labelReceptor" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="checkAlPortador" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="cbReceptor" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="tfImporte" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel7" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="checkCruzado" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="checkEndosado" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="tfEstado" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel9" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+                  <Component id="bAddPlaza" alignment="0" min="-2" pref="22" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="32767" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+  </Layout>
+  <SubComponents>
+    <Component class="javax.swing.JLabel" name="jLabel1">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="N&#xb0;"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="tfNumero">
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel2">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Banco"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="cbBancos">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="0"/>
+        </Property>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="bAddBanco">
+      <Properties>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/iconos/16px_add.png"/>
+        </Property>
+        <Property name="name" type="java.lang.String" value="Marcas" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel3">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Plaza"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="cbPlazas">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="0"/>
+        </Property>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="bAddPlaza">
+      <Properties>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/iconos/16px_add.png"/>
+        </Property>
+        <Property name="name" type="java.lang.String" value="Marcas" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel4">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Emisi&#xf3;n"/>
+      </Properties>
+    </Component>
+    <Component class="com.toedter.calendar.JDateChooser" name="dcIssued">
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel5">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Vencimiento"/>
+      </Properties>
+    </Component>
+    <Component class="com.toedter.calendar.JDateChooser" name="dcExpiration">
+    </Component>
+    <Component class="javax.swing.JLabel" name="labelIssuer">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Emisor"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="checkPropio">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Propio"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="cbIssuer">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="0"/>
+        </Property>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="labelReceptor">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Receptor"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="checkAlPortador">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Al portador"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="cbReceptor">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="0"/>
+        </Property>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel7">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Importe"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="tfImporte">
+      <Properties>
+        <Property name="horizontalAlignment" type="int" value="4"/>
+        <Property name="text" type="java.lang.String" value="0.00"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel9">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Estado"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="tfEstado">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Tahoma" size="11" style="1"/>
+        </Property>
+        <Property name="horizontalAlignment" type="int" value="0"/>
+        <Property name="text" type="java.lang.String" value="DEPOSITADO"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="checkCruzado">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Cruzado"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="checkEndosado">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Endosado"/>
+      </Properties>
+    </Component>
+  </SubComponents>
+</Form>

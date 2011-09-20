@@ -20,6 +20,9 @@ public class DetalleVenta implements Serializable {
    private int cantidad;
    private Double precioUnitario;
    private int tipoDesc;
+   /**
+    * Descuento ya está multiplicado por {@link DetalleVenta#cantidad}
+    */
    private Double descuento;
    private FacturaVenta factura;
    private Producto producto;

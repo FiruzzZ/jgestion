@@ -212,9 +212,13 @@ public class OrdenJpaController {
       }
    }
 
-   public void initOrden(JFrame owner, boolean visible) {
+   public void initOrden(JFrame owner, boolean visible) throws MessageException {
+      UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.ORDENES_IO);
       jdFactura = new JDFacturaCompra(owner, true, 1);
       jdFactura.getBtnAnular().setVisible(false);
+      jdFactura.setLocation(jdFactura.getOwner().getX() + 100, jdFactura.getOwner().getY() + 50);
+      jdFactura.panelToOrden();
+      jdFactura.setTitle("ORDEN de Entrada/Salida");
       UTIL.getDefaultTableModel(jdFactura.getjTable1(),
               new String[]{"entity", "CÓDIGO", "PRODUCTO", "CANT."},
               new int[]{1, 80, 150, 20});
@@ -307,8 +311,7 @@ public class OrdenJpaController {
             @Override
             public void keyReleased(KeyEvent e) {
                if (e.getKeyCode() == 10) {
-                  producto_selected = new ProductoJpaController()
-                          .findProductoByCodigo(jdFactura.getTfProductoCodigo().getText().trim());
+                  producto_selected = new ProductoJpaController().findProductoByCodigo(jdFactura.getTfProductoCodigo().getText().trim());
                   setProducto(producto_selected);
                }
             }
@@ -332,9 +335,6 @@ public class OrdenJpaController {
          });
       }
 
-      jdFactura.setLocation(jdFactura.getOwner().getX() + 100, jdFactura.getOwner().getY() + 50);
-      jdFactura.panelToOrden();
-      jdFactura.setTitle("ORDEN de .....?");
       jdFactura.pack();
       jdFactura.setVisible(visible);
    }
@@ -404,7 +404,8 @@ public class OrdenJpaController {
       return orden;
    }
 
-   public void initBuscador(JFrame owner) {
+   public void initBuscador(JFrame owner) throws MessageException {
+      UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.ORDENES_IO);
       panel = new PanelBuscadorOrdenes();
       UTIL.loadComboBox(panel.getCdSucursales(), new SucursalJpaController().findSucursalEntities(), "<Todas>");
       buscador = new JDBuscador(owner, true, panel, "Buscador de " + CLASS_NAME);
@@ -419,8 +420,12 @@ public class OrdenJpaController {
          @Override
          public void mouseClicked(MouseEvent e) {
             if (e.getClickCount() > 1) {
-               selectedOrden = (Orden) UTIL.getSelectedValue(buscador.getjTable1(), 0);
-               setDatos(selectedOrden);
+               try {
+                  selectedOrden = (Orden) UTIL.getSelectedValue(buscador.getjTable1(), 0);
+                  setDatos(selectedOrden);
+               } catch (MessageException ex) {
+                  //ignored...
+               }
             }
          }
       });
@@ -472,7 +477,7 @@ public class OrdenJpaController {
       }
    }
 
-   private void setDatos(Orden orden) {
+   private void setDatos(Orden orden) throws MessageException {
       if (jdFactura == null) {
          initOrden(null, false);
          jdFactura.getBtnADD().setEnabled(false);

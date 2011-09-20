@@ -159,10 +159,12 @@
     <class>entity.TiposDocumentos</class>
     <class>entity.Unidadmedida</class>
     <class>entity.Usuario</class>
+    <class>entity.FacturaElectronica</class>
+    <class>entity.DocumentoTipo</class>
     <properties>
-      <property name="toplink.jdbc.user" value="tester"/>
-      <property name="toplink.jdbc.password" value="tester"/>
-      <property name="toplink.jdbc.url" value="jdbc:postgresql://localhost:5433/jgestiontest"/>
+      <property name="toplink.jdbc.user" value="postgres"/>
+      <property name="toplink.jdbc.password" value="juajua"/>
+      <property name="toplink.jdbc.url" value="jdbc:postgresql://localhost:5432/jgestiontest"/>
       <property name="toplink.jdbc.driver" value="org.postgresql.Driver"/>
     </properties>
   </persistence-unit>

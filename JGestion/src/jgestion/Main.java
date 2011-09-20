@@ -18,7 +18,7 @@ import java.util.Vector;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceException;
-import javax.persistence.Query;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import oracle.toplink.essentials.exceptions.DatabaseException;
 import org.apache.log4j.Logger;
@@ -42,13 +42,20 @@ public class Main {
       try {
          if (DAO.getEntityManager().isOpen()) {
             DAO.setDefaultData();
-            EventQueue.invokeLater(new Runnable() {
-
-               @Override
-               public void run() {
-                  new JFP().setVisible(true);
-               }
-            });
+//                FacturaVenta findFacturaVenta = new FacturaVentaJpaController().findFacturaVenta(436);
+//                AFIPWSController af = new AFIPWSController();
+//                JDialog invokeFE = af.showSetting(findFacturaVenta);
+//                invokeFE.setVisible(true);
+//                System.exit(0);
+                            EventQueue.invokeLater(new Runnable() {
+                
+                               @Override
+                               public void run() {
+                                  JFP jFP = new JFP();
+                                  new Thread(jFP, "checkDBConnection").start();
+                                  jFP.setVisible(true);
+                               }
+                            });
          }
       } catch (MessageException ex) {
          log.fatal("MessageException ", ex);
@@ -60,7 +67,7 @@ public class Main {
          log.fatal("DataBase Error!!", ex);
          OCURRIO_ERROR = true;
       } catch (PersistenceException ex) {
-         JOptionPane.showMessageDialog(null, "PersistenceException..!", "EN MAIN", 0);
+         JOptionPane.showMessageDialog(null, ex.getMessage() , "Error -> MAIN -> PersistenceException", 0);
          log.fatal("PersistenceException", ex);
          OCURRIO_ERROR = true;
       } catch (Exception ex) {
