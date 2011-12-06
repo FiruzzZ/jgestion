@@ -1,10 +1,12 @@
 package entity;
 
+import controller.Valores.FormaPago;
 import utilities.general.UTIL;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.*;
+import org.eclipse.persistence.config.QueryHints;
 
 /**
  *
@@ -14,297 +16,320 @@ import javax.persistence.*;
 @Table(name = "factura_venta" //, uniqueConstraints = {@UniqueConstraint(columnNames = {"numero"})}
 )
 @NamedQueries({
-   @NamedQuery(name = "FacturaVenta.findAll", query = "SELECT f FROM FacturaVenta f"),
-   @NamedQuery(name = "FacturaVenta.findById", query = "SELECT f FROM FacturaVenta f WHERE f.id = :id", hints =
-   @QueryHint(name = "toplink.refresh", value = "true")),
-   @NamedQuery(name = "FacturaVenta.findByNumero", query = "SELECT f FROM FacturaVenta f WHERE f.numero = :numero")
+    @NamedQuery(name = "FacturaVenta.findAll", query = "SELECT f FROM FacturaVenta f"),
+    @NamedQuery(name = "FacturaVenta.findById", query = "SELECT f FROM FacturaVenta f WHERE f.id = :id",
+    hints =
+    @QueryHint(name = QueryHints.REFRESH, value = "true")),
+    @NamedQuery(name = "FacturaVenta.findByNumero", query = "SELECT f FROM FacturaVenta f WHERE f.numero = :numero")
 })
 public class FacturaVenta implements Serializable {
 
-   private static final long serialVersionUID = 1L;
-   @Id
-   @Basic(optional = false)
-   @Column(name = "id", nullable = false)
-   @GeneratedValue(strategy = GenerationType.IDENTITY)
-   private Integer id;
-   @Basic(optional = false)
-   @Column(name = "tipo", nullable = false)
-   private char tipo;
-   @Basic(optional = false)
-   @Column(name = "fecha_venta", nullable = false)
-   @Temporal(TemporalType.DATE)
-   private Date fechaVenta;
-   @Basic(optional = false)
-   @Column(name = "importe", nullable = false, precision = 9, scale = 2)
-   private Double importe;
-   @Basic(optional = false)
-   @Column(name = "fechaalta", nullable = false, insertable = false, updatable = false, columnDefinition = "timestamp with time zone NOT NULL DEFAULT now()")
-   @Temporal(TemporalType.TIMESTAMP)
-   private Date fechaalta;
-   @Column(name = "descuento", precision = 9, scale = 2)
-   private Double descuento;
-   @Basic(optional = false)
-   @Column(name = "numero", nullable = false)
-   private long numero;
-   @JoinColumn(name = "sucursal", referencedColumnName = "id", nullable = false)
-   @ManyToOne(optional = false)
-   private Sucursal sucursal;
-   @Basic(optional = false)
-   @Column(name = "iva10", nullable = false)
-   private double iva10;
-   @Basic(optional = false)
-   @Column(name = "iva21", nullable = false)
-   private double iva21;
-   @Column(name = "factura_cuarto")
-   private Short facturaCuarto;
-   @Column(name = "factura_octeto")
-   private Integer facturaOcteto;
-   @Basic(optional = false)
-   @Column(name = "movimiento_interno", nullable = false)
-   private int movimientoInterno;
-   @OneToMany(cascade = CascadeType.ALL, mappedBy = "factura", fetch = FetchType.EAGER)
-   private List<DetalleVenta> detallesVentaList;
-   @JoinColumn(name = "cliente", referencedColumnName = "id", nullable = false)
-   @ManyToOne(optional = false)
-   private Cliente cliente;
-   @JoinColumn(name = "lista_precios", referencedColumnName = "id", nullable = false)
-   @ManyToOne(optional = false)
-   private ListaPrecios listaPrecios;
-   @JoinColumn(name = "usuario", referencedColumnName = "id", nullable = false)
-   @ManyToOne(optional = false)
-   private Usuario usuario;
-   @JoinColumn(name = "caja", referencedColumnName = "id", nullable = false)
-   @ManyToOne(optional = false)
-   private Caja caja;
-   @Basic(optional = false)
-   @Column(name = "gravado", nullable = false)
-   private Double gravado;
-   @Basic(optional = false)
-   @Column(name = "forma_pago", nullable = false)
-   private short formaPago;
-   @Basic(optional = false)
-   @Column(name = "dias_cta_cte", nullable = false)
-   private Short diasCtaCte;
-   @Basic(optional = false)
-   @Column(name = "anulada", nullable = false)
-   private boolean anulada;
-   @JoinColumn(name = "remito", referencedColumnName = "id")
-   @ManyToOne
-   private Remito remito;
+    private static final long serialVersionUID = 1L;
+    @Id
+    @Basic(optional = false)
+    @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+    @Basic(optional = false)
+    @Column(name = "tipo", nullable = false)
+    private char tipo;
+    @Basic(optional = false)
+    @Column(name = "fecha_venta", nullable = false)
+    @Temporal(TemporalType.DATE)
+    private Date fechaVenta;
+    @Basic(optional = false)
+    @Column(name = "importe", nullable = false, precision = 9, scale = 2)
+    private Double importe;
+    @Basic(optional = false)
+    @Column(name = "fechaalta", nullable = false, insertable = false, updatable = false, columnDefinition = "timestamp with time zone NOT NULL DEFAULT now()")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fechaalta;
+    @Column(name = "descuento", precision = 9, scale = 2)
+    private Double descuento;
+    @Basic(optional = false)
+    @Column(name = "numero", nullable = false)
+    private long numero;
+    @JoinColumn(name = "sucursal", referencedColumnName = "id", nullable = false)
+    @ManyToOne(optional = false)
+    private Sucursal sucursal;
+    @Basic(optional = false)
+    @Column(name = "iva10", nullable = false)
+    private double iva10;
+    @Basic(optional = false)
+    @Column(name = "iva21", nullable = false)
+    private double iva21;
+    @Column(name = "factura_cuarto")
+    private Short facturaCuarto;
+    @Column(name = "factura_octeto")
+    private Integer facturaOcteto;
+    @Basic(optional = false)
+    @Column(name = "movimiento_interno", nullable = false)
+    private int movimientoInterno;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "factura", fetch = FetchType.EAGER)
+    private List<DetalleVenta> detallesVentaList;
+    @JoinColumn(name = "cliente", referencedColumnName = "id", nullable = false)
+    @ManyToOne(optional = false)
+    private Cliente cliente;
+    @JoinColumn(name = "lista_precios", referencedColumnName = "id", nullable = false)
+    @ManyToOne(optional = false)
+    private ListaPrecios listaPrecios;
+    @JoinColumn(name = "usuario", referencedColumnName = "id", nullable = false)
+    @ManyToOne(optional = false)
+    private Usuario usuario;
+    @JoinColumn(name = "caja", referencedColumnName = "id", nullable = false)
+    @ManyToOne(optional = false)
+    private Caja caja;
+    @Basic(optional = false)
+    @Column(name = "gravado", nullable = false)
+    private Double gravado;
+    @Basic(optional = false)
+    @Column(name = "forma_pago", nullable = false)
+    private int formaPago;
+    @Basic(optional = false)
+    @Column(name = "dias_cta_cte", nullable = false)
+    private Short diasCtaCte;
+    @Basic(optional = false)
+    @Column(name = "anulada", nullable = false)
+    private boolean anulada;
+    @JoinColumn(name = "remito", referencedColumnName = "id")
+    @ManyToOne
+    private Remito remito;
+    @Transient
+    private transient ChequeTerceros cheque;
 
-   public FacturaVenta() {
-   }
+    public FacturaVenta() {
+    }
 
-   public FacturaVenta(Integer id) {
-      this.id = id;
-   }
+    public FacturaVenta(Integer id) {
+        this.id = id;
+    }
 
-   public Integer getId() {
-      return id;
-   }
+    public Integer getId() {
+        return id;
+    }
 
-   public void setId(Integer id) {
-      this.id = id;
-   }
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-   public char getTipo() {
-      return tipo;
-   }
+    public char getTipo() {
+        return tipo;
+    }
 
-   public void setTipo(char tipo) {
-      this.tipo = tipo;
-   }
+    public void setTipo(char tipo) {
+        this.tipo = tipo;
+    }
 
-   public Date getFechaVenta() {
-      return fechaVenta;
-   }
+    public Date getFechaVenta() {
+        return fechaVenta;
+    }
 
-   public void setFechaVenta(Date fechaVenta) {
-      this.fechaVenta = fechaVenta;
-   }
+    public void setFechaVenta(Date fechaVenta) {
+        this.fechaVenta = fechaVenta;
+    }
 
-   public Double getImporte() {
-      return importe;
-   }
+    public Double getImporte() {
+        return importe;
+    }
 
-   public void setImporte(Double importe) {
-      this.importe = importe;
-   }
+    public void setImporte(Double importe) {
+        this.importe = importe;
+    }
 
-   public Date getFechaalta() {
-      return fechaalta;
-   }
+    public Date getFechaalta() {
+        return fechaalta;
+    }
 
-   public Double getDescuento() {
-      return descuento;
-   }
+    public void setFechaalta(Date fechaalta) {
+        this.fechaalta = fechaalta;
+    }
 
-   public void setDescuento(Double descuento) {
-      this.descuento = descuento;
-   }
+    public Double getDescuento() {
+        return descuento;
+    }
 
-   public long getNumero() {
-      return numero;
-   }
+    public void setDescuento(Double descuento) {
+        this.descuento = descuento;
+    }
 
-   public void setNumero(long numero) {
-      this.numero = numero;
-   }
+    public long getNumero() {
+        return numero;
+    }
 
-   public Sucursal getSucursal() {
-      return sucursal;
-   }
+    public void setNumero(long numero) {
+        this.numero = numero;
+    }
 
-   public void setSucursal(Sucursal sucursal) {
-      this.sucursal = sucursal;
-   }
+    public Sucursal getSucursal() {
+        return sucursal;
+    }
 
-   public double getIva10() {
-      return iva10;
-   }
+    public void setSucursal(Sucursal sucursal) {
+        this.sucursal = sucursal;
+    }
 
-   public void setIva10(double iva10) {
-      this.iva10 = iva10;
-   }
+    public double getIva10() {
+        return iva10;
+    }
 
-   public double getIva21() {
-      return iva21;
-   }
+    public void setIva10(double iva10) {
+        this.iva10 = iva10;
+    }
 
-   public void setIva21(double iva21) {
-      this.iva21 = iva21;
-   }
+    public double getIva21() {
+        return iva21;
+    }
 
-   public Short getFacturaCuarto() {
-      return facturaCuarto;
-   }
+    public void setIva21(double iva21) {
+        this.iva21 = iva21;
+    }
 
-   public void setFacturaCuarto(Short facturaCuarto) {
-      this.facturaCuarto = facturaCuarto;
-   }
+    public Short getFacturaCuarto() {
+        return facturaCuarto;
+    }
 
-   public Integer getFacturaOcteto() {
-      return facturaOcteto;
-   }
+    public void setFacturaCuarto(Short facturaCuarto) {
+        this.facturaCuarto = facturaCuarto;
+    }
 
-   public void setFacturaOcteto(Integer facturaOcteto) {
-      this.facturaOcteto = facturaOcteto;
-   }
+    public Integer getFacturaOcteto() {
+        return facturaOcteto;
+    }
 
-   public int getMovimientoInterno() {
-      return movimientoInterno;
-   }
+    public void setFacturaOcteto(Integer facturaOcteto) {
+        this.facturaOcteto = facturaOcteto;
+    }
 
-   public void setMovimientoInterno(int movimientoInterno) {
-      this.movimientoInterno = movimientoInterno;
-   }
+    public int getMovimientoInterno() {
+        return movimientoInterno;
+    }
 
-   public List<DetalleVenta> getDetallesVentaList() {
-      return detallesVentaList;
-   }
+    public void setMovimientoInterno(int movimientoInterno) {
+        this.movimientoInterno = movimientoInterno;
+    }
 
-   public void setDetallesVentaList(List<DetalleVenta> detallesVentaList) {
-      this.detallesVentaList = detallesVentaList;
-   }
+    public List<DetalleVenta> getDetallesVentaList() {
+        return detallesVentaList;
+    }
 
-   public Cliente getCliente() {
-      return cliente;
-   }
+    public void setDetallesVentaList(List<DetalleVenta> detallesVentaList) {
+        this.detallesVentaList = detallesVentaList;
+    }
 
-   public void setCliente(Cliente cliente) {
-      this.cliente = cliente;
-   }
+    public Cliente getCliente() {
+        return cliente;
+    }
 
-   public ListaPrecios getListaPrecios() {
-      return listaPrecios;
-   }
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
 
-   public void setListaPrecios(ListaPrecios listaPrecios) {
-      this.listaPrecios = listaPrecios;
-   }
+    public ListaPrecios getListaPrecios() {
+        return listaPrecios;
+    }
 
-   public Usuario getUsuario() {
-      return usuario;
-   }
+    public void setListaPrecios(ListaPrecios listaPrecios) {
+        this.listaPrecios = listaPrecios;
+    }
 
-   public void setUsuario(Usuario usuario) {
-      this.usuario = usuario;
-   }
+    public Usuario getUsuario() {
+        return usuario;
+    }
 
-   public Caja getCaja() {
-      return caja;
-   }
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
 
-   public void setCaja(Caja caja) {
-      this.caja = caja;
-   }
+    public Caja getCaja() {
+        return caja;
+    }
 
-   public Double getGravado() {
-      return gravado;
-   }
+    public void setCaja(Caja caja) {
+        this.caja = caja;
+    }
 
-   public void setGravado(Double gravado) {
-      this.gravado = gravado;
-   }
+    public Double getGravado() {
+        return gravado;
+    }
 
-   public short getFormaPago() {
-      return formaPago;
-   }
+    public void setGravado(Double gravado) {
+        this.gravado = gravado;
+    }
 
-   public void setFormaPago(short formaPago) {
-      this.formaPago = formaPago;
-   }
+    public int getFormaPago() {
+        return formaPago;
+    }
 
-   public Short getDiasCtaCte() {
-      return diasCtaCte;
-   }
+    public FormaPago getFormaPagoEnum() {
+        return FormaPago.getFormaPago(formaPago);
+    }
 
-   public void setDiasCtaCte(Short diasCtaCte) {
-      this.diasCtaCte = diasCtaCte;
-   }
+    public void setFormaPago(FormaPago formaPago) {
+        this.formaPago = formaPago.getId();
+    }
 
-   public Remito getRemito() {
-      return remito;
-   }
+    public void setFormaPago(int formaPago) {
+        this.formaPago = formaPago;
+    }
 
-   public void setRemito(Remito remito) {
-      this.remito = remito;
-   }
+    public Short getDiasCtaCte() {
+        return diasCtaCte;
+    }
 
-   @Override
-   public int hashCode() {
-      int hash = 0;
-      hash += (id != null ? id.hashCode() : 0);
-      return hash;
-   }
+    public void setDiasCtaCte(Short diasCtaCte) {
+        this.diasCtaCte = diasCtaCte;
+    }
 
-   @Override
-   public boolean equals(Object object) {
-      // TODO: Warning - this method won't work in the case the id fields are not set
-      if (!(object instanceof FacturaVenta)) {
-         return false;
-      }
-      FacturaVenta other = (FacturaVenta) object;
-      if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-         return false;
-      }
-      return true;
-   }
+    public Remito getRemito() {
+        return remito;
+    }
 
-   @Override
-   public String toString() {
-      if (this.getMovimientoInterno() == 0) {
-         return UTIL.AGREGAR_CEROS(String.valueOf(this.getNumero()), 12);
-      } else {
-         return "I" + String.valueOf(this.getMovimientoInterno());
-      }
-   }
+    public void setRemito(Remito remito) {
+        this.remito = remito;
+    }
 
-   public void setAnulada(boolean anulada) {
-      this.anulada = anulada;
-   }
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
+    }
 
-   public boolean getAnulada() {
-      return anulada;
-   }
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof FacturaVenta)) {
+            return false;
+        }
+        FacturaVenta other = (FacturaVenta) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        if (this.getMovimientoInterno() == 0) {
+            return UTIL.AGREGAR_CEROS(String.valueOf(this.getNumero()), 12);
+        } else {
+            return "I" + String.valueOf(this.getMovimientoInterno());
+        }
+    }
+
+    public void setAnulada(boolean anulada) {
+        this.anulada = anulada;
+    }
+
+    public boolean getAnulada() {
+        return anulada;
+    }
+
+    public ChequeTerceros getCheque() {
+        return cheque;
+    }
+
+    public void setCheque(ChequeTerceros cheque) {
+        this.cheque = cheque;
+    }
 }

@@ -5,6 +5,7 @@
  */
 package gui;
 
+import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import java.util.Date;
@@ -16,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
+import utilities.general.UTIL;
 
 /**
  * Ventana usada para el ABM de Recibos y Remitos
@@ -87,6 +89,8 @@ public class JDReRe extends javax.swing.JDialog {
         tfTOTAL = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         jCheckBox1 = new javax.swing.JCheckBox();
+        jLabel10 = new javax.swing.JLabel();
+        checkPagoConCheque = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("setear título!");
@@ -272,6 +276,9 @@ public class JDReRe extends javax.swing.JDialog {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 selectAllText(evt);
             }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                tfEntregaFocusLost(evt);
+            }
         });
 
         tfObservacion.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -336,6 +343,7 @@ public class JDReRe extends javax.swing.JDialog {
 
         checkAcreditarEntrega.setMnemonic('r');
         checkAcreditarEntrega.setText("desacreditar entrega");
+        checkAcreditarEntrega.setToolTipText("La entrega será ");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -420,7 +428,7 @@ public class JDReRe extends javax.swing.JDialog {
 
         jLabel1.setText("Total");
 
-        jCheckBox1.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jCheckBox1.setFont(new java.awt.Font("Tahoma", 0, 10));
         jCheckBox1.setMnemonic('o');
         jCheckBox1.setText("Ocultar Datos");
         jCheckBox1.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
@@ -430,6 +438,12 @@ public class JDReRe extends javax.swing.JDialog {
                 jCheckBox1StateChanged(evt);
             }
         });
+
+        jLabel10.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jLabel10.setText("** Desacreditado");
+
+        checkPagoConCheque.setText("Pago con cheque");
+        checkPagoConCheque.setToolTipText("Seleccione para relacionar el pago del documento con un Cheque");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -442,19 +456,6 @@ public class JDReRe extends javax.swing.JDialog {
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 498, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(labelPorCreditoDebito)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(tfPorCreditoDebito, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(10, 10, 10)
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(tfTotalPagado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 376, Short.MAX_VALUE)
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(tfTOTAL, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(bAnular)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 62, Short.MAX_VALUE)
                         .addComponent(bImprimir)
@@ -462,7 +463,25 @@ public class JDReRe extends javax.swing.JDialog {
                         .addComponent(bAceptar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(bCancelar))
-                    .addComponent(jCheckBox1, javax.swing.GroupLayout.Alignment.TRAILING))
+                    .addComponent(jCheckBox1, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jLabel10)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 123, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(checkPagoConCheque)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(tfTOTAL, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(labelPorCreditoDebito)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(tfPorCreditoDebito, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(10, 10, 10)
+                                .addComponent(jLabel2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(tfTotalPagado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -478,10 +497,12 @@ public class JDReRe extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(27, 27, 27)
+                        .addComponent(jLabel10)
+                        .addGap(13, 13, 13)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(tfTOTAL, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel1)))
+                            .addComponent(jLabel1)
+                            .addComponent(checkPagoConCheque)))
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(tfTotalPagado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel2)
@@ -511,6 +532,15 @@ private void jCheckBox1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FI
     jPanel1.setVisible(!jCheckBox1.isSelected());
     pack();
 }//GEN-LAST:event_jCheckBox1StateChanged
+
+private void tfEntregaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfEntregaFocusLost
+    try {
+        tfEntrega.setText(UTIL.PRECIO_CON_PUNTO.format(Double.valueOf(tfEntrega.getText())));
+        tfEntrega.setForeground(Color.BLACK);
+    } catch (Exception exception) {
+        tfEntrega.setForeground(Color.RED);
+    }
+}//GEN-LAST:event_tfEntregaFocusLost
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton bAceptar;
     private javax.swing.JButton bAnular;
@@ -524,10 +554,12 @@ private void jCheckBox1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FI
     private javax.swing.JComboBox cbCtaCtes;
     private javax.swing.JComboBox cbSucursal;
     private javax.swing.JCheckBox checkAcreditarEntrega;
+    private javax.swing.JCheckBox checkPagoConCheque;
     private com.toedter.calendar.JDateChooser dcFechaCarga;
     private com.toedter.calendar.JDateChooser dcFechaReRe;
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
@@ -636,6 +668,10 @@ private void jCheckBox1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FI
         return checkAcreditarEntrega;
     }
 
+    public JCheckBox getCheckPagoConCheque() {
+        return checkPagoConCheque;
+    }
+
     public JComboBox getCbCaja() {
         return cbCaja;
     }
@@ -652,11 +688,11 @@ private void jCheckBox1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FI
         return cbSucursal;
     }
 
-    public java.util.Date getDcFechaReRe() {
+    public Date getDcFechaReRe() {
         return dcFechaReRe.getDate();
     }
 
-    public java.util.Date getDcFechaCarga() {
+    public Date getDcFechaCarga() {
         return dcFechaCarga.getDate();
     }
 
@@ -726,7 +762,7 @@ private void jCheckBox1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FI
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="SETTERS">
-    public void setDcFechaReRe(java.util.Date dcFecha) {
+    public void setDcFechaReRe(Date dcFecha) {
         this.dcFechaReRe.setDate(dcFecha);
     }
 
@@ -762,7 +798,7 @@ private void jCheckBox1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FI
         this.tfTotalPagado.setText(tfTotalPagado);
     }
 
-    public void setDcFechaCarga(java.util.Date fechaCarga) {
+    public void setDcFechaCarga(Date fechaCarga) {
         dcFechaCarga.setDate(fechaCarga);
     }
 

@@ -37,11 +37,11 @@ public class DetalleCajaMovimientos implements Serializable {
    @Basic(optional = false)
    @Column(name = "ingreso", nullable = false)
    private boolean ingreso;
-   @Basic(optional = false)
-   @Column(name = "tipo", nullable = false)
    /**
     * 1 factu_compra, 2 factu_venta, 3 remesa, 4 recibo, 5 movimiento caja, 6 devolucion (anulacion), 7 apertura caja, 8 mov. varios, 9 mov interno (MVI)
     */
+   @Basic(optional = false)
+   @Column(name = "tipo", nullable = false)
    private short tipo;
    @Basic(optional = false)
    @Column(name = "numero", nullable = false)
@@ -93,6 +93,11 @@ public class DetalleCajaMovimientos implements Serializable {
       return tipo;
    }
 
+   /**
+    * Set el tipo (este campo está parametrizado).
+    * @param tipo 
+    * @see DetalleCajaMovimientos#tipo
+    */
    public void setTipo(short tipo) {
       this.tipo = tipo;
    }

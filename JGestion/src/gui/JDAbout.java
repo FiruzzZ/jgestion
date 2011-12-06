@@ -7,6 +7,7 @@
 package gui;
 
 import java.util.Properties;
+import jgestion.Main;
 
 /**
  *
@@ -19,8 +20,8 @@ public class JDAbout extends javax.swing.JDialog {
       super(parent, modal);
       initComponents();
       Properties pro = System.getProperties();
-      ta.setText("JGestion (Sistema de administración comercial)"
-              + "\nVersión: " + JFP.VERSION
+      ta.setText(Main.resourceBundle.getString("softwareTitle")
+              + "\nVersión: " + Main.resourceBundle.getString("softwareVersion")
               + "\nJVM: " + pro.getProperty("java.version")
               + "\nOS: " + pro.getProperty("os.name") + " " + pro.getProperty("os.version")
               + "\nUserDir: " + pro.getProperty("user.dir"));

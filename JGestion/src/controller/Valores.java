@@ -16,7 +16,7 @@ public abstract class Valores {
      */
     public enum FormaPago {
 
-        CONTADO(1, "CONTADO"), CTA_CTE(2, "CTA CTE"), CHEQUE(3, "CHEQUE");
+        CONTADO(1, "CONTADO"), CTA_CTE(2, "CTA CTE"), CHEQUE(3, "CHEQUE"), CONTADO_CHEQUE(4, "CONTADO/CHEQUE");
         private final int id;
         private final String nombre;
 
@@ -44,8 +44,6 @@ public abstract class Valores {
         }
 
         public static List<FormaPago> getFormasDePago() {
-            //retorna una copia de las formas de pago
-//            return new ArrayList<FormaPago>(formasDePago);
             return (List<FormaPago>) Arrays.asList(FormaPago.values());
         }
 
@@ -81,5 +79,4 @@ public abstract class Valores {
             return this.nombre;
         }
     }
-
 }

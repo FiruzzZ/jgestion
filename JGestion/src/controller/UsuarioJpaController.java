@@ -30,6 +30,7 @@ import javax.swing.JFrame;
 import javax.swing.table.DefaultTableModel;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.eclipse.persistence.config.QueryHints;
 
 /**
  *
@@ -362,7 +363,7 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
       UTIL.limpiarDtm(dtm);
       List<Usuario> l;
       if (query == null) {
-         l = DAO.getEntityManager().createNamedQuery(CLASS_NAME + ".findAll").setHint("toplink.refresh", true).getResultList();
+         l = DAO.getEntityManager().createNamedQuery(CLASS_NAME + ".findAll").setHint(QueryHints.REFRESH, true).getResultList();
       } else { // para cuando se usa el Buscador del ABM
          l = DAO.getEntityManager().createNativeQuery(query, Usuario.class).getResultList();
       }

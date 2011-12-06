@@ -75,6 +75,9 @@ public class JDFacturaVenta extends javax.swing.JDialog {
                 cbFormaPago.setVisible(false);
                 labelDias.setVisible(false);
                 tfDias.setVisible(false);
+                labelListaPrecios.setVisible(false);
+                cbListaPrecio.setVisible(false);
+                labelListaPrecioParaCatalogo.setVisible(false);
             }
         }
         decimalFormatSymbols = new DecimalFormatSymbols();
@@ -242,7 +245,6 @@ public class JDFacturaVenta extends javax.swing.JDialog {
 
         labelDias.setText("Días");
 
-        tfDias.setColumns(3);
         tfDias.setEnabled(false);
         tfDias.setName("dias"); // NOI18N
         tfDias.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -296,7 +298,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
                     .addComponent(labelCaja)
                     .addComponent(labelLetra))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelDatosFacturacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(panelDatosFacturacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(tfObservacion, javax.swing.GroupLayout.PREFERRED_SIZE, 601, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelDatosFacturacionLayout.createSequentialGroup()
                         .addGroup(panelDatosFacturacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -309,7 +311,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
                                 .addComponent(tfFacturaCuarto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(tfFacturaOcteto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 8, Short.MAX_VALUE)
                                 .addComponent(labeFecha)
                                 .addGap(4, 4, 4))
                             .addComponent(cbListaPrecio, javax.swing.GroupLayout.Alignment.LEADING, 0, 308, Short.MAX_VALUE)
@@ -341,14 +343,14 @@ public class JDFacturaVenta extends javax.swing.JDialog {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(labelDias)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(tfDias, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(tfDias, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                             .addGroup(panelDatosFacturacionLayout.createSequentialGroup()
                                 .addComponent(dcFechaFactura, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(14, 14, 14)
                                 .addComponent(labelNumMovimiento)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(tfNumMovimiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         panelDatosFacturacionLayout.setVerticalGroup(
             panelDatosFacturacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -701,6 +703,8 @@ public class JDFacturaVenta extends javax.swing.JDialog {
         jCheckBox1.setFont(new java.awt.Font("Tahoma", 0, 10));
         jCheckBox1.setMnemonic('o');
         jCheckBox1.setText("Ocultar Datos facturación");
+        jCheckBox1.setFocusPainted(false);
+        jCheckBox1.setFocusable(false);
         jCheckBox1.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
         jCheckBox1.setRequestFocusEnabled(false);
         jCheckBox1.addActionListener(new java.awt.event.ActionListener() {
@@ -803,12 +807,18 @@ public class JDFacturaVenta extends javax.swing.JDialog {
 
     private void cbFormaPagoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbFormaPagoActionPerformed
         //habilitando el textfield para poner la cantidad de días de cta cte
-        tfDias.setEnabled((cbFormaPago.getSelectedItem().toString().equals(Valores.FormaPago.CTA_CTE.getNombre())));
+        Valores.FormaPago formaPago = (Valores.FormaPago) cbFormaPago.getSelectedItem();
+        boolean habilitarDias = formaPago.equals(Valores.FormaPago.CTA_CTE);
+        tfDias.setEnabled(habilitarDias);
         tfDias.setRequestFocusEnabled(tfDias.isEnabled());
         tfDias.setText("");
+
+        boolean habilitarCaja = (formaPago.equals(Valores.FormaPago.CONTADO)
+                || formaPago.equals(Valores.FormaPago.CONTADO_CHEQUE));
+
         //deshabilita la selección de caja
-        //ya que cuando es CtaCte, no hay movimiento de Caja
-        cbCaja.setEnabled(!tfDias.isEnabled());
+        //ya que cuando es CtaCte o Cheque, no hay movimiento de Caja
+        cbCaja.setEnabled(habilitarCaja);
 }//GEN-LAST:event_cbFormaPagoActionPerformed
 
     private void cbFormaPagoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_cbFormaPagoFocusLost
@@ -1168,6 +1178,10 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
         return labelNumMovimiento;
     }
 
+    public JLabel getLabelDias() {
+        return labelDias;
+    }
+    
     public void setTfNumMovimiento(String tfMovimientoInterno) {
         this.tfNumMovimiento.setText(tfMovimientoInterno);
     }
@@ -1192,12 +1206,17 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
         cbFacturaTipo.setEnabled(false);
         cbCaja.setEnabled(false);
         cbFormaPago.setEnabled(false);
-        tfDias.setEnabled(false);
+        tfDias.setEditable(false);
         tfObservacion.setEnabled(false);
         //////////////////
         tfProductoCodigo.setEnabled(false);
         bBuscarProducto.setEnabled(false);
         cbProductos.setEnabled(false);
+        tfCantidad.setEnabled(false);
+        tfPrecioUnitario.setEnabled(false);
+        tfProductoIVA.setEnabled(false);
+        cbDesc.setEnabled(false);
+        tfProductoDesc.setEnabled(false);
         btnADD.setEnabled(false);
         btnDEL.setEnabled(false);
         btnCancelar.setEnabled(false);
@@ -1335,6 +1354,9 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
         labelDescuento.setVisible(false);
         cbDesc.setVisible(false);
         tfProductoDesc.setVisible(false);
+        //no factu electrónica
+        checkFacturacionElectronica.setVisible(false);
+        setVisibleChange(false);
         pack();
     }
 
@@ -1366,5 +1388,16 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
     public void setVisibleListaPrecio(boolean b) {
         cbListaPrecio.setVisible(b);
         labelListaPrecios.setVisible(b);
+    }
+
+    /**
+     * Setea la visibilidad de los componentes relacionados al cambio/vuelvo 
+     * (change of money) de dinero.
+     * @param b 
+     */
+    private void setVisibleChange(boolean b) {
+        jLabel3.setVisible(b);
+        tfCambio.setVisible(b);
+        tfMonto.setVisible(b);
     }
 }

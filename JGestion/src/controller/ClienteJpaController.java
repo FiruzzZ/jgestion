@@ -24,6 +24,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.NoResultException;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -36,12 +37,12 @@ import javax.swing.table.DefaultTableModel;
 public class ClienteJpaController implements ActionListener {
 
     public final String CLASS_NAME = Cliente.class.getSimpleName();
-    private final String[] colsName = {"ID", "Código", "Razón social", "Tipo", "Nº Doc.", "Teléfonos"};
-    private final int[] colsWidth = {10, 20, 100, 10, 40, 80};
+    private final String[] columnNames = {"ID", "Código", "Razón social", "Tipo", "Nº Doc.", "Teléfonos"};
+    private final int[] columnWidths = {10, 20, 100, 10, 40, 80};
     private Cliente EL_OBJECT;
     private JDContenedor contenedor = null;
     private JDABM abm;
-    private PanelABMProveedores panel;
+    private PanelABMProveedores panelABM;
 
     // <editor-fold defaultstate="collapsed" desc="CRUD y List's">
     public EntityManager getEntityManager() {
@@ -102,7 +103,7 @@ public class ClienteJpaController implements ActionListener {
         }
     }
 
-    public List<Cliente> findClienteEntities() {
+    public List<Cliente> findEntities() {
         return findClienteEntities(true, -1, -1);
     }
 
@@ -143,7 +144,7 @@ public class ClienteJpaController implements ActionListener {
     }
     // </editor-fold>
 
-    public Container initContenedor(JFrame frame, boolean modal) {
+    public JDialog initContenedor(JFrame frame, boolean modal) {
         contenedor = new JDContenedor(frame, modal, "ABM - " + CLASS_NAME + "s");
         contenedor.hideBtmEliminar();
         contenedor.getTfFiltro().addKeyListener(new KeyAdapter() {
@@ -153,7 +154,7 @@ public class ClienteJpaController implements ActionListener {
                 armarQuery(contenedor.getTfFiltro().getText().trim());
             }
         });
-        UTIL.getDefaultTableModel(contenedor.getjTable1(), colsName, colsWidth);
+        UTIL.getDefaultTableModel(contenedor.getjTable1(), columnNames, columnWidths);
         UTIL.hideColumnTable(contenedor.getjTable1(), 0);
         cargarContenedorTabla(contenedor.getDTM(), null);
         contenedor.setListener(this);
@@ -194,22 +195,22 @@ public class ClienteJpaController implements ActionListener {
             throw new MessageException("Debe elegir una fila de la tabla");
         }
 
-        panel = new PanelABMProveedores();
-        panel.getCheckRetencionDGR().setVisible(false);
-        panel.getCheckRetencionIVA().setVisible(false);
-        UTIL.loadComboBox(panel.getCbProvincias(), new ProvinciaJpaController().findProvinciaEntities(), true);
-        UTIL.loadComboBox(panel.getCbDepartamentos(), null, true);
-        UTIL.loadComboBox(panel.getCbMunicipios(), null, true);
-        UTIL.loadComboBox(panel.getCbCondicIVA(), new ContribuyenteJpaController().findContribuyenteEntities(), false);
-        panel.setListener(this);
+        panelABM = new PanelABMProveedores();
+        panelABM.getCheckRetencionDGR().setVisible(false);
+        panelABM.getCheckRetencionIVA().setVisible(false);
+        UTIL.loadComboBox(panelABM.getCbProvincias(), new ProvinciaJpaController().findProvinciaEntities(), true);
+        UTIL.loadComboBox(panelABM.getCbDepartamentos(), null, true);
+        UTIL.loadComboBox(panelABM.getCbMunicipios(), null, true);
+        UTIL.loadComboBox(panelABM.getCbCondicIVA(), new ContribuyenteJpaController().findContribuyenteEntities(), false);
+        panelABM.setListener(this);
         if (isEditing) {
             setPanel(EL_OBJECT);
         } else {
             // si es nuevo, agrega un código sugerido
-            panel.setTfCodigo(String.valueOf(getClienteCount() + 1));
+            panelABM.setTfCodigo(String.valueOf(getClienteCount() + 1));
         }
 
-        abm = new JDABM(true, contenedor, panel);
+        abm = new JDABM(true, contenedor, panelABM);
         abm.setTitle("ABM " + CLASS_NAME + "s");
         if (e != null) {
             abm.setLocation(((java.awt.Component) e.getSource()).getLocation());
@@ -220,198 +221,194 @@ public class ClienteJpaController implements ActionListener {
     }
 
     private void setPanel(Cliente object) {
-        panel.setTfCodigo(object.getCodigo());
-        panel.setTfNombre(object.getNombre());
-        panel.setTfDireccion(object.getDireccion());
-        panel.getCbTipoDocumento().setSelectedIndex(object.getTipodoc() - 1);
-        panel.setTfNumDocumento(String.valueOf(object.getNumDoc()));
+        panelABM.setTfCodigo(object.getCodigo());
+        panelABM.setTfNombre(object.getNombre());
+        panelABM.setTfDireccion(object.getDireccion());
+        panelABM.getCbTipoDocumento().setSelectedIndex(object.getTipodoc() - 1);
+        panelABM.setTfNumDocumento(String.valueOf(object.getNumDoc()));
 
         if (object.getCodigopostal() != null) {
-            panel.setTfCP(object.getCodigopostal().toString());
+            panelABM.setTfCP(object.getCodigopostal().toString());
         }
         if (object.getTele1() != null) {
-            panel.setTfTele1(object.getTele1().toString());
+            panelABM.setTfTele1(object.getTele1().toString());
             if (object.getInterno1() != null) {
-                panel.setTfInterno1(object.getInterno1().toString());
+                panelABM.setTfInterno1(object.getInterno1().toString());
             }
         }
         if (object.getTele2() != null) {
-            panel.setTfTele2(object.getTele2().toString());
+            panelABM.setTfTele2(object.getTele2().toString());
             if (object.getInterno2() != null) {
-                panel.setTfInterno2(object.getInterno2().toString());
+                panelABM.setTfInterno2(object.getInterno2().toString());
             }
         }
 
         if (object.getEmail() != null) {
-            panel.setTfEmail(object.getEmail());
+            panelABM.setTfEmail(object.getEmail());
         }
 
         if (object.getWebpage() != null) {
-            panel.setTfWEB(object.getWebpage());
+            panelABM.setTfWEB(object.getWebpage());
         }
 
         if (object.getContacto() != null) {
-            panel.setTfContacto(object.getContacto());
+            panelABM.setTfContacto(object.getContacto());
         }
 
-        for (int i = 0; i < panel.getCbCondicIVA().getItemCount(); i++) {
-            if (panel.getCbCondicIVA().getItemAt(i).toString().equals(object.getContribuyente().getNombre())) {
-                panel.getCbCondicIVA().setSelectedIndex(i);
+        for (int i = 0; i < panelABM.getCbCondicIVA().getItemCount(); i++) {
+            if (panelABM.getCbCondicIVA().getItemAt(i).toString().equals(object.getContribuyente().getNombre())) {
+                panelABM.getCbCondicIVA().setSelectedIndex(i);
                 break;
             }
         }
 
-        for (int i = 0; i < panel.getCbProvincias().getItemCount(); i++) {
-            if (panel.getCbProvincias().getItemAt(i).toString().equals(object.getProvincia().getNombre())) {
-                panel.getCbProvincias().setSelectedIndex(i);
+        for (int i = 0; i < panelABM.getCbProvincias().getItemCount(); i++) {
+            if (panelABM.getCbProvincias().getItemAt(i).toString().equals(object.getProvincia().getNombre())) {
+                panelABM.getCbProvincias().setSelectedIndex(i);
                 break;
             }
         }
 
         if (object.getDepartamento() != null) {
-            for (int i = 0; i < panel.getCbDepartamentos().getItemCount(); i++) {
-                if (panel.getCbDepartamentos().getItemAt(i).toString().equals(object.getDepartamento().getNombre())) {
-                    panel.getCbDepartamentos().setSelectedIndex(i);
+            for (int i = 0; i < panelABM.getCbDepartamentos().getItemCount(); i++) {
+                if (panelABM.getCbDepartamentos().getItemAt(i).toString().equals(object.getDepartamento().getNombre())) {
+                    panelABM.getCbDepartamentos().setSelectedIndex(i);
                     break;
                 }
             }
         }
 
         if (object.getMunicipio() != null) {
-            for (int i = 0; i < panel.getCbMunicipios().getItemCount(); i++) {
-                if (panel.getCbMunicipios().getItemAt(i).toString().equals(object.getMunicipio().getNombre())) {
-                    panel.getCbMunicipios().setSelectedIndex(i);
+            for (int i = 0; i < panelABM.getCbMunicipios().getItemCount(); i++) {
+                if (panelABM.getCbMunicipios().getItemAt(i).toString().equals(object.getMunicipio().getNombre())) {
+                    panelABM.getCbMunicipios().setSelectedIndex(i);
                     break;
                 }
             }
         }
     }
 
-    private void setEntity() throws MessageException {
-        if (EL_OBJECT == null) {
-            EL_OBJECT = new Cliente();
-        }
-
+    private void setEntity(Cliente o) throws MessageException {
         // <editor-fold defaultstate="collapsed" desc="CTRL">
-        if (panel.getTfCodigo() == null || panel.getTfCodigo().length() < 1) {
+        if (panelABM.getTfCodigo() == null || panelABM.getTfCodigo().length() < 1) {
             throw new MessageException("Debe ingresar un código");
         }
 
-        if (panel.getTfNombre() == null || panel.getTfNombre().length() < 1) {
+        if (panelABM.getTfNombre() == null || panelABM.getTfNombre().length() < 1) {
             throw new MessageException("Debe ingresar un nombre");
         }
 
-        if (panel.getTfDireccion() == null) {
+        if (panelABM.getTfDireccion() == null) {
             throw new MessageException("Dirección no válida");
         }
 
-        if (panel.getCbProvincias().getSelectedIndex() < 1) {
+        if (panelABM.getCbProvincias().getSelectedIndex() < 1) {
             throw new MessageException("Debe especificar una Provincia y Departamento");
         }
 
-        if (panel.getCbDepartamentos().getSelectedIndex() < 1) {
+        if (panelABM.getCbDepartamentos().getSelectedIndex() < 1) {
             throw new MessageException("Debe especificar un Departamento");
         }
 
         try {
-            if (panel.getTfTele1().length() > 0) {
-                Long.valueOf(panel.getTfTele1());
+            if (panelABM.getTfTele1().length() > 0) {
+                Long.valueOf(panelABM.getTfTele1());
             }
         } catch (NumberFormatException e) {
             throw new MessageException("Teléfono 1 no válido");
         }
 
         try {
-            if (panel.getTfTele2().length() > 0) {
-                Long.valueOf(panel.getTfTele2());
+            if (panelABM.getTfTele2().length() > 0) {
+                Long.valueOf(panelABM.getTfTele2());
             }
         } catch (NumberFormatException e) {
             throw new MessageException("Teléfono 2 no válido");
         }
-        if (panel.getTfInterno1().length() > 0) {
-            if (panel.getTfTele1() == null) {
+        if (panelABM.getTfInterno1().length() > 0) {
+            if (panelABM.getTfTele1() == null) {
                 throw new MessageException("Especifique un número de teléfono 1 para el interno 1");
             } else {
                 try {
-                    Integer.valueOf(panel.getTfInterno1());
+                    Integer.valueOf(panelABM.getTfInterno1());
                 } catch (Exception e) {
                     throw new MessageException("Número de interno 1 no válido (Solo números enteros)");
                 }
             }
         }
 
-        if (panel.getTfInterno2().length() > 0) {
-            if (panel.getTfTele2() == null) {
+        if (panelABM.getTfInterno2().length() > 0) {
+            if (panelABM.getTfTele2() == null) {
                 throw new MessageException("Especifique un número de teléfono 2 para el interno 2");
             } else {
                 try {
-                    Integer.valueOf(panel.getTfInterno1());
+                    Integer.valueOf(panelABM.getTfInterno1());
                 } catch (Exception e) {
                     throw new MessageException("Número de interno 2 no válido (Solo números enteros)");
                 }
             }
         }
 
-        if (panel.getCbTipoDocumento().getSelectedIndex() == 0) {
-            if (panel.getTfNumDocumento().length() < 1) {
+        if (panelABM.getCbTipoDocumento().getSelectedIndex() == 0) {
+            if (panelABM.getTfNumDocumento().length() < 1) {
                 throw new MessageException("Número de DNI no válido, debe completar el campo");
             }
         } else {
             try {
-                UTIL.VALIDAR_CUIL(panel.getTfNumDocumento());
+                UTIL.VALIDAR_CUIL(panelABM.getTfNumDocumento());
             } catch (Exception ex) {
                 throw new MessageException(ex.getMessage());
             }
         }// </editor-fold>
 
         // NOT NULLABLE's
-        EL_OBJECT.setCodigo(panel.getTfCodigo());
-        EL_OBJECT.setNombre(panel.getTfNombre().toUpperCase());
-        EL_OBJECT.setDireccion(panel.getTfDireccion());
-        EL_OBJECT.setProvincia((Provincia) panel.getSelectedProvincia());
-        EL_OBJECT.setDepartamento((Departamento) panel.getSelectedDepartamento());
-        EL_OBJECT.setContribuyente((Contribuyente) panel.getSelectedCondicIVA());
-        EL_OBJECT.setTipodoc(panel.getCbTipoDocumento().getSelectedIndex() + 1);// DNI = 1 , CUIT = 2
-        EL_OBJECT.setNumDoc(new Long(panel.getTfNumDocumento()));
+        o.setCodigo(panelABM.getTfCodigo());
+        o.setNombre(panelABM.getTfNombre().toUpperCase());
+        o.setDireccion(panelABM.getTfDireccion());
+        o.setProvincia((Provincia) panelABM.getSelectedProvincia());
+        o.setDepartamento((Departamento) panelABM.getSelectedDepartamento());
+        o.setContribuyente((Contribuyente) panelABM.getSelectedCondicIVA());
+        o.setTipodoc(panelABM.getCbTipoDocumento().getSelectedIndex() + 1);// DNI = 1 , CUIT = 2
+        o.setNumDoc(new Long(panelABM.getTfNumDocumento()));
 
         // estado activo
-        EL_OBJECT.setEstado(1);
+        o.setEstado(1);
 
         //NULLABLE's
-        if (panel.getCbMunicipios().getSelectedIndex() > 0) {
-            EL_OBJECT.setMunicipio((Municipio) panel.getSelectedMunicipio());
+        if (panelABM.getCbMunicipios().getSelectedIndex() > 0) {
+            o.setMunicipio((Municipio) panelABM.getSelectedMunicipio());
         }
 
-        if (panel.getTfContacto().length() > 0) {
-            EL_OBJECT.setContacto(panel.getTfContacto());
+        if (panelABM.getTfContacto().length() > 0) {
+            o.setContacto(panelABM.getTfContacto());
         }
 
-        if (panel.getTfCP().length() > 0) {
-            EL_OBJECT.setCodigopostal(new Integer(panel.getTfCP()));
+        if (panelABM.getTfCP().length() > 0) {
+            o.setCodigopostal(new Integer(panelABM.getTfCP()));
         }
 
-        if (panel.getTfEmail().length() > 0) {
-            EL_OBJECT.setEmail(panel.getTfEmail());
+        if (panelABM.getTfEmail().length() > 0) {
+            o.setEmail(panelABM.getTfEmail());
         }
 
-        if (panel.getTfWEB().length() > 0) {
-            EL_OBJECT.setWebpage(panel.getTfWEB());
+        if (panelABM.getTfWEB().length() > 0) {
+            o.setWebpage(panelABM.getTfWEB());
         }
 
         // <editor-fold defaultstate="collapsed" desc="setter Tele1">
-        if (panel.getTfTele1().length() > 0) {
-            EL_OBJECT.setTele1(new Long(panel.getTfTele1()));
-            if (panel.getTfInterno1().length() > 0) {
-                EL_OBJECT.setInterno1(new Integer(panel.getTfInterno1()));
+        if (panelABM.getTfTele1().length() > 0) {
+            o.setTele1(new Long(panelABM.getTfTele1()));
+            if (panelABM.getTfInterno1().length() > 0) {
+                o.setInterno1(new Integer(panelABM.getTfInterno1()));
             }
         }
         // </editor-fold>
 
         // <editor-fold defaultstate="collapsed" desc="setter Tele2">
-        if (panel.getTfTele2().length() > 0) {
-            EL_OBJECT.setTele2(new Long(panel.getTfTele2()));
-            if (panel.getTfInterno2().length() > 0) {
-                EL_OBJECT.setInterno2(new Integer(panel.getTfInterno2()));
+        if (panelABM.getTfTele2().length() > 0) {
+            o.setTele2(new Long(panelABM.getTfTele2()));
+            if (panelABM.getTfInterno2().length() > 0) {
+                o.setInterno2(new Integer(panelABM.getTfInterno2()));
             }
         }
         // </editor-fold>
@@ -423,7 +420,7 @@ public class ClienteJpaController implements ActionListener {
      * @throws MessageException end-user explanation message.
      * @throws Exception 
      */
-    private void checkConstraints(Cliente object) throws MessageException, Exception {
+    private void checkConstraints(Cliente object) throws MessageException {
         String idQuery = "";
 
         if (object.getId() != null) {
@@ -446,14 +443,6 @@ public class ClienteJpaController implements ActionListener {
                     + " WHERE " + idQuery + " o.num_doc=" + object.getNumDoc(), Cliente.class).getSingleResult();
             throw new MessageException("Ya existe otro " + CLASS_NAME + " con este DNI/CUIT.");
         } catch (NoResultException ex) {
-        }
-
-
-        //persistiendo......
-        if (object.getId() == null) {
-            create(object);
-        } else {
-            edit(object);
         }
     }
 
@@ -514,9 +503,18 @@ public class ClienteJpaController implements ActionListener {
                 contenedor = null;
             } else if (boton.getName().equalsIgnoreCase("aceptar")) {
                 try {
-                    setEntity();
-                    String msg = EL_OBJECT.getId() == null ? "Registrado" : "Modificado";
+                    if (EL_OBJECT == null) {
+                        EL_OBJECT = new Cliente();
+                    }
+                    setEntity(EL_OBJECT);
                     checkConstraints(EL_OBJECT);
+                    String msg = EL_OBJECT.getId() == null ? "Registrado" : "Modificado";
+                    //persistiendo......
+                    if (EL_OBJECT.getId() == null) {
+                        create(EL_OBJECT);
+                    } else {
+                        edit(EL_OBJECT);
+                    }
                     abm.showMessage(msg, CLASS_NAME, 1);
                     cargarContenedorTabla(contenedor.getDTM(), "");
                     abm.dispose();
@@ -528,19 +526,19 @@ public class ClienteJpaController implements ActionListener {
                 }
             } else if (boton.getName().equalsIgnoreCase("cancelar")) {
                 abm.dispose();
-                panel = null;
+                panelABM = null;
                 abm = null;
                 EL_OBJECT = null;
             } else if (boton.getName().equalsIgnoreCase("municipio")) {
                 new MunicipioJpaController().initContenedor(null, true);
-                UTIL.loadComboBox(panel.getCbProvincias(), new ProvinciaJpaController().findProvinciaEntities(), true);
-                UTIL.loadComboBox(panel.getCbDepartamentos(), null, true);
-                UTIL.loadComboBox(panel.getCbMunicipios(), null, true);
+                UTIL.loadComboBox(panelABM.getCbProvincias(), new ProvinciaJpaController().findProvinciaEntities(), true);
+                UTIL.loadComboBox(panelABM.getCbDepartamentos(), null, true);
+                UTIL.loadComboBox(panelABM.getCbMunicipios(), null, true);
             } else if (boton.getName().equalsIgnoreCase("departamento")) {
                 new DepartamentoJpaController().initContenedor(null, true);
-                UTIL.loadComboBox(panel.getCbProvincias(), new ProvinciaJpaController().findProvinciaEntities(), true);
-                UTIL.loadComboBox(panel.getCbDepartamentos(), null, true);
-                UTIL.loadComboBox(panel.getCbMunicipios(), null, true);
+                UTIL.loadComboBox(panelABM.getCbProvincias(), new ProvinciaJpaController().findProvinciaEntities(), true);
+                UTIL.loadComboBox(panelABM.getCbDepartamentos(), null, true);
+                UTIL.loadComboBox(panelABM.getCbMunicipios(), null, true);
             }
             return;
         }// </editor-fold>
@@ -549,15 +547,15 @@ public class ClienteJpaController implements ActionListener {
             javax.swing.JComboBox combo = (javax.swing.JComboBox) e.getSource();
             if (combo.getName().equalsIgnoreCase("cbProvincias")) {
                 if (combo.getSelectedIndex() > 0) {
-                    UTIL.loadComboBox(panel.getCbDepartamentos(), ((Provincia) combo.getSelectedItem()).getDeptoList(), true);
+                    UTIL.loadComboBox(panelABM.getCbDepartamentos(), ((Provincia) combo.getSelectedItem()).getDeptoList(), true);
                 } else {
-                    UTIL.loadComboBox(panel.getCbDepartamentos(), null, true);
+                    UTIL.loadComboBox(panelABM.getCbDepartamentos(), null, true);
                 }
             } else if (combo.getName().equalsIgnoreCase("cbDepartamentos")) {
                 if (combo.getSelectedIndex() > 0) {
-                    UTIL.loadComboBox(panel.getCbMunicipios(), ((Departamento) combo.getSelectedItem()).getMunicipioList(), true);
+                    UTIL.loadComboBox(panelABM.getCbMunicipios(), ((Departamento) combo.getSelectedItem()).getMunicipioList(), true);
                 } else {
-                    UTIL.loadComboBox(panel.getCbMunicipios(), null, true);
+                    UTIL.loadComboBox(panelABM.getCbMunicipios(), null, true);
                 }
             }
         }
@@ -595,7 +593,7 @@ public class ClienteJpaController implements ActionListener {
         return t;
     }
 
-    public void initClienteToProveedor(JFrame jFrame) {
+    public JDialog initClienteToProveedor(JFrame jFrame) {
         initContenedor(jFrame, true);
         contenedor.setButtonsVisible(false);
         contenedor.getLabelMensaje().setText("<html>Esta opción le permite crear un Proveedor de los datos de un Cliente</html>");
@@ -622,35 +620,33 @@ public class ClienteJpaController implements ActionListener {
                 }
             }
         });
-        contenedor.setVisible(true);
+        return contenedor;
     }
 
-    private Proveedor createProveedorFromCliente(Cliente cliente) throws MessageException, Exception {
-        Proveedor proveedor;
-        proveedor = new ProveedorJpaController().createFromCliente(cliente);
-        return proveedor;
+    private void createProveedorFromCliente(Cliente cliente) throws MessageException, Exception {
+        new ProveedorJpaController().createProveedorFromCliente(cliente);
     }
 
-    Cliente createFromProveedor(Proveedor cliente) throws MessageException, Exception {
+    Cliente createFromProveedor(Proveedor proveedor) throws MessageException, Exception {
         Cliente p = new Cliente();
-        p.setNombre(cliente.getNombre());
-        p.setCodigo(cliente.getCodigo());
-        p.setContribuyente(cliente.getContribuyente());
+        p.setNombre(proveedor.getNombre());
+        p.setCodigo(proveedor.getCodigo());
+        p.setContribuyente(proveedor.getContribuyente());
         p.setTipodoc(2);
-        p.setNumDoc(cliente.getCuit());
-        p.setProvincia(cliente.getProvincia());
-        p.setDepartamento(cliente.getDepartamento());
-        p.setMunicipio(cliente.getMunicipio());
-        p.setDireccion(cliente.getDireccion());
-        p.setEmail(cliente.getEmail());
-        p.setTele1(cliente.getTele1());
-        p.setInterno1(cliente.getInterno1());
-        p.setTele2(cliente.getTele2());
-        p.setInterno2(cliente.getInterno2());
-        p.setCodigopostal(cliente.getCodigopostal());
-        p.setEmail(cliente.getEmail());
-        p.setObservacion(cliente.getObservacion());
-        p.setWebpage(cliente.getWebpage());
+        p.setNumDoc(proveedor.getCuit());
+        p.setProvincia(proveedor.getProvincia());
+        p.setDepartamento(proveedor.getDepartamento());
+        p.setMunicipio(proveedor.getMunicipio());
+        p.setDireccion(proveedor.getDireccion());
+        p.setEmail(proveedor.getEmail());
+        p.setTele1(proveedor.getTele1());
+        p.setInterno1(proveedor.getInterno1());
+        p.setTele2(proveedor.getTele2());
+        p.setInterno2(proveedor.getInterno2());
+        p.setCodigopostal(proveedor.getCodigopostal());
+        p.setEmail(proveedor.getEmail());
+        p.setObservacion(proveedor.getObservacion());
+        p.setWebpage(proveedor.getWebpage());
         p.setEstado(1);
         checkConstraints(p);
         return p;

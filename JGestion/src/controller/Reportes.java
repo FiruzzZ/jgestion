@@ -65,7 +65,7 @@ public class Reportes implements Runnable {
       }
       parameters = new java.util.HashMap();
       this.pathReport = pathReport;
-      this.tituloReporte = title;
+      tituloReporte = title;
       reporteFinalizado = false;
       withPrintDialog = true;
       datosEmpresaController = new DatosEmpresaJpaController().findDatosEmpresa(1);

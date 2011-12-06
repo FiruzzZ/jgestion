@@ -87,8 +87,8 @@ public class DetalleVenta implements Serializable {
       this.descuento = descuento;
    }
 
-   @JoinColumn(name = "factura", referencedColumnName = "id", nullable = false)
-   @ManyToOne(optional = false)
+   @JoinColumn(name = "factura", nullable = false)
+   @ManyToOne(optional = false, fetch= FetchType.LAZY)
    public FacturaVenta getFactura() {
       return factura;
    }

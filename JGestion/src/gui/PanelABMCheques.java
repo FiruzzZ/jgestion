@@ -5,11 +5,12 @@
  */
 package gui;
 
-import com.toedter.calendar.JDateChooser;
+import java.util.Date;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 /**
@@ -32,69 +33,105 @@ public class PanelABMCheques extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        tfSucursalDireccion = new javax.swing.JTextField();
+        jLabel8 = new javax.swing.JLabel();
+        dcCobro = new com.toedter.calendar.JDateChooser();
+        jLabel5 = new javax.swing.JLabel();
+        dcCheque = new com.toedter.calendar.JDateChooser();
+        jLabel4 = new javax.swing.JLabel();
+        bAddSucursal = new javax.swing.JButton();
+        cbBancoSucursales = new javax.swing.JComboBox();
+        jLabel3 = new javax.swing.JLabel();
+        bAddBanco = new javax.swing.JButton();
+        cbBancos = new javax.swing.JComboBox();
+        jLabel2 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         tfNumero = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
-        cbBancos = new javax.swing.JComboBox();
-        bAddBanco = new javax.swing.JButton();
-        jLabel3 = new javax.swing.JLabel();
-        cbPlazas = new javax.swing.JComboBox();
-        bAddPlaza = new javax.swing.JButton();
-        jLabel4 = new javax.swing.JLabel();
-        dcIssued = new com.toedter.calendar.JDateChooser();
-        jLabel5 = new javax.swing.JLabel();
-        dcExpiration = new com.toedter.calendar.JDateChooser();
-        labelIssuer = new javax.swing.JLabel();
-        checkPropio = new javax.swing.JCheckBox();
-        cbIssuer = new javax.swing.JComboBox();
-        labelReceptor = new javax.swing.JLabel();
-        checkAlPortador = new javax.swing.JCheckBox();
-        cbReceptor = new javax.swing.JComboBox();
         jLabel7 = new javax.swing.JLabel();
         tfImporte = new javax.swing.JTextField();
+        cbLibrado = new javax.swing.JComboBox();
+        jLabel10 = new javax.swing.JLabel();
+        checkCruzado = new javax.swing.JCheckBox();
+        cbEmisor = new javax.swing.JComboBox();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        taObservacion = new javax.swing.JTextArea();
+        jLabel6 = new javax.swing.JLabel();
+        bAddEmisor = new javax.swing.JButton();
         jLabel9 = new javax.swing.JLabel();
         tfEstado = new javax.swing.JTextField();
-        checkCruzado = new javax.swing.JCheckBox();
+        checkPropio = new javax.swing.JCheckBox();
+        labelEmisor = new javax.swing.JLabel();
         checkEndosado = new javax.swing.JCheckBox();
+        tfEndosatario = new javax.swing.JTextField();
+        jLabel11 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
+        dcEndoso = new com.toedter.calendar.JDateChooser();
 
-        jLabel1.setText("N°");
+        tfSucursalDireccion.setEditable(false);
 
-        jLabel2.setText("Banco");
+        jLabel8.setText("Dirección");
+
+        jLabel5.setText("Fecha de Cobro");
+
+        jLabel4.setText("Fecha de Cheque");
+
+        bAddSucursal.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/16px_add.png"))); // NOI18N
+        bAddSucursal.setName("Marcas"); // NOI18N
+
+        jLabel3.setText("Banco Sucursal");
 
         bAddBanco.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/16px_add.png"))); // NOI18N
         bAddBanco.setName("Marcas"); // NOI18N
 
-        jLabel3.setText("Plaza");
+        jLabel2.setText("Banco");
 
-        bAddPlaza.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/16px_add.png"))); // NOI18N
-        bAddPlaza.setName("Marcas"); // NOI18N
+        jLabel1.setText("N° de Cheque");
 
-        jLabel4.setText("Emisión");
-
-        jLabel5.setText("Vencimiento");
-
-        labelIssuer.setText("Emisor");
-
-        checkPropio.setText("Propio");
-
-        labelReceptor.setText("Receptor");
-
-        checkAlPortador.setText("Al portador");
+        tfNumero.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
 
         jLabel7.setText("Importe");
 
         tfImporte.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        tfImporte.setText("0.00");
+
+        jLabel10.setText("Librado");
+
+        checkCruzado.setMnemonic('z');
+        checkCruzado.setText("Cruzado");
+
+        taObservacion.setColumns(20);
+        taObservacion.setLineWrap(true);
+        taObservacion.setRows(4);
+        jScrollPane1.setViewportView(taObservacion);
+
+        jLabel6.setText("Observación");
+
+        bAddEmisor.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/16px_add.png"))); // NOI18N
+        bAddEmisor.setName("Marcas"); // NOI18N
 
         jLabel9.setText("Estado");
 
+        tfEstado.setEditable(false);
         tfEstado.setFont(new java.awt.Font("Tahoma", 1, 11));
         tfEstado.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        tfEstado.setText("DEPOSITADO");
+        tfEstado.setText("---");
+        tfEstado.setEnabled(false);
 
-        checkCruzado.setText("Cruzado");
+        checkPropio.setMnemonic('r');
+        checkPropio.setText("Propio");
 
+        labelEmisor.setText("Emisor Clien/Prov");
+
+        checkEndosado.setMnemonic('d');
         checkEndosado.setText("Endosado");
+        checkEndosado.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                checkEndosadoStateChanged(evt);
+            }
+        });
+
+        jLabel11.setText("Endosatario");
+
+        jLabel12.setText("Fecha");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -103,54 +140,79 @@ public class PanelABMCheques extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel2)
-                    .addComponent(jLabel1)
+                    .addComponent(jLabel6)
                     .addComponent(jLabel4)
-                    .addComponent(labelReceptor)
-                    .addComponent(labelIssuer)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel2)
                     .addComponent(jLabel3)
+                    .addComponent(jLabel8)
+                    .addComponent(jLabel10)
+                    .addComponent(labelEmisor)
                     .addComponent(jLabel9)
-                    .addComponent(jLabel7))
+                    .addComponent(jLabel11)
+                    .addComponent(jLabel12))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addComponent(tfEstado, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(17, 17, 17)
-                                .addComponent(checkCruzado)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(checkEndosado))
-                            .addComponent(tfImporte, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(79, 79, 79))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(checkPropio)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(cbReceptor, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 305, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(checkAlPortador, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(cbPlazas, javax.swing.GroupLayout.Alignment.LEADING, 0, 305, Short.MAX_VALUE)
-                            .addComponent(tfNumero, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 305, Short.MAX_VALUE)
+                        .addComponent(cbEmisor, 0, 357, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(bAddEmisor, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(dcCheque, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(dcCobro, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(cbLibrado, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(checkCruzado))
+                    .addComponent(checkEndosado)
+                    .addComponent(tfEstado, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(dcEndoso, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(tfEndosatario, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 357, Short.MAX_VALUE)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 357, Short.MAX_VALUE)
+                            .addComponent(cbBancoSucursales, javax.swing.GroupLayout.Alignment.LEADING, 0, 357, Short.MAX_VALUE)
+                            .addComponent(cbBancos, javax.swing.GroupLayout.Alignment.LEADING, 0, 357, Short.MAX_VALUE)
+                            .addComponent(tfSucursalDireccion, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 357, Short.MAX_VALUE)
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addComponent(dcIssued, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(tfNumero, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel5)
+                                .addComponent(jLabel7)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(dcExpiration, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(cbBancos, javax.swing.GroupLayout.Alignment.LEADING, 0, 305, Short.MAX_VALUE)
-                            .addComponent(checkPropio, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(cbIssuer, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 305, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(tfImporte, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(bAddBanco, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(bAddPlaza, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(bAddSucursal, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
+                .addComponent(checkPropio)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(cbEmisor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(labelEmisor))
+                    .addComponent(bAddEmisor, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(jLabel4)
+                    .addComponent(dcCheque, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(dcCobro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel5))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(tfNumero, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(tfNumero, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel7)
+                    .addComponent(tfImporte, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -159,69 +221,75 @@ public class PanelABMCheques extends javax.swing.JPanel {
                     .addComponent(bAddBanco, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(bAddSucursal, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(cbPlazas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(cbBancoSucursales, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel3))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                            .addComponent(jLabel4)
-                            .addComponent(dcExpiration, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel5)
-                            .addComponent(dcIssued, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(labelIssuer)
-                            .addComponent(checkPropio))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cbIssuer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(labelReceptor)
-                            .addComponent(checkAlPortador))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cbReceptor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(5, 5, 5)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(tfImporte, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel7)
-                            .addComponent(checkCruzado)
-                            .addComponent(checkEndosado))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(tfEstado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel9)))
-                    .addComponent(bAddPlaza, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(tfSucursalDireccion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel8))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cbLibrado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel10)
+                    .addComponent(checkCruzado))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel6)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(tfEstado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel9))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(checkEndosado)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(tfEndosatario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel11))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(jLabel12)
+                    .addComponent(dcEndoso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
+
+private void checkEndosadoStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_checkEndosadoStateChanged
+    if (checkEndosado.isFocusOwner()) {
+        tfEndosatario.setEnabled(checkEndosado.isSelected());
+        dcEndoso.setEnabled(checkEndosado.isSelected());
+    }
+}//GEN-LAST:event_checkEndosadoStateChanged
 
     public JButton getbAddBanco() {
         return bAddBanco;
     }
 
-    public JButton getbAddPlaza() {
-        return bAddPlaza;
+    public JButton getbAddSucursal() {
+        return bAddSucursal;
+    }
+
+    public JButton getbAddEmisor() {
+        return bAddEmisor;
     }
 
     public JComboBox getCbBancos() {
         return cbBancos;
     }
 
-    public JComboBox getCbIssuer() {
-        return cbIssuer;
+    public JComboBox getCbEmisor() {
+        return cbEmisor;
     }
 
-    public JComboBox getCbPlazas() {
-        return cbPlazas;
+    public JComboBox getCbLibrado() {
+        return cbLibrado;
     }
 
-    public JComboBox getCbReceptor() {
-        return cbReceptor;
-    }
-
-    public JCheckBox getCheckAlPortador() {
-        return checkAlPortador;
+    public JComboBox getCbBancoSucursales() {
+        return cbBancoSucursales;
     }
 
     public JCheckBox getCheckCruzado() {
@@ -236,12 +304,28 @@ public class PanelABMCheques extends javax.swing.JPanel {
         return checkPropio;
     }
 
-    public JDateChooser getDcExpiration() {
-        return dcExpiration;
+    public Date getDcCheque() {
+        return dcCheque.getDate();
     }
 
-    public JDateChooser getDcIssued() {
-        return dcIssued;
+    public Date getDcEndoso() {
+        return dcEndoso.getDate();
+    }
+
+    public Date getDcCobro() {
+        return dcCobro.getDate();
+    }
+
+    public JLabel getLabelEmisor() {
+        return labelEmisor;
+    }
+
+    public JTextArea getTaObservacion() {
+        return taObservacion;
+    }
+
+    public JTextField getTfEndosatario() {
+        return tfEndosatario;
     }
 
     public JTextField getTfEstado() {
@@ -256,38 +340,54 @@ public class PanelABMCheques extends javax.swing.JPanel {
         return tfNumero;
     }
 
-    public JLabel getLabelIssuer() {
-        return labelIssuer;
+    public JTextField getTfSucursalDireccion() {
+        return tfSucursalDireccion;
     }
 
-    public JLabel getLabelReceptor() {
-        return labelReceptor;
+    public void setDcCheque(Date fechaCheque) {
+        dcCheque.setDate(fechaCheque);
     }
 
+    public void setDcCobro(Date fechaCobro) {
+        dcCobro.setDate(fechaCobro);
+    }
+
+    public void setDcEndoso(Date fechaEndoso) {
+        dcEndoso.setDate(fechaEndoso);
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton bAddBanco;
-    private javax.swing.JButton bAddPlaza;
+    private javax.swing.JButton bAddEmisor;
+    private javax.swing.JButton bAddSucursal;
+    private javax.swing.JComboBox cbBancoSucursales;
     private javax.swing.JComboBox cbBancos;
-    private javax.swing.JComboBox cbIssuer;
-    private javax.swing.JComboBox cbPlazas;
-    private javax.swing.JComboBox cbReceptor;
-    private javax.swing.JCheckBox checkAlPortador;
+    private javax.swing.JComboBox cbEmisor;
+    private javax.swing.JComboBox cbLibrado;
     private javax.swing.JCheckBox checkCruzado;
     private javax.swing.JCheckBox checkEndosado;
     private javax.swing.JCheckBox checkPropio;
-    private com.toedter.calendar.JDateChooser dcExpiration;
-    private com.toedter.calendar.JDateChooser dcIssued;
+    private com.toedter.calendar.JDateChooser dcCheque;
+    private com.toedter.calendar.JDateChooser dcCobro;
+    private com.toedter.calendar.JDateChooser dcEndoso;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
-    private javax.swing.JLabel labelIssuer;
-    private javax.swing.JLabel labelReceptor;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel labelEmisor;
+    private javax.swing.JTextArea taObservacion;
+    private javax.swing.JTextField tfEndosatario;
     private javax.swing.JTextField tfEstado;
     private javax.swing.JTextField tfImporte;
     private javax.swing.JTextField tfNumero;
+    private javax.swing.JTextField tfSucursalDireccion;
     // End of variables declaration//GEN-END:variables
 }

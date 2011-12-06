@@ -6,10 +6,12 @@
 package gui;
 
 import java.awt.event.ActionListener;
+import java.util.ResourceBundle;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import jgestion.Main;
 
 /**
  *
@@ -18,6 +20,7 @@ import javax.swing.JPanel;
 public class JDABM extends javax.swing.JDialog {
 
     private JPanel panel;
+    private JButton lastButtonPressed;
 
     /** Creates new form JDABM */
     public JDABM(java.awt.Frame parent, boolean modal, javax.swing.JPanel panelNEW) {
@@ -26,6 +29,8 @@ public class JDABM extends javax.swing.JDialog {
         getContentPane().add(this.panel);
         pack();
         initComponents();
+//        bAceptar.setText(Main.resourceBundle.getString("ok"));
+//        bCancelar.setText(Main.resourceBundle.getString("cancel"));
         setLocationRelativeTo(parent);
         ajustarABMSizeToPanel();
     }
@@ -74,16 +79,17 @@ public class JDABM extends javax.swing.JDialog {
         bAceptar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setMinimumSize(new java.awt.Dimension(300, 100));
         setResizable(false);
 
         bCancelar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px-Crystal_Clear_action_button_cancel.png"))); // NOI18N
         bCancelar.setMnemonic('c');
-        bCancelar.setText("Cancelar");
+        bCancelar.setText(Main.resourceBundle.getString("cancel"));
         bCancelar.setName("cancelar"); // NOI18N
 
         bAceptar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px-Crystal_Clear_action_apply.png"))); // NOI18N
         bAceptar.setMnemonic('a');
-        bAceptar.setText("Aceptar");
+        bAceptar.setText(Main.resourceBundle.getString("ok"));
         bAceptar.setName("aceptar"); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -91,7 +97,7 @@ public class JDABM extends javax.swing.JDialog {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(83, Short.MAX_VALUE)
+                .addContainerGap(31, Short.MAX_VALUE)
                 .addComponent(bAceptar)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(bCancelar)
@@ -163,5 +169,27 @@ public class JDABM extends javax.swing.JDialog {
      */
     public JPanel getPanel() {
         return panel;
+    }
+
+    public void setAceptarAsLastButtonPressed() {
+        lastButtonPressed = bAceptar;
+    }
+
+    public void setCancelarAsLastButtonPressed() {
+        lastButtonPressed = bCancelar;
+    }
+
+    /**
+     * Permite saber que botón se apretó por último (<code>bAceptar || bCancelar</code>)
+     * o ninguno (si se cerró la ventana sin haber apretado en ninguno).
+     * @return true si el último fue {@link JDABM#bAceptar}, false si fue {@link JDABM#bCancelar}
+     *  o <code>null</null> si se cerró sin haber presionado ninguno.
+     */
+    public Boolean isAceptarLastButtonPressed() {
+        if (lastButtonPressed == null) {
+            return null;
+        } else {
+            return lastButtonPressed.equals(bAceptar);
+        }
     }
 }

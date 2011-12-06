@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence version="1.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd">
   <persistence-unit name="JGestionPU" transaction-type="RESOURCE_LOCAL">
-    <provider>oracle.toplink.essentials.PersistenceProvider</provider>
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
     <class>entity.Caja</class>
     <class>entity.CajaMovimientos</class>
     <class>entity.Cliente</class>
@@ -46,26 +46,35 @@
     <class>entity.Rubro</class>
     <class>entity.Stock</class>
     <class>entity.Sucursal</class>
-    <class>entity.TiposDocumentos</class>
     <class>entity.Unidadmedida</class>
     <class>entity.Usuario</class>
+    <class>entity.Banco</class>
+    <class>entity.BancoSucursal</class>
+    <class>entity.ChequePropio</class>
+    <class>entity.ChequeTerceros</class>
+    <class>entity.Librado</class>
+    <class>entity.FacturaElectronica</class>
     <properties>
-      <property name="toplink.jdbc.url" value="jdbc:postgresql://10.0.0.3:5432/JGESTIONX"/>
-      <property name="toplink.jdbc.password" value="jgestioncualquiera"/>
-      <property name="toplink.jdbc.driver" value="org.postgresql.Driver"/>
-      <property name="toplink.jdbc.user" value="jgestion"/>
+      <!--      <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://10.0.0.15:5432/JGESTIONX"/>-->
+      <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://10.0.0.15:5432/jgestionahinco"/>
+      <property name="javax.persistence.jdbc.password" value="juajua"/>
+      <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
+      <property name="javax.persistence.jdbc.user" value="postgres"/>
+      <property name="eclipselink.ddl-generation" value="create-tables"/>
     </properties>
   </persistence-unit>
-  <persistence-unit name="JGestionPUWorldPrint" transaction-type="RESOURCE_LOCAL">
-    <provider>oracle.toplink.essentials.PersistenceProvider</provider>
+  <persistence-unit name="JGestionPUProgreso" transaction-type="RESOURCE_LOCAL">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
     <class>entity.Caja</class>
     <class>entity.CajaMovimientos</class>
     <class>entity.Cliente</class>
+    <class>entity.Configuracion</class>
     <class>entity.Contribuyente</class>
     <class>entity.CtacteCliente</class>
     <class>entity.CtacteProveedor</class>
     <class>entity.DatosEmpresa</class>
     <class>entity.Departamento</class>
+    <class>entity.DetalleAcreditacion</class>
     <class>entity.DetalleCajaMovimientos</class>
     <class>entity.DetalleCompra</class>
     <class>entity.DetalleListaPrecios</class>
@@ -100,18 +109,23 @@
     <class>entity.Rubro</class>
     <class>entity.Stock</class>
     <class>entity.Sucursal</class>
-    <class>entity.TiposDocumentos</class>
     <class>entity.Unidadmedida</class>
     <class>entity.Usuario</class>
+    <class>entity.Banco</class>
+    <class>entity.BancoSucursal</class>
+    <class>entity.ChequePropio</class>
+    <class>entity.ChequeTerceros</class>
+    <class>entity.Librado</class>
+    <class>entity.FacturaElectronica</class>
     <properties>
-      <property name="toplink.jdbc.user" value="jgestion"/>
-      <property name="toplink.jdbc.password" value="jgestioncualquiera"/>
-      <property name="toplink.jdbc.url" value="jdbc:postgresql://10.0.0.3:5432/JGESTION"/>
-      <property name="toplink.jdbc.driver" value="org.postgresql.Driver"/>
+      <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://190.16.61.28:5433/jgestionprogreso"/>
+      <property name="javax.persistence.jdbc.password" value="jgestion"/>
+      <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
+      <property name="javax.persistence.jdbc.user" value="jgestion"/>
     </properties>
   </persistence-unit>
   <persistence-unit name="JGestionTest" transaction-type="RESOURCE_LOCAL">
-    <provider>oracle.toplink.essentials.PersistenceProvider</provider>
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
     <class>entity.Caja</class>
     <class>entity.CajaMovimientos</class>
     <class>entity.Cliente</class>
@@ -156,16 +170,19 @@
     <class>entity.Rubro</class>
     <class>entity.Stock</class>
     <class>entity.Sucursal</class>
-    <class>entity.TiposDocumentos</class>
     <class>entity.Unidadmedida</class>
     <class>entity.Usuario</class>
     <class>entity.FacturaElectronica</class>
-    <class>entity.DocumentoTipo</class>
+    <class>entity.Banco</class>
+    <class>entity.BancoSucursal</class>
+    <class>entity.ChequePropio</class>
+    <class>entity.ChequeTerceros</class>
+    <class>entity.Librado</class>
     <properties>
-      <property name="toplink.jdbc.user" value="postgres"/>
-      <property name="toplink.jdbc.password" value="juajua"/>
-      <property name="toplink.jdbc.url" value="jdbc:postgresql://localhost:5432/jgestiontest"/>
-      <property name="toplink.jdbc.driver" value="org.postgresql.Driver"/>
+      <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/jgestiontest"/>
+      <property name="javax.persistence.jdbc.password" value="juajua"/>
+      <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
+      <property name="javax.persistence.jdbc.user" value="postgres"/>
     </properties>
   </persistence-unit>
 </persistence>
