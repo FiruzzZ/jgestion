@@ -23,6 +23,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import javax.persistence.NoResultException;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import org.apache.log4j.Level;
@@ -77,7 +78,7 @@ public class ProveedorJpaController implements ActionListener {
         }
     }
 
-    public List<Proveedor> findProveedorEntities() {
+    public List<Proveedor> findEntities() {
         return findProveedorEntities(true, -1, -1);
     }
 
@@ -179,6 +180,11 @@ public class ProveedorJpaController implements ActionListener {
                     setEntity();
                     String msg = EL_OBJECT.getId() == null ? "Registrado" : "Modificado";
                     checkConstraints(EL_OBJECT);
+                    if (EL_OBJECT.getId() == null) {
+                        create(EL_OBJECT);
+                    } else {
+                        edit(EL_OBJECT);
+                    }
                     abm.showMessage(msg, CLASS_NAME, 1);
                     cargarContenedorTabla(contenedor.getDTM());
                     abm.dispose();
@@ -237,7 +243,7 @@ public class ProveedorJpaController implements ActionListener {
         // </editor-fold>
     }
 
-    public Container initContenedor(JFrame frame, boolean modal) {
+    public JDialog initContenedor(JFrame frame, boolean modal) {
         contenedor = new JDContenedor(frame, modal, "ABM - " + CLASS_NAME);
         contenedor.getTfFiltro().addKeyListener(new KeyAdapter() {
 
@@ -352,7 +358,7 @@ public class ProveedorJpaController implements ActionListener {
 
     }
 
-    private void setEntity() throws MessageException {
+    private Proveedor setEntity() throws MessageException {
         if (EL_OBJECT == null) {
             EL_OBJECT = new Proveedor();
         }
@@ -424,7 +430,7 @@ public class ProveedorJpaController implements ActionListener {
                 EL_OBJECT.setInterno2(new Integer(panel.getTfInterno2()));
             }
         }
-
+        return EL_OBJECT;
     }
 
     /**
@@ -457,14 +463,6 @@ public class ProveedorJpaController implements ActionListener {
             throw new MessageException("Ya existe un " + CLASS_NAME + " con este Código.");
         } catch (NoResultException ex) {
         }
-
-
-        //persistiendo......
-        if (object.getId() == null) {
-            create(object);
-        } else {
-            edit(object);
-        }
     }
 
     /**
@@ -479,7 +477,7 @@ public class ProveedorJpaController implements ActionListener {
         cargarContenedorTabla(contenedor.getDTM(), query);
     }
 
-    Proveedor createFromCliente(Cliente cliente) throws MessageException, Exception {
+    Proveedor createProveedorFromCliente(Cliente cliente) throws MessageException, Exception {
         Proveedor p = new Proveedor();
         p.setNombre(cliente.getNombre());
         p.setCodigo(cliente.getCodigo());
@@ -499,10 +497,11 @@ public class ProveedorJpaController implements ActionListener {
         p.setObservacion(cliente.getObservacion());
         p.setWebpage(cliente.getWebpage());
         checkConstraints(p);
+        create(p);
         return p;
     }
 
-    public Container initProveedorToCliente(JFrame jFrame) {
+    public JDialog initProveedorToCliente(JFrame jFrame) {
         initContenedor(jFrame, true);
         contenedor.setButtonsVisible(false);
         contenedor.getLabelMensaje().setText("<html>Esta opción le permite crear un Cliente de los datos de un Proveedor</html>");
@@ -514,12 +513,12 @@ public class ProveedorJpaController implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Integer proveedorID = (Integer) UTIL.getSelectedValue(contenedor.getjTable1(), 0);
-                Proveedor cliente = findProveedor(proveedorID);
+                Proveedor proveedor = findProveedor(proveedorID);
                 try {
-                    if (cliente == null) {
+                    if (proveedor == null) {
                         throw new MessageException("Seleccione el " + CLASS_NAME + " que desea convertir");
                     }
-                    createClienteFromProveedor(cliente);
+                    createClienteFromProveedor(proveedor);
                     JOptionPane.showMessageDialog(contenedor, "Proveedor creado");
                 } catch (MessageException ex) {
                     JOptionPane.showMessageDialog(contenedor, ex.getMessage());
@@ -532,9 +531,9 @@ public class ProveedorJpaController implements ActionListener {
         return contenedor;
     }
 
-    private Cliente createClienteFromProveedor(Proveedor cliente) throws MessageException, Exception {
-        Cliente proveedor;
-        proveedor = new ClienteJpaController().createFromProveedor(cliente);
-        return proveedor;
+    private Cliente createClienteFromProveedor(Proveedor proveedor) throws MessageException, Exception {
+        Cliente cliente;
+        cliente = new ClienteJpaController().createFromProveedor(proveedor);
+        return cliente;
     }
 }

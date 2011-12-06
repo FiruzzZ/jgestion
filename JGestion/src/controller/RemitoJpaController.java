@@ -17,12 +17,11 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import org.apache.log4j.Priority;
+import javax.swing.JOptionPane;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -280,8 +279,8 @@ public class RemitoJpaController implements ActionListener, KeyListener {
          r.addParameter("REMITO_ID", p.getId());
          r.printReport(true);
       } catch (Exception ex) {
-         javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
-         Logger.getLogger(PresupuestoJpaController.class.getName()).log(Level.SEVERE, null, ex);
+         JOptionPane.showMessageDialog(null, ex.getMessage());
+         Logger.getLogger(this.getClass()).error("Error - Impresión de Remito.id=" + p.getId(), ex);
       }
    }
 
@@ -326,7 +325,7 @@ public class RemitoJpaController implements ActionListener, KeyListener {
 
       //personalizando vista de Buscador
       buscador.setPanelInfoParaRemitos();
-      UTIL.loadComboBox(buscador.getCbClieProv(), new ClienteJpaController().findClienteEntities(), true);
+      UTIL.loadComboBox(buscador.getCbClieProv(), new ClienteJpaController().findEntities(), true);
       UTIL.loadComboBox(buscador.getCbSucursal(), new SucursalJpaController().findSucursalEntities(), true);
       UTIL.getDefaultTableModel(
               buscador.getjTable1(),

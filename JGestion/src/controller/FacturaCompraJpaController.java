@@ -159,7 +159,7 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
       UTIL.hideColumnTable(jdFactura.getjTable1(), 0);
       //set next nº movimiento
       jdFactura.setTfNumMovimiento(String.valueOf(getFacturaCompraCount() + 1));
-      UTIL.loadComboBox(jdFactura.getCbProveedor(), new ProveedorJpaController().findProveedorEntities(), false);
+      UTIL.loadComboBox(jdFactura.getCbProveedor(), new ProveedorJpaController().findEntities(), false);
       UTIL.loadComboBox(jdFactura.getCbSucursal(), new SucursalJpaController().findSucursalEntities(), false);
       UTIL.loadComboBox(jdFactura.getCbFacturaTipo(), TIPOS_FACTURA, false);
       UTIL.loadComboBox(jdFactura.getCbFormaPago(), Valores.FormaPago.getFormasDePago(), false);
@@ -377,7 +377,7 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
          detalleCompra.setCantidad(Integer.valueOf(dtm.getValueAt(i, 3).toString()));
          detalleCompra.setPrecioUnitario(Double.valueOf(dtm.getValueAt(i, 4).toString()));
          newFacturaCompra.getDetalleCompraList().add(detalleCompra);
-         productoCtrl.updateCostoCompra(detalleCompra.getProducto(),
+         productoCtrl.valorizarStock(detalleCompra.getProducto(),
                  detalleCompra.getPrecioUnitario(),
                  detalleCompra.getCantidad(),
                  Integer.parseInt(dtm.getValueAt(i, 6).toString()));
@@ -581,7 +581,7 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
       }// </editor-fold>
 
       buscador = new JDBuscadorReRe(frame, "Buscador - Factura compra", modal, "Proveedor", "Nº Factura");
-      UTIL.loadComboBox(buscador.getCbClieProv(), new ProveedorJpaController().findProveedorEntities(), true);
+      UTIL.loadComboBox(buscador.getCbClieProv(), new ProveedorJpaController().findEntities(), true);
       UTIL.loadComboBox(buscador.getCbCaja(), new CajaJpaController().findCajasPermitidasByUsuario(UsuarioJpaController.getCurrentUser(), true), true);
       UTIL.loadComboBox(buscador.getCbSucursal(), new SucursalJpaController().findSucursalEntities(), true);
       UTIL.loadComboBox(buscador.getCbFormasDePago(), Valores.FormaPago.getFormasDePago(), true);

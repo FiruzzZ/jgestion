@@ -3,6 +3,8 @@ package controller;
 import controller.exceptions.DatabaseErrorException;
 import controller.exceptions.MessageException;
 import controller.exceptions.MissingReportException;
+import entity.ChequePropio;
+import entity.ChequeTerceros;
 import entity.DetalleCajaMovimientos;
 import entity.DetalleListaPrecios;
 import entity.FacturaCompra;
@@ -17,15 +19,12 @@ import gui.PanelBalanceComprasVentas;
 import gui.PanelBalanceGeneral;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.math.RoundingMode;
-import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Level;
@@ -73,9 +72,7 @@ public class Contabilidad {
                 columnNamesBalanceGeneral,
                 columnWidthsBalanceGeneral,
                 columnClassBalanceGeneral);
-        DefaultTableCellRenderer defaultTableCellRender = new DefaultTableCellRenderer();
-        defaultTableCellRender.setHorizontalAlignment(JLabel.RIGHT);
-        jdBalanceUI.getjTable1().setDefaultRenderer(String.class, defaultTableCellRender);
+        UTIL.setHorizonalAlignment(jdBalanceUI.getjTable1(), String.class, JLabel.RIGHT);
         jdBalanceUI.getbBuscar().addActionListener(new ActionListener() {
 
             @Override
@@ -209,9 +206,7 @@ public class Contabilidad {
                 columnNamesBalanceCompraVenta,
                 columnWidthsBalanceCompraVenta,
                 columnClassBalanceCompraVenta);
-        DefaultTableCellRenderer defaultTableCellRender = new DefaultTableCellRenderer();
-        defaultTableCellRender.setHorizontalAlignment(JLabel.RIGHT);
-        jdBalanceUI.getjTable1().setDefaultRenderer(String.class, defaultTableCellRender);
+        UTIL.setHorizonalAlignment(jdBalanceUI.getjTable1(), String.class, JLabel.RIGHT);
         jdBalanceUI.setTitle("Balance");
         jdBalanceUI.getbBuscar().addActionListener(new ActionListener() {
 
@@ -509,5 +504,47 @@ public class Contabilidad {
         }
         Double montoDefinitivo = (monto == null ? producto.getPrecioVenta() : monto);
         return ((montoDefinitivo * margenFinal) / 100);
+    }
+
+    /**
+     * Retorna el estado del cheque como String.
+     * <br>1 = ENTREGADO (estado exclusivo de {@link ChequePropio}).
+     * <br>2 = CARTERA (estado exclusivo de {@link ChequeTerceros}).
+     * <br>3 = DEPOSTADO.
+     * <br>4 = CAJA (cheque que se convirtió en efectivo y se asentó en alguna caja)
+     * <br>5 = RECHAZADO.
+     * @param estadoID
+     * @return String que representa el estado.
+     * @throws IllegalArgumentException si no existe el estadoID
+     */
+    public static String getChequeEstadoToString(int estadoID) {
+        String estado;
+        switch (estadoID) {
+            case 1: {
+                estado = "ENTREGADO";
+                break;
+            }
+            case 2: {
+                estado = "CARTERA";
+                break;
+            }
+            case 3: {
+                estado = "DEPOSITADO";
+                break;
+            }
+            case 4: {
+                estado = "CAJA";
+                break;
+            }
+            case 5: {
+                estado = "RECHAZADO";
+                break;
+            }
+
+            default: {
+                throw new IllegalArgumentException("Estado de CHEQUE no definido");
+            }
+        }
+        return estado;
     }
 }

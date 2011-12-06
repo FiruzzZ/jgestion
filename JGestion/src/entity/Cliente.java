@@ -141,7 +141,7 @@ public class Cliente implements Serializable {
         return tele1;
     }
 
-    public void setTele1(long tele1) {
+    public void setTele1(Long tele1) {
         this.tele1 = tele1;
     }
 

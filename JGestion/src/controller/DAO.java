@@ -19,11 +19,11 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.Persistence;
-import oracle.toplink.essentials.exceptions.DatabaseException;
-import oracle.toplink.essentials.internal.ejb.cmp3.EntityManagerImpl;
-import oracle.toplink.essentials.internal.sessions.UnitOfWorkImpl;
+import javax.persistence.Query;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.eclipse.persistence.config.QueryHints;
+import org.eclipse.persistence.exceptions.DatabaseException;
 
 /**
  *
@@ -48,6 +48,7 @@ public abstract class DAO implements Runnable {
 
     @Override
     public Object clone() throws CloneNotSupportedException {
+        //singleton..
         throw new CloneNotSupportedException("This Object can not be cloned, because it's a Singleton Design Class!!! [666]");
     }
 
@@ -55,11 +56,13 @@ public abstract class DAO implements Runnable {
         if (emf == null) {
             Logger.getLogger(DAO.class).debug("EntityManagerFactory == null");
 //            emf = Persistence.createEntityManagerFactory("JGestionPU");
-         emf = Persistence.createEntityManagerFactory("JGestionTest");
+//            emf = Persistence.createEntityManagerFactory("JGestionTest");
 //         emf = Persistence.createEntityManagerFactory("JGestionPUWorldPrint");
+         emf = Persistence.createEntityManagerFactory("JGestionPUProgreso");
             getJDBCConnection();
         }
-        return emf.createEntityManager();
+        EntityManager em = emf.createEntityManager();
+        return em;
     }
 
     static EntityManagerFactory getEntityManagerFactory(String string) {
@@ -98,9 +101,14 @@ public abstract class DAO implements Runnable {
                 Logger.getLogger(DAO.class).log(Level.TRACE, "Creating a new JDBC #" + instanceOfJDBCCreated);
                 entityManagerForJDBC = emf.createEntityManager();
                 entityManagerForJDBC.getTransaction().begin();
-                UnitOfWorkImpl unitOfWorkImpl = (UnitOfWorkImpl) ((EntityManagerImpl) entityManagerForJDBC.getDelegate()).getActiveSession();
-                unitOfWorkImpl.beginEarlyTransaction();
-                connection = unitOfWorkImpl.getAccessor().getConnection();
+
+                //JPA 1.0
+//                UnitOfWorkImpl unitOfWorkImpl = (UnitOfWorkImpl) ((EntityManagerImpl) entityManagerForJDBC.getDelegate()).getActiveSession();
+//                unitOfWorkImpl.beginEarlyTransaction();
+//                connection = unitOfWorkImpl.getAccessor().getConnection();
+
+                //JPA 2.0
+                connection = entityManagerForJDBC.unwrap(java.sql.Connection.class);
             }
         } catch (SQLException ex) {
             Logger.getLogger(DAO.class).log(Level.ERROR, ex.getMessage(), ex);
@@ -222,7 +230,7 @@ public abstract class DAO implements Runnable {
     static List<?> getNativeQueryResultList(String sqlString, String resultSetMapping) throws DatabaseErrorException {
         EntityManager em = getEntityManager();
         try {
-            return em.createNativeQuery(sqlString, resultSetMapping).setHint("toplink.refresh", true).getResultList();
+            return em.createNativeQuery(sqlString, resultSetMapping).setHint(QueryHints.REFRESH, true).getResultList();
         } catch (DatabaseException e) {
             throw new DatabaseErrorException(e);
         } finally {
@@ -236,7 +244,7 @@ public abstract class DAO implements Runnable {
      * (<code>object.id</code>)
      * @param object La clase de la cual se buscará la instancia
      * @param id valor único identificador
-     * @return Una instacia del tipo <code>object</code>
+     * @return Una instancia del tipo <code>object</code>
      */
     public static Object findEntity(Class object, Integer id) {
         if (object == null) {
@@ -246,7 +254,7 @@ public abstract class DAO implements Runnable {
             throw new IllegalArgumentException("El parámetro id can not be NULL");
         }
         try {
-            return getEntityManager().createQuery("SELECT o FROM " + object.getSimpleName() + " o WHERE o.id=" + id).setHint("toplink.refresh", true).getSingleResult();
+            return getEntityManager().createQuery("SELECT o FROM " + object.getSimpleName() + " o WHERE o.id=" + id).setHint(QueryHints.REFRESH, true).getSingleResult();
         } catch (NoResultException ex) {
             return null;
         } catch (NonUniqueResultException ex) {
@@ -269,7 +277,7 @@ public abstract class DAO implements Runnable {
             throw new IllegalArgumentException("El parámetro object can not be NULL");
         }
         conditions = conditions == null ? "" : "WHERE " + conditions;
-        return getEntityManager().createQuery("SELECT o FROM " + object.getSimpleName() + " o " + conditions).setHint("toplink.refresh", true).getResultList();
+        return getEntityManager().createQuery("SELECT o FROM " + object.getSimpleName() + " o " + conditions).setHint(QueryHints.REFRESH, true).getResultList();
     }
 
     /**
@@ -399,6 +407,7 @@ public abstract class DAO implements Runnable {
 //            DAO.getEntityManager().getTransaction().commit();
             }// </editor-fold>
 
+            new ChequesController();
             em.getTransaction().commit();
         } catch (Exception ex) {
             if (em.getTransaction().isActive()) {
@@ -413,5 +422,35 @@ public abstract class DAO implements Runnable {
         }
         ventanaSystemMessage.agregar("Proceso de inicialización finalizado..");
         System.out.println("finished setDefaultData()..");
+    }
+
+    /**
+     * Ver {@link EntityManager#createQuery(java.lang.String)}
+     * @param query a Java Persistence query string
+     * @param withRefreshQueryHint
+     * @return 
+     */
+    static Query createQuery(String query, boolean withRefreshQueryHint) {
+        EntityManager em = getEntityManager();
+        Query q = em.createQuery(query);
+        if (withRefreshQueryHint) {
+            q.setHint(QueryHints.REFRESH, true);
+        }
+        return q;
+    }
+    
+    static Query createNativeQuery(String query, Class aClass, boolean withRefreshQueryHint) {
+        EntityManager em = getEntityManager();
+        Query q = em.createNativeQuery(query, aClass);
+        if (withRefreshQueryHint) {
+            q.setHint(QueryHints.REFRESH, true);
+        }
+        return q;
+    }
+    
+    public <T extends Object> List<T> get(T object, String condicion) {
+        List<T> l = new ArrayList<T>();
+        return l;
+        
     }
 }

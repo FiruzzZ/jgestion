@@ -5,7 +5,7 @@
 
 package controller.exceptions;
 
-import oracle.toplink.essentials.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.DatabaseException;
 
 /**
  *

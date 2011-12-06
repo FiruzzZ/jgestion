@@ -175,8 +175,12 @@ public class JDContenedor extends javax.swing.JDialog {
     }
 
     /**
-     * Agrega el textField, la botonera de la derecha y la tabla
-     * @param o A object whom <b>implements</b> Key, Action and Mouse Listener.
+     * Agrega un escuchador a el textField, la botonera de la derecha y la tabla
+     * @param o A object whom implements:
+     * <br>{@link ActionListener} for {@code bNuevo, bModificar, bBorrar, bImprimir, bSalir}.
+     * <br>{@link KeyListener} for {@code tfFiltro}.
+     * <br>{@link MouseListener} for {@code jTable1}.
+     * @throws ClassCastException if the object does not implement {@link ActionListener}
      */
     public void setListener(Object o) {
         bNuevo.addActionListener((ActionListener) o);

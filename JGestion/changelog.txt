@@ -1,7 +1,173 @@
+2011/11/21
+//-- nueva estructura de mensajes informativos del sistema
+DROP TABLE msj_informativos;
+CREATE TABLE msj_informativos
+(
+  id integer NOT NULL,
+  message text NOT NULL,
+  code character varying(500) NOT NULL,
+  CONSTRAINT msj_informativos_pkey PRIMARY KEY (id),
+  CONSTRAINT msj_informativos_code_key UNIQUE (code)
+)
+WITH (
+  OIDS=FALSE
+);
 
+2011/09/03
+    ALTER TABLE ADD COLUMN acreditado boolean NOT NULL DEFAULT false
+2011/08/30
+//DB CREATE TABLE's cheque_estado, librado, banco, banco_sucursal, cheque_propio, cheque_tercero
+CREATE TABLE cheque_estado
+(
+  id integer NOT NULL,
+  nombre character varying(20) NOT NULL,
+  CONSTRAINT cheque_estado_pkey PRIMARY KEY (id),
+  CONSTRAINT cheque_estado_nombre_key UNIQUE (nombre)
+)
+WITH (
+  OIDS=FALSE
+);
+CREATE TABLE librado
+(
+  id integer NOT NULL,
+  nombre character varying(30) NOT NULL,
+  CONSTRAINT librado_pkey PRIMARY KEY (id),
+  CONSTRAINT librado_nombre_key UNIQUE (nombre)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE librado OWNER TO postgres;
+COMMENT ON TABLE librado IS 'Se refiera a la forma/situación/estado que se encuentra el cheque';
+
+CREATE TABLE banco
+(
+  id serial NOT NULL,
+  nombre character varying(100) NOT NULL,
+  version_banco bigint,
+  CONSTRAINT banco_pkey PRIMARY KEY (id),
+  CONSTRAINT banco_nombre_key UNIQUE (nombre)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE banco OWNER TO postgres;
+COMMENT ON TABLE banco IS 'Bancos, los cuales poseén sucursales (tabla banco_sucursal)';
+
+CREATE TABLE banco_sucursal
+(
+  id serial NOT NULL,
+  nombre character varying(200) NOT NULL,
+  codigo character varying(20),
+  direccion character varying(200) NOT NULL,
+  telefono numeric(12,0),
+  banco integer NOT NULL,
+  CONSTRAINT banco_sucursal_pkey PRIMARY KEY (id),
+  CONSTRAINT banco_sucursal_banco_fkey FOREIGN KEY (banco)
+      REFERENCES banco (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT banco_sucursal_nombre_key UNIQUE (nombre, banco)
+)
+WITH (
+  OIDS=FALSE
+);
+
+CREATE TABLE cheque_propio
+(
+  id serial NOT NULL,
+  numero numeric(20,0) NOT NULL,
+  fecha_cheque date NOT NULL,
+  banco integer NOT NULL,
+  banco_sucursal integer NOT NULL,
+  cruzado boolean NOT NULL DEFAULT false,
+  observacion character varying(300),
+  estado integer NOT NULL,
+  fecha_creacion timestamp with time zone NOT NULL DEFAULT now(),
+  fecha_cobro date,
+  usuario integer NOT NULL,
+  endosatario character varying(200),
+  fecha_endoso date,
+  librado integer NOT NULL,
+  importe numeric(9,2) NOT NULL,
+  proveedor integer NOT NULL,
+  version_cheque bigint,
+  bound integer NOT NULL, -- 1=factura_compra, 3 =remesa
+  bound_id integer,
+  CONSTRAINT cheque_propio_pkey PRIMARY KEY (id),
+  CONSTRAINT cheque_propio_banco_fkey FOREIGN KEY (banco)
+      REFERENCES banco (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT cheque_propio_banco_sucursal_fkey FOREIGN KEY (banco_sucursal)
+      REFERENCES banco_sucursal (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT cheque_propio_librado_fkey FOREIGN KEY (librado)
+      REFERENCES librado (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT cheque_propio_proveedor_fkey FOREIGN KEY (proveedor)
+      REFERENCES proveedor (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT cheque_propio_usuario_fkey FOREIGN KEY (usuario)
+      REFERENCES usuario (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT cheque_propio_numero_key UNIQUE (numero)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE cheque_propio OWNER TO postgres;
+COMMENT ON COLUMN cheque_propio.bound IS '1=factura_compra, 3 =remesa';
+
+CREATE TABLE cheque_terceros
+(
+  id serial NOT NULL,
+  numero numeric(20,0) NOT NULL,
+  fecha_cheque date NOT NULL,
+  banco integer NOT NULL,
+  banco_sucursal integer NOT NULL,
+  cruzado boolean NOT NULL DEFAULT false,
+  observacion character varying(300),
+  estado integer NOT NULL,
+  fecha_creacion timestamp with time zone NOT NULL DEFAULT now(),
+  fecha_cobro date,
+  usuario integer NOT NULL,
+  endosatario character varying(200),
+  fecha_endoso date,
+  librado integer NOT NULL,
+  importe numeric(9,2) NOT NULL,
+  cliente integer NOT NULL,
+  version_cheque bigint,
+  bound integer NOT NULL, -- 2=factura_venta, 4=recibo
+  bound_id integer,
+  CONSTRAINT cheque_terceros_pkey PRIMARY KEY (id),
+  CONSTRAINT cheque_terceros_banco_fkey FOREIGN KEY (banco)
+      REFERENCES banco (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT cheque_terceros_banco_sucursal_fkey FOREIGN KEY (banco_sucursal)
+      REFERENCES banco_sucursal (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT cheque_terceros_cliente_fkey FOREIGN KEY (cliente)
+      REFERENCES cliente (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT cheque_terceros_librado_fkey FOREIGN KEY (librado)
+      REFERENCES librado (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT cheque_terceros_usuario_fkey FOREIGN KEY (usuario)
+      REFERENCES usuario (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT cheque_terceros_cliente_key UNIQUE (cliente, numero)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE cheque_terceros OWNER TO postgres;
+COMMENT ON COLUMN cheque_terceros.bound IS '2=factura_venta, 4=recibo';
+
+2011/08/23
+//DB
+    ALTER TABLE detalle_acreditacion ADD COLUMN anulado boolean NOT NULL DEFAULT false;
 2011/08/08
 Se agregó facturación electrónica
-|->DB
+//DB
     CREATE TABLE documento_tipo
     (
       id serial NOT NULL,
@@ -40,7 +206,7 @@ Se agregó facturación electrónica
     COMMENT ON COLUMN factura_electronica.observaciones IS 'eventos relacionados a la obtención del CAE';
 
 2011/04/27
-|->DB
+//DB
     CREATE TABLE movimiento_concepto (
       id serial NOT NULL, 
       nombre character varying(30) NOT NULL, 
@@ -51,9 +217,9 @@ Se agregó facturación electrónica
       ALTER TABLE detalle_caja_movimientos ADD COLUMN movimiento_concepto INTEGER NOT NULL DEFAULT 1;
       ALTER TABLE detalle_caja_movimientos ADD FOREIGN KEY (movimiento_concepto) REFERENCES movimiento_concepto (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
 2011/04/18
-|->DB
-|  |-CREATE TABLE detalle_acreditacion
-   |-ALTER COLUMNS TYPE double precision to NUMERIC(12,3)..
+//DB
+    CREATE TABLE detalle_acreditacion
+    ALTER COLUMNS TYPE double precision to NUMERIC(12,3);
       ALTER TABLE caja_movimientos ALTER monto_apertura TYPE numeric(12,3);
       ALTER TABLE caja_movimientos ALTER monto_cierre TYPE numeric(12,3);
       ALTER TABLE ctacte_cliente ALTER entregado TYPE numeric(12,3);
@@ -96,48 +262,79 @@ Se agregó facturación electrónica
       ALTER TABLE recibo ALTER monto TYPE numeric(12,3);
       ALTER TABLE remesa ALTER monto_entrega TYPE numeric(12,3);
 2011/04/12
-|->DB
-   |-ALTER TABLE remito ADD COLUMN fecha_remito date NOT NULL DEFAULT now();
-   |-ALTER TABLE remito ALTER COLUMN fecha_remito DROP DEFAULT;
+//DB
+    ALTER TABLE remito ADD COLUMN fecha_remito date NOT NULL DEFAULT now();
+    ALTER TABLE remito ALTER COLUMN fecha_remito DROP DEFAULT;
 2011/04/05
---Added new feat!! "Nota de crédito"
-|->new Entity NotaCredito
-|->GUI ABM NotaCredito
-|->DB
-|  |-CREATE TABLE nota_credito
-|  |-CREATE TABLE detalle_nota_credito
-|->Report JGestion_NotaCredito
+//Added new feat!! "Nota de crédito"
+//new Entity NotaCredito
+//GUI ABM NotaCredito
+//DB
+    CREATE TABLE nota_credito
+    CREATE TABLE detalle_nota_credito
+//Report JGestion_NotaCredito
 
 
 2011/02/17
 //Edit GUI:
-   - Agregaron permisos correspondientes a ProdudosWeb y Oferas.
-|->DB
-   |-ALTER TABLE permisos ADD COLUMN abm_catalogoweb boolean NOT NULL DEFAULT false;
-   |-ALTER TABLE permisos ADD COLUMN abm_ofertasweb boolean NOT NULL DEFAULT false;
+// Agregaron permisos correspondientes a ProdudosWeb y Oferas.
+//DB
+    ALTER TABLE permisos ADD COLUMN abm_catalogoweb boolean NOT NULL DEFAULT false;
+    ALTER TABLE permisos ADD COLUMN abm_ofertasweb boolean NOT NULL DEFAULT false;
 2011/02/14
 //Edit GUI:
-   - JDFacturaVenta -> Detección de Productos en oferta
-|->DB
-   |-ALTER TABLE detalle_venta ADD COLUMN oferta integer;
-   |-ALTER TABLE detalle_venta ADD FOREIGN KEY (oferta) REFERENCES historial_ofertas (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+   - JDFacturaVenta // Detección de Productos en oferta
+//DB
+    ALTER TABLE detalle_venta ADD COLUMN oferta integer;
+    ALTER TABLE detalle_venta ADD FOREIGN KEY (oferta) REFERENCES historial_ofertas (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
 2011/02/11
-|->DB Modif:
-   |-CREATE TABLE historial_ofertas
+//DB Modif:
+    CREATE TABLE historial_ofertas
 2011/02/10
 //Integrando con la Web
 // Added GUI:
    - Ventana de asignación de productos al catálogo.
    - Ventana de creación de ofertas/destacados.
 //Modif:
-   - Class ListaPrecios, se le agregó el atributo paraCatalogoWeb.
-ALTER TABLE lista_precios ADD COLUMN para_catalogo_web BOOLEAN NOT NULL DEFAULT FALSE
+//   Class ListaPrecios, se le agregó el atributo paraCatalogoWeb.
+    ALTER TABLE lista_precios ADD COLUMN para_catalogo_web BOOLEAN NOT NULL DEFAULT FALSE
 2010/10/??
-CREATE TABLE productos_web
+//DB
+//verdura para carrito web
+    CREATE ROLE jgestion_web LOGIN
+    NOSUPERUSER NOINHERIT NOCREATEDB NOCREATEROLE CONNECTION LIMIT 10;
+    CREATE TABLE productos_web (
+      producto integer NOT NULL,
+      precio numeric(12,2) NOT NULL,
+      destacado boolean NOT NULL DEFAULT false,
+      oferta boolean NOT NULL DEFAULT false,
+      inicio_oferta date,
+      fin_oferta date,
+      estado smallint NOT NULL DEFAULT 1, -- 1 =nuevo, 2= modificado, 3= eliminado
+      chequeado smallint NOT NULL DEFAULT 0, -- por la web page..
+      id integer NOT NULL,
+      CONSTRAINT productos_web_pkey PRIMARY KEY (id),
+      CONSTRAINT fk_productos_web_producto FOREIGN KEY (producto)
+          REFERENCES producto (id) MATCH SIMPLE
+          ON UPDATE NO ACTION ON DELETE NO ACTION,
+      CONSTRAINT productos_web_producto_fkey FOREIGN KEY (producto)
+          REFERENCES producto (id) MATCH SIMPLE
+          ON UPDATE NO ACTION ON DELETE NO ACTION,
+      CONSTRAINT productos_web_producto_key UNIQUE (producto),
+      CONSTRAINT unq_productos_web_0 UNIQUE (producto)
+    )
+    WITH (
+      OIDS=FALSE
+    );
+    ALTER TABLE productos_web OWNER TO postgres;
+    GRANT ALL ON TABLE productos_web TO postgres;
+    GRANT SELECT, UPDATE ON TABLE productos_web TO jgestion_web;
+    COMMENT ON COLUMN productos_web.estado IS '1 =nuevo, 2= modificado, 3= eliminado';
+    COMMENT ON COLUMN productos_web.chequeado IS 'por la web page..';
 2010/09/27
 //Added GUI:
-   - Impl de los AutoCompleteComboBox (Facturas venta, compra y no se donde mas)
-   - Impl el Thread de checkeo de conexión con la DB (gui.JFP)
+//   - Impl de los AutoCompleteComboBox (Facturas venta, compra y no se donde mas)
+//   - Impl el Thread de checkeo de conexión con la DB (gui.JFP)
 2010/09/13
 //Added GUI:
        Menu > Productos > Movimientos

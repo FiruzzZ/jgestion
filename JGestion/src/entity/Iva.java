@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package entity;
 
 import java.io.Serializable;
@@ -25,25 +24,24 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "iva")
-@NamedQueries({@NamedQuery(name = "Iva.findAll", query = "SELECT i FROM Iva i"), @NamedQuery(name = "Iva.findById", query = "SELECT i FROM Iva i WHERE i.id = :id"), @NamedQuery(name = "Iva.findByIva", query = "SELECT i FROM Iva i WHERE i.iva = :iva")})
+@NamedQueries({
+    @NamedQuery(name = "Iva.findAll", query = "SELECT i FROM Iva i"),
+    @NamedQuery(name = "Iva.findById", query = "SELECT i FROM Iva i WHERE i.id = :id"),
+    @NamedQuery(name = "Iva.findByIva", query = "SELECT i FROM Iva i WHERE i.iva = :iva")
+})
 public class Iva implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
     @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Basic(optional = false)
     @Column(name = "iva", nullable = false, precision = 4, scale = 1)
     private Double iva;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "iva")
-    private List<Producto> productoList;
 
     public Iva() {
-    }
-
-    public Iva(Integer id) {
-        this.id = id;
     }
 
     public Iva(Integer id, Double iva) {
@@ -65,14 +63,6 @@ public class Iva implements Serializable {
 
     public void setIva(Double iva) {
         this.iva = iva;
-    }
-
-    public List<Producto> getProductoList() {
-        return productoList;
-    }
-
-    public void setProductoList(List<Producto> productoList) {
-        this.productoList = productoList;
     }
 
     @Override
@@ -99,5 +89,4 @@ public class Iva implements Serializable {
     public String toString() {
         return this.getIva().toString();
     }
-
 }

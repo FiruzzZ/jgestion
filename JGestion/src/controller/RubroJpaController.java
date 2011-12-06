@@ -14,6 +14,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
+import javax.swing.JFrame;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -22,13 +23,13 @@ import javax.swing.table.DefaultTableModel;
  * @author FiruzzZ
  */
 public class RubroJpaController implements ActionListener, MouseListener {
-    public static final int DE_PRODUCTO=1;
+
+    public static final int DE_PRODUCTO = 1;
 //    public static final int DE_CLIENTE=2;
 //    public static final int DE_PROVEEDOR=3;
-
-    public final String CLASS_NAME="Rubro";
-    private final String[] colsName={"Nº","Nombre","Código"};
-    private final int[] colsWidth={20,120,80};
+    public final String CLASS_NAME = "Rubro";
+    private final String[] colsName = {"Nº", "Nombre", "Código"};
+    private final int[] colsWidth = {20, 120, 80};
     private JDMiniABM abm;
     /**
      * Con este, separamos los rubros que usan las distintas entidades.
@@ -113,51 +114,60 @@ public class RubroJpaController implements ActionListener, MouseListener {
     }// </editor-fold>
 
     private void checkConstraints(Rubro rubro) throws MessageException, Exception {
-        String idQuery="";
-        if(rubro.getIdrubro()!=null) idQuery="o.idrubro!="+rubro.getIdrubro()+" AND ";
+        String idQuery = "";
+        if (rubro.getIdrubro() != null) {
+            idQuery = "o.idrubro!=" + rubro.getIdrubro() + " AND ";
+        }
         try {
-            DAO.getEntityManager().createNativeQuery("SELECT * FROM "+CLASS_NAME+" o " +
-                    " WHERE "+idQuery+" o.nombre='"+rubro.getNombre()+"' AND o.tipo="+rubro.getTipo() , Rubro.class)
-                    .getSingleResult();
-            throw new MessageException("Ya existe otro "+CLASS_NAME+" con este nombre.");
-        } catch (NoResultException ex) { }
-        if(rubro.getCodigo()!=null && rubro.getCodigo().length()>0)
-        try {
-            DAO.getEntityManager().createNativeQuery("SELECT * FROM "+CLASS_NAME+" o " +
-                    " WHERE "+idQuery+" o.codigo='"+rubro.getCodigo()+"' AND o.tipo="+rubro.getTipo() , Rubro.class)
-                    .getSingleResult();
-            throw new MessageException("Ya existe otro "+CLASS_NAME+" con este código.");
-        } catch (NoResultException ex) { }
+            DAO.getEntityManager().createNativeQuery("SELECT * FROM " + CLASS_NAME + " o "
+                    + " WHERE " + idQuery + " o.nombre='" + rubro.getNombre() + "' AND o.tipo=" + rubro.getTipo(), Rubro.class).getSingleResult();
+            throw new MessageException("Ya existe otro " + CLASS_NAME + " con este nombre.");
+        } catch (NoResultException ex) {
+        }
+        if (rubro.getCodigo() != null && rubro.getCodigo().length() > 0) {
+            try {
+                DAO.getEntityManager().createNativeQuery("SELECT * FROM " + CLASS_NAME + " o "
+                        + " WHERE " + idQuery + " o.codigo='" + rubro.getCodigo() + "' AND o.tipo=" + rubro.getTipo(), Rubro.class).getSingleResult();
+                throw new MessageException("Ya existe otro " + CLASS_NAME + " con este código.");
+            } catch (NoResultException ex) {
+            }
+        }
 
         //persistiendo......
-        if(rubro.getIdrubro()==null)
+        if (rubro.getIdrubro() == null) {
             create(rubro);
-        else
+        } else {
             edit(rubro);
+        }
     }
 
     private void setEntity() throws MessageException {
-        if(rubro==null) rubro = new Rubro();
-        if(abm.getTfNombre()==null || abm.getTfNombre().trim().length() < 1 )
-            throw new MessageException("Debe ingresar un nombre de "+CLASS_NAME.toLowerCase());
+        if (rubro == null) {
+            rubro = new Rubro();
+        }
+        if (abm.getTfNombre() == null || abm.getTfNombre().trim().length() < 1) {
+            throw new MessageException("Debe ingresar un nombre de " + CLASS_NAME.toLowerCase());
+        }
         rubro.setNombre(abm.getTfNombre().trim().toUpperCase());
-        if(abm.getTfCodigo().trim().length()>0)
+        if (abm.getTfCodigo().trim().length() > 0) {
             rubro.setCodigo(abm.getTfCodigo().trim().toUpperCase());
+        }
         rubro.setTipo(TIPO); // <--- la magia
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
         // <editor-fold defaultstate="collapsed" desc="JButton">
         if (e.getSource().getClass().equals(javax.swing.JButton.class)) {
             javax.swing.JButton boton = (javax.swing.JButton) e.getSource();
 
             if (boton.getName().equalsIgnoreCase("new")) {
-                rubro=null;
+                rubro = null;
                 abm.clearPanelFields();
             } else if (boton.getName().equalsIgnoreCase("del")) {
                 try {
                     eliminarRubro();
-                    rubro=null;
+                    rubro = null;
                     abm.clearPanelFields();
                     cargarDTM(abm.getDTM(), "");
                     abm.showMessage("Eliminado..", CLASS_NAME, 1);
@@ -172,18 +182,18 @@ public class RubroJpaController implements ActionListener, MouseListener {
                     ex.printStackTrace();
                 }
             } else if (boton.getName().equalsIgnoreCase("cancelar")) {
-                rubro=null;
+                rubro = null;
                 abm.clearPanelFields();
             } else if (boton.getName().equalsIgnoreCase("guardar")) {
                 try {
                     setEntity();
                     checkConstraints(rubro);
-                    rubro=null;
+                    rubro = null;
                     abm.clearPanelFields();
                     cargarDTM(abm.getDTM(), "");
                 } catch (MessageException ex) {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 0);
                     ex.printStackTrace();
                 }
@@ -193,19 +203,15 @@ public class RubroJpaController implements ActionListener, MouseListener {
         }// </editor-fold>
     }
 
-    public void initABM(java.awt.Frame frame, boolean modal) throws Exception {
-       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
-      try {
-         UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.DATOS_GENERAL);
-      } catch (MessageException ex) {
-         javax.swing.JOptionPane.showMessageDialog(null,ex.getMessage());
-         return;
-      }// </editor-fold>
+    public void initABM(JFrame frame, boolean modal) throws MessageException {
+        UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.DATOS_GENERAL);
         abm = new JDMiniABM(frame, modal);
         abm.setLocationRelativeTo(frame);
         abm.hideFieldExtra();
         abm.hideBtnLock();
-        abm.setTitle("ABM - Rubros de "+rubroToString());
+        abm.setTitle("ABM - Rubros de " + rubroToString());
+        abm.getTaInformacion().setText("Los Rubros (y SubRubros) son utilizados para clasificar y segmentar los "
+                + "distintos productos");
         UTIL.getDefaultTableModel(abm.getjTable1(), colsName, colsWidth);
         //oculta columna ID
         UTIL.hideColumnTable(abm.getjTable1(), 0);
@@ -215,89 +221,124 @@ public class RubroJpaController implements ActionListener, MouseListener {
     }
 
     public void mouseReleased(MouseEvent e) {
-        Integer selectedRow = ((javax.swing.JTable)e.getSource()).getSelectedRow();
-        DefaultTableModel dtm = (DefaultTableModel) ((javax.swing.JTable)e.getSource()).getModel();
-        if(selectedRow > -1)
+        Integer selectedRow = ((javax.swing.JTable) e.getSource()).getSelectedRow();
+        DefaultTableModel dtm = (DefaultTableModel) ((javax.swing.JTable) e.getSource()).getModel();
+        if (selectedRow > -1) {
             rubro = (Rubro) DAO.getEntityManager().find(Rubro.class,
-                Integer.valueOf((dtm.getValueAt(selectedRow, 0)).toString()));
-        if(rubro!=null)
+                    Integer.valueOf((dtm.getValueAt(selectedRow, 0)).toString()));
+        }
+        if (rubro != null) {
             setPanelFields(rubro);
+        }
     }
 
-    public void mouseClicked(MouseEvent e) { }
-    public void mousePressed(MouseEvent e) { }
-    public void mouseEntered(MouseEvent e) { }
-    public void mouseExited(MouseEvent e) { }
+    public void mouseClicked(MouseEvent e) {
+    }
+
+    public void mousePressed(MouseEvent e) {
+    }
+
+    public void mouseEntered(MouseEvent e) {
+    }
+
+    public void mouseExited(MouseEvent e) {
+    }
 
     private void cargarDTM(DefaultTableModel dtm, String query) {
-        for(int i=dtm.getRowCount(); i>0;i--) {dtm.removeRow(i-1); }
+        for (int i = dtm.getRowCount(); i > 0; i--) {
+            dtm.removeRow(i - 1);
+        }
         java.util.List<Rubro> l;
-        if(query==null || query.length()<10)
-            l = DAO.getEntityManager().createNamedQuery(CLASS_NAME+".findByTipo").setParameter("tipo", TIPO).getResultList();
-        else
-            // para cuando se usa el Buscador del ABM
+        if (query == null || query.length() < 10) {
+            l = DAO.getEntityManager().createNamedQuery(CLASS_NAME + ".findByTipo").setParameter("tipo", TIPO).getResultList();
+        } else // para cuando se usa el Buscador del ABM
+        {
             l = DAO.getEntityManager().createNativeQuery(query, Rubro.class).getResultList();
+        }
         for (Rubro o : l) {
-            dtm.addRow(new Object[] {
-                o.getIdrubro(),
-                o.getNombre(),
-                o.getCodigo()
-            });
+            dtm.addRow(new Object[]{
+                        o.getIdrubro(),
+                        o.getNombre(),
+                        o.getCodigo()
+                    });
         }
     }
 
     private void setPanelFields(Rubro o) {
         abm.setTfNombre(o.getNombre());
-        if(o.getCodigo()!=null)
+        if (o.getCodigo() != null) {
             abm.setTfCodigo(o.getCodigo());
-        else abm.setTfCodigo("");
+        } else {
+            abm.setTfCodigo("");
+        }
     }
 
     private void eliminarRubro() throws MessageException, NonexistentEntityException, IllegalOrphanException {
-        if(rubro==null)
-            throw new MessageException("No hay "+CLASS_NAME+" seleccionado");
+        if (rubro == null) {
+            throw new MessageException("No hay " + CLASS_NAME + " seleccionado");
+        }
         destroy(rubro.getIdrubro());
     }
 
     private int getListDeForeignKeys(int idRubro) {
         try {
 
-            return DAO.getEntityManager().createNativeQuery("select * from "+rubroToString()+" where rubro="+idRubro).getResultList().size();
-        } catch (NoResultException ex) { return 0;
-        } catch (Exception ex) { ex.printStackTrace(); }
+            return DAO.getEntityManager().createNativeQuery("select * from " + rubroToString() + " where rubro=" + idRubro).getResultList().size();
+        } catch (NoResultException ex) {
+            return 0;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
         return 0;
     }
 
     private int getListSubRubros(int idRubro) {
         try {
-            return DAO.getEntityManager().createNativeQuery("select * from "+rubroToString()+" where subrubro="+idRubro).getResultList().size();
-        } catch (NoResultException ex) { return 0;
-        } catch (Exception ex) { ex.printStackTrace(); }
+            return DAO.getEntityManager().createNativeQuery("select * from " + rubroToString() + " where subrubro=" + idRubro).getResultList().size();
+        } catch (NoResultException ex) {
+            return 0;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
         return 0;
     }
+
     private String rubroToString(int rubrosDe) {
-        if(rubrosDe<=1)
+        if (rubrosDe <= 1) {
             switch (TIPO) {
-                case 1: return "Producto";
-                case 2: return "Cliente";
-                case 3: return "Proveedor";
-                default: return null;
+                case 1:
+                    return "Producto";
+                case 2:
+                    return "Cliente";
+                case 3:
+                    return "Proveedor";
+                default:
+                    return null;
             }
-        else
+        } else {
             switch (TIPO) {
-                case 1: return "Productos";
-                case 2: return "Clientes";
-                case 3: return "Proveedores";
-                default: return null;
+                case 1:
+                    return "Productos";
+                case 2:
+                    return "Clientes";
+                case 3:
+                    return "Proveedores";
+                default:
+                    return null;
             }
+        }
     }
 
     private String rubroToString() {
         switch (TIPO) {
-            case 1: return "Producto";
-            case 2: return "Cliente";
-            case 3: return "Proveedor";
-            default: return null;
+            case 1:
+                return "Producto";
+            case 2:
+                return "Cliente";
+            case 3:
+                return "Proveedor";
+            default:
+                return null;
         }
     }
 }

@@ -318,7 +318,7 @@ public class PresupuestoJpaController implements ActionListener, KeyListener {
       buscador.hideCaja();
       buscador.hideFormaPago();
       buscador.getjTfOcteto().setVisible(false);
-      UTIL.loadComboBox(buscador.getCbClieProv(), new ClienteJpaController().findClienteEntities(), true);
+      UTIL.loadComboBox(buscador.getCbClieProv(), new ClienteJpaController().findEntities(), true);
       UTIL.loadComboBox(buscador.getCbSucursal(), new SucursalJpaController().findSucursalEntities(), true);
       UTIL.getDefaultTableModel(
               buscador.getjTable1(),
