@@ -38,6 +38,7 @@ import java.awt.event.MouseAdapter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.persistence.LockModeType;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.swing.JDialog;
@@ -319,7 +320,7 @@ public class CajaMovimientosJpaController implements ActionListener {
             }
         }
     }
-    
+
     void asentarMovimiento(ChequePropio cheque, Caja caja) throws Exception {
         CajaMovimientos cm = findCajaMovimientoAbierta(caja);
         EntityManager em = getEntityManager();
@@ -391,6 +392,7 @@ public class CajaMovimientosJpaController implements ActionListener {
             em.getTransaction().begin();
             facturaVenta = em.find(FacturaVenta.class, facturaVenta.getId());
             cajaMovimientoDestino = em.find(CajaMovimientos.class, cajaMovimientoDestino.getId());
+            em.lock(facturaVenta, LockModeType.PESSIMISTIC_WRITE);
 
             //generic info in case of anullation..
             DetalleCajaMovimientos newDetalleCajaMovimiento = new DetalleCajaMovimientos();
@@ -400,11 +402,11 @@ public class CajaMovimientosJpaController implements ActionListener {
             newDetalleCajaMovimiento.setUsuario(UsuarioJpaController.getCurrentUser());
             newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.ANULACION);
 
-            if (facturaVenta.getFormaPago() == Valores.FormaPago.CONTADO.getId()) {
+            if (facturaVenta.getFormaPagoEnum().equals(Valores.FormaPago.CTA_CTE)) {
                 newDetalleCajaMovimiento.setMonto(-facturaVenta.getImporte());
                 newDetalleCajaMovimiento.setDescripcion(getDescripcion(facturaVenta) + " [ANULADA]");
                 new DetalleCajaMovimientosJpaController().create(newDetalleCajaMovimiento);
-            } else if (facturaVenta.getFormaPago() == Valores.FormaPago.CTA_CTE.getId()) {
+            } else if (facturaVenta.getFormaPagoEnum().equals(Valores.FormaPago.CTA_CTE)) {
                 CtacteCliente ccc = new CtacteClienteJpaController().findCtacteClienteByFactura(facturaVenta.getId());
                 if (ccc.getEntregado() > 0) {
                     //find all receipts (Recibo's) that contains a payment of the bill (FacturaVenta)
@@ -413,14 +415,14 @@ public class CajaMovimientosJpaController implements ActionListener {
                     for (Recibo reciboQueEnSuDetalleContieneLaFacturaVenta : recibosList) {
                         //if this is setted as TRUE, the entire Recibo must be annulled
                         detalleUnico = (reciboQueEnSuDetalleContieneLaFacturaVenta.getDetalleReciboList().size() == 1);
-                        //NOTE!
-                        //A Recibo can have two details of the same facturaVenta.
+                        //NOTE!: A Recibo can have two details of the same facturaVenta.
                         //One with DetalleRecibo.acreditado = FALSE and one with TRUE
                         for (DetalleRecibo detalleRecibo : reciboQueEnSuDetalleContieneLaFacturaVenta.getDetalleReciboList()) {
                             if (detalleRecibo.getFacturaVenta().equals(facturaVenta)) {
-                                detalleRecibo.setObservacion("ANULADO - " + detalleRecibo.getObservacion());
+                                detalleRecibo.setObservacion("[ANULADO] " + detalleRecibo.getObservacion());
                                 detalleRecibo.setAnulado(true);
-                                reciboQueEnSuDetalleContieneLaFacturaVenta.setMonto(reciboQueEnSuDetalleContieneLaFacturaVenta.getMonto() - detalleRecibo.getMontoEntrega());
+                                reciboQueEnSuDetalleContieneLaFacturaVenta.setMonto(
+                                        reciboQueEnSuDetalleContieneLaFacturaVenta.getMonto() - detalleRecibo.getMontoEntrega());
                                 if (detalleRecibo.isAcreditado()) {
                                     DetalleAcreditacion anular = new DetalleAcreditacionJpaController().anular(detalleRecibo);
                                     new NotaCreditoJpaController().acreditar(anular);
@@ -439,7 +441,9 @@ public class CajaMovimientosJpaController implements ActionListener {
                 ccc.setEstado(Valores.CtaCteEstado.ANULADA.getId());
                 em.merge(ccc);
             } else if (facturaVenta.getFormaPago() == Valores.FormaPago.CHEQUE.getId()) {
+                throw new UnsupportedOperationException("Anulación de Facturas, FormaPago = CHEQUE no implementada aún");
             } else if (facturaVenta.getFormaPago() == Valores.FormaPago.CONTADO_CHEQUE.getId()) {
+                throw new UnsupportedOperationException("Anulación de Facturas, FormaPago = CONTADO/CHEQUE no implementada aún");
             }
 
             facturaVenta.setAnulada(true);

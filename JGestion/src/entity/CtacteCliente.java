@@ -1,6 +1,7 @@
 
 package entity;
 
+import controller.Valores.FormaPago;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Basic;
@@ -13,13 +14,15 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.PostPersist;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 /**
- *
- * @author Administrador
+ * Representa una relación contable OneToOne entre {@link Cliente} y {@link FacturaVenta}
+ * resultado de una venta a {@link FormaPago#CTA_CTE}.
+ * @author FiruzzZ
  */
 @Entity
 @Table(name = "ctacte_cliente")
@@ -61,6 +64,7 @@ public class CtacteCliente implements Serializable {
       this.id = id;
    }
 
+   @PostPersist
    public Integer getId() {
       return id;
    }

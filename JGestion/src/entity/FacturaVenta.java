@@ -3,6 +3,7 @@ package entity;
 import controller.Valores.FormaPago;
 import utilities.general.UTIL;
 import java.io.Serializable;
+import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.*;
@@ -99,11 +100,8 @@ public class FacturaVenta implements Serializable {
 
     public FacturaVenta() {
     }
-
-    public FacturaVenta(Integer id) {
-        this.id = id;
-    }
-
+    
+    @PostPersist
     public Integer getId() {
         return id;
     }

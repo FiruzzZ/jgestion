@@ -6,6 +6,7 @@
             <name>JGestion</name>
             <source-roots>
                 <root id="src.dir"/>
+                <root id="src.reportes.dir"/>
             </source-roots>
             <test-roots>
                 <root id="test.src.dir"/>

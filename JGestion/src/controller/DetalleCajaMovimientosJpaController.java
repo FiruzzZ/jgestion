@@ -65,6 +65,9 @@ public class DetalleCajaMovimientosJpaController {
      */
     public final static short CHEQUE_PROPIO = 11;
 
+    public DetalleCajaMovimientosJpaController() {
+    }
+    
     // <editor-fold defaultstate="collapsed" desc="CRUD...">
     public EntityManager getEntityManager() {
         return DAO.getEntityManager();
