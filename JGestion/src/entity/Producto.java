@@ -1,6 +1,7 @@
 package entity;
 
 import java.io.Serializable;
+import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.*;
@@ -120,6 +121,7 @@ public class Producto implements Serializable {
         this.id = id;
     }
 
+    @PostPersist
     public Integer getId() {
         return id;
     }
@@ -303,7 +305,7 @@ public class Producto implements Serializable {
     public void setIdunidadmedida(Unidadmedida idunidadmedida) {
         this.idunidadmedida = idunidadmedida;
     }
-
+ 
     @Override
     public int hashCode() {
         int hash = 0;

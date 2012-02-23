@@ -2,31 +2,16 @@ package jgestion;
 
 import controller.*;
 import controller.exceptions.MessageException;
-import entity.*;
-import gui.JDSystemMessages;
 import gui.JFP;
 import java.awt.EventQueue;
 import java.awt.SplashScreen;
-import java.awt.Toolkit;
-import java.net.URL;
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Properties;
 import java.util.ResourceBundle;
-import java.util.Vector;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceException;
-import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 //import oracle.toplink.essentials.exceptions.DatabaseException;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.eclipse.persistence.exceptions.DatabaseException;
-import utilities.general.UTIL;
 
 /**
  *
@@ -38,7 +23,6 @@ public class Main {
     private static boolean OCURRIO_ERROR = false;
     public static ResourceBundle resourceBundle = ResourceBundle.getBundle("resources");
 
-    ;
     /**
      * @param args the command line arguments
      */

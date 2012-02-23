@@ -102,16 +102,16 @@ public class ProductoJpaController implements ActionListener, KeyListener {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            Iva ivaNew = producto.getIva();
-            Marca marcaNew = producto.getMarca();
-            if (ivaNew != null) {
-                ivaNew = em.getReference(ivaNew.getClass(), ivaNew.getId());
-                producto.setIva(ivaNew);
-            }
-            if (marcaNew != null) {
-                marcaNew = em.getReference(marcaNew.getClass(), marcaNew.getId());
-                producto.setMarca(marcaNew);
-            }
+//            Iva ivaNew = producto.getIva();
+//            Marca marcaNew = producto.getMarca();
+//            if (ivaNew != null) {
+//                ivaNew = em.getReference(ivaNew.getClass(), ivaNew.getId());
+//                producto.setIva(ivaNew);
+//            }
+//            if (marcaNew != null) {
+//                marcaNew = em.getReference(marcaNew.getClass(), marcaNew.getId());
+//                producto.setMarca(marcaNew);
+//            }
             producto = em.merge(producto);
             em.getTransaction().commit();
         } catch (Exception ex) {

@@ -55,10 +55,10 @@ public abstract class DAO implements Runnable {
     public static EntityManager getEntityManager() {
         if (emf == null) {
             Logger.getLogger(DAO.class).debug("EntityManagerFactory == null");
-//            emf = Persistence.createEntityManagerFactory("JGestionPU");
+            emf = Persistence.createEntityManagerFactory("JGestionPU");
+//            emf = Persistence.createEntityManagerFactory("JGestionLOCAL");
 //            emf = Persistence.createEntityManagerFactory("JGestionTest");
-//         emf = Persistence.createEntityManagerFactory("JGestionPUWorldPrint");
-         emf = Persistence.createEntityManagerFactory("JGestionPUProgreso");
+//         emf = Persistence.createEntityManagerFactory("JGestionPUProgreso");
             getJDBCConnection();
         }
         EntityManager em = emf.createEntityManager();
