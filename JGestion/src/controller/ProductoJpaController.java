@@ -1,49 +1,30 @@
 package controller;
 
-import controller.exceptions.*;
-import entity.Iva;
-import entity.Marca;
-import entity.Producto;
-import entity.Rubro;
-import entity.Stock;
-import entity.Sucursal;
-import utilities.general.UTIL;
-import entity.Unidadmedida;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
+import controller.exceptions.DatabaseErrorException;
+import controller.exceptions.MessageException;
+import controller.exceptions.MissingReportException;
+import controller.exceptions.NonexistentEntityException;
+import entity.*;
+import gui.*;
+import java.awt.BorderLayout;
+import java.awt.event.*;
+import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
-import gui.JDABM;
-import gui.JDBuscador;
-import gui.JDContenedor;
-import gui.JDStockGral;
-import gui.PanelABMProductos;
-import gui.PanelBuscadorMovimientosPro;
-import gui.PanelProductoListados;
-import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseAdapter;
-import java.io.File;
-import java.util.Date;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
+import javax.persistence.Query;
+import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import net.atlanticbb.tantlinger.shef.HTMLEditorPane;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.eclipse.persistence.config.QueryHints;
+import utilities.general.UTIL;
 
 /**
  *
@@ -58,9 +39,13 @@ public class ProductoJpaController implements ActionListener, KeyListener {
     private final int[] colsWidth = {15, 50, 100, 50, 20};
     private PanelABMProductos panel;
     private Producto EL_OBJECT;
-    /** almacena temporalmente el archivo de la imagen del producto */
+    /**
+     * almacena temporalmente el archivo de la imagen del producto
+     */
     private File fotoFile;
-    /** Formas de registrar el COSTO COMPRA de los productos */
+    /**
+     * Formas de registrar el COSTO COMPRA de los productos
+     */
     public static final int PPP = 3, ANTIGUO = 2, ULTIMA_COMPRA = 1;
     private PanelBuscadorMovimientosPro panelito;
     private JDBuscador buscador;
@@ -177,8 +162,11 @@ public class ProductoJpaController implements ActionListener, KeyListener {
 
     public Producto findProducto(Integer id) {
         EntityManager em = getEntityManager();
+        em.setProperty(QueryHints.REFRESH, Boolean.TRUE);
         try {
-            return em.find(Producto.class, id);
+            Producto find = em.find(Producto.class, id);
+            em.refresh(find);
+            return find;
         } finally {
             em.close();
         }
@@ -278,7 +266,8 @@ public class ProductoJpaController implements ActionListener, KeyListener {
             EL_OBJECT = getSelectedFromContenedor();
             if (EL_OBJECT == null) {
                 throw new MessageException("Debe elegir una fila");
-            }
+            } 
+            EL_OBJECT = findProducto(EL_OBJECT.getId());
         }
         settingABM(isEditing);
     }
@@ -364,22 +353,22 @@ public class ProductoJpaController implements ActionListener, KeyListener {
         return JDDescripcionHTML;
     }
 
+    @SuppressWarnings({"unchecked", "unchecked"})
     private void cargarContenedorTabla(String query) throws DatabaseErrorException {
         if (contenedor != null) {
             DefaultTableModel dtm = contenedor.getDTM();
             UTIL.limpiarDtm(dtm);
             List<Producto> l;
             if (query == null) {
-                l = (List<Producto>) DAO.getNativeQueryResultList(
-                        "SELECT o.* FROM " + CLASS_NAME + " o ORDER BY o.nombre", "ProductoToContenedor");
+                l = (List<Producto>) DAO.getNativeQueryResultList("SELECT id, codigo, nombre, marca, stockactual FROM " + CLASS_NAME + " o ORDER BY o.nombre", Producto.class);
             } else {
-                l = (List<Producto>) DAO.getNativeQueryResultList(query, "ProductoToContenedor");
+                l = (List<Producto>) DAO.getNativeQueryResultList(query, Producto.class);
             }
             EntityManager entityManager = DAO.getEntityManager();
             for (Producto o : l) {
                 if (o.getMarca() == null) {
                     o.setMarca((Marca) entityManager.createQuery("SELECT o from Marca o, Producto p where o.id = p.marca.id AND p.id=" + o.getId()).getSingleResult());
-                    Logger.getLogger(this.getClass()).log(Level.DEBUG, "Producto.id=" + o.getId() + " Marca.id" + o.getMarca().getId());
+                    Logger.getLogger(this.getClass()).debug("Producto.id=" + o.getId() + " Marca.id" + o.getMarca().getId());
                 }
                 dtm.addRow(new Object[]{
                             o.getId(),
@@ -582,12 +571,13 @@ public class ProductoJpaController implements ActionListener, KeyListener {
 
     /**
      * Arma la query, la cual va filtrar los datos en el JDContenedor
+     *
      * @param filtro
      */
     private void armarQuery(String filtro) throws DatabaseErrorException {
         String query = null;
         if (filtro != null && filtro.length() > 0) {
-            query = "SELECT * FROM " + CLASS_NAME + " o WHERE o.nombre ILIKE '" + filtro + "%' ORDER BY o.nombre";
+            query = "SELECT id, codigo, nombre, marca, stockactual FROM " + CLASS_NAME + " o WHERE o.nombre ILIKE '" + filtro + "%' ORDER BY o.nombre";
         }
         cargarContenedorTabla(query);
     }
@@ -667,7 +657,7 @@ public class ProductoJpaController implements ActionListener, KeyListener {
                         abm.dispose();
                     }
 
-                    cargarContenedorTabla(null);
+                    armarQuery(null);
                     EL_OBJECT = null;
                 } catch (MessageException ex) {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
@@ -710,8 +700,10 @@ public class ProductoJpaController implements ActionListener, KeyListener {
 
     /**
      * Busca un producto por su código
+     *
      * @param codigoProducto
-     * @return a instance of Producto or  <code>null</code>  if Producto.codigo does not exist.
+     * @return a instance of Producto or
+     * <code>null</code> if Producto.codigo does not exist.
      */
     Producto findProductoByCodigo(String codigoProducto) {
         try {
@@ -736,11 +728,14 @@ public class ProductoJpaController implements ActionListener, KeyListener {
     }
 
     /**
-     * Actualiza el costo de compra del producto, dependiendo de la valoricacionStock
+     * Actualiza el costo de compra del producto, dependiendo de la
+     * valoricacionStock
+     *
      * @param producto
      * @param newPrecioUnitario
      * @param cantidad
-     * @param valoracionStock 1 = ULTIMA_COMPRA, 2 = ANTIGUO (o sea no cambia nada), 3 = PPP
+     * @param valoracionStock 1 = ULTIMA_COMPRA, 2 = ANTIGUO (o sea no cambia
+     * nada), 3 = PPP
      */
     void valorizarStock(Producto producto, double newPrecioUnitario, int cantidad, int valoracionStock) throws Exception {
         if (valoracionStock == ULTIMA_COMPRA) {
@@ -750,7 +745,7 @@ public class ProductoJpaController implements ActionListener, KeyListener {
             if (producto.getStockactual() < 0) {
                 throw new MessageException("No se puede hacer un cálculo de PPP"
                         + " siendo el stock actual del producto menor a 0"
-                        + "\nProducto: " + producto.getNombre() 
+                        + "\nProducto: " + producto.getNombre()
                         + "\nStock actual: " + producto.getStockactual());
             }
             double ppp = ((producto.getCostoCompra() * producto.getStockactual())
@@ -769,8 +764,10 @@ public class ProductoJpaController implements ActionListener, KeyListener {
 
     /**
      * Actualiza el atributo stockActual de la entidad Producto según stock.
+     *
      * @param producto al cual se le modificará el {@link Producto#stockactual}
-     * @param cantidad si es una Venta, DEBE pasarse un valor NEGATIVO (para restar);
+     * @param cantidad si es una Venta, DEBE pasarse un valor NEGATIVO (para
+     * restar);
      */
     void updateStockActual(Producto producto, int cantidad) {
         System.out.println("updateStockActual (General): " + producto.getNombre() + " = " + producto.getStockactual() + " + " + cantidad);
@@ -1014,16 +1011,22 @@ public class ProductoJpaController implements ActionListener, KeyListener {
 
     /**
      * Retrieve a lightweigth List of Product (id, codigo, nombre, remunerativo)
-     * @return a List of  {@link Producto} or <tt>null</tt> if something goes wrong.
+     *
+     * @return a List of  {@link Producto} or <tt>null</tt> if something goes
+     * wrong.
      */
     public List<Producto> findProductoToCombo() {
         try {
-            return (List<Producto>) DAO.getNativeQueryResultList(
-                    "SELECT p.id, p.codigo, p.nombre, p.remunerativo "
+            @SuppressWarnings("unchecked")
+            List<Producto> resultList = DAO.getEntityManager().
+                    createNativeQuery(
+                    "SELECT p.id, p.codigo, p.nombre "
                     + "FROM Producto p "
-                    + "ORDER BY p.nombre, p.codigo", "ProductoToBuscador");
-
-        } catch (DatabaseErrorException ex) {
+                    + "ORDER BY p.nombre, p.codigo", Producto.class).
+                    setHint(QueryHints.REFRESH, true).
+                    getResultList();
+            return resultList;
+        } catch (Exception ex) {
             Logger.getLogger(ProductoJpaController.class.getName()).log(Level.ERROR, null, ex);
         }
         return null;
