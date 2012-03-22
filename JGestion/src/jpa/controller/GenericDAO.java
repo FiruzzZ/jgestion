@@ -1,15 +1,14 @@
-package controller;
+package jpa.controller;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
 /**
  * @param <T> the entity type
  * @param <ID> the primary key type
- * @author Administrador
+ * @author FiruzzZ
  */
-public interface GenericDAO<T, ID extends Serializable> {
+public interface GenericDAO<T, ID> {
 
     /**
      * Get the Class of the entity.
@@ -23,6 +22,8 @@ public interface GenericDAO<T, ID extends Serializable> {
     T merge(T person);
 
     void remove(T person);
+
+    void refresh(T entity);
 
     T find(final ID id);
 
@@ -40,6 +41,7 @@ public interface GenericDAO<T, ID extends Serializable> {
     /**
      * Find using a named query. The parameters are added in order as they was
      * declared on the namedQuery.
+     *
      * @param queryName the name of the query
      * @param params the query parameters
      *

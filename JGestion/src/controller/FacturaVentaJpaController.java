@@ -1,38 +1,30 @@
 package controller;
 
-import javax.swing.JDialog;
-import utilities.general.UTIL;
-import controller.exceptions.*;
+import controller.exceptions.DatabaseErrorException;
+import controller.exceptions.MessageException;
 import entity.*;
-import java.awt.event.FocusEvent;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import generics.AutoCompleteComboBox;
 import gui.JDABM;
 import gui.JDBuscadorReRe;
 import gui.JDFacturaVenta;
 import gui.PanelReasignacionDeCaja;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.ArrayList;
-import java.util.List;
-import javax.persistence.NoResultException;
-import javax.swing.JOptionPane;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.text.JTextComponent;
-import generics.AutoCompleteComboBox;
-import java.awt.event.FocusAdapter;
 import java.util.Date;
+import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.Query;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.text.JTextComponent;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import utilities.general.UTIL;
 
 /**
  * Clase (Ventana) usada para crear FacturaVenta, Remitos, Presupuestos

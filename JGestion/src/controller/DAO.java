@@ -1,25 +1,14 @@
 package controller;
 
 import controller.exceptions.DatabaseErrorException;
-import entity.Contribuyente;
-import entity.DatosEmpresa;
-import entity.Iva;
-import entity.MovimientoConcepto;
-import entity.Permisos;
-import entity.PermisosCaja;
-import entity.Unidadmedida;
-import entity.Usuario;
+import entity.*;
 import gui.JDSystemMessages;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
-import javax.persistence.Persistence;
-import javax.persistence.Query;
+import java.util.Properties;
+import javax.persistence.*;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.eclipse.persistence.config.QueryHints;
@@ -33,17 +22,34 @@ public abstract class DAO implements Runnable {
 
     private static EntityManagerFactory emf;
     /**
-     * Este EntityManager, es una Transaction iniciada. <code>em.getTransaction().begin())</code>
-     * NO SE COMMITEA NUNCA!
-     * Es usado exclusivamente para conexiones JDBC, no se
-     * limpia (.clear()) ni se cierra (.close())
+     * Este EntityManager, es una Transaction iniciada.
+     * <code>em.getTransaction().begin())</code> NO SE COMMITEA NUNCA! Es usado
+     * exclusivamente para conexiones JDBC, no se limpia (.clear()) ni se cierra
+     * (.close())
      */
     private static EntityManager entityManagerForJDBC;
     private static Connection connection;
     private static int instanceOfJDBCCreated = 0;
+    private static Properties properties = null;
 
     private DAO() {
         //singleton..
+    }
+
+    public static void setProperties(Properties p) {
+        properties = p;
+        if (properties == null) {
+            throw new IllegalArgumentException("Archivo de configuración de conexión no válido.\nNull Properties");
+        }
+        if (properties.isEmpty())  {
+            throw new IllegalArgumentException("Archivo de configuración de conexión no válido.\nEmpty Properties");
+        }
+        if (properties.getProperty("database") == null
+                || properties.getProperty("port") == null
+                || properties.getProperty("server") == null) {
+            throw new IllegalArgumentException("Archivo de configuración de conexión no válido");
+        }
+        DAO.properties = p;
     }
 
     @Override
@@ -54,11 +60,15 @@ public abstract class DAO implements Runnable {
 
     public static EntityManager getEntityManager() {
         if (emf == null) {
-            Logger.getLogger(DAO.class).debug("EntityManagerFactory == null");
-            emf = Persistence.createEntityManagerFactory("JGestionPU");
-//            emf = Persistence.createEntityManagerFactory("JGestionLOCAL");
-//            emf = Persistence.createEntityManagerFactory("JGestionTest");
-//         emf = Persistence.createEntityManagerFactory("JGestionPUProgreso");
+            String persistenceUnitName = "JGestionPU";
+            Logger.getLogger(DAO.class).trace("Initializing EntityManagerFactory= " + persistenceUnitName);
+            String server, port, database;
+            server = properties.getProperty("server");
+            port = properties.getProperty("port");
+            database = properties.getProperty("database");
+            properties.setProperty("javax.persistence.jdbc.url", "jdbc:postgresql://" + server + ":" + port + "/" + database);
+            emf = Persistence.createEntityManagerFactory(persistenceUnitName, properties);
+//            }
             getJDBCConnection();
         }
         EntityManager em = emf.createEntityManager();
@@ -89,9 +99,10 @@ public abstract class DAO implements Runnable {
     }
 
     /**
-     * Devuelve un {@link java.sql.Connection}
-     * Este método leave a EntityManager.getTransaction.begin() opened!
-     * Which must be closed with {@code closeEntityManager()} manually when the returned Connection oebject will no longer be used
+     * Devuelve un {@link java.sql.Connection} Este método leave a
+     * EntityManager.getTransaction.begin() opened! Which must be closed with {@code closeEntityManager()}
+     * manually when the returned Connection oebject will no longer be used
+     *
      * @return
      */
     public static Connection getJDBCConnection() {
@@ -137,6 +148,7 @@ public abstract class DAO implements Runnable {
 
     /**
      * Como no se puede borrar una detached entity,
+     *
      * @param classType
      * @param id can't be nul!!
      */
@@ -167,6 +179,7 @@ public abstract class DAO implements Runnable {
      * Merge the state of the given entity into the current persistence context.
      * If any exception occurs, a rollback action on the current transaction is
      * launched.
+     *
      * @param o entity instance
      * @return the managed instance that the state was merged to or
      * <code>null</code> if a exception occurs
@@ -205,8 +218,10 @@ public abstract class DAO implements Runnable {
 
     /**
      * Obtiene una collection de objetos
+     *
      * @param sqlString a native SQL statement.
-     * @param resultClass the class of the returning List. If is NULL, will be a untyped List.
+     * @param resultClass the class of the returning List. If is NULL, will be a
+     * untyped List.
      * @return a list...
      * @throws DatabaseErrorException
      */
@@ -239,14 +254,16 @@ public abstract class DAO implements Runnable {
     }
 
     /**
-     * Busca el estado mas actualizado del objeto en la base de datos.
-     * El objeto debe tener un campo llamado id y ser único (UNIQUE CONSTRAINT)
-     * (<code>object.id</code>)
+     * Busca el estado mas actualizado del objeto en la base de datos. El objeto
+     * debe tener un campo llamado id y ser único (UNIQUE CONSTRAINT) (
+     * <code>object.id</code>)
+     *
      * @param object La clase de la cual se buscará la instancia
      * @param id valor único identificador
-     * @return Una instancia del tipo <code>object</code>
+     * @return Una instancia del tipo
+     * <code>object</code>
      */
-    public static Object findEntity(Class object, Integer id) {
+    public static Object findEntity(Class<?> object, Integer id) {
         if (object == null) {
             throw new IllegalArgumentException("El parámetro object can not be NULL");
         }
@@ -263,13 +280,16 @@ public abstract class DAO implements Runnable {
     }
 
     /**
-     * Retorna una collections de objetos
-     * object is renamed to o (<code> SELECT o FROM object o</code>).
+     * Retorna una collections de objetos object is renamed to o (
+     * <code> SELECT o FROM object o</code>).
+     *
      * @param object Class type of the object to find and return.
-     * @param conditions a String with filters to obtain the collections entities.
-     * Example <code>conditions = "o.id > 777 AND o.aField != null"</code>, and this will be
-     * contated to <code>"WHERE " + conditions</code>.
-     * Must be null is there is no conditions.
+     * @param conditions a String with filters to obtain the collections
+     * entities. Example
+     * <code>conditions = "o.id > 777 AND o.aField != null"</code>, and this
+     * will be contated to
+     * <code>"WHERE " + conditions</code>. Must be null is there is no
+     * conditions.
      * @return a List of object
      */
     static List<?> findEntities(Class object, String conditions) {
@@ -282,8 +302,7 @@ public abstract class DAO implements Runnable {
 
     /**
      * Crea todos los datos que el sistema necesita inicialmente:
-     * <br>*Contribuyentes
-     * <br>*Usuario: admin pws: adminadmin (permisos full)
+     * <br>*Contribuyentes <br>*Usuario: admin pws: adminadmin (permisos full)
      * <br>*ya vemos que mas..
      */
     public static void setDefaultData() throws Exception {
@@ -426,9 +445,10 @@ public abstract class DAO implements Runnable {
 
     /**
      * Ver {@link EntityManager#createQuery(java.lang.String)}
+     *
      * @param query a Java Persistence query string
      * @param withRefreshQueryHint
-     * @return 
+     * @return
      */
     static Query createQuery(String query, boolean withRefreshQueryHint) {
         EntityManager em = getEntityManager();
@@ -438,7 +458,7 @@ public abstract class DAO implements Runnable {
         }
         return q;
     }
-    
+
     static Query createNativeQuery(String query, Class aClass, boolean withRefreshQueryHint) {
         EntityManager em = getEntityManager();
         Query q = em.createNativeQuery(query, aClass);
@@ -447,10 +467,10 @@ public abstract class DAO implements Runnable {
         }
         return q;
     }
-    
+
     public <T extends Object> List<T> get(T object, String condicion) {
         List<T> l = new ArrayList<T>();
         return l;
-        
+
     }
 }
