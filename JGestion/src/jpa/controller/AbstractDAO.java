@@ -2,6 +2,7 @@ package jpa.controller;
 
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.EntityManager;
@@ -129,7 +130,7 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
      * clara la esta Javadoc...)
      *
      * @param sqlString a SELECT native SQL statement.
-     * @param hints The hints elements
+     * @param hints optional hints elements
      * @return a list...
      */
     @SuppressWarnings("unchecked")
@@ -139,5 +140,15 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
             query.setHint(entry.getKey(), entry.getValue());
         }
         return query.getResultList();
+    }
+
+    /**
+     *
+     * @param sqlString a SELECT native SQL statement.
+     * @return
+     * @see AbstractDAO#findByNativeQuery(java.lang.String, java.util.Map)
+     */
+    public List<T> findByNativeQuery(String sqlString) {
+        return findByNativeQuery(sqlString, new HashMap<String, Object>(0));
     }
 }

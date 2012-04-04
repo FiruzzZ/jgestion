@@ -223,8 +223,8 @@ public class OrdenJpaController {
               new int[]{1, 80, 150, 20});
       UTIL.hideColumnTable(jdFactura.getjTable1(), 0);
       if (visible) {
-         UTIL.loadComboBox(jdFactura.getCbSucursal(), new SucursalJpaController().findSucursalEntities(), false);
-         UTIL.loadComboBox(jdFactura.getCbProductos(), new ProductoJpaController().findProductoToCombo(), false);
+         UTIL.loadComboBox(jdFactura.getCbSucursal(), new UsuarioHelper().getSucursales(), false);
+         UTIL.loadComboBox(jdFactura.getCbProductos(), new ProductoController().findProductoToCombo(), false);
          // <editor-fold defaultstate="collapsed" desc="ajuste de foco, problemas de GUI">
          jdFactura.getTfCantidad().addFocusListener(new FocusAdapter() {
 
@@ -246,7 +246,7 @@ public class OrdenJpaController {
             @Override
             public void focusLost(FocusEvent e) {
                try {
-                  producto_selected = new ProductoJpaController().findProductoByCodigo(((Producto) jdFactura.getCbProductos().getSelectedItem()).getCodigo());
+                  producto_selected = new ProductoController().findProductoByCodigo(((Producto) jdFactura.getCbProductos().getSelectedItem()).getCodigo());
                   setProducto(producto_selected);
                   //problemas de GUI design, sino el foco se va a la mierda..
                   jdFactura.getTfCantidad().requestFocus();
@@ -263,7 +263,7 @@ public class OrdenJpaController {
             public void keyReleased(KeyEvent e) {
                if (e.getKeyCode() == 10) {
                   try {
-                     producto_selected = new ProductoJpaController().findProductoByCodigo(((Producto) jdFactura.getCbProductos().getSelectedItem()).getCodigo());
+                     producto_selected = new ProductoController().findProductoByCodigo(((Producto) jdFactura.getCbProductos().getSelectedItem()).getCodigo());
                      setProducto(producto_selected);
                      if (producto_selected != null) {
                         jdFactura.setTfProductoPrecioActual(new StockJpaController().getStockGlobal(producto_selected.getId()).toString());
@@ -310,7 +310,7 @@ public class OrdenJpaController {
             @Override
             public void keyReleased(KeyEvent e) {
                if (e.getKeyCode() == 10) {
-                  producto_selected = new ProductoJpaController().findProductoByCodigo(jdFactura.getTfProductoCodigo().getText().trim());
+                  producto_selected = new ProductoController().findProductoByCodigo(jdFactura.getTfProductoCodigo().getText().trim());
                   setProducto(producto_selected);
                }
             }
@@ -406,7 +406,7 @@ public class OrdenJpaController {
    public void initBuscador(JFrame owner) throws MessageException {
       UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.ORDENES_IO);
       panel = new PanelBuscadorOrdenes();
-      UTIL.loadComboBox(panel.getCdSucursales(), new SucursalJpaController().findSucursalEntities(), "<Todas>");
+      UTIL.loadComboBox(panel.getCdSucursales(), new UsuarioHelper().getSucursales(), "<Todas>");
       buscador = new JDBuscador(owner, true, panel, "Buscador de " + CLASS_NAME);
       UTIL.getDefaultTableModel(buscador.getjTable1(),
               new String[]{"entity", "Nº", "Sucursal", "Fecha", "Usuario"},

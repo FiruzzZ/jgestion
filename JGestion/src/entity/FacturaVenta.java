@@ -59,10 +59,6 @@ public class FacturaVenta implements Serializable {
     @Basic(optional = false)
     @Column(name = "iva21", nullable = false)
     private double iva21;
-    @Column(name = "factura_cuarto")
-    private Short facturaCuarto;
-    @Column(name = "factura_octeto")
-    private Integer facturaOcteto;
     @Basic(optional = false)
     @Column(name = "movimiento_interno", nullable = false)
     private int movimientoInterno;
@@ -180,22 +176,6 @@ public class FacturaVenta implements Serializable {
 
     public void setIva21(double iva21) {
         this.iva21 = iva21;
-    }
-
-    public Short getFacturaCuarto() {
-        return facturaCuarto;
-    }
-
-    public void setFacturaCuarto(Short facturaCuarto) {
-        this.facturaCuarto = facturaCuarto;
-    }
-
-    public Integer getFacturaOcteto() {
-        return facturaOcteto;
-    }
-
-    public void setFacturaOcteto(Integer facturaOcteto) {
-        this.facturaOcteto = facturaOcteto;
     }
 
     public int getMovimientoInterno() {

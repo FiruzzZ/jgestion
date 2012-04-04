@@ -9,7 +9,7 @@ import controller.Contabilidad;
 import controller.DAO;
 import controller.FacturaVentaJpaController;
 import controller.ListaPreciosJpaController;
-import controller.ProductoJpaController;
+import controller.ProductoController;
 import controller.ProductosWebJpaController;
 import controller.exceptions.MessageException;
 import controller.exceptions.NonexistentEntityException;
@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
+import jpa.controller.ProductoJpaController;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -31,7 +32,7 @@ import org.apache.log4j.Logger;
  */
 public class JDCatalogoWEB extends javax.swing.JDialog {
 
-    private ProductoJpaController productroController;
+    private ProductoJpaController productoJpaController;
     private ProductosWebJpaController productosWebJpaController;
 
     /** Creates new form JDCatalogoWEB
@@ -40,7 +41,7 @@ public class JDCatalogoWEB extends javax.swing.JDialog {
     public JDCatalogoWEB(java.awt.Frame parent, boolean modal) throws SQLException {
         super(parent, modal);
         initComponents();
-        productroController = new ProductoJpaController();
+        productoJpaController = new ProductoJpaController();
         productosWebJpaController = new ProductosWebJpaController();
         UTIL.hideColumnTable(tableCatalogo, 0); //columna que contiene el productoID
         cargarTablaProductos(null);
@@ -370,7 +371,7 @@ public class JDCatalogoWEB extends javax.swing.JDialog {
         DefaultTableModel dtm = UTIL.getDtm(tableProductos);
         while (rs.next()) {
             Integer id = rs.getInt("id");
-            Producto producto = productroController.findProducto(id);
+            Producto producto = productoJpaController.find(id);
             Double precioFinal = getPrecioFinal(producto, listaPrecios);
             dtm.addRow(new Object[]{
                         producto.getCodigo(),

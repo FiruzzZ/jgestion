@@ -246,6 +246,7 @@ public class UnidadmedidaJpaController implements ActionListener, MouseListener 
             return;
         }// </editor-fold>
         abm = new JDMiniABM(frame, modal);
+        abm.hideBtnLock();
         abm.hideFieldCodigo();
         abm.hideFieldExtra();
         abm.setTitle("ABM - Unidades de medida");

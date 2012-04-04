@@ -26,6 +26,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import jgestion.JGestionUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -192,7 +193,7 @@ public class CtacteClienteJpaController implements ActionListener {
         return listaCtaCteCliente;
     }
 
-    CtacteCliente findCtacteClienteByFactura(Integer id) {
+    public CtacteCliente findCtacteClienteByFactura(Integer id) {
         return (CtacteCliente) DAO.getEntityManager().createQuery("SELECT o FROM " + CLASS_NAME + " o "
                 + " where o.factura.id = " + id).getSingleResult();
     }
@@ -306,8 +307,8 @@ public class CtacteClienteJpaController implements ActionListener {
         totalDebe = 0.0;
         totalHaber = 0.0;
 
-        String query = "SELECT ccc.* "
-                + " FROM ctacte_cliente ccc, cliente c, factura_venta fv "
+        String query = "SELECT ccc.*, s.puntoventa "
+                + " FROM ctacte_cliente ccc, cliente c, factura_venta fv JOIN sucursal ON (fv.sucursal = sucursal.id) "
                 + " WHERE ccc.factura = fv.id "
                 + " AND fv.cliente = c.id ";
         try {
@@ -352,7 +353,7 @@ public class CtacteClienteJpaController implements ActionListener {
 
             dtm.addRow(new Object[]{
                         ctaCte.getId(), // <--------- No es visible desde la GUI
-                        factura.getTipo() + UTIL.AGREGAR_CEROS(factura.getNumero(), 12),
+                        factura.getTipo() + JGestionUtils.getNumeracion(factura, true),
                         UTIL.DATE_FORMAT.format(factura.getFechaVenta()),
                         UTIL.DATE_FORMAT.format(UTIL.customDateByDays(factura.getFechaVenta(), ctaCte.getDias())),
                         UTIL.PRECIO_CON_PUNTO.format(ctaCte.getImporte()),
@@ -378,10 +379,11 @@ public class CtacteClienteJpaController implements ActionListener {
 
     /**
      * Carga el combo con los Recibo's que tenga esta CtaCteCliente.
+     *
      * @param ctacteCliente
      */
     private void cargarComboBoxRecibosDeCtaCte(CtacteCliente ctacteCliente) {
-        List<Recibo> recibosList = new ReciboJpaController().findRecibosByFactura(ctacteCliente.getFactura());
+        List<Recibo> recibosList = new ReciboController().findRecibosByFactura(ctacteCliente.getFactura());
         UTIL.loadComboBox(resumenCtaCtes.getCbReRes(), recibosList, false);
         setDatosReciboSelected();
     }
@@ -419,6 +421,7 @@ public class CtacteClienteJpaController implements ActionListener {
     /**
      * Calcula el total del DEBE, HABER y SALDO ACUMULATIVO de la Cta. cte. del
      * Cliente anterior a la fecha desde especificada en el Buscador.
+     *
      * @param query
      */
     private void setResumenHistorial(String query) {
@@ -433,7 +436,8 @@ public class CtacteClienteJpaController implements ActionListener {
 
     /**
      * Inicia una UI de busqueda y chequeo de vencimientos de {@link CtacteCliente}
-     *  y {@link CtacteProveedor}
+     * y {@link CtacteProveedor}
+     *
      * @param owner el papi de la ventana
      */
     public void initCheckVencimientos(JFrame owner) {

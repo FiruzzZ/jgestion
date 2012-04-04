@@ -184,10 +184,10 @@ public class ClienteJpaController implements ActionListener {
     }
 
     /**
-     * 
-     * @param isEditing 
+     *
+     * @param isEditing
      * @param e se posicionará a la ventana en relación a este, can be null.
-     * @throws MessageException 
+     * @throws MessageException
      */
     private void initABM(boolean isEditing, ActionEvent e) throws MessageException {
         UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.ABM_CLIENTES);
@@ -303,11 +303,14 @@ public class ClienteJpaController implements ActionListener {
         }
 
         if (panelABM.getCbProvincias().getSelectedIndex() < 1) {
-            throw new MessageException("Debe especificar una Provincia y Departamento");
+            throw new MessageException("Debe especificar una Provincia, Departamento y Municipio");
         }
 
         if (panelABM.getCbDepartamentos().getSelectedIndex() < 1) {
             throw new MessageException("Debe especificar un Departamento");
+        }
+        if (panelABM.getCbMunicipios().getSelectedIndex() < 1) {
+            throw new MessageException("Debe especificar un Municipio");
         }
 
         try {
@@ -351,22 +354,30 @@ public class ClienteJpaController implements ActionListener {
 
         if (panelABM.getCbTipoDocumento().getSelectedIndex() == 0) {
             if (panelABM.getTfNumDocumento().length() < 1) {
-                throw new MessageException("Número de DNI no válido, debe completar el campo");
+                throw new MessageException("Número de DNI no válido");
             }
         } else {
             try {
+                Long.valueOf(panelABM.getTfNumDocumento());
                 UTIL.VALIDAR_CUIL(panelABM.getTfNumDocumento());
-            } catch (Exception ex) {
-                throw new MessageException(ex.getMessage());
+                panelABM.setIconoValidadorCUIT(true, "CUIT válido");
+            } catch (NumberFormatException ex) {
+                throw new MessageException("La CUIT/CUIL no es válida (ingrese solo números)");
+            } catch (IllegalArgumentException ex) {
+                panelABM.setIconoValidadorCUIT(false, ex.getMessage());
             }
         }// </editor-fold>
 
+        Provincia provincia = (Provincia) panelABM.getSelectedProvincia();
+        Departamento departamento = (Departamento) panelABM.getSelectedDepartamento();
+        Municipio municipio = (Municipio) panelABM.getSelectedMunicipio();
         // NOT NULLABLE's
         o.setCodigo(panelABM.getTfCodigo());
         o.setNombre(panelABM.getTfNombre().toUpperCase());
         o.setDireccion(panelABM.getTfDireccion());
-        o.setProvincia((Provincia) panelABM.getSelectedProvincia());
-        o.setDepartamento((Departamento) panelABM.getSelectedDepartamento());
+        o.setProvincia(provincia);
+        o.setDepartamento(departamento);
+        o.setMunicipio(municipio);
         o.setContribuyente((Contribuyente) panelABM.getSelectedCondicIVA());
         o.setTipodoc(panelABM.getCbTipoDocumento().getSelectedIndex() + 1);// DNI = 1 , CUIT = 2
         o.setNumDoc(new Long(panelABM.getTfNumDocumento()));
@@ -375,10 +386,6 @@ public class ClienteJpaController implements ActionListener {
         o.setEstado(1);
 
         //NULLABLE's
-        if (panelABM.getCbMunicipios().getSelectedIndex() > 0) {
-            o.setMunicipio((Municipio) panelABM.getSelectedMunicipio());
-        }
-
         if (panelABM.getTfContacto().length() > 0) {
             o.setContacto(panelABM.getTfContacto());
         }
@@ -415,10 +422,12 @@ public class ClienteJpaController implements ActionListener {
     }
 
     /**
-     * Check the constraints related to the Entity like UNIQUE's codigo, nombre...
+     * Check the constraints related to the Entity like UNIQUE's codigo,
+     * nombre...
+     *
      * @param object
      * @throws MessageException end-user explanation message.
-     * @throws Exception 
+     * @throws Exception
      */
     private void checkConstraints(Cliente object) throws MessageException {
         String idQuery = "";
@@ -529,16 +538,26 @@ public class ClienteJpaController implements ActionListener {
                 panelABM = null;
                 abm = null;
                 EL_OBJECT = null;
-            } else if (boton.getName().equalsIgnoreCase("municipio")) {
-                new MunicipioJpaController().initContenedor(null, true);
-                UTIL.loadComboBox(panelABM.getCbProvincias(), new ProvinciaJpaController().findProvinciaEntities(), true);
-                UTIL.loadComboBox(panelABM.getCbDepartamentos(), null, true);
-                UTIL.loadComboBox(panelABM.getCbMunicipios(), null, true);
-            } else if (boton.getName().equalsIgnoreCase("departamento")) {
+            } else if (boton.equals(panelABM.getbDepartamentos())) {
                 new DepartamentoJpaController().initContenedor(null, true);
-                UTIL.loadComboBox(panelABM.getCbProvincias(), new ProvinciaJpaController().findProvinciaEntities(), true);
-                UTIL.loadComboBox(panelABM.getCbDepartamentos(), null, true);
-                UTIL.loadComboBox(panelABM.getCbMunicipios(), null, true);
+                //cuando cierra el abm
+                if (panelABM.getCbProvincias().getSelectedIndex() > 0) {
+                    UTIL.loadComboBox(panelABM.getCbDepartamentos(),
+                            new DepartamentoJpaController().findDeptosFromProvincia(
+                            ((Provincia) panelABM.getCbProvincias().getSelectedItem()).getId()), true);
+                } else {
+                    UTIL.loadComboBox(panelABM.getCbDepartamentos(), null, true);
+                }
+
+            } else if (boton.equals(panelABM.getbMunicipios())) {
+                new MunicipioJpaController().initContenedor(null, true);
+                if (panelABM.getCbDepartamentos().getSelectedIndex() > 0) {
+                    UTIL.loadComboBox(panelABM.getCbMunicipios(),
+                            new MunicipioJpaController().findMunicipiosFromDepto(
+                            ((Departamento) panelABM.getCbDepartamentos().getSelectedItem()).getId()), true);
+                } else {
+                    UTIL.loadComboBox(panelABM.getCbMunicipios(), null, true);
+                }
             }
             return;
         }// </editor-fold>
@@ -564,6 +583,7 @@ public class ClienteJpaController implements ActionListener {
 
     /**
      * Arma la query, para filtrar filas en la tabla del JDContenedor
+     *
      * @param filtro atributo "nombre" del objeto; ej.: o.nombre ILIKE 'filtro%'
      */
     private void armarQuery(String filtro) {

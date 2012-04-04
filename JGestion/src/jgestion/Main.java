@@ -23,15 +23,13 @@ import org.eclipse.persistence.exceptions.DatabaseException;
  * @author Administrador
  */
 public class Main {
+
     private static final String propertiesFile = "cfg.ini";
     private static final Logger log = Logger.getLogger(Main.class);
     private static boolean OCURRIO_ERROR = false;
     public static ResourceBundle resourceBundle = ResourceBundle.getBundle("resources");
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
+    private Main() {
         SplashScreen.getSplashScreen();
         PropertyConfigurator.configure("log4j.properties");
         threadSafe();
@@ -55,13 +53,16 @@ public class Main {
                     }
                 });
             }
+        } catch (IllegalArgumentException ex ) {
+            log.trace(ex.getLocalizedMessage(), ex);
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Ojo!", JOptionPane.WARNING_MESSAGE);
         } catch (FileNotFoundException ex) {
             log.fatal("No se encontro el archivo cfg.ini", ex);
-            JOptionPane.showMessageDialog(null, "No se encontró el archivo de configuración cfg.ini\n"+ ex.getLocalizedMessage(), "Error", 0);
+            JOptionPane.showMessageDialog(null, "No se encontró el archivo de configuración cfg.ini\n" + ex.getLocalizedMessage(), "Error", 0);
         } catch (IOException ex) {
             log.fatal("IOExpection con archivo cfg.ini", ex);
             java.util.logging.Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(null, "Error intentando acceder al archivo de configuración cfg.ini\n"+ ex.getLocalizedMessage(), "Error", 0);
+            JOptionPane.showMessageDialog(null, "Error intentando acceder al archivo de configuración cfg.ini\n" + ex.getLocalizedMessage(), "Error", 0);
         } catch (MessageException ex) {
             log.fatal("MessageException ", ex);
             JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", 2);
@@ -85,9 +86,10 @@ public class Main {
                 System.exit(1);
             }
         }
-        // Si por ejemplo se produciera una excepción de este tipo
-        // se ejecutará el thread antes de que la máquina virtual finalice:
-        // throw new RuntimeException();
+    }
+
+    public static void main(String[] args) {
+        new Main();
     }
 
     private static void threadSafe() {
@@ -100,8 +102,5 @@ public class Main {
             }
         };
         Runtime.getRuntime().addShutdownHook(shutdownThread);
-    }
-
-    private Main() {
     }
 }

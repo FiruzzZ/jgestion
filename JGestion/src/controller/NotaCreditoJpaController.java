@@ -29,6 +29,7 @@ import java.util.Date;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import jpa.controller.ProductoJpaController;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -131,10 +132,10 @@ public class NotaCreditoJpaController {
                     //deshabilita botón para no darle fruta
                     facturaVentaController.getContenedor().getBtnAceptar().setEnabled(false);
                     if (!facturaVentaController.getContenedor().isViewMode()) {
-                        NotaCredito notaCreditoToPersist = setAndPersist();
+                        NotaCredito notaCreditoToPersist = setEntity();
                         create(notaCreditoToPersist);
                         reporte(notaCreditoToPersist);
-                        facturaVentaController.setNumeroFactura(getNextNumeroNotaCredito());
+                        facturaVentaController.setNumeroFactura(notaCreditoToPersist.getSucursal(), getNextNumeroNotaCredito(notaCreditoToPersist.getSucursal()));
                         facturaVentaController.borrarDetalles();
                     } else {
                         if (JOptionPane.YES_OPTION == JOptionPane.showOptionDialog(jdFacturaVenta, "¿Desea reimprimir la Nota de crédito?", "Re imprimir", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null)) {
@@ -152,27 +153,34 @@ public class NotaCreditoJpaController {
             }
         });
         if (loadDefaultData) {
-            facturaVentaController.setNumeroFactura(getNextNumeroNotaCredito());
+            try {
+                Sucursal s = (Sucursal) facturaVentaController.getContenedor().getCbSucursal().getSelectedItem();
+                facturaVentaController.setNumeroFactura(s, getNextNumeroNotaCredito(s));
+            } catch (Exception e) {
+                throw new MessageException("Para realizar una Nota de Crédito debe tener habilitada al menos una Sucursal");
+            }
         }
         facturaVentaController.getContenedor().setUIToNotaCredito();
         jdFacturaVenta = facturaVentaController.getContenedor();
         jdFacturaVenta.setVisible(setVisible);
     }
 
-    private Long getNextNumeroNotaCredito() {
+    private Long getNextNumeroNotaCredito(Sucursal s) {
         EntityManager em = getEntityManager();
-        Long nextRemitoNumero = 100000001L;
+        Long nextRemitoNumero = 1L;
         try {
-            nextRemitoNumero = 1 + (Long) em.createQuery("SELECT MAX(o.numero) FROM " + CLASS_NAME + " o").getSingleResult();
+            nextRemitoNumero = 1 + (Long) em.createQuery("SELECT MAX(o.numero)"
+                    + " FROM " + CLASS_NAME + " o"
+                    + " WHERE o.sucursal.id= " + s.getId()).getSingleResult();
         } catch (NullPointerException ex) {
-            // primero!! 0001-00000001
+            Logger.getLogger(this.getClass()).trace("pinto la 1ra " + this.getClass() + ", " + s.getNombre());
         } finally {
             em.close();
         }
         return nextRemitoNumero;
     }
 
-    private NotaCredito setAndPersist() throws MessageException, Exception {
+    private NotaCredito setEntity() throws MessageException, Exception {
         if (jdFacturaVenta.getDcFechaFactura() == null) {
             throw new MessageException("Fecha de factura no válida");
         }
@@ -200,7 +208,7 @@ public class NotaCreditoJpaController {
         }
 
         NotaCredito newNotaCredito = new NotaCredito();
-        newNotaCredito.setNumero(Long.valueOf(jdFacturaVenta.getTfFacturaCuarto() + jdFacturaVenta.getTfFacturaOcteto()));
+        newNotaCredito.setNumero(Long.valueOf(jdFacturaVenta.getTfFacturaOcteto()));
         newNotaCredito.setFechaNotaCredito(fechaNotaCredito);
         newNotaCredito.setImporte(Double.valueOf(jdFacturaVenta.getTfTotal()));
         newNotaCredito.setGravado(Double.valueOf(jdFacturaVenta.getTfGravado()));
@@ -212,12 +220,12 @@ public class NotaCreditoJpaController {
         newNotaCredito.setObservacion(observacion);
         newNotaCredito.setDetalleNotaCreditoCollection(new ArrayList<DetalleNotaCredito>(dtm.getRowCount()));
         DetalleNotaCredito detalleVenta;
-        ProductoJpaController productoController = new ProductoJpaController();
+        ProductoJpaController productoJpaController = new ProductoJpaController();
         for (int i = 0; i < dtm.getRowCount(); i++) {
             detalleVenta = new DetalleNotaCredito();
             detalleVenta.setCantidad(Integer.valueOf(dtm.getValueAt(i, 3).toString()));
             detalleVenta.setPrecioUnitario(Double.valueOf(dtm.getValueAt(i, 4).toString()));
-            detalleVenta.setProducto(productoController.findProducto((Integer) dtm.getValueAt(i, 9)));
+            detalleVenta.setProducto(productoJpaController.find((Integer) dtm.getValueAt(i, 9)));
             newNotaCredito.getDetalleNotaCreditoCollection().add(detalleVenta);
         }
         return newNotaCredito;
@@ -240,7 +248,7 @@ public class NotaCreditoJpaController {
             }
         });
         UTIL.loadComboBox(buscador.getCbClieProv(), new ClienteJpaController().findEntities(), true);
-        UTIL.loadComboBox(buscador.getCbSucursal(), new SucursalJpaController().findSucursalEntities(), true);
+        UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getSucursales(), true);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
                 new String[]{"NotaCreditoID", "Nº " + CLASS_NAME, "Cliente", "Importe", "Acreditado", "Fecha", "Sucursal", "Usuario", "Fecha (Sistema)"},
@@ -276,8 +284,9 @@ public class NotaCreditoJpaController {
 
     /**
      * Arma la consulta según los filtros de la UI {@link JDBuscadorReRe}
+     *
      * @return String SQL native query
-     * @throws MessageException 
+     * @throws MessageException
      */
     private String armarQuery() throws MessageException {
         StringBuilder query = new StringBuilder("SELECT o.* FROM nota_credito o"
@@ -301,6 +310,16 @@ public class NotaCreditoJpaController {
         }
         if (buscador.getCbSucursal().getSelectedIndex() > 0) {
             query.append(" AND o.sucursal = ").append(((Sucursal) buscador.getCbSucursal().getSelectedItem()).getId());
+        } else {
+            query.append(" AND (");
+            for (int i = 1; i < buscador.getCbSucursal().getItemCount(); i++) {
+                Sucursal sucursal = (Sucursal) buscador.getCbSucursal().getItemAt(i);
+                query.append(" o.sucursal=").append(sucursal.getId());
+                if ((i + 1) < buscador.getCbSucursal().getItemCount()) {
+                    query.append(" OR ");
+                }
+            }
+            query.append(")");
         }
         if (buscador.getCbClieProv().getSelectedIndex() > 0) {
             query.append(" AND o.cliente = ").append(((Cliente) buscador.getCbClieProv().getSelectedItem()).getId());
@@ -425,6 +444,7 @@ public class NotaCreditoJpaController {
 
     /**
      * Find entities of {@link NotaCredito#cliente} = cliente
+     *
      * @param cliente
      * @return
      * @throws DatabaseErrorException
@@ -447,10 +467,14 @@ public class NotaCreditoJpaController {
 
     /**
      * Resta crédito de las {@link NotaCredito} del {@link Cliente}
-     * @param recibo El cual en su detalle ({@link Recibo#detalleReciboList}) contiene las facturas que fueron acreditadas
+     *
+     * @param recibo El cual en su detalle ({@link Recibo#detalleReciboList})
+     * contiene las facturas que fueron acreditadas
      * @param cliente Al cual se le van desacreditar
-     * @param montoDesacreditar monto que se le va a desacreditar. Si es &lt=0, no se hace nada.
-     * @return la diferencia entre (montoDesacreditar - lo que se pudo desacreditar)
+     * @param montoDesacreditar monto que se le va a desacreditar. Si es &lt=0,
+     * no se hace nada.
+     * @return la diferencia entre (montoDesacreditar - lo que se pudo
+     * desacreditar)
      */
     double desacreditar(Recibo recibo, Cliente cliente, double montoDesacreditar) {
         List<NotaCredito> notaCreditoList = findNotaCreditoAcreditables(cliente);
@@ -524,10 +548,12 @@ public class NotaCreditoJpaController {
      * Acredita el monto de {@link DetalleAcreditacion} a la {@link NotaCredito}
      * Este método se utiliza cuando se anula un {@link Recibo} o
      * {@link FacturaVenta#formaPago} == {@link Valores.FormaPago#CTA_CTE}
-     * @param detalle {@link DetalleAcreditacion} que fue anulado.
-     * @return instancia de {@link NotaCredito} que fue modificada (acreditada nuevamente).
+     *
+     * @param anular {@link DetalleAcreditacion} que fue anulado.
+     * @return instancia de {@link NotaCredito} que fue modificada (acreditada
+     * nuevamente).
      */
-    NotaCredito acreditar(DetalleAcreditacion anular) {
+    public NotaCredito acreditar(DetalleAcreditacion anular) {
         if (!anular.isAnulado()) {
             throw new IllegalArgumentException(DetalleAcreditacion.class + " must be anulado == TRUE");
         }
@@ -538,8 +564,9 @@ public class NotaCreditoJpaController {
     }
 
     /**
-     * NotaCredito cuyo...  
+     * NotaCredito cuyo...
      *  {@link NotaCredito#anulada} == false && {@link NotaCredito#importe} &lt> {@link NotaCredito#desacreditado}
+     *
      * @param cliente Del cual se quieren las NotaCredito
      * @return chocolate..
      */

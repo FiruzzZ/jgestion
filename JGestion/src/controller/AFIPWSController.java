@@ -280,9 +280,9 @@ public class AFIPWSController {
         FECAECabRequest fECAECabRequest = new FECAECabRequest();
 
         fECAECabRequest.setCbteTipo(cbteTipo.getId());
-        fECAECabRequest.setPtoVta(fv.getFacturaCuarto());
+        fECAECabRequest.setPtoVta(fv.getSucursal().getPuntoVenta().intValue());
         int ultimoCompActualizado;
-        ultimoCompActualizado = aFIPClient.getUltimoCompActualizado(fv.getFacturaCuarto(), new CbteTipo(fECAECabRequest.getCbteTipo()));
+        ultimoCompActualizado = aFIPClient.getUltimoCompActualizado(fv.getSucursal().getPuntoVenta().intValue(), new CbteTipo(fECAECabRequest.getCbteTipo()));
 
 
 
@@ -368,8 +368,8 @@ public class AFIPWSController {
         detalle.setConcepto(conceptoTipo.getId());
         detalle.setDocTipo(docTipo.getId());
         detalle.setDocNro(fv.getCliente().getNumDoc());
-        detalle.setCbteDesde(fv.getFacturaOcteto());
-        detalle.setCbteHasta(fv.getFacturaOcteto());
+        detalle.setCbteDesde(fv.getNumero());
+        detalle.setCbteHasta(fv.getNumero());
         detalle.setCbteFch(getXMLDate(fv.getFechaVenta()));
         detalle.setImpTotal(impTotal);
         detalle.setImpTotConc(impTotalConcepto);

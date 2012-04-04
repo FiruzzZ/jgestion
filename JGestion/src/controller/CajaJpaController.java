@@ -21,6 +21,7 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import jpa.controller.CajaMovimientosJpaController;
 import org.apache.log4j.Logger;
 
 /**
@@ -37,7 +38,7 @@ public class CajaJpaController implements ActionListener {
             + "\nMovimientos entre Cajas, Movimientos varios, cobro Cheques) en efectivo."
             + "\nLa creación de una Caja implica la apertura de la misma (con su primer detalle indicadolo), ningún usuario"
             + "\nincluyendo quien la creó tendrá permiso de acceso a esta. Para tener acceso debe ir a:"
-            + "\nMenú -> Usuarios > ABM Usuarios > Seleccionar el usuario > Modificar > y seleccionar en la tabla inferior la/s Caja/s";
+            + "\nMenú -> Usuarios -> ABM Usuarios -> Seleccionar el usuario -> Modificar -> y seleccionar en la tabla inferior la/s Caja/s";
 
     // <editor-fold defaultstate="collapsed" desc="CRUD..">
     public EntityManager getEntityManager() {
@@ -113,7 +114,7 @@ public class CajaJpaController implements ActionListener {
         if (caja.getId() == null) {
             create(caja);
             //se crea y hace una apertura implicitamente de cajaMovimiento
-            new CajaMovimientosJpaController().nueva(caja);
+            new CajaMovimientosController().nueva(caja);
         } else {
             edit(caja);
         }

@@ -26,6 +26,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import jgestion.JGestionUtils;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -132,7 +133,7 @@ public class Contabilidad {
     }
 
     /**
-     * Create SQL Statement to retrieve entities {@link DetalleCajaMovimientos#tipo} != 7 (aperturas de caja)
+     * Create Native SQL Statement to retrieve entities {@link DetalleCajaMovimientos#tipo} != 7 (aperturas de caja)
      * @return a String with SQL
      */
     private String armarQueryBalance() {
@@ -378,7 +379,7 @@ public class Contabilidad {
             }
             dtm.addRow(new Object[]{
                         dateFormat.format(factura.getFechaVenta()),
-                        factura.getTipo() + factura.toString() + (factura.getAnulada() ? "(ANULADA)" : ""),
+                        factura.getTipo() + JGestionUtils.getNumeracion(factura, false) + (factura.getAnulada() ? "(ANULADA)" : ""),
                         UTIL.DECIMAL_FORMAT.format(factura.getImporte()),
                         efectivo != null ? efectivo : "------",
                         cccpc != null ? UTIL.DECIMAL_FORMAT.format(cccpc) : "------",

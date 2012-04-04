@@ -11,135 +11,145 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "usuario", uniqueConstraints = {
-   @UniqueConstraint(columnNames = {"nick"})})
+    @UniqueConstraint(columnNames = {"nick"})})
 @NamedQueries({
-   @NamedQuery(name = "Usuario.findAll", query = "SELECT u FROM Usuario u ORDER BY u.nick"),
-   @NamedQuery(name = "Usuario.findById", query = "SELECT u FROM Usuario u WHERE u.id = :id"),
-   @NamedQuery(name = "Usuario.findByNick", query = "SELECT u FROM Usuario u WHERE u.nick = :nick"),
-   @NamedQuery(name = "Usuario.findByEstado", query = "SELECT u FROM Usuario u WHERE u.estado = :estado")
+    @NamedQuery(name = "Usuario.findAll", query = "SELECT u FROM Usuario u ORDER BY u.nick"),
+    @NamedQuery(name = "Usuario.findById", query = "SELECT u FROM Usuario u WHERE u.id = :id"),
+    @NamedQuery(name = "Usuario.findByNick", query = "SELECT u FROM Usuario u WHERE u.nick = :nick"),
+    @NamedQuery(name = "Usuario.findByEstado", query = "SELECT u FROM Usuario u WHERE u.estado = :estado")
 })
 public class Usuario implements Serializable {
 
-   private static final long serialVersionUID = 1L;
-   @Id
-   @Basic(optional = false)
-   @Column(name = "id", nullable = false)
-   @GeneratedValue(strategy = GenerationType.IDENTITY)
-   private Integer id;
-   @Basic(optional = false)
-   @Column(name = "nick", nullable = false, length = 50)
-   private String nick;
-   @Basic(optional = false)
-   @Column(name = "pass", nullable = false, length = 50)
-   private String pass;
-   @Basic(optional = false)
-   @Column(name = "estado", nullable = false)
-   private int estado;
-   @Basic(optional = false)
-   @Column(name = "fechaalta", nullable = false, insertable = false, updatable = false, columnDefinition = "timestamp with time zone NOT NULL DEFAULT now()")
-   @Temporal(TemporalType.TIMESTAMP)
-   private Date fechaalta;
-   @JoinColumn(name = "permisos", referencedColumnName = "id")
-   @OneToOne
-   private Permisos permisos;
-   @OneToMany(mappedBy = "usuario")
-   private List<Stock> stockList;
-   @OneToMany(cascade = CascadeType.ALL, mappedBy = "usuario")
-   private List<PermisosCaja> permisosCajaList;
+    private static final long serialVersionUID = 1L;
+    @Id
+    @Basic(optional = false)
+    @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+    @Basic(optional = false)
+    @Column(name = "nick", nullable = false, length = 50)
+    private String nick;
+    @Basic(optional = false)
+    @Column(name = "pass", nullable = false, length = 50)
+    private String pass;
+    @Basic(optional = false)
+    @Column(name = "estado", nullable = false)
+    private int estado;
+    @Basic(optional = false)
+    @Column(name = "fechaalta", nullable = false, insertable = false, updatable = false, columnDefinition = "timestamp with time zone NOT NULL DEFAULT now()")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fechaalta;
+    @JoinColumn(name = "permisos", referencedColumnName = "id")
+    @OneToOne
+    private Permisos permisos;
+    @OneToMany(mappedBy = "usuario")
+    private List<Stock> stockList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "usuario")
+    private List<PermisosCaja> permisosCajaList;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PermisosSucursal> sucursales;
 
-   public Usuario() {
-   }
+    public Usuario() {
+    }
 
-   public Usuario(Integer id) {
-      this.id = id;
-   }
+    public Usuario(Integer id) {
+        this.id = id;
+    }
 
-   public Integer getId() {
-      return id;
-   }
+    public Integer getId() {
+        return id;
+    }
 
-   public void setId(Integer id) {
-      this.id = id;
-   }
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-   public String getNick() {
-      return nick;
-   }
+    public String getNick() {
+        return nick;
+    }
 
-   public void setNick(String nick) {
-      this.nick = nick;
-   }
+    public void setNick(String nick) {
+        this.nick = nick;
+    }
 
-   public String getPass() {
-      return pass;
-   }
+    public String getPass() {
+        return pass;
+    }
 
-   public void setPass(String pass) {
-      this.pass = pass;
-   }
+    public void setPass(String pass) {
+        this.pass = pass;
+    }
 
-   public int getEstado() {
-      return estado;
-   }
+    public int getEstado() {
+        return estado;
+    }
 
-   public void setEstado(int estado) {
-      this.estado = estado;
-   }
+    public void setEstado(int estado) {
+        this.estado = estado;
+    }
 
-   public Date getFechaalta() {
-      return fechaalta;
-   }
+    public Date getFechaalta() {
+        return fechaalta;
+    }
 
-   public void setFechaalta(Date fechaalta) {
-      this.fechaalta = fechaalta;
-   }
+    public void setFechaalta(Date fechaalta) {
+        this.fechaalta = fechaalta;
+    }
 
-   public Permisos getPermisos() {
-      return permisos;
-   }
+    public Permisos getPermisos() {
+        return permisos;
+    }
 
-   public void setPermisos(Permisos permisos) {
-      this.permisos = permisos;
-   }
+    public void setPermisos(Permisos permisos) {
+        this.permisos = permisos;
+    }
 
-   public List<Stock> getStockList() {
-      return stockList;
-   }
+    public List<Stock> getStockList() {
+        return stockList;
+    }
 
-   public void setStockList(List<Stock> stockList) {
-      this.stockList = stockList;
-   }
+    public void setStockList(List<Stock> stockList) {
+        this.stockList = stockList;
+    }
 
-   public List<PermisosCaja> getPermisosCajaList() {
-      return permisosCajaList;
-   }
+    public List<PermisosCaja> getPermisosCajaList() {
+        return permisosCajaList;
+    }
 
-   public void setPermisosCajaList(List<PermisosCaja> permisosCajaList) {
-      this.permisosCajaList = permisosCajaList;
-   }
+    public void setPermisosCajaList(List<PermisosCaja> permisosCajaList) {
+        this.permisosCajaList = permisosCajaList;
+    }
 
-   @Override
-   public int hashCode() {
-      int hash = 0;
-      hash += (id != null ? id.hashCode() : 0);
-      return hash;
-   }
+    public List<PermisosSucursal> getSucursales() {
+        return sucursales;
+    }
 
-   @Override
-   public boolean equals(Object object) {
-      // TODO: Warning - this method won't work in the case the id fields are not set
-      if (!(object instanceof Usuario)) {
-         return false;
-      }
-      Usuario other = (Usuario) object;
-      if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-         return false;
-      }
-      return true;
-   }
+    public void setSucursales(List<PermisosSucursal> sucursales) {
+        this.sucursales = sucursales;
+    }
 
-   @Override
-   public String toString() {
-      return this.getNick();
-   }
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Usuario)) {
+            return false;
+        }
+        Usuario other = (Usuario) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return this.getNick();
+    }
 }

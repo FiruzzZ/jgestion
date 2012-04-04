@@ -102,7 +102,7 @@ public class DetalleCajaMovimientosJpaController {
         }
     }
 
-    void edit(DetalleCajaMovimientos detalleCajaMovimientos) throws NonexistentEntityException, Exception {
+    void edit(DetalleCajaMovimientos detalleCajaMovimientos) {
         DAO.doMerge(detalleCajaMovimientos);
     }
 

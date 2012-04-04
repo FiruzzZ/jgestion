@@ -112,7 +112,7 @@ public class DetalleAcreditacionJpaController implements Serializable {
         }
     }
 
-    DetalleAcreditacion anular(DetalleRecibo detalle) {
+    public DetalleAcreditacion anular(DetalleRecibo detalle) {
         DetalleAcreditacion o;
         EntityManager em = getEntityManager();
         try {
