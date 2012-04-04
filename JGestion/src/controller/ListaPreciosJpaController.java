@@ -446,7 +446,7 @@ public class ListaPreciosJpaController implements ActionListener, MouseListener,
                contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
             } catch (Exception ex) {
                contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-               Logger.getLogger(SucursalJpaController.class.getName()).log(Level.SEVERE, null, ex);
+               Logger.getLogger(SucursalController.class.getName()).log(Level.SEVERE, null, ex);
             }
          } else if (boton.getName().equalsIgnoreCase("edit")) {
             try {
@@ -455,7 +455,7 @@ public class ListaPreciosJpaController implements ActionListener, MouseListener,
                contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
             } catch (Exception ex) {
                contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-               Logger.getLogger(SucursalJpaController.class.getName()).log(Level.SEVERE, null, ex);
+               Logger.getLogger(SucursalController.class.getName()).log(Level.SEVERE, null, ex);
             }
 
          } else if (boton.getName().equalsIgnoreCase("del")) {
@@ -470,10 +470,10 @@ public class ListaPreciosJpaController implements ActionListener, MouseListener,
                contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
             } catch (NonexistentEntityException ex) {
                contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-               Logger.getLogger(SucursalJpaController.class.getName()).log(Level.SEVERE, null, ex);
+               Logger.getLogger(SucursalController.class.getName()).log(Level.SEVERE, null, ex);
             } catch (Exception ex) {
                contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-               Logger.getLogger(SucursalJpaController.class.getName()).log(Level.SEVERE, null, ex);
+               Logger.getLogger(SucursalController.class.getName()).log(Level.SEVERE, null, ex);
             }
          } else if (boton.getName().equalsIgnoreCase("Print")) {
          } else if (boton.getName().equalsIgnoreCase("exit")) {
@@ -494,7 +494,7 @@ public class ListaPreciosJpaController implements ActionListener, MouseListener,
                abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
             } catch (Exception ex) {
                abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
-               Logger.getLogger(SucursalJpaController.class.getName()).log(Level.SEVERE, null, ex);
+               Logger.getLogger(SucursalController.class.getName()).log(Level.SEVERE, null, ex);
             }
          } else if (boton.getName().equalsIgnoreCase("cancelar")) {
             abm.dispose();

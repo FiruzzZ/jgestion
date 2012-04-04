@@ -24,16 +24,19 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.NoResultException;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
+import jpa.controller.CajaMovimientosJpaController;
+import jpa.controller.RemesaJpaController;
 import org.apache.log4j.Logger;
 
 /**
  *
  * @author Administrador
  */
-public class RemesaJpaController implements ActionListener, FocusListener {
+public class RemesaController implements ActionListener, FocusListener {
 
     private final String CLASS_NAME = Remesa.class.getSimpleName();
     private static final String[] COLUMN_NAMES = {"facturaID", "Factura", "Observación", "Entrega", "Acredidato"};
@@ -44,180 +47,16 @@ public class RemesaJpaController implements ActionListener, FocusListener {
     private Date selectedFechaReRe = null;
     private JDBuscadorReRe buscador;
     private Remesa rereSelected;
-    private static Logger LOGGER = Logger.getLogger(RemesaJpaController.class);
+    private static Logger LOGGER = Logger.getLogger(RemesaController.class);
+    private RemesaJpaController jpaController;
 
-    // <editor-fold defaultstate="collapsed" desc="CRUD...">
+    public RemesaController() {
+        jpaController = new RemesaJpaController();
+    }
+
     public EntityManager getEntityManager() {
         return DAO.getEntityManager();
     }
-
-    public void create(Remesa remesa) throws PreexistingEntityException, Exception {
-        if (remesa.getDetalleRemesaList() == null) {
-            remesa.setDetalleRemesaList(new ArrayList<DetalleRemesa>());
-        }
-
-        EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            remesa.setNumero(getNextNumeroRemesa());
-            List<DetalleRemesa> attachedDetalleRemesaList = new ArrayList<DetalleRemesa>();
-            for (DetalleRemesa detalleRemesaListDetalleRemesaToAttach : remesa.getDetalleRemesaList()) {
-                detalleRemesaListDetalleRemesaToAttach = em.merge(detalleRemesaListDetalleRemesaToAttach);
-                attachedDetalleRemesaList.add(detalleRemesaListDetalleRemesaToAttach);
-            }
-            remesa.setDetalleRemesaList(attachedDetalleRemesaList);
-            em.persist(remesa);
-            em.getTransaction().commit();
-        } catch (Exception ex) {
-            if (findRemesa(remesa.getId()) != null) {
-                throw new PreexistingEntityException("Remesa " + remesa + " already exists.", ex);
-            }
-            throw ex;
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
-    }
-
-    public void edit(Remesa remesa) throws IllegalOrphanException, NonexistentEntityException, Exception {
-        EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            Remesa persistentRemesa = em.find(Remesa.class, remesa.getNumero());
-            List<DetalleRemesa> detalleRemesaListOld = persistentRemesa.getDetalleRemesaList();
-            List<DetalleRemesa> detalleRemesaListNew = remesa.getDetalleRemesaList();
-            List<String> illegalOrphanMessages = null;
-            for (DetalleRemesa detalleRemesaListOldDetalleRemesa : detalleRemesaListOld) {
-                if (!detalleRemesaListNew.contains(detalleRemesaListOldDetalleRemesa)) {
-                    if (illegalOrphanMessages == null) {
-                        illegalOrphanMessages = new ArrayList<String>();
-                    }
-                    illegalOrphanMessages.add("You must retain DetalleRemesa " + detalleRemesaListOldDetalleRemesa + " since its remesa field is not nullable.");
-                }
-            }
-            if (illegalOrphanMessages != null) {
-                throw new IllegalOrphanException(illegalOrphanMessages);
-            }
-            List<DetalleRemesa> attachedDetalleRemesaListNew = new ArrayList<DetalleRemesa>();
-            for (DetalleRemesa detalleRemesaListNewDetalleRemesaToAttach : detalleRemesaListNew) {
-                detalleRemesaListNewDetalleRemesaToAttach = em.getReference(detalleRemesaListNewDetalleRemesaToAttach.getClass(), detalleRemesaListNewDetalleRemesaToAttach.getId());
-                attachedDetalleRemesaListNew.add(detalleRemesaListNewDetalleRemesaToAttach);
-            }
-            detalleRemesaListNew = attachedDetalleRemesaListNew;
-            remesa.setDetalleRemesaList(detalleRemesaListNew);
-            remesa = em.merge(remesa);
-            for (DetalleRemesa detalleRemesaListNewDetalleRemesa : detalleRemesaListNew) {
-                if (!detalleRemesaListOld.contains(detalleRemesaListNewDetalleRemesa)) {
-                    Remesa oldRemesaOfDetalleRemesaListNewDetalleRemesa = detalleRemesaListNewDetalleRemesa.getRemesa();
-                    detalleRemesaListNewDetalleRemesa.setRemesa(remesa);
-                    detalleRemesaListNewDetalleRemesa = em.merge(detalleRemesaListNewDetalleRemesa);
-                    if (oldRemesaOfDetalleRemesaListNewDetalleRemesa != null && !oldRemesaOfDetalleRemesaListNewDetalleRemesa.equals(remesa)) {
-                        oldRemesaOfDetalleRemesaListNewDetalleRemesa.getDetalleRemesaList().remove(detalleRemesaListNewDetalleRemesa);
-                        oldRemesaOfDetalleRemesaListNewDetalleRemesa = em.merge(oldRemesaOfDetalleRemesaListNewDetalleRemesa);
-                    }
-                }
-            }
-            em.getTransaction().commit();
-        } catch (Exception ex) {
-            String msg = ex.getLocalizedMessage();
-            if (msg == null || msg.length() == 0) {
-                Integer id = remesa.getId();
-                if (findRemesa(id) == null) {
-                    throw new NonexistentEntityException("The remesa with id " + id + " no longer exists.");
-                }
-            }
-            throw ex;
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
-    }
-
-    public void destroy(Long id) throws IllegalOrphanException, NonexistentEntityException {
-        EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            Remesa remesa;
-            try {
-                remesa = em.getReference(Remesa.class, id);
-                remesa.getNumero();
-            } catch (EntityNotFoundException enfe) {
-                throw new NonexistentEntityException("The remesa with id " + id + " no longer exists.", enfe);
-            }
-            List<String> illegalOrphanMessages = null;
-            List<DetalleRemesa> detalleRemesaListOrphanCheck = remesa.getDetalleRemesaList();
-            for (DetalleRemesa detalleRemesaListOrphanCheckDetalleRemesa : detalleRemesaListOrphanCheck) {
-                if (illegalOrphanMessages == null) {
-                    illegalOrphanMessages = new ArrayList<String>();
-                }
-                illegalOrphanMessages.add("This Remesa (" + remesa + ") cannot be destroyed since the DetalleRemesa " + detalleRemesaListOrphanCheckDetalleRemesa + " in its detalleRemesaList field has a non-nullable remesa field.");
-            }
-            if (illegalOrphanMessages != null) {
-                throw new IllegalOrphanException(illegalOrphanMessages);
-            }
-            em.remove(remesa);
-            em.getTransaction().commit();
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
-    }
-
-    public List<Remesa> findRemesaEntities() {
-        return findRemesaEntities(true, -1, -1);
-    }
-
-    public List<Remesa> findRemesaEntities(int maxResults, int firstResult) {
-        return findRemesaEntities(false, maxResults, firstResult);
-    }
-
-    private List<Remesa> findRemesaEntities(boolean all, int maxResults, int firstResult) {
-        EntityManager em = getEntityManager();
-        try {
-            Query q = em.createQuery("select object(o) from Remesa as o");
-            if (!all) {
-                q.setMaxResults(maxResults);
-                q.setFirstResult(firstResult);
-            }
-            return q.getResultList();
-        } finally {
-            em.close();
-        }
-    }
-
-    public Remesa findRemesa(Integer id) {
-        EntityManager em = getEntityManager();
-        try {
-            return em.find(Remesa.class, id);
-        } finally {
-            em.close();
-        }
-    }
-
-    private Remesa findRemesa(long numero) {
-        EntityManager em = getEntityManager();
-        try {
-            return (Remesa) em.createQuery("SELECT o FROM " + CLASS_NAME + " o WHERE o.numero =" + numero).getSingleResult();
-        } finally {
-            em.close();
-        }
-    }
-
-    public int getRemesaCount() {
-        EntityManager em = getEntityManager();
-        try {
-            Query q = em.createQuery("select count(o) from Remesa as o");
-            return ((Long) q.getSingleResult()).intValue();
-        } finally {
-            em.close();
-        }
-    }// </editor-fold>
 
     private Long getNextNumeroRemesa() {
         EntityManager em = getEntityManager();
@@ -242,7 +81,7 @@ public class RemesaJpaController implements ActionListener, FocusListener {
         jdReRe = new JDReRe(frame, modal);
         jdReRe.setUIForRemesas();
         UTIL.getDefaultTableModel(jdReRe.getjTable1(), COLUMN_NAMES, COLUMN_WIDTH, COLUMN_CLASS);
-        UTIL.loadComboBox(jdReRe.getCbSucursal(), new SucursalJpaController().findSucursalEntities(), false);
+        UTIL.loadComboBox(jdReRe.getCbSucursal(), new UsuarioHelper().getSucursales(), false);
         UTIL.loadComboBox(jdReRe.getCbCaja(), new CajaJpaController().findCajasPermitidasByUsuario(UsuarioJpaController.getCurrentUser(), true), false);
         UTIL.loadComboBox(jdReRe.getCbClienteProveedor(), new ProveedorJpaController().findEntities(), true);
         UTIL.loadComboBox(jdReRe.getCbCtaCtes(), null, false);
@@ -268,7 +107,7 @@ public class RemesaJpaController implements ActionListener, FocusListener {
                 try {
                     checkConstraints();
                     Remesa re = setEntity();
-                    create(re);
+                    jpaController.create(re);
                     for (DetalleRemesa detalleRemesa : re.getDetalleRemesaList()) {
                         //actuliza saldo pagado de cada ctacte
                         actualizarMontoEntrega(detalleRemesa.getFacturaCompra(), detalleRemesa.getMontoEntrega());
@@ -517,20 +356,14 @@ public class RemesaJpaController implements ActionListener, FocusListener {
         }
     }
 
-    private void initBuscador(javax.swing.JDialog dialog, boolean modal) {
-        // <editor-fold defaultstate="collapsed" desc="checking Permiso">
-        try {
-            UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.COMPRA);
-        } catch (MessageException ex) {
-            javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
-            return;
-        }// </editor-fold>
+    public JDialog initBuscador(JDialog dialog, boolean modal) throws MessageException {
+        UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.COMPRA);
         buscador = new JDBuscadorReRe(dialog, "Buscador - " + CLASS_NAME, modal, "Proveedor", "Nº " + CLASS_NAME);
         buscador.setLocationRelativeTo(dialog);
         buscador.setListeners(this);
         UTIL.loadComboBox(buscador.getCbClieProv(), new ProveedorJpaController().findEntities(), true);
-        UTIL.loadComboBox(buscador.getCbCaja(), new CajaJpaController().findCajasPermitidasByUsuario(UsuarioJpaController.getCurrentUser(), true), true);
-        UTIL.loadComboBox(buscador.getCbSucursal(), new SucursalJpaController().findSucursalEntities(), true);
+        UTIL.loadComboBox(buscador.getCbCaja(), new UsuarioHelper().getCajas(true), true);
+        UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getSucursales(), true);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
                 new String[]{"Nº", "Monto", "Fecha", "Sucursal", "Caja", "Usuario", "Fecha/Hora (Sist)"},
@@ -556,7 +389,7 @@ public class RemesaJpaController implements ActionListener, FocusListener {
                 }
             }
         });
-        buscador.setVisible(true);
+        return buscador;
     }
 
     private void cargarCtaCtes(Proveedor proveedor) {
@@ -644,8 +477,8 @@ public class RemesaJpaController implements ActionListener, FocusListener {
 
     private void setSelectedRemesa() {
         int rowIndex = buscador.getjTable1().getSelectedRow();
-        long remesaID = Long.valueOf(buscador.getjTable1().getValueAt(rowIndex, 0).toString());
-        rereSelected = new RemesaJpaController().findRemesa(remesaID);
+        long numero = Long.valueOf(buscador.getjTable1().getValueAt(rowIndex, 0).toString());
+        rereSelected = jpaController.findByNumero(numero);
         if (rereSelected != null) {
             buscador.dispose();
         }
@@ -656,6 +489,7 @@ public class RemesaJpaController implements ActionListener, FocusListener {
     /**
      * Setea la ventana de JDReRe de forma q solo se puedan ver los datos y
      * detalles de la Remesa, imprimir y ANULAR, pero NO MODIFICAR
+     *
      * @param remesa
      */
     private void setDatosCtaCte(Remesa remesa) {
@@ -729,9 +563,11 @@ public class RemesaJpaController implements ActionListener, FocusListener {
     }
 
     /**
-     * La anulación de una Remesa, resta a <code>CtaCteProveedor.entregado</code>
-     * los pagos/entregas (parciales/totales) realizados de cada DetalleRemesa y
-     * cambia <code>Remesa.estado = false<code>
+     * La anulación de una Remesa, resta a
+     * <code>CtaCteProveedor.entregado</code> los pagos/entregas
+     * (parciales/totales) realizados de cada DetalleRemesa y cambia
+     * <code>Remesa.estado = false<code>
+     *
      * @throws MessageException
      * @throws IllegalOrphanException
      * @throws NonexistentEntityException
@@ -771,15 +607,15 @@ public class RemesaJpaController implements ActionListener, FocusListener {
             }
         }
         remesa.setEstado(false);
-        DAO.doMerge(remesa);
+        jpaController.merge(remesa);
     }
 
     List<Remesa> findByFactura(FacturaCompra factura) {
         List<DetalleRemesa> detalleRemesaList = new DetalleRemesaJpaController().findDetalleRemesaByFactura(factura);
-        List recibosList = new ArrayList(detalleRemesaList.size());
+        List<Remesa> remesas = new ArrayList<Remesa>(detalleRemesaList.size());
         for (DetalleRemesa detalleRecibo : detalleRemesaList) {
-            recibosList.add(detalleRecibo.getRemesa());
+            remesas.add(detalleRecibo.getRemesa());
         }
-        return recibosList;
+        return remesas;
     }
 }

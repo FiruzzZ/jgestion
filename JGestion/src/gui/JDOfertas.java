@@ -10,7 +10,7 @@ import controller.DAO;
 import controller.FacturaVentaJpaController;
 import controller.HistorialOfertasJpaController;
 import controller.ListaPreciosJpaController;
-import controller.ProductoJpaController;
+import controller.ProductoController;
 import controller.ProductosWebJpaController;
 import controller.exceptions.MessageException;
 import controller.exceptions.NonexistentEntityException;
@@ -31,6 +31,7 @@ import javax.swing.table.DefaultTableModel;
 import java.util.Date;
 import javax.persistence.NonUniqueResultException;
 import javax.swing.JOptionPane;
+import jpa.controller.ProductoJpaController;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Priority;
@@ -41,7 +42,7 @@ import org.apache.log4j.Priority;
  */
 public class JDOfertas extends javax.swing.JDialog {
 
-   private final ProductoJpaController productoCtrller;
+   private final ProductoController productoCtrller;
    private final ProductosWebJpaController productosWebCtrller;
    private final HistorialOfertasJpaController historialOfertasCtrller;
    private Producto selectedProducto;
@@ -56,10 +57,10 @@ public class JDOfertas extends javax.swing.JDialog {
       initComponents();
       setLocationRelativeTo(parent);
       productosWebCtrller = new ProductosWebJpaController();
-      productoCtrller = new ProductoJpaController();
+      productoCtrller = new ProductoController();
       historialOfertasCtrller = new HistorialOfertasJpaController();
 
-      UTIL.loadComboBox(cbProductos, new ProductoJpaController().findProductoToCombo(), Boolean.FALSE);
+      UTIL.loadComboBox(cbProductos, new ProductoController().findProductoToCombo(), Boolean.FALSE);
       tfListaPreciosCatalogo.setText(listaPreciosParaCatalogo.getNombre());
       cargarTablaOfertas();
    }
@@ -609,7 +610,7 @@ public class JDOfertas extends javax.swing.JDialog {
 
     private void btnQuitarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnQuitarActionPerformed
        Producto producto = (Producto) UTIL.getSelectedValue(jTable1, 0);
-       producto = new ProductoJpaController().findProducto(producto.getId());
+       producto = new ProductoJpaController().find(producto.getId());
        if (producto != null) {
           try {
              quitarOferta(producto);

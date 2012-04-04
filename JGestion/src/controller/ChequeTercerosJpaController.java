@@ -37,6 +37,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
+import jpa.controller.CajaMovimientosJpaController;
 import org.apache.log4j.Logger;
 import org.eclipse.persistence.config.QueryHints;
 import utilities.general.UTIL;
@@ -572,16 +573,16 @@ public class ChequeTercerosJpaController implements ActionListener, Serializable
         return abm;
     }
 
-    ChequeTerceros findChequeTerceros(FacturaVenta facturaVenta) {
-        ChequeTerceros cheque = null;
+    public ChequeTerceros findChequeTerceros(FacturaVenta facturaVenta) {
+        ChequeTerceros cheque;
         cheque = (ChequeTerceros) getEntityManager().
                 createQuery("SELECT o FROM " + CLASS_NAME + " o WHERE o.bound=" + DetalleCajaMovimientosJpaController.FACTU_VENTA
                 + " AND o.boundId=" + facturaVenta.getId()).setHint(QueryHints.REFRESH, true).getSingleResult();
         return cheque;
     }
 
-    ChequeTerceros findChequeTerceros(Recibo recibo) {
-        ChequeTerceros cheque = null;
+    public ChequeTerceros findChequeTerceros(Recibo recibo) {
+        ChequeTerceros cheque;
         cheque = (ChequeTerceros) getEntityManager().
                 createQuery("SELECT o FROM " + CLASS_NAME + " o WHERE o.bound=" + DetalleCajaMovimientosJpaController.RECIBO
                 + " AND o.boundId=" + recibo.getId()).setHint(QueryHints.REFRESH, true).getSingleResult();

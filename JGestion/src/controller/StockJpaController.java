@@ -147,7 +147,7 @@ public class StockJpaController {
 //         facturaCompra = DAO.getEntityManager().find(FacturaCompra.class, facturaCompra.getId());
             List<DetalleCompra> listaDetalleCompra = new DetalleCompraJpaController().findByFactura(facturaCompra);
             System.out.println("Cantidad de Items: " + listaDetalleCompra.size());
-            ProductoJpaController productoCtrl = new ProductoJpaController();
+            ProductoController productoCtrl = new ProductoController();
             Stock stock;
             for (DetalleCompra detalleCompra : listaDetalleCompra) {
                 try {
@@ -195,7 +195,7 @@ public class StockJpaController {
         try {
             em.getTransaction().begin();
             List<DetalleVenta> detallesVentaList = new DetalleVentaJpaController().findByFactura(facturaVenta.getId());
-            ProductoJpaController productoCtrl = new ProductoJpaController();
+            ProductoController productoCtrl = new ProductoController();
             Stock stock;
             for (DetalleVenta detalleVenta : detallesVentaList) {
                 try {
@@ -248,7 +248,7 @@ public class StockJpaController {
                 + " o.producto = " + producto.getId() + " AND o.sucursal = " + sucursal.getId(), Stock.class).getSingleResult();
     }
 
-    void modificarStockBySucursal(Producto producto, Sucursal sucursal, int cantidad) {
+    public void modificarStockBySucursal(Producto producto, Sucursal sucursal, int cantidad) {
         Stock stock = findStock(producto, sucursal);
         stock.setStockSucu(stock.getStockSucu() + cantidad);
         stock.setFechaCarga(new Date());

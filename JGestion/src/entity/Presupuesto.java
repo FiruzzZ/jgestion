@@ -18,195 +18,208 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.UniqueConstraint;
 
 /**
  *
  * @author Administrador
  */
 @Entity
-@Table(name = "presupuesto")
+@Table(name = "presupuesto",
+uniqueConstraints =
+@UniqueConstraint(columnNames = {"numero, sucursal"}))
 @NamedQueries({
-   @NamedQuery(name = "Presupuesto.findAll", query = "SELECT p FROM Presupuesto p"),
-   @NamedQuery(name = "Presupuesto.findById", query = "SELECT p FROM Presupuesto p WHERE p.id = :id")
+    @NamedQuery(name = "Presupuesto.findAll", query = "SELECT p FROM Presupuesto p"),
+    @NamedQuery(name = "Presupuesto.findById", query = "SELECT p FROM Presupuesto p WHERE p.id = :id")
 })
 public class Presupuesto implements Serializable {
 
-   private static final long serialVersionUID = 1L;
-   @Id
-   @Basic(optional = false)
-   @Column(name = "id", nullable = false)
-   @GeneratedValue(strategy = GenerationType.IDENTITY)
-   private Integer id;
-   @Basic(optional = false)
-   @Column(name = "fechaalta", nullable = false, insertable = false, updatable = false, columnDefinition = "timestamp with time zone NOT NULL DEFAULT now()")
-   @Temporal(TemporalType.TIMESTAMP)
-   private Date fechaalta;
-   @Basic(optional = false)
-   @Column(name = "importe", nullable = false)
-   private double importe;
-   @Basic(optional = false)
-   @Column(name = "descuento", nullable = false)
-   private double descuento;
-   @Basic(optional = false)
-   @Column(name = "iva10", nullable = false)
-   private double iva10;
-   @Basic(optional = false)
-   @Column(name = "iva21", nullable = false)
-   private double iva21;
-   @Basic(optional = false)
-   @Column(name = "forma_pago", nullable = false)
-   private short formaPago;
-   @Column(name = "dias")
-   private Short dias;
-   @JoinColumn(name = "lista_precios", referencedColumnName = "id", nullable = false)
-   @ManyToOne(optional = false)
-   private ListaPrecios listaPrecios;
-   @JoinColumn(name = "cliente", referencedColumnName = "id", nullable = false)
-   @ManyToOne(optional = false)
-   private Cliente cliente;
-   @JoinColumn(name = "sucursal", referencedColumnName = "id", nullable = false)
-   @ManyToOne(optional = false)
-   private Sucursal sucursal;
-   @JoinColumn(name = "usuario", referencedColumnName = "id", nullable = false)
-   @ManyToOne(optional = false)
-   private Usuario usuario;
-   @OneToMany(cascade = CascadeType.ALL, mappedBy = "presupuesto")
-   private List<DetallePresupuesto> detallePresupuestoList;
+    private static final long serialVersionUID = 1L;
+    @Id
+    @Basic(optional = false)
+    @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+    @Basic(optional = false)
+    @Column(nullable = false, precision = 8)
+    private Integer numero;
+    @Basic(optional = false)
+    @Column(name = "fechaalta", nullable = false, insertable = false, updatable = false, columnDefinition = "timestamp with time zone NOT NULL DEFAULT now()")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fechaalta;
+    @Basic(optional = false)
+    @Column(name = "importe", nullable = false)
+    private double importe;
+    @Basic(optional = false)
+    @Column(name = "descuento", nullable = false)
+    private double descuento;
+    @Basic(optional = false)
+    @Column(name = "iva10", nullable = false)
+    private double iva10;
+    @Basic(optional = false)
+    @Column(name = "iva21", nullable = false)
+    private double iva21;
+    @Basic(optional = false)
+    @Column(name = "forma_pago", nullable = false)
+    private short formaPago;
+    @Column(name = "dias")
+    private Short dias;
+    @JoinColumn(name = "lista_precios", referencedColumnName = "id", nullable = false)
+    @ManyToOne(optional = false)
+    private ListaPrecios listaPrecios;
+    @JoinColumn(name = "cliente", referencedColumnName = "id", nullable = false)
+    @ManyToOne(optional = false)
+    private Cliente cliente;
+    @JoinColumn(name = "sucursal", referencedColumnName = "id", nullable = false)
+    @ManyToOne(optional = false)
+    private Sucursal sucursal;
+    @JoinColumn(name = "usuario", referencedColumnName = "id", nullable = false)
+    @ManyToOne(optional = false)
+    private Usuario usuario;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "presupuesto", orphanRemoval = true)
+    private List<DetallePresupuesto> detallePresupuestoList;
 
-   public Presupuesto() {
-   }
+    public Presupuesto() {
+    }
 
-   public Presupuesto(Integer id) {
-      this.id = id;
-   }
+    public Presupuesto(Integer id) {
+        this.id = id;
+    }
 
-   public Integer getId() {
-      return id;
-   }
+    public Integer getId() {
+        return id;
+    }
 
-   public void setId(Integer id) {
-      this.id = id;
-   }
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-   public Date getFechaalta() {
-      return fechaalta;
-   }
+    public Integer getNumero() {
+        return numero;
+    }
 
-   public void setFechaalta(Date fechaCreacion) {
-      this.fechaalta = fechaCreacion;
-   }
+    public void setNumero(Integer numero) {
+        this.numero = numero;
+    }
 
-   public double getImporte() {
-      return importe;
-   }
+    public Date getFechaalta() {
+        return fechaalta;
+    }
 
-   public void setImporte(double importe) {
-      this.importe = importe;
-   }
+    public void setFechaalta(Date fechaCreacion) {
+        this.fechaalta = fechaCreacion;
+    }
 
-   public double getDescuento() {
-      return descuento;
-   }
+    public double getImporte() {
+        return importe;
+    }
 
-   public void setDescuento(double descuento) {
-      this.descuento = descuento;
-   }
+    public void setImporte(double importe) {
+        this.importe = importe;
+    }
 
-   public double getIva10() {
-      return iva10;
-   }
+    public double getDescuento() {
+        return descuento;
+    }
 
-   public void setIva10(double iva10) {
-      this.iva10 = iva10;
-   }
+    public void setDescuento(double descuento) {
+        this.descuento = descuento;
+    }
 
-   public double getIva21() {
-      return iva21;
-   }
+    public double getIva10() {
+        return iva10;
+    }
 
-   public void setIva21(double iva21) {
-      this.iva21 = iva21;
-   }
+    public void setIva10(double iva10) {
+        this.iva10 = iva10;
+    }
 
-   public ListaPrecios getListaPrecios() {
-      return listaPrecios;
-   }
+    public double getIva21() {
+        return iva21;
+    }
 
-   public void setListaPrecios(ListaPrecios listaPrecios) {
-      this.listaPrecios = listaPrecios;
-   }
+    public void setIva21(double iva21) {
+        this.iva21 = iva21;
+    }
 
-   public Cliente getCliente() {
-      return cliente;
-   }
+    public ListaPrecios getListaPrecios() {
+        return listaPrecios;
+    }
 
-   public void setCliente(Cliente cliente) {
-      this.cliente = cliente;
-   }
+    public void setListaPrecios(ListaPrecios listaPrecios) {
+        this.listaPrecios = listaPrecios;
+    }
 
-   public Sucursal getSucursal() {
-      return sucursal;
-   }
+    public Cliente getCliente() {
+        return cliente;
+    }
 
-   public void setSucursal(Sucursal sucursal) {
-      this.sucursal = sucursal;
-   }
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
 
-   public Usuario getUsuario() {
-      return usuario;
-   }
+    public Sucursal getSucursal() {
+        return sucursal;
+    }
 
-   public void setUsuario(Usuario usuario) {
-      this.usuario = usuario;
-   }
+    public void setSucursal(Sucursal sucursal) {
+        this.sucursal = sucursal;
+    }
 
-   public short getFormaPago() {
-      return formaPago;
-   }
+    public Usuario getUsuario() {
+        return usuario;
+    }
 
-   public void setFormaPago(short formaPago) {
-      this.formaPago = formaPago;
-   }
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
 
-   public Short getDias() {
-      return dias;
-   }
+    public short getFormaPago() {
+        return formaPago;
+    }
 
-   public void setDias(Short dias) {
-      this.dias = dias;
-   }
+    public void setFormaPago(short formaPago) {
+        this.formaPago = formaPago;
+    }
 
-   public List<DetallePresupuesto> getDetallePresupuestoList() {
-      return detallePresupuestoList;
-   }
+    public Short getDias() {
+        return dias;
+    }
 
-   public void setDetallePresupuestoList(List<DetallePresupuesto> detallePresupuestoList) {
-      this.detallePresupuestoList = detallePresupuestoList;
-   }
+    public void setDias(Short dias) {
+        this.dias = dias;
+    }
 
-   @Override
-   public int hashCode() {
-      int hash = 0;
-      hash += (id != null ? id.hashCode() : 0);
-      return hash;
-   }
+    public List<DetallePresupuesto> getDetallePresupuestoList() {
+        return detallePresupuestoList;
+    }
 
-   @Override
-   public boolean equals(Object object) {
-      // TODO: Warning - this method won't work in the case the id fields are not set
-      if (!(object instanceof Presupuesto)) {
-         return false;
-      }
-      Presupuesto other = (Presupuesto) object;
-      if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-         return false;
-      }
-      return true;
-   }
+    public void setDetallePresupuestoList(List<DetallePresupuesto> detallePresupuestoList) {
+        this.detallePresupuestoList = detallePresupuestoList;
+    }
 
-   @Override
-   public String toString() {
-      return this.getId().toString();
-   }
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
+    }
 
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Presupuesto)) {
+            return false;
+        }
+        Presupuesto other = (Presupuesto) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Presupuesto{" + "id=" + id + ", numero=" + numero + ", fechaalta=" + fechaalta + ", importe=" + importe + ", descuento=" + descuento + ", iva10=" + iva10 + ", iva21=" + iva21 + ", formaPago=" + formaPago + ", dias=" + dias + ", listaPrecios=" + listaPrecios + ", cliente=" + cliente + ", sucursal=" + sucursal + ", usuario=" + usuario + '}';
+    }
 }

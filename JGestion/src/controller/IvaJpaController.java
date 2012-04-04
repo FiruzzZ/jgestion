@@ -14,6 +14,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 import org.apache.log4j.Logger;
 
@@ -58,8 +61,7 @@ public class IvaJpaController implements ActionListener, MouseListener {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            Iva persistentIva = em.find(Iva.class, iva.getId());
-            iva = em.merge(iva);
+            em.merge(iva);
             em.getTransaction().commit();
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
@@ -90,7 +92,7 @@ public class IvaJpaController implements ActionListener, MouseListener {
                 throw new NonexistentEntityException("The iva with id " + id + " no longer exists.", enfe);
             }
             List<String> illegalOrphanMessages = null;
-            List<Producto> productoListOrphanCheck = new ProductoJpaController().findProductoByIva(iva);
+            List<Producto> productoListOrphanCheck = new ProductoController().findProductoByIva(iva);
             for (Producto productoListOrphanCheckProducto : productoListOrphanCheck) {
                 if (illegalOrphanMessages == null) {
                     illegalOrphanMessages = new ArrayList<String>();
@@ -159,35 +161,37 @@ public class IvaJpaController implements ActionListener, MouseListener {
         }// </editor-fold>
         abm = new JDMiniABM(frame, modal);
         abm.setLocationRelativeTo(frame);
-        abm.getTaInformacion().setText("ABM de las Alicuotas (IVA) de los Productos que se van a administrar.");
+        abm.getTaInformacion().setText("ABM de las Alicuotas (IVA) de los Productos.");
         // solo queda visible tfCodigo....
+        abm.getjLabelCodigo().setText("IVA %");
         abm.hideFieldNombre();
         abm.hideBtnLock();
         abm.hideFieldExtra();
         abm.setTitle("ABM - " + CLASS_NAME);
-        try {
-            UTIL.getDefaultTableModel(abm.getjTable1(), colsName, colsWidth);
-        } catch (Exception ex) {
-            Logger.getLogger(this.getClass()).error(null, ex);
-        }
-        cargarDTM(abm.getDTM(), null);
+        UTIL.getDefaultTableModel(abm.getjTable1(), colsName, colsWidth, new Class<?>[]{null, String.class});
+        UTIL.setHorizonalAlignment(abm.getjTable1(), String.class, SwingConstants.RIGHT);
+        cargarTablaIvas(abm.getjTable1(), null);
         abm.setListeners(this);
         abm.setVisible(true);
     }
 
-    private void cargarDTM(DefaultTableModel dtm, String nativeQuery) {
-        UTIL.limpiarDtm(dtm);
-        java.util.List<Iva> l;
+    @SuppressWarnings("unchecked")
+    private void cargarTablaIvas(JTable jtable, String nativeQuery) {
+        DefaultTableModel dtm =(DefaultTableModel) jtable.getModel();
+        dtm.setRowCount(0);
+        List<Iva> l = null;
         if (nativeQuery == null || nativeQuery.length() < 10) {
             l = DAO.getEntityManager().createNamedQuery(CLASS_NAME + ".findAll").getResultList();
-        } else // para cuando se usa el Buscador del ABM
-        {
-            l = DAO.getEntityManager().createNativeQuery(nativeQuery, Iva.class).getResultList();
+        } else {
+            try {
+                // para cuando se usa el Buscador del ABM
+                l = (List<Iva>) DAO.getNativeQueryResultList(nativeQuery, Iva.class);
+            } catch (DatabaseErrorException ex) {
+                //ignored...
+            }
         }
         for (Iva o : l) {
-            dtm.addRow(new Object[]{
-                        o.getId(),
-                        o.getIva(),});
+            dtm.addRow(new Object[]{o.getId(), UTIL.PRECIO_CON_PUNTO.format(o.getIva())});
         }
     }
 
@@ -205,7 +209,7 @@ public class IvaJpaController implements ActionListener, MouseListener {
                     }
                     destroy(EL_OBJECT.getId());
                     clearPanelFields();
-                    cargarDTM(abm.getDTM(), "");
+                    cargarTablaIvas(abm.getjTable1(), null);
                     abm.showMessage("Eliminado..", CLASS_NAME, 1);
                 } catch (MessageException ex) {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 0);
@@ -216,6 +220,7 @@ public class IvaJpaController implements ActionListener, MouseListener {
                     abm.showMessage("El IVA " + EL_OBJECT.toString() + " no puede ser eliminado por estar relacionado a los siguientes Productos\n"
                             + ex.getMessage(), CLASS_NAME, 0);
                 } catch (Exception ex) {
+                    abm.showMessage(ex.getMessage(), CLASS_NAME, 0);
                     ex.printStackTrace();
                 }
             } else if (boton.getName().equalsIgnoreCase("cancelar")) {
@@ -225,23 +230,20 @@ public class IvaJpaController implements ActionListener, MouseListener {
                     setEntity();
                     checkConstraints(EL_OBJECT);
                     clearPanelFields();
-                    cargarDTM(abm.getDTM(), null);
+                    cargarTablaIvas(abm.getjTable1(), null);
                 } catch (MessageException ex) {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
             }
-
-            return;
         }// </editor-fold>
     }
 
     public void mouseReleased(MouseEvent e) {
         Integer selectedRow = ((javax.swing.JTable) e.getSource()).getSelectedRow();
         if (selectedRow > -1) {
-            EL_OBJECT = (Iva) DAO.getEntityManager().find(Iva.class,
-                    Integer.valueOf((((javax.swing.JTable) e.getSource()).getValueAt(selectedRow, 0)).toString()));
+            EL_OBJECT = findIva(Integer.parseInt(UTIL.getSelectedValue(abm.getjTable1(), 0).toString()));
         }
         if (EL_OBJECT != null) {
             setPanelFields(EL_OBJECT);

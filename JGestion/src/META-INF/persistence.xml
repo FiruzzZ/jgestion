@@ -54,11 +54,13 @@
     <class>entity.ChequeTerceros</class>
     <class>entity.Librado</class>
     <class>entity.FacturaElectronica</class>
+    <class>entity.PermisosSucursal</class>
     <properties>
-      <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://jgestion.no-ip.org:5433/jgestionahinco"/>
+      <!--      <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://jgestion.no-ip.org:5433/jgestionahinco"/>-->
       <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
       <property name="javax.persistence.jdbc.user" value="jgestion"/>
       <property name="javax.persistence.jdbc.password" value="jgestion"/>
+      <property name="eclipselink.logging.level" value="INFO"/>
     </properties>
   </persistence-unit>
 </persistence>

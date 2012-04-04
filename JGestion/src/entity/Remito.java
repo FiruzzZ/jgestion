@@ -1,26 +1,9 @@
 package entity;
 
-import utilities.general.UTIL;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-import javax.persistence.Basic;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.*;
 
 /**
  *
@@ -49,7 +32,7 @@ public class Remito implements Serializable {
     @Column(name = "fecha_remito", nullable = false)
     @Temporal(TemporalType.DATE)
     private Date fechaRemito;
-    @Column(name = "fecha_creacion", nullable = false, insertable = false, updatable = false)
+    @Column(name = "fecha_creacion", nullable = false, insertable = false, updatable = false, columnDefinition = "timestamp with time zone NOT NULL DEFAULT now()")
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaCreacion;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "remito")
@@ -168,6 +151,6 @@ public class Remito implements Serializable {
 
     @Override
     public String toString() {
-        return UTIL.AGREGAR_CEROS(this.getNumero(), 12);
+        return "Remito{" + "id=" + id + ", numero=" + numero + ", fechaRemito=" + fechaRemito + ", fechaCreacion=" + fechaCreacion + ", detalleRemitoList=" + detalleRemitoList.size() + ", cliente=" + cliente + ", sucursal=" + sucursal + ", usuario=" + usuario + ", facturaVenta=" + facturaVenta + '}';
     }
 }

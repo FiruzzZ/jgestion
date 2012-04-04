@@ -19,6 +19,7 @@ import javax.persistence.Query;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+import jpa.controller.ProductoJpaController;
 import net.atlanticbb.tantlinger.shef.HTMLEditorPane;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Level;
@@ -30,7 +31,7 @@ import utilities.general.UTIL;
  *
  * @author FiruzzZ
  */
-public class ProductoJpaController implements ActionListener, KeyListener {
+public class ProductoController implements ActionListener, KeyListener {
 
     public static final String CLASS_NAME = Producto.class.getSimpleName();
     private JDContenedor contenedor;
@@ -52,135 +53,11 @@ public class ProductoJpaController implements ActionListener, KeyListener {
     private PanelProductoListados panelProductoListados;
     private HTMLEditorPane editor;
     private boolean permitirFiltroVacio;
+    private ProductoJpaController productoJpaController;
 
-    public EntityManager getEntityManager() {
-        return DAO.getEntityManager();
+    public ProductoController() {
+        productoJpaController = new ProductoJpaController();
     }
-
-    // <editor-fold defaultstate="collapsed" desc="create, edit, destroy, Listing's...">
-    public void create(Producto producto) {
-        EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            Iva iva = producto.getIva();
-            if (iva != null) {
-                iva = em.getReference(iva.getClass(), iva.getId());
-                producto.setIva(iva);
-            }
-            Marca marca = producto.getMarca();
-            if (marca != null) {
-                marca = em.getReference(marca.getClass(), marca.getId());
-                producto.setMarca(marca);
-            }
-            em.persist(producto);
-            em.getTransaction().commit();
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
-    }
-
-    public void edit(Producto producto) throws NonexistentEntityException, Exception {
-        EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-//            Iva ivaNew = producto.getIva();
-//            Marca marcaNew = producto.getMarca();
-//            if (ivaNew != null) {
-//                ivaNew = em.getReference(ivaNew.getClass(), ivaNew.getId());
-//                producto.setIva(ivaNew);
-//            }
-//            if (marcaNew != null) {
-//                marcaNew = em.getReference(marcaNew.getClass(), marcaNew.getId());
-//                producto.setMarca(marcaNew);
-//            }
-            producto = em.merge(producto);
-            em.getTransaction().commit();
-        } catch (Exception ex) {
-            String msg = ex.getLocalizedMessage();
-            if (msg == null || msg.length() == 0) {
-                Integer id = producto.getId();
-                if (findProducto(id) == null) {
-                    throw new NonexistentEntityException("The producto with id " + id + " no existe mas.");
-                }
-            }
-            throw ex;
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
-    }
-
-    public void destroy(Integer id) throws NonexistentEntityException, MessageException {
-        EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            Producto producto;
-            try {
-                producto = em.getReference(Producto.class, id);
-                producto.getId();
-            } catch (EntityNotFoundException enfe) {
-                throw new NonexistentEntityException("The producto with id " + id + " no existe mas.", enfe);
-            }
-            em.remove(producto);
-            em.getTransaction().commit();
-        } catch (Exception ex) {
-            throw new MessageException("No puede eliminar este producto, porque contiene un historial de compra/venta.");
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
-    }
-
-    public List<Producto> findProductoEntities() {
-        return findProductoEntities(true, -1, -1);
-    }
-
-    public List<Producto> findProductoEntities(int maxResults, int firstResult) {
-        return findProductoEntities(false, maxResults, firstResult);
-    }
-
-    private List<Producto> findProductoEntities(boolean all, int maxResults, int firstResult) {
-        EntityManager em = getEntityManager();
-        try {
-            Query q = em.createQuery("select o from Producto as o order by o.nombre");
-            if (!all) {
-                q.setMaxResults(maxResults);
-                q.setFirstResult(firstResult);
-            }
-            return q.getResultList();
-        } finally {
-            em.close();
-        }
-    }
-
-    public Producto findProducto(Integer id) {
-        EntityManager em = getEntityManager();
-        em.setProperty(QueryHints.REFRESH, Boolean.TRUE);
-        try {
-            Producto find = em.find(Producto.class, id);
-            em.refresh(find);
-            return find;
-        } finally {
-            em.close();
-        }
-    }
-
-    public int getProductoCount() {
-        EntityManager em = getEntityManager();
-        try {
-            return ((Long) em.createQuery("select count(o) from Producto as o").getSingleResult()).intValue();
-        } finally {
-            em.close();
-        }
-    }
-    // </editor-fold>
 
     public void initContenedor(JFrame owner, boolean modal, boolean modoBuscador) throws DatabaseErrorException {
         contenedor = new JDContenedor(owner, modal, "ABM - " + CLASS_NAME);
@@ -194,7 +71,7 @@ public class ProductoJpaController implements ActionListener, KeyListener {
                     EL_OBJECT = null;
                     initABM(false);
                 } catch (IOException ex) {
-                    Logger.getLogger(ProductoJpaController.class.getName()).log(Level.ERROR, null, ex);
+                    Logger.getLogger(ProductoController.class.getName()).log(Level.ERROR, null, ex);
                 } catch (MessageException ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 }
@@ -266,8 +143,8 @@ public class ProductoJpaController implements ActionListener, KeyListener {
             EL_OBJECT = getSelectedFromContenedor();
             if (EL_OBJECT == null) {
                 throw new MessageException("Debe elegir una fila");
-            } 
-            EL_OBJECT = findProducto(EL_OBJECT.getId());
+            }
+            EL_OBJECT = productoJpaController.find(EL_OBJECT.getId());
         }
         settingABM(isEditing);
     }
@@ -583,38 +460,23 @@ public class ProductoJpaController implements ActionListener, KeyListener {
     }
 
     private void checkConstraints(Producto object) throws MessageException, Exception {
-        EntityManager em = getEntityManager();
         String idQuery = "";
         if (object.getId() != null) {
             idQuery = "o.id!=" + object.getId() + " AND ";
-
-
         }
-        try {
-            em.createNativeQuery("SELECT * FROM " + CLASS_NAME + " o "
-                    + " WHERE " + idQuery + "  " + " o.codigo='" + object.getCodigo() + "'", Producto.class).getSingleResult();
-
-
-            throw new MessageException(
-                    "Ya existe un " + CLASS_NAME + " con este codigo.");
-        } catch (NoResultException ex) {
+        if (!productoJpaController.findByNativeQuery("SELECT * FROM " + CLASS_NAME + " o "
+                + " WHERE " + idQuery + "  " + " o.codigo='" + object.getCodigo() + "'").isEmpty()) {
+            throw new MessageException("Ya existe un " + CLASS_NAME + " con este codigo.");
         }
-        try {
-            em.createNativeQuery("SELECT * FROM " + CLASS_NAME + " o "
-                    + " WHERE " + idQuery + "  " + " o.nombre='" + object.getNombre() + "'", Producto.class).getSingleResult();
-
-
-            throw new MessageException(
-                    "Ya existe un " + CLASS_NAME + " con este nombre.");
-        } catch (NoResultException ex) {
+        if (!productoJpaController.findByNativeQuery("SELECT * FROM " + CLASS_NAME + " o "
+                + " WHERE " + idQuery + "  " + " o.nombre='" + object.getNombre() + "'").isEmpty()) {
+            throw new MessageException("Ya existe un " + CLASS_NAME + " con este nombre.");
         }
-
         if (object.getId() == null) {
-            create(object);
+            productoJpaController.create(object);
         } else {
-            edit(object);
+            productoJpaController.merge(object);
         }
-
     }
 
     private void cargarImagen() throws IOException, Exception {
@@ -676,10 +538,10 @@ public class ProductoJpaController implements ActionListener, KeyListener {
                     cargarImagen();
                 } catch (IOException ex) {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    Logger.getLogger(ProductoJpaController.class.getName()).log(Level.ERROR, null, ex);
+                    Logger.getLogger(ProductoController.class.getName()).log(Level.ERROR, null, ex);
                 } catch (Exception ex) {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    Logger.getLogger(ProductoJpaController.class.getName()).log(Level.ERROR, null, ex);
+                    Logger.getLogger(ProductoController.class.getName()).log(Level.ERROR, null, ex);
                 }
             } else if (boton.getName().equalsIgnoreCase("marcas")) {
                 new MarcaJpaController().initJD(abm, true);
@@ -688,7 +550,7 @@ public class ProductoJpaController implements ActionListener, KeyListener {
                 try {
                     initStockGral(EL_OBJECT);
                 } catch (MessageException ex) {
-                    Logger.getLogger(ProductoJpaController.class.getName()).log(Level.ERROR, null, ex);
+                    Logger.getLogger(ProductoController.class.getName()).log(Level.ERROR, null, ex);
                 }
             }
 
@@ -711,10 +573,6 @@ public class ProductoJpaController implements ActionListener, KeyListener {
         } catch (NoResultException ex) {
             return null;
         }
-    }
-
-    Producto findProductoById(Integer id) {
-        return (Producto) DAO.getEntityManager().createNamedQuery(CLASS_NAME + ".findById").setParameter("id", id).getSingleResult();
     }
 
     Producto getProductoSelected() {
@@ -769,17 +627,13 @@ public class ProductoJpaController implements ActionListener, KeyListener {
      * @param cantidad si es una Venta, DEBE pasarse un valor NEGATIVO (para
      * restar);
      */
-    void updateStockActual(Producto producto, int cantidad) {
+    public void updateStockActual(Producto producto, int cantidad) {
         System.out.println("updateStockActual (General): " + producto.getNombre() + " = " + producto.getStockactual() + " + " + cantidad);
         producto.setStockactual(producto.getStockactual() + cantidad);
         try {
-            edit(producto);
-
-
-        } catch (NonexistentEntityException ex) {
-            Logger.getLogger(ProductoJpaController.class.getName()).log(Level.ERROR, null, ex);
+            productoJpaController.merge(producto);
         } catch (Exception ex) {
-            Logger.getLogger(ProductoJpaController.class.getName()).log(Level.ERROR, null, ex);
+            Logger.getLogger(ProductoController.class.getName()).log(Level.ERROR, null, ex);
         }
     }
 
@@ -798,7 +652,7 @@ public class ProductoJpaController implements ActionListener, KeyListener {
 
 
         } catch (Exception ex) {
-            Logger.getLogger(ProductoJpaController.class.getName()).log(Level.ERROR, null, ex);
+            Logger.getLogger(ProductoController.class.getName()).log(Level.ERROR, null, ex);
         }
         List<Stock> stockList = new StockJpaController().findStocksByProducto(p.getId());
         DefaultTableModel dtm = jdStockGral.getDtm();
@@ -825,32 +679,28 @@ public class ProductoJpaController implements ActionListener, KeyListener {
 
         if (EL_OBJECT == null) {
             if (contenedor != null && contenedor.getjTable1().getSelectedRow() != -1) {
-                EL_OBJECT = findProducto((Integer) contenedor.getSelectedValue(0));
+                EL_OBJECT = productoJpaController.find((Integer) contenedor.getSelectedValue(0));
             }
             if (EL_OBJECT == null) {
                 throw new MessageException("No hay " + CLASS_NAME + " seleccionado");
             }
         }
-        destroy(EL_OBJECT.getId());
+        productoJpaController.remove(EL_OBJECT);
         EL_OBJECT = null;
         cargarContenedorTabla(null);
     }
 
     private Producto getSelectedFromContenedor() {
         Integer selectedRow = contenedor.getjTable1().getSelectedRow();
-
-
         if (selectedRow > -1) {
-            return (Producto) DAO.getEntityManager().find(Producto.class,
-                    Integer.valueOf(
-                    (contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
+            return productoJpaController.find(Integer.valueOf((contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
         } else {
             return null;
         }
     }
 
     private void doReportProductList() throws Exception {
-        if (getProductoCount() == 0) {
+        if (productoJpaController.count() == 0) {
             throw new MessageException("No existen " + CLASS_NAME + "s para imprimir un listado.");
         }
         Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_ProductosList.jasper", "Listado Productos");
@@ -864,7 +714,7 @@ public class ProductoJpaController implements ActionListener, KeyListener {
         UTIL.loadComboBox(panelito.getCbMarcas(), new MarcaJpaController().findMarcaEntities(), true);
         UTIL.loadComboBox(panelito.getCbRubros(), new RubroJpaController().findRubros(), true);
         UTIL.loadComboBox(panelito.getCbSubRubros(), new RubroJpaController().findRubros(), true);
-        UTIL.loadComboBox(panelito.getCbSucursales(), new SucursalJpaController().findSucursalEntities(), true);
+        UTIL.loadComboBox(panelito.getCbSucursales(), new UsuarioHelper().getSucursales(), true);
         buscador = new JDBuscador(frame, modal, panelito, "Movimientos de productos");
         buscador.agrandar(200, 0);
         UTIL.getDefaultTableModel(
@@ -1027,7 +877,7 @@ public class ProductoJpaController implements ActionListener, KeyListener {
                     getResultList();
             return resultList;
         } catch (Exception ex) {
-            Logger.getLogger(ProductoJpaController.class.getName()).log(Level.ERROR, null, ex);
+            Logger.getLogger(ProductoController.class.getName()).log(Level.ERROR, null, ex);
         }
         return null;
     }
@@ -1060,7 +910,7 @@ public class ProductoJpaController implements ActionListener, KeyListener {
                 try {
                     armarQueryProductosListado(true);
                 } catch (Exception ex) {
-                    Logger.getLogger(ProductoJpaController.class).error(ex);
+                    Logger.getLogger(ProductoController.class).error(ex);
                     JOptionPane.showMessageDialog(buscador, ex.getMessage());
                 }
             }

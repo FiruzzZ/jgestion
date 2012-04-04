@@ -41,7 +41,7 @@ public abstract class DAO implements Runnable {
         if (properties == null) {
             throw new IllegalArgumentException("Archivo de configuración de conexión no válido.\nNull Properties");
         }
-        if (properties.isEmpty())  {
+        if (properties.isEmpty()) {
             throw new IllegalArgumentException("Archivo de configuración de conexión no válido.\nEmpty Properties");
         }
         if (properties.getProperty("database") == null
@@ -66,9 +66,11 @@ public abstract class DAO implements Runnable {
             server = properties.getProperty("server");
             port = properties.getProperty("port");
             database = properties.getProperty("database");
+            if(properties.getProperty("create-tables", "false").equals("true")) {
+                properties.setProperty("eclipselink.ddl-generation", "create-tables");
+            }
             properties.setProperty("javax.persistence.jdbc.url", "jdbc:postgresql://" + server + ":" + port + "/" + database);
             emf = Persistence.createEntityManagerFactory(persistenceUnitName, properties);
-//            }
             getJDBCConnection();
         }
         EntityManager em = emf.createEntityManager();
@@ -128,8 +130,7 @@ public abstract class DAO implements Runnable {
     }
 
     static void create(Object o) throws Exception {
-        EntityManager em = null;
-        em = getEntityManager();
+        EntityManager em = getEntityManager();
         try {
             em.getTransaction().begin();
             em.persist(o);
@@ -152,7 +153,7 @@ public abstract class DAO implements Runnable {
      * @param classType
      * @param id can't be nul!!
      */
-    static void remove(Class classType, Integer id) throws Exception {
+    static void remove(Class<?> classType, Integer id) throws Exception {
         if (id == null) {
             throw new IllegalArgumentException("id can not be NULL!!");
         }
@@ -228,11 +229,11 @@ public abstract class DAO implements Runnable {
     static List<?> getNativeQueryResultList(String sqlString, Class<?> resultClass) throws DatabaseErrorException {
         EntityManager em = getEntityManager();
         try {
-            List l;
+            List<?> l;
             if (resultClass != null) {
-                l = em.createNativeQuery(sqlString, resultClass).getResultList();
+                l = em.createNativeQuery(sqlString, resultClass).setHint(QueryHints.REFRESH, true).getResultList();
             } else {
-                l = em.createNativeQuery(sqlString).getResultList();
+                l = em.createNativeQuery(sqlString).setHint(QueryHints.REFRESH, true).getResultList();
             }
             return l;
         } catch (DatabaseException e) {
@@ -245,7 +246,11 @@ public abstract class DAO implements Runnable {
     static List<?> getNativeQueryResultList(String sqlString, String resultSetMapping) throws DatabaseErrorException {
         EntityManager em = getEntityManager();
         try {
-            return em.createNativeQuery(sqlString, resultSetMapping).setHint(QueryHints.REFRESH, true).getResultList();
+            if (resultSetMapping != null) {
+                return em.createNativeQuery(sqlString, resultSetMapping).setHint(QueryHints.REFRESH, true).getResultList();
+            } else {
+                return em.createNativeQuery(sqlString).setHint(QueryHints.REFRESH, true).getResultList();
+            }
         } catch (DatabaseException e) {
             throw new DatabaseErrorException(e);
         } finally {
@@ -304,9 +309,13 @@ public abstract class DAO implements Runnable {
      * Crea todos los datos que el sistema necesita inicialmente:
      * <br>*Contribuyentes <br>*Usuario: admin pws: adminadmin (permisos full)
      * <br>*ya vemos que mas..
+     * @throws Exception 
      */
     public static void setDefaultData() throws Exception {
-        System.out.println("--SETTING DEFAULT DATA--");
+        if(properties.getProperty("populate", "false").equals("false")) {
+            return;
+        }
+        Logger.getLogger(DAO.class).trace("Iniciando carga de DefaultData: populating..");
         EntityManager em = null;
         JDSystemMessages ventanaSystemMessage = new JDSystemMessages(null, true);
 
@@ -400,33 +409,32 @@ public abstract class DAO implements Runnable {
                         + "(9,'Jujuy'), (10,'La Pampa'), (11,'La Rioja'), (12,'Mendoza'),"
                         + "(13,'Misiones'),(14,'Neuquén'),(15,'Río Negro'),(16,'Salta'),"
                         + "(17,'San Juan'),(18,'San Luis'),(19,'Santa Cruz'),(20,'Santa Fe'),"
-                        + "(21,'Sgo del Estero'),(22,'T. del Fuego'),(23,'Tucumán');"
-                        + " INSERT INTO depto (iddepto, idprovincia, nombre) VALUES "
-                        + "(1,5,'Corrientes'),(2,5,'Concepción'),(3,5,'Santo Tomé'),"
-                        + "(4,13,'Posadas'), (5,13,'Concepción'), (6,13,'Eldorado'),"
-                        + "(7,13,'General Manuel Belgrano'),(8,13,'Guaraní'),(9,13,'Iguazú'),"
-                        + "(10,13,'Leandro N. Alem'),(11,13,'Libertador General San Martín'),"
-                        + "(12,13,'Montecarlo'),(13,13,'OBERÁ'),(14,13,'San Ignacio'),"
-                        + "(15,13,'San Javier'),(16,13,'San Pedro'),(17,13,'Veinticinco de Mayo'),"
-                        + "(18,13,'APÓSTOLES'),(19,13,'Cainguás'),(20,13,'Candelaria');"
-                        + " INSERT INTO municipio (iddepto, nombre) VALUES "
-                        + "(4,'GARUPÁ'),(4,'POSADAS'),(4,'FACHINAL'),(5,'CONCEPCIÓN DE LA SIERRA'),(5,'SANTA MARIA'),(6,'COLONIA DELICIA'),(6,'9 DE JULIO'),"
-                        + "(6,'EL DORADO'),(6,'COLONIA VICTORIA'),(7,'BERNARDO DE IRIGOYEN'),(7,'CMDTE ANDRESITO'),(7,'SAN ANTONIO'),(8,'SAN VICENTE'),"
-                        + "(8,'EL SOBERBIO'),(9,'WANDA'),(9,'PUERTO LIBERTAD'),(9,'PUERTO ESPERANZA'),(9,'PUERTO IGUAZU'),(10,'ARROYO DEL MEDIO'),"
-                        + "(10,'L.N ALEM'),(10,'DOS ARROYOS'),(10,'CAÁ-YARÍ'),(10,'OLEGARIO V. ANDRADE'),(10,'CERRO AZUL'),(10,'ALMAFUERTE'),"
-                        + "(11,'PUERTO LEONI'),(11,'CAPIOVI'),(11,'PUERTO RICO'),(11,'RUIZ DE MONTOYA'),(12,'CARAGUATAY'),(13,'SAN MARTIN '),"
-                        + "(13,'CAMPO VIERA'),(13,'COLONIA ALBERDI'),(13,'GRAL ALVEAR'),(13,'PANAMBI'),(13,'CAMPO RAMON'),(13,'GUARANI'),"
-                        + "(14,'GRAL URQUIZA'),(14,'SANTO PIPO'),(14,'COLONIA POLANA'),(14,'SAN IGNACIO'),(14,'CORPUS'),(14,'JARDIN AMERICA'),"
-                        + "(14,'HIPOLITO YRIGOYEN'),(15,'MOJON GRANDE'),(15,'SAN JAVIER'),(15,'Florentino Ameghino'),(16,'SAN PEDRO'),(17,'ALBA POSSE'),"
-                        + "(17,'COLONIA AURORA'),(17,'25 DE MAYO'),(18,'AZARA'),(18,'APÓSTOLES'),(18,'SAN JOSE'),(18,'TRES CAPONES'),(19,'DOS DE MAYO'),"
-                        + "(19,'CAMPO GRANDE'),(20,'MARTIRES'),(20,'BOMPLAN'),(20,'CERRO CORA'),(20,'CANDELARIA'),(20,'LORETO'),(20,'PROFUNDIDAD'),"
-                        + "(20,'SANTA ANA');");
+                        + "(21,'Sgo del Estero'),(22,'T. del Fuego'),(23,'Tucumán');");
+//                        + " INSERT INTO depto (iddepto, idprovincia, nombre) VALUES "
+//                        + "(1,5,'Corrientes'),(2,5,'Concepción'),(3,5,'Santo Tomé'),"
+//                        + "(4,13,'Posadas'), (5,13,'Concepción'), (6,13,'Eldorado'),"
+//                        + "(7,13,'General Manuel Belgrano'),(8,13,'Guaraní'),(9,13,'Iguazú'),"
+//                        + "(10,13,'Leandro N. Alem'),(11,13,'Libertador General San Martín'),"
+//                        + "(12,13,'Montecarlo'),(13,13,'OBERÁ'),(14,13,'San Ignacio'),"
+//                        + "(15,13,'San Javier'),(16,13,'San Pedro'),(17,13,'Veinticinco de Mayo'),"
+//                        + "(18,13,'APÓSTOLES'),(19,13,'Cainguás'),(20,13,'Candelaria');"
+//                        + " INSERT INTO municipio (iddepto, nombre) VALUES "
+//                        + "(4,'GARUPÁ'),(4,'POSADAS'),(4,'FACHINAL'),(5,'CONCEPCIÓN DE LA SIERRA'),(5,'SANTA MARIA'),(6,'COLONIA DELICIA'),(6,'9 DE JULIO'),"
+//                        + "(6,'EL DORADO'),(6,'COLONIA VICTORIA'),(7,'BERNARDO DE IRIGOYEN'),(7,'CMDTE ANDRESITO'),(7,'SAN ANTONIO'),(8,'SAN VICENTE'),"
+//                        + "(8,'EL SOBERBIO'),(9,'WANDA'),(9,'PUERTO LIBERTAD'),(9,'PUERTO ESPERANZA'),(9,'PUERTO IGUAZU'),(10,'ARROYO DEL MEDIO'),"
+//                        + "(10,'L.N ALEM'),(10,'DOS ARROYOS'),(10,'CAÁ-YARÍ'),(10,'OLEGARIO V. ANDRADE'),(10,'CERRO AZUL'),(10,'ALMAFUERTE'),"
+//                        + "(11,'PUERTO LEONI'),(11,'CAPIOVI'),(11,'PUERTO RICO'),(11,'RUIZ DE MONTOYA'),(12,'CARAGUATAY'),(13,'SAN MARTIN '),"
+//                        + "(13,'CAMPO VIERA'),(13,'COLONIA ALBERDI'),(13,'GRAL ALVEAR'),(13,'PANAMBI'),(13,'CAMPO RAMON'),(13,'GUARANI'),"
+//                        + "(14,'GRAL URQUIZA'),(14,'SANTO PIPO'),(14,'COLONIA POLANA'),(14,'SAN IGNACIO'),(14,'CORPUS'),(14,'JARDIN AMERICA'),"
+//                        + "(14,'HIPOLITO YRIGOYEN'),(15,'MOJON GRANDE'),(15,'SAN JAVIER'),(15,'Florentino Ameghino'),(16,'SAN PEDRO'),(17,'ALBA POSSE'),"
+//                        + "(17,'COLONIA AURORA'),(17,'25 DE MAYO'),(18,'AZARA'),(18,'APÓSTOLES'),(18,'SAN JOSE'),(18,'TRES CAPONES'),(19,'DOS DE MAYO'),"
+//                        + "(19,'CAMPO GRANDE'),(20,'MARTIRES'),(20,'BOMPLAN'),(20,'CERRO CORA'),(20,'CANDELARIA'),(20,'LORETO'),(20,'PROFUNDIDAD'),"
+//                        + "(20,'SANTA ANA');");
                 getJDBCConnection().commit();
                 getJDBCConnection().close();
 //            DAO.getEntityManager().getTransaction().commit();
             }// </editor-fold>
-
-            new ChequesController();
+            ChequesController chequesController = new ChequesController();
             em.getTransaction().commit();
         } catch (Exception ex) {
             if (em.getTransaction().isActive()) {
@@ -459,7 +467,7 @@ public abstract class DAO implements Runnable {
         return q;
     }
 
-    static Query createNativeQuery(String query, Class aClass, boolean withRefreshQueryHint) {
+    static Query createNativeQuery(String query, Class<?> aClass, boolean withRefreshQueryHint) {
         EntityManager em = getEntityManager();
         Query q = em.createNativeQuery(query, aClass);
         if (withRefreshQueryHint) {

@@ -21,6 +21,7 @@ import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
 import javax.swing.JFrame;
+import jpa.controller.RemesaJpaController;
 import net.sf.jasperreports.engine.JRException;
 
 /**
@@ -172,7 +173,7 @@ public class CtacteProveedorJpaController implements ActionListener {
       return listaCtaCteProveedor;
    }
 
-   CtacteProveedor findCtacteProveedorByFactura(Integer idFacturaCompra) throws NoResultException {
+   public CtacteProveedor findCtacteProveedorByFactura(Integer idFacturaCompra) throws NoResultException {
       return (CtacteProveedor) DAO.getEntityManager().createNativeQuery("select * from ctacte_proveedor o "
               + "where o.factura = " + idFacturaCompra, CtacteProveedor.class).getSingleResult();
 

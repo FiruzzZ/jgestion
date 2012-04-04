@@ -1,3 +1,11 @@
+2012/04/03
+ALTER TABLE presupuesto ADD COLUMN numero numeric(8,0);
+update presupuesto set numero = id;
+ALTER TABLE presupuesto add unique (numero, sucursal);
+ALTER TABLE recibo ADD COLUMN numero numeric(8,0);
+update recibo set numero = cast(substring(id || '' from 2) as integer);
+ALTER TABLE recibo add unique (numero, sucursal);
+
 2011/11/21
 //-- nueva estructura de mensajes informativos del sistema
 DROP TABLE msj_informativos;

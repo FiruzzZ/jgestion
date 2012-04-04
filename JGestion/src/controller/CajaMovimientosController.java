@@ -1,61 +1,35 @@
 package controller;
 
-import controller.exceptions.*;
-import entity.CajaMovimientos;
-import entity.ChequeTerceros;
-import entity.CtacteCliente;
-import entity.CtacteProveedor;
-import entity.DetalleAcreditacion;
-import entity.DetalleCompra;
-import entity.DetalleVenta;
-import entity.FacturaCompra;
-import entity.FacturaVenta;
+import controller.exceptions.MessageException;
+import controller.exceptions.MissingReportException;
+import entity.*;
+import gui.*;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
-import java.awt.event.MouseEvent;
-import java.math.BigDecimal;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import entity.Caja;
-import entity.ChequePropio;
-import entity.DetalleCajaMovimientos;
-import entity.DetalleRecibo;
-import entity.DetalleRemesa;
-import entity.MovimientoConcepto;
-import entity.Recibo;
-import entity.Remesa;
-import utilities.general.UTIL;
-import gui.JDABM;
-import gui.JDBuscador;
-import gui.JDCajaToCaja;
-import gui.JDCierreCaja;
-import gui.PanelBuscadorCajaToCaja;
-import gui.PanelBuscadorCajasCerradas;
-import gui.PanelBuscadorMovimientosVarios;
-import gui.PanelMovimientosVarios;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import javax.persistence.LockModeType;
 import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import jpa.controller.CajaMovimientosJpaController;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.eclipse.persistence.config.QueryHints;
+import utilities.general.UTIL;
 
 /**
  * Encargada de registrar todos los asientos (ingresos/egresos) de las cajas..
+ *
  * @author FiruzzZ
  */
-public class CajaMovimientosJpaController implements ActionListener {
+public class CajaMovimientosController implements ActionListener {
 
     public static final String CLASS_NAME = CajaMovimientos.class.getSimpleName();
     private JDCierreCaja jdCierreCaja;
@@ -67,507 +41,17 @@ public class CajaMovimientosJpaController implements ActionListener {
     private PanelBuscadorCajasCerradas panelBuscadorCajasCerradas;
     private CajaMovimientos selectedCajaMovimientos;
     private PanelBuscadorCajaToCaja panelBuscadorCajaToCaja;
+    private CajaMovimientosJpaController jpaController;
 
-    public CajaMovimientosJpaController() {
-    }
-
-    // <editor-fold defaultstate="collapsed" desc="CRUD..">
-    public EntityManager getEntityManager() {
-        return DAO.getEntityManager();
-    }
-
-    public void create(CajaMovimientos cajaMovimientos) {
-        if (cajaMovimientos.getDetalleCajaMovimientosList() == null) {
-            cajaMovimientos.setDetalleCajaMovimientosList(new ArrayList<DetalleCajaMovimientos>());
-        }
-        EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            Caja caja = cajaMovimientos.getCaja();
-            if (caja != null) {
-                caja = em.getReference(caja.getClass(), caja.getId());
-                cajaMovimientos.setCaja(caja);
-            }
-            List<DetalleCajaMovimientos> attachedDetalleCajaMovimientosList = new ArrayList<DetalleCajaMovimientos>();
-            for (DetalleCajaMovimientos dcmToAttach : cajaMovimientos.getDetalleCajaMovimientosList()) {
-                dcmToAttach = em.merge(dcmToAttach);
-                attachedDetalleCajaMovimientosList.add(dcmToAttach);
-            }
-            cajaMovimientos.setDetalleCajaMovimientosList(attachedDetalleCajaMovimientosList);
-            em.persist(cajaMovimientos);
-            if (caja != null) {
-                caja.getCajaMovimientosList().add(cajaMovimientos);
-                caja = em.merge(caja);
-            }
-            for (DetalleCajaMovimientos detalleCajaMovimientosListDetalleCajaMovimientos : cajaMovimientos.getDetalleCajaMovimientosList()) {
-                CajaMovimientos oldCajaMovimientos = detalleCajaMovimientosListDetalleCajaMovimientos.getCajaMovimientos();
-                detalleCajaMovimientosListDetalleCajaMovimientos.setCajaMovimientos(cajaMovimientos);
-                detalleCajaMovimientosListDetalleCajaMovimientos = em.merge(detalleCajaMovimientosListDetalleCajaMovimientos);
-                if (oldCajaMovimientos != null) {
-                    oldCajaMovimientos.getDetalleCajaMovimientosList().remove(detalleCajaMovimientosListDetalleCajaMovimientos);
-                    oldCajaMovimientos = em.merge(oldCajaMovimientos);
-                }
-            }
-            em.getTransaction().commit();
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
-    }
-
-    public void merge(CajaMovimientos cajaMovimientos) throws Exception {
-        EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            em.merge(cajaMovimientos);
-            em.getTransaction().commit();
-        } catch (Exception ex) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            throw ex;
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
-    }
-
-    public List<CajaMovimientos> findCajaMovimientosEntities() {
-        return findCajaMovimientosEntities(true, -1, -1);
-    }
-
-    public List<CajaMovimientos> findCajaMovimientosEntities(int maxResults, int firstResult) {
-        return findCajaMovimientosEntities(false, maxResults, firstResult);
-    }
-
-    private List<CajaMovimientos> findCajaMovimientosEntities(boolean all, int maxResults, int firstResult) {
-        EntityManager em = getEntityManager();
-        try {
-            Query q = em.createQuery("select object(o) from CajaMovimientos as o");
-            if (!all) {
-                q.setMaxResults(maxResults);
-                q.setFirstResult(firstResult);
-            }
-            return q.getResultList();
-        } finally {
-            em.close();
-        }
-    }
-
-    public CajaMovimientos findCajaMovimientos(Integer id) {
-        EntityManager em = getEntityManager();
-        try {
-            return em.find(CajaMovimientos.class, id);
-        } finally {
-            em.close();
-        }
-    }
-
-    public int getCajaMovimientosCount() {
-        EntityManager em = getEntityManager();
-        try {
-            Query q = em.createQuery("select count(o) from CajaMovimientos as o");
-            return ((Long) q.getSingleResult()).intValue();
-        } finally {
-            em.close();
-        }
-    }// </editor-fold>
-
-    void asentarMovimiento(FacturaCompra facturaCompra) throws Exception {
-        Logger.getLogger(CajaMovimientosJpaController.class).trace("asentarMovimiento (FacturaCompra): " + facturaCompra.getId() + " " + facturaCompra.getNumero());
-        CajaMovimientos cm = findCajaMovimientoAbierta(facturaCompra.getCaja());
-        EntityManager em = getEntityManager();
-        try {
-            em.getTransaction().begin();
-            CajaMovimientos cajaMovimientoActual = em.find(CajaMovimientos.class, cm.getId());
-            DetalleCajaMovimientos newDetalleCajaMovimiento = new DetalleCajaMovimientos();
-            newDetalleCajaMovimiento.setCajaMovimientos(cajaMovimientoActual);
-            newDetalleCajaMovimiento.setIngreso(false);
-            //el importe de las FacturaCompra son siempre negativos..
-            newDetalleCajaMovimiento.setMonto(-facturaCompra.getImporte());
-            newDetalleCajaMovimiento.setNumero(facturaCompra.getId());
-            newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.FACTU_COMPRA);
-            newDetalleCajaMovimiento.setDescripcion("F" + facturaCompra.getTipo() + UTIL.AGREGAR_CEROS(facturaCompra.getNumero(), 12));
-            newDetalleCajaMovimiento.setUsuario(UsuarioJpaController.getCurrentUser());
-            new DetalleCajaMovimientosJpaController().create(newDetalleCajaMovimiento);
-        } catch (Exception e) {
-            em.getTransaction().rollback();
-            throw e;
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
-    }
-
-    void asentarMovimiento(FacturaVenta facturaVenta) throws Exception {
-        Logger.getLogger(CajaMovimientosJpaController.class).trace("asentarMovimiento FactuaVenta");
-        //caja en la q se va asentar
-        CajaMovimientos cm = findCajaMovimientoAbierta(facturaVenta.getCaja());
-        EntityManager em = getEntityManager();
-        try {
-            em.getTransaction().begin();
-            CajaMovimientos cajaMovimientoActual = em.find(CajaMovimientos.class, cm.getId());
-            DetalleCajaMovimientos newDetalleCajaMovimiento = new DetalleCajaMovimientos();
-            newDetalleCajaMovimiento.setCajaMovimientos(cajaMovimientoActual);
-            newDetalleCajaMovimiento.setIngreso(true);
-            if (facturaVenta.getFormaPagoEnum().equals(Valores.FormaPago.CONTADO)) {
-                newDetalleCajaMovimiento.setMonto(facturaVenta.getImporte());
-            } else if (facturaVenta.getFormaPagoEnum().equals(Valores.FormaPago.CONTADO_CHEQUE)) {
-                BigDecimal importe = new BigDecimal(facturaVenta.getImporte());
-                ChequeTerceros chequeTerceros = new ChequeTercerosJpaController().findChequeTerceros(facturaVenta);
-                BigDecimal noEfectivo = chequeTerceros.getImporte();
-                //obtain the incom e cash from the sale 
-                newDetalleCajaMovimiento.setMonto(noEfectivo.subtract(importe).doubleValue());
-            } else {
-                throw new IllegalArgumentException(facturaVenta.getClass() + ".id=" + facturaVenta.getId()
-                        + " contiene FormaPago=" + facturaVenta.getFormaPagoEnum() + " NO ASENTABLE COMO MOVIMIENTO CONTABLE.");
-            }
-            newDetalleCajaMovimiento.setNumero(facturaVenta.getId());
-            newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.FACTU_VENTA);
-            newDetalleCajaMovimiento.setDescripcion(getDescripcion(facturaVenta));
-            newDetalleCajaMovimiento.setUsuario(UsuarioJpaController.getCurrentUser());
-            new DetalleCajaMovimientosJpaController().create(newDetalleCajaMovimiento);
-        } catch (Exception e) {
-            em.getTransaction().rollback();
-            throw e;
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
-    }
-
-    void asentarMovimiento(Recibo recibo) throws Exception {
-        //caja en la q se va asentar
-        CajaMovimientos cm = findCajaMovimientoAbierta(recibo.getCaja());
-        EntityManager em = getEntityManager();
-        try {
-            em.getTransaction().begin();
-            CajaMovimientos cajaMovimientoActual = em.find(CajaMovimientos.class, cm.getId());
-            DetalleCajaMovimientos newDetalleCajaMovimiento = new DetalleCajaMovimientos();
-            newDetalleCajaMovimiento.setCajaMovimientos(cajaMovimientoActual);
-            newDetalleCajaMovimiento.setIngreso(true);
-            newDetalleCajaMovimiento.setMonto(recibo.getMonto());
-            newDetalleCajaMovimiento.setNumero(recibo.getId());
-            newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.RECIBO);
-            newDetalleCajaMovimiento.setDescripcion("R" + UTIL.AGREGAR_CEROS(recibo.getId(), 12));
-            newDetalleCajaMovimiento.setUsuario(UsuarioJpaController.getCurrentUser());
-            new DetalleCajaMovimientosJpaController().create(newDetalleCajaMovimiento);
-        } catch (Exception e) {
-            em.getTransaction().rollback();
-            throw e;
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
-    }
-
-    void asentarMovimiento(Remesa remesa) throws Exception {
-        System.out.println("asentarMovimiento (Remesa)");
-        //caja en la q se va asentar
-        CajaMovimientos cm = findCajaMovimientoAbierta(remesa.getCaja());
-        EntityManager em = getEntityManager();
-        try {
-            em.getTransaction().begin();
-            CajaMovimientos cajaMovimientoActual = em.find(CajaMovimientos.class, cm.getId());
-            DetalleCajaMovimientos newDetalleCajaMovimiento = new DetalleCajaMovimientos();
-            newDetalleCajaMovimiento.setCajaMovimientos(cajaMovimientoActual);
-            newDetalleCajaMovimiento.setIngreso(false);
-            newDetalleCajaMovimiento.setMonto(-remesa.getMonto());
-            newDetalleCajaMovimiento.setNumero(remesa.getId());
-            newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.REMESA);
-            String descripcion = "R" + UTIL.AGREGAR_CEROS(remesa.getNumero(), 12);
-            newDetalleCajaMovimiento.setDescripcion(descripcion);
-            newDetalleCajaMovimiento.setUsuario(UsuarioJpaController.getCurrentUser());
-            new DetalleCajaMovimientosJpaController().create(newDetalleCajaMovimiento);
-        } catch (Exception e) {
-            em.getTransaction().rollback();
-            throw e;
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
-    }
-
-    void asentarMovimiento(ChequeTerceros cheque, Caja caja) throws Exception {
-        CajaMovimientos cm = findCajaMovimientoAbierta(caja);
-        EntityManager em = getEntityManager();
-        try {
-            em.getTransaction().begin();
-            CajaMovimientos cajaMovimientoActual = em.find(CajaMovimientos.class, cm.getId());
-            DetalleCajaMovimientos newDetalleCajaMovimiento = new DetalleCajaMovimientos();
-            newDetalleCajaMovimiento.setCajaMovimientos(cajaMovimientoActual);
-            newDetalleCajaMovimiento.setIngreso(true);
-            newDetalleCajaMovimiento.setMonto(cheque.getImporte().doubleValue());
-            newDetalleCajaMovimiento.setNumero(cheque.getId());
-            newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.CHEQUE_TERCEROS);
-            newDetalleCajaMovimiento.setDescripcion("CH" + cheque.getNumero() + " (" + cheque.getCliente().getNombre() + ")");
-            newDetalleCajaMovimiento.setUsuario(UsuarioJpaController.getCurrentUser());
-            new DetalleCajaMovimientosJpaController().create(newDetalleCajaMovimiento);
-        } catch (Exception e) {
-            em.getTransaction().rollback();
-            throw e;
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
-    }
-
-    void asentarMovimiento(ChequePropio cheque, Caja caja) throws Exception {
-        CajaMovimientos cm = findCajaMovimientoAbierta(caja);
-        EntityManager em = getEntityManager();
-        try {
-            em.getTransaction().begin();
-            CajaMovimientos cajaMovimientoActual = em.find(CajaMovimientos.class, cm.getId());
-            DetalleCajaMovimientos newDetalleCajaMovimiento = new DetalleCajaMovimientos();
-            newDetalleCajaMovimiento.setCajaMovimientos(cajaMovimientoActual);
-            newDetalleCajaMovimiento.setIngreso(false);
-            newDetalleCajaMovimiento.setMonto(-cheque.getImporte().doubleValue());
-            newDetalleCajaMovimiento.setNumero(cheque.getId());
-            newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.CHEQUE_PROPIO);
-            newDetalleCajaMovimiento.setDescripcion("CH" + cheque.getNumero() + " (" + cheque.getProveedor().getNombre() + ")");
-            newDetalleCajaMovimiento.setUsuario(UsuarioJpaController.getCurrentUser());
-            new DetalleCajaMovimientosJpaController().create(newDetalleCajaMovimiento);
-        } catch (Exception e) {
-            em.getTransaction().rollback();
-            throw e;
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
-    }
-
-    void anular(Recibo recibo) throws MessageException, Exception {
-        if (recibo.getEstado()) {
-            throw new MessageException("No se puede anular el recibo Nº" + recibo.getId() + " porque ESTADO =" + recibo.getEstado());
-        }
-        //caja en la q se va asentar
-        CajaMovimientos cm = findCajaMovimientoAbierta(recibo.getCaja());
-        EntityManager em = getEntityManager();
-        try {
-            em.getTransaction().begin();
-            CajaMovimientos cajaMovimientoActual = em.find(CajaMovimientos.class, cm.getId());
-            DetalleCajaMovimientos newDetalleCajaMovimiento = new DetalleCajaMovimientos();
-            newDetalleCajaMovimiento.setCajaMovimientos(cajaMovimientoActual);
-            newDetalleCajaMovimiento.setIngreso(false);
-            newDetalleCajaMovimiento.setMonto(-recibo.getMonto());
-            newDetalleCajaMovimiento.setNumero(recibo.getId());
-            newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.RECIBO);
-            newDetalleCajaMovimiento.setDescripcion("R" + UTIL.AGREGAR_CEROS(recibo.getId(), 12) + " [ANULADO]");
-            newDetalleCajaMovimiento.setUsuario(UsuarioJpaController.getCurrentUser());
-            new DetalleCajaMovimientosJpaController().create(newDetalleCajaMovimiento);
-        } catch (Exception e) {
-            em.getTransaction().rollback();
-            throw e;
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
+    public CajaMovimientosController() {
+        jpaController = new CajaMovimientosJpaController();
     }
 
     /**
-     * Realiza todos los procesos de anulación de una FacturaVenta/Comprobante.
-     *<html><ul>
-     * <li> Asentar el reintegro del importe de facturaVenta a la cajaMovimientoDestino.
-     * <li> Re-establece los stock de Productos involucrados.
-     * <li> Si es por CtaCte, ccc.estado = 3 (anulado), así como los posible pagos realizados.
-     * </ul></html>
-     * @param facturaVenta la cual se quiere anular
-     * @param cajaMovimientoDestino en la cual se van a registrar los movimientos contables
-     * @throws Exception
-     */
-    void anular(FacturaVenta facturaVenta, CajaMovimientos cajaMovimientoDestino) throws Exception {
-        EntityManager em = getEntityManager();
-        try {
-            em.getTransaction().begin();
-            facturaVenta = em.find(FacturaVenta.class, facturaVenta.getId());
-            cajaMovimientoDestino = em.find(CajaMovimientos.class, cajaMovimientoDestino.getId());
-            em.lock(facturaVenta, LockModeType.PESSIMISTIC_WRITE);
-
-            //generic info in case of anullation..
-            DetalleCajaMovimientos newDetalleCajaMovimiento = new DetalleCajaMovimientos();
-            newDetalleCajaMovimiento.setCajaMovimientos(cajaMovimientoDestino);
-            newDetalleCajaMovimiento.setIngreso(false);
-            newDetalleCajaMovimiento.setNumero(facturaVenta.getId());
-            newDetalleCajaMovimiento.setUsuario(UsuarioJpaController.getCurrentUser());
-            newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.ANULACION);
-
-            if (facturaVenta.getFormaPagoEnum().equals(Valores.FormaPago.CTA_CTE)) {
-                newDetalleCajaMovimiento.setMonto(-facturaVenta.getImporte());
-                newDetalleCajaMovimiento.setDescripcion(getDescripcion(facturaVenta) + " [ANULADA]");
-                new DetalleCajaMovimientosJpaController().create(newDetalleCajaMovimiento);
-            } else if (facturaVenta.getFormaPagoEnum().equals(Valores.FormaPago.CTA_CTE)) {
-                CtacteCliente ccc = new CtacteClienteJpaController().findCtacteClienteByFactura(facturaVenta.getId());
-                if (ccc.getEntregado() > 0) {
-                    //find all receipts (Recibo's) that contains a payment of the bill (FacturaVenta)
-                    List<Recibo> recibosList = new ReciboJpaController().findRecibosByFactura(facturaVenta);
-                    boolean detalleUnico;
-                    for (Recibo reciboQueEnSuDetalleContieneLaFacturaVenta : recibosList) {
-                        //if this is setted as TRUE, the entire Recibo must be annulled
-                        detalleUnico = (reciboQueEnSuDetalleContieneLaFacturaVenta.getDetalleReciboList().size() == 1);
-                        //NOTE!: A Recibo can have two details of the same facturaVenta.
-                        //One with DetalleRecibo.acreditado = FALSE and one with TRUE
-                        for (DetalleRecibo detalleRecibo : reciboQueEnSuDetalleContieneLaFacturaVenta.getDetalleReciboList()) {
-                            if (detalleRecibo.getFacturaVenta().equals(facturaVenta)) {
-                                detalleRecibo.setObservacion("[ANULADO] " + detalleRecibo.getObservacion());
-                                detalleRecibo.setAnulado(true);
-                                reciboQueEnSuDetalleContieneLaFacturaVenta.setMonto(
-                                        reciboQueEnSuDetalleContieneLaFacturaVenta.getMonto() - detalleRecibo.getMontoEntrega());
-                                if (detalleRecibo.isAcreditado()) {
-                                    DetalleAcreditacion anular = new DetalleAcreditacionJpaController().anular(detalleRecibo);
-                                    new NotaCreditoJpaController().acreditar(anular);
-                                } else {
-                                    newDetalleCajaMovimiento.setMonto(-detalleRecibo.getMontoEntrega());
-                                    newDetalleCajaMovimiento.setDescripcion(getDescripcion(facturaVenta) + " -> R" + reciboQueEnSuDetalleContieneLaFacturaVenta.getId() + " [ANULADA]");
-                                    new DetalleCajaMovimientosJpaController().create(newDetalleCajaMovimiento);
-                                }
-                                em.merge(detalleRecibo);
-                                reciboQueEnSuDetalleContieneLaFacturaVenta.setEstado(!detalleUnico);
-                                em.merge(reciboQueEnSuDetalleContieneLaFacturaVenta);
-                            }
-                        }
-                    }
-                }
-                ccc.setEstado(Valores.CtaCteEstado.ANULADA.getId());
-                em.merge(ccc);
-            } else if (facturaVenta.getFormaPago() == Valores.FormaPago.CHEQUE.getId()) {
-                throw new UnsupportedOperationException("Anulación de Facturas, FormaPago = CHEQUE no implementada aún");
-            } else if (facturaVenta.getFormaPago() == Valores.FormaPago.CONTADO_CHEQUE.getId()) {
-                throw new UnsupportedOperationException("Anulación de Facturas, FormaPago = CONTADO/CHEQUE no implementada aún");
-            }
-
-            facturaVenta.setAnulada(true);
-            em.merge(facturaVenta);
-            //re-estableciendo stock
-            List<DetalleVenta> itemList = facturaVenta.getDetallesVentaList();
-            ProductoJpaController productoCtrl = new ProductoJpaController();
-            StockJpaController stockCtrl = new StockJpaController();
-            for (DetalleVenta detallesVenta : itemList) {
-                stockCtrl.modificarStockBySucursal(detallesVenta.getProducto(), facturaVenta.getSucursal(), detallesVenta.getCantidad());
-                productoCtrl.updateStockActual(detallesVenta.getProducto(), detallesVenta.getCantidad());
-            }
-            em.getTransaction().commit();
-        } catch (Exception e) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            throw e;
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
-    }
-
-    /**
-     * Realiza todos los procesos de anulación de una FacturaCompra
-     *<html><ul>
-     * <li> Asentar el reintegro del importe de facturaVenta a la cajaMovimientoDestino.
-     * <li> Re-establece los stock de Productos involucrados.
-     * <li> Si es por CtaCte, ccc.estado = 3 (anulado), así como los posible pagos realizados.
-     * </ul></html>
-     * @param facturaCompra
-     * @param cajaMovimientoDestino
-     * @throws Exception
-     */
-    void anular(FacturaCompra facturaCompra, CajaMovimientos cajaMovimientoDestino) throws Exception {
-        EntityManager em = getEntityManager();
-        try {
-            em.getTransaction().begin();
-            facturaCompra = em.find(FacturaCompra.class, facturaCompra.getId());
-            cajaMovimientoDestino = em.find(CajaMovimientos.class, cajaMovimientoDestino.getId());
-            DetalleCajaMovimientos newDetalleCajaMovimiento;
-            //si fue al CONTADO...
-            if (facturaCompra.getFormaPago() == Valores.FormaPago.CONTADO.getId()) {
-                newDetalleCajaMovimiento = new DetalleCajaMovimientos();
-                newDetalleCajaMovimiento.setCajaMovimientos(cajaMovimientoDestino);
-                newDetalleCajaMovimiento.setIngreso(true);
-                newDetalleCajaMovimiento.setMonto(facturaCompra.getImporte());
-                newDetalleCajaMovimiento.setNumero(facturaCompra.getId());
-                newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.ANULACION);
-                newDetalleCajaMovimiento.setDescripcion("F" + facturaCompra.getTipo() + UTIL.AGREGAR_CEROS(facturaCompra.getNumero(), 12) + " [ANULADA]");
-                newDetalleCajaMovimiento.setUsuario(UsuarioJpaController.getCurrentUser());
-                new DetalleCajaMovimientosJpaController().create(newDetalleCajaMovimiento);
-            } else if (facturaCompra.getFormaPago() == Valores.FormaPago.CTA_CTE.getId()) {
-                // o CTA CTE..
-                CtacteProveedor ccp = new CtacteProveedorJpaController().findCtacteProveedorByFactura(facturaCompra.getId());
-                //si se hicieron REMESA's de pago de esta deuda
-                if (ccp.getEntregado() > 0) {
-                    List<Remesa> remesaList = new RemesaJpaController().findByFactura(facturaCompra);
-                    boolean detalleUnico; //Therefore, the entire Recibo must be annulled
-                    for (Remesa remesaQueEnSuDetalleContieneLaFactura : remesaList) {
-                        detalleUnico = false;
-                        if (remesaQueEnSuDetalleContieneLaFactura.getDetalleRemesaList().size() == 1) {
-                            detalleUnico = true;
-                        }
-                        for (DetalleRemesa detalleRemesa : remesaQueEnSuDetalleContieneLaFactura.getDetalleRemesaList()) {
-                            if (detalleRemesa.getFacturaCompra().equals(facturaCompra)) {
-                                detalleRemesa.setObservacion("ANULADO - " + detalleRemesa.getObservacion());
-                                detalleRemesa.setAnulado(true);
-                                remesaQueEnSuDetalleContieneLaFactura.setMontoEntrega(remesaQueEnSuDetalleContieneLaFactura.getMonto() - detalleRemesa.getMontoEntrega());
-                                newDetalleCajaMovimiento = new DetalleCajaMovimientos();
-                                newDetalleCajaMovimiento.setCajaMovimientos(cajaMovimientoDestino);
-                                newDetalleCajaMovimiento.setIngreso(true);
-                                newDetalleCajaMovimiento.setMonto(detalleRemesa.getMontoEntrega());
-                                newDetalleCajaMovimiento.setNumero(facturaCompra.getId());
-                                newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.ANULACION);
-                                newDetalleCajaMovimiento.setDescripcion("F" + facturaCompra.getTipo()
-                                        + UTIL.AGREGAR_CEROS(facturaCompra.getNumero(), 12)
-                                        + " -> R" + remesaQueEnSuDetalleContieneLaFactura.getNumero() + " [ANULADA]");
-                                newDetalleCajaMovimiento.setUsuario(UsuarioJpaController.getCurrentUser());
-                                em.persist(newDetalleCajaMovimiento);
-                                em.merge(detalleRemesa);
-                                if (detalleUnico) {
-                                    remesaQueEnSuDetalleContieneLaFactura.setEstado(false);
-                                }
-                                em.merge(remesaQueEnSuDetalleContieneLaFactura);
-                            }
-                        }
-                    }
-                }
-                ccp.setEstado((short) 3);
-                em.merge(ccp);
-            }
-
-            facturaCompra.setAnulada(true);
-            em.merge(facturaCompra);
-            //re-estableciendo stock
-            List<DetalleCompra> itemList = facturaCompra.getDetalleCompraList();
-            ProductoJpaController productoCtrl = new ProductoJpaController();
-            StockJpaController stockCtrl = new StockJpaController();
-            for (DetalleCompra detallesVenta : itemList) {
-                //resta el stock
-                stockCtrl.modificarStockBySucursal(detallesVenta.getProducto(), facturaCompra.getSucursal(), -detallesVenta.getCantidad());
-                //actualiza esa variable de mierda que no se para que creé..
-                productoCtrl.updateStockActual(detallesVenta.getProducto(), -detallesVenta.getCantidad());
-            }
-            em.getTransaction().commit();
-        } catch (Exception e) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            throw e;
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
-    }
-
-    /**
-     * Arma la descripción del detalleCajaMovimiento.
-     * Si se imprime factura ej: F + [letra de factura] + [número de factura]
-     * Si es interno ej: I + [número de movimento interno]
+     * Arma la descripción del detalleCajaMovimiento. Si se imprime factura ej:
+     * F + [letra de factura] + [número de factura] Si es interno ej: I +
+     * [número de movimento interno]
+     *
      * @param factura
      * @return Un String con la descripción.
      */
@@ -583,10 +67,13 @@ public class CajaMovimientosJpaController implements ActionListener {
     }
 
     /**
-     * Crea (abre) una <code>CajaMovimientos</code> implicitamente con la creación
-     * de una <code>Caja</code>, así como el 1er
+     * Crea (abre) una
+     * <code>CajaMovimientos</code> implicitamente con la creación de una
+     * <code>Caja</code>, así como el 1er
      * <code>DetalleCajaMovimientos</code> con monto inicial $0.
-     * @param caja a la cual se van a vincular la <code>CajaMovimientos</code> y
+     *
+     * @param caja a la cual se van a vincular la
+     * <code>CajaMovimientos</code> y
      * <code>DetalleCajaMovimientos</code>.
      */
     void nueva(Caja caja) {
@@ -606,13 +93,16 @@ public class CajaMovimientosJpaController implements ActionListener {
         dcm.setUsuario(UsuarioJpaController.getCurrentUser());
         dcm.setMovimientoConcepto(MovimientoConceptoJpaController.EFECTIVO);
         cm.getDetalleCajaMovimientosList().add(dcm);
-        create(cm);
+        jpaController.create(cm);
     }
 
     /**
-     * Crea (abre) LA SIGUIENTE <code>CajaMovimientos</code> implicita POST cierre de la actual.
-     * El montoApertura de la nueva <code>CajaMovimientos</code> es == al montoCierre de la anterior.
-     * La fechaApertura de la nueva es == a un día después de la anterior.
+     * Crea (abre) LA SIGUIENTE
+     * <code>CajaMovimientos</code> implicita POST cierre de la actual. El
+     * montoApertura de la nueva
+     * <code>CajaMovimientos</code> es == al montoCierre de la anterior. La
+     * fechaApertura de la nueva es == a un día después de la anterior.
+     *
      * @param cajaMovimiento la que precede a la que se va abrir.
      */
     private void abrirNextCajaMovimiento(CajaMovimientos cajaMovimiento) throws Exception {
@@ -636,37 +126,7 @@ public class CajaMovimientosJpaController implements ActionListener {
             dcm.setMovimientoConcepto(MovimientoConceptoJpaController.EFECTIVO);
         }
         cm.getDetalleCajaMovimientosList().add(dcm);
-        create(cm);
-    }
-
-    /**
-     * Busca la CajaMovimiento abierta correspodiente a la Caja candidata.
-     * Es decir con fecha_cierre == NULL
-     * @param cajaCandidata
-     * @return una entidad CajaMomiviento, o <code>null</code> si no existe una para la cajaCandidata
-     * @throws NoResultException
-     * @throws NonUniqueResultException
-     */
-    public CajaMovimientos findCajaMovimientoAbierta(Caja cajaCandidata) throws NoResultException, NonUniqueResultException {
-        EntityManager em = getEntityManager();
-        CajaMovimientos cajaMovimiento = null;
-        try {
-            //busca la cajaMovimiento cuya fechaCierre != NULL (debería haber solo UNA)
-            cajaMovimiento = (CajaMovimientos) em.createQuery("SELECT o FROM " + CLASS_NAME + " o"
-                    + " where o.fechaCierre is null AND o.caja.id =" + cajaCandidata.getId()).setHint(QueryHints.REFRESH, true).getSingleResult();
-        } catch (NoResultException ex) {
-            //cuando Ruben hace su magia pasa esto!
-            throw ex;
-        } catch (NonUniqueResultException ex) {
-            //esto ya sería el colmo...!!
-            Logger.getLogger(this.getClass()).log(Level.FATAL, "HAY MAS DE 1 ABIERTA!!! -> CAJA: " + cajaCandidata, ex);
-            throw ex;
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
-        return cajaMovimiento;
+        jpaController.create(cm);
     }
 
     public void initCierreCaja(JFrame frame, boolean modal) {
@@ -706,10 +166,10 @@ public class CajaMovimientosJpaController implements ActionListener {
                         }
                     } catch (MissingReportException ex) {
                         JOptionPane.showMessageDialog(jdCierreCaja, ex.getMessage());
-                        Logger.getLogger(CajaMovimientosJpaController.class.getName()).log(Level.ERROR, null, ex);
+                        Logger.getLogger(CajaMovimientosController.class.getName()).log(Level.ERROR, null, ex);
                     } catch (JRException ex) {
                         JOptionPane.showMessageDialog(jdCierreCaja, ex.getMessage());
-                        Logger.getLogger(CajaMovimientosJpaController.class.getName()).log(Level.ERROR, null, ex);
+                        Logger.getLogger(CajaMovimientosController.class.getName()).log(Level.ERROR, null, ex);
                     } catch (ClassCastException ex) {
                         jdCierreCaja.showMessage("No hay ninguna Caja seleccionada", null, 2);
                     }
@@ -848,7 +308,7 @@ public class CajaMovimientosJpaController implements ActionListener {
         //datos implicitos
         cajaMovimientos.setSistemaFechaCierre(new Date());
         cajaMovimientos.setUsuarioCierre(UsuarioJpaController.getCurrentUser());
-        merge(cajaMovimientos);
+        jpaController.merge(cajaMovimientos);
 
         abrirNextCajaMovimiento(cajaMovimientos);
         if (imprimir_caja_OK == 0) {
@@ -863,8 +323,10 @@ public class CajaMovimientosJpaController implements ActionListener {
     }
 
     /**
-     * Busca las Cajas ACTIVAS a las cuales tiene permisos el "Usuario actualmente loggeado",
-     * después busca las CajaMovimientos correspondientes a cada Caja
+     * Busca las Cajas ACTIVAS a las cuales tiene permisos el "Usuario
+     * actualmente loggeado", después busca las CajaMovimientos correspondientes
+     * a cada Caja
+     *
      * @return eso que tanto buscó!..
      */
     private List<CajaMovimientos> getCajaMovimientosActivasFromCurrentUser() {
@@ -875,11 +337,11 @@ public class CajaMovimientosJpaController implements ActionListener {
         for (Caja caja : cajasPermitidasList) {
             try {
                 //get cajaMovim abierta correspondiente a cada Caja
-                cajaMovimiento = findCajaMovimientoAbierta(caja);
+                cajaMovimiento = jpaController.findCajaMovimientoAbierta(caja);
             } catch (NoResultException ex) {
-                //no debería entrar acá!!! carajo
+                Logger.getLogger(this.getClass()).error("No debería entrar acá!! fixCaja=" + caja);
                 fixCajaMalAbierta(caja);
-                cajaMovimiento = findCajaMovimientoAbierta(caja);
+                cajaMovimiento = jpaController.findCajaMovimientoAbierta(caja);
             }
 //            if (cajaMovimiento != null) {
             cajaMovimientosAbiertasList.add(cajaMovimiento);
@@ -1007,21 +469,7 @@ public class CajaMovimientosJpaController implements ActionListener {
     }
 
     private int getNextMovimientoCajaToCaja() {
-        EntityManager em = getEntityManager();
-        try { //se especifica o.ingreso = true .. porque cada movimiento Caja to Caja
-            // genera 2 movimientos (un ingreso y un egreso) ... lo cual duplica la cantidad real
-            Object o = em.createQuery("SELECT COUNT(o.id) FROM DetalleCajaMovimientos o "
-                    + " WHERE o.ingreso = true AND o.tipo = " + DetalleCajaMovimientosJpaController.MOVIMIENTO_CAJA).getSingleResult();
-            if (o == null) {
-                return 1;
-            } else {
-                return 1 + Integer.valueOf(o.toString());
-            }
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
+        return jpaController.getNextNumeroMovimientoCajaToCaja();
     }
 
     private void setDatosCajaToCajaCombo(String name) {
@@ -1035,7 +483,7 @@ public class CajaMovimientosJpaController implements ActionListener {
                 cajaMovimientos = (CajaMovimientos) jdCajaToCaja.getCbCajaDestino().getSelectedItem();
             }
             //si no saltó la ClassCastException...
-            cajaMovimientos = findCajaMovimientos(cajaMovimientos.getId());
+            cajaMovimientos = jpaController.find(cajaMovimientos.getId());
             fechaApertura = cajaMovimientos.getFechaApertura();
 
             Double totalIngresos = 0.0; // VA INCLUIR monto de apertura
@@ -1064,6 +512,7 @@ public class CajaMovimientosJpaController implements ActionListener {
 
     /**
      * Desplega la GUI para realizar Movimientos varios
+     *
      * @param frame papi Component
      * @param modal
      */
@@ -1130,6 +579,7 @@ public class CajaMovimientosJpaController implements ActionListener {
 
     /**
      * Asienta movimientos varios (tipo == 8)
+     *
      * @throws MessageException
      */
     private DetalleCajaMovimientos setMovimientoVarios() throws MessageException {
@@ -1181,7 +631,7 @@ public class CajaMovimientosJpaController implements ActionListener {
                     new String[]{"Caja", "Descripción", "Mov. Concepto", "Monto", "Fecha (Hora)", "Usuario"},
                     new int[]{70, 160, 60, 20, 60, 50});
         } catch (Exception ex) {
-            Logger.getLogger(CajaMovimientosJpaController.class.getName()).log(Level.ERROR, null, ex);
+            Logger.getLogger(CajaMovimientosController.class.getName()).log(Level.ERROR, null, ex);
         }
         buscador.getbBuscar().addActionListener(new ActionListener() {
 
@@ -1190,7 +640,7 @@ public class CajaMovimientosJpaController implements ActionListener {
                 try {
                     armarQueryMovimientosVarios(false);
                 } catch (Exception ex) {
-                    Logger.getLogger(CajaMovimientosJpaController.class.getName()).log(Level.ERROR, null, ex);
+                    Logger.getLogger(CajaMovimientosController.class.getName()).log(Level.ERROR, null, ex);
                 }
             }
         });
@@ -1201,7 +651,7 @@ public class CajaMovimientosJpaController implements ActionListener {
                 try {
                     armarQueryMovimientosVarios(true);
                 } catch (Exception ex) {
-                    Logger.getLogger(CajaMovimientosJpaController.class.getName()).log(Level.ERROR, null, ex);
+                    Logger.getLogger(CajaMovimientosController.class.getName()).log(Level.ERROR, null, ex);
                 }
             }
         });
@@ -1456,12 +906,14 @@ public class CajaMovimientosJpaController implements ActionListener {
 
     /**
      * Pone como Descripción del DetalleCajaMovimiento la FacturaVenta
+     *
      * @param facturaVenta
      */
     void actualizarDescripcion(FacturaVenta facturaVenta) {
-        DetalleCajaMovimientos dcm = new DetalleCajaMovimientosJpaController().findDetalleCajaMovimientosByNumero(facturaVenta.getId(), DetalleCajaMovimientosJpaController.FACTU_VENTA);
+        DetalleCajaMovimientosJpaController c = new DetalleCajaMovimientosJpaController();
+        DetalleCajaMovimientos dcm = c.findDetalleCajaMovimientosByNumero(facturaVenta.getId(), DetalleCajaMovimientosJpaController.FACTU_VENTA);
         dcm.setDescripcion(getDescripcion(facturaVenta));
-        DAO.doMerge(dcm);
+        c.edit(dcm);
     }
 
     private CajaMovimientos getSelectedCajaMovimientos(javax.swing.JTable table) {
@@ -1531,25 +983,23 @@ public class CajaMovimientosJpaController implements ActionListener {
     }
 
     /**
-     * Abre una {@link CajaMovimientos} que ya debería haberse abierto.. pero por alguna
-     * razón fantástica, esto a veces no pasa
-     * Note: solo a Ruben le pasa esto
-     * @param caja la cual corresponde a la {@link CajaMovimientos} que debería estar
-     * abierta.
+     * Abre una {@link CajaMovimientos} que ya debería haberse abierto.. pero
+     * por alguna razón fantástica, esto a veces no pasa Note: solo a Ruben le
+     * pasa esto
+     *
+     * @param caja la cual corresponde a la {@link CajaMovimientos} que debería
+     * estar abierta.
      */
     private void fixCajaMalAbierta(Caja caja) {
-        EntityManager em = getEntityManager();
-        Integer lastIDCajaMovimientoCerrada = (Integer) em.createQuery("SELECT MAX(o.id) FROM " + CLASS_NAME + " o "
-                + "WHERE o.caja.id = " + caja.getId()).getSingleResult();
-        CajaMovimientos lastCajaMovCerrada = em.find(CajaMovimientos.class, lastIDCajaMovimientoCerrada);
-        Logger.getLogger(CajaMovimientosJpaController.class.getName()).warn(
+        Integer lastIDCajaMovimientoCerrada = jpaController.findLastCajaMovimientoIDCerrada(caja);
+        CajaMovimientos lastCajaMovCerrada = jpaController.find(lastIDCajaMovimientoCerrada);
+        Logger.getLogger(this.getClass()).warn(
                 "Corrigiendo error en creación de caja. fixCaja()"
                 + "\n\túltima Caja cerrada: id=" + caja.getId() + ", nombre=" + caja.getNombre() + "-> lastID:" + lastIDCajaMovimientoCerrada);
         try {
             abrirNextCajaMovimiento(lastCajaMovCerrada);
         } catch (Exception ex) {
-            Logger.getLogger(CajaMovimientosJpaController.class.getName()).log(Level.ERROR, null, ex);
+            Logger.getLogger(CajaMovimientosController.class.getName()).log(Level.ERROR, null, ex);
         }
-        em.close();
     }
 }
