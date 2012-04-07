@@ -345,6 +345,9 @@ public abstract class DAO implements Runnable {
                 permisos.setDatosGeneral(true);
                 permisos.setTesoreria(true);
                 permisos.setCerrarCajas(true);
+                permisos.setAbmOfertasweb(true);
+                permisos.setAbmCatalogoweb(true);
+                permisos.setOrdenesES(true);
                 em.persist(permisos);
                 permisos.setUsuario(u);
                 u.setPermisos(permisos);

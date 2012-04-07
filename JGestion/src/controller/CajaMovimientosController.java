@@ -144,7 +144,7 @@ public class CajaMovimientosController implements ActionListener {
                     jdCierreCaja.getjTable1(),
                     new String[]{"Descripción", "Monto", "Fecha (Hora)", "Usuario"},
                     new int[]{180, 20, 60, 40},
-                    new Class[]{null, String.class, String.class, null});
+                    new Class<?>[]{null, String.class, String.class, null});
             UTIL.setHorizonalAlignment(jdCierreCaja.getjTable1(), String.class, JLabel.RIGHT);
             UTIL.loadComboBox(jdCierreCaja.getCbCaja(), getCajaMovimientosActivasFromCurrentUser(), true);
             jdCierreCaja.getbBuscar().addActionListener(new ActionListener() {
@@ -241,7 +241,7 @@ public class CajaMovimientosController implements ActionListener {
 
     private void setInfoCajaMovimientos(CajaMovimientos cajaMovimientos) {
         DefaultTableModel dtm = jdCierreCaja.getDtm();
-        UTIL.limpiarDtm(dtm);
+        dtm.setRowCount(0);
         jdCierreCaja.setDcApertura(cajaMovimientos.getFechaApertura());
 
         // el detalleCajaMov de "apertura de caja" es ingreso = true

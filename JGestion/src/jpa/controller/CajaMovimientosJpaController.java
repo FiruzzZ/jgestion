@@ -12,6 +12,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
+import jgestion.JGestionUtils;
+import net.sf.jasperreports.components.barbecue.BarcodeProviders;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.eclipse.persistence.config.QueryHints;
@@ -34,7 +36,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
     }
 
     public void asentarMovimiento(FacturaCompra facturaCompra) throws Exception {
-        Logger.getLogger(CajaMovimientosController.class).trace("asentarMovimiento (FacturaCompra): " + facturaCompra.getId() + " " + facturaCompra.getNumero());
+        Logger.getLogger(this.getClass()).trace("asentarMovimiento (FacturaCompra): " + facturaCompra.getId() + " " + facturaCompra.getNumero());
         CajaMovimientos cm = findCajaMovimientoAbierta(facturaCompra.getCaja());
         EntityManager em = getEntityManager();
         try {
@@ -47,7 +49,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
             newDetalleCajaMovimiento.setMonto(-facturaCompra.getImporte());
             newDetalleCajaMovimiento.setNumero(facturaCompra.getId());
             newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.FACTU_COMPRA);
-            newDetalleCajaMovimiento.setDescripcion("F" + facturaCompra.getTipo() + UTIL.AGREGAR_CEROS(facturaCompra.getNumero(), 12));
+            newDetalleCajaMovimiento.setDescripcion("F" + JGestionUtils.getNumeracion(facturaCompra, true));
             newDetalleCajaMovimiento.setUsuario(UsuarioJpaController.getCurrentUser());
             new DetalleCajaMovimientosJpaController().create(newDetalleCajaMovimiento);
         } catch (Exception e) {
@@ -61,10 +63,10 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
     }
 
     public void asentarMovimiento(FacturaVenta facturaVenta) throws Exception {
-        Logger.getLogger(CajaMovimientosController.class).trace("asentarMovimiento FactuaVenta");
+        Logger.getLogger(this.getClass()).trace("asentarMovimiento FactuaVenta");
         //caja en la q se va asentar
-        CajaMovimientos cm = findCajaMovimientoAbierta(facturaVenta.getCaja());
         EntityManager em = getEntityManager();
+        CajaMovimientos cm = findCajaMovimientoAbierta(facturaVenta.getCaja());
         try {
             em.getTransaction().begin();
             CajaMovimientos cajaMovimientoActual = em.find(CajaMovimientos.class, cm.getId());
@@ -77,7 +79,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
                 BigDecimal importe = new BigDecimal(facturaVenta.getImporte());
                 ChequeTerceros chequeTerceros = new ChequeTercerosJpaController().findChequeTerceros(facturaVenta);
                 BigDecimal noEfectivo = chequeTerceros.getImporte();
-                //obtain the incom e cash from the sale 
+                //obtain the income cash from the sale 
                 newDetalleCajaMovimiento.setMonto(noEfectivo.subtract(importe).doubleValue());
             } else {
                 throw new IllegalArgumentException(facturaVenta.getClass() + ".id=" + facturaVenta.getId()
@@ -85,7 +87,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
             }
             newDetalleCajaMovimiento.setNumero(facturaVenta.getId());
             newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.FACTU_VENTA);
-            newDetalleCajaMovimiento.setDescripcion(getDescripcion(facturaVenta));
+            newDetalleCajaMovimiento.setDescripcion(JGestionUtils.getNumeracion(facturaVenta));
             newDetalleCajaMovimiento.setUsuario(UsuarioJpaController.getCurrentUser());
             new DetalleCajaMovimientosJpaController().create(newDetalleCajaMovimiento);
         } catch (Exception e) {
@@ -111,7 +113,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
             newDetalleCajaMovimiento.setMonto(recibo.getMonto());
             newDetalleCajaMovimiento.setNumero(recibo.getId());
             newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.RECIBO);
-            newDetalleCajaMovimiento.setDescripcion("R" + UTIL.AGREGAR_CEROS(recibo.getId(), 12));
+            newDetalleCajaMovimiento.setDescripcion("R" + JGestionUtils.getNumeracion(recibo, true));
             newDetalleCajaMovimiento.setUsuario(UsuarioJpaController.getCurrentUser());
             new DetalleCajaMovimientosJpaController().create(newDetalleCajaMovimiento);
         } catch (Exception e) {
@@ -125,7 +127,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
     }
 
     public void asentarMovimiento(Remesa remesa) throws Exception {
-        System.out.println("asentarMovimiento (Remesa)");
+        Logger.getLogger(this.getClass()).trace("asentarMovimiento (Remesa)");
         //caja en la q se va asentar
         CajaMovimientos cm = findCajaMovimientoAbierta(remesa.getCaja());
         EntityManager em = getEntityManager();
@@ -138,8 +140,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
             newDetalleCajaMovimiento.setMonto(-remesa.getMonto());
             newDetalleCajaMovimiento.setNumero(remesa.getId());
             newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.REMESA);
-            String descripcion = "R" + UTIL.AGREGAR_CEROS(remesa.getNumero(), 12);
-            newDetalleCajaMovimiento.setDescripcion(descripcion);
+            newDetalleCajaMovimiento.setDescripcion("RM" + JGestionUtils.getNumeracion(remesa, true));
             newDetalleCajaMovimiento.setUsuario(UsuarioJpaController.getCurrentUser());
             new DetalleCajaMovimientosJpaController().create(newDetalleCajaMovimiento);
         } catch (Exception e) {
@@ -204,7 +205,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
 
     public void anular(Recibo recibo) throws MessageException, Exception {
         if (recibo.getEstado()) {
-            throw new MessageException("No se puede anular el recibo Nº" + recibo.getId() + " porque ESTADO =" + recibo.getEstado());
+            throw new MessageException("No se puede anular el recibo Nº" + JGestionUtils.getNumeracion(recibo,true) + " porque ESTADO =" + recibo.getEstado());
         }
         //caja en la q se va asentar
         CajaMovimientos cm = findCajaMovimientoAbierta(recibo.getCaja());
@@ -218,7 +219,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
             newDetalleCajaMovimiento.setMonto(-recibo.getMonto());
             newDetalleCajaMovimiento.setNumero(recibo.getId());
             newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.RECIBO);
-            newDetalleCajaMovimiento.setDescripcion("R" + UTIL.AGREGAR_CEROS(recibo.getId(), 12) + " [ANULADO]");
+            newDetalleCajaMovimiento.setDescripcion("R" + JGestionUtils.getNumeracion(recibo, true) + " [ANULADO]");
             newDetalleCajaMovimiento.setUsuario(UsuarioJpaController.getCurrentUser());
             new DetalleCajaMovimientosJpaController().create(newDetalleCajaMovimiento);
         } catch (Exception e) {
@@ -249,7 +250,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
             em.getTransaction().begin();
             facturaVenta = em.find(FacturaVenta.class, facturaVenta.getId());
             cajaMovimientoDestino = em.find(CajaMovimientos.class, cajaMovimientoDestino.getId());
-            em.lock(facturaVenta, LockModeType.PESSIMISTIC_WRITE);
+            em.lock(facturaVenta, LockModeType.PESSIMISTIC_FORCE_INCREMENT);
 
             //generic info in case of anullation..
             DetalleCajaMovimientos newDetalleCajaMovimiento = new DetalleCajaMovimientos();
@@ -261,7 +262,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
 
             if (facturaVenta.getFormaPagoEnum().equals(Valores.FormaPago.CTA_CTE)) {
                 newDetalleCajaMovimiento.setMonto(-facturaVenta.getImporte());
-                newDetalleCajaMovimiento.setDescripcion(getDescripcion(facturaVenta) + " [ANULADA]");
+                newDetalleCajaMovimiento.setDescripcion(JGestionUtils.getNumeracion(facturaVenta) + " [ANULADA]");
                 new DetalleCajaMovimientosJpaController().create(newDetalleCajaMovimiento);
             } else if (facturaVenta.getFormaPagoEnum().equals(Valores.FormaPago.CTA_CTE)) {
                 CtacteCliente ccc = new CtacteClienteJpaController().findCtacteClienteByFactura(facturaVenta.getId());
@@ -285,7 +286,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
                                     new NotaCreditoJpaController().acreditar(anular);
                                 } else {
                                     newDetalleCajaMovimiento.setMonto(-detalleRecibo.getMontoEntrega());
-                                    newDetalleCajaMovimiento.setDescripcion(getDescripcion(facturaVenta) + " -> R" + reciboQueEnSuDetalleContieneLaFacturaVenta.getId() + " [ANULADA]");
+                                    newDetalleCajaMovimiento.setDescripcion(JGestionUtils.getNumeracion(facturaVenta) + " -> R" + reciboQueEnSuDetalleContieneLaFacturaVenta.getId() + " [ANULADA]");
                                     new DetalleCajaMovimientosJpaController().create(newDetalleCajaMovimiento);
                                 }
                                 em.merge(detalleRecibo);
@@ -352,7 +353,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
                 newDetalleCajaMovimiento.setMonto(facturaCompra.getImporte());
                 newDetalleCajaMovimiento.setNumero(facturaCompra.getId());
                 newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.ANULACION);
-                newDetalleCajaMovimiento.setDescripcion("F" + facturaCompra.getTipo() + UTIL.AGREGAR_CEROS(facturaCompra.getNumero(), 12) + " [ANULADA]");
+                newDetalleCajaMovimiento.setDescripcion("F" + JGestionUtils.getNumeracion(facturaCompra, true) + " [ANULADA]");
                 newDetalleCajaMovimiento.setUsuario(UsuarioJpaController.getCurrentUser());
                 new DetalleCajaMovimientosJpaController().create(newDetalleCajaMovimiento);
             } else if (facturaCompra.getFormaPago() == Valores.FormaPago.CTA_CTE.getId()) {
@@ -378,8 +379,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
                                 newDetalleCajaMovimiento.setMonto(detalleRemesa.getMontoEntrega());
                                 newDetalleCajaMovimiento.setNumero(facturaCompra.getId());
                                 newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.ANULACION);
-                                newDetalleCajaMovimiento.setDescripcion("F" + facturaCompra.getTipo()
-                                        + UTIL.AGREGAR_CEROS(facturaCompra.getNumero(), 12)
+                                newDetalleCajaMovimiento.setDescripcion("F" + JGestionUtils.getNumeracion(facturaCompra, true)
                                         + " -> R" + remesaQueEnSuDetalleContieneLaFactura.getNumero() + " [ANULADA]");
                                 newDetalleCajaMovimiento.setUsuario(UsuarioJpaController.getCurrentUser());
                                 em.persist(newDetalleCajaMovimiento);
@@ -484,25 +484,6 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
         }
         cm.getDetalleCajaMovimientosList().add(dcm);
         create(cm);
-    }
-
-    /**
-     * Arma la descripción del detalleCajaMovimiento. Si se imprime factura ej:
-     * F + [letra de factura] + [número de factura] Si es interno ej: I +
-     * [número de movimento interno]
-     *
-     * @param factura
-     * @return Un String con la descripción.
-     */
-    private String getDescripcion(FacturaVenta facturaVenta) {
-        String codigoDescrip;
-        if (facturaVenta.getNumero() == 0) {
-            codigoDescrip = "I" + facturaVenta.getMovimientoInterno();
-        } else {
-            codigoDescrip = "F" + facturaVenta.getTipo()
-                    + UTIL.AGREGAR_CEROS(String.valueOf(facturaVenta.getNumero()), 12);
-        }
-        return codigoDescrip;
     }
 
     public Integer findLastCajaMovimientoIDCerrada(Caja caja) {

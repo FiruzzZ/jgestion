@@ -96,6 +96,7 @@ public class ProductoController implements ActionListener, KeyListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
+                    UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.ABM_PRODUCTOS);
                     eliminarProducto();
                     contenedor.showMessage("Producto eliminado..", CLASS_NAME, 1);
                 } catch (NonexistentEntityException ex) {
@@ -669,14 +670,6 @@ public class ProductoController implements ActionListener, KeyListener {
     }
 
     private void eliminarProducto() throws MessageException, NonexistentEntityException, DatabaseErrorException {
-        // <editor-fold defaultstate="collapsed" desc="checking Permiso">
-        try {
-            UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.ABM_PRODUCTOS);
-        } catch (MessageException ex) {
-            javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
-            return;
-        }// </editor-fold>
-
         if (EL_OBJECT == null) {
             if (contenedor != null && contenedor.getjTable1().getSelectedRow() != -1) {
                 EL_OBJECT = productoJpaController.find((Integer) contenedor.getSelectedValue(0));

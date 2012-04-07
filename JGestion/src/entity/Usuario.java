@@ -1,6 +1,7 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.*;
@@ -52,6 +53,17 @@ public class Usuario implements Serializable {
     public Usuario() {
     }
 
+    public Usuario(String nick, String pass, int estado, Permisos permisos, List<Stock> stockList, List<PermisosCaja> permisosCajaList, List<PermisosSucursal> sucursales) {
+        this.nick = nick;
+        this.pass = pass;
+        this.estado = estado;
+        this.permisos = permisos;
+        this.stockList = stockList;
+        this.permisosCajaList = permisosCajaList;
+        this.sucursales = sucursales;
+    }
+
+    
     public Usuario(Integer id) {
         this.id = id;
     }
@@ -113,6 +125,9 @@ public class Usuario implements Serializable {
     }
 
     public List<PermisosCaja> getPermisosCajaList() {
+        if (permisos == null) {
+            permisosCajaList = new ArrayList<PermisosCaja>(5);
+        }
         return permisosCajaList;
     }
 
@@ -121,6 +136,9 @@ public class Usuario implements Serializable {
     }
 
     public List<PermisosSucursal> getSucursales() {
+        if (sucursales == null) {
+            sucursales = new ArrayList<PermisosSucursal>(5);
+        }
         return sucursales;
     }
 

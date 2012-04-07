@@ -135,7 +135,7 @@ public class ReciboController implements ActionListener, FocusListener {
             public void actionPerformed(ActionEvent e) {
                 try {
                     checkConstraints();
-                    Recibo recibo = getEntityFromUI();
+                    Recibo recibo = setEntity();
                     persist(recibo, jdReRe.getCheckPagoConCheque().isSelected());
                     rereSelected = recibo;
                     jdReRe.showMessage(CLASS_NAME + " creado..", CLASS_NAME, 1);
@@ -161,7 +161,7 @@ public class ReciboController implements ActionListener, FocusListener {
                     } else {
                         //cuando se está creando un recibo y se va imprimir al tokesaun!
                         checkConstraints();
-                        Recibo recibo = getEntityFromUI();
+                        Recibo recibo = setEntity();
                         persist(recibo, jdReRe.getCheckPagoConCheque().isSelected());
                         rereSelected = recibo;
                         imprimirRecibo(rereSelected);
@@ -293,7 +293,7 @@ public class ReciboController implements ActionListener, FocusListener {
         }
     }
 
-    private Recibo getEntityFromUI() throws Exception {
+    private Recibo setEntity() throws Exception {
         Recibo recibo = new Recibo();
         recibo.setCaja((Caja) jdReRe.getCbCaja().getSelectedItem());
         recibo.setSucursal((Sucursal) jdReRe.getCbSucursal().getSelectedItem());
@@ -307,7 +307,7 @@ public class ReciboController implements ActionListener, FocusListener {
         FacturaVentaJpaController fcc = new FacturaVentaJpaController();
         DetalleRecibo detalle;
         String observacion;
-        for (int i = dtm.getRowCount() - 1; i > -1; i--) {
+        for (int i = 0; i < dtm.getRowCount(); i++) {
             detalle = new DetalleRecibo();
             detalle.setFacturaVenta(fcc.findFacturaVenta(Integer.valueOf(dtm.getValueAt(i, 0).toString())));
             observacion = dtm.getValueAt(i, 2) != null ? dtm.getValueAt(i, 2).toString() : null;
@@ -556,7 +556,7 @@ public class ReciboController implements ActionListener, FocusListener {
         for (CtacteCliente ctacteCliente : ctacteClientePendientesList) {
             FacturaVenta factura = ctacteCliente.getFactura();
 
-            l.add(new ComboBoxWrapper<CtacteCliente>(ctacteCliente, ctacteCliente.getId(), JGestionUtils.getFullIdentificador(factura)));
+            l.add(new ComboBoxWrapper<CtacteCliente>(ctacteCliente, ctacteCliente.getId(), JGestionUtils.getNumeracion(factura)));
         }
         UTIL.loadComboBox(jdReRe.getCbCtaCtes(), ctacteClientePendientesList, false);
     }
@@ -577,14 +577,11 @@ public class ReciboController implements ActionListener, FocusListener {
 
     private void armarQuery() throws MessageException {
         StringBuilder query = new StringBuilder(
-                "SELECT o.* FROM recibo o, cliente p , caja c, detalle_recibo dr, factura_venta f, usuario u, sucursal s  "
-                + " WHERE o.id = dr.recibo "
-                + "   AND o.caja = c.id "
-                + "   AND o.usuario = u.id "
-                + "   AND o.sucursal = s.id "
-                + "   AND f.id = dr.factura_venta "
-                + "   AND p.id = f.cliente"
-                + "   ");
+                "SELECT o.*"
+                + " FROM recibo o JOIN caja c ON (o.caja = c.id)"
+                + " JOIN detalle_recibo dr ON (o.id = dr.recibo) JOIN factura_venta f ON (dr.factura_venta = f.id)"
+                + " JOIN cliente p ON (f.cliente = p.id) JOIN usuario u ON (o.usuario = u.id) JOIN sucursal s ON (o.sucursal = s.id)"
+                + " WHERE o.id is not null  ");
 
         long numero;
         //filtro por nº de ReRe
@@ -645,7 +642,7 @@ public class ReciboController implements ActionListener, FocusListener {
             query.append(" AND p.id = ").append(((Cliente) buscador.getCbClieProv().getSelectedItem()).getId());
         }
 
-        query.append(" GROUP BY o.id, o.fecha_carga, o.monto, o.usuario, o.caja, o.sucursal, o.fecha_recibo, o.estado"
+        query.append(" GROUP BY o.id, o.numero, o.fecha_carga, o.monto, o.usuario, o.caja, o.sucursal, o.fecha_recibo, o.estado"
                 + " ORDER BY o.id");
         cargarBuscador(query.toString());
     }

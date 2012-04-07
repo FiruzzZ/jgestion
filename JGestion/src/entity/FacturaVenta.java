@@ -96,7 +96,7 @@ public class FacturaVenta implements Serializable {
 
     public FacturaVenta() {
     }
-    
+
     @PostPersist
     public Integer getId() {
         return id;
@@ -286,15 +286,6 @@ public class FacturaVenta implements Serializable {
         return true;
     }
 
-    @Override
-    public String toString() {
-        if (this.getMovimientoInterno() == 0) {
-            return UTIL.AGREGAR_CEROS(String.valueOf(this.getNumero()), 12);
-        } else {
-            return "I" + String.valueOf(this.getMovimientoInterno());
-        }
-    }
-
     public void setAnulada(boolean anulada) {
         this.anulada = anulada;
     }
@@ -309,5 +300,21 @@ public class FacturaVenta implements Serializable {
 
     public void setCheque(ChequeTerceros cheque) {
         this.cheque = cheque;
+    }
+
+    @Override
+    public String toString() {
+        return "FacturaVenta{" + "id=" + id + ", tipo=" + tipo + ", fechaVenta="
+                + fechaVenta + ", importe=" + importe + ", fechaalta=" + fechaalta
+                + ", descuento=" + descuento + ", numero=" + numero
+                + ", sucursal=" + sucursal + ", iva10=" + iva10 + ", iva21="
+                + iva21 + ", movimientoInterno=" + movimientoInterno
+                + ", cliente=" + cliente + ", listaPrecios=" + listaPrecios
+                + ", usuario=" + usuario + ", caja=" + caja
+                + ", gravado=" + gravado + ", formaPago=" + formaPago
+                + ", diasCtaCte=" + diasCtaCte + ", anulada=" + anulada
+                + ", remito=" + remito + ", cheque=" + cheque 
+                + ", detallesVentaList=" + detallesVentaList
+                + '}';
     }
 }

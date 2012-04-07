@@ -21,6 +21,8 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import jgestion.JGestionUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -230,7 +232,7 @@ public class RemitoJpaController implements ActionListener, KeyListener {
             // </editor-fold>
 
             Remito newRemito = new Remito();
-            newRemito.setNumero(Long.valueOf(facturaVentaUI.getTfFacturaCuarto() + facturaVentaUI.getTfFacturaOcteto()));
+            newRemito.setNumero(getNextNumero(selectedSucursal));
             newRemito.setCliente(selectedCliente);
             newRemito.setSucursal(selectedSucursal);
             newRemito.setFechaRemito(facturaVentaUI.getDcFechaFactura());
@@ -257,7 +259,7 @@ public class RemitoJpaController implements ActionListener, KeyListener {
         }
     }
 
-    public Long getNextNumero(Sucursal s) {
+    public Integer getNextNumero(Sucursal s) {
         EntityManager em = getEntityManager();
         Long nextRemitoNumero = 1L;
         try {
@@ -269,7 +271,7 @@ public class RemitoJpaController implements ActionListener, KeyListener {
         } finally {
             em.close();
         }
-        return nextRemitoNumero;
+        return nextRemitoNumero.intValue();
     }
 
     private void doImprimir(Remito p) {
@@ -301,8 +303,10 @@ public class RemitoJpaController implements ActionListener, KeyListener {
      * @param frame
      * @param modal
      * @param setVisible
+     * @throws MessageException  
      */
-    public void initBuscador(JFrame frame, boolean modal, boolean setVisible) {
+    public void initBuscador(JFrame frame, boolean modal, boolean setVisible) throws MessageException {
+        UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.VENTA);
         buscador = new JDBuscadorReRe(frame, "Buscador - " + CLASS_NAME, modal, "Cliente", "Nº " + CLASS_NAME);
         initBuscador(setVisible);
     }
@@ -330,8 +334,9 @@ public class RemitoJpaController implements ActionListener, KeyListener {
         UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getSucursales(), true);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
-                new String[]{"Nº " + CLASS_NAME, "Nº Factura", "Cliente", "Fecha", "Sucursal", "Usuario"},
-                new int[]{15, 20, 50, 50, 80, 50});
+                new String[]{"Instance", "Nº " + CLASS_NAME, "Nº Factura", "Cliente", "Fecha", "Sucursal", "Usuario"},
+                new int[]{1, 15, 20, 50, 50, 80, 50});
+        UTIL.hideColumnTable(buscador.getjTable1(), 0);
         MODO_VISTA = true;
         buscador.setListeners(this);
         buscador.setVisible(setVisible);
@@ -423,22 +428,22 @@ public class RemitoJpaController implements ActionListener, KeyListener {
             }
         }
         query.append(" ORDER BY o.id");
-        org.apache.log4j.Logger.getLogger(this.getClass()).log(org.apache.log4j.Level.DEBUG, "QUERY: " + query.toString());
-        cargarDtmBuscador(query.toString());
+        cargarTablaBuscador(query.toString());
     }
 
-    private void cargarDtmBuscador(String query) {
+    private void cargarTablaBuscador(String query) {
         buscador.dtmRemoveAll();
-        javax.swing.table.DefaultTableModel dtm = buscador.getDtm();
+        DefaultTableModel dtm = buscador.getDtm();
         List<Remito> list = DAO.getEntityManager().createNativeQuery(query, Remito.class).getResultList();
         for (Remito remito : list) {
             dtm.addRow(new Object[]{
-                        remito, // <--- no es visible
-                        remito.getFacturaVenta(),
-                        remito.getCliente(),
+                        remito,
+                        JGestionUtils.getNumeracion(remito, true),
+                        remito.getFacturaVenta() != null ? JGestionUtils.getNumeracion(remito.getFacturaVenta()) : "",
+                        remito.getCliente().getNombre(),
                         UTIL.DATE_FORMAT.format(remito.getFechaRemito()),
-                        remito.getSucursal(),
-                        remito.getUsuario()});
+                        remito.getSucursal().getNombre(),
+                        remito.getUsuario().getNick()});
         }
     }
 
