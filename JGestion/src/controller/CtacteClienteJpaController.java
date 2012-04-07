@@ -215,14 +215,8 @@ public class CtacteClienteJpaController implements ActionListener {
         return listaCtaCteCliente;
     }
 
-    public void initResumenCtaCte(JFrame frame, boolean modal) {
-        // <editor-fold defaultstate="collapsed" desc="checking Permiso">
-        try {
-            UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
-        } catch (MessageException ex) {
-            javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
-            return;
-        }// </editor-fold>
+    public void initResumenCtaCte(JFrame frame, boolean modal) throws MessageException {
+        UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
 
         resumenCtaCtes = new JDResumenCtaCtes(frame, modal, true);
         resumenCtaCtes.getjTableResumen().addMouseListener(new MouseAdapter() {
@@ -307,7 +301,7 @@ public class CtacteClienteJpaController implements ActionListener {
         totalDebe = 0.0;
         totalHaber = 0.0;
 
-        String query = "SELECT ccc.*, s.puntoventa "
+        String query = "SELECT ccc.*, sucursal.puntoventa "
                 + " FROM ctacte_cliente ccc, cliente c, factura_venta fv JOIN sucursal ON (fv.sucursal = sucursal.id) "
                 + " WHERE ccc.factura = fv.id "
                 + " AND fv.cliente = c.id ";
@@ -331,7 +325,7 @@ public class CtacteClienteJpaController implements ActionListener {
         cargarTablaResumen(query);
         if (imprimirResumen) {
             doReportResumenCCC(((Cliente) resumenCtaCtes.getCbClieProv().getSelectedItem()),
-                    resumenCtaCtes.getDcDesde() != null ? " AND ccc.fecha_carga >= '" + UTIL.DATE_FORMAT.format(resumenCtaCtes.getDcDesde()) + "'" : "");
+                    resumenCtaCtes.getDcDesde() != null ? (" AND ccc.fecha_carga >= '" + UTIL.DATE_FORMAT.format(resumenCtaCtes.getDcDesde()) + "'") : "");
         }
     }
 
@@ -353,7 +347,7 @@ public class CtacteClienteJpaController implements ActionListener {
 
             dtm.addRow(new Object[]{
                         ctaCte.getId(), // <--------- No es visible desde la GUI
-                        factura.getTipo() + JGestionUtils.getNumeracion(factura, true),
+                        JGestionUtils.getNumeracion(factura),
                         UTIL.DATE_FORMAT.format(factura.getFechaVenta()),
                         UTIL.DATE_FORMAT.format(UTIL.customDateByDays(factura.getFechaVenta(), ctaCte.getDias())),
                         UTIL.PRECIO_CON_PUNTO.format(ctaCte.getImporte()),
@@ -365,15 +359,12 @@ public class CtacteClienteJpaController implements ActionListener {
         }
     }
 
-    private void doReportResumenCCC(Cliente cliente, String filter_date) throws Exception {
+    private void doReportResumenCCC(Cliente cliente, String filterdate) throws Exception {
         Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_ResumenCCC.jasper", "Resumen CCC");
         r.addCurrent_User();
         r.addParameter("CLIENTE_ID", cliente.getId());
         r.addParameter("SUBREPORT_DIR", Reportes.FOLDER_REPORTES);
-        if (filter_date == null) {
-            filter_date = "";
-        }
-        r.addParameter("FILTER_DATE", filter_date);
+        r.addParameter("FILTER_DATE", filterdate == null ? "" : filterdate);
         r.printReport(true);
     }
 

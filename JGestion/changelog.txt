@@ -1,4 +1,5 @@
 2012/04/03
+//ALTER TABLE recibo  COLUMN id integer; y agregar la nextval('recibo_id_seq')
 ALTER TABLE presupuesto ADD COLUMN numero numeric(8,0);
 update presupuesto set numero = id;
 ALTER TABLE presupuesto add unique (numero, sucursal);

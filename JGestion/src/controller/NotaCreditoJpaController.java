@@ -165,7 +165,7 @@ public class NotaCreditoJpaController {
         jdFacturaVenta.setVisible(setVisible);
     }
 
-    private Long getNextNumeroNotaCredito(Sucursal s) {
+    private Integer getNextNumeroNotaCredito(Sucursal s) {
         EntityManager em = getEntityManager();
         Long nextRemitoNumero = 1L;
         try {
@@ -177,7 +177,7 @@ public class NotaCreditoJpaController {
         } finally {
             em.close();
         }
-        return nextRemitoNumero;
+        return nextRemitoNumero.intValue();
     }
 
     private NotaCredito setEntity() throws MessageException, Exception {
@@ -231,7 +231,8 @@ public class NotaCreditoJpaController {
         return newNotaCredito;
     }
 
-    public void initBuscador(JFrame owner, final boolean paraAnular) {
+    public void initBuscador(JFrame owner, final boolean paraAnular) throws MessageException {
+        UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.VENTA);
         buscador = new JDBuscadorReRe(owner, "Buscador - Notas de crédito", true, "Cliente", "Nº");
         buscador.hideCaja();
         buscador.hideFactura();

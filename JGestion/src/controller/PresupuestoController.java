@@ -308,8 +308,9 @@ public class PresupuestoController implements ActionListener, KeyListener {
         }
     }
 
-    public void initBuscador(javax.swing.JFrame frame) {
-        buscador = new JDBuscadorReRe(frame, "Buscador - " + CLASS_NAME, true, "Cliente", "Nº " + CLASS_NAME);
+    public void initBuscador(JFrame owner) throws MessageException {
+        UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.VENTA);
+        buscador = new JDBuscadorReRe(owner, "Buscador - " + CLASS_NAME, true, "Cliente", "Nº " + CLASS_NAME);
         buscador.getjTable1().addMouseListener(new java.awt.event.MouseAdapter() {
 
             @Override

@@ -840,7 +840,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jDesktopPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 428, Short.MAX_VALUE)
+            .addComponent(jDesktopPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 428, Short.MAX_VALUE)
         );
 
         pack();
@@ -1039,14 +1039,18 @@ public class JFP extends javax.swing.JFrame implements Runnable {
     }//GEN-LAST:event_jMenuItem23ActionPerformed
 
     private void jMenuItem30ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem30ActionPerformed
-        new CtacteClienteJpaController().initResumenCtaCte(this, false);
+        try {
+            new CtacteClienteJpaController().initResumenCtaCte(this, false);
+        } catch (Exception ex) {
+            showError(ex.getMessage());
+        }
         refreshConnectionDB();
     }//GEN-LAST:event_jMenuItem30ActionPerformed
 
     private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
         try {
             new PresupuestoController().initPresupuesto(this, false, true, true);
-        } catch (MessageException ex) {
+        } catch (Exception ex) {
             showError(ex.getMessage());
         }
         refreshConnectionDB();
@@ -1056,8 +1060,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         try {
             new RemitoJpaController().initRemito(this, false, true, true);
         } catch (Exception ex) {
-            throw new IllegalArgumentException(ex.getMessage(), ex);
-//            showError(ex.getMessage());
+            showError(ex.getMessage());
         }
         refreshConnectionDB();
     }//GEN-LAST:event_jMenuItem5ActionPerformed
@@ -1065,14 +1068,18 @@ public class JFP extends javax.swing.JFrame implements Runnable {
     private void jMenuItem18ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem18ActionPerformed
         try {
             new FacturaVentaJpaController().initBuscador(this, true, false);
-        } catch (MessageException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage());
+        } catch (Exception ex) {
+            showError(ex.getMessage());
         }
         refreshConnectionDB();
     }//GEN-LAST:event_jMenuItem18ActionPerformed
 
     private void jMenuItem36ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem36ActionPerformed
-        new PresupuestoController().initBuscador(this);
+        try {
+            new PresupuestoController().initBuscador(this);
+        } catch (Exception ex) {
+            showError(ex.getMessage());
+        }
         refreshConnectionDB();
     }//GEN-LAST:event_jMenuItem36ActionPerformed
 
@@ -1082,7 +1089,11 @@ public class JFP extends javax.swing.JFrame implements Runnable {
     }//GEN-LAST:event_jMenuItem34ActionPerformed
 
     private void jMenuItem35ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem35ActionPerformed
-        new RemitoJpaController().initBuscador(this, true, true);
+        try {
+            new RemitoJpaController().initBuscador(this, true, true);
+        } catch (Exception ex) {
+            showError(ex.getMessage());
+        }
         refreshConnectionDB();
     }//GEN-LAST:event_jMenuItem35ActionPerformed
 
@@ -1176,11 +1187,19 @@ public class JFP extends javax.swing.JFrame implements Runnable {
     }//GEN-LAST:event_jMenuItem47ActionPerformed
 
     private void jMenuItem48ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem48ActionPerformed
-        new NotaCreditoJpaController().initBuscador(this, false);
+        try {
+            new NotaCreditoJpaController().initBuscador(this, false);
+        } catch (Exception ex) {
+            showError(ex.getMessage());
+        }
     }//GEN-LAST:event_jMenuItem48ActionPerformed
 
     private void jMenuItem49ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem49ActionPerformed
-        new NotaCreditoJpaController().initBuscador(this, true);
+        try {
+            new NotaCreditoJpaController().initBuscador(this, true);
+        } catch (MessageException ex) {
+            showError(ex.getMessage());
+        }
     }//GEN-LAST:event_jMenuItem49ActionPerformed
 
     private void jMenuItem50ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem50ActionPerformed

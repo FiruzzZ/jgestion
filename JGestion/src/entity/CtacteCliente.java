@@ -145,9 +145,10 @@ public class CtacteCliente implements Serializable {
       return true;
    }
 
-   @Override
-   public String toString() {
-      return this.getFactura().toString();
-   }
+    @Override
+    public String toString() {
+        return "CtacteCliente{" + "id=" + id + ", dias=" + dias + ", importe=" + importe + ", estado=" + estado + ", entregado=" + entregado + ", fechaCarga=" + fechaCarga + ", factura=" + factura + '}';
+    }
 
+   
 }
