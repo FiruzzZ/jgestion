@@ -200,11 +200,11 @@ public class ProveedorJpaController implements ActionListener {
                 abm = null;
                 EL_OBJECT = null;
             } else if (boton.getName().equalsIgnoreCase("bDepartamentoS")) {
-                new DepartamentoJpaController().initContenedor(null, true);
+                new DepartamentoController().initContenedor(null, true);
                 //cuando cierra el abm
                 if (panelABM.getCbProvincias().getSelectedIndex() > 0) {
                     UTIL.loadComboBox(panelABM.getCbDepartamentos(),
-                            new DepartamentoJpaController().findDeptosFromProvincia(
+                            new DepartamentoController().findDeptosFromProvincia(
                             ((Provincia) panelABM.getCbProvincias().getSelectedItem()).getId()), true);
                 } else {
                     UTIL.loadComboBox(panelABM.getCbDepartamentos(), null, true);
@@ -227,7 +227,7 @@ public class ProveedorJpaController implements ActionListener {
             javax.swing.JComboBox combo = (javax.swing.JComboBox) e.getSource();
             if (combo.getName().equalsIgnoreCase("cbProvincias")) {
                 if (combo.getSelectedIndex() > 0) {
-                    UTIL.loadComboBox(panelABM.getCbDepartamentos(), new DepartamentoJpaController().findDeptosFromProvincia(((Provincia) combo.getSelectedItem()).getId()), true);
+                    UTIL.loadComboBox(panelABM.getCbDepartamentos(), new DepartamentoController().findDeptosFromProvincia(((Provincia) combo.getSelectedItem()).getId()), true);
                 } else {
                     UTIL.loadComboBox(panelABM.getCbDepartamentos(), null, true);
                 }
@@ -312,7 +312,6 @@ public class ProveedorJpaController implements ActionListener {
         abm.setTitle("ABM " + CLASS_NAME + "es");
         abm.setListener(this);
         abm.setLocationRelativeTo(contenedor);
-//      abm.setLocationByPlatform(true);
         abm.setVisible(true);
     }
 

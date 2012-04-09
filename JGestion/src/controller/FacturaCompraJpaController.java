@@ -143,7 +143,7 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
         }
     }// </editor-fold>
 
-    public void initJDFacturaCompra(JFrame frame, boolean modal) throws MessageException {
+    public void initJDFacturaCompra(JFrame owner, boolean modal) throws MessageException {
         UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.COMPRA);
         UsuarioHelper uh = new UsuarioHelper();
         if (uh.getSucursales().isEmpty()) {
@@ -152,7 +152,7 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
         if (uh.getCajas(true).isEmpty()) {
             throw new IllegalArgumentException(Main.resourceBundle.getString("unassigned.caja"));
         }
-        jdFactura = new JDFacturaCompra(frame, modal, 1);
+        jdFactura = new JDFacturaCompra(owner, modal, 1);
         UTIL.getDefaultTableModel(jdFactura.getjTable1(), colsName, colsWidth);
         //esconde la columna IVA-Producto
         UTIL.hideColumnTable(jdFactura.getjTable1(), 0);
@@ -213,7 +213,7 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
             }
         });
         jdFactura.setListener(this);
-        jdFactura.setLocationByPlatform(true);
+        jdFactura.setLocationRelativeTo(owner);
         jdFactura.setVisible(true);
     }
 

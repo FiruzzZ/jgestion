@@ -139,8 +139,8 @@ public class CtacteProveedor implements Serializable {
       return true;
    }
 
-   @Override
-   public String toString() {
-      return UTIL.AGREGAR_CEROS(String.valueOf(this.getFactura().getNumero()), 12);
-   }
+    @Override
+    public String toString() {
+        return "CtacteProveedor{" + "id=" + id + ", dias=" + dias + ", importe=" + importe + ", estado=" + estado + ", entregado=" + entregado + ", fechaCarga=" + fechaCarga + ", factura=" + factura + '}';
+    }
 }

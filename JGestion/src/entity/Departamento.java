@@ -35,7 +35,7 @@ public class Departamento implements Serializable {
     @Id
     @Basic(optional = false)
     @Column(name = "iddepto", nullable = false)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Basic(optional = false)
     @Column(name = "nombre", nullable = false, length = 250)

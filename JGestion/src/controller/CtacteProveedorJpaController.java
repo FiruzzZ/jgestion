@@ -179,16 +179,16 @@ public class CtacteProveedorJpaController implements ActionListener {
 
    }
 
-   public void iniResumenCtaCte(JFrame frame, boolean modal) {
+   public void iniResumenCtaCte(JFrame owner, boolean modal) {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
          UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
       } catch (MessageException ex) {
-         javax.swing.JOptionPane.showMessageDialog(frame, ex.getMessage());
+         javax.swing.JOptionPane.showMessageDialog(owner, ex.getMessage());
          return;
       }// </editor-fold>
 
-      resumenCtaCtes = new JDResumenCtaCtes(frame, modal, false);
+      resumenCtaCtes = new JDResumenCtaCtes(owner, modal, false);
       resumenCtaCtes.getjTableResumen().addMouseListener(new MouseAdapter() {
 
          @Override
@@ -208,7 +208,7 @@ public class CtacteProveedorJpaController implements ActionListener {
               new String[]{"Nº Factura", "Observación", "Monton"},
               new int[]{60, 100, 50});
       resumenCtaCtes.setListener(this);
-      resumenCtaCtes.setLocationByPlatform(true);
+      resumenCtaCtes.setLocationRelativeTo(owner);
       resumenCtaCtes.setVisible(true);
    }
 

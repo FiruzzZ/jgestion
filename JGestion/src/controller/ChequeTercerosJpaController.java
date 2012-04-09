@@ -179,10 +179,10 @@ public class ChequeTercerosJpaController implements ActionListener, Serializable
     //</editor-fold>
 
     /**
-     * 
-     * @param isEditing 
+     *
+     * @param isEditing
      * @param e se posicionará a la ventana en relación a este, can be null.
-     * @throws MessageException 
+     * @throws MessageException
      */
     private JDialog initABM(boolean isEditing) throws MessageException {
         UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
@@ -517,11 +517,14 @@ public class ChequeTercerosJpaController implements ActionListener, Serializable
     }
 
     /**
-     * Levanta la UI de ABM Cheques, para la creación de uno y relacionar este al
+     * Levanta la UI de ABM Cheques, para la creación de uno y relacionar este
+     * al
      * {@link Recibo}.
      * {@link ChequeTerceros#bound} will be set as {@link DetalleCajaMovimientosJpaController#RECIBO}
+     *
      * @param recibo
-     * @return instancia de {@link ChequeTerceros}, a la cual solo le falta settear
+     * @return instancia de {@link ChequeTerceros}, a la cual solo le falta
+     * settear
      * {@link ChequeTerceros#boundId} == {@link Recibo#id}
      * @throws MessageException Si la creación es cancelada o interrumpida.
      */
@@ -548,10 +551,12 @@ public class ChequeTercerosJpaController implements ActionListener, Serializable
     }
 
     /**
-     * Get the GUI ABM de cheques, seteada con algunos valores de la FacturaVenta.
+     * Get the GUI ABM de cheques, seteada con algunos valores de la
+     * FacturaVenta.
+     *
      * @param newFacturaVenta
      * @return
-     * @throws MessageException 
+     * @throws MessageException
      */
     JDialog getABMCheque(FacturaVenta newFacturaVenta) throws MessageException {
         initABM(false);
@@ -585,15 +590,18 @@ public class ChequeTercerosJpaController implements ActionListener, Serializable
         ChequeTerceros cheque;
         cheque = (ChequeTerceros) getEntityManager().
                 createQuery("SELECT o FROM " + CLASS_NAME + " o WHERE o.bound=" + DetalleCajaMovimientosJpaController.RECIBO
-                + " AND o.boundId=" + recibo.getId()).setHint(QueryHints.REFRESH, true).getSingleResult();
+                + " AND o.boundId=" + recibo.getId()).
+                setHint(QueryHints.REFRESH, true).getSingleResult();
         return cheque;
     }
 
     /**
      * Inicializa la vista encargada de administrar cheques (Propios o Terceros)
+     *
      * @param parent JFrame padre.
-     * @param listener Para los botones laterales. Si <code>listener == null</code> se
-     * asignará <code>this</code> por defecto.
+     * @param listener Para los botones laterales. Si
+     * <code>listener == null</code> se asignará
+     * <code>this</code> por defecto.
      * @return una instancia de {@link JDChequesManager}.
      */
     public JDialog initManager(JFrame parent, ActionListener listener) {
@@ -718,6 +726,7 @@ public class ChequeTercerosJpaController implements ActionListener, Serializable
 
     /**
      * Levanta una UI de selección de Caja, en la cual se va asentar el cheque.
+     *
      * @return instance of Caja si seleccionó
      */
     private Caja initUIAsentarChequeToCaja() {

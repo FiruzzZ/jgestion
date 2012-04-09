@@ -36,20 +36,20 @@ public abstract class DAO implements Runnable {
         //singleton..
     }
 
-    public static void setProperties(Properties p) {
-        properties = p;
-        if (properties == null) {
+    @SuppressWarnings("AssignmentToCollectionOrArrayFieldFromParameter")
+    public static void setProperties(final Properties p) {
+        if (p == null) {
             throw new IllegalArgumentException("Archivo de configuración de conexión no válido.\nNull Properties");
         }
-        if (properties.isEmpty()) {
+        if (p.isEmpty()) {
             throw new IllegalArgumentException("Archivo de configuración de conexión no válido.\nEmpty Properties");
         }
-        if (properties.getProperty("database") == null
-                || properties.getProperty("port") == null
-                || properties.getProperty("server") == null) {
+        if (p.getProperty("database") == null
+                || p.getProperty("port") == null
+                || p.getProperty("server") == null) {
             throw new IllegalArgumentException("Archivo de configuración de conexión no válido");
         }
-        DAO.properties = p;
+        properties = p;
     }
 
     @Override
@@ -66,7 +66,7 @@ public abstract class DAO implements Runnable {
             server = properties.getProperty("server");
             port = properties.getProperty("port");
             database = properties.getProperty("database");
-            if(properties.getProperty("create-tables", "false").equals("true")) {
+            if (properties.getProperty("create-tables", "false").equals("true")) {
                 properties.setProperty("eclipselink.ddl-generation", "create-tables");
             }
             properties.setProperty("javax.persistence.jdbc.url", "jdbc:postgresql://" + server + ":" + port + "/" + database);
@@ -309,10 +309,11 @@ public abstract class DAO implements Runnable {
      * Crea todos los datos que el sistema necesita inicialmente:
      * <br>*Contribuyentes <br>*Usuario: admin pws: adminadmin (permisos full)
      * <br>*ya vemos que mas..
-     * @throws Exception 
+     *
+     * @throws Exception
      */
     public static void setDefaultData() throws Exception {
-        if(properties.getProperty("populate", "false").equals("false")) {
+        if (properties.getProperty("populate", "false").equals("false")) {
             return;
         }
         Logger.getLogger(DAO.class).trace("Iniciando carga de DefaultData: populating..");
@@ -392,7 +393,7 @@ public abstract class DAO implements Runnable {
 
             // <editor-fold defaultstate="collapsed" desc="MovimientoConcepto.EFECTIVO">
             if (em.createQuery("SELECT COUNT(o) FROM " + MovimientoConceptoJpaController.CLASS_NAME + " o").getSingleResult().toString().equalsIgnoreCase("0")) {
-                System.out.println("Creando Unidadmedida..");
+                System.out.println("Creando MovimientoConcepto..");
                 MovimientoConcepto o = new MovimientoConcepto();
                 o.setId(1);
                 o.setNombre("EFECTIVO");
@@ -412,7 +413,7 @@ public abstract class DAO implements Runnable {
                         + "(9,'Jujuy'), (10,'La Pampa'), (11,'La Rioja'), (12,'Mendoza'),"
                         + "(13,'Misiones'),(14,'Neuquén'),(15,'Río Negro'),(16,'Salta'),"
                         + "(17,'San Juan'),(18,'San Luis'),(19,'Santa Cruz'),(20,'Santa Fe'),"
-                        + "(21,'Sgo del Estero'),(22,'T. del Fuego'),(23,'Tucumán');");
+                        + "(21,'Santiago del Estero'),(22,'Tierra del Fuego'),(23,'Tucumán');");
 //                        + " INSERT INTO depto (iddepto, idprovincia, nombre) VALUES "
 //                        + "(1,5,'Corrientes'),(2,5,'Concepción'),(3,5,'Santo Tomé'),"
 //                        + "(4,13,'Posadas'), (5,13,'Concepción'), (6,13,'Eldorado'),"

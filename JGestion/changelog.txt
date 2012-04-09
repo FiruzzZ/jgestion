@@ -1,12 +1,31 @@
 2012/04/03
-//ALTER TABLE recibo  COLUMN id integer; y agregar la nextval('recibo_id_seq')
+CREATE TABLE usuario_permisossucursal (
+  usuario_id integer NOT NULL,
+  sucursales_id integer NOT NULL,
+  CONSTRAINT usuario_permisossucursal_pkey PRIMARY KEY (usuario_id, sucursales_id),
+  CONSTRAINT fk_usuario_permisossucursal_sucursales_id FOREIGN KEY (sucursales_id)
+      REFERENCES permisossucursal (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT fk_usuario_permisossucursal_usuario_id FOREIGN KEY (usuario_id)
+      REFERENCES usuario (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (  OIDS=FALSE);
+
 ALTER TABLE presupuesto ADD COLUMN numero numeric(8,0);
 update presupuesto set numero = id;
 ALTER TABLE presupuesto add unique (numero, sucursal);
 ALTER TABLE recibo ADD COLUMN numero numeric(8,0);
 update recibo set numero = cast(substring(id || '' from 2) as integer);
+CREATE SEQUENCE recibo_id_seq
+   INCREMENT 1
+   START 1
+   MINVALUE 1
+   MAXVALUE 99999999
+   CACHE 1;
 ALTER TABLE recibo add unique (numero, sucursal);
-
+ALTER TABLE recibo ALTER id TYPE integer;
+ALTER TABLE recibo ALTER COLUMN id SET DEFAULT nextval('recibo_id_seq');
 2011/11/21
 //-- nueva estructura de mensajes informativos del sistema
 DROP TABLE msj_informativos;

@@ -111,7 +111,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
             newDetalleCajaMovimiento.setCajaMovimientos(cajaMovimientoActual);
             newDetalleCajaMovimiento.setIngreso(true);
             newDetalleCajaMovimiento.setMonto(recibo.getMonto());
-            newDetalleCajaMovimiento.setNumero(recibo.getId());
+            newDetalleCajaMovimiento.setNumero(Long.valueOf(recibo.getId()));
             newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.RECIBO);
             newDetalleCajaMovimiento.setDescripcion("R" + JGestionUtils.getNumeracion(recibo, true));
             newDetalleCajaMovimiento.setUsuario(UsuarioJpaController.getCurrentUser());
@@ -205,7 +205,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
 
     public void anular(Recibo recibo) throws MessageException, Exception {
         if (recibo.getEstado()) {
-            throw new MessageException("No se puede anular el recibo Nº" + JGestionUtils.getNumeracion(recibo,true) + " porque ESTADO =" + recibo.getEstado());
+            throw new MessageException("No se puede anular el recibo Nº" + JGestionUtils.getNumeracion(recibo, true) + " porque ESTADO =" + recibo.getEstado());
         }
         //caja en la q se va asentar
         CajaMovimientos cm = findCajaMovimientoAbierta(recibo.getCaja());
@@ -217,7 +217,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
             newDetalleCajaMovimiento.setCajaMovimientos(cajaMovimientoActual);
             newDetalleCajaMovimiento.setIngreso(false);
             newDetalleCajaMovimiento.setMonto(-recibo.getMonto());
-            newDetalleCajaMovimiento.setNumero(recibo.getId());
+            newDetalleCajaMovimiento.setNumero(Long.valueOf(recibo.getId()));
             newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.RECIBO);
             newDetalleCajaMovimiento.setDescripcion("R" + JGestionUtils.getNumeracion(recibo, true) + " [ANULADO]");
             newDetalleCajaMovimiento.setUsuario(UsuarioJpaController.getCurrentUser());
@@ -286,7 +286,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
                                     new NotaCreditoJpaController().acreditar(anular);
                                 } else {
                                     newDetalleCajaMovimiento.setMonto(-detalleRecibo.getMontoEntrega());
-                                    newDetalleCajaMovimiento.setDescripcion(JGestionUtils.getNumeracion(facturaVenta) + " -> R" + reciboQueEnSuDetalleContieneLaFacturaVenta.getId() + " [ANULADA]");
+                                    newDetalleCajaMovimiento.setDescripcion(JGestionUtils.getNumeracion(facturaVenta) + " -> R" + JGestionUtils.getNumeracion(reciboQueEnSuDetalleContieneLaFacturaVenta, true) + " [ANULADA]");
                                     new DetalleCajaMovimientosJpaController().create(newDetalleCajaMovimiento);
                                 }
                                 em.merge(detalleRecibo);

@@ -441,7 +441,7 @@ public class PresupuestoController implements ActionListener, KeyListener {
         jdFacturaVenta.setTfTotalIVA21(UTIL.PRECIO_CON_PUNTO.format(presupuesto.getIva21()));
         jdFacturaVenta.setTfTotal(UTIL.PRECIO_CON_PUNTO.format(presupuesto.getImporte()));
         jdFacturaVenta.modoVista(); //   <----------------------
-        jdFacturaVenta.setLocationByPlatform(true);
+        jdFacturaVenta.setLocationRelativeTo(buscador);
         jdFacturaVenta.setVisible(true);
     }
 }

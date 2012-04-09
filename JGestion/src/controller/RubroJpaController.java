@@ -14,12 +14,14 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.table.DefaultTableModel;
 
 /**
- * Clase encargada del DAO y CRUD de los Rubro's de los Productos, Clientes
- * y Proveedores.
+ * Clase encargada del DAO y CRUD de los Rubro's de los Productos, Clientes y
+ * Proveedores.
+ *
  * @author FiruzzZ
  */
 public class RubroJpaController implements ActionListener, MouseListener {
@@ -32,8 +34,8 @@ public class RubroJpaController implements ActionListener, MouseListener {
     private final int[] colsWidth = {20, 120, 80};
     private JDMiniABM abm;
     /**
-     * Con este, separamos los rubros que usan las distintas entidades.
-     * 1= productos, 2= clientes, 3 = proveedores
+     * Con este, separamos los rubros que usan las distintas entidades. 1=
+     * productos, 2= clientes, 3 = proveedores
      */
     private final short TIPO;
     private Rubro rubro;
@@ -203,10 +205,21 @@ public class RubroJpaController implements ActionListener, MouseListener {
         }// </editor-fold>
     }
 
-    public void initABM(JFrame frame, boolean modal) throws MessageException {
-        UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.DATOS_GENERAL);
-        abm = new JDMiniABM(frame, modal);
-        abm.setLocationRelativeTo(frame);
+    public JDialog getABM(JDialog owner) throws MessageException {
+        UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.ABM_PRODUCTOS);
+        abm = new JDMiniABM(owner, true);
+        initABM();
+        return abm;
+    }
+
+    public JDialog getABM(JFrame owner) throws MessageException {
+        UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.ABM_PRODUCTOS);
+        abm = new JDMiniABM(owner, true);
+        initABM();
+        return abm;
+    }
+
+    private void initABM() throws MessageException {
         abm.hideFieldExtra();
         abm.hideBtnLock();
         abm.setTitle("ABM - Rubros de " + rubroToString());
@@ -217,7 +230,6 @@ public class RubroJpaController implements ActionListener, MouseListener {
         UTIL.hideColumnTable(abm.getjTable1(), 0);
         cargarDTM(abm.getDTM(), null);
         abm.setListeners(this);
-        abm.setVisible(true);
     }
 
     public void mouseReleased(MouseEvent e) {

@@ -431,7 +431,8 @@ public class CtacteClienteJpaController implements ActionListener {
      *
      * @param owner el papi de la ventana
      */
-    public void initCheckVencimientos(JFrame owner) {
+    public void initCheckVencimientos(JFrame owner) throws MessageException {
+        UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
         panelCCCheck = new PanelCtaCteCheckVencimientos();
         panelCCCheck.getCbEntidadElegida().addActionListener(new ActionListener() {
 

@@ -140,7 +140,6 @@ public class MunicipioJpaController implements ActionListener, MouseListener, Ke
         UTIL.getDefaultTableModel(contenedor.getjTable1(), colsName, colsWidth);
         cargarDTM(contenedor.getDTM(), null);
         contenedor.setListener(this);
-        contenedor.setLocationByPlatform(true);
         contenedor.setVisible(true);
     }
 
@@ -174,7 +173,7 @@ public class MunicipioJpaController implements ActionListener, MouseListener, Ke
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    Logger.getLogger(DepartamentoJpaController.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(DepartamentoController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             } else if (boton.getName().equalsIgnoreCase("edit")) {
                 try {
@@ -183,7 +182,7 @@ public class MunicipioJpaController implements ActionListener, MouseListener, Ke
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    Logger.getLogger(DepartamentoJpaController.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(DepartamentoController.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
             } else if (boton.getName().equalsIgnoreCase("del")) {
@@ -198,10 +197,10 @@ public class MunicipioJpaController implements ActionListener, MouseListener, Ke
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (IllegalOrphanException ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    Logger.getLogger(DepartamentoJpaController.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(DepartamentoController.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (NonexistentEntityException ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    Logger.getLogger(DepartamentoJpaController.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(DepartamentoController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             } else if (boton.getName().equalsIgnoreCase("Print")) {
             } else if (boton.getName().equalsIgnoreCase("exit")) {
@@ -213,13 +212,14 @@ public class MunicipioJpaController implements ActionListener, MouseListener, Ke
                     String msj = municipio.getId() == null ? "Registrado.." : "Modificado..";
                     persistEntity(municipio);
                     abm.showMessage(msj, CLASS_NAME, 1);
+                    abm.dispose();
                     cargarDTM(contenedor.getDTM(), null);
                     municipio = null;
                 } catch (MessageException ex) {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                    Logger.getLogger(DepartamentoJpaController.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(DepartamentoController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             } else if (boton.getName().equalsIgnoreCase("cancelar")) {
                 abm.dispose();
@@ -255,7 +255,7 @@ public class MunicipioJpaController implements ActionListener, MouseListener, Ke
     private void setComboBoxDepartamentos(int idProvincia) {
         if (idProvincia != 0) {
             UTIL.loadComboBox(panel.getCbDepartamentos(),
-                    new DepartamentoJpaController().findDeptosFromProvincia(idProvincia), true);
+                    new DepartamentoController().findDeptosFromProvincia(idProvincia), true);
         } else {
             UTIL.loadComboBox(panel.getCbDepartamentos(), null, true);
         }
@@ -290,7 +290,6 @@ public class MunicipioJpaController implements ActionListener, MouseListener, Ke
             abm.setLocationRelativeTo((java.awt.Component) e.getSource());
         }
         abm.setListener(this);
-        abm.setLocationByPlatform(true);
         abm.setVisible(true);
     }
 
