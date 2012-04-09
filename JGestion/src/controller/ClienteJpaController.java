@@ -192,7 +192,8 @@ public class ClienteJpaController implements ActionListener {
     private void initABM(boolean isEditing, ActionEvent e) throws MessageException {
         UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.ABM_CLIENTES);
         if (isEditing && EL_OBJECT == null) {
-            throw new MessageException("Debe elegir una fila de la tabla");
+            throw new MessageException("Debe elegir una fila");
+
         }
 
         panelABM = new PanelABMProveedores();
@@ -476,8 +477,10 @@ public class ClienteJpaController implements ActionListener {
                     if (selectedRow > -1) {
                         EL_OBJECT = DAO.getEntityManager().find(Cliente.class,
                                 Integer.valueOf((contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
-                        initABM(true, e);
+                    } else {
+                        EL_OBJECT = null;
                     }
+                    initABM(true, e);
                 } catch (MessageException ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
@@ -539,11 +542,11 @@ public class ClienteJpaController implements ActionListener {
                 abm = null;
                 EL_OBJECT = null;
             } else if (boton.equals(panelABM.getbDepartamentos())) {
-                new DepartamentoJpaController().initContenedor(null, true);
+                new DepartamentoController().initContenedor(null, true);
                 //cuando cierra el abm
                 if (panelABM.getCbProvincias().getSelectedIndex() > 0) {
                     UTIL.loadComboBox(panelABM.getCbDepartamentos(),
-                            new DepartamentoJpaController().findDeptosFromProvincia(
+                            new DepartamentoController().findDeptosFromProvincia(
                             ((Provincia) panelABM.getCbProvincias().getSelectedItem()).getId()), true);
                 } else {
                     UTIL.loadComboBox(panelABM.getCbDepartamentos(), null, true);
@@ -613,8 +616,8 @@ public class ClienteJpaController implements ActionListener {
         return t;
     }
 
-    public JDialog initClienteToProveedor(JFrame jFrame) {
-        initContenedor(jFrame, true);
+    public JDialog initClienteToProveedor(JFrame owner) {
+        initContenedor(owner, true);
         contenedor.setButtonsVisible(false);
         contenedor.getLabelMensaje().setText("<html>Esta opción le permite crear un Proveedor de los datos de un Cliente</html>");
         contenedor.getbNuevo().setVisible(true);
@@ -625,10 +628,14 @@ public class ClienteJpaController implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Integer clienteID = (Integer) UTIL.getSelectedValue(contenedor.getjTable1(), 0);
-                Cliente cliente = findCliente(clienteID);
                 try {
-                    if (cliente == null) {
+                    if (clienteID == null) {
                         throw new MessageException("Seleccione el " + CLASS_NAME + " que desea convertir");
+                    }
+                    Cliente cliente = findCliente(clienteID);
+                    if (cliente == null) {
+                        cargarContenedorTabla(contenedor.getDTM(), null);
+                        throw new MessageException("El Cliente que intenta convertir no existe mas.");
                     }
                     createProveedorFromCliente(cliente);
                     JOptionPane.showMessageDialog(contenedor, "Proveedor creado");

@@ -13,6 +13,7 @@ import javax.persistence.*;
     @NamedQuery(name = "Sucursal.findAll", query = "SELECT s FROM Sucursal s ORDER BY s.nombre"),
     @NamedQuery(name = "Sucursal.findById", query = "SELECT s FROM Sucursal s WHERE s.id = :id")
 })
+@Access(AccessType.FIELD)
 public class Sucursal implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -22,7 +23,7 @@ public class Sucursal implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Basic(optional = false)
-    @Column(name = "nombre", nullable = false, unique=true, length = 200)
+    @Column(name = "nombre", nullable = false, unique = true, length = 200)
     private String nombre;
     @Basic(optional = false)
     @Column(name = "direccion", nullable = false, length = 200)
@@ -44,7 +45,7 @@ public class Sucursal implements Serializable {
     @JoinColumn(name = "departamento", referencedColumnName = "iddepto", nullable = false)
     @ManyToOne(optional = false)
     private Departamento departamento;
-    @JoinColumn(name = "municipio", referencedColumnName = "id")
+    @JoinColumn(name = "municipio", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Municipio municipio;
     @JoinColumn(name = "provincia", referencedColumnName = "idprovincia", nullable = false)
@@ -195,6 +196,6 @@ public class Sucursal implements Serializable {
 
     @Override
     public String toString() {
-        return this.getNombre();
+        return "Sucursal{" + "id=" + id + ", nombre=" + nombre + ", direccion=" + direccion + ", tele1=" + tele1 + ", tele2=" + tele2 + ", estado=" + estado + ", interno1=" + interno1 + ", interno2=" + interno2 + ", encargado=" + encargado + ", email=" + email + ", departamento=" + departamento + ", municipio=" + municipio + ", provincia=" + provincia + ", puntoVenta=" + puntoVenta + '}';
     }
 }

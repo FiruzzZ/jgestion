@@ -124,38 +124,27 @@ public class MarcaJpaController implements ActionListener, MouseListener {
         }
     }// </editor-fold>
 
-    public void initJD(JFrame frame, boolean modal) {
-        // <editor-fold defaultstate="collapsed" desc="checking Permiso">
-        try {
-            UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.DATOS_GENERAL);
-        } catch (MessageException ex) {
-            javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
-            return;
-        }// </editor-fold>
-        abm = new JDMiniABM(frame, modal);
-        initJD();
+    public void getABM(JFrame owner, boolean modal) throws MessageException {
+        UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.ABM_PRODUCTOS);
+        abm = new JDMiniABM(owner, modal);
+        abm.setLocationRelativeTo(owner);
+        initABM();
     }
 
-    public void initJD(JDialog dialog, boolean modal) {
-        // <editor-fold defaultstate="collapsed" desc="checking Permiso">
-        try {
-            UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.DATOS_GENERAL);
-        } catch (MessageException ex) {
-            javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
-            return;
-        }// </editor-fold>
-        abm = new JDMiniABM(dialog, modal);
-        initJD();
+    public void getABM(JDialog owner, boolean modal) throws MessageException {
+        UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.ABM_PRODUCTOS);
+        abm = new JDMiniABM(owner, modal);
+        abm.setLocationRelativeTo(owner);
+        initABM();
     }
 
-    private void initJD() {
+    private void initABM() {
         abm.hideBtnLock();
         abm.hideFieldExtra();
         abm.setTitle("ABM - " + CLASS_NAME + "s");
         abm.getTaInformacion().setText("La Marca es un atributo del Producto, "
                 + "es necesario crear al menos una para poder crear Productos."
                 + "\nPuede ser usado como una forma de agrupación/clasificación.");
-//        abm.setVisibleTaInformacion(false);
         UTIL.getDefaultTableModel(abm.getjTable1(), colsName, colsWidth);
         cargarDTM(abm.getDTM(), null);
         abm.setListeners(this);
@@ -294,8 +283,8 @@ public class MarcaJpaController implements ActionListener, MouseListener {
             throw new MessageException("Nombre no puede superar los 50 caracteres");
         }
         String nombre = abm.getTfNombre().trim().toUpperCase();
-        String codigo = null; 
-        if(abm.getTfCodigo().trim().length() > 0) {
+        String codigo = null;
+        if (abm.getTfCodigo().trim().length() > 0) {
             if (abm.getTfNombre().length() > 50) {
                 throw new MessageException("El código no puede superar los 50 caracteres");
             }

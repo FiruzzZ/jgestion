@@ -23,6 +23,7 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.NoResultException;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.table.DefaultTableModel;
 import jpa.controller.SucursalJpaController;
@@ -342,7 +343,8 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
         }
     }
 
-    public void initContenedor(javax.swing.JFrame frame) {
+    public void initContenedor(javax.swing.JFrame frame) throws MessageException {
+        UsuarioJpaController.checkPermiso(PermisoDe.ABM_USUARIOS);
         contenedor = new JDContenedor(frame, true, "ABM - " + CLASS_NAME + "s");
         contenedor.getTfFiltro().setToolTipText("Filtra por nombre de " + CLASS_NAME);
         contenedor.setModoBuscador(false);
@@ -377,7 +379,7 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
     @Override
     public void actionPerformed(ActionEvent e) {
         try {
-            if (e.getSource().getClass().equals(javax.swing.JButton.class)) {
+            if (e.getSource() instanceof JButton) {
                 javax.swing.JButton boton = (javax.swing.JButton) e.getSource();
 
                 if (boton.getName().equalsIgnoreCase("new")) {
@@ -405,19 +407,12 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
             contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
         } catch (Exception ex) {
             contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
-            ex.printStackTrace();
+            Logger.getLogger(UsuarioJpaController.class).error(ex.getLocalizedMessage(), ex);
         }
     }
 
-    private void initABM(boolean isEditing) throws Exception {
-        // <editor-fold defaultstate="collapsed" desc="checking Permiso">
-        try {
-            UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.ABM_USUARIOS);
-        } catch (MessageException ex) {
-            javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
-            return;
-        }// </editor-fold>
-
+    private void initABM(boolean isEditing) throws MessageException {
+        UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.ABM_USUARIOS);
         if (isEditing) {
             mouseReleased(null);
             if (EL_OBJECT == null) {

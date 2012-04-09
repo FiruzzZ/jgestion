@@ -15,6 +15,7 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+import javax.swing.JFrame;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
@@ -151,16 +152,10 @@ public class IvaJpaController implements ActionListener, MouseListener {
         }
     }// </editor-fold>
 
-    public void initABM(java.awt.Frame frame, boolean modal) {
-        // <editor-fold defaultstate="collapsed" desc="checking Permiso">
-        try {
-            UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.DATOS_GENERAL);
-        } catch (MessageException ex) {
-            javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
-            return;
-        }// </editor-fold>
-        abm = new JDMiniABM(frame, modal);
-        abm.setLocationRelativeTo(frame);
+    public void initABM(JFrame owner, boolean modal) throws MessageException {
+        UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.ABM_PRODUCTOS);
+        abm = new JDMiniABM(owner, modal);
+        abm.setLocationRelativeTo(owner);
         abm.getTaInformacion().setText("ABM de las Alicuotas (IVA) de los Productos.");
         // solo queda visible tfCodigo....
         abm.getjLabelCodigo().setText("IVA %");
@@ -177,7 +172,7 @@ public class IvaJpaController implements ActionListener, MouseListener {
 
     @SuppressWarnings("unchecked")
     private void cargarTablaIvas(JTable jtable, String nativeQuery) {
-        DefaultTableModel dtm =(DefaultTableModel) jtable.getModel();
+        DefaultTableModel dtm = (DefaultTableModel) jtable.getModel();
         dtm.setRowCount(0);
         List<Iva> l = null;
         if (nativeQuery == null || nativeQuery.length() < 10) {

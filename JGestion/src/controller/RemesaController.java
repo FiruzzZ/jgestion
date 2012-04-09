@@ -506,7 +506,7 @@ public class RemesaController implements ActionListener, FocusListener {
 
         //Uso los .toString por el 1er Item de los combos <Vacio> o <Elegir>
         // van a tirar error de ClassCastException
-        UTIL.setSelectedItem(jdReRe.getCbSucursal(), remesa.getSucursal().toString());
+        UTIL.setSelectedItem(jdReRe.getCbSucursal(), remesa.getSucursal().getNombre());
         UTIL.setSelectedItem(jdReRe.getCbCaja(), remesa.getCaja().toString());
         UTIL.setSelectedItem(jdReRe.getCbClienteProveedor(), p.toString());
 

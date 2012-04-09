@@ -237,14 +237,8 @@ public class UnidadmedidaJpaController implements ActionListener, MouseListener 
         }
     }
 
-    public void initABM(JFrame frame, boolean modal) {
-        // <editor-fold defaultstate="collapsed" desc="checking Permiso">
-        try {
-            UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.DATOS_GENERAL);
-        } catch (MessageException ex) {
-            javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
-            return;
-        }// </editor-fold>
+    public void initABM(JFrame frame, boolean modal) throws MessageException {
+        UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.ABM_PRODUCTOS);
         abm = new JDMiniABM(frame, modal);
         abm.hideBtnLock();
         abm.hideFieldCodigo();

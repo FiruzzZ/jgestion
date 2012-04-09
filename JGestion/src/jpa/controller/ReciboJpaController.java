@@ -4,10 +4,12 @@ import controller.CtacteClienteJpaController;
 import controller.DAO;
 import controller.Valores;
 import controller.exceptions.MessageException;
-import entity.*;
+import entity.CtacteCliente;
+import entity.DetalleRecibo;
+import entity.Recibo;
+import entity.Sucursal;
 import java.util.List;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 
 /**
  *

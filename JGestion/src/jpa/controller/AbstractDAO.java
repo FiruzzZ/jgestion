@@ -97,7 +97,7 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
 
     @Override
     public int count() {
-        CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
+        CriteriaQuery<Long> cq = getEntityManager().getCriteriaBuilder().createQuery(Long.class);
         Root<T> rt = cq.from(entityClass);
         cq.select(getEntityManager().getCriteriaBuilder().count(rt));
         Query q = getEntityManager().createQuery(cq);
@@ -134,8 +134,19 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
      * @return a list...
      */
     @SuppressWarnings("unchecked")
-    public List<T> findByNativeQuery(String sqlString, Map<String, Object> hints) {
-        Query query = getEntityManager().createNativeQuery(sqlString, getEntityClass());
+    public List<T> findByNativeQuery(String sqlString, String stringSetMapping, Map<String, Object> hints) {
+        Query query;
+        if (stringSetMapping == null) {
+            query = getEntityManager().createNativeQuery(sqlString, getEntityClass());
+        } else {
+            query = getEntityManager().createNativeQuery(sqlString, stringSetMapping);
+        }
+        if (hints == null) {
+            hints = new HashMap<String, Object>(1);
+        }
+        if (hints.isEmpty() || !hints.containsKey(QueryHints.REFRESH)) {
+            hints.put(QueryHints.REFRESH, Boolean.TRUE);
+        }
         for (Map.Entry<String, Object> entry : hints.entrySet()) {
             query.setHint(entry.getKey(), entry.getValue());
         }
@@ -143,12 +154,38 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
     }
 
     /**
+     * This method add the hint ({@link QueryHints#REFRESH}, Boolean.TRUE)
      *
      * @param sqlString a SELECT native SQL statement.
      * @return
-     * @see AbstractDAO#findByNativeQuery(java.lang.String, java.util.Map)
+     * @see #findByNativeQuery(java.lang.String, java.util.Map)
      */
     public List<T> findByNativeQuery(String sqlString) {
-        return findByNativeQuery(sqlString, new HashMap<String, Object>(0));
+        return findByNativeQuery(sqlString, null, null);
     }
+
+    /**
+     * This method add the hint ({@link QueryHints#REFRESH}, Boolean.TRUE)
+     *
+     * @param sqlString a SELECT native SQL statement.
+     * @return
+     * @see #findByNativeQuery(java.lang.String, java.util.Map)
+     */
+    public List<T> findByNativeQuery(String sqlString, String stringSetMapping) {
+        return findByNativeQuery(sqlString, stringSetMapping, null);
+    }
+
+    /**
+     * Execute a Java Persistence query language statement with a REFRESH hint!
+     *
+     * @param qlString
+     * @return a list of the results
+     */
+    @Override
+    public List<T> findByQuery(String qlString) {
+        TypedQuery<T> typedQuery = getEntityManager().createQuery(qlString, getEntityClass());
+        typedQuery.setHint(QueryHints.REFRESH, Boolean.TRUE);
+        return typedQuery.getResultList();
+    }
+
 }

@@ -1298,7 +1298,7 @@ public class FacturaVentaJpaController implements ActionListener, KeyListener {
             jdFacturaVenta.getCheckFacturacionElectronica().setVisible(false);
         }
         jdFacturaVenta.setListener(this);
-        jdFacturaVenta.setLocationByPlatform(true);
+        jdFacturaVenta.setLocationRelativeTo(buscador);
         jdFacturaVenta.setVisible(true);
     }
 

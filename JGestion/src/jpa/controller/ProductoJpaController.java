@@ -2,6 +2,7 @@ package jpa.controller;
 
 import controller.DAO;
 import entity.Producto;
+import java.util.List;
 import javax.persistence.EntityManager;
 import org.eclipse.persistence.config.QueryHints;
 
@@ -32,4 +33,5 @@ public class ProductoJpaController extends AbstractDAO<Producto, Integer> {
         entityManager.refresh(find);
         return find;
     }
+
 }

@@ -383,9 +383,9 @@ public class SucursalController implements ActionListener, MouseListener {
             javax.swing.JComboBox combo = (javax.swing.JComboBox) e.getSource();
             if (combo.getName().equalsIgnoreCase("cbProvincias")) {
                 if (combo.getSelectedIndex() > 0) {
-                    UTIL.loadComboBox(panel.getCbDepartamentos(), new DepartamentoJpaController().findDeptosFromProvincia(((Provincia) combo.getSelectedItem()).getId()), true);
+                    UTIL.loadComboBox(panel.getCbDepartamentos(), new DepartamentoController().findDeptosFromProvincia(((Provincia) combo.getSelectedItem()).getId()), true);
                 } else {
-                    UTIL.loadComboBox(panel.getCbDepartamentos(), new DepartamentoJpaController().findDeptosFromProvincia(0), true);
+                    UTIL.loadComboBox(panel.getCbDepartamentos(), new DepartamentoController().findDeptosFromProvincia(0), true);
                 }
             } else if (combo.getName().equalsIgnoreCase("cbDepartamentos")) {
                 if (combo.getSelectedIndex() > 0) {

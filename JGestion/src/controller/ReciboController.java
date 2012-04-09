@@ -69,20 +69,14 @@ public class ReciboController implements ActionListener, FocusListener {
      * <code>true</code> siempre, no está implementado para false
      * @param setVisible
      */
-    public void initRecibos(JFrame frame, boolean modal, boolean setVisible) {
-        // <editor-fold defaultstate="collapsed" desc="checking Permiso">
-        try {
-            UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.VENTA);
-        } catch (MessageException ex) {
-            javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
-            return;
-        }// </editor-fold>
+    public void initRecibos(JFrame frame, boolean modal, boolean setVisible) throws MessageException {
+        UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.VENTA);
         UsuarioHelper uh = new UsuarioHelper();
         if (uh.getSucursales().isEmpty()) {
-            throw new IllegalArgumentException(Main.resourceBundle.getString("unassigned.sucursal"));
+            throw new MessageException(Main.resourceBundle.getString("unassigned.sucursal"));
         }
         if (uh.getCajas(true).isEmpty()) {
-            throw new IllegalArgumentException(Main.resourceBundle.getString("unassigned.caja"));
+            throw new MessageException(Main.resourceBundle.getString("unassigned.caja"));
         }
         jdReRe = new JDReRe(frame, modal);
         jdReRe.setUIForRecibos();
@@ -265,14 +259,6 @@ public class ReciboController implements ActionListener, FocusListener {
         JDialogTable jd = new JDialogTable(jdReRe, "Detalle de crédito: " + cliente.getNombre(), true, dtm);
         jd.setSize(600, 400);
         jd.setVisible(true);
-    }
-
-    public void buscadorMouseClicked(MouseEvent e) {
-        if (buscador != null) {
-            if (e.getClickCount() > 1) {
-                setSelectedRecibo();
-            }
-        }
     }
 
     @Override
@@ -532,7 +518,9 @@ public class ReciboController implements ActionListener, FocusListener {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                buscadorMouseClicked(e);
+                if (e.getClickCount() > 1) {
+                    setSelectedRecibo();
+                }
             }
         });
         buscador.getbBuscar().addActionListener(new ActionListener() {
@@ -671,7 +659,11 @@ public class ReciboController implements ActionListener, FocusListener {
         rereSelected = jpaController.find(id);
         if (rereSelected != null) {
             if (jdReRe == null) {
-                initRecibos(null, true, false);
+                try {
+                    initRecibos(null, true, false);
+                } catch (MessageException ex) {
+                    jdReRe.showMessage(ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+                }
             }
             buscador.dispose();
             setDatosRecibo(rereSelected);
@@ -699,7 +691,7 @@ public class ReciboController implements ActionListener, FocusListener {
         //Uso los toString() para que compare String's..
         //por si el combo está vacio <VACIO> o no eligió ninguno
         //van a tirar error de ClassCastException
-        UTIL.setSelectedItem(jdReRe.getCbSucursal(), recibo.getSucursal().toString());
+        UTIL.setSelectedItem(jdReRe.getCbSucursal(), recibo.getSucursal().getNombre());
         UTIL.setSelectedItem(jdReRe.getCbCaja(), recibo.getCaja().toString());
         UTIL.setSelectedItem(jdReRe.getCbClienteProveedor(), cliente.toString());
         cargarDetalleReRe(recibo.getDetalleReciboList());

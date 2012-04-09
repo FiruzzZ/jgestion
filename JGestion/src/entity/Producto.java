@@ -328,7 +328,7 @@ public class Producto implements Serializable {
 
     @Override
     public String toString() {
-        return this.getNombre();
+        return "Producto{" + "id=" + id + ", codigo=" + codigo + ", nombre=" + nombre + ", stockmaximo=" + stockmaximo + ", stockactual=" + stockactual + ", stockminimo=" + stockminimo + ", deposito=" + deposito + ", ubicacion=" + ubicacion + ", costoCompra=" + costoCompra + ", descripcion=" + descripcion + ", margen=" + margen + ", tipomargen=" + tipomargen + ", precioVenta=" + precioVenta + ", foto=" + foto + ", remunerativo=" + remunerativo + ", fechaAlta=" + fechaAlta + ", ultimaCompra=" + ultimaCompra + ", iva=" + iva + ", marca=" + marca + ", rubro=" + rubro + ", subrubro=" + subrubro + ", idunidadmedida=" + idunidadmedida + ", stockList=" + stockList + '}';
     }
 
     /**

@@ -2,6 +2,7 @@ package jgestion;
 
 import controller.*;
 import controller.exceptions.MessageException;
+import entity.Producto;
 import generics.PropsUtils;
 import gui.JFP;
 import java.awt.EventQueue;
@@ -9,11 +10,13 @@ import java.awt.SplashScreen;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import javax.persistence.PersistenceException;
 import javax.swing.JOptionPane;
+import jpa.controller.ProductoJpaController;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -38,11 +41,11 @@ public class Main {
             DAO.setProperties(properties);
             if (DAO.getEntityManager().isOpen()) {
                 DAO.setDefaultData();
-//                FacturaVenta findFacturaVenta = new FacturaVentaJpaController().findFacturaVenta(436);
-//                AFIPWSController af = new AFIPWSController();
-//                JDialog invokeFE = af.showSetting(findFacturaVenta);
-//                invokeFE.setVisible(true);
-//                System.exit(0);
+                //                FacturaVenta findFacturaVenta = new FacturaVentaJpaController().findFacturaVenta(436);
+                //                AFIPWSController af = new AFIPWSController();
+                //                JDialog invokeFE = af.showSetting(findFacturaVenta);
+                //                invokeFE.setVisible(true);
+                //                System.exit(0);
                 EventQueue.invokeLater(new Runnable() {
 
                     @Override
@@ -53,7 +56,7 @@ public class Main {
                     }
                 });
             }
-        } catch (IllegalArgumentException ex ) {
+        } catch (IllegalArgumentException ex) {
             log.trace(ex.getLocalizedMessage(), ex);
             JOptionPane.showMessageDialog(null, ex.getMessage(), "Ojo!", JOptionPane.WARNING_MESSAGE);
         } catch (FileNotFoundException ex) {
