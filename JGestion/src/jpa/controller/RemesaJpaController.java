@@ -42,4 +42,11 @@ public class RemesaJpaController extends AbstractDAO<Remesa, Integer> {
                 where(cb.equal(from.get(DetalleRemesa_.facturaCompra), facturaCompra));
         return getEntityManager().createQuery(cq).getResultList();
     }
+
+    public List<DetalleRemesa> findDetalleRemesaByFactura(FacturaCompra factura) {
+        return getEntityManager().
+                createQuery("SELECT o FROM DetalleRemesa o"
+                + " WHERE o.facturaCompra = :facturaCompra", DetalleRemesa.class).
+                setParameter("facturaCompra", factura).getResultList();
+    }
 }

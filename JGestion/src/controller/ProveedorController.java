@@ -33,7 +33,7 @@ import org.apache.log4j.Logger;
  *
  * @author FiruzzZ
  */
-public class ProveedorJpaController implements ActionListener {
+public class ProveedorController implements ActionListener {
 
     public final String CLASS_NAME = Proveedor.class.getSimpleName();
     private final String[] colsName = {"ID", "Código", "Razón social", "CUIT", "Teléfonos"};
@@ -532,7 +532,7 @@ public class ProveedorJpaController implements ActionListener {
                     JOptionPane.showMessageDialog(contenedor, ex.getMessage());
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(contenedor, ex.getMessage());
-                    Logger.getLogger(ClienteJpaController.class.getName()).log(Level.ERROR, null, ex);
+                    Logger.getLogger(ClienteController.class.getName()).log(Level.ERROR, null, ex);
                 }
             }
         });
@@ -541,7 +541,7 @@ public class ProveedorJpaController implements ActionListener {
 
     private Cliente createClienteFromProveedor(Proveedor proveedor) throws MessageException, Exception {
         Cliente cliente;
-        cliente = new ClienteJpaController().createFromProveedor(proveedor);
+        cliente = new ClienteController().createFromProveedor(proveedor);
         return cliente;
     }
 }

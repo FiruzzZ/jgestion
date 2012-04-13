@@ -139,6 +139,7 @@ public class DetalleVenta implements Serializable {
 
     @Override
     public String toString() {
-        return "Detalle: " + this.getId().toString();
+        return "DetalleVenta{" + "id=" + id + ", cantidad=" + cantidad + ", precioUnitario=" + precioUnitario + ", tipoDesc=" + tipoDesc + ", descuento=" + descuento + ", factura=" + factura + ", producto=" + producto + ", oferta=" + oferta + '}';
     }
+
 }

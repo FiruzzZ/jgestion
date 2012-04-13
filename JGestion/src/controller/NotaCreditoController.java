@@ -38,16 +38,16 @@ import org.apache.log4j.Logger;
  *
  * @author Administrador
  */
-public class NotaCreditoJpaController {
+public class NotaCreditoController {
 
     private static final String CLASS_NAME = NotaCredito.class.getSimpleName();
     private JDFacturaVenta jdFacturaVenta;
-    private FacturaVentaJpaController facturaVentaController;
+    private FacturaVentaController facturaVentaController;
     private JDBuscadorReRe buscador;
     private NotaCredito EL_OBJECT;
     private static int OBSERVACION_PROPERTY_LIMIT_LENGHT = 200;
 
-    public NotaCreditoJpaController() {
+    public NotaCreditoController() {
     }
 
     // <editor-fold defaultstate="collapsed" desc="CRUD">
@@ -122,7 +122,7 @@ public class NotaCreditoJpaController {
     }// </editor-fold>
 
     public void initABMNotaCredito(JFrame owner, boolean modal, boolean setVisible, boolean loadDefaultData) throws MessageException {
-        facturaVentaController = new FacturaVentaJpaController();
+        facturaVentaController = new FacturaVentaController();
         facturaVentaController.initFacturaVenta(owner, modal, null, 2, false, loadDefaultData);
         facturaVentaController.getContenedor().getBtnAceptar().addActionListener(new ActionListener() {
 
@@ -146,7 +146,7 @@ public class NotaCreditoJpaController {
                     facturaVentaController.getContenedor().showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
                     facturaVentaController.getContenedor().showMessage(ex.getMessage(), CLASS_NAME, 2);
-                    Logger.getLogger(NotaCreditoJpaController.class).log(Level.ERROR, ex, ex);
+                    Logger.getLogger(NotaCreditoController.class).log(Level.ERROR, ex, ex);
                 } finally {
                     facturaVentaController.getContenedor().getBtnAceptar().setEnabled(true);
                 }
@@ -203,8 +203,8 @@ public class NotaCreditoJpaController {
         DefaultTableModel dtm = jdFacturaVenta.getDTM();
         if (dtm.getRowCount() < 1) {
             throw new MessageException("No ha agregado ningún item al detalle.");
-        } else if (dtm.getRowCount() > FacturaVentaJpaController.LIMITE_DE_ITEMS) {
-            throw new MessageException("El límite del detalle son " + FacturaVentaJpaController.LIMITE_DE_ITEMS + " items.");
+        } else if (dtm.getRowCount() > FacturaVentaController.LIMITE_DE_ITEMS) {
+            throw new MessageException("El límite del detalle son " + FacturaVentaController.LIMITE_DE_ITEMS + " items.");
         }
 
         NotaCredito newNotaCredito = new NotaCredito();
@@ -244,11 +244,11 @@ public class NotaCreditoJpaController {
                 try {
                     cargarDtmBuscador(armarQuery());
                 } catch (MessageException ex) {
-                    Logger.getLogger(NotaCreditoJpaController.class.getName()).log(Level.WARN, null, ex);
+                    Logger.getLogger(NotaCreditoController.class.getName()).log(Level.WARN, null, ex);
                 }
             }
         });
-        UTIL.loadComboBox(buscador.getCbClieProv(), new ClienteJpaController().findEntities(), true);
+        UTIL.loadComboBox(buscador.getCbClieProv(), new ClienteController().findEntities(), true);
         UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getSucursales(), true);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
@@ -269,7 +269,7 @@ public class NotaCreditoJpaController {
                                 cargarDtmBuscador(armarQuery());
                             }
                         } catch (MessageException ex) {
-                            Logger.getLogger(NotaCreditoJpaController.class.getName()).log(Level.WARN, null, ex);
+                            Logger.getLogger(NotaCreditoController.class.getName()).log(Level.WARN, null, ex);
                         }
                     }
                 }
@@ -326,7 +326,7 @@ public class NotaCreditoJpaController {
             query.append(" AND o.cliente = ").append(((Cliente) buscador.getCbClieProv().getSelectedItem()).getId());
         }
         query.append(" ORDER BY o.id");
-        Logger.getLogger(FacturaVentaJpaController.class).log(Level.TRACE, "queryBuscador=" + query.toString());
+        Logger.getLogger(FacturaVentaController.class).log(Level.TRACE, "queryBuscador=" + query.toString());
         return query.toString();
     }
 
@@ -536,7 +536,7 @@ public class NotaCreditoJpaController {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            Logger.getLogger(NotaCreditoJpaController.class).log(Level.DEBUG, "Error desacreditar()", ex);
+            Logger.getLogger(NotaCreditoController.class).log(Level.DEBUG, "Error desacreditar()", ex);
         } finally {
             if (em != null) {
                 em.close();

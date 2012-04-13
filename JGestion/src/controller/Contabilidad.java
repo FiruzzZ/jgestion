@@ -379,7 +379,7 @@ public class Contabilidad {
             }
             dtm.addRow(new Object[]{
                         dateFormat.format(factura.getFechaVenta()),
-                        JGestionUtils.getNumeracion(factura) + (factura.getAnulada() ? "(ANULADA)" : ""),
+                        JGestionUtils.getNumeracion(factura) + (factura.getAnulada() ? "[ANULADA]" : ""),
                         UTIL.DECIMAL_FORMAT.format(factura.getImporte()),
                         efectivo != null ? efectivo : "------",
                         cccpc != null ? UTIL.DECIMAL_FORMAT.format(cccpc) : "------",

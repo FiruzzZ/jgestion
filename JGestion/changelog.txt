@@ -1,3 +1,4 @@
+ALTER TABLE permisos ADD COLUMN venta_numeracion_manual boolean NOT NULL DEFAULT false;
 2012/04/03
 CREATE TABLE usuario_permisossucursal (
   usuario_id integer NOT NULL,
@@ -11,12 +12,23 @@ CREATE TABLE usuario_permisossucursal (
       ON UPDATE NO ACTION ON DELETE NO ACTION
 )
 WITH (  OIDS=FALSE);
-
 ALTER TABLE presupuesto ADD COLUMN numero numeric(8,0);
 update presupuesto set numero = id;
 ALTER TABLE presupuesto add unique (numero, sucursal);
-ALTER TABLE recibo ADD COLUMN numero numeric(8,0);
+--checkear que la columna numero tenga mas de un caracter (cuando son movimientos internos happends)
+UPDATE factura_venta SET numero = to_number(substring(numero|| '' from 2) , '99999999');
+ALTER TABLE factura_venta ALTER numero TYPE numeric(8,0);
+UPDATE remito SET numero = to_number(substring(numero|| '' from 2) , '99999999');
+ALTER TABLE remito ALTER numero TYPE numeric(8,0);
 update recibo set numero = cast(substring(id || '' from 2) as integer);
+ALTER TABLE recibo ADD COLUMN numero numeric(8,0);
+CREATE SEQUENCE depto_iddepto_seq
+   INCREMENT 1
+   START 1
+   MINVALUE 1
+   MAXVALUE 99999999
+   CACHE 1;
+ALTER TABLE depto ALTER COLUMN iddepto SET DEFAULT nextval('depto_iddepto_seq');
 CREATE SEQUENCE recibo_id_seq
    INCREMENT 1
    START 1
@@ -26,6 +38,8 @@ CREATE SEQUENCE recibo_id_seq
 ALTER TABLE recibo add unique (numero, sucursal);
 ALTER TABLE recibo ALTER id TYPE integer;
 ALTER TABLE recibo ALTER COLUMN id SET DEFAULT nextval('recibo_id_seq');
+ALTER TABLE sucursal ADD COLUMN puntoventa integer NOT NULL DEFAULT 1;
+ALTER TABLE sucursal ADD UNIQUE (puntoventa);
 2011/11/21
 //-- nueva estructura de mensajes informativos del sistema
 DROP TABLE msj_informativos;

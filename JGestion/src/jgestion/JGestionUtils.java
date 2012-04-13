@@ -24,7 +24,7 @@ public class JGestionUtils {
         if (facturaVenta.getNumero() == 0) {
             return "FI" + UTIL.AGREGAR_CEROS(facturaVenta.getSucursal().getPuntoVenta(), 4) + "-" + UTIL.AGREGAR_CEROS(facturaVenta.getMovimientoInterno(), 8);
         } else {
-            return "F" + facturaVenta.getTipo() + UTIL.AGREGAR_CEROS(facturaVenta.getSucursal().getPuntoVenta(), 4) + "-" + UTIL.AGREGAR_CEROS(facturaVenta.getNumero(), 8);
+            return facturaVenta.getTipo() + UTIL.AGREGAR_CEROS(facturaVenta.getSucursal().getPuntoVenta(), 4) + "-" + UTIL.AGREGAR_CEROS(facturaVenta.getNumero(), 8);
         }
     }
 

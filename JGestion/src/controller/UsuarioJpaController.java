@@ -33,7 +33,7 @@ import org.eclipse.persistence.config.QueryHints;
 
 /**
  *
- * @author Administrador
+ * @author FiruzzZ
  */
 public class UsuarioJpaController implements ActionListener, MouseListener, KeyListener {
 
@@ -464,6 +464,7 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
         panel.getCheckABMCatalogoweb().setSelected(u.getPermisos().getAbmCatalogoweb());
         panel.getCheckABMOfertas().setSelected(u.getPermisos().getAbmOfertasweb());
         panel.getCheckOrdenesES().setSelected(u.getPermisos().getOrdenesES());
+        panel.getCheckVentaNumeracionManual().setSelected(u.getPermisos().getVentaNumeracionManual());
         setCajasPermitidas(u.getPermisosCajaList());
         setSucursalesPermitidas(u.getSucursales());
     }
@@ -541,6 +542,7 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
         permisos.setAbmCatalogoweb(panel.getCheckABMCatalogoweb().isSelected());
         permisos.setAbmOfertasweb(panel.getCheckABMOfertas().isSelected());
         permisos.setOrdenesES(panel.getCheckOrdenesES().isSelected());
+        permisos.setVentaNumeracionManual(panel.getCheckVentaNumeracionManual().isSelected());
         return permisos;
     }
 
@@ -682,6 +684,8 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
             permitido = CURRENT_USER.getPermisos().getAbmOfertasweb();
         } else if (PermisoDe.ORDENES_IO.equals(permisoToCheck)) {
             permitido = CURRENT_USER.getPermisos().getOrdenesES();
+        } else if (PermisoDe.VENTA_NUMERACION_MANUAL.equals(permisoToCheck)) {
+            permitido = CURRENT_USER.getPermisos().getVentaNumeracionManual();
         }
         if (!permitido) {
             throw new MessageException("Acceso denegado: No tiene permiso para "
@@ -690,7 +694,7 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
     }
 
     private void cargarTablaCajas() {
-        List<Caja> cajasList = new CajaJpaController().findCajaEntities();
+        List<Caja> cajasList = new CajaController().findCajaEntities();
         DefaultTableModel dtm = (DefaultTableModel) panel.getTableCajas().getModel();
         dtm.setRowCount(0);
         for (Caja caja : cajasList) {

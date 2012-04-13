@@ -28,7 +28,7 @@ import org.apache.log4j.Logger;
  *
  * @author Administrador
  */
-public class CajaJpaController implements ActionListener {
+public class CajaController implements ActionListener {
 
     public final String CLASS_NAME = Caja.class.getSimpleName();
     private JDMiniABM abm;

@@ -10,6 +10,7 @@ import java.awt.BorderLayout;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -26,6 +27,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.eclipse.persistence.config.QueryHints;
 import utilities.general.UTIL;
+import utilities.swing.components.ComboBoxWrapper;
 
 /**
  *
@@ -860,19 +862,24 @@ public class ProductoController implements ActionListener, KeyListener {
      */
     public List<Producto> findProductoToCombo() {
         try {
-            @SuppressWarnings("unchecked")
-            List<Producto> resultList = DAO.getEntityManager().
-                    createNativeQuery(
+            List<Producto> resultList = jpaController.findByNativeQuery(
                     "SELECT p.id, p.codigo, p.nombre "
                     + "FROM Producto p "
-                    + "ORDER BY p.nombre, p.codigo", Producto.class).
-                    setHint(QueryHints.REFRESH, true).
-                    getResultList();
+                    + "ORDER BY p.nombre");
             return resultList;
         } catch (Exception ex) {
             Logger.getLogger(ProductoController.class.getName()).log(Level.ERROR, null, ex);
         }
         return null;
+    }
+    
+    public List<ComboBoxWrapper<Producto>> findWrappedProductoToCombo() {
+        List<Producto> ff = findProductoToCombo();
+        List<ComboBoxWrapper<Producto>> l = new ArrayList<ComboBoxWrapper<Producto>>(ff.size());
+        for (Producto producto : ff) {
+            l.add(new ComboBoxWrapper<Producto>(producto, producto.getId(), producto.getNombre()));
+        }
+        return l;
     }
 
     public void initListadoProducto(JFrame owner) {

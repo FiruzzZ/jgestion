@@ -39,7 +39,7 @@ public class SucursalController implements ActionListener, MouseListener {
      * Variable global interna, se una para el alta y modificación de una
      * entidad Sucursal. Uso exclusivo dentro de la class.
      */
-    private Sucursal ELOBJECT;
+    private Sucursal entity;
 
     public SucursalController() {
         jpaController = new SucursalJpaController();
@@ -53,7 +53,7 @@ public class SucursalController implements ActionListener, MouseListener {
             javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
             return;
         }// </editor-fold>
-        if (isEditting && ELOBJECT == null) {
+        if (isEditting && entity == null) {
             throw new MessageException("Debe elegir una fila");
         }
         panel = new PanelABMSucursal();
@@ -62,7 +62,7 @@ public class SucursalController implements ActionListener, MouseListener {
         UTIL.loadComboBox(panel.getCbMunicipios(), null, true);
         panel.setListener(this);
         if (isEditting) {
-            setPanel(ELOBJECT);
+            setPanel(entity);
         }
         abm = new JDABM(true, contenedor, panel);
         abm.setTitle("ABM " + CLASS_NAME + "es");
@@ -136,7 +136,7 @@ public class SucursalController implements ActionListener, MouseListener {
     public void mouseReleased(MouseEvent e) {
         Integer selectedRow = ((javax.swing.JTable) e.getSource()).getSelectedRow();
         if (selectedRow > -1) {
-            ELOBJECT = (Sucursal) DAO.getEntityManager().find(Sucursal.class,
+            entity = (Sucursal) DAO.getEntityManager().find(Sucursal.class,
                     Integer.valueOf((((javax.swing.JTable) e.getSource()).getValueAt(selectedRow, 0)).toString()));
         }
     }
@@ -154,10 +154,11 @@ public class SucursalController implements ActionListener, MouseListener {
     }
 
     private void setEntity() throws MessageException, Exception {
-        if (ELOBJECT == null) {
-            ELOBJECT = new Sucursal();
+        if (entity == null) {
+            entity = new Sucursal();
         }
         long puntoVenta;
+        Integer factura_a, factura_b, notaCredito, recibo, remito;
         // <editor-fold defaultstate="collapsed" desc="CTRLS">
         if (panel.getTfNombre() == null || panel.getTfNombre().length() < 1) {
             throw new MessageException("Debe ingresar un nombre");
@@ -169,6 +170,46 @@ public class SucursalController implements ActionListener, MouseListener {
             }
         } catch (NumberFormatException ex) {
             throw new MessageException("Punto de Venta no válido (debe estar compuesto solo por números, entre 0001 y 9999)");
+        }
+        try {
+            factura_a = Integer.valueOf(panel.getTfInicialFacturaA().getText());
+            if (factura_a < 1 || factura_a > 99999999) {
+                throw new MessageException("Número de Factura 'A' no válido (debe estar compuesto solo por números, mayor a cero y menor o igual a 99999999)");
+            }
+        } catch (Exception e) {
+            throw new MessageException("Número de Factura 'A' no válido (debe estar compuesto solo por números");
+        }
+        try {
+            factura_b = Integer.valueOf(panel.getTfInicialFacturaB().getText());
+            if (factura_b < 1 || factura_b > 99999999) {
+                throw new MessageException("Número de Factura 'B' no válido (debe estar compuesto solo por números, mayor a cero y menor o igual a 99999999)");
+            }
+        } catch (Exception e) {
+            throw new MessageException("Número de Factura 'B' no válido (debe estar compuesto solo por números)");
+        }
+        try {
+            notaCredito = Integer.valueOf(panel.getTfInicialNotaCredito().getText());
+            if (notaCredito < 1 || notaCredito > 99999999) {
+                throw new MessageException("Número de Nota de Credito no válido (debe estar compuesto solo por números, mayor a cero y menor o igual a 99999999)");
+            }
+        } catch (Exception e) {
+            throw new MessageException("Número de Nota de Crédito no válido (debe estar compuesto solo por números)");
+        }
+        try {
+            recibo = Integer.valueOf(panel.getTfInicialRecibo().getText());
+            if (recibo < 1 || recibo > 99999999) {
+                throw new MessageException("Número de Recibo no válido (debe estar compuesto solo por números, mayor a cero y menor o igual a 99999999)");
+            }
+        } catch (Exception e) {
+            throw new MessageException("Número de Recibo no válido (debe estar compuesto solo por números)");
+        }
+        try {
+            remito = Integer.valueOf(panel.getTfInicialRemito().getText());
+            if (remito < 1 || remito > 99999999) {
+                throw new MessageException("Número de Remito no válido (debe estar compuesto solo por números, mayor a cero y menor o igual a 99999999)");
+            }
+        } catch (Exception e) {
+            throw new MessageException("Número de Remito no válido (debe estar compuesto solo por números)");
         }
         if (panel.getTfDireccion() == null) {
             throw new MessageException("Debe indicar la dirección de la sucursal");
@@ -191,32 +232,37 @@ public class SucursalController implements ActionListener, MouseListener {
         }// </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="NULLable's">
         if (panel.getTfEncargado() != null) {
-            ELOBJECT.setEncargado(panel.getTfEncargado().toUpperCase());
+            entity.setEncargado(panel.getTfEncargado().toUpperCase());
         }
 
         if (panel.getTfEmail() != null) {
-            ELOBJECT.setEmail(panel.getTfEmail().toUpperCase());
+            entity.setEmail(panel.getTfEmail().toUpperCase());
         }
 
         if (panel.getTfTele1() != null && panel.getTfTele1().length() > 0) {
-            ELOBJECT.setTele1(new BigInteger(panel.getTfTele1()));
+            entity.setTele1(new BigInteger(panel.getTfTele1()));
             if (panel.getTfInterno1().length() > 0) {
-                ELOBJECT.setInterno1(new Integer(panel.getTfInterno1()));
+                entity.setInterno1(new Integer(panel.getTfInterno1()));
             }
         }
         if (panel.getTfTele2() != null && panel.getTfTele2().length() > 0) {
-            ELOBJECT.setTele2(new BigInteger(panel.getTfTele2()));
+            entity.setTele2(new BigInteger(panel.getTfTele2()));
             if (panel.getTfInterno2().length() > 0) {
-                ELOBJECT.setInterno2(new Integer(panel.getTfInterno2()));
+                entity.setInterno2(new Integer(panel.getTfInterno2()));
             }
         }// </editor-fold>
         // NOT NULLABLE's
-        ELOBJECT.setNombre(panel.getTfNombre().toUpperCase());
-        ELOBJECT.setDireccion(panel.getTfDireccion());
-        ELOBJECT.setProvincia((Provincia) panel.getSelectedProvincia());
-        ELOBJECT.setDepartamento((Departamento) panel.getSelectedDepartamento());
-        ELOBJECT.setMunicipio((Municipio) panel.getSelectedMunicipio());
-        ELOBJECT.setPuntoVenta(puntoVenta);
+        entity.setNombre(panel.getTfNombre().toUpperCase());
+        entity.setDireccion(panel.getTfDireccion());
+        entity.setProvincia((Provincia) panel.getSelectedProvincia());
+        entity.setDepartamento((Departamento) panel.getSelectedDepartamento());
+        entity.setMunicipio((Municipio) panel.getSelectedMunicipio());
+        entity.setPuntoVenta(puntoVenta);
+        entity.setFactura_a(factura_a);
+        entity.setFactura_b(factura_b);
+        entity.setNotaCredito(notaCredito);
+        entity.setRecibo(recibo);
+        entity.setRemito(remito);
     }
 
     private void checkConstraints(Sucursal object) throws MessageException, IllegalOrphanException, NonexistentEntityException {
@@ -232,18 +278,20 @@ public class SucursalController implements ActionListener, MouseListener {
                 + " WHERE " + idQuery + " o.puntoventa=" + object.getPuntoVenta()).isEmpty()) {
             throw new MessageException("Ya existe otra " + CLASS_NAME + " con este punto de venta.");
         }
-        if (object.getId() == null) {
-            jpaController.create(object);
-        } else {
-            jpaController.merge(object);
+        if (object.getId() != null) {
+            
         }
     }
 
     private void setPanel(Sucursal s) {
         panel.setTfNombre(s.getNombre());
         panel.getTfPuntoVenta().setText(UTIL.AGREGAR_CEROS(s.getPuntoVenta(), 4));
+        panel.getTfInicialFacturaA().setText(UTIL.AGREGAR_CEROS(s.getFactura_a(), 8));
+        panel.getTfInicialFacturaB().setText(UTIL.AGREGAR_CEROS(s.getFactura_b(), 8));
+        panel.getTfInicialNotaCredito().setText(UTIL.AGREGAR_CEROS(s.getNotaCredito(), 8));
+        panel.getTfInicialRecibo().setText(UTIL.AGREGAR_CEROS(s.getRecibo(), 8));
+        panel.getTfInicialRemito().setText(UTIL.AGREGAR_CEROS(s.getRemito(), 8));
         panel.setTfDireccion(s.getDireccion());
-
         if (s.getEncargado() != null) {
             panel.setTfEncargado(s.getEncargado());
         }
@@ -334,10 +382,10 @@ public class SucursalController implements ActionListener, MouseListener {
 
             } else if (boton.getName().equalsIgnoreCase("del")) {
                 try {
-                    if (ELOBJECT == null) {
+                    if (entity == null) {
                         throw new MessageException("No hay " + CLASS_NAME + " seleccionada");
                     }
-                    jpaController.remove(ELOBJECT);
+                    jpaController.remove(entity);
                     cargarDTM(contenedor.getDTM(), null);
                 } catch (MessageException ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
@@ -352,10 +400,15 @@ public class SucursalController implements ActionListener, MouseListener {
             } else if (boton.getName().equalsIgnoreCase("aceptar")) {
                 try {
                     setEntity();
-                    checkConstraints(ELOBJECT);
-                    String msg = ELOBJECT.getId() == null ? "Registrado" : "Modificado";
+                    checkConstraints(entity);
+                    String msg = entity.getId() == null ? "Registrado" : "Modificado";
+                    if (entity.getId() == null) {
+                        jpaController.create(entity);
+                    } else {
+                        jpaController.merge(entity);
+                    }
                     abm.showMessage(msg, CLASS_NAME, 1);
-                    ELOBJECT = null;
+                    entity = null;
                     cargarDTM(contenedor.getDTM(), "");
                     abm.dispose();
                 } catch (MessageException ex) {
@@ -368,7 +421,7 @@ public class SucursalController implements ActionListener, MouseListener {
                 abm.dispose();
                 panel = null;
                 abm = null;
-                ELOBJECT = null;
+                entity = null;
             }
             return;
         } // </editor-fold>

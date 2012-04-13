@@ -252,7 +252,7 @@ public class ChequePropioJpaController implements Serializable, ActionListener {
         panelABM.getbAddSucursal().addActionListener(this);
         UTIL.loadComboBox(panelABM.getCbBancos(), new BancoJpaController().findEntities(), true);
         UTIL.loadComboBox(panelABM.getCbBancoSucursales(), null, null, "<Seleccionar un Banco>");
-        UTIL.loadComboBox(panelABM.getCbEmisor(), new ProveedorJpaController().findEntities(), false);
+        UTIL.loadComboBox(panelABM.getCbEmisor(), new ProveedorController().findEntities(), false);
         UTIL.loadComboBox(panelABM.getCbLibrado(), new LibradoJpaController().findEntities(), false);
         if (isEditing) {
             setPanel(EL_OBJECT);
@@ -382,7 +382,7 @@ public class ChequePropioJpaController implements Serializable, ActionListener {
                         abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
                     }
                 } else if (boton.equals(panelABM.getbAddEmisor())) {
-                    ProveedorJpaController c = new ProveedorJpaController();
+                    ProveedorController c = new ProveedorController();
                     JDialog jd = c.initContenedor(null, true);
                     jd.setLocationRelativeTo(abm);
                     jd.setVisible(true);
@@ -519,7 +519,7 @@ public class ChequePropioJpaController implements Serializable, ActionListener {
     public JDialog initManager(JFrame parent, ActionListener buttonListener) {
         jdChequeManager = (JDChequesManager) new ChequeTercerosJpaController().initManager(parent, buttonListener);
         jdChequeManager.getLabelEmisor().setText("Emitido a");
-        UTIL.loadComboBox(jdChequeManager.getCbEmisor(), new ProveedorJpaController().findEntities(), true);
+        UTIL.loadComboBox(jdChequeManager.getCbEmisor(), new ProveedorController().findEntities(), true);
         jdChequeManager.setTitle("Administración de Cheques Propios");
         return jdChequeManager;
     }
@@ -528,7 +528,7 @@ public class ChequePropioJpaController implements Serializable, ActionListener {
         jdChequeManager = new JDChequesManager(parent, true);
         UTIL.loadComboBox(jdChequeManager.getCbBancos(), new BancoJpaController().findEntities(), true);
         UTIL.loadComboBox(jdChequeManager.getCbBancoSucursales(), null, null, "<Seleccionar un Banco>");
-        UTIL.loadComboBox(jdChequeManager.getCbEmisor(), new ProveedorJpaController().findEntities(), true);
+        UTIL.loadComboBox(jdChequeManager.getCbEmisor(), new ProveedorController().findEntities(), true);
         UTIL.loadComboBox(jdChequeManager.getCbLibrado(), new LibradoJpaController().findEntities(), true);
         UTIL.loadComboBox(jdChequeManager.getCbEstados(), Arrays.asList(ChequeEstado.values()), true);
         UTIL.getDefaultTableModel(jdChequeManager.getjTable1(),

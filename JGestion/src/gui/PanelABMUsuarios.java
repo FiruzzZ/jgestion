@@ -59,6 +59,7 @@ public class PanelABMUsuarios extends javax.swing.JPanel {
         checkABMCatalogoweb = new javax.swing.JCheckBox();
         checkABMOfertas = new javax.swing.JCheckBox();
         checkOrdenesES = new javax.swing.JCheckBox();
+        checkVentaNumeracionManual = new javax.swing.JCheckBox();
         jScrollPane1 = new javax.swing.JScrollPane();
         tableCajas = new javax.swing.JTable();
         jLabel8 = new javax.swing.JLabel();
@@ -126,6 +127,9 @@ public class PanelABMUsuarios extends javax.swing.JPanel {
 
         checkOrdenesES.setText("Ordenes ES");
 
+        checkVentaNumeracionManual.setText("Venta (Numeración manual)");
+        checkVentaNumeracionManual.setToolTipText("Permite cargar Comprobantes de Venta (Factura, Remito, Recibo, Nota Crédito) y asignarle un específico N°");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -148,16 +152,15 @@ public class PanelABMUsuarios extends javax.swing.JPanel {
                     .addComponent(checkCerrarCajas))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(checkABMCatalogoweb)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(checkCompra)
-                            .addComponent(checkOrdenesES))
-                        .addGap(42, 42, 42)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(checkABMOfertas)
-                            .addComponent(checkVenta))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(checkCompra)
+                    .addComponent(checkOrdenesES)
+                    .addComponent(checkABMCatalogoweb))
+                .addGap(14, 14, 14)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(checkVentaNumeracionManual)
+                    .addComponent(checkABMOfertas)
+                    .addComponent(checkVenta))
+                .addContainerGap(27, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -181,7 +184,8 @@ public class PanelABMUsuarios extends javax.swing.JPanel {
                     .addComponent(checkListaPrecios)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(checkCerrarCajas)
-                        .addComponent(checkABMCatalogoweb, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(checkABMCatalogoweb, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(checkVentaNumeracionManual, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(73, Short.MAX_VALUE))
         );
 
@@ -340,6 +344,7 @@ public class PanelABMUsuarios extends javax.swing.JPanel {
     private javax.swing.JCheckBox checkTesoreria;
     private javax.swing.JCheckBox checkUsuarios;
     private javax.swing.JCheckBox checkVenta;
+    private javax.swing.JCheckBox checkVentaNumeracionManual;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel6;
@@ -452,6 +457,10 @@ public class PanelABMUsuarios extends javax.swing.JPanel {
 
     public JCheckBox getCheckOrdenesES() {
         return checkOrdenesES;
+    }
+
+    public JCheckBox getCheckVentaNumeracionManual() {
+        return checkVentaNumeracionManual;
     }
 
     public void setEnableTfNick(boolean habilitar) {

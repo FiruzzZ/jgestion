@@ -63,7 +63,6 @@ public class Usuario implements Serializable {
         this.sucursales = sucursales;
     }
 
-    
     public Usuario(Integer id) {
         this.id = id;
     }

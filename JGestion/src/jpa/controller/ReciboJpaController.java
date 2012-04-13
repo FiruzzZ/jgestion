@@ -4,12 +4,10 @@ import controller.CtacteClienteJpaController;
 import controller.DAO;
 import controller.Valores;
 import controller.exceptions.MessageException;
-import entity.CtacteCliente;
-import entity.DetalleRecibo;
-import entity.Recibo;
-import entity.Sucursal;
+import entity.*;
 import java.util.List;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 
 /**
  *
@@ -86,5 +84,21 @@ public class ReciboJpaController extends AbstractDAO<Recibo, Integer> {
         recibo.setEstado(false);
         merge(recibo);
         new CajaMovimientosJpaController().anular(recibo);
+    }
+
+    public Recibo find(Sucursal sucursal, Integer numero) {
+        try {
+            return getEntityManager().createQuery("SELECT o FROM Recibo o "
+                    + "WHERE o.sucursal.id=" + sucursal.getId() + " AND o.numero=" + numero, getEntityClass()).getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<DetalleRecibo> findDetalleReciboEntitiesByFactura(FacturaVenta factura) {
+        return getEntityManager().
+                createNamedQuery("DetalleRecibo.findByFacturaVenta").
+                setParameter("facturaVenta", factura).getResultList();
     }
 }

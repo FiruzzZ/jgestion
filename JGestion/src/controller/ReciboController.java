@@ -1,31 +1,19 @@
 package controller;
 
-import controller.exceptions.*;
-import entity.Caja;
-import entity.ChequeTerceros;
-import entity.Cliente;
-import entity.CtacteCliente;
-import entity.NotaCredito;
-import entity.Recibo;
-import java.util.Iterator;
-import javax.persistence.EntityManager;
-import entity.DetalleRecibo;
-import entity.FacturaVenta;
-import entity.Sucursal;
-import utilities.general.UTIL;
+import controller.exceptions.MessageException;
+import controller.exceptions.NonexistentEntityException;
+import controller.exceptions.PreexistingEntityException;
+import entity.*;
 import gui.JDBuscadorReRe;
 import gui.JDReRe;
 import gui.generics.JDialogTable;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import javax.persistence.EntityManager;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import jgestion.JGestionUtils;
@@ -34,6 +22,7 @@ import jpa.controller.CajaMovimientosJpaController;
 import jpa.controller.ReciboJpaController;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import utilities.general.UTIL;
 import utilities.swing.components.ComboBoxWrapper;
 
 /**
@@ -52,6 +41,7 @@ public class ReciboController implements ActionListener, FocusListener {
     private JDBuscadorReRe buscador;
     private Recibo rereSelected;
     private ReciboJpaController jpaController;
+    private boolean unlockedNumeracion = false;
 
     public ReciboController() {
         jpaController = new ReciboJpaController();
@@ -68,6 +58,7 @@ public class ReciboController implements ActionListener, FocusListener {
      * @param modal debería ser
      * <code>true</code> siempre, no está implementado para false
      * @param setVisible
+     * @throws MessageException
      */
     public void initRecibos(JFrame frame, boolean modal, boolean setVisible) throws MessageException {
         UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.VENTA);
@@ -84,7 +75,7 @@ public class ReciboController implements ActionListener, FocusListener {
         UTIL.hideColumnsTable(jdReRe.getjTable1(), new int[]{0, 4});
         UTIL.loadComboBox(jdReRe.getCbSucursal(), uh.getSucursales(), false);
         UTIL.loadComboBox(jdReRe.getCbCaja(), uh.getCajas(true), false);
-        UTIL.loadComboBox(jdReRe.getCbClienteProveedor(), new ClienteJpaController().findEntities(), true);
+        UTIL.loadComboBox(jdReRe.getCbClienteProveedor(), new ClienteController().findEntities(), true);
         UTIL.loadComboBox(jdReRe.getCbCtaCtes(), null, false);
         setNextNumeroReRe();
         jdReRe.getbAnular().addActionListener(new ActionListener() {
@@ -177,7 +168,7 @@ public class ReciboController implements ActionListener, FocusListener {
                 if (jdReRe.getCbClienteProveedor().getSelectedIndex() > 0) {
                     Cliente cliente = (Cliente) jdReRe.getCbClienteProveedor().getSelectedItem();
                     cargarFacturasCtaCtes(cliente);
-                    double credito = new NotaCreditoJpaController().getCreditoDisponible(cliente);
+                    double credito = new NotaCreditoController().getCreditoDisponible(cliente);
                     jdReRe.getTfCreditoDebito().setText(UTIL.PRECIO_CON_PUNTO.format(credito));
                     jdReRe.getTfRestanteCreditoDebito().setText(UTIL.PRECIO_CON_PUNTO.format(credito));
                 } else {
@@ -244,7 +235,7 @@ public class ReciboController implements ActionListener, FocusListener {
                 new String[]{"Nº Nota crédito", "Fecha", "Importe", "Desacreditado", "Total Acum."},
                 new int[]{50, 50, 50, 50, 100},
                 new Class<?>[]{null, null, Double.class, Double.class, Double.class});
-        List<NotaCredito> lista = new NotaCreditoJpaController().findNotaCreditoFrom(cliente, false);
+        List<NotaCredito> lista = new NotaCreditoController().findNotaCreditoFrom(cliente, false);
         DefaultTableModel dtm = (DefaultTableModel) tabla.getModel();
         double acumulativo = 0.0;
         for (NotaCredito notaCredito : lista) {
@@ -277,20 +268,45 @@ public class ReciboController implements ActionListener, FocusListener {
         if (jdReRe.getDcFechaReRe() == null) {
             throw new MessageException("Fecha de " + CLASS_NAME + " no válida");
         }
+
+        if (unlockedNumeracion) {
+            try {
+                Integer numero = Integer.valueOf(jdReRe.getTfOcteto());
+                if (numero < 1 && numero > 99999999) {
+                    throw new MessageException("Número de Recibo no válido, debe ser mayor a 0 y menor o igual a 99999999");
+                }
+                Recibo oldRecibo = jpaController.find(getSelectedSucursalFromJD(), numero);
+                if (oldRecibo != null) {
+                    throw new MessageException("Ya existe un registro de Recibo N° " + JGestionUtils.getNumeracion(oldRecibo, true));
+                }
+            } catch (NumberFormatException numberFormatException) {
+                throw new MessageException("Número de Recibo no válido, ingrese solo dígitos");
+            }
+        }
+    }
+
+    Sucursal getSelectedSucursalFromJD() {
+        @SuppressWarnings("unchecked")
+        ComboBoxWrapper<Sucursal> cbw = (ComboBoxWrapper<Sucursal>) jdReRe.getCbSucursal().getSelectedItem();
+        return cbw.getEntity();
     }
 
     private Recibo setEntity() throws Exception {
         Recibo recibo = new Recibo();
         recibo.setCaja((Caja) jdReRe.getCbCaja().getSelectedItem());
-        recibo.setSucursal((Sucursal) jdReRe.getCbSucursal().getSelectedItem());
-        recibo.setNumero(jpaController.getNextNumero(recibo.getSucursal()));
+        recibo.setSucursal(getSelectedSucursalFromJD());
+        if (unlockedNumeracion) {
+            recibo.setNumero(Integer.valueOf(jdReRe.getTfOcteto()));
+        } else {
+            recibo.setNumero(jpaController.getNextNumero(recibo.getSucursal()));
+        }
         recibo.setUsuario(UsuarioJpaController.getCurrentUser());
         recibo.setEstado(true);
         recibo.setFechaRecibo(jdReRe.getDcFechaReRe());
         // 30% faster on ArrayList with initialCapacity :O
         recibo.setDetalleReciboList(new ArrayList<DetalleRecibo>(jdReRe.getDtm().getRowCount()));
         DefaultTableModel dtm = jdReRe.getDtm();
-        FacturaVentaJpaController fcc = new FacturaVentaJpaController();
+        FacturaVentaController fcc = new FacturaVentaController();
         DetalleRecibo detalle;
         String observacion;
         for (int i = 0; i < dtm.getRowCount(); i++) {
@@ -343,7 +359,7 @@ public class ReciboController implements ActionListener, FocusListener {
             new CajaMovimientosJpaController().asentarMovimiento(recibo);
         }
         if (montoParaDesacreditar.doubleValue() > 0) {
-            new NotaCreditoJpaController().desacreditar(
+            new NotaCreditoController().desacreditar(
                     recibo,
                     (Cliente) jdReRe.getCbClienteProveedor().getSelectedItem(),
                     montoParaDesacreditar.doubleValue());
@@ -504,7 +520,7 @@ public class ReciboController implements ActionListener, FocusListener {
 
     private void initBuscador() {
         buscador.setParaRecibos();
-        UTIL.loadComboBox(buscador.getCbClieProv(), new ClienteJpaController().findEntities(), true);
+        UTIL.loadComboBox(buscador.getCbClieProv(), new ClienteController().findEntities(), true);
         UTIL.loadComboBox(buscador.getCbCaja(), new UsuarioHelper().getCajas(Boolean.TRUE), true);
         UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getSucursales(), true);
         UTIL.getDefaultTableModel(
@@ -683,7 +699,7 @@ public class ReciboController implements ActionListener, FocusListener {
         jdReRe.setTfOcteto(UTIL.AGREGAR_CEROS(recibo.getNumero(), 8));
 
         //por no redundar en DATOOOOOOOOOSS...!!!
-        Cliente cliente = new FacturaVentaJpaController().findFacturaVenta(recibo.getDetalleReciboList().get(0).getFacturaVenta().getId()).getCliente();
+        Cliente cliente = new FacturaVentaController().findFacturaVenta(recibo.getDetalleReciboList().get(0).getFacturaVenta().getId()).getCliente();
 
         jdReRe.setDcFechaReRe(recibo.getFechaRecibo());
         jdReRe.setDcFechaCarga(recibo.getFechaCarga());
@@ -825,7 +841,7 @@ public class ReciboController implements ActionListener, FocusListener {
      * @return una lista de Recibo's
      */
     public List<Recibo> findRecibosByFactura(FacturaVenta factura) {
-        List<DetalleRecibo> detalleReciboList = new DetalleReciboJpaController().findDetalleReciboEntitiesByFactura(factura);
+        List<DetalleRecibo> detalleReciboList = jpaController.findDetalleReciboEntitiesByFactura(factura);
         List recibosList = new ArrayList(detalleReciboList.size());
         for (DetalleRecibo detalleRecibo : detalleReciboList) {
             if (!recibosList.contains(detalleRecibo.getRecibo())) {
@@ -844,4 +860,12 @@ public class ReciboController implements ActionListener, FocusListener {
     private ChequeTerceros getChequeToBind(Recibo recibo) throws MessageException {
         return new ChequeTercerosJpaController().getABMCheque(recibo);
     }
+
+    public void unlockedABM(JFrame owner) throws MessageException {
+        initRecibos(owner, true, false);
+        unlockedNumeracion = true;
+        jdReRe.setTfOctetoEditable(true);
+        jdReRe.setVisible(true);
+    }
+
 }

@@ -194,7 +194,7 @@ public class ChequeTercerosJpaController implements ActionListener, Serializable
         panelABM.getLabelEmisor().setText("Emisor (Cliente)");
         UTIL.loadComboBox(panelABM.getCbBancos(), new BancoJpaController().findEntities(), true);
         UTIL.loadComboBox(panelABM.getCbBancoSucursales(), null, null, "<Seleccionar un Banco>");
-        UTIL.loadComboBox(panelABM.getCbEmisor(), new ClienteJpaController().findEntities(), false);
+        UTIL.loadComboBox(panelABM.getCbEmisor(), new ClienteController().findEntities(), false);
         UTIL.loadComboBox(panelABM.getCbLibrado(), new LibradoJpaController().findEntities(), false);
 
         panelABM.getCbBancos().addActionListener(new ActionListener() {
@@ -423,7 +423,7 @@ public class ChequeTercerosJpaController implements ActionListener, Serializable
                         abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
                     }
                 } else if (boton.getName().equalsIgnoreCase("baAddEmisor")) {
-                    JDialog initContenedor = new ClienteJpaController().initContenedor(null, true);
+                    JDialog initContenedor = new ClienteController().initContenedor(null, true);
                     initContenedor.setVisible(true);
                 }
             } //</editor-fold>
@@ -611,7 +611,7 @@ public class ChequeTercerosJpaController implements ActionListener, Serializable
         } else {
             jdChequeManager.addButtonListener(this);
             jdChequeManager.getLabelEmisor().setText("Emisor por");
-            UTIL.loadComboBox(jdChequeManager.getCbEmisor(), new ClienteJpaController().findEntities(), true);
+            UTIL.loadComboBox(jdChequeManager.getCbEmisor(), new ClienteController().findEntities(), true);
             jdChequeManager.setTitle("Administración de Cheques Terceros");
         }
         return jdChequeManager;
@@ -734,7 +734,7 @@ public class ChequeTercerosJpaController implements ActionListener, Serializable
         JPanel p = new JPanel(new GridLayout(3, 1));
         p.add(new JLabel("Seleccionar Caja destino"));
         final JComboBox cbCajas = new JComboBox();
-        UTIL.loadComboBox(cbCajas, new CajaJpaController().findCajasPermitidasByUsuario(UsuarioJpaController.getCurrentUser(), Boolean.TRUE), false);
+        UTIL.loadComboBox(cbCajas, new CajaController().findCajasPermitidasByUsuario(UsuarioJpaController.getCurrentUser(), Boolean.TRUE), false);
         p.add(cbCajas);
         abm = new JDABM(true, jdChequeManager, "Asentar Cheque a Caja", p);
         abm.getbAceptar().addActionListener(new ActionListener() {

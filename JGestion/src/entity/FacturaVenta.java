@@ -314,7 +314,6 @@ public class FacturaVenta implements Serializable {
                 + ", gravado=" + gravado + ", formaPago=" + formaPago
                 + ", diasCtaCte=" + diasCtaCte + ", anulada=" + anulada
                 + ", remito=" + remito + ", cheque=" + cheque 
-                + ", detallesVentaList=" + detallesVentaList
                 + '}';
     }
 }
