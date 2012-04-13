@@ -267,7 +267,7 @@ public class CtacteClienteJpaController implements ActionListener {
                 }
             }
         });
-        UTIL.loadComboBox(resumenCtaCtes.getCbClieProv(), new ClienteJpaController().findEntities(), false);
+        UTIL.loadComboBox(resumenCtaCtes.getCbClieProv(), new ClienteController().findEntities(), false);
         UTIL.loadComboBox(resumenCtaCtes.getCbReRes(), null, true);
         UTIL.getDefaultTableModel(
                 resumenCtaCtes.getjTableResumen(),
@@ -442,9 +442,9 @@ public class CtacteClienteJpaController implements ActionListener {
                 if (index == 0) {
                     panelCCCheck.getCbClientesProveedores().removeAllItems();
                 } else if (index == 1) {
-                    UTIL.loadComboBox(panelCCCheck.getCbClientesProveedores(), new ClienteJpaController().findEntities(), "<Todos>");
+                    UTIL.loadComboBox(panelCCCheck.getCbClientesProveedores(), new ClienteController().findEntities(), "<Todos>");
                 } else if (index == 2) {
-                    UTIL.loadComboBox(panelCCCheck.getCbClientesProveedores(), new ProveedorJpaController().findEntities(), "<Todos>");
+                    UTIL.loadComboBox(panelCCCheck.getCbClientesProveedores(), new ProveedorController().findEntities(), "<Todos>");
                 }
             }
         });

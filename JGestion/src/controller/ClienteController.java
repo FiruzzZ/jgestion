@@ -34,7 +34,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Administrador
  */
-public class ClienteJpaController implements ActionListener {
+public class ClienteController implements ActionListener {
 
     public final String CLASS_NAME = Cliente.class.getSimpleName();
     private final String[] columnNames = {"ID", "Código", "Razón social", "Tipo", "Nº Doc.", "Teléfonos"};
@@ -469,7 +469,7 @@ public class ClienteJpaController implements ActionListener {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    Logger.getLogger(ClienteJpaController.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(ClienteController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             } else if (boton.getName().equalsIgnoreCase("edit")) {
                 try {
@@ -485,7 +485,7 @@ public class ClienteJpaController implements ActionListener {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    Logger.getLogger(ClienteJpaController.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(ClienteController.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
             } else if (boton.getName().equalsIgnoreCase("del")) {
@@ -503,10 +503,10 @@ public class ClienteJpaController implements ActionListener {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (NonexistentEntityException ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    Logger.getLogger(ClienteJpaController.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(ClienteController.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (Exception ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    Logger.getLogger(ClienteJpaController.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(ClienteController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             } else if (boton.getName().equalsIgnoreCase("Print")) {
                 //no implementado aun...
@@ -534,7 +534,7 @@ public class ClienteJpaController implements ActionListener {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                    Logger.getLogger(ClienteJpaController.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(ClienteController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             } else if (boton.getName().equalsIgnoreCase("cancelar")) {
                 abm.dispose();
@@ -643,7 +643,7 @@ public class ClienteJpaController implements ActionListener {
                     JOptionPane.showMessageDialog(contenedor, ex.getMessage());
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(contenedor, ex.getMessage());
-                    Logger.getLogger(ClienteJpaController.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(ClienteController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
@@ -651,7 +651,7 @@ public class ClienteJpaController implements ActionListener {
     }
 
     private void createProveedorFromCliente(Cliente cliente) throws MessageException, Exception {
-        new ProveedorJpaController().createProveedorFromCliente(cliente);
+        new ProveedorController().createProveedorFromCliente(cliente);
     }
 
     Cliente createFromProveedor(Proveedor proveedor) throws MessageException, Exception {

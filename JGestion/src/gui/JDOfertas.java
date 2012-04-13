@@ -7,7 +7,7 @@ package gui;
 
 import controller.Contabilidad;
 import controller.DAO;
-import controller.FacturaVentaJpaController;
+import controller.FacturaVentaController;
 import controller.HistorialOfertasJpaController;
 import controller.ListaPreciosJpaController;
 import controller.ProductoController;

@@ -189,20 +189,17 @@
                   </Group>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
+                      <Component id="checkCompra" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Component id="checkOrdenesES" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Component id="checkABMCatalogoweb" alignment="0" min="-2" max="-2" attributes="0"/>
-                      <Group type="102" attributes="0">
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="checkCompra" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Component id="checkOrdenesES" alignment="0" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <EmptySpace min="-2" pref="42" max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                              <Component id="checkABMOfertas" min="-2" max="-2" attributes="0"/>
-                              <Component id="checkVenta" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                      </Group>
                   </Group>
-                  <EmptySpace max="32767" attributes="0"/>
+                  <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Component id="checkVentaNumeracionManual" min="-2" max="-2" attributes="0"/>
+                      <Component id="checkABMOfertas" min="-2" max="-2" attributes="0"/>
+                      <Component id="checkVenta" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace pref="27" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -231,6 +228,7 @@
                       <Group type="103" alignment="0" groupAlignment="3" attributes="0">
                           <Component id="checkCerrarCajas" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="checkABMCatalogoweb" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
+                          <Component id="checkVentaNumeracionManual" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                   <EmptySpace pref="73" max="32767" attributes="0"/>
@@ -313,6 +311,12 @@
         <Component class="javax.swing.JCheckBox" name="checkOrdenesES">
           <Properties>
             <Property name="text" type="java.lang.String" value="Ordenes ES"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="checkVentaNumeracionManual">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Venta (Numeraci&#xf3;n manual)"/>
+            <Property name="toolTipText" type="java.lang.String" value="Permite cargar Comprobantes de Venta (Factura, Remito, Recibo, Nota Cr&#xe9;dito) y asignarle un espec&#xed;fico N&#xb0;"/>
           </Properties>
         </Component>
       </SubComponents>

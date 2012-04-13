@@ -31,13 +31,13 @@ public class PresupuestoController implements ActionListener, KeyListener {
 
     public static final String CLASS_NAME = "Presupuesto";
     private JDFacturaVenta jdFacturaVenta;
-    private final FacturaVentaJpaController facturaVentaController;
+    private final FacturaVentaController facturaVentaController;
     private JDBuscadorReRe buscador;
     private boolean MODO_VISTA = false;
     private Presupuesto selectedPresupuesto;
 
     public PresupuestoController() {
-        facturaVentaController = new FacturaVentaJpaController();
+        facturaVentaController = new FacturaVentaController();
     }
 
     // <editor-fold defaultstate="collapsed" desc="CRUD..">
@@ -323,7 +323,7 @@ public class PresupuestoController implements ActionListener, KeyListener {
         buscador.hideCaja();
         buscador.hideFormaPago();
         buscador.getjTfOcteto().setVisible(false);
-        UTIL.loadComboBox(buscador.getCbClieProv(), new ClienteJpaController().findEntities(), true);
+        UTIL.loadComboBox(buscador.getCbClieProv(), new ClienteController().findEntities(), true);
         UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getSucursales(), true);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),

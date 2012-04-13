@@ -54,8 +54,44 @@ public class Sucursal implements Serializable {
     @Basic(optional = false)
     @Column(nullable = false, unique = true)
     private Long puntoVenta;
+    @Basic(optional = false)
+    @Column(name = "factura_a", precision = 8, nullable = false)
+    private Integer factura_a;
+    @Basic(optional = false)
+    @Column(name = "factura_b", precision = 8, nullable = false)
+    private Integer factura_b;
+    @Basic(optional = false)
+    @Column(precision = 8, nullable = false)
+    private Integer notaCredito;
+    @Basic(optional = false)
+    @Column(precision = 8, nullable = false)
+    private Integer recibo;
+    @Basic(optional = false)
+    @Column(precision = 8, nullable = false)
+    private Integer remito;
 
     public Sucursal() {
+    }
+
+    public Sucursal(String nombre, String direccion, BigInteger tele1, BigInteger tele2, Integer estado, Integer interno1, Integer interno2, String encargado, String email, Departamento departamento, Municipio municipio, Provincia provincia, Long puntoVenta, Integer factura_a, Integer factura_b, Integer notaCredito, Integer recibo, Integer remito) {
+        this.nombre = nombre;
+        this.direccion = direccion;
+        this.tele1 = tele1;
+        this.tele2 = tele2;
+        this.estado = estado;
+        this.interno1 = interno1;
+        this.interno2 = interno2;
+        this.encargado = encargado;
+        this.email = email;
+        this.departamento = departamento;
+        this.municipio = municipio;
+        this.provincia = provincia;
+        this.puntoVenta = puntoVenta;
+        this.factura_a = factura_a;
+        this.factura_b = factura_b;
+        this.notaCredito = notaCredito;
+        this.recibo = recibo;
+        this.remito = remito;
     }
 
     public Sucursal(Integer id) {
@@ -172,6 +208,46 @@ public class Sucursal implements Serializable {
 
     public void setPuntoVenta(Long puntoVenta) {
         this.puntoVenta = puntoVenta;
+    }
+
+    public Integer getFactura_a() {
+        return factura_a;
+    }
+
+    public void setFactura_a(Integer factura_a) {
+        this.factura_a = factura_a;
+    }
+
+    public Integer getFactura_b() {
+        return factura_b;
+    }
+
+    public void setFactura_b(Integer factura_b) {
+        this.factura_b = factura_b;
+    }
+
+    public Integer getNotaCredito() {
+        return notaCredito;
+    }
+
+    public void setNotaCredito(Integer notaCredito) {
+        this.notaCredito = notaCredito;
+    }
+
+    public Integer getRecibo() {
+        return recibo;
+    }
+
+    public void setRecibo(Integer recibo) {
+        this.recibo = recibo;
+    }
+
+    public Integer getRemito() {
+        return remito;
+    }
+
+    public void setRemito(Integer remito) {
+        this.remito = remito;
     }
 
     @Override

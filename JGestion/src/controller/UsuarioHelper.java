@@ -6,6 +6,7 @@ import entity.Sucursal;
 import entity.Usuario;
 import java.util.ArrayList;
 import java.util.List;
+import utilities.swing.components.ComboBoxWrapper;
 
 /**
  *
@@ -40,8 +41,17 @@ class UsuarioHelper {
         }
         return l;
     }
-    
+
     List<Caja> getCajas(Boolean estado) {
-        return new CajaJpaController().findCajasPermitidasByUsuario(usuario, estado);
+        return new CajaController().findCajasPermitidasByUsuario(usuario, estado);
+    }
+
+    List<ComboBoxWrapper<Sucursal>> getWrappedSucursales() {
+        List<Sucursal> sucursales = getSucursales();
+        List<ComboBoxWrapper<Sucursal>> l = new ArrayList<ComboBoxWrapper<Sucursal>>(sucursales.size());
+        for (Sucursal sucursal : sucursales) {
+            l.add(new ComboBoxWrapper<Sucursal>(sucursal, sucursal.getId(), sucursal.getNombre()));
+        }
+        return l;
     }
 }

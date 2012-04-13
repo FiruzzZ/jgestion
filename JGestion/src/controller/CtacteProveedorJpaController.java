@@ -196,7 +196,7 @@ public class CtacteProveedorJpaController implements ActionListener {
             jTableResumenMouseReleased(e);
          }
       });
-      UTIL.loadComboBox(resumenCtaCtes.getCbClieProv(), new ProveedorJpaController().findEntities(), false);
+      UTIL.loadComboBox(resumenCtaCtes.getCbClieProv(), new ProveedorController().findEntities(), false);
       UTIL.loadComboBox(resumenCtaCtes.getCbReRes(), null, true);
       UTIL.getDefaultTableModel(
               resumenCtaCtes.getjTableResumen(),

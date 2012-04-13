@@ -155,7 +155,7 @@ public class ListaPreciosJpaController implements ActionListener, MouseListener,
          UTIL.getDefaultTableModel(contenedor.getjTable1(), colsName, colsWidth, colsClass);
          UTIL.hideColumnTable(contenedor.getjTable1(), 0);
       } catch (Exception ex) {
-         Logger.getLogger(FacturaCompraJpaController.class.getName()).log(Level.SEVERE, null, ex);
+         Logger.getLogger(FacturaCompraController.class.getName()).log(Level.SEVERE, null, ex);
       }
       //esconde la columna IVA-Producto
       cargarDTM(contenedor.getDTM(), null);

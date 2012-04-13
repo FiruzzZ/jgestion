@@ -41,7 +41,7 @@ import jpa.controller.CajaMovimientosJpaController;
  *
  * @author FiruzzZ
  */
-public class FacturaCompraJpaController implements ActionListener, KeyListener {
+public class FacturaCompraController implements ActionListener, KeyListener {
 
     public static final List<String> TIPOS_FACTURA;
     public static final List<String> FORMAS_PAGO;
@@ -158,11 +158,11 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
         UTIL.hideColumnTable(jdFactura.getjTable1(), 0);
         //set next nº movimiento
         jdFactura.setTfNumMovimiento(String.valueOf(getFacturaCompraCount() + 1));
-        UTIL.loadComboBox(jdFactura.getCbProveedor(), new ProveedorJpaController().findEntities(), false);
+        UTIL.loadComboBox(jdFactura.getCbProveedor(), new ProveedorController().findEntities(), false);
         UTIL.loadComboBox(jdFactura.getCbSucursal(), new UsuarioHelper().getSucursales(), false);
         UTIL.loadComboBox(jdFactura.getCbFacturaTipo(), TIPOS_FACTURA, false);
         UTIL.loadComboBox(jdFactura.getCbFormaPago(), Valores.FormaPago.getFormasDePago(), false);
-        UTIL.loadComboBox(jdFactura.getCbCaja(), new CajaJpaController().findCajasPermitidasByUsuario(UsuarioJpaController.getCurrentUser(), true), false);
+        UTIL.loadComboBox(jdFactura.getCbCaja(), new CajaController().findCajasPermitidasByUsuario(UsuarioJpaController.getCurrentUser(), true), false);
         UTIL.loadComboBox(jdFactura.getCbProductos(), new ProductoController().findProductoToCombo(), false);
 
         jdFactura.getCbProductos().setEditable(true);
@@ -515,7 +515,7 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
                     jdFactura.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
                     jdFactura.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    Logger.getLogger(FacturaCompraJpaController.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(FacturaCompraController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             } else if (boton.getName().equalsIgnoreCase("add")) {
                 try {
@@ -524,7 +524,7 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
                     jdFactura.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
                     jdFactura.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    Logger.getLogger(FacturaCompraJpaController.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(FacturaCompraController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             } else if (boton.getName().equalsIgnoreCase("del")) {
                 deleteProductoFromLista();
@@ -542,7 +542,7 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
                 try {
                     armarQuery();
                 } catch (MessageException ex) {
-                    Logger.getLogger(FacturaCompraJpaController.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(FacturaCompraController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
 
@@ -581,8 +581,8 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
         }// </editor-fold>
 
         buscador = new JDBuscadorReRe(frame, "Buscador - Factura compra", modal, "Proveedor", "Nº Factura");
-        UTIL.loadComboBox(buscador.getCbClieProv(), new ProveedorJpaController().findEntities(), true);
-        UTIL.loadComboBox(buscador.getCbCaja(), new CajaJpaController().findCajasPermitidasByUsuario(UsuarioJpaController.getCurrentUser(), true), true);
+        UTIL.loadComboBox(buscador.getCbClieProv(), new ProveedorController().findEntities(), true);
+        UTIL.loadComboBox(buscador.getCbCaja(), new CajaController().findCajasPermitidasByUsuario(UsuarioJpaController.getCurrentUser(), true), true);
         UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getSucursales(), true);
         UTIL.loadComboBox(buscador.getCbFormasDePago(), Valores.FormaPago.getFormasDePago(), true);
         UTIL.getDefaultTableModel(
@@ -782,7 +782,7 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
         }
 
         Caja oldCaja = factura.getCaja();
-        List<Caja> cajasPermitidasList = new CajaJpaController().findCajasPermitidasByUsuario(UsuarioJpaController.getCurrentUser(), true);
+        List<Caja> cajasPermitidasList = new CajaController().findCajasPermitidasByUsuario(UsuarioJpaController.getCurrentUser(), true);
         if (cajasPermitidasList.isEmpty()) {
             throw new MessageException("No tiene acceso a ninguna Caja del sistema");
         }
@@ -797,7 +797,7 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
             throw new MessageException("ERROR DE SISTEMA\nHay un problema con la Caja " + oldCaja.getNombre());
         }
         if (cajaMovimientoActiva.getCaja().isBaja() || (!cajaMovimientoActiva.getCaja().getEstado())) {
-            cajaMovimientoActiva = new FacturaVentaJpaController().initReAsignacionCajaMovimiento(cajasPermitidasList);
+            cajaMovimientoActiva = new FacturaVentaController().initReAsignacionCajaMovimiento(cajasPermitidasList);
             if (cajaMovimientoActiva == null) {
                 return;
             }
@@ -805,7 +805,7 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
         try {
             cmController.anular(factura, cajaMovimientoActiva);
         } catch (Exception ex) {
-            Logger.getLogger(FacturaVentaJpaController.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FacturaVentaController.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
@@ -820,7 +820,7 @@ public class FacturaCompraJpaController implements ActionListener, KeyListener {
             r.addParameter("FORMA_PAGO", Valores.FormaPago.getFormaPago(EL_OBJECT.getFormaPago()).getNombre());
             r.viewReport();
         } catch (Exception ex) {
-            Logger.getLogger(FacturaCompraJpaController.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FacturaCompraController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

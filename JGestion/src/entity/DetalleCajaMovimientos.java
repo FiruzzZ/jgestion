@@ -11,171 +11,185 @@ import javax.persistence.*;
 @Entity
 @Table(name = "detalle_caja_movimientos")
 @NamedQueries({
-   @NamedQuery(name = "DetalleCajaMovimientos.findAll", query = "SELECT d FROM DetalleCajaMovimientos d"),
-   @NamedQuery(name = "DetalleCajaMovimientos.findById", query = "SELECT d FROM DetalleCajaMovimientos d WHERE d.id = :id")
+    @NamedQuery(name = "DetalleCajaMovimientos.findAll", query = "SELECT d FROM DetalleCajaMovimientos d"),
+    @NamedQuery(name = "DetalleCajaMovimientos.findById", query = "SELECT d FROM DetalleCajaMovimientos d WHERE d.id = :id")
 })
 @SqlResultSetMappings({
-   @SqlResultSetMapping(name = "DetalleCajaMovimientos.BalanceGeneral", entities = {
-      @EntityResult(entityClass = DetalleCajaMovimientos.class, fields = {
-         @FieldResult(name = "id", column = "id"),
-         @FieldResult(name = "ingreso", column = "ingreso"),
-         @FieldResult(name = "tipo", column = "tipo"),
-         @FieldResult(name = "monto", column = "monto"),
-         @FieldResult(name = "fecha", column = "fecha"),
-         @FieldResult(name = "descripcion", column = "descripcion")
-      })
-   })
+    @SqlResultSetMapping(name = "DetalleCajaMovimientos.BalanceGeneral", entities = {
+        @EntityResult(entityClass = DetalleCajaMovimientos.class, fields = {
+            @FieldResult(name = "id", column = "id"),
+            @FieldResult(name = "ingreso", column = "ingreso"),
+            @FieldResult(name = "tipo", column = "tipo"),
+            @FieldResult(name = "monto", column = "monto"),
+            @FieldResult(name = "fecha", column = "fecha"),
+            @FieldResult(name = "descripcion", column = "descripcion")
+        })
+    })
 })
 public class DetalleCajaMovimientos implements Serializable {
 
-   private static final long serialVersionUID = 1L;
-   @Id
-   @Basic(optional = false)
-   @Column(name = "id", nullable = false)
-   @GeneratedValue(strategy = GenerationType.IDENTITY)
-   private Integer id;
-   @Basic(optional = false)
-   @Column(name = "ingreso", nullable = false)
-   private boolean ingreso;
-   /**
-    * 1 factu_compra, 2 factu_venta, 3 remesa, 4 recibo, 5 movimiento caja, 6 devolucion (anulacion), 7 apertura caja, 8 mov. varios, 9 mov interno (MVI)
-    */
-   @Basic(optional = false)
-   @Column(name = "tipo", nullable = false)
-   private short tipo;
-   @Basic(optional = false)
-   @Column(name = "numero", nullable = false)
-   private long numero;
-   @Basic(optional = false)
-   @Column(name = "monto", nullable = false)
-   private double monto;
-   @Basic(optional = false)
-   @Column(name = "fecha", nullable = false, insertable = false, updatable = false, columnDefinition = "timestamp with time zone NOT NULL DEFAULT now()")
-   @Temporal(TemporalType.TIMESTAMP)
-   private Date fecha;
-   @Basic(optional = false)
-   @Column(name = "descripcion", nullable = false, length = 250)
-   private String descripcion;
-   @JoinColumn(name = "caja_movimientos", referencedColumnName = "id", nullable = false)
-   @ManyToOne(optional = false)
-   private CajaMovimientos cajaMovimientos;
-   @JoinColumn(name = "usuario", referencedColumnName = "id", nullable = false)
-   @ManyToOne(optional = false)
-   private Usuario usuario;
-   @JoinColumn(name = "movimiento_concepto", referencedColumnName = "id", nullable = false)
-   @ManyToOne(optional = false)
-   private MovimientoConcepto movimientoConcepto;
+    private static final long serialVersionUID = 1L;
+    @Id
+    @Basic(optional = false)
+    @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+    @Basic(optional = false)
+    @Column(name = "ingreso", nullable = false)
+    private boolean ingreso;
+    /**
+     * 1 factu_compra, 2 factu_venta, 3 remesa, 4 recibo, 5 movimiento caja, 6
+     * devolucion (anulacion), 7 apertura caja, 8 mov. varios, 9 mov interno
+     * (MVI)
+     */
+    @Basic(optional = false)
+    @Column(name = "tipo", nullable = false)
+    private short tipo;
+    @Basic(optional = false)
+    @Column(name = "numero", nullable = false)
+    private long numero;
+    @Basic(optional = false)
+    @Column(name = "monto", nullable = false)
+    private double monto;
+    @Basic(optional = false)
+    @Column(name = "fecha", nullable = false, insertable = false, updatable = false, columnDefinition = "timestamp with time zone NOT NULL DEFAULT now()")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fecha;
+    @Column(name = "fechamovimiento")
+    @Temporal(TemporalType.DATE)
+    private Date fechaMovimiento;
+    @Basic(optional = false)
+    @Column(name = "descripcion", nullable = false, length = 250)
+    private String descripcion;
+    @JoinColumn(name = "caja_movimientos", referencedColumnName = "id", nullable = false)
+    @ManyToOne(optional = false)
+    private CajaMovimientos cajaMovimientos;
+    @JoinColumn(name = "usuario", referencedColumnName = "id", nullable = false)
+    @ManyToOne(optional = false)
+    private Usuario usuario;
+    @JoinColumn(name = "movimiento_concepto", referencedColumnName = "id", nullable = false)
+    @ManyToOne(optional = false)
+    private MovimientoConcepto movimientoConcepto;
 
-   public DetalleCajaMovimientos() {
-   }
+    public DetalleCajaMovimientos() {
+    }
 
-   public DetalleCajaMovimientos(Integer id) {
-      this.id = id;
-   }
+    public DetalleCajaMovimientos(Integer id) {
+        this.id = id;
+    }
 
-   public Integer getId() {
-      return id;
-   }
+    public Integer getId() {
+        return id;
+    }
 
-   public void setId(Integer id) {
-      this.id = id;
-   }
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-   public boolean getIngreso() {
-      return ingreso;
-   }
+    public boolean getIngreso() {
+        return ingreso;
+    }
 
-   public void setIngreso(boolean ingreso) {
-      this.ingreso = ingreso;
-   }
+    public void setIngreso(boolean ingreso) {
+        this.ingreso = ingreso;
+    }
 
-   public short getTipo() {
-      return tipo;
-   }
+    public short getTipo() {
+        return tipo;
+    }
 
-   /**
-    * Set el tipo (este campo está parametrizado).
-    * @param tipo 
-    * @see DetalleCajaMovimientos#tipo
-    */
-   public void setTipo(short tipo) {
-      this.tipo = tipo;
-   }
+    /**
+     * Set el tipo (este campo está parametrizado).
+     *
+     * @param tipo
+     * @see DetalleCajaMovimientos#tipo
+     */
+    public void setTipo(short tipo) {
+        this.tipo = tipo;
+    }
 
-   public long getNumero() {
-      return numero;
-   }
+    public long getNumero() {
+        return numero;
+    }
 
-   public void setNumero(long numero) {
-      this.numero = numero;
-   }
+    public void setNumero(long numero) {
+        this.numero = numero;
+    }
 
-   public double getMonto() {
-      return monto;
-   }
+    public double getMonto() {
+        return monto;
+    }
 
-   public void setMonto(double monto) {
-      this.monto = monto;
-   }
+    public void setMonto(double monto) {
+        this.monto = monto;
+    }
 
-   public Date getFecha() {
-      return fecha;
-   }
+    public Date getFecha() {
+        return fecha;
+    }
 
-   public String getDescripcion() {
-      return descripcion;
-   }
+    public String getDescripcion() {
+        return descripcion;
+    }
 
-   public void setDescripcion(String descripcion) {
-      this.descripcion = descripcion;
-   }
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
 
-   public CajaMovimientos getCajaMovimientos() {
-      return cajaMovimientos;
-   }
+    public CajaMovimientos getCajaMovimientos() {
+        return cajaMovimientos;
+    }
 
-   public void setCajaMovimientos(CajaMovimientos cajaMovimientos) {
-      this.cajaMovimientos = cajaMovimientos;
-   }
+    public void setCajaMovimientos(CajaMovimientos cajaMovimientos) {
+        this.cajaMovimientos = cajaMovimientos;
+    }
 
-   public Usuario getUsuario() {
-      return usuario;
-   }
+    public Usuario getUsuario() {
+        return usuario;
+    }
 
-   public void setUsuario(Usuario usuario) {
-      this.usuario = usuario;
-   }
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
 
-   public MovimientoConcepto getMovimientoConcepto() {
-      return movimientoConcepto;
-   }
+    public MovimientoConcepto getMovimientoConcepto() {
+        return movimientoConcepto;
+    }
 
-   public void setMovimientoConcepto(MovimientoConcepto movimientoConcepto) {
-      this.movimientoConcepto = movimientoConcepto;
-   }
+    public void setMovimientoConcepto(MovimientoConcepto movimientoConcepto) {
+        this.movimientoConcepto = movimientoConcepto;
+    }
 
-   @Override
-   public int hashCode() {
-      int hash = 0;
-      hash += (id != null ? id.hashCode() : 0);
-      return hash;
-   }
+    public Date getFechaMovimiento() {
+        return fechaMovimiento;
+    }
 
-   @Override
-   public boolean equals(Object object) {
-      // TODO: Warning - this method won't work in the case the id fields are not set
-      if (!(object instanceof DetalleCajaMovimientos)) {
-         return false;
-      }
-      DetalleCajaMovimientos other = (DetalleCajaMovimientos) object;
-      if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-         return false;
-      }
-      return true;
-   }
+    public void setFechaMovimiento(Date fechaMovimiento) {
+        this.fechaMovimiento = fechaMovimiento;
+    }
 
-   @Override
-   public String toString() {
-      return this.getDescripcion();
-   }
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof DetalleCajaMovimientos)) {
+            return false;
+        }
+        DetalleCajaMovimientos other = (DetalleCajaMovimientos) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return this.getDescripcion();
+    }
 }

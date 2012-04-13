@@ -11,6 +11,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import utilities.general.UTIL;
 import gui.JDBuscadorReRe;
+import gui.JFP;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -27,21 +28,20 @@ import org.apache.log4j.Logger;
 
 /**
  *
- * @author Administrador
+ * @author FiruzzZ
  */
-public class RemitoJpaController implements ActionListener, KeyListener {
+public class RemitoController implements ActionListener, KeyListener {
 
     public static final String CLASS_NAME = Remito.class.getSimpleName();
-    private final FacturaVentaJpaController facturaVentaController;
-    private JDFacturaVenta facturaVentaUI;
+    private final FacturaVentaController facturaVentaController;
     private JDBuscadorReRe buscador;
     private boolean MODO_VISTA;
     private Remito selectedRemito;
-    private JDFacturaVenta jdFacturaVenta;
     private boolean toFacturar;
+    private boolean unlockedNumeracion = false;
 
-    public RemitoJpaController() {
-        facturaVentaController = new FacturaVentaJpaController();
+    public RemitoController() {
+        facturaVentaController = new FacturaVentaController();
     }
 
     // <editor-fold defaultstate="collapsed" desc="CRUD..">
@@ -146,8 +146,8 @@ public class RemitoJpaController implements ActionListener, KeyListener {
         return buscador;
     }
 
-    public void initRemito(JFrame frame, boolean modal, boolean setVisible, boolean loadDefaultData) throws MessageException {
-        facturaVentaController.initFacturaVenta(frame, modal, this, 3, setVisible, loadDefaultData);
+    public void initRemito(JFrame owner, boolean modal, boolean setVisible, boolean loadDefaultData) throws MessageException {
+        facturaVentaController.initFacturaVenta(owner, modal, this, 3, setVisible, loadDefaultData);
         //implementación del boton Aceptar
         facturaVentaController.getContenedor().getBtnAceptar().addActionListener(new ActionListener() {
 
@@ -160,7 +160,7 @@ public class RemitoJpaController implements ActionListener, KeyListener {
                     facturaVentaController.getContenedor().showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
                     facturaVentaController.getContenedor().showMessage(ex.getMessage(), CLASS_NAME, 2);
-                    ex.printStackTrace();
+                    Logger.getLogger(RemitoController.class).error(ex.getLocalizedMessage(), ex);
                 } finally {
                     facturaVentaController.getContenedor().getBtnAceptar().setEnabled(true);
                 }
@@ -171,7 +171,7 @@ public class RemitoJpaController implements ActionListener, KeyListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         //todo las demás acciones son manejadas (delegadas) -> FacturaVentaJpaController
-        if (e.getSource().getClass().equals(JButton.class)) {
+        if (e.getSource() instanceof JButton) {
             JButton boton = (JButton) e.getSource();
             if (boton.getName().equalsIgnoreCase("filtrarReRe")) {
                 try {
@@ -204,8 +204,7 @@ public class RemitoJpaController implements ActionListener, KeyListener {
         if (MODO_VISTA) {
             doImprimir(selectedRemito);
         } else {
-            //obtiene la Vista que contiene todos los datos
-            facturaVentaUI = facturaVentaController.getContenedor();
+            JDFacturaVenta facturaVentaUI = facturaVentaController.getContenedor();
             Cliente selectedCliente;
             Sucursal selectedSucursal;
 
@@ -224,15 +223,33 @@ public class RemitoJpaController implements ActionListener, KeyListener {
             if (facturaVentaUI.getDcFechaFactura() == null) {
                 throw new MessageException("Fecha no válida");
             }
-
-            javax.swing.table.DefaultTableModel dtm = facturaVentaUI.getDTM();
+            if (unlockedNumeracion) {
+                try {
+                    Integer octeto = Integer.valueOf(facturaVentaUI.getTfFacturaOcteto());
+                    if (octeto < 1 && octeto > 99999999) {
+                        throw new MessageException("Número de Remito no válido, debe ser mayor a 0 y menor o igual a 99999999");
+                    }
+                    Remito oldFactura = find(facturaVentaController.getSelectedSucursalFromJDFacturaVenta(), octeto);
+                    if (oldFactura != null) {
+                        throw new MessageException("Ya existe un registro de Remito N° " + JGestionUtils.getNumeracion(oldFactura, true));
+                    }
+                } catch (Exception ex) {
+                    throw new MessageException("Número de Remito no válido, ingrese solo dígitos");
+                }
+            }
+            DefaultTableModel dtm = facturaVentaUI.getDTM();
             if (dtm.getRowCount() < 1) {
-                throw new MessageException(CLASS_NAME + " debe tener al menos un item.");
+                throw new MessageException("El Detalle no contiene ningún item.");
             }
             // </editor-fold>
 
             Remito newRemito = new Remito();
-            newRemito.setNumero(getNextNumero(selectedSucursal));
+            if (unlockedNumeracion) {
+                newRemito.setNumero(Integer.valueOf(facturaVentaUI.getTfFacturaOcteto()));
+            } else {
+                newRemito.setNumero(getNextNumero(selectedSucursal));
+            }
+
             newRemito.setCliente(selectedCliente);
             newRemito.setSucursal(selectedSucursal);
             newRemito.setFechaRemito(facturaVentaUI.getDcFechaFactura());
@@ -250,7 +267,7 @@ public class RemitoJpaController implements ActionListener, KeyListener {
             try {
                 newRemito = create(newRemito);
             } catch (PreexistingEntityException ex) {
-                org.apache.log4j.Logger.getLogger(PresupuestoController.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
+                Logger.getLogger(PresupuestoController.class.getName()).error(null, ex);
             } catch (Exception ex) {
                 throw ex;
             }
@@ -303,7 +320,7 @@ public class RemitoJpaController implements ActionListener, KeyListener {
      * @param frame
      * @param modal
      * @param setVisible
-     * @throws MessageException  
+     * @throws MessageException
      */
     public void initBuscador(JFrame frame, boolean modal, boolean setVisible) throws MessageException {
         UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.VENTA);
@@ -330,7 +347,7 @@ public class RemitoJpaController implements ActionListener, KeyListener {
 
         //personalizando vista de Buscador
         buscador.setPanelInfoParaRemitos();
-        UTIL.loadComboBox(buscador.getCbClieProv(), new ClienteJpaController().findEntities(), true);
+        UTIL.loadComboBox(buscador.getCbClieProv(), new ClienteController().findEntities(), true);
         UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getSucursales(), true);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
@@ -348,7 +365,7 @@ public class RemitoJpaController implements ActionListener, KeyListener {
         } catch (MessageException ex) {
             // no va saltar nunca este
         }
-        jdFacturaVenta = facturaVentaController.getContenedor();
+        JDFacturaVenta jdFacturaVenta = facturaVentaController.getContenedor();
         jdFacturaVenta.setTfNumMovimiento(remito.getId().toString());
         jdFacturaVenta.setLocationRelativeTo(buscador);
         String numFactura = UTIL.AGREGAR_CEROS(remito.getNumero(), 12);
@@ -362,7 +379,7 @@ public class RemitoJpaController implements ActionListener, KeyListener {
         jdFacturaVenta.setDcFechaFactura(remito.getFechaRemito());
 
         List<DetalleRemito> lista = remito.getDetalleRemitoList();
-        javax.swing.table.DefaultTableModel dtm = jdFacturaVenta.getDTM();
+        DefaultTableModel dtm = jdFacturaVenta.getDTM();
         for (DetalleRemito detallesPresupuesto : lista) {
             dtm.addRow(new Object[]{
                         null,
@@ -477,5 +494,18 @@ public class RemitoJpaController implements ActionListener, KeyListener {
         buscador.getCbFormasDePago().setEnabled(false);
         buscador.getCbClieProv().setEnabled(false);
         buscador.setVisible(true);
+    }
+
+    public void unlockedABM(JFrame owner) throws MessageException {
+        initRemito(owner, true, false, true);
+        unlockedNumeracion = true;
+        facturaVentaController.getContenedor().setNumeroFacturaEditable(true);
+        facturaVentaController.getContenedor().setVisible(true);
+
+    }
+
+    private Remito find(Sucursal sucursal, Integer numero) {
+        return getEntityManager().createQuery("SELECT o FROM Remito o"
+                + " WHERE o.sucursal.id=" + sucursal.getId() + " AND o.numero=" + numero, Remito.class).getSingleResult();
     }
 }

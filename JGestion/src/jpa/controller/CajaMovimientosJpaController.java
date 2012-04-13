@@ -283,7 +283,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
                                         reciboQueEnSuDetalleContieneLaFacturaVenta.getMonto() - detalleRecibo.getMontoEntrega());
                                 if (detalleRecibo.isAcreditado()) {
                                     DetalleAcreditacion anular = new DetalleAcreditacionJpaController().anular(detalleRecibo);
-                                    new NotaCreditoJpaController().acreditar(anular);
+                                    new NotaCreditoController().acreditar(anular);
                                 } else {
                                     newDetalleCajaMovimiento.setMonto(-detalleRecibo.getMontoEntrega());
                                     newDetalleCajaMovimiento.setDescripcion(JGestionUtils.getNumeracion(facturaVenta) + " -> R" + JGestionUtils.getNumeracion(reciboQueEnSuDetalleContieneLaFacturaVenta, true) + " [ANULADA]");

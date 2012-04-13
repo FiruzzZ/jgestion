@@ -56,7 +56,7 @@ public class CajaMovimientosController implements ActionListener {
      * @return Un String con la descripción.
      */
     private String getDescripcion(FacturaVenta facturaVenta) {
-        String codigo_descrip = "";
+        String codigo_descrip;
         if (facturaVenta.getNumero() == 0) {
             codigo_descrip = "I" + facturaVenta.getMovimientoInterno();
         } else {
@@ -81,8 +81,7 @@ public class CajaMovimientosController implements ActionListener {
         cm.setCaja(caja);
         cm.setFechaApertura(new Date());
         cm.setMontoApertura(0.0);
-        cm.setSistemaFechaApertura(new Date());
-        cm.setDetalleCajaMovimientosList(new ArrayList<DetalleCajaMovimientos>());
+        cm.setDetalleCajaMovimientosList(new ArrayList<DetalleCajaMovimientos>(1));
         //creando el 1er movimiento de la caja (apertura en $0)
         DetalleCajaMovimientos dcm = new DetalleCajaMovimientos();
         dcm.setDescripcion("Apertura de caja (creación)");
@@ -92,6 +91,7 @@ public class CajaMovimientosController implements ActionListener {
         dcm.setTipo(DetalleCajaMovimientosJpaController.APERTURA_CAJA);
         dcm.setUsuario(UsuarioJpaController.getCurrentUser());
         dcm.setMovimientoConcepto(MovimientoConceptoJpaController.EFECTIVO);
+        dcm.setCajaMovimientos(cm);
         cm.getDetalleCajaMovimientosList().add(dcm);
         jpaController.create(cm);
     }
@@ -331,7 +331,7 @@ public class CajaMovimientosController implements ActionListener {
      */
     private List<CajaMovimientos> getCajaMovimientosActivasFromCurrentUser() {
         //get cajas permitidas para ESTE usuario
-        List<Caja> cajasPermitidasList = new CajaJpaController().findCajasPermitidasByUsuario(UsuarioJpaController.getCurrentUser(), true);
+        List<Caja> cajasPermitidasList = new CajaController().findCajasPermitidasByUsuario(UsuarioJpaController.getCurrentUser(), true);
         List<CajaMovimientos> cajaMovimientosAbiertasList = new ArrayList<CajaMovimientos>(cajasPermitidasList.size());
         CajaMovimientos cajaMovimiento;
         for (Caja caja : cajasPermitidasList) {
@@ -533,9 +533,9 @@ public class CajaMovimientosController implements ActionListener {
             panelMovVarios.setVisibleResponsables(false);
             panelMovVarios.getbBuscar().addActionListener(new ActionListener() {
 
+                @Override
                 public void actionPerformed(ActionEvent e) {
                     initBuscadorMovimientosVarios((JFrame) abm.getOwner());
-                    abm.setVisible(false);
                     buscador.setVisible(true);
                 }
             });
@@ -613,10 +613,11 @@ public class CajaMovimientosController implements ActionListener {
         dcm.setMovimientoConcepto((MovimientoConcepto) panelMovVarios.getCbConcepto().getSelectedItem());
         dcm.setTipo(DetalleCajaMovimientosJpaController.MOVIMIENTO_VARIOS);
         dcm.setUsuario(UsuarioJpaController.getCurrentUser());
+        dcm.setFechaMovimiento(panelMovVarios.getDcMovimientoFecha());
         return dcm;
     }
 
-    private void initBuscadorMovimientosVarios(JFrame papiComponent) {
+    private void initBuscadorMovimientosVarios(JFrame owner) {
         panelBuscadorMovimientosVarios = new PanelBuscadorMovimientosVarios();
         List<Caja> cajaList = new ArrayList<Caja>();
         for (CajaMovimientos cajaMovimientos : getCajaMovimientosActivasFromCurrentUser()) {
@@ -624,12 +625,12 @@ public class CajaMovimientosController implements ActionListener {
         }
         UTIL.loadComboBox(panelBuscadorMovimientosVarios.getCbCaja(), cajaList, true);
         UTIL.loadComboBox(panelBuscadorMovimientosVarios.getCbMovimientoConceptos(), new MovimientoConceptoJpaController(null).findMovimientoConceptoEntities(), true);
-        buscador = new JDBuscador(papiComponent, false, panelBuscadorMovimientosVarios, "Buscardor - Movimientos varios");
+        buscador = new JDBuscador(owner, false, panelBuscadorMovimientosVarios, "Buscardor - Movimientos varios");
         try {
             UTIL.getDefaultTableModel(
                     buscador.getjTable1(),
-                    new String[]{"Caja", "Descripción", "Mov. Concepto", "Monto", "Fecha (Hora)", "Usuario"},
-                    new int[]{70, 160, 60, 20, 60, 50});
+                    new String[]{"Caja", "Descripción", "Mov. Concepto", "Mov. Fecha", "Monto", "Fecha (Sistema)", "Usuario"},
+                    new int[]{70, 160, 60, 40, 20, 60, 50});
         } catch (Exception ex) {
             Logger.getLogger(CajaMovimientosController.class.getName()).log(Level.ERROR, null, ex);
         }
@@ -656,14 +657,14 @@ public class CajaMovimientosController implements ActionListener {
             }
         });
         buscador.hideLimpiar();
-        buscador.setLocationRelativeTo((Component) papiComponent);
+        buscador.setLocationRelativeTo((Component) owner);
         buscador.setVisible(true);
     }
 
     private void initBuscadorCajaToCaja(JDialog papiComponent) {
         panelBuscadorCajaToCaja = new PanelBuscadorCajaToCaja();
-        UTIL.loadComboBox(panelBuscadorCajaToCaja.getCbCajaOrigen(), new CajaJpaController().findCajasPermitidasByUsuario(UsuarioJpaController.getCurrentUser(), true), true);
-        UTIL.loadComboBox(panelBuscadorCajaToCaja.getCbCajaDestino(), new CajaJpaController().findCajasPermitidasByUsuario(UsuarioJpaController.getCurrentUser(), true), true);
+        UTIL.loadComboBox(panelBuscadorCajaToCaja.getCbCajaOrigen(), new CajaController().findCajasPermitidasByUsuario(UsuarioJpaController.getCurrentUser(), true), true);
+        UTIL.loadComboBox(panelBuscadorCajaToCaja.getCbCajaDestino(), new CajaController().findCajasPermitidasByUsuario(UsuarioJpaController.getCurrentUser(), true), true);
         buscador = new JDBuscador(papiComponent, false, panelBuscadorCajaToCaja, "Buscardor - Movimientos entre Cajas");
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
@@ -732,11 +733,11 @@ public class CajaMovimientosController implements ActionListener {
         }
 
         if (panelBuscadorMovimientosVarios.getDcDesde() != null) {
-            query += " AND o.fecha >='" + panelBuscadorMovimientosVarios.getDcDesde() + "'";
+            query += " AND o.fechamovimiento >='" + panelBuscadorMovimientosVarios.getDcDesde() + "'";
         }
 
         if (panelBuscadorMovimientosVarios.getDcHasta() != null) {
-            query += " AND o.fecha <='" + panelBuscadorMovimientosVarios.getDcHasta() + "'";
+            query += " AND o.fechamovimiento <='" + panelBuscadorMovimientosVarios.getDcHasta() + "'";
         }
         if (panelBuscadorMovimientosVarios.getCbMovimientoConceptos().getSelectedIndex() > 0) {
             query += " AND o.movimiento_concepto = " + ((MovimientoConcepto) panelBuscadorMovimientosVarios.getCbMovimientoConceptos().getSelectedItem()).getId();
@@ -782,6 +783,7 @@ public class CajaMovimientosController implements ActionListener {
                             dcm.getCajaMovimientos(),
                             dcm.getDescripcion(),
                             dcm.getMovimientoConcepto(),
+                            dcm.getFechaMovimiento() != null ? UTIL.DATE_FORMAT.format(dcm.getFechaMovimiento()) : null,
                             UTIL.PRECIO_CON_PUNTO.format(dcm.getMonto()),
                             UTIL.DATE_FORMAT.format(dcm.getFecha()) + "(" + UTIL.TIME_FORMAT.format(dcm.getFecha()) + ")",
                             dcm.getUsuario()
@@ -805,7 +807,7 @@ public class CajaMovimientosController implements ActionListener {
 
     private void initBuscadorCierreCaja() {
         panelBuscadorCajasCerradas = new PanelBuscadorCajasCerradas();
-        UTIL.loadComboBox(panelBuscadorCajasCerradas.getCbCaja(), new CajaJpaController().findCajasPermitidasByUsuario(UsuarioJpaController.getCurrentUser(), true), true);
+        UTIL.loadComboBox(panelBuscadorCajasCerradas.getCbCaja(), new CajaController().findCajasPermitidasByUsuario(UsuarioJpaController.getCurrentUser(), true), true);
         buscador = new JDBuscador(jdCierreCaja, true, panelBuscadorCajasCerradas, "Buscador - Cajas cerradas");
         buscador.getbImprimir().setEnabled(false);
         buscador.hideLimpiar();

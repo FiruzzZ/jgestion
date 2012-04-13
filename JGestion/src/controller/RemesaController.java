@@ -82,8 +82,8 @@ public class RemesaController implements ActionListener, FocusListener {
         jdReRe.setUIForRemesas();
         UTIL.getDefaultTableModel(jdReRe.getjTable1(), COLUMN_NAMES, COLUMN_WIDTH, COLUMN_CLASS);
         UTIL.loadComboBox(jdReRe.getCbSucursal(), new UsuarioHelper().getSucursales(), false);
-        UTIL.loadComboBox(jdReRe.getCbCaja(), new CajaJpaController().findCajasPermitidasByUsuario(UsuarioJpaController.getCurrentUser(), true), false);
-        UTIL.loadComboBox(jdReRe.getCbClienteProveedor(), new ProveedorJpaController().findEntities(), true);
+        UTIL.loadComboBox(jdReRe.getCbCaja(), new CajaController().findCajasPermitidasByUsuario(UsuarioJpaController.getCurrentUser(), true), false);
+        UTIL.loadComboBox(jdReRe.getCbClienteProveedor(), new ProveedorController().findEntities(), true);
         UTIL.loadComboBox(jdReRe.getCbCtaCtes(), null, false);
         jdReRe.getbAnular().addActionListener(new ActionListener() {
 
@@ -215,7 +215,7 @@ public class RemesaController implements ActionListener, FocusListener {
         // 30% faster on ArrayList with initialCapacity
         re.setDetalleRemesaList(new ArrayList<DetalleRemesa>(jdReRe.getDtm().getRowCount()));
         DefaultTableModel dtm = jdReRe.getDtm();
-        FacturaCompraJpaController fcc = new FacturaCompraJpaController();
+        FacturaCompraController fcc = new FacturaCompraController();
         DetalleRemesa detalle;
 //        double montoParaDesacreditar =0.0;
         for (int i = 0; i < dtm.getRowCount(); i++) {
@@ -361,7 +361,7 @@ public class RemesaController implements ActionListener, FocusListener {
         buscador = new JDBuscadorReRe(dialog, "Buscador - " + CLASS_NAME, modal, "Proveedor", "Nº " + CLASS_NAME);
         buscador.setLocationRelativeTo(dialog);
         buscador.setListeners(this);
-        UTIL.loadComboBox(buscador.getCbClieProv(), new ProveedorJpaController().findEntities(), true);
+        UTIL.loadComboBox(buscador.getCbClieProv(), new ProveedorController().findEntities(), true);
         UTIL.loadComboBox(buscador.getCbCaja(), new UsuarioHelper().getCajas(true), true);
         UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getSucursales(), true);
         UTIL.getDefaultTableModel(
@@ -499,7 +499,7 @@ public class RemesaController implements ActionListener, FocusListener {
         jdReRe.setTfOcteto(numero.substring(4));
 
         //por no redundar en DATOOOOOOOOOSS...!!!
-        Proveedor p = new FacturaCompraJpaController().findFacturaCompra(remesa.getDetalleRemesaList().get(0).getFacturaCompra().getId()).getProveedor();
+        Proveedor p = new FacturaCompraController().findFacturaCompra(remesa.getDetalleRemesaList().get(0).getFacturaCompra().getId()).getProveedor();
 
         jdReRe.setDcFechaReRe(remesa.getFechaRemesa());
         jdReRe.setDcFechaCarga(remesa.getFechaCarga());
@@ -611,7 +611,7 @@ public class RemesaController implements ActionListener, FocusListener {
     }
 
     List<Remesa> findByFactura(FacturaCompra factura) {
-        List<DetalleRemesa> detalleRemesaList = new DetalleRemesaJpaController().findDetalleRemesaByFactura(factura);
+        List<DetalleRemesa> detalleRemesaList = jpaController.findDetalleRemesaByFactura(factura);
         List<Remesa> remesas = new ArrayList<Remesa>(detalleRemesaList.size());
         for (DetalleRemesa detalleRecibo : detalleRemesaList) {
             remesas.add(detalleRecibo.getRemesa());
