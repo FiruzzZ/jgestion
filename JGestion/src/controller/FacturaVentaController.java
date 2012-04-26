@@ -22,6 +22,7 @@ import javax.swing.text.JTextComponent;
 import jgestion.JGestionUtils;
 import jgestion.Main;
 import jpa.controller.CajaMovimientosJpaController;
+import jpa.controller.FacturaVentaJpaController;
 import jpa.controller.PresupuestoJpaController;
 import jpa.controller.ProductoJpaController;
 import org.apache.log4j.Level;
@@ -66,61 +67,13 @@ public class FacturaVentaController implements ActionListener, KeyListener {
     private HistorialOfertas productoEnOferta;
     private Logger LOG = Logger.getLogger(FacturaVentaController.class);
     private boolean unlockedNumeracion = false;
+    private FacturaVentaJpaController jpaController;
+
+    public FacturaVentaController() {
+        jpaController = new FacturaVentaJpaController();
+    }
 
     // <editor-fold defaultstate="collapsed" desc="CRUD...">
-    public EntityManager getEntityManager() {
-        return DAO.getEntityManager();
-    }
-
-    private void create(FacturaVenta facturaVenta) throws Exception {
-        EntityManager em = null;
-        try {
-            em = DAO.getEntityManager();
-            em.getTransaction().begin();
-            List<DetalleVenta> detallesVentaListToPersist = facturaVenta.getDetallesVentaList();
-            facturaVenta.setDetallesVentaList(new ArrayList<DetalleVenta>());
-            em.persist(facturaVenta);
-            em.getTransaction().commit();
-            for (DetalleVenta detallesVenta : detallesVentaListToPersist) {
-                detallesVenta.setFactura(facturaVenta);
-                new DetalleVentaJpaController().create(detallesVenta);
-            }
-        } catch (Exception ex) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            throw ex;
-        } finally {
-            if (em != null) {
-                if (em.isOpen()) {
-                    em.close();
-                }
-            }
-        }
-    }
-
-    public List<FacturaVenta> findFacturaVentaEntities() {
-        return findFacturaVentaEntities(true, -1, -1);
-    }
-
-    public List<FacturaVenta> findFacturaVentaEntities(int maxResults, int firstResult) {
-        return findFacturaVentaEntities(false, maxResults, firstResult);
-    }
-
-    private List<FacturaVenta> findFacturaVentaEntities(boolean all, int maxResults, int firstResult) {
-        EntityManager em = getEntityManager();
-        try {
-            Query q = em.createQuery("select object(o) from FacturaVenta as o");
-            if (!all) {
-                q.setMaxResults(maxResults);
-                q.setFirstResult(firstResult);
-            }
-            return q.getResultList();
-        } finally {
-            em.close();
-        }
-    }
-
     public FacturaVenta findFacturaVenta(Integer id) {
 //        EntityManager em = getEntityManager();
 //        try {
@@ -134,15 +87,6 @@ public class FacturaVentaController implements ActionListener, KeyListener {
 //            em.close();
 //        }
     }
-
-    public int getFacturaVentaCount() {
-        EntityManager em = getEntityManager();
-        try {
-            return ((Long) em.createQuery("select count(o) from " + CLASS_NAME + " as o").getSingleResult()).intValue();
-        } finally {
-            em.close();
-        }
-    }// </editor-fold>
 
     /**
      * Inicializa la GUI de Ventas {@link gui.JDFacturaVenta}, está misma es
@@ -279,9 +223,11 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                 if (jdFacturaVenta.getCbSucursal().isFocusOwner()) {
                     Sucursal s = getSelectedSucursalFromJDFacturaVenta();
                     if (factVenta1_Presup2_Remito3 == 1) {
-                        setNumeroFactura(s, getNextNumeroFactura(s, jdFacturaVenta.getCbFacturaTipo().getSelectedItem().toString().charAt(0)));
+                        setNumeroFactura(s, jpaController.getNextNumeroFactura(s, jdFacturaVenta.getCbFacturaTipo().getSelectedItem().toString().charAt(0)));
                     } else if (factVenta1_Presup2_Remito3 == 2) {
-                        setNumeroFactura(s, ((PresupuestoJpaController) listener).getNextNumero(s));
+                        if (listener != null) {
+                            setNumeroFactura(s, ((PresupuestoJpaController) listener).getNextNumero(s));
+                        }
                     } else if (factVenta1_Presup2_Remito3 == 3) {
                         setNumeroFactura(s, ((RemitoController) listener).getNextNumero(s));
                     }
@@ -405,7 +351,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                     public void actionPerformed(ActionEvent e) {
                         if (jdFacturaVenta.getCbFacturaTipo().getSelectedItem() != null) {
                             Sucursal s = getSelectedSucursalFromJDFacturaVenta();
-                            setNumeroFactura(s, getNextNumeroFactura(s, jdFacturaVenta.getCbFacturaTipo().getSelectedItem().toString().charAt(0)));
+                            setNumeroFactura(s, jpaController.getNextNumeroFactura(s, jdFacturaVenta.getCbFacturaTipo().getSelectedItem().toString().charAt(0)));
                         }
                     }
                 });
@@ -451,9 +397,9 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                 jdFacturaVenta.setTfFacturaCuarto("");
                 jdFacturaVenta.setTfFacturaOcteto("");
                 UTIL.loadComboBox(jdFacturaVenta.getCbCaja(), new UsuarioHelper().getCajas(true), false);
-                jdFacturaVenta.setTfNumMovimiento(getNextMovimientoInterno().toString());
+                jdFacturaVenta.setTfNumMovimiento(jpaController.getNextMovimientoInterno().toString());
                 Sucursal s = getSelectedSucursalFromJDFacturaVenta();
-                setNumeroFactura(s, getNextNumeroFactura(s, jdFacturaVenta.getCbFacturaTipo().getSelectedItem().toString().charAt(0)));
+                setNumeroFactura(s, jpaController.getNextNumeroFactura(s, jdFacturaVenta.getCbFacturaTipo().getSelectedItem().toString().charAt(0)));
             } else if (factVenta1_Presup2_Remito3 == 2) {
                 // y aca?...
             } else if (factVenta1_Presup2_Remito3 == 3) {
@@ -925,11 +871,11 @@ public class FacturaVentaController implements ActionListener, KeyListener {
             if (unlockedNumeracion) {
                 newFacturaVenta.setNumero(Integer.valueOf(jdFacturaVenta.getTfFacturaOcteto()));
             } else {
-                newFacturaVenta.setNumero(getNextNumeroFactura(newFacturaVenta.getSucursal(), newFacturaVenta.getTipo()));
+                newFacturaVenta.setNumero(jpaController.getNextNumeroFactura(newFacturaVenta.getSucursal(), newFacturaVenta.getTipo()));
             }
         } else {
             newFacturaVenta.setNumero(0);
-            newFacturaVenta.setMovimientoInterno(getNextMovimientoInterno());
+            newFacturaVenta.setMovimientoInterno(jpaController.getNextMovimientoInterno());
             newFacturaVenta.setTipo('I');
         }
 
@@ -952,6 +898,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
             detalleVenta.setDescuento(Double.valueOf(dtm.getValueAt(i, 6).toString()));
             detalleVenta.setTipoDesc(Integer.valueOf(dtm.getValueAt(i, 8).toString()));
             detalleVenta.setProducto(productoController.find((Integer) dtm.getValueAt(i, 9)));
+            detalleVenta.setFactura(newFacturaVenta);
             if (dtm.getValueAt(i, 10) != null) {
                 detalleVenta.setOferta((HistorialOfertas) dtm.getValueAt(i, 10));
             }
@@ -989,22 +936,6 @@ public class FacturaVentaController implements ActionListener, KeyListener {
             default: {
                 throw new IllegalArgumentException("FormaPago de la FacturaVenta.id="
                         + facturaVenta.getId() + " no existe");
-            }
-        }
-    }
-
-    private Integer getNextMovimientoInterno() {
-        EntityManager em = getEntityManager();
-        try {
-            Object o = em.createQuery("SELECT MAX(o.movimientoInterno) FROM FacturaVenta o").getSingleResult();
-            if (o == null) {
-                return 1;
-            } else {
-                return 1 + Integer.valueOf(o.toString());
-            }
-        } finally {
-            if (em != null) {
-                em.close();
             }
         }
     }
@@ -1058,10 +989,11 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         UTIL.loadComboBox(buscador.getCbFormasDePago(), Valores.FormaPago.getFormasDePago(), true);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
-                new String[]{"facturaID", "Nº factura", "Mov.", "Cliente", "Forma Pago", "Importe", "Fecha", "Sucursal", "Caja", "Usuario", "Fecha (Sistema)"},
-                new int[]{1, 60, 10, 50, 40, 50, 50, 80, 80, 50, 70});
-        //escondiendo facturaID
+                new String[]{"facturaID", "Nº factura", "Mov.", "Cliente", "Forma Pago", "Importe", "Fecha", "Caja", "Usuario", "Fecha (Sistema)"},
+                new int[]{1, 90, 10, 50, 40, 50, 50, 80, 50, 70},
+                new Class<?>[]{null, null, Integer.class, null, null, String.class, null, null, null, null});
         UTIL.hideColumnTable(buscador.getjTable1(), 0);
+        UTIL.setHorizonalAlignment(buscador.getjTable1(), String.class, SwingConstants.RIGHT);
         buscador.getjTable1().addMouseListener(new MouseAdapter() {
 
             @Override
@@ -1069,7 +1001,11 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                 if (e.getClickCount() >= 2) {
                     if (buscador.getjTable1().getSelectedRow() > -1) {
                         try {
-                            EL_OBJECT = findFacturaVenta(Integer.valueOf(buscador.getDtm().getValueAt(buscador.getjTable1().getSelectedRow(), 0).toString()));
+                            EL_OBJECT = jpaController.find(Integer.valueOf(buscador.getDtm().getValueAt(buscador.getjTable1().getSelectedRow(), 0).toString()));
+                            if (EL_OBJECT.getFormaPagoEnum() == Valores.FormaPago.CHEQUE) {
+                                ChequeTerceros chequeTercerosBound = new ChequeTercerosJpaController().findChequeTerceros(EL_OBJECT);
+                                EL_OBJECT.setCheque(chequeTercerosBound);
+                            }
                             setDatosEnUI(EL_OBJECT, paraAnular);
                         } catch (MessageException ex) {
                             buscador.showMessage(ex.getMessage(), "Error de datos", 0);
@@ -1090,7 +1026,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
     private void cargarTablaBuscador(String query) {
         DefaultTableModel dtm = buscador.getDtm();
         dtm.setRowCount(0);
-        List<FacturaVenta> l = DAO.getEntityManager().createNativeQuery(query, FacturaVenta.class).getResultList();
+        List<FacturaVenta> l = jpaController.findByNativeQuery(query);
         for (FacturaVenta facturaVenta : l) {
             dtm.addRow(new Object[]{
                         facturaVenta.getId(), // <--- no es visible
@@ -1100,7 +1036,6 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                         facturaVenta.getFormaPagoEnum(),
                         UTIL.PRECIO_CON_PUNTO.format(facturaVenta.getImporte()),
                         UTIL.DATE_FORMAT.format(facturaVenta.getFechaVenta()),
-                        facturaVenta.getSucursal().getNombre(),
                         facturaVenta.getCaja().getNombre(),
                         facturaVenta.getUsuario().getNick(),
                         UTIL.TIMESTAMP_FORMAT.format(facturaVenta.getFechaalta())
@@ -1108,82 +1043,81 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private void armarQuery() throws MessageException {
-        String query = "SELECT o.* FROM factura_venta o"
-                + " WHERE o.anulada = " + buscador.isCheckAnuladaSelected();
+        StringBuilder query = new StringBuilder("SELECT o.* FROM factura_venta o"
+                + " WHERE o.anulada = " + buscador.isCheckAnuladaSelected());
 
         long numero;
         //filtro por nº de ReRe
-        if (buscador.getTfCuarto().length() > 0 && buscador.getTfOcteto().length() > 0) {
+        if (buscador.getTfOcteto().length() > 0) {
             try {
-                numero = Long.parseLong(buscador.getTfCuarto() + buscador.getTfOcteto());
-                query += " AND o.numero = " + numero;
+                numero = Long.parseLong(buscador.getTfOcteto());
+                query.append(" AND o.numero = ").append(numero);
             } catch (NumberFormatException ex) {
                 throw new MessageException("Número de " + CLASS_NAME + " no válido");
             }
         }
 
         //filtro por nº de factura
-        if (buscador.getTfFactu4().length() > 0 && buscador.getTfFactu8().length() > 0) {
+        if (buscador.getTfFactu8().length() > 0) {
             try {
-                numero = Long.parseLong(buscador.getTfFactu4() + buscador.getTfFactu8());
-                query += " AND o.numero = " + numero;
+                numero = Long.parseLong(buscador.getTfFactu8());
+                query.append(" AND o.numero = ").append(numero);
             } catch (NumberFormatException ex) {
                 throw new MessageException("Número de " + CLASS_NAME + " no válido");
             }
         }
         if (buscador.getDcDesde() != null) {
-            query += " AND o.fecha_venta >= '" + buscador.getDcDesde() + "'";
+            query.append(" AND o.fecha_venta >= '").append(buscador.getDcDesde()).append("'");
         }
         if (buscador.getDcHasta() != null) {
-            query += " AND o.fecha_venta <= '" + buscador.getDcHasta() + "'";
+            query.append(" AND o.fecha_venta <= '").append(buscador.getDcHasta()).append("'");
         }
         if (buscador.getCbCaja().getSelectedIndex() > 0) {
-            query += " AND o.caja = " + ((Caja) buscador.getCbCaja().getSelectedItem()).getId();
+            query.append(" AND o.caja = ").append(((Caja) buscador.getCbCaja().getSelectedItem()).getId());
         } else {
-            query += " AND (";
+            query.append(" AND (");
             for (int i = 1; i < buscador.getCbCaja().getItemCount(); i++) {
                 Caja caja = (Caja) buscador.getCbCaja().getItemAt(i);
-                query += " o.caja=" + caja.getId();
+                query.append(" o.caja=").append(caja.getId());
                 if ((i + 1) < buscador.getCbCaja().getItemCount()) {
-                    query += " OR ";
+                    query.append(" OR ");
                 }
             }
-            query += ")";
+            query.append(")");
         }
         if (buscador.getCbSucursal().getSelectedIndex() > 0) {
-            query += " AND o.sucursal = " + ((ComboBoxWrapper<Sucursal>) buscador.getCbSucursal().getSelectedItem()).getId();
+            query.append(" AND o.sucursal = ").append(((ComboBoxWrapper<Sucursal>) buscador.getCbSucursal().getSelectedItem()).getId());
         } else {
-            query += " AND (";
+            query.append(" AND (");
             for (int i = 1; i < buscador.getCbSucursal().getItemCount(); i++) {
                 ComboBoxWrapper<Sucursal> cbw = (ComboBoxWrapper<Sucursal>) buscador.getCbSucursal().getItemAt(i);
-                query += " o.sucursal=" + cbw.getId();
+                query.append(" o.sucursal=").append(cbw.getId());
                 if ((i + 1) < buscador.getCbSucursal().getItemCount()) {
-                    query += " OR ";
+                    query.append(" OR ");
                 }
             }
-            query += ")";
+            query.append(")");
         }
 
         if (buscador.getCbClieProv().getSelectedIndex() > 0) {
-            query += " AND o.cliente = " + ((Cliente) buscador.getCbClieProv().getSelectedItem()).getId();
+            query.append(" AND o.cliente = ").append(((Cliente) buscador.getCbClieProv().getSelectedItem()).getId());
         }
 
         if (buscador.getCbFormasDePago().getSelectedIndex() > 0) {
-            query += " AND o.forma_pago = " + ((Valores.FormaPago) buscador.getCbFormasDePago().getSelectedItem()).getId();
+            query.append(" AND o.forma_pago = ").append(((Valores.FormaPago) buscador.getCbFormasDePago().getSelectedItem()).getId());
         }
 
         if (buscador.getTfFactu4().trim().length() > 0) {
             try {
-                query += " AND o.movimiento_interno = " + Integer.valueOf(buscador.getTfFactu4());
+                query.append(" AND o.movimiento_interno = ").append(Integer.valueOf(buscador.getTfFactu4()));
             } catch (NumberFormatException ex) {
                 throw new MessageException("Número de movimiento no válido");
             }
         }
-        query += " ORDER BY o.id";
+        query.append(" ORDER BY o.id");
         Logger.getLogger(FacturaVentaController.class).log(Level.TRACE, "queryBuscador=" + query);
-        cargarTablaBuscador(query);
+        cargarTablaBuscador(query.toString());
     }
 
     /**
@@ -1238,7 +1172,6 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         } catch (MessageException ex) {
             Logger.getLogger(this.getClass()).log(Level.ERROR, null, ex);
         }
-        jdFacturaVenta.setLocationRelativeTo(buscador);
         // seteando datos de FacturaCompra
         jdFacturaVenta.getCbCliente().addItem(selectedFacturaVenta.getCliente());
         Sucursal s = selectedFacturaVenta.getSucursal();
@@ -1270,7 +1203,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         }
         // <editor-fold defaultstate="collapsed" desc="Carga de DetallesVenta">
         List<DetalleVenta> lista = selectedFacturaVenta.getDetallesVentaList();
-        DefaultTableModel dtm = jdFacturaVenta.getDTM();
+        DefaultTableModel dtm = (DefaultTableModel) jdFacturaVenta.getjTable1().getModel();
         for (DetalleVenta detallesVenta : lista) {
             Iva iva = detallesVenta.getProducto().getIva();
             if (iva == null) {
@@ -1286,15 +1219,19 @@ public class FacturaVentaController implements ActionListener, KeyListener {
             double productoConIVA = detallesVenta.getPrecioUnitario()
                     + UTIL.getPorcentaje(detallesVenta.getPrecioUnitario(), iva.getIva());
             //"IVA","Cód. Producto","Producto","Cantidad","P. Unitario","P. final","Desc","Sub total"
+            Logger.getLogger(this.getClass()).debug(detallesVenta);
             dtm.addRow(new Object[]{
                         null,
                         detallesVenta.getProducto().getCodigo(),
-                        detallesVenta.getProducto(),
+                        detallesVenta.getProducto().getNombre() + "(" + detallesVenta.getProducto().getIva().getIva() + ")",
                         detallesVenta.getCantidad(),
                         detallesVenta.getPrecioUnitario(),
                         UTIL.PRECIO_CON_PUNTO.format(productoConIVA),
                         detallesVenta.getDescuento(),
-                        UTIL.PRECIO_CON_PUNTO.format((detallesVenta.getCantidad() * productoConIVA) - detallesVenta.getDescuento())
+                        UTIL.PRECIO_CON_PUNTO.format((detallesVenta.getCantidad() * productoConIVA) - detallesVenta.getDescuento()),
+                        null,
+                        detallesVenta.getProducto().getId(),
+                        null
                     });
         }// </editor-fold>
 
@@ -1399,25 +1336,9 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         r.printReport(true);
     }
 
-    private Integer getNextNumeroFactura(Sucursal sucursal, char letra) {
-        EntityManager em = getEntityManager();
-        Long nextFactura = 1L;
-        try {
-            nextFactura = 1 + (Long) em.createQuery("SELECT MAX(o.numero) FROM FacturaVenta o"
-                    + " WHERE o.movimientoInterno = 0"
-                    + " AND o.tipo ='" + letra + "'"
-                    + " AND o.sucursal.id= " + sucursal.getId()).getSingleResult();
-        } catch (NullPointerException ex) {
-            System.out.println("pintó la 1ra Factura " + letra + ", Sucursal=" + sucursal.getNombre() + "=" + UTIL.AGREGAR_CEROS(sucursal.getPuntoVenta(), 4) + "-" + UTIL.AGREGAR_CEROS(nextFactura, 8));
-        } finally {
-            em.close();
-        }
-        return nextFactura.intValue();
-    }
-
     private String getNextNumeroFacturaConGuion(char letra) {
         Sucursal s = getSelectedSucursalFromJDFacturaVenta();
-        Integer nextNumero = getNextNumeroFactura(s, letra);
+        Integer nextNumero = jpaController.getNextNumeroFactura(s, letra);
         String factuString = UTIL.AGREGAR_CEROS(nextNumero.toString(), 8);
         factuString = UTIL.AGREGAR_CEROS(s.getPuntoVenta(), 4) + "-" + factuString;
         return factuString;
@@ -1426,7 +1347,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
     private void cambiarMovimientoInternoToFactura(FacturaVenta facturaVenta) throws Exception {
         Sucursal s = getSelectedSucursalFromJDFacturaVenta();
         facturaVenta.setTipo(jdFacturaVenta.getCbFacturaTipo().getSelectedItem().toString().charAt(0));
-        facturaVenta.setNumero(getNextNumeroFactura(s, facturaVenta.getTipo()));
+        facturaVenta.setNumero(jpaController.getNextNumeroFactura(s, facturaVenta.getTipo()));
         facturaVenta.setMovimientoInterno(0);
         DAO.doMerge(facturaVenta);
         if (facturaVenta.getFormaPago() == Valores.FormaPago.CONTADO.getId()) {
@@ -1448,14 +1369,13 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                         + "\nNota: No se pueden generar Movimientos Internos antiguos.");
             }
             FacturaVenta newFacturaVenta = getEntity(conFactura);
-            Logger.getLogger(this.getClass()).debug(newFacturaVenta.toString());
             ChequeTerceros cheque = null;
             if (newFacturaVenta.getFormaPagoEnum().equals(Valores.FormaPago.CHEQUE)
                     || newFacturaVenta.getFormaPagoEnum().equals(Valores.FormaPago.CONTADO_CHEQUE)) {
                 //entity Cheque persisted..
                 cheque = getChequeToBind(newFacturaVenta);
             }
-            create(newFacturaVenta);
+            jpaController.create(newFacturaVenta);
             //refreshing the entity from DB
             newFacturaVenta = (FacturaVenta) DAO.findEntity(FacturaVenta.class, newFacturaVenta.getId());
             if (cheque != null) {
@@ -1519,9 +1439,9 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         jdFacturaVenta.setTfRemito("Sin Remito");
         remitoToFacturar = null;
         if (jdFacturaVenta.getModoUso() == 1) {
-            jdFacturaVenta.setTfNumMovimiento(getNextMovimientoInterno().toString());
+            jdFacturaVenta.setTfNumMovimiento(jpaController.getNextMovimientoInterno().toString());
             Sucursal s = getSelectedSucursalFromJDFacturaVenta();
-            setNumeroFactura(s, getNextNumeroFactura(s, jdFacturaVenta.getCbFacturaTipo().getSelectedItem().toString().charAt(0)));
+            setNumeroFactura(s, jpaController.getNextNumeroFactura(s, jdFacturaVenta.getCbFacturaTipo().getSelectedItem().toString().charAt(0)));
         }
     }
 
@@ -1632,10 +1552,12 @@ public class FacturaVentaController implements ActionListener, KeyListener {
     }
 
     public void unlockedABM(JFrame owner) throws MessageException {
+        UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.VENTA_NUMERACION_MANUAL);
+        unlockedNumeracion = true;
         initFacturaVenta(owner, true, this, 1, false, true);
+        jdFacturaVenta.setTfFacturaOcteto(null);
         jdFacturaVenta.getBtnAceptar().setEnabled(false);
         jdFacturaVenta.setNumeroFacturaEditable(true);
-        unlockedNumeracion = true;
         jdFacturaVenta.setLocationRelativeTo(owner);
         jdFacturaVenta.setVisible(true);
 
@@ -1643,9 +1565,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
     }
 
     private FacturaVenta findBySucursal(char tipo, Sucursal sucursal, Integer numero) {
-        return getEntityManager().createQuery("SELECT o FROM FacturaVenta o"
-                + " WHERE o.sucursal.id=" + sucursal.getId() 
-                + " AND o.numero=" + numero
-                + " AND o.tipo=" + tipo, FacturaVenta.class).getSingleResult();
+        return jpaController.find(tipo, sucursal, numero);
+
     }
 }

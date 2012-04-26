@@ -1,6 +1,5 @@
 package entity;
 
-import utilities.general.UTIL;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -12,7 +11,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "factura_compra", uniqueConstraints = {
-   @UniqueConstraint(columnNames = {"numero", "proveedor"})
+//   @UniqueConstraint(columnNames = {"numero", "proveedor"})
 })
 @NamedQueries({
    @NamedQuery(name = "FacturaCompra.findAll", query = "SELECT f FROM FacturaCompra f"),
@@ -301,8 +300,9 @@ public class FacturaCompra implements Serializable {
       return true;
    }
 
-   @Override
-   public String toString() {
-      return UTIL.AGREGAR_CEROS(String.valueOf(this.getNumero()), 12);
-   }
+    @Override
+    public String toString() {
+        return "FacturaCompra{" + "id=" + id + ", numero=" + numero + ", tipo=" + tipo + ", importe=" + importe + ", fechaCompra=" + fechaCompra + ", fechaalta=" + fechaalta + ", formaPago=" + formaPago + ", remito=" + remito + ", actualizaStock=" + actualizaStock + ", facturaCuarto=" + facturaCuarto + ", facturaOcteto=" + facturaOcteto + ", percIva=" + percIva + ", percDgr=" + percDgr + ", iva10=" + iva10 + ", iva21=" + iva21 + ", movimientoInterno=" + movimientoInterno + ", diasCtaCte=" + diasCtaCte + ", proveedor=" + proveedor.getId() + ", sucursal=" + sucursal.getId() + ", usuario=" + usuario.getId() + ", caja=" + caja.getId() + ", anulada=" + anulada + '}';
+    }
+   
 }

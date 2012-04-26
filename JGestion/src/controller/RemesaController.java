@@ -31,6 +31,7 @@ import javax.swing.table.DefaultTableModel;
 import jpa.controller.CajaMovimientosJpaController;
 import jpa.controller.RemesaJpaController;
 import org.apache.log4j.Logger;
+import utilities.swing.components.ComboBoxWrapper;
 
 /**
  *
@@ -58,31 +59,13 @@ public class RemesaController implements ActionListener, FocusListener {
         return DAO.getEntityManager();
     }
 
-    private Long getNextNumeroRemesa() {
-        EntityManager em = getEntityManager();
-        Long next_factu = 100000001L;
-        try {
-            next_factu = 1 + (Long) em.createQuery("SELECT MAX(o.id)"
-                    + " FROM " + CLASS_NAME + " o").getSingleResult();
-        } catch (NoResultException ex) {
-            System.out.println("pintó la 1ra " + CLASS_NAME + "....NoResultEx");
-        } catch (NullPointerException ex) {
-            System.out.println("pintó la 1ra " + CLASS_NAME + "....NullPointerEx");
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
-        return next_factu;
-    }
-
     public void initRemesa(JFrame frame, boolean modal) throws MessageException {
         UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.COMPRA);
         jdReRe = new JDReRe(frame, modal);
         jdReRe.setUIForRemesas();
         UTIL.getDefaultTableModel(jdReRe.getjTable1(), COLUMN_NAMES, COLUMN_WIDTH, COLUMN_CLASS);
-        UTIL.loadComboBox(jdReRe.getCbSucursal(), new UsuarioHelper().getSucursales(), false);
-        UTIL.loadComboBox(jdReRe.getCbCaja(), new CajaController().findCajasPermitidasByUsuario(UsuarioJpaController.getCurrentUser(), true), false);
+        UTIL.loadComboBox(jdReRe.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), false);
+        UTIL.loadComboBox(jdReRe.getCbCaja(), new UsuarioHelper().getCajas(true), false);
         UTIL.loadComboBox(jdReRe.getCbClienteProveedor(), new ProveedorController().findEntities(), true);
         UTIL.loadComboBox(jdReRe.getCbCtaCtes(), null, false);
         jdReRe.getbAnular().addActionListener(new ActionListener() {
@@ -204,10 +187,11 @@ public class RemesaController implements ActionListener, FocusListener {
 
     }
 
+    @SuppressWarnings("unchecked")
     private Remesa setEntity() throws Exception {
         Remesa re = new Remesa();
         re.setCaja((Caja) jdReRe.getCbCaja().getSelectedItem());
-        re.setSucursal((Sucursal) jdReRe.getCbSucursal().getSelectedItem());
+        re.setSucursal(((ComboBoxWrapper<Sucursal>) jdReRe.getCbSucursal().getSelectedItem()).getEntity());
         re.setUsuario(UsuarioJpaController.getCurrentUser());
         re.setEstado(true);
         re.setFechaRemesa(jdReRe.getDcFechaReRe());
@@ -415,10 +399,10 @@ public class RemesaController implements ActionListener, FocusListener {
 
         long numero;
         //filtro por nº de ReRe
-        if (buscador.getTfCuarto().length() > 0 && buscador.getTfOcteto().length() > 0) {
+        if (buscador.getTfOcteto().length() > 0) {
             try {
-                numero = Long.parseLong(buscador.getTfCuarto() + buscador.getTfOcteto());
-                query += " AND o.id = " + numero;
+                numero = Long.parseLong(buscador.getTfOcteto());
+                query += " AND o.numero = " + numero;
             } catch (NumberFormatException ex) {
                 throw new MessageException("Número de " + CLASS_NAME + " no válido");
             }

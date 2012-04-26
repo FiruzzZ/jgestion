@@ -67,7 +67,7 @@ public class Reportes implements Runnable {
             }
             pathReport = FOLDER_REPORTES + pathReport;
         }
-        jd = new WaitingDialog((JDialog)null, "Imprimiendo", true, "Preparando reporte....");
+        jd = new WaitingDialog((JDialog) null, "Imprimiendo", false, "Preparando reporte....");
         jd.setVisible(true);
         parameters = new HashMap();
         this.pathReport = pathReport;
@@ -187,5 +187,9 @@ public class Reportes implements Runnable {
 
     public boolean isReporteFinalizado() {
         return reporteFinalizado;
+    }
+
+    void addEmpresaReport() {
+        parameters.put("SUBREPORT_DIR", FOLDER_REPORTES);
     }
 }

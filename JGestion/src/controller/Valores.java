@@ -44,13 +44,14 @@ public abstract class Valores {
         }
 
         public static List<FormaPago> getFormasDePago() {
-            return (List<FormaPago>) Arrays.asList(FormaPago.values());
+            return Arrays.asList(FormaPago.values());
         }
 
         @Override
         public String toString() {
             return this.nombre;
         }
+        
     }
 
     /**
@@ -79,4 +80,5 @@ public abstract class Valores {
             return this.nombre;
         }
     }
+    
 }

@@ -20,6 +20,7 @@ import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.NoResultException;
@@ -29,6 +30,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
+import utilities.swing.components.ComboBoxWrapper;
 
 /**
  *
@@ -677,5 +679,14 @@ public class ClienteController implements ActionListener {
         p.setEstado(1);
         checkConstraints(p);
         return p;
+    }
+
+    List<ComboBoxWrapper<Cliente>> findAllWrapped() {
+        List<Cliente> list = findEntities();
+        List<ComboBoxWrapper<Cliente>> l = new ArrayList<ComboBoxWrapper<Cliente>>(list.size());
+        for (Cliente cliente : list) {
+            l.add(new ComboBoxWrapper<Cliente>(cliente, cliente.getId(), cliente.getNombre()));
+        }
+        return l;
     }
 }

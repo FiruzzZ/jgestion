@@ -135,8 +135,9 @@ public class StockJpaController {
     }
 
     /**
-     * Actualiza el Stock, en base al DetallesCompra de la FacturaCompra
-     * y también actualiza Producto.stockActual
+     * Actualiza el Stock, en base al DetallesCompra de la FacturaCompra y
+     * también actualiza Producto.stockActual
+     *
      * @param facturaCompra ...
      */
     void updateStock(FacturaCompra facturaCompra) {
@@ -188,6 +189,7 @@ public class StockJpaController {
 
     /**
      * Actualiza el Stock, en base al DetalleVenta de la FacturaVenta
+     *
      * @param facturaVenta del cual se obtiene la List DetallesVenta
      */
     void updateStock(FacturaVenta facturaVenta) throws Exception {
@@ -229,7 +231,7 @@ public class StockJpaController {
             }
             throw ex;
         } finally {
-            if (em != null) {
+            if (em != null && em.isOpen()) {
                 em.close();
             }
         }
@@ -238,10 +240,12 @@ public class StockJpaController {
 
     /**
      * Busca el Stock del Producto de esa Sucursal.
+     *
      * @param Producto
      * @param Sucursal
      * @return a entity Stock
-     * @exception Lanza un NoResultException si no existe el Producto en la Sucursal.
+     * @exception Lanza un NoResultException si no existe el Producto en la
+     * Sucursal.
      */
     private Stock findStock(Producto producto, Sucursal sucursal) {
         return (Stock) DAO.getEntityManager().createNativeQuery("SELECT * FROM " + CLASS_NAME + " o WHERE "

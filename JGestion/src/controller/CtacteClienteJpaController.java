@@ -15,6 +15,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
@@ -28,6 +29,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import jgestion.JGestionUtils;
 import org.apache.log4j.Logger;
+import utilities.swing.components.ComboBoxWrapper;
 
 /**
  *
@@ -375,13 +377,19 @@ public class CtacteClienteJpaController implements ActionListener {
      */
     private void cargarComboBoxRecibosDeCtaCte(CtacteCliente ctacteCliente) {
         List<Recibo> recibosList = new ReciboController().findRecibosByFactura(ctacteCliente.getFactura());
-        UTIL.loadComboBox(resumenCtaCtes.getCbReRes(), recibosList, false);
+        List<ComboBoxWrapper<Recibo>> wrapped = new ArrayList<ComboBoxWrapper<Recibo>>(recibosList.size());
+        for (Recibo recibo : recibosList) {
+            wrapped.add(new ComboBoxWrapper<Recibo>(recibo, recibo.getId(), JGestionUtils.getNumeracion(recibo, true)));
+        }
+        UTIL.loadComboBox(resumenCtaCtes.getCbReRes(), wrapped, false);
         setDatosReciboSelected();
     }
 
     private void setDatosReciboSelected() {
         try {
-            Recibo recibo = (Recibo) resumenCtaCtes.getCbReRes().getSelectedItem();
+            @SuppressWarnings("unchecked")
+            ComboBoxWrapper<Recibo> cbw = (ComboBoxWrapper<Recibo>) resumenCtaCtes.getCbReRes().getSelectedItem();
+            Recibo recibo = cbw.getEntity();
             resumenCtaCtes.setTfReciboFecha(UTIL.DATE_FORMAT.format(recibo.getFechaRecibo()));
             resumenCtaCtes.setTfReciboMonto(UTIL.DECIMAL_FORMAT.format(recibo.getMonto()));
             resumenCtaCtes.getLabelReciboAnulado().setVisible(!recibo.getEstado());

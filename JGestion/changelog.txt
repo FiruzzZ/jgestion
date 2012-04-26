@@ -1,3 +1,17 @@
+2012/04/13
+--alter table sucursal add column puntoventa integer not null default 1;
+ALTER TABLE sucursal ADD COLUMN factura_a numeric(8,0) NOT NULL DEFAULT 1;
+ALTER TABLE sucursal ADD COLUMN factura_b numeric(8,0) NOT NULL DEFAULT 1;
+ALTER TABLE sucursal ADD COLUMN remito numeric(8,0) NOT NULL DEFAULT 1;
+ALTER TABLE sucursal ADD COLUMN recibo numeric(8,0) NOT NULL DEFAULT 1;
+ALTER TABLE sucursal ADD COLUMN notacredito numeric(8,0) NOT NULL DEFAULT 1;
+ALTER TABLE sucursal ALTER COLUMN puntoventa DROP DEFAULT;
+ALTER TABLE sucursal ALTER COLUMN factura_a DROP DEFAULT;
+ALTER TABLE sucursal ALTER COLUMN factura_b DROP DEFAULT;
+ALTER TABLE sucursal ALTER COLUMN remito DROP DEFAULT;
+ALTER TABLE sucursal ALTER COLUMN recibo DROP DEFAULT;
+ALTER TABLE sucursal ALTER COLUMN notacredito DROP DEFAULT;
+2012/04/11
 ALTER TABLE permisos ADD COLUMN venta_numeracion_manual boolean NOT NULL DEFAULT false;
 2012/04/03
 CREATE TABLE usuario_permisossucursal (

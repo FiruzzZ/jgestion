@@ -24,7 +24,9 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import jgestion.JGestionUtils;
+import jpa.controller.RemitoJpaController;
 import org.apache.log4j.Logger;
+import utilities.swing.components.ComboBoxWrapper;
 
 /**
  *
@@ -39,8 +41,10 @@ public class RemitoController implements ActionListener, KeyListener {
     private Remito selectedRemito;
     private boolean toFacturar;
     private boolean unlockedNumeracion = false;
+    private RemitoJpaController jpaController;
 
     public RemitoController() {
+        jpaController = new RemitoJpaController();
         facturaVentaController = new FacturaVentaController();
     }
 
@@ -215,7 +219,7 @@ public class RemitoController implements ActionListener, KeyListener {
                 throw new MessageException("Cliente no válido");
             }
             try {
-                selectedSucursal = (Sucursal) facturaVentaUI.getCbSucursal().getSelectedItem();
+                selectedSucursal = facturaVentaController.getSelectedSucursalFromJDFacturaVenta();
             } catch (ClassCastException ex) {
                 throw new MessageException("Sucursal no válido");
             }
@@ -277,18 +281,7 @@ public class RemitoController implements ActionListener, KeyListener {
     }
 
     public Integer getNextNumero(Sucursal s) {
-        EntityManager em = getEntityManager();
-        Long nextRemitoNumero = 1L;
-        try {
-            nextRemitoNumero = 1 + (Long) em.createQuery("SELECT MAX(o.numero)"
-                    + " FROM " + CLASS_NAME + " o"
-                    + " WHERE o.sucursal.id=" + s.getId()).getSingleResult();
-        } catch (NullPointerException ex) {
-            System.out.println("pintó el 1er Remito ");
-        } finally {
-            em.close();
-        }
-        return nextRemitoNumero.intValue();
+        return jpaController.getNextNumero(s);
     }
 
     private void doImprimir(Remito p) {
@@ -305,7 +298,7 @@ public class RemitoController implements ActionListener, KeyListener {
     private void limpiarPanel() {
         facturaVentaController.borrarDetalles();
         facturaVentaController.getContenedor().setTfNumMovimiento(String.valueOf(getRemitoCount() + 1));
-        Sucursal s = (Sucursal) facturaVentaController.getContenedor().getCbSucursal().getSelectedItem();
+        Sucursal s = facturaVentaController.getSelectedSucursalFromJDFacturaVenta();
         facturaVentaController.setNumeroFactura(s, getNextNumero(s));
     }
 
@@ -348,7 +341,7 @@ public class RemitoController implements ActionListener, KeyListener {
         //personalizando vista de Buscador
         buscador.setPanelInfoParaRemitos();
         UTIL.loadComboBox(buscador.getCbClieProv(), new ClienteController().findEntities(), true);
-        UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getSucursales(), true);
+        UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), true);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
                 new String[]{"Instance", "Nº " + CLASS_NAME, "Nº Factura", "Cliente", "Fecha", "Sucursal", "Usuario"},
@@ -368,13 +361,12 @@ public class RemitoController implements ActionListener, KeyListener {
         JDFacturaVenta jdFacturaVenta = facturaVentaController.getContenedor();
         jdFacturaVenta.setTfNumMovimiento(remito.getId().toString());
         jdFacturaVenta.setLocationRelativeTo(buscador);
-        String numFactura = UTIL.AGREGAR_CEROS(remito.getNumero(), 12);
-        jdFacturaVenta.setTfFacturaCuarto(numFactura.substring(0, 4));
-        jdFacturaVenta.setTfFacturaOcteto(numFactura.substring(4));
+        jdFacturaVenta.setTfFacturaCuarto(UTIL.AGREGAR_CEROS(remito.getSucursal().getPuntoVenta(), 4));
+        jdFacturaVenta.setTfFacturaOcteto(UTIL.AGREGAR_CEROS(remito.getNumero(), 8));
         jdFacturaVenta.getCbCliente().removeAllItems();
         jdFacturaVenta.getCbCliente().addItem(remito.getCliente());
         jdFacturaVenta.getCbSucursal().removeAllItems();
-        jdFacturaVenta.getCbSucursal().addItem(remito.getSucursal());
+        jdFacturaVenta.getCbSucursal().addItem(new ComboBoxWrapper<Sucursal>(remito.getSucursal(), remito.getSucursal().getId(), remito.getSucursal().getNombre()));
 //      jdFacturaVenta.getCbUsuario().addItem(remito.getUsuario());
         jdFacturaVenta.setDcFechaFactura(remito.getFechaRemito());
 
@@ -398,15 +390,15 @@ public class RemitoController implements ActionListener, KeyListener {
         jdFacturaVenta.setVisible(true);
     }
 
+    @SuppressWarnings("unchecked")
     private void armarQuery() throws MessageException {
         StringBuilder query = new StringBuilder("SELECT o.* FROM remito o"
                 + " WHERE o.id > -1 ");
 
-        long numero;
         //filtro por nº de ReRe
-        if (buscador.getTfCuarto().length() > 0 && buscador.getTfOcteto().length() > 0) {
+        if (buscador.getTfOcteto().length() > 0) {
             try {
-                numero = Long.parseLong(buscador.getTfCuarto() + buscador.getTfOcteto());
+                Integer numero = Integer.valueOf(buscador.getTfOcteto());
                 query.append(" AND o.numero = ").append(numero);
             } catch (NumberFormatException ex) {
                 throw new MessageException("Número de " + CLASS_NAME + " no válido");
@@ -420,11 +412,11 @@ public class RemitoController implements ActionListener, KeyListener {
             query.append(" AND o.fecha_remito <='").append(buscador.getDcHasta()).append("'");
         }
         if (buscador.getCbSucursal().getSelectedIndex() > 0) {
-            query.append(" AND o.sucursal= ").append(((Sucursal) buscador.getCbSucursal().getSelectedItem()).getId());
+            query.append(" AND o.sucursal= ").append(((ComboBoxWrapper<Sucursal>) buscador.getCbSucursal().getSelectedItem()).getEntity().getId());
         } else {
             query.append(" AND (");
             for (int i = 1; i < buscador.getCbSucursal().getItemCount(); i++) {
-                Sucursal s = (Sucursal) buscador.getCbSucursal().getItemAt(i);
+                Sucursal s = ((ComboBoxWrapper<Sucursal>) buscador.getCbSucursal().getItemAt(i)).getEntity();
                 query.append(" o.sucursal=").append(s.getId());
                 if ((i + 1) < buscador.getCbSucursal().getItemCount()) {
                     query.append(" OR ");
@@ -497,6 +489,7 @@ public class RemitoController implements ActionListener, KeyListener {
     }
 
     public void unlockedABM(JFrame owner) throws MessageException {
+        UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.VENTA_NUMERACION_MANUAL);
         initRemito(owner, true, false, true);
         unlockedNumeracion = true;
         facturaVentaController.getContenedor().setNumeroFacturaEditable(true);

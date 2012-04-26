@@ -2,6 +2,7 @@ package jgestion;
 
 import controller.*;
 import controller.exceptions.MessageException;
+import entity.Sucursal;
 import generics.PropsUtils;
 import gui.JFP;
 import java.awt.EventQueue;
@@ -14,6 +15,7 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import javax.persistence.PersistenceException;
 import javax.swing.JOptionPane;
+import jpa.controller.ReciboJpaController;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.eclipse.persistence.exceptions.DatabaseException;

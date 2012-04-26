@@ -130,6 +130,7 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
      * clara la esta Javadoc...)
      *
      * @param sqlString a SELECT native SQL statement.
+     * @param stringSetMapping
      * @param hints optional hints elements
      * @return a list...
      */
@@ -141,14 +142,13 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
         } else {
             query = getEntityManager().createNativeQuery(sqlString, stringSetMapping);
         }
-        if (hints == null) {
-            hints = new HashMap<String, Object>(1);
+        if (hints == null || hints.isEmpty() || !hints.containsKey(QueryHints.REFRESH)) {
+            query.setHint(QueryHints.REFRESH, Boolean.TRUE);
         }
-        if (hints.isEmpty() || !hints.containsKey(QueryHints.REFRESH)) {
-            hints.put(QueryHints.REFRESH, Boolean.TRUE);
-        }
-        for (Map.Entry<String, Object> entry : hints.entrySet()) {
-            query.setHint(entry.getKey(), entry.getValue());
+        if (hints != null) {
+            for (Map.Entry<String, Object> entry : hints.entrySet()) {
+                query.setHint(entry.getKey(), entry.getValue());
+            }
         }
         return query.getResultList();
     }
@@ -187,5 +187,4 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
         typedQuery.setHint(QueryHints.REFRESH, Boolean.TRUE);
         return typedQuery.getResultList();
     }
-
 }

@@ -106,18 +106,18 @@ public class CajaMovimientosController implements ActionListener {
      * @param cajaMovimiento la que precede a la que se va abrir.
      */
     private void abrirNextCajaMovimiento(CajaMovimientos cajaMovimiento) throws Exception {
-        CajaMovimientos cm = new CajaMovimientos();
-        cm.setCaja(cajaMovimiento.getCaja());
+        CajaMovimientos nextCaja = new CajaMovimientos();
+        nextCaja.setCaja(cajaMovimiento.getCaja());
         //fecha de apertura, un día después del cierre de ESTA
-        cm.setFechaApertura(UTIL.customDateByDays(cajaMovimiento.getFechaCierre(), +1));
-        cm.setMontoApertura(cajaMovimiento.getMontoCierre());
-        cm.setSistemaFechaApertura(new Date());
-        cm.setDetalleCajaMovimientosList(new ArrayList<DetalleCajaMovimientos>());
+        nextCaja.setFechaApertura(UTIL.customDateByDays(cajaMovimiento.getFechaCierre(), +1));
+        nextCaja.setMontoApertura(cajaMovimiento.getMontoCierre());
+        nextCaja.setDetalleCajaMovimientosList(new ArrayList<DetalleCajaMovimientos>());
         //creando el 1er detalleCajaMovimiento..
         DetalleCajaMovimientos dcm = new DetalleCajaMovimientos();
+        dcm.setCajaMovimientos(nextCaja);
         dcm.setDescripcion("Apertura de caja");
         dcm.setIngreso(true);
-        dcm.setMonto(cm.getMontoApertura());
+        dcm.setMonto(nextCaja.getMontoApertura());
         dcm.setNumero(-1); //meaningless yet...
         dcm.setTipo(DetalleCajaMovimientosJpaController.APERTURA_CAJA);
         dcm.setUsuario(UsuarioJpaController.getCurrentUser());
@@ -125,8 +125,8 @@ public class CajaMovimientosController implements ActionListener {
             //default value
             dcm.setMovimientoConcepto(MovimientoConceptoJpaController.EFECTIVO);
         }
-        cm.getDetalleCajaMovimientosList().add(dcm);
-        jpaController.create(cm);
+        nextCaja.getDetalleCajaMovimientosList().add(dcm);
+        jpaController.create(nextCaja);
     }
 
     public void initCierreCaja(JFrame frame, boolean modal) {
@@ -186,6 +186,7 @@ public class CajaMovimientosController implements ActionListener {
                             jdCierreCaja.showMessage(ex.getMessage(), "Error", 2);
                         } catch (Exception ex) {
                             jdCierreCaja.showMessage(ex.getMessage(), "Error.Exception", 0);
+                            Logger.getLogger(CajaMovimientosController.class.getSimpleName()).fatal(ex.getLocalizedMessage(), ex);
                         }
                     } else {
                         jdCierreCaja.showMessage("No hay Caja seleccionada", "Error", 2);
@@ -299,10 +300,10 @@ public class CajaMovimientosController implements ActionListener {
             throw new MessageException("La fecha de cierre de caja no puede ser anterior a la de apertura");
         }
 
-        int imprimir_caja_OK = javax.swing.JOptionPane.showConfirmDialog(jdCierreCaja,
+        int imprimir_caja_OK = JOptionPane.showConfirmDialog(jdCierreCaja,
                 "¿Imprimir cierre de caja?",
                 "Cierre de Caja",
-                javax.swing.JOptionPane.OK_CANCEL_OPTION);
+                JOptionPane.OK_CANCEL_OPTION);
         cajaMovimientos.setFechaCierre(jdCierreCaja.getFechaCierre());
         cajaMovimientos.setMontoCierre(getTotal());
         //datos implicitos

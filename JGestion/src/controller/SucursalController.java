@@ -10,6 +10,7 @@ import entity.Sucursal;
 import gui.JDABM;
 import gui.JDContenedor;
 import gui.PanelABMSucursal;
+import gui.PanelNumeracionActual;
 import java.awt.event.*;
 import java.math.BigInteger;
 import java.util.List;
@@ -17,9 +18,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.NoResultException;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
-import jpa.controller.SucursalJpaController;
+import jpa.controller.*;
 import utilities.general.UTIL;
 
 /**
@@ -46,13 +48,7 @@ public class SucursalController implements ActionListener, MouseListener {
     }
 
     private void initABM(boolean isEditting, ActionEvent e) throws MessageException {
-        // <editor-fold defaultstate="collapsed" desc="checking Permiso">
-        try {
-            UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.DATOS_GENERAL);
-        } catch (MessageException ex) {
-            javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
-            return;
-        }// </editor-fold>
+        UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.DATOS_GENERAL);
         if (isEditting && entity == null) {
             throw new MessageException("Debe elegir una fila");
         }
@@ -164,7 +160,7 @@ public class SucursalController implements ActionListener, MouseListener {
             throw new MessageException("Debe ingresar un nombre");
         }
         try {
-            puntoVenta = Integer.valueOf(panel.getTfPuntoVenta().getText());
+            puntoVenta = Integer.valueOf(panel.getTfPuntoVenta().getText().trim());
             if (puntoVenta < 1 || puntoVenta > 9999) {
                 throw new MessageException("Punto de Venta no válido (debe estar compuesto solo por números, entre 0001 y 9999)");
             }
@@ -172,15 +168,15 @@ public class SucursalController implements ActionListener, MouseListener {
             throw new MessageException("Punto de Venta no válido (debe estar compuesto solo por números, entre 0001 y 9999)");
         }
         try {
-            factura_a = Integer.valueOf(panel.getTfInicialFacturaA().getText());
+            factura_a = Integer.valueOf(panel.getTfInicialFacturaA().getText().trim());
             if (factura_a < 1 || factura_a > 99999999) {
                 throw new MessageException("Número de Factura 'A' no válido (debe estar compuesto solo por números, mayor a cero y menor o igual a 99999999)");
             }
         } catch (Exception e) {
-            throw new MessageException("Número de Factura 'A' no válido (debe estar compuesto solo por números");
+            throw new MessageException("Número de Factura 'A' no válido (debe estar compuesto solo por números)");
         }
         try {
-            factura_b = Integer.valueOf(panel.getTfInicialFacturaB().getText());
+            factura_b = Integer.valueOf(panel.getTfInicialFacturaB().getText().trim());
             if (factura_b < 1 || factura_b > 99999999) {
                 throw new MessageException("Número de Factura 'B' no válido (debe estar compuesto solo por números, mayor a cero y menor o igual a 99999999)");
             }
@@ -188,7 +184,7 @@ public class SucursalController implements ActionListener, MouseListener {
             throw new MessageException("Número de Factura 'B' no válido (debe estar compuesto solo por números)");
         }
         try {
-            notaCredito = Integer.valueOf(panel.getTfInicialNotaCredito().getText());
+            notaCredito = Integer.valueOf(panel.getTfInicialNotaCredito().getText().trim());
             if (notaCredito < 1 || notaCredito > 99999999) {
                 throw new MessageException("Número de Nota de Credito no válido (debe estar compuesto solo por números, mayor a cero y menor o igual a 99999999)");
             }
@@ -196,7 +192,7 @@ public class SucursalController implements ActionListener, MouseListener {
             throw new MessageException("Número de Nota de Crédito no válido (debe estar compuesto solo por números)");
         }
         try {
-            recibo = Integer.valueOf(panel.getTfInicialRecibo().getText());
+            recibo = Integer.valueOf(panel.getTfInicialRecibo().getText().trim());
             if (recibo < 1 || recibo > 99999999) {
                 throw new MessageException("Número de Recibo no válido (debe estar compuesto solo por números, mayor a cero y menor o igual a 99999999)");
             }
@@ -204,7 +200,7 @@ public class SucursalController implements ActionListener, MouseListener {
             throw new MessageException("Número de Recibo no válido (debe estar compuesto solo por números)");
         }
         try {
-            remito = Integer.valueOf(panel.getTfInicialRemito().getText());
+            remito = Integer.valueOf(panel.getTfInicialRemito().getText().trim());
             if (remito < 1 || remito > 99999999) {
                 throw new MessageException("Número de Remito no válido (debe estar compuesto solo por números, mayor a cero y menor o igual a 99999999)");
             }
@@ -265,21 +261,66 @@ public class SucursalController implements ActionListener, MouseListener {
         entity.setRemito(remito);
     }
 
-    private void checkConstraints(Sucursal object) throws MessageException, IllegalOrphanException, NonexistentEntityException {
+    private void checkConstraints(Sucursal sucursal) throws MessageException {
         String idQuery = "";
-        if (object.getId() != null) {
-            idQuery = "o.id !=" + object.getId() + " AND ";
+        if (sucursal.getId() != null) {
+            idQuery = "o.id !=" + sucursal.getId() + " AND ";
         }
         if (!jpaController.findByNativeQuery("SELECT * FROM " + CLASS_NAME + " o "
-                + " WHERE " + idQuery + " o.nombre='" + object.getNombre() + "' ").isEmpty()) {
+                + " WHERE " + idQuery + " o.nombre='" + sucursal.getNombre() + "' ").isEmpty()) {
             throw new MessageException("Ya existe otra " + CLASS_NAME + " con este nombre.");
         }
         if (!jpaController.findByNativeQuery("SELECT * FROM " + CLASS_NAME + " o "
-                + " WHERE " + idQuery + " o.puntoventa=" + object.getPuntoVenta()).isEmpty()) {
+                + " WHERE " + idQuery + " o.puntoventa=" + sucursal.getPuntoVenta()).isEmpty()) {
             throw new MessageException("Ya existe otra " + CLASS_NAME + " con este punto de venta.");
         }
-        if (object.getId() != null) {
-            
+        if (sucursal.getId() != null) {
+            Sucursal oldInstance = jpaController.find(sucursal.getId());
+            String buttonMessage = "Para ver la actual numeración de los comprobantes, utilice el botón de \"Ver Numeración Actual\".";
+            String anterior = "Nota: Si lo que desea es atrasar la numeración para cargar comprobantes anteriores (antiguos), puede hacerlo en:"
+                    + "\nMenú -> Tesorería -> Venta (Numeración manual) -> "
+                    + "\nEste le permitirá especificar el número del comprobante.";
+            Integer next;
+            if (sucursal.getFactura_a().equals(oldInstance.getFactura_a())) {
+                next = new FacturaVentaJpaController().getNextNumeroFactura(sucursal, 'a');
+                if (next > sucursal.getFactura_a()) {
+                    throw new MessageException("Existen registros de Factura 'A' superior a " + UTIL.AGREGAR_CEROS(sucursal.getFactura_a(), 8) + "."
+                            + "\n" + buttonMessage
+                            + "\n" + anterior + "Facturación");
+                }
+            }
+            if (sucursal.getFactura_b().equals(oldInstance.getFactura_b())) {
+                next = new FacturaVentaJpaController().getNextNumeroFactura(sucursal, 'b');
+                if (next > sucursal.getFactura_b()) {
+                    throw new MessageException("Existen registros de Factura 'B' superior a " + UTIL.AGREGAR_CEROS(sucursal.getFactura_a(), 8) + "."
+                            + "\n" + buttonMessage
+                            + "\n" + anterior + "Facturación");
+                }
+            }
+            if (sucursal.getRecibo().equals(oldInstance.getRecibo())) {
+                next = new ReciboJpaController().getNextNumero(sucursal);
+                if (next > sucursal.getRecibo()) {
+                    throw new MessageException("Existen registros de Recibo superior a " + UTIL.AGREGAR_CEROS(sucursal.getFactura_a(), 8) + "."
+                            + "\n" + buttonMessage
+                            + "\n" + anterior + "Recibo");
+                }
+            }
+            if (sucursal.getRemito().equals(oldInstance.getRemito())) {
+                next = new RemitoJpaController().getNextNumero(sucursal);
+                if (next > sucursal.getRemito()) {
+                    throw new MessageException("Existen registros de Remito superior a " + UTIL.AGREGAR_CEROS(sucursal.getFactura_a(), 8) + "."
+                            + "\n" + buttonMessage
+                            + "\n" + anterior + "Remito");
+                }
+            }
+            if (sucursal.getNotaCredito().equals(oldInstance.getNotaCredito())) {
+                next = new NotaCreditoJpaController().getNextNumero(sucursal);
+                if (next > sucursal.getNotaCredito()) {
+                    throw new MessageException("Existen registros de Nota de Crédito superior a " + UTIL.AGREGAR_CEROS(sucursal.getFactura_a(), 8) + "."
+                            + "\n" + buttonMessage
+                            + "\n" + anterior + "Nota de Crédito");
+                }
+            }
         }
     }
 
@@ -359,7 +400,7 @@ public class SucursalController implements ActionListener, MouseListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         // <editor-fold defaultstate="collapsed" desc="JButton">
-        if (e.getSource().getClass().equals(JButton.class)) {
+        if (e.getSource() instanceof JButton) {
             JButton boton = (JButton) e.getSource();
             if (boton.getName().equalsIgnoreCase("new")) {
                 try {
@@ -404,6 +445,10 @@ public class SucursalController implements ActionListener, MouseListener {
                     String msg = entity.getId() == null ? "Registrado" : "Modificado";
                     if (entity.getId() == null) {
                         jpaController.create(entity);
+                        abm.showMessage("Las Sucursales nuevas por defecto no están asignadas a ningún usuario."
+                                + "\nPara asignar permisos a esta, debe ir a:"
+                                + "\nMenú -> Usuarios -> ABM Usuarios -> Seleccionar el usuario > Modificar y selecione las Sucursales"
+                                + "\nen de la tabla inferior.", CLASS_NAME, 2);
                     } else {
                         jpaController.merge(entity);
                     }
@@ -422,12 +467,16 @@ public class SucursalController implements ActionListener, MouseListener {
                 panel = null;
                 abm = null;
                 entity = null;
+            } else if (boton.getName().equalsIgnoreCase("verNumeracionActual")) {
+                if (entity != null && entity.getId() != null) {
+                    showNumeracionActualDialog(entity);
+                } else {
+                }
             }
-            return;
         } // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="JTextField">
-        else if (e.getSource().getClass().equals(javax.swing.JTextField.class)) {
-            javax.swing.JTextField tf = (javax.swing.JTextField) e.getSource();
+        else if (e.getSource() instanceof JTextField) {
+            JTextField tf = (JTextField) e.getSource();
             if (tf.getName().equalsIgnoreCase("tfFiltro")) {
             }
         } // </editor-fold>
@@ -449,5 +498,34 @@ public class SucursalController implements ActionListener, MouseListener {
             }
         }
         // </editor-fold>
+    }
+
+    private void showNumeracionActualDialog(Sucursal entity) {
+        JDialog jd = new JDialog(abm, "Numeración actual", true);
+        PanelNumeracionActual paneln = new PanelNumeracionActual();
+        Integer actual = (new FacturaVentaJpaController().getNextNumeroFactura(entity, 'a'));
+        actual = actual.equals(entity.getFactura_a()) ? actual : actual - 1;
+        paneln.setTfInicialFacturaA(UTIL.AGREGAR_CEROS(actual, 8));
+
+        actual = (new FacturaVentaJpaController().getNextNumeroFactura(entity, 'b'));
+        actual = actual.equals(entity.getFactura_b()) ? actual : actual - 1;
+        paneln.setTfInicialFacturaB(UTIL.AGREGAR_CEROS(actual, 8));
+
+        actual = new ReciboJpaController().getNextNumero(entity);
+        actual = actual.equals(entity.getRecibo()) ? actual : actual - 1;
+        paneln.setTfInicialRecibo(UTIL.AGREGAR_CEROS(actual, 8));
+
+        actual = new RemitoJpaController().getNextNumero(entity);
+        actual = actual.equals(entity.getRemito()) ? actual : actual - 1;
+        paneln.setTfInicialRemito(UTIL.AGREGAR_CEROS(actual, 8));
+
+        actual = new NotaCreditoJpaController().getNextNumero(entity);
+        actual = actual.equals(entity.getNotaCredito()) ? actual : actual - 1;
+        paneln.setTfInicialNotaCredito(UTIL.AGREGAR_CEROS(actual, 8));
+        jd.add(paneln);
+        jd.pack();
+        jd.setLocationRelativeTo(abm);
+        jd.setVisible(true);
+
     }
 }

@@ -73,7 +73,7 @@ public class ReciboController implements ActionListener, FocusListener {
         jdReRe.setUIForRecibos();
         UTIL.getDefaultTableModel(jdReRe.getjTable1(), COLUMN_NAMES, COLUMN_WIDTH, COLUMN_CLASS);
         UTIL.hideColumnsTable(jdReRe.getjTable1(), new int[]{0, 4});
-        UTIL.loadComboBox(jdReRe.getCbSucursal(), uh.getSucursales(), false);
+        UTIL.loadComboBox(jdReRe.getCbSucursal(), uh.getWrappedSucursales(), false);
         UTIL.loadComboBox(jdReRe.getCbCaja(), uh.getCajas(true), false);
         UTIL.loadComboBox(jdReRe.getCbClienteProveedor(), new ClienteController().findEntities(), true);
         UTIL.loadComboBox(jdReRe.getCbCtaCtes(), null, false);
@@ -192,7 +192,7 @@ public class ReciboController implements ActionListener, FocusListener {
                         jdReRe.setTfSaldo(UTIL.PRECIO_CON_PUNTO.format(selectedCtaCte.getImporte() - selectedCtaCte.getEntregado()));
                     } catch (ClassCastException ex) {
                         selectedCtaCte = null;
-                        System.out.println("No se pudo caster a CtaCteProveedor -> " + jdReRe.getCbCtaCtes().getSelectedItem());
+                        System.out.println("No se pudo caster a CombBoxWrapper<CtaCteProveedor> -> " + jdReRe.getCbCtaCtes().getSelectedItem());
                     }
                 } catch (NullPointerException ex) {
                     //cuando no eligio una ctacte aún o el cliente/proveedor no tiene ninguna
@@ -456,11 +456,8 @@ public class ReciboController implements ActionListener, FocusListener {
 
         jdReRe.getDtm().addRow(new Object[]{
                     facturaToAddToDetail.getId(),
-                    //por si es un MovimientiInterno y no un número de FacturaVenta
                     //se concat al final ** (doble asterisco) cuando es acreditada la entrega
-                    ((facturaToAddToDetail.getNumero() != 0)
-                    ? UTIL.AGREGAR_CEROS(String.valueOf(facturaToAddToDetail.getNumero()), 12)
-                    : "I" + String.valueOf(facturaToAddToDetail.getMovimientoInterno())) + (acreditado ? "**" : ""),
+                    JGestionUtils.getNumeracion(facturaToAddToDetail) + (acreditado ? "**" : ""),
                     observacion,
                     entrega,
                     acreditado
@@ -522,12 +519,12 @@ public class ReciboController implements ActionListener, FocusListener {
         buscador.setParaRecibos();
         UTIL.loadComboBox(buscador.getCbClieProv(), new ClienteController().findEntities(), true);
         UTIL.loadComboBox(buscador.getCbCaja(), new UsuarioHelper().getCajas(Boolean.TRUE), true);
-        UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getSucursales(), true);
+        UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), true);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
-                new String[]{"Instance", "Nº Recibo", "Monto", "Fecha", "Sucursal", "Caja", "Usuario", "Fecha/Hora (Sist)"},
-                new int[]{1, 50, 30, 40, 50, 50, 50, 70},
-                new Class<?>[]{null, null, String.class, String.class, null, null, null, null});
+                new String[]{"Instance", "Nº Recibo", "Monto", "Fecha", "Caja", "Usuario", "Fecha/Hora (Sist)"},
+                new int[]{1, 80, 30, 40, 50, 50, 70},
+                new Class<?>[]{null, null, String.class, String.class, null, null, null});
         UTIL.hideColumnTable(buscador.getjTable1(), 0);
         UTIL.setHorizonalAlignment(buscador.getjTable1(), String.class, SwingConstants.RIGHT);
         buscador.getjTable1().addMouseListener(new MouseAdapter() {
@@ -556,13 +553,12 @@ public class ReciboController implements ActionListener, FocusListener {
     private void cargarFacturasCtaCtes(Cliente cliente) {
         limpiarDetalle();
         List<CtacteCliente> ctacteClientePendientesList = new CtacteClienteJpaController().findCtacteClienteByCliente(cliente.getId(), Valores.CtaCteEstado.PENDIENTE.getId());
-        List<ComboBoxWrapper<CtacteCliente>> l = new ArrayList<ComboBoxWrapper<CtacteCliente>>(ctacteClientePendientesList.size());
+        List<ComboBoxWrapper<CtacteCliente>> wrappedList = new ArrayList<ComboBoxWrapper<CtacteCliente>>(ctacteClientePendientesList.size());
         for (CtacteCliente ctacteCliente : ctacteClientePendientesList) {
             FacturaVenta factura = ctacteCliente.getFactura();
-
-            l.add(new ComboBoxWrapper<CtacteCliente>(ctacteCliente, ctacteCliente.getId(), JGestionUtils.getNumeracion(factura)));
+            wrappedList.add(new ComboBoxWrapper<CtacteCliente>(ctacteCliente, ctacteCliente.getId(), JGestionUtils.getNumeracion(factura)));
         }
-        UTIL.loadComboBox(jdReRe.getCbCtaCtes(), ctacteClientePendientesList, false);
+        UTIL.loadComboBox(jdReRe.getCbCtaCtes(), wrappedList, false);
     }
 
     /**
@@ -579,6 +575,7 @@ public class ReciboController implements ActionListener, FocusListener {
         rereSelected = null;
     }
 
+    @SuppressWarnings("unchecked")
     private void armarQuery() throws MessageException {
         StringBuilder query = new StringBuilder(
                 "SELECT o.*"
@@ -589,19 +586,19 @@ public class ReciboController implements ActionListener, FocusListener {
 
         long numero;
         //filtro por nº de ReRe
-        if (buscador.getTfCuarto().length() > 0 && buscador.getTfOcteto().length() > 0) {
+        if (buscador.getTfOcteto().length() > 0) {
             try {
-                numero = Long.parseLong(buscador.getTfCuarto() + buscador.getTfOcteto());
-                query.append(" AND o.id = ").append(numero);
+                numero = Long.parseLong(buscador.getTfOcteto());
+                query.append(" AND o.numero= ").append(numero);
             } catch (NumberFormatException ex) {
                 throw new MessageException("Número de " + CLASS_NAME + " no válido");
             }
         }
 
         //filtro por nº de factura
-        if (buscador.getTfFactu4().length() > 0 && buscador.getTfFactu8().length() > 0) {
+        if (buscador.getTfFactu8().length() > 0) {
             try {
-                numero = Long.parseLong(buscador.getTfFactu4() + buscador.getTfFactu8());
+                numero = Long.parseLong(buscador.getTfFactu8());
                 query.append(" AND f.numero = ").append(numero);
             } catch (NumberFormatException ex) {
                 throw new MessageException("Número de " + CLASS_NAME + " no válido");
@@ -627,12 +624,12 @@ public class ReciboController implements ActionListener, FocusListener {
             query.append(")");
         }
         if (buscador.getCbSucursal().getSelectedIndex() > 0) {
-            query.append(" AND o.sucursal = ").append(((Sucursal) buscador.getCbSucursal().getSelectedItem()).getId());
+            query.append(" AND o.sucursal = ").append(((ComboBoxWrapper<Sucursal>) buscador.getCbSucursal().getSelectedItem()).getId());
         } else {
             query.append(" AND (");
             for (int i = 1; i < buscador.getCbSucursal().getItemCount(); i++) {
-                Sucursal sucursal = (Sucursal) buscador.getCbSucursal().getItemAt(i);
-                query.append(" o.sucursal=").append(sucursal.getId());
+                ComboBoxWrapper<Sucursal> cbw = (ComboBoxWrapper<Sucursal>) buscador.getCbSucursal().getItemAt(i);
+                query.append(" o.sucursal=").append(cbw.getId());
                 if ((i + 1) < buscador.getCbSucursal().getItemCount()) {
                     query.append(" OR ");
                 }
@@ -647,7 +644,7 @@ public class ReciboController implements ActionListener, FocusListener {
         }
 
         query.append(" GROUP BY o.id, o.numero, o.fecha_carga, o.monto, o.usuario, o.caja, o.sucursal, o.fecha_recibo, o.estado"
-                + " ORDER BY o.id");
+                + " ORDER BY o.sucursal, o.numero");
         cargarBuscador(query.toString());
     }
 
@@ -656,12 +653,12 @@ public class ReciboController implements ActionListener, FocusListener {
         DefaultTableModel dtm = buscador.getDtm();
         List<Recibo> l = jpaController.findByNativeQuery(query);
         for (Recibo o : l) {
+            System.out.println(o);
             dtm.addRow(new Object[]{
                         o.getId(),
-                        JGestionUtils.getNumeracion(o, false),
+                        JGestionUtils.getNumeracion(o, true),
                         UTIL.PRECIO_CON_PUNTO.format(o.getMonto()),
                         UTIL.DATE_FORMAT.format(o.getFechaRecibo()),
-                        o.getSucursal().getNombre(),
                         o.getCaja().getNombre(),
                         o.getUsuario().getNick(),
                         UTIL.TIMESTAMP_FORMAT.format(o.getFechaCarga())
@@ -767,7 +764,7 @@ public class ReciboController implements ActionListener, FocusListener {
     }
 
     private void setNextNumeroReRe() {
-        Sucursal sucursal = (Sucursal) jdReRe.getCbSucursal().getSelectedItem();
+        Sucursal sucursal = getSelectedSucursalFromJD();
         Integer nextRe = jpaController.getNextNumero(sucursal);
         jdReRe.setTfCuarto(UTIL.AGREGAR_CEROS(sucursal.getPuntoVenta(), 4));
         jdReRe.setTfOcteto(UTIL.AGREGAR_CEROS(nextRe, 8));
@@ -862,10 +859,10 @@ public class ReciboController implements ActionListener, FocusListener {
     }
 
     public void unlockedABM(JFrame owner) throws MessageException {
-        initRecibos(owner, true, false);
+        UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.VENTA_NUMERACION_MANUAL);
         unlockedNumeracion = true;
+        initRecibos(owner, true, false);
         jdReRe.setTfOctetoEditable(true);
         jdReRe.setVisible(true);
     }
-
 }
