@@ -14,9 +14,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
-import javax.persistence.Query;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
@@ -25,7 +23,6 @@ import net.atlanticbb.tantlinger.shef.HTMLEditorPane;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.eclipse.persistence.config.QueryHints;
 import utilities.general.UTIL;
 import utilities.swing.components.ComboBoxWrapper;
 
@@ -572,7 +569,7 @@ public class ProductoController implements ActionListener, KeyListener {
      */
     Producto findProductoByCodigo(String codigoProducto) {
         try {
-            return (Producto) DAO.getEntityManager().createNamedQuery(CLASS_NAME + ".findByCodigo").setParameter("codigo", codigoProducto).getSingleResult();
+            return jpaController.findByCodigo(codigoProducto);
         } catch (NoResultException ex) {
             return null;
         }

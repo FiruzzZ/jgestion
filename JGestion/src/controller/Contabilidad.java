@@ -46,7 +46,6 @@ public class Contabilidad {
     private static final String columnNamesBalanceCompraVenta[] = {"FECHA", "DESCRIPCIÓN", "INGRESOS/EGRESOS", "EFECTIVO", "CTA. CTE.", "TOTAL ACUM."};
     private static final int columnWidthsBalanceCompraVenta[] = {60, 190, 60, 60, 60, 60};
     private static final Class[] columnClassBalanceCompraVenta = {Object.class, Object.class, String.class, String.class, String.class, String.class};
-    private static DecimalFormat PRECIO_CON_PUNTO;
 
     static {
 //        PRECIO_CON_PUNTO = UTIL.PRECIO_CON_PUNTO;
@@ -59,8 +58,9 @@ public class Contabilidad {
 
     /**
      * GUI para ver de los movimientos INGRESOS/EGRESOS.
+     *
      * @param parent
-     * @throws MessageException  
+     * @throws MessageException
      */
     public void initBalanceGeneralUI(JFrame parent) throws MessageException {
         UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
@@ -114,6 +114,7 @@ public class Contabilidad {
 
     /**
      * Adiviná que hace......
+     *
      * @param QUERY String SQL statement
      * @param FECHA_DESDE opcional
      * @param FECHA_HASTA opcional
@@ -133,7 +134,9 @@ public class Contabilidad {
     }
 
     /**
-     * Create Native SQL Statement to retrieve entities {@link DetalleCajaMovimientos#tipo} != 7 (aperturas de caja)
+     * Create Native SQL Statement to retrieve entities {@link DetalleCajaMovimientos#tipo}
+     * != 7 (aperturas de caja)
+     *
      * @return a String with SQL
      */
     private String armarQueryBalance() {
@@ -188,10 +191,11 @@ public class Contabilidad {
     }
 
     /**
-     * UI para ver los registros de venta (Facturas [Contado, Cta. Cte.]),
-     * Mov. internos, etc..
+     * UI para ver los registros de venta (Facturas [Contado, Cta. Cte.]), Mov.
+     * internos, etc..
+     *
      * @param parent papi frame
-     * @throws MessageException end user message information 
+     * @throws MessageException end user message information
      */
     public void initBalanceCompraVentaUI(JFrame parent) throws MessageException {
         UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
@@ -335,12 +339,12 @@ public class Contabilidad {
             }
             dtm.addRow(new Object[]{
                         dateFormat.format(factura.getFechaCompra()),
-                        factura.getTipo() + factura.toString() + (factura.getAnulada() ? "(ANULADA)" : ""),
+                        JGestionUtils.getNumeracion(factura, true) + (factura.getAnulada() ? "[ANULADA]" : ""),
                         UTIL.PRECIO_CON_PUNTO.format(factura.getImporte()),
                         efectivo != null ? efectivo : "------",
                         cccpc != null ? cccpc : "------",
                         UTIL.PRECIO_CON_PUNTO.format(totalIngresos)
-                    });
+                    }); 
         }
         jdBalanceUI.getTfTotalAux().setText(UTIL.PRECIO_CON_PUNTO.format(totalIngresos));
         jdBalanceUI.getTfIngresos().setText(UTIL.PRECIO_CON_PUNTO.format(totalEfectivo));
@@ -411,9 +415,11 @@ public class Contabilidad {
     /**
      * Calcula el precio final del producto con o sin IVA, teniendo en cuenta el
      * margen segun la lista de precios.
-     * @param producto Del cual se obtendrá el {@code producto.getPrecioVenta()} y {@linkplain Producto#getIva()}
+     *
+     * @param producto Del cual se obtendrá el {@code producto.getPrecioVenta()}
+     * y {@linkplain Producto#getIva()}
      * @param listaPrecios
-     * @param incluirIVA 
+     * @param incluirIVA
      * @return precioFinal incluido IVA
      */
     public static Double getPrecioFinal(Producto producto, ListaPrecios listaPrecios, boolean incluirIVA) {
@@ -429,13 +435,12 @@ public class Contabilidad {
 
     /**
      * Calcula el margen monetario ganancia/perdida sobre el monto.
+     *
      * @param monto cantidad monetaria sobre la cual se hará el cálculo
-     * @param tipoDeMargen Indica como se aplicará el margen al monto.
-     * If <code>(tipo > 2 || tipo &lt; 1)</code> will return <code>null</code>.
-     *    <lu>
-     *     <li>1 = % (porcentaje)
-     *     <li>2 = $ (monto fijo)
-     *    <lu>
+     * @param tipoDeMargen Indica como se aplicará el margen al monto. If
+     * <code>(tipo > 2 || tipo &lt; 1)</code> will return
+     * <code>null</code>. <lu> <li>1 = % (porcentaje) <li>2 = $ (monto fijo)
+     * <lu>
      * @param margen monto fijo o porcentual.
      * @return El margen de ganancia correspondiente al monto.
      */
@@ -462,12 +467,14 @@ public class Contabilidad {
     /**
      * Calcula el margen de ganancia sobre el monto según la {@link ListaPrecios}
      * seleccionada.
+     *
      * @param listaPrecios
      * @param producto {@link Producto} del cual se tomarán los {@link Rubro} y
-     * Sub para determinar el margen de ganancia if 
+     * Sub para determinar el margen de ganancia if
      * {@link ListaPrecios#margenGeneral} == FALSE.
      * @param monto sobre el cual se va calcular el margen (suele incluir el
-     * margen individual de ganancia de cada producto). Si es == null, se utilizará {@link Producto#precioVenta}
+     * margen individual de ganancia de cada producto). Si es == null, se
+     * utilizará {@link Producto#precioVenta}
      * @return margen de ganancia (NO INCLUYE EL MONTO).
      */
     public static Double GET_MARGEN_SEGUN_LISTAPRECIOS(ListaPrecios listaPrecios, Producto producto, Double monto) {
@@ -495,9 +502,11 @@ public class Contabilidad {
                     }
                 }
                 if (margenEncontrado > margenFinal) {
-                    /*Puede que la listaPrecios tenga determinado margenes de ganancia
-                     * tanto para el Rubro como SubRubro de un Producto, entonces
-                     * solo tomamos el mayor de ellos para aplicarlo.
+                    /*
+                     * Puede que la listaPrecios tenga determinado margenes de
+                     * ganancia tanto para el Rubro como SubRubro de un
+                     * Producto, entonces solo tomamos el mayor de ellos para
+                     * aplicarlo.
                      */
                     margenFinal = margenEncontrado;
                 }
@@ -508,12 +517,11 @@ public class Contabilidad {
     }
 
     /**
-     * Retorna el estado del cheque como String.
-     * <br>1 = ENTREGADO (estado exclusivo de {@link ChequePropio}).
-     * <br>2 = CARTERA (estado exclusivo de {@link ChequeTerceros}).
-     * <br>3 = DEPOSTADO.
-     * <br>4 = CAJA (cheque que se convirtió en efectivo y se asentó en alguna caja)
-     * <br>5 = RECHAZADO.
+     * Retorna el estado del cheque como String. <br>1 = ENTREGADO (estado
+     * exclusivo de {@link ChequePropio}). <br>2 = CARTERA (estado exclusivo de {@link ChequeTerceros}).
+     * <br>3 = DEPOSTADO. <br>4 = CAJA (cheque que se convirtió en efectivo y se
+     * asentó en alguna caja) <br>5 = RECHAZADO.
+     *
      * @param estadoID
      * @return String que representa el estado.
      * @throws IllegalArgumentException si no existe el estadoID

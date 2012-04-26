@@ -2,8 +2,12 @@ package jpa.controller;
 
 import controller.DAO;
 import entity.Producto;
+import entity.Producto_;
 import java.util.List;
 import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import org.eclipse.persistence.config.QueryHints;
 
 /**
@@ -34,4 +38,16 @@ public class ProductoJpaController extends AbstractDAO<Producto, Integer> {
         return find;
     }
 
+    public Producto findByCodigo(String codigo) {
+//        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+//        CriteriaQuery<Producto> cq = cb.createQuery(getEntityClass());
+//        Root<Producto> from = cq.from(getEntityClass());
+//        cb.equal(from.get(Producto_.codigo), codigoProducto);
+//        return getEntityManager().createQuery(cq).getSingleResult();
+        return getEntityManager().
+                createQuery("SELECT o FROM Producto o WHERE o.codigo='" + codigo + "'", getEntityClass()).
+                setHint(QueryHints.REFRESH, Boolean.TRUE).
+                getSingleResult();
+
+    }
 }

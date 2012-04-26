@@ -13,27 +13,37 @@ public class JGestionUtils {
     }
 
     /**
-     * si es FacturaVenta TipoFactura + #### (punto de venta) + ########
-     * (número). <br>EJ: A0001-00001234 <br>si es Interno: "I" + #### (punto de
-     * venta) + ######## (N° Movimiento interno)
+     * Si es Factura: <br> "F" + TipoFactura + #### (punto de venta) + ########
+     * (número). <br>EJ: A0001-00001234 <br>Si es Interno: <br>"I" + #### (punto
+     * de venta) + ######## (N° Movimiento interno)
      *
-     * @param facturaVenta
+     * @param o
      * @return
      */
-    public static String getNumeracion(FacturaVenta facturaVenta) {
-        if (facturaVenta.getNumero() == 0) {
-            return "FI" + UTIL.AGREGAR_CEROS(facturaVenta.getSucursal().getPuntoVenta(), 4) + "-" + UTIL.AGREGAR_CEROS(facturaVenta.getMovimientoInterno(), 8);
+    public static String getNumeracion(FacturaVenta o) {
+        if (o.getNumero() == 0) {
+            return "FI" + UTIL.AGREGAR_CEROS(o.getSucursal().getPuntoVenta(), 4) + "-" + UTIL.AGREGAR_CEROS(o.getMovimientoInterno(), 8);
         } else {
-            return facturaVenta.getTipo() + UTIL.AGREGAR_CEROS(facturaVenta.getSucursal().getPuntoVenta(), 4) + "-" + UTIL.AGREGAR_CEROS(facturaVenta.getNumero(), 8);
+            return o.getTipo() + UTIL.AGREGAR_CEROS(o.getSucursal().getPuntoVenta(), 4) + "-" + UTIL.AGREGAR_CEROS(o.getNumero(), 8);
         }
     }
 
+    /**
+     * Si es Factura: <br> "F"+ TipoFactura + #### (punto de venta) + ########
+     * (número). <br>EJ: A0001-00001234 <br>Si es Interno: <br>"FI" + #### (punto
+     * de venta DONDE SER REALIZO LA CARGA) + ######## (N° Movimiento interno)
+     *
+     * @param o
+     * @param conGuion
+     * @return
+     */
     public static String getNumeracion(FacturaCompra o, boolean conGuion) {
-        if (o.getMovimientoInterno() == 0) {
+        if (o.getNumero() != 0) {
             String guion = conGuion ? "-" : "";
-            return "F" + o.getTipo() + UTIL.AGREGAR_CEROS(o.getSucursal().getPuntoVenta(), 4) + guion + UTIL.AGREGAR_CEROS(o.getNumero(), 8);
+            String numero = UTIL.AGREGAR_CEROS(o.getNumero(), 12);
+            return "F" + o.getTipo() + numero.substring(0, 4) + guion + numero.substring(4);
         } else {
-            return "I" + UTIL.AGREGAR_CEROS(o.getSucursal().getPuntoVenta(), 4) + UTIL.AGREGAR_CEROS(o.getMovimientoInterno(), 8);
+            return "FI" + UTIL.AGREGAR_CEROS(o.getSucursal().getPuntoVenta(), 4) + UTIL.AGREGAR_CEROS(o.getMovimientoInterno(), 8);
         }
     }
 

@@ -28,11 +28,12 @@ public class WaitingDialog extends JDialog implements Serializable {
 
     private void initPrintingReportDialog() {
         this.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-        this.setUndecorated(true);
+//        this.setUndecorated(true);
         this.setSize(400, 75);
         this.setResizable(false);
         this.setAlwaysOnTop(true);
         labelMessage = new JLabel();
+//        labelMessage.setForeground(Color.WHITE);
         labelMessage.setFont(new Font("Tahoma", 0, 14)); // NOI18N
         labelMessage.setHorizontalAlignment(SwingConstants.CENTER);
         labelMessage.setIcon(new ImageIcon(getClass().getResource("/iconos/impresora.png"))); // NOI18N

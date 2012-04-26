@@ -11,7 +11,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "remito", uniqueConstraints =
-@UniqueConstraint(columnNames = {"numero"}))
+@UniqueConstraint(columnNames = {"numero", "sucursal"}))
 @NamedQueries({
     @NamedQuery(name = "Remito.findAll", query = "SELECT r FROM Remito r"),
     @NamedQuery(name = "Remito.findById", query = "SELECT r FROM Remito r WHERE r.id = :id"),
@@ -26,8 +26,8 @@ public class Remito implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Basic(optional = false)
-    @Column(name = "numero", nullable = false, unique = true, scale = 12, precision = 0)
-    private long numero;
+    @Column(name = "numero", nullable = false, scale = 8, precision = 0)
+    private Integer numero;
     @Basic(optional = false)
     @Column(name = "fecha_remito", nullable = false)
     @Temporal(TemporalType.DATE)
@@ -65,11 +65,11 @@ public class Remito implements Serializable {
         this.id = id;
     }
 
-    public long getNumero() {
+    public Integer getNumero() {
         return numero;
     }
 
-    public void setNumero(long numero) {
+    public void setNumero(Integer numero) {
         this.numero = numero;
     }
 
@@ -151,6 +151,6 @@ public class Remito implements Serializable {
 
     @Override
     public String toString() {
-        return "Remito{" + "id=" + id + ", numero=" + numero + ", fechaRemito=" + fechaRemito + ", fechaCreacion=" + fechaCreacion + ", detalleRemitoList=" + detalleRemitoList.size() + ", cliente=" + cliente + ", sucursal=" + sucursal + ", usuario=" + usuario + ", facturaVenta=" + facturaVenta + '}';
+        return "Remito{" + "id=" + id + ", numero=" + numero + ", fechaRemito=" + fechaRemito + ", fechaCreacion=" + fechaCreacion + ", detalleRemitoList=" + detalleRemitoList.size() + '}';
     }
 }

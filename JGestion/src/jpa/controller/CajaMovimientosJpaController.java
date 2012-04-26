@@ -36,7 +36,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
     }
 
     public void asentarMovimiento(FacturaCompra facturaCompra) throws Exception {
-        Logger.getLogger(this.getClass()).trace("asentarMovimiento (FacturaCompra): " + facturaCompra.getId() + " " + facturaCompra.getNumero());
+        Logger.getLogger(this.getClass()).trace("asentarMovimiento (FacturaCompra): id=" + facturaCompra.getId() + ", numero=" + facturaCompra.getNumero());
         CajaMovimientos cm = findCajaMovimientoAbierta(facturaCompra.getCaja());
         EntityManager em = getEntityManager();
         try {
@@ -49,7 +49,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
             newDetalleCajaMovimiento.setMonto(-facturaCompra.getImporte());
             newDetalleCajaMovimiento.setNumero(facturaCompra.getId());
             newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.FACTU_COMPRA);
-            newDetalleCajaMovimiento.setDescripcion("F" + JGestionUtils.getNumeracion(facturaCompra, true));
+            newDetalleCajaMovimiento.setDescripcion(JGestionUtils.getNumeracion(facturaCompra, true));
             newDetalleCajaMovimiento.setUsuario(UsuarioJpaController.getCurrentUser());
             new DetalleCajaMovimientosJpaController().create(newDetalleCajaMovimiento);
         } catch (Exception e) {
@@ -90,11 +90,14 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
             newDetalleCajaMovimiento.setDescripcion(JGestionUtils.getNumeracion(facturaVenta));
             newDetalleCajaMovimiento.setUsuario(UsuarioJpaController.getCurrentUser());
             new DetalleCajaMovimientosJpaController().create(newDetalleCajaMovimiento);
-        } catch (Exception e) {
-            em.getTransaction().rollback();
-            throw e;
+            em.getTransaction().commit();
+        } catch (Exception ex) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw ex;
         } finally {
-            if (em != null) {
+            if (em != null && em.isOpen()) {
                 em.close();
             }
         }
@@ -226,7 +229,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
             em.getTransaction().rollback();
             throw e;
         } finally {
-            if (em != null) {
+            if (em != null && em.isOpen()) {
                 em.close();
             }
         }
@@ -250,7 +253,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
             em.getTransaction().begin();
             facturaVenta = em.find(FacturaVenta.class, facturaVenta.getId());
             cajaMovimientoDestino = em.find(CajaMovimientos.class, cajaMovimientoDestino.getId());
-            em.lock(facturaVenta, LockModeType.PESSIMISTIC_FORCE_INCREMENT);
+            em.lock(facturaVenta, LockModeType.PESSIMISTIC_WRITE);
 
             //generic info in case of anullation..
             DetalleCajaMovimientos newDetalleCajaMovimiento = new DetalleCajaMovimientos();
@@ -353,7 +356,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
                 newDetalleCajaMovimiento.setMonto(facturaCompra.getImporte());
                 newDetalleCajaMovimiento.setNumero(facturaCompra.getId());
                 newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.ANULACION);
-                newDetalleCajaMovimiento.setDescripcion("F" + JGestionUtils.getNumeracion(facturaCompra, true) + " [ANULADA]");
+                newDetalleCajaMovimiento.setDescripcion(JGestionUtils.getNumeracion(facturaCompra, true) + " [ANULADA]");
                 newDetalleCajaMovimiento.setUsuario(UsuarioJpaController.getCurrentUser());
                 new DetalleCajaMovimientosJpaController().create(newDetalleCajaMovimiento);
             } else if (facturaCompra.getFormaPago() == Valores.FormaPago.CTA_CTE.getId()) {
@@ -379,7 +382,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
                                 newDetalleCajaMovimiento.setMonto(detalleRemesa.getMontoEntrega());
                                 newDetalleCajaMovimiento.setNumero(facturaCompra.getId());
                                 newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.ANULACION);
-                                newDetalleCajaMovimiento.setDescripcion("F" + JGestionUtils.getNumeracion(facturaCompra, true)
+                                newDetalleCajaMovimiento.setDescripcion(JGestionUtils.getNumeracion(facturaCompra, true)
                                         + " -> R" + remesaQueEnSuDetalleContieneLaFactura.getNumero() + " [ANULADA]");
                                 newDetalleCajaMovimiento.setUsuario(UsuarioJpaController.getCurrentUser());
                                 em.persist(newDetalleCajaMovimiento);
@@ -432,11 +435,10 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
      * @throws NonUniqueResultException
      */
     public CajaMovimientos findCajaMovimientoAbierta(Caja cajaCandidata) throws NoResultException, NonUniqueResultException {
-        EntityManager em = getEntityManager();
         CajaMovimientos cajaMovimiento = null;
         try {
             //busca la cajaMovimiento cuya fechaCierre != NULL (debería haber solo UNA)
-            cajaMovimiento = (CajaMovimientos) em.createQuery("SELECT o FROM " + getEntityClass().getSimpleName() + " o"
+            cajaMovimiento = (CajaMovimientos) getEntityManager().createQuery("SELECT o FROM " + getEntityClass().getSimpleName() + " o"
                     + " where o.fechaCierre is null AND o.caja.id =" + cajaCandidata.getId()).setHint(QueryHints.REFRESH, true).getSingleResult();
         } catch (NoResultException ex) {
             //cuando Ruben hace su magia pasa esto!
@@ -445,10 +447,6 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
             //esto ya sería el colmo...!!
             Logger.getLogger(this.getClass()).log(Level.FATAL, "HAY MAS DE 1 ABIERTA!!! -> CAJA: " + cajaCandidata, ex);
             throw ex;
-        } finally {
-            if (em != null) {
-                em.close();
-            }
         }
         return cajaMovimiento;
     }

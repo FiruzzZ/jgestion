@@ -337,11 +337,10 @@ public class PresupuestoController implements ActionListener, KeyListener {
     private void armarQuery() throws MessageException {
         String query = "SELECT o.* FROM " + CLASS_NAME + " o WHERE o.id > -1";
 
-        long presupuestoID;
         //filtro por nº de ReRe
         if (buscador.getTfCuarto().length() > 0) {
             try {
-                presupuestoID = Long.parseLong(buscador.getTfCuarto());
+                Integer presupuestoID = Integer.valueOf(buscador.getTfOcteto());
                 query += " AND o.id = " + presupuestoID;
             } catch (NumberFormatException ex) {
                 throw new MessageException("Número de " + CLASS_NAME + " no válido.\n\n" + ex.getMessage());

@@ -137,8 +137,10 @@ public class Orden implements Serializable {
       return true;
    }
 
-   @Override
-   public String toString() {
-      return String.valueOf(this.numero);
-   }
+    @Override
+    public String toString() {
+        return "Orden{" + "id=" + id + ", numero=" + numero + ", fecha=" + fecha + ", detalleOrdenList=" + detalleOrdenList + ", usuario=" + usuario.getId() + ", sucursal=" + sucursal.getId() + '}';
+    }
+
+   
 }

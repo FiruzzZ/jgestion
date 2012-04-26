@@ -33,15 +33,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
      * Creates new form JFP
      */
     public JFP() {
-        /*
-         * Set the Nimbus look and feel
-         */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /*
-         * If Nimbus (introduced in Java SE 6) is not available, stay with the
-         * default look and feel. For details see
-         * http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
-         */
+        //<editor-fold defaultstate="collapsed" desc="set Nimbus L&F">
         try {
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -49,20 +41,16 @@ public class JFP extends javax.swing.JFrame implements Runnable {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-        } catch (InstantiationException ex) {
-        } catch (IllegalAccessException ex) {
-        } catch (UnsupportedLookAndFeelException ex) {
+        } catch (Exception ex) {
         }
         //</editor-fold>
         loginUser();
         initComponents();
-        setIcons();
+        setAppIcons();
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         Dimension frameSize = getSize();
         setLocation((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
         jMenuItem11.setVisible(false); // Menú -> Datos Generales -> Contribuyente
-        this.setIconImage(Toolkit.getDefaultToolkit().createImage(getClass().getResource(Main.resourceBundle.getString("softwareIcon"))));
         this.setTitle(Main.resourceBundle.getString("softwareTitle")
                 + " - "
                 + Main.resourceBundle.getString("softwareDescription")
@@ -172,6 +160,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenuItem57 = new javax.swing.JMenuItem();
         jMenuItem61 = new javax.swing.JMenuItem();
         jMenuItem62 = new javax.swing.JMenuItem();
+        jMenuItem63 = new javax.swing.JMenuItem();
         jMenu9 = new javax.swing.JMenu();
         jMenuItem22 = new javax.swing.JMenuItem();
         jMenuItem19 = new javax.swing.JMenuItem();
@@ -248,7 +237,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         });
         jMenu2.add(jMenuItem2);
 
-        jMenuItem14.setText("Recibos");
+        jMenuItem14.setText("Recibo");
         jMenuItem14.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem14ActionPerformed(evt);
@@ -687,7 +676,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         });
         jMenu22.add(jMenuItem57);
 
-        jMenuItem61.setText("Recibos");
+        jMenuItem61.setText("Recibo");
         jMenuItem61.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem61ActionPerformed(evt);
@@ -695,13 +684,16 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         });
         jMenu22.add(jMenuItem61);
 
-        jMenuItem62.setText("Remitos");
+        jMenuItem62.setText("Remito");
         jMenuItem62.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem62ActionPerformed(evt);
             }
         });
         jMenu22.add(jMenuItem62);
+
+        jMenuItem63.setText("Nota de Crédito");
+        jMenu22.add(jMenuItem63);
 
         menuTesoreria.add(jMenu22);
 
@@ -1238,7 +1230,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         try {
             new NotaCreditoController().initABMNotaCredito(this, Boolean.TRUE, true, true);
         } catch (MessageException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Advertencia de Uso", 2);
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Advertencia", 2);
         }
     }//GEN-LAST:event_jMenuItem47ActionPerformed
 
@@ -1366,7 +1358,6 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         }
         refreshConnectionDB();
     }//GEN-LAST:event_jMenuItem61ActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JMenu jMenu1;
@@ -1451,6 +1442,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenuItem jMenuItem60;
     private javax.swing.JMenuItem jMenuItem61;
     private javax.swing.JMenuItem jMenuItem62;
+    private javax.swing.JMenuItem jMenuItem63;
     private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JMenuItem jMenuItem8;
     private javax.swing.JMenuItem jMenuItem9;
@@ -1528,11 +1520,12 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         System.out.println("Connectivity Thread finished..");
     }
 
-    private void setIcons() {
+    private void setAppIcons() {
         List<Image> iconsList = new ArrayList<Image>(3);
-        iconsList.add(Toolkit.getDefaultToolkit().getImage("/iconos/16px_sum.ico"));
-        iconsList.add(Toolkit.getDefaultToolkit().getImage("/iconos/24px_sum.ico"));
-        iconsList.add(Toolkit.getDefaultToolkit().getImage("/iconos/32px_sum.ico"));
+        iconsList.add(Toolkit.getDefaultToolkit().createImage(getClass().getResource(Main.resourceBundle.getString("softwareIcon"))));
+        iconsList.add(Toolkit.getDefaultToolkit().createImage(getClass().getResource("/iconos/16px_sum.ico")));
+        iconsList.add(Toolkit.getDefaultToolkit().createImage(getClass().getResource("/iconos/24px_sum.ico")));
+        iconsList.add(Toolkit.getDefaultToolkit().createImage(getClass().getResource("/iconos/32px_sum.ico")));
         this.setIconImages(iconsList);
     }
 }

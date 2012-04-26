@@ -69,7 +69,7 @@ public class PanelABMCheques extends javax.swing.JPanel {
 
         tfSucursalDireccion.setEditable(false);
 
-        jLabel8.setText("Dirección");
+        jLabel8.setText("Sucursal Dirección");
 
         jLabel5.setText("Fecha de Cobro");
 
@@ -111,7 +111,7 @@ public class PanelABMCheques extends javax.swing.JPanel {
         jLabel9.setText("Estado");
 
         tfEstado.setEditable(false);
-        tfEstado.setFont(new java.awt.Font("Tahoma", 1, 11));
+        tfEstado.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         tfEstado.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         tfEstado.setText("---");
         tfEstado.setEnabled(false);
@@ -131,7 +131,7 @@ public class PanelABMCheques extends javax.swing.JPanel {
 
         jLabel11.setText("Endosatario");
 
-        jLabel12.setText("Fecha");
+        jLabel12.setText("Fecha de endoso");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -155,7 +155,7 @@ public class PanelABMCheques extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(checkPropio)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(cbEmisor, 0, 357, Short.MAX_VALUE)
+                        .addComponent(cbEmisor, 0, 355, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(bAddEmisor, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
@@ -173,11 +173,11 @@ public class PanelABMCheques extends javax.swing.JPanel {
                     .addComponent(dcEndoso, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(tfEndosatario, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 357, Short.MAX_VALUE)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 357, Short.MAX_VALUE)
-                            .addComponent(cbBancoSucursales, javax.swing.GroupLayout.Alignment.LEADING, 0, 357, Short.MAX_VALUE)
-                            .addComponent(cbBancos, javax.swing.GroupLayout.Alignment.LEADING, 0, 357, Short.MAX_VALUE)
-                            .addComponent(tfSucursalDireccion, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 357, Short.MAX_VALUE)
+                            .addComponent(tfEndosatario, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 355, Short.MAX_VALUE)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 355, Short.MAX_VALUE)
+                            .addComponent(cbBancoSucursales, javax.swing.GroupLayout.Alignment.LEADING, 0, 355, Short.MAX_VALUE)
+                            .addComponent(cbBancos, javax.swing.GroupLayout.Alignment.LEADING, 0, 355, Short.MAX_VALUE)
+                            .addComponent(tfSucursalDireccion, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 355, Short.MAX_VALUE)
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                 .addComponent(tfNumero, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)

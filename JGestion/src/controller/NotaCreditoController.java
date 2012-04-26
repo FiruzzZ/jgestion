@@ -28,11 +28,14 @@ import java.util.Collection;
 import java.util.Date;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
+import jpa.controller.NotaCreditoJpaController;
 import jpa.controller.ProductoJpaController;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import utilities.swing.components.ComboBoxWrapper;
 
 /**
  *
@@ -46,8 +49,10 @@ public class NotaCreditoController {
     private JDBuscadorReRe buscador;
     private NotaCredito EL_OBJECT;
     private static int OBSERVACION_PROPERTY_LIMIT_LENGHT = 200;
+    private NotaCreditoJpaController jpaController;
 
     public NotaCreditoController() {
+        jpaController = new NotaCreditoJpaController();
     }
 
     // <editor-fold defaultstate="collapsed" desc="CRUD">
@@ -135,7 +140,7 @@ public class NotaCreditoController {
                         NotaCredito notaCreditoToPersist = setEntity();
                         create(notaCreditoToPersist);
                         reporte(notaCreditoToPersist);
-                        facturaVentaController.setNumeroFactura(notaCreditoToPersist.getSucursal(), getNextNumeroNotaCredito(notaCreditoToPersist.getSucursal()));
+                        facturaVentaController.setNumeroFactura(notaCreditoToPersist.getSucursal(), jpaController.getNextNumero(notaCreditoToPersist.getSucursal()));
                         facturaVentaController.borrarDetalles();
                     } else {
                         if (JOptionPane.YES_OPTION == JOptionPane.showOptionDialog(jdFacturaVenta, "¿Desea reimprimir la Nota de crédito?", "Re imprimir", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null)) {
@@ -152,32 +157,17 @@ public class NotaCreditoController {
                 }
             }
         });
-        if (loadDefaultData) {
-            try {
-                Sucursal s = (Sucursal) facturaVentaController.getContenedor().getCbSucursal().getSelectedItem();
-                facturaVentaController.setNumeroFactura(s, getNextNumeroNotaCredito(s));
-            } catch (Exception e) {
-                throw new MessageException("Para realizar una Nota de Crédito debe tener habilitada al menos una Sucursal");
-            }
-        }
+//        if (loadDefaultData) {
+//            try {
+//                Sucursal s = (Sucursal) facturaVentaController.getContenedor().getCbSucursal().getSelectedItem();
+//                facturaVentaController.setNumeroFactura(s, jpaController.getNextNumero(s));
+//            } catch (Exception e) {
+//                throw new MessageException("Para realizar una Nota de Crédito debe tener habilitada al menos una Sucursal");
+//            }
+//        }
         facturaVentaController.getContenedor().setUIToNotaCredito();
         jdFacturaVenta = facturaVentaController.getContenedor();
         jdFacturaVenta.setVisible(setVisible);
-    }
-
-    private Integer getNextNumeroNotaCredito(Sucursal s) {
-        EntityManager em = getEntityManager();
-        Long nextRemitoNumero = 1L;
-        try {
-            nextRemitoNumero = 1 + (Long) em.createQuery("SELECT MAX(o.numero)"
-                    + " FROM " + CLASS_NAME + " o"
-                    + " WHERE o.sucursal.id= " + s.getId()).getSingleResult();
-        } catch (NullPointerException ex) {
-            Logger.getLogger(this.getClass()).trace("pinto la 1ra " + this.getClass() + ", " + s.getNombre());
-        } finally {
-            em.close();
-        }
-        return nextRemitoNumero.intValue();
     }
 
     private NotaCredito setEntity() throws MessageException, Exception {
@@ -189,7 +179,7 @@ public class NotaCreditoController {
         Cliente cliente = (Cliente) jdFacturaVenta.getCbCliente().getSelectedItem();
         String observacion = null;
         try {
-            sucursal = (Sucursal) jdFacturaVenta.getCbSucursal().getSelectedItem();
+            sucursal = facturaVentaController.getSelectedSucursalFromJDFacturaVenta();
         } catch (ClassCastException e) {
             throw new MessageException("Debe crear una Sucursal."
                     + "\nMenú: Datos Generales -> Sucursales");
@@ -208,7 +198,7 @@ public class NotaCreditoController {
         }
 
         NotaCredito newNotaCredito = new NotaCredito();
-        newNotaCredito.setNumero(Long.valueOf(jdFacturaVenta.getTfFacturaOcteto()));
+        newNotaCredito.setNumero(jpaController.getNextNumero(sucursal));
         newNotaCredito.setFechaNotaCredito(fechaNotaCredito);
         newNotaCredito.setImporte(Double.valueOf(jdFacturaVenta.getTfTotal()));
         newNotaCredito.setGravado(Double.valueOf(jdFacturaVenta.getTfGravado()));
@@ -249,13 +239,15 @@ public class NotaCreditoController {
             }
         });
         UTIL.loadComboBox(buscador.getCbClieProv(), new ClienteController().findEntities(), true);
-        UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getSucursales(), true);
+        UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), true);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
-                new String[]{"NotaCreditoID", "Nº " + CLASS_NAME, "Cliente", "Importe", "Acreditado", "Fecha", "Sucursal", "Usuario", "Fecha (Sistema)"},
-                new int[]{1, 60, 150, 50, 50, 50, 80, 50, 70});
+                new String[]{"NotaCreditoID", "Nº Nota de Crédito", "Cliente", "Importe", "Acreditado", "Fecha", "Usuario", "Fecha (Sistema)"},
+                new int[]{1, 60, 150, 50, 50, 50, 50, 70},
+                new Class<?>[]{null, null, null, String.class, null, null, null, null});
         //escondiendo facturaID
         UTIL.hideColumnTable(buscador.getjTable1(), 0);
+        UTIL.setHorizonalAlignment(buscador.getjTable1(), String.class, SwingConstants.RIGHT);
         buscador.getjTable1().addMouseListener(new MouseAdapter() {
 
             @Override
@@ -289,15 +281,16 @@ public class NotaCreditoController {
      * @return String SQL native query
      * @throws MessageException
      */
+    @SuppressWarnings("unchecked")
     private String armarQuery() throws MessageException {
         StringBuilder query = new StringBuilder("SELECT o.* FROM nota_credito o"
                 + " WHERE o.anulada = " + buscador.isCheckAnuladaSelected());
 
         long numero;
         //filtro por nº de ReRe
-        if (buscador.getTfCuarto().length() > 0 && buscador.getTfOcteto().length() > 0) {
+        if (buscador.getTfOcteto().length() > 0) {
             try {
-                numero = Long.parseLong(buscador.getTfCuarto() + buscador.getTfOcteto());
+                numero = Long.parseLong(buscador.getTfOcteto());
                 query.append(" AND o.numero = ").append(numero);
             } catch (NumberFormatException ex) {
                 throw new MessageException("Número de " + CLASS_NAME + " no válido");
@@ -310,12 +303,12 @@ public class NotaCreditoController {
             query.append(" AND o.fecha_nota_credito <= '").append(buscador.getDcHasta()).append("'");
         }
         if (buscador.getCbSucursal().getSelectedIndex() > 0) {
-            query.append(" AND o.sucursal = ").append(((Sucursal) buscador.getCbSucursal().getSelectedItem()).getId());
+            query.append(" AND o.sucursal = ").append(((ComboBoxWrapper<Sucursal>) buscador.getCbSucursal().getSelectedItem()).getId());
         } else {
             query.append(" AND (");
             for (int i = 1; i < buscador.getCbSucursal().getItemCount(); i++) {
-                Sucursal sucursal = (Sucursal) buscador.getCbSucursal().getItemAt(i);
-                query.append(" o.sucursal=").append(sucursal.getId());
+                ComboBoxWrapper<Sucursal> cbw = (ComboBoxWrapper<Sucursal>) buscador.getCbSucursal().getItemAt(i);
+                query.append(" o.sucursal=").append(cbw.getId());
                 if ((i + 1) < buscador.getCbSucursal().getItemCount()) {
                     query.append(" OR ");
                 }

@@ -26,15 +26,18 @@ public class ReciboJpaController extends AbstractDAO<Recibo, Integer> {
     }
 
     public Integer getNextNumero(Sucursal sucursal) {
-        Long l = (Long) getEntityManager().createQuery("SELECT MAX(o.numero)"
+        Integer next = sucursal.getRecibo();
+        Object l = getEntityManager().createQuery("SELECT MAX(o.numero)"
                 + " FROM " + getEntityClass().getSimpleName() + " o"
                 + " WHERE o.sucursal.id = " + sucursal.getId()).getSingleResult();
         if (l != null) {
-            return l.intValue();
-        } else {
-            System.out.println("Pintó el 1er de " + getEntityClass().getSimpleName() + ", Sucursa=" + sucursal.getNombre() + "(" + sucursal.getPuntoVenta() + ")");
-            return 1;
+            Integer nextNumeroSegunDB = 1 + Integer.valueOf(l.toString());
+            if (nextNumeroSegunDB > next) {
+                //quiere decir que la numeración ya supera la configuración
+                next = nextNumeroSegunDB;
+            }
         }
+        return next;
     }
 
     /**
