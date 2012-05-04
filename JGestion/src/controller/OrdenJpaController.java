@@ -265,7 +265,7 @@ public class OrdenJpaController {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     if (jdFactura.getjTable1().getSelectedRow() > -1) {
-                        jdFactura.getDTM().removeRow(jdFactura.getjTable1().getSelectedRow());
+                        jdFactura.getDtm().removeRow(jdFactura.getjTable1().getSelectedRow());
                     }
                 }
             });
@@ -318,7 +318,7 @@ public class OrdenJpaController {
     }
 
     private Orden setAndPersist() throws MessageException, Exception {
-        int rowCant = jdFactura.getDTM().getRowCount();
+        int rowCant = jdFactura.getDtm().getRowCount();
         if (rowCant < 1) {
             throw new MessageException("Y los productos a modificar?");
         }

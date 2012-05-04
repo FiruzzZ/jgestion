@@ -195,7 +195,7 @@ public class RemesaController implements ActionListener, FocusListener {
         re.setUsuario(UsuarioJpaController.getCurrentUser());
         re.setEstado(true);
         re.setFechaRemesa(jdReRe.getDcFechaReRe());
-        re.setMontoEntrega(Double.parseDouble(jdReRe.getTfTotalPagado()));
+        re.setMontoEntrega(Double.parseDouble(jdReRe.getTfTotalPagado().getText()));
         // 30% faster on ArrayList with initialCapacity
         re.setDetalleRemesaList(new ArrayList<DetalleRemesa>(jdReRe.getDtm().getRowCount()));
         DefaultTableModel dtm = jdReRe.getDtm();
@@ -242,7 +242,7 @@ public class RemesaController implements ActionListener, FocusListener {
         jdReRe.setTfEntrega("");
         jdReRe.setTfObservacion("");
         jdReRe.setTfSaldo("0");
-        jdReRe.setTfTotalPagado("0");
+        jdReRe.getTfTotalPagado().setText("0");
         selectedFechaReRe = null;
     }
 
@@ -311,7 +311,7 @@ public class RemesaController implements ActionListener, FocusListener {
         }
         double restante;
         if (acreditado) {
-            restante = Double.parseDouble(jdReRe.getTfRestanteCreditoDebito().getText());
+            restante = Double.parseDouble(jdReRe.getTfCreditoDebitoRestante().getText());
             //si se intenta hacer un pago superior a la deuda
             if (restante < entrega) {
                 throw new MessageException("La entrega no puede superar el deuda");
@@ -325,8 +325,8 @@ public class RemesaController implements ActionListener, FocusListener {
                     entrega,
                     acreditado
                 });
-        double totalEntregado = Double.valueOf(jdReRe.getTfTotalPagado());
-        jdReRe.setTfTotalPagado(UTIL.PRECIO_CON_PUNTO.format(totalEntregado + entrega));
+        double totalEntregado = Double.valueOf(jdReRe.getTfTotalPagado().getText());
+        jdReRe.getTfTotalPagado().setText(UTIL.PRECIO_CON_PUNTO.format(totalEntregado + entrega));
 
     }
 
@@ -334,8 +334,8 @@ public class RemesaController implements ActionListener, FocusListener {
         int selectedRow = jdReRe.getjTable1().getSelectedRow();
         if (selectedRow > -1) {
             double entrega = Double.valueOf(jdReRe.getDtm().getValueAt(selectedRow, 2).toString());
-            double totalEntregado = Double.valueOf(jdReRe.getTfTotalPagado());
-            jdReRe.setTfTotalPagado(UTIL.PRECIO_CON_PUNTO.format(totalEntregado - entrega));
+            double totalEntregado = Double.valueOf(jdReRe.getTfTotalPagado().getText());
+            jdReRe.getTfTotalPagado().setText(UTIL.PRECIO_CON_PUNTO.format(totalEntregado - entrega));
             jdReRe.getDtm().removeRow(selectedRow);
         }
     }
@@ -499,7 +499,7 @@ public class RemesaController implements ActionListener, FocusListener {
         jdReRe.setTfImporte("");
         jdReRe.setTfPagado("");
         jdReRe.setTfSaldo("");
-        jdReRe.setTfTotalPagado(String.valueOf(remesa.getMonto()));
+        jdReRe.getTfTotalPagado().setText(String.valueOf(remesa.getMonto()));
     }
 
     private void cargarDetalleReRe(List<DetalleRemesa> detalleRemesaList) {

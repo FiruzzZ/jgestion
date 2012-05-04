@@ -1473,4 +1473,8 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
         tfFacturaOcteto.setEnabled(b);
         tfFacturaOcteto.setEditable(b);
     }
+
+    public void setEnableDcFechaFactura(boolean enable) {
+        dcFechaFactura.setEnabled(enable);
+    }
 }

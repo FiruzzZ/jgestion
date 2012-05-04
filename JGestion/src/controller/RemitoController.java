@@ -18,6 +18,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -42,6 +43,8 @@ public class RemitoController implements ActionListener, KeyListener {
     private boolean toFacturar;
     private boolean unlockedNumeracion = false;
     private RemitoJpaController jpaController;
+    //global mutable
+    private boolean editing = false;
 
     public RemitoController() {
         jpaController = new RemitoJpaController();
@@ -159,7 +162,13 @@ public class RemitoController implements ActionListener, KeyListener {
             public void actionPerformed(ActionEvent e) {
                 try {
                     facturaVentaController.getContenedor().getBtnAceptar().setEnabled(false);
-                    doRemito();
+                    if (!editing) {
+                        createRemito();
+                    } else {
+                        editRemito(selectedRemito);
+                        
+                        buscador.setVisible(true);
+                    }
                 } catch (MessageException ex) {
                     facturaVentaController.getContenedor().showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
@@ -170,6 +179,39 @@ public class RemitoController implements ActionListener, KeyListener {
                 }
             }
         });
+    }
+
+    private void editRemito(Remito remitoToEdit) throws MessageException, NonexistentEntityException, Exception {
+        JDFacturaVenta facturaVentaUI = facturaVentaController.getContenedor();
+        Cliente selectedCliente;
+        Sucursal selectedSucursal;
+        try {
+            selectedCliente = (Cliente) facturaVentaUI.getCbCliente().getSelectedItem();
+        } catch (ClassCastException ex) {
+            throw new MessageException("Cliente no válido");
+        }
+        try {
+            selectedSucursal = facturaVentaController.getSelectedSucursalFromJDFacturaVenta();
+        } catch (ClassCastException ex) {
+            throw new MessageException("Sucursal no válido");
+        }
+
+        if (facturaVentaUI.getDcFechaFactura() == null) {
+            throw new MessageException("Fecha no válida");
+        }
+        if (!remitoToEdit.getSucursal().equals(selectedSucursal)) {
+            remitoToEdit.setNumero(getNextNumero(selectedSucursal));
+        }
+        remitoToEdit.setCliente(selectedCliente);
+        remitoToEdit.setSucursal(selectedSucursal);
+        remitoToEdit.setFechaRemito(facturaVentaUI.getDcFechaFactura());
+        try {
+            edit(remitoToEdit);
+        } catch (IllegalOrphanException ex) {
+            throw new MessageException(ex.getMessage());
+        }
+        doImprimir(remitoToEdit);
+        facturaVentaUI.setVisible(false);
     }
 
     @Override
@@ -204,7 +246,7 @@ public class RemitoController implements ActionListener, KeyListener {
     public void keyPressed(KeyEvent e) {
     }
 
-    private void doRemito() throws MessageException, Exception {
+    private void createRemito() throws MessageException, Exception {
         if (MODO_VISTA) {
             doImprimir(selectedRemito);
         } else {
@@ -332,7 +374,15 @@ public class RemitoController implements ActionListener, KeyListener {
                         //cuando se va relacionar un Remito a una FacturaVenta
                         buscador.dispose();
                     } else {
-                        setDatos(selectedRemito);
+                        try {
+                            if (editing && selectedRemito.getFacturaVenta() != null) {
+                                throw new MessageException("No se puede modificar el Remito " + JGestionUtils.getNumeracion(selectedRemito, true)
+                                        + "\nporque ya fue relacionado a una Factura (" + JGestionUtils.getNumeracion(selectedRemito.getFacturaVenta()) + ")");
+                            }
+                            setDatos(selectedRemito);
+                        } catch (MessageException ex) {
+                            buscador.showMessage(ex.getMessage(), "Error", JOptionPane.WARNING_MESSAGE);
+                        }
                     }
                 }
             }
@@ -354,7 +404,7 @@ public class RemitoController implements ActionListener, KeyListener {
 
     private void setDatos(Remito remito) {
         try {
-            initRemito(null, true, false, false);
+            initRemito(null, true, false, editing);
         } catch (MessageException ex) {
             // no va saltar nunca este
         }
@@ -363,10 +413,16 @@ public class RemitoController implements ActionListener, KeyListener {
         jdFacturaVenta.setLocationRelativeTo(buscador);
         jdFacturaVenta.setTfFacturaCuarto(UTIL.AGREGAR_CEROS(remito.getSucursal().getPuntoVenta(), 4));
         jdFacturaVenta.setTfFacturaOcteto(UTIL.AGREGAR_CEROS(remito.getNumero(), 8));
-        jdFacturaVenta.getCbCliente().removeAllItems();
-        jdFacturaVenta.getCbCliente().addItem(remito.getCliente());
-        jdFacturaVenta.getCbSucursal().removeAllItems();
-        jdFacturaVenta.getCbSucursal().addItem(new ComboBoxWrapper<Sucursal>(remito.getSucursal(), remito.getSucursal().getId(), remito.getSucursal().getNombre()));
+        if (editing) {
+            UTIL.setSelectedItem(jdFacturaVenta.getCbCliente(), remito.getCliente());
+            UTIL.setSelectedItem(jdFacturaVenta.getCbSucursal(), new ComboBoxWrapper<Sucursal>(remito.getSucursal(), remito.getSucursal().getId(), remito.getSucursal().getNombre()));
+        } else {
+            jdFacturaVenta.getCbCliente().removeAllItems();
+            jdFacturaVenta.getCbCliente().addItem(remito.getCliente());
+            jdFacturaVenta.getCbSucursal().removeAllItems();
+            jdFacturaVenta.getCbSucursal().addItem(new ComboBoxWrapper<Sucursal>(remito.getSucursal(), remito.getSucursal().getId(), remito.getSucursal().getNombre()));
+
+        }
 //      jdFacturaVenta.getCbUsuario().addItem(remito.getUsuario());
         jdFacturaVenta.setDcFechaFactura(remito.getFechaRemito());
 
@@ -376,7 +432,7 @@ public class RemitoController implements ActionListener, KeyListener {
             dtm.addRow(new Object[]{
                         null,
                         detallesPresupuesto.getProducto().getCodigo(),
-                        detallesPresupuesto.getProducto(),
+                        detallesPresupuesto.getProducto().getNombre() + " " + detallesPresupuesto.getProducto().getMarca().getNombre(),
                         detallesPresupuesto.getCantidad(),
                         0,
                         0,
@@ -384,9 +440,18 @@ public class RemitoController implements ActionListener, KeyListener {
                         0
                     });
         }
-
         jdFacturaVenta.modoVista();
-        jdFacturaVenta.setLocation(jdFacturaVenta.getX() + 50, jdFacturaVenta.getY() + 50);
+        if (editing) {
+            jdFacturaVenta.getCbCliente().setEnabled(true);
+            jdFacturaVenta.getCbSucursal().setEnabled(true);
+            jdFacturaVenta.setEnableDcFechaFactura(true);
+            JButton btnAceptar = jdFacturaVenta.getBtnAceptar();
+            btnAceptar.setEnabled(true);
+            btnAceptar.setText("Modificar");
+            btnAceptar.setSize(btnAceptar.getWidth() + 10, btnAceptar.getHeight());
+            btnAceptar.setMnemonic('f');
+            btnAceptar.setEnabled(true);
+        }
         jdFacturaVenta.setVisible(true);
     }
 
@@ -500,5 +565,13 @@ public class RemitoController implements ActionListener, KeyListener {
     private Remito find(Sucursal sucursal, Integer numero) {
         return getEntityManager().createQuery("SELECT o FROM Remito o"
                 + " WHERE o.sucursal.id=" + sucursal.getId() + " AND o.numero=" + numero, Remito.class).getSingleResult();
+    }
+
+    public void initRemitoEditor(JFrame owner) throws MessageException {
+        this.editing = true;
+//        initRemito(owner, true, false, true);
+        initBuscador(owner, true, false);
+        MODO_VISTA = false;
+        buscador.setVisible(true);
     }
 }

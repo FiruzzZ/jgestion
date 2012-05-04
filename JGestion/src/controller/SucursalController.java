@@ -1,8 +1,6 @@
 package controller;
 
-import controller.exceptions.IllegalOrphanException;
 import controller.exceptions.MessageException;
-import controller.exceptions.NonexistentEntityException;
 import entity.Departamento;
 import entity.Municipio;
 import entity.Provincia;
@@ -16,7 +14,6 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.persistence.NoResultException;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JTextField;
@@ -281,7 +278,7 @@ public class SucursalController implements ActionListener, MouseListener {
                     + "\nMenú -> Tesorería -> Venta (Numeración manual) -> "
                     + "\nEste le permitirá especificar el número del comprobante.";
             Integer next;
-            if (sucursal.getFactura_a().equals(oldInstance.getFactura_a())) {
+            if (!sucursal.getFactura_a().equals(oldInstance.getFactura_a())) {
                 next = new FacturaVentaJpaController().getNextNumeroFactura(sucursal, 'a');
                 if (next > sucursal.getFactura_a()) {
                     throw new MessageException("Existen registros de Factura 'A' superior a " + UTIL.AGREGAR_CEROS(sucursal.getFactura_a(), 8) + "."
@@ -289,7 +286,7 @@ public class SucursalController implements ActionListener, MouseListener {
                             + "\n" + anterior + "Facturación");
                 }
             }
-            if (sucursal.getFactura_b().equals(oldInstance.getFactura_b())) {
+            if (!sucursal.getFactura_b().equals(oldInstance.getFactura_b())) {
                 next = new FacturaVentaJpaController().getNextNumeroFactura(sucursal, 'b');
                 if (next > sucursal.getFactura_b()) {
                     throw new MessageException("Existen registros de Factura 'B' superior a " + UTIL.AGREGAR_CEROS(sucursal.getFactura_a(), 8) + "."
@@ -297,7 +294,7 @@ public class SucursalController implements ActionListener, MouseListener {
                             + "\n" + anterior + "Facturación");
                 }
             }
-            if (sucursal.getRecibo().equals(oldInstance.getRecibo())) {
+            if (!sucursal.getRecibo().equals(oldInstance.getRecibo())) {
                 next = new ReciboJpaController().getNextNumero(sucursal);
                 if (next > sucursal.getRecibo()) {
                     throw new MessageException("Existen registros de Recibo superior a " + UTIL.AGREGAR_CEROS(sucursal.getFactura_a(), 8) + "."
@@ -305,7 +302,7 @@ public class SucursalController implements ActionListener, MouseListener {
                             + "\n" + anterior + "Recibo");
                 }
             }
-            if (sucursal.getRemito().equals(oldInstance.getRemito())) {
+            if (!sucursal.getRemito().equals(oldInstance.getRemito())) {
                 next = new RemitoJpaController().getNextNumero(sucursal);
                 if (next > sucursal.getRemito()) {
                     throw new MessageException("Existen registros de Remito superior a " + UTIL.AGREGAR_CEROS(sucursal.getFactura_a(), 8) + "."
@@ -313,7 +310,7 @@ public class SucursalController implements ActionListener, MouseListener {
                             + "\n" + anterior + "Remito");
                 }
             }
-            if (sucursal.getNotaCredito().equals(oldInstance.getNotaCredito())) {
+            if (!sucursal.getNotaCredito().equals(oldInstance.getNotaCredito())) {
                 next = new NotaCreditoJpaController().getNextNumero(sucursal);
                 if (next > sucursal.getNotaCredito()) {
                     throw new MessageException("Existen registros de Nota de Crédito superior a " + UTIL.AGREGAR_CEROS(sucursal.getFactura_a(), 8) + "."

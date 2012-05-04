@@ -62,7 +62,9 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
     }
 
     private void init(String title, String labelClieProv, String labelReRe) {
-        this.setLocationRelativeTo(getOwner());
+        if (getOwner() != null) {
+            this.setLocationRelativeTo(getOwner());
+        }
         this.setTitle(title);
         bImprimir.setVisible(false);
         this.labelClieProv.setText(labelClieProv);
