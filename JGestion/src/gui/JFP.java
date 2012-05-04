@@ -95,7 +95,6 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenu2 = new javax.swing.JMenu();
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenuItem14 = new javax.swing.JMenuItem();
-        jMenuItem5 = new javax.swing.JMenuItem();
         jMenuItem6 = new javax.swing.JMenuItem();
         jMenuItem47 = new javax.swing.JMenuItem();
         jMenu11 = new javax.swing.JMenu();
@@ -104,6 +103,9 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenuItem35 = new javax.swing.JMenuItem();
         jMenuItem36 = new javax.swing.JMenuItem();
         jMenuItem48 = new javax.swing.JMenuItem();
+        jMenu23 = new javax.swing.JMenu();
+        jMenuItem5 = new javax.swing.JMenuItem();
+        jMenuItem64 = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
         jMenuItem4 = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -245,14 +247,6 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         });
         jMenu2.add(jMenuItem14);
 
-        jMenuItem5.setText("Remito");
-        jMenuItem5.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem5ActionPerformed(evt);
-            }
-        });
-        jMenu2.add(jMenuItem5);
-
         jMenuItem6.setText("Presupuesto                         ");
         jMenuItem6.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -313,6 +307,26 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenu11.add(jMenuItem48);
 
         jMenu2.add(jMenu11);
+
+        jMenu23.setText("Remitos");
+
+        jMenuItem5.setText("Alta Remito");
+        jMenuItem5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem5ActionPerformed(evt);
+            }
+        });
+        jMenu23.add(jMenuItem5);
+
+        jMenuItem64.setText("Editar Remito");
+        jMenuItem64.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem64ActionPerformed(evt);
+            }
+        });
+        jMenu23.add(jMenuItem64);
+
+        jMenu2.add(jMenu23);
 
         jMenuBar1.add(jMenu2);
 
@@ -898,7 +912,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
         try {
-            new FacturaCompraController().initJDFacturaCompra(this, true);
+            new FacturaCompraController().initABMFacturaCompra(this, true);
         } catch (MessageException ex) {
             showError(ex.getMessage());
         }
@@ -1358,6 +1372,15 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         }
         refreshConnectionDB();
     }//GEN-LAST:event_jMenuItem61ActionPerformed
+
+    private void jMenuItem64ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem64ActionPerformed
+        try {
+            new RemitoController().initRemitoEditor(this);
+        } catch (MessageException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage());
+        }
+    }//GEN-LAST:event_jMenuItem64ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JMenu jMenu1;
@@ -1375,6 +1398,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenu jMenu20;
     private javax.swing.JMenu jMenu21;
     private javax.swing.JMenu jMenu22;
+    private javax.swing.JMenu jMenu23;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenu jMenu4;
     private javax.swing.JMenu jMenu5;
@@ -1443,6 +1467,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenuItem jMenuItem61;
     private javax.swing.JMenuItem jMenuItem62;
     private javax.swing.JMenuItem jMenuItem63;
+    private javax.swing.JMenuItem jMenuItem64;
     private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JMenuItem jMenuItem8;
     private javax.swing.JMenuItem jMenuItem9;

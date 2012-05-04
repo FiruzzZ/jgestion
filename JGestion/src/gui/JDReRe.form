@@ -27,43 +27,57 @@
           <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jPanel1" alignment="0" max="32767" attributes="1"/>
-                  <Component id="jPanel2" alignment="0" max="32767" attributes="1"/>
-                  <Component id="jScrollPane1" alignment="0" max="32767" attributes="2"/>
-                  <Group type="102" alignment="1" attributes="0">
-                      <Component id="bAnular" min="-2" max="-2" attributes="1"/>
-                      <EmptySpace max="32767" attributes="0"/>
-                      <Component id="bImprimir" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="bAceptar" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="bCancelar" min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <Component id="jCheckBox1" alignment="1" min="-2" max="-2" attributes="0"/>
-                  <Group type="102" alignment="1" attributes="0">
-                      <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="32767" attributes="0"/>
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Group type="102" alignment="1" attributes="1">
-                              <Component id="checkPagoConCheque" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="32767" attributes="0"/>
-                              <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="tfTOTAL" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <Group type="102" alignment="1" attributes="0">
-                              <Component id="labelPorCreditoDebito" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="tfPorCreditoDebito" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace min="10" pref="10" max="-2" attributes="0"/>
-                              <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="tfTotalPagado" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                      </Group>
-                  </Group>
+                  <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
+                  <Component id="checkPagoConCheque" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="32767" attributes="0"/>
+              <Component id="labelPorCreditoDebito" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="tfTotalPorCreditoDebito" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="jLabel2" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Component id="labelRetencionPercepcion" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel1" alignment="1" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                  <Component id="tfTotalPagado" alignment="1" max="32767" attributes="0"/>
+                  <Component id="tfTOTAL" alignment="1" max="32767" attributes="0"/>
+                  <Component id="tfRetencion" alignment="1" max="32767" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+          </Group>
+          <Group type="102" alignment="1" attributes="0">
+              <EmptySpace max="32767" attributes="0"/>
+              <Component id="jCheckBox1" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="10" pref="10" max="-2" attributes="0"/>
+          </Group>
+          <Group type="102" alignment="1" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="bAnular" min="-2" max="-2" attributes="1"/>
+              <EmptySpace max="32767" attributes="0"/>
+              <Component id="bImprimir" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="bAceptar" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="bCancelar" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="10" pref="10" max="-2" attributes="0"/>
+          </Group>
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace min="10" pref="10" max="-2" attributes="0"/>
+              <Component id="jScrollPane1" max="32767" attributes="2"/>
+              <EmptySpace max="32767" attributes="0"/>
+          </Group>
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace min="10" pref="10" max="-2" attributes="0"/>
+              <Component id="jPanel2" max="32767" attributes="1"/>
+              <EmptySpace max="32767" attributes="0"/>
+          </Group>
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace min="10" pref="10" max="-2" attributes="0"/>
+              <Component id="jPanel1" max="32767" attributes="1"/>
+              <EmptySpace max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -81,28 +95,40 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
                       <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="13" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="tfTOTAL" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="checkPagoConCheque" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" attributes="0">
+                              <EmptySpace min="-2" pref="13" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="tfTotalPagado" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="checkPagoConCheque" min="-2" max="-2" attributes="0"/>
+                          </Group>
                       </Group>
                   </Group>
                   <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="tfTotalPagado" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="tfPorCreditoDebito" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="tfTotalPorCreditoDebito" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="labelPorCreditoDebito" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="tfRetencion" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="labelRetencionPercepcion" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
-              <EmptySpace min="-2" pref="11" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="tfTOTAL" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace pref="24" max="32767" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="bCancelar" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
                   <Component id="bAceptar" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
                   <Component id="bImprimir" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
                   <Component id="bAnular" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -202,13 +228,13 @@
                           <Component id="cbClienteProveedor" alignment="0" max="32767" attributes="1"/>
                       </Group>
                       <Group type="102" attributes="0">
-                          <Component id="tfCreditoDebito" min="-2" max="-2" attributes="0"/>
+                          <Component id="tfCreditoDebitoDisponible" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="btnDetalleCreditoDebito" min="-2" pref="30" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="36" max="-2" attributes="0"/>
                           <Component id="labelRestanteCreditoDebito" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="tfRestanteCreditoDebito" min="-2" max="-2" attributes="0"/>
+                          <Component id="tfCreditoDebitoRestante" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                   <EmptySpace max="32767" attributes="0"/>
@@ -245,10 +271,10 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="2" attributes="0">
                       <Component id="labelCreditoDebito" alignment="2" min="-2" max="-2" attributes="0"/>
-                      <Component id="tfCreditoDebito" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Component id="tfCreditoDebitoDisponible" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="btnDetalleCreditoDebito" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Group type="103" alignment="2" groupAlignment="3" attributes="0">
-                          <Component id="tfRestanteCreditoDebito" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="tfCreditoDebitoRestante" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="labelRestanteCreditoDebito" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -349,7 +375,7 @@
             <Property name="text" type="java.lang.String" value="Cr&#xe9;dito"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="tfCreditoDebito">
+        <Component class="javax.swing.JTextField" name="tfCreditoDebitoDisponible">
           <Properties>
             <Property name="columns" type="int" value="8"/>
             <Property name="editable" type="boolean" value="false"/>
@@ -374,7 +400,7 @@
             <Property name="text" type="java.lang.String" value="Restante"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="tfRestanteCreditoDebito">
+        <Component class="javax.swing.JTextField" name="tfCreditoDebitoRestante">
           <Properties>
             <Property name="columns" type="int" value="8"/>
             <Property name="editable" type="boolean" value="false"/>
@@ -398,6 +424,7 @@
         </Property>
         <Property name="horizontalAlignment" type="int" value="4"/>
         <Property name="text" type="java.lang.String" value="0"/>
+        <Property name="toolTipText" type="java.lang.String" value="NO incluye el monto ACREDITADO ni la RETENCI&#xd3;N"/>
         <Property name="focusable" type="boolean" value="false"/>
         <Property name="requestFocusEnabled" type="boolean" value="false"/>
       </Properties>
@@ -634,7 +661,7 @@
         </Component>
       </SubComponents>
     </Container>
-    <Component class="javax.swing.JTextField" name="tfPorCreditoDebito">
+    <Component class="javax.swing.JTextField" name="tfTotalPorCreditoDebito">
       <Properties>
         <Property name="columns" type="int" value="8"/>
         <Property name="editable" type="boolean" value="false"/>
@@ -667,7 +694,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel1">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Total"/>
+        <Property name="text" type="java.lang.String" value="Total pagado"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JCheckBox" name="jCheckBox1">
@@ -696,6 +723,24 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Pago con cheque"/>
         <Property name="toolTipText" type="java.lang.String" value="Seleccione para relacionar el pago del documento con un Cheque"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="tfRetencion">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Tahoma" size="12" style="1"/>
+        </Property>
+        <Property name="horizontalAlignment" type="int" value="4"/>
+        <Property name="text" type="java.lang.String" value="0"/>
+      </Properties>
+      <Events>
+        <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="tfRetencionFocusLost"/>
+        <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="tfRetencionKeyTyped"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JLabel" name="labelRetencionPercepcion">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Retenci&#xf3;n"/>
       </Properties>
     </Component>
   </SubComponents>

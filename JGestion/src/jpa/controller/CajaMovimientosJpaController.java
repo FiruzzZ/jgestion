@@ -113,7 +113,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
             DetalleCajaMovimientos newDetalleCajaMovimiento = new DetalleCajaMovimientos();
             newDetalleCajaMovimiento.setCajaMovimientos(cajaMovimientoActual);
             newDetalleCajaMovimiento.setIngreso(true);
-            newDetalleCajaMovimiento.setMonto(recibo.getMonto());
+            newDetalleCajaMovimiento.setMonto(recibo.getMonto() - recibo.getRetencion().doubleValue());
             newDetalleCajaMovimiento.setNumero(Long.valueOf(recibo.getId()));
             newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.RECIBO);
             newDetalleCajaMovimiento.setDescripcion("R" + JGestionUtils.getNumeracion(recibo, true));

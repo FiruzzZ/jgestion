@@ -199,7 +199,7 @@ public class PanelABMProductos extends javax.swing.JPanel {
             }
         });
 
-        jLabel16.setText("Precio");
+        jLabel16.setText("Precio venta");
 
         tfPrecio.setColumns(4);
         tfPrecio.setHorizontalAlignment(javax.swing.JTextField.RIGHT);

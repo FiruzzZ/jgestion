@@ -1,6 +1,7 @@
 package entity;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.*;
@@ -28,7 +29,7 @@ public class Recibo implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Basic(optional = false)
-    @Column(name="numero", nullable = false, length = 8)
+    @Column(name = "numero", nullable = false, length = 8)
     private Integer numero;
     @Basic(optional = false)
     @Column(name = "fecha_carga", nullable = false, insertable = false, updatable = false, columnDefinition = "timestamp with time zone NOT NULL DEFAULT now()")
@@ -37,6 +38,9 @@ public class Recibo implements Serializable {
     @Basic(optional = false)
     @Column(name = "monto", nullable = false)
     private double monto;
+    @Basic(optional = false)
+    @Column(name = "retencion", nullable = false, precision = 10, scale = 2)
+    private BigDecimal retencion;
     @Basic(optional = false)
     @Column(name = "fecha_recibo", nullable = false)
     @Temporal(TemporalType.DATE)
@@ -59,10 +63,11 @@ public class Recibo implements Serializable {
     public Recibo() {
     }
 
-    public Recibo(Integer numero, Date fechaCarga, double monto, Date fechaRecibo, boolean estado, Caja caja, Sucursal sucursal, Usuario usuario, List<DetalleRecibo> detalleReciboList) {
+    public Recibo(Integer numero, Date fechaCarga, double monto, BigDecimal retencion, Date fechaRecibo, boolean estado, Caja caja, Sucursal sucursal, Usuario usuario, List<DetalleRecibo> detalleReciboList) {
         this.numero = numero;
         this.fechaCarga = fechaCarga;
         this.monto = monto;
+        this.retencion = retencion;
         this.fechaRecibo = fechaRecibo;
         this.estado = estado;
         this.caja = caja;
@@ -89,6 +94,14 @@ public class Recibo implements Serializable {
 
     public void setMonto(double monto) {
         this.monto = monto;
+    }
+
+    public BigDecimal getRetencion() {
+        return retencion;
+    }
+
+    public void setRetencion(BigDecimal retencion) {
+        this.retencion = retencion;
     }
 
     public Date getFechaRecibo() {
@@ -169,6 +182,6 @@ public class Recibo implements Serializable {
 
     @Override
     public String toString() {
-        return "Recibo{" + "id=" + id + ", numero=" + numero + ", fechaCarga=" + fechaCarga + ", monto=" + monto + ", fechaRecibo=" + fechaRecibo + ", estado=" + estado + ", caja=" + caja + ", sucursal=" + sucursal + ", usuario=" + usuario + ", detalleReciboList=" + detalleReciboList.size() + '}';
+        return "Recibo{" + "id=" + id + ", numero=" + numero + ", fechaCarga=" + fechaCarga + ", monto=" + monto + ", retencion=" + retencion + ", fechaRecibo=" + fechaRecibo + ", estado=" + estado + ", caja=" + caja + ", sucursal=" + sucursal + ", usuario=" + usuario + ", detalleReciboList=" + detalleReciboList.size() + '}';
     }
 }
