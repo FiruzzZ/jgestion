@@ -18,6 +18,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
+import jgestion.Main;
 import jpa.controller.*;
 import utilities.general.UTIL;
 
@@ -442,10 +443,7 @@ public class SucursalController implements ActionListener, MouseListener {
                     String msg = entity.getId() == null ? "Registrado" : "Modificado";
                     if (entity.getId() == null) {
                         jpaController.create(entity);
-                        abm.showMessage("Las Sucursales nuevas por defecto no están asignadas a ningún usuario."
-                                + "\nPara asignar permisos a esta, debe ir a:"
-                                + "\nMenú -> Usuarios -> ABM Usuarios -> Seleccionar el usuario > Modificar y selecione las Sucursales"
-                                + "\nen de la tabla inferior.", CLASS_NAME, 2);
+                        abm.showMessage(Main.resourceBundle.getString("info.newsucursal"), CLASS_NAME, 2);
                     } else {
                         jpaController.merge(entity);
                     }

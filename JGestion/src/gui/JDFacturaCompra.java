@@ -5,6 +5,7 @@
  */
 package gui;
 
+import java.awt.Color;
 import java.awt.event.*;
 import utilities.general.UTIL;
 import javax.swing.JButton;
@@ -115,6 +116,9 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         cbProductos = new javax.swing.JComboBox();
         labelCodigoNoRegistrado = new javax.swing.JLabel();
         labelCodigoNoRegistrado.setVisible(false);
+        labelDescuento = new javax.swing.JLabel();
+        cbDesc = new javax.swing.JComboBox();
+        tfProductoDesc = new javax.swing.JTextField();
         btnAnular = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -289,7 +293,7 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         jTable1.setRequestFocusEnabled(false);
         jScrollPane1.setViewportView(jTable1);
 
-        panelResumen.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Resumen", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 11), new java.awt.Color(0, 0, 0))); // NOI18N
+        panelResumen.setBorder(javax.swing.BorderFactory.createTitledBorder("Resumen"));
 
         jLabel12.setText("Neto");
 
@@ -615,6 +619,29 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         labelCodigoNoRegistrado.setForeground(new java.awt.Color(255, 51, 0));
         labelCodigoNoRegistrado.setText("¡CÓDIGO NO REGISTRADO!");
 
+        labelDescuento.setText("Desc");
+
+        cbDesc.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "%", "$" }));
+        cbDesc.setToolTipText("<html>Margen de descuento aplicado al producto\n<br>% - Porcentual\n<br>$  - Monto fijo \n</html>");
+
+        tfProductoDesc.setColumns(4);
+        tfProductoDesc.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        tfProductoDesc.setText("0");
+        tfProductoDesc.setToolTipText("Descuento sobre Precio Unitario");
+        tfProductoDesc.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                tfProductoDescFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                tfProductoDescFocusLost(evt);
+            }
+        });
+        tfProductoDesc.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                tfProductoDescKeyTyped(evt);
+            }
+        });
+
         javax.swing.GroupLayout panelProductoLayout = new javax.swing.GroupLayout(panelProducto);
         panelProducto.setLayout(panelProductoLayout);
         panelProductoLayout.setHorizontalGroup(
@@ -638,23 +665,33 @@ public class JDFacturaCompra extends javax.swing.JDialog {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(tfProductoIVA, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cbCambioPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(labelDescuento)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cbDesc, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(tfProductoDesc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnADD, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnDEL, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(cbProductos, javax.swing.GroupLayout.PREFERRED_SIZE, 341, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(panelProductoLayout.createSequentialGroup()
-                        .addComponent(tfProductoCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(bBuscarProducto, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(labelPrecioActual)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(tfProductoPrecioActual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(labelCodigoNoRegistrado)))
-                .addContainerGap(11, Short.MAX_VALUE))
+                        .addGroup(panelProductoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(panelProductoLayout.createSequentialGroup()
+                                .addComponent(cbProductos, javax.swing.GroupLayout.PREFERRED_SIZE, 341, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(cbCambioPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(panelProductoLayout.createSequentialGroup()
+                                .addComponent(tfProductoCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(bBuscarProducto, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(labelPrecioActual)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(tfProductoPrecioActual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(labelCodigoNoRegistrado)))
+                        .addGap(0, 1, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         panelProductoLayout.setVerticalGroup(
             panelProductoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -671,7 +708,8 @@ public class JDFacturaCompra extends javax.swing.JDialog {
                     .addGroup(panelProductoLayout.createSequentialGroup()
                         .addGroup(panelProductoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel8)
-                            .addComponent(cbProductos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(cbProductos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(cbCambioPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(panelProductoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel9)
@@ -680,7 +718,10 @@ public class JDFacturaCompra extends javax.swing.JDialog {
                             .addComponent(tfPrecioUnitario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(labelIVA)
                             .addComponent(tfProductoIVA, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(cbCambioPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(panelProductoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(labelDescuento)
+                                .addComponent(tfProductoDesc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(cbDesc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addComponent(btnADD, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnDEL, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
@@ -818,6 +859,25 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         tf.setSelectionStart(0);
     }//GEN-LAST:event_xxx
 
+    private void tfProductoDescFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfProductoDescFocusGained
+        tfProductoDesc.setSelectionStart(0);
+    }//GEN-LAST:event_tfProductoDescFocusGained
+
+    private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfProductoDescFocusLost
+        if (cbDesc.getSelectedIndex() == 1) {
+            try {
+                tfProductoDesc.setText(UTIL.PRECIO_CON_PUNTO.format(Double.valueOf(tfProductoDesc.getText())));
+                tfProductoDesc.setForeground(Color.BLACK);
+            } catch (Exception exception) {
+                tfProductoDesc.setForeground(Color.RED);
+            }
+        }
+    }//GEN-LAST:event_tfProductoDescFocusLost
+
+    private void tfProductoDescKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfProductoDescKeyTyped
+        SwingUtil.checkInputDigit(evt, true);
+    }//GEN-LAST:event_tfProductoDescKeyTyped
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton bBuscarProducto;
     private javax.swing.JButton btnADD;
@@ -827,6 +887,7 @@ public class JDFacturaCompra extends javax.swing.JDialog {
     private javax.swing.JButton btnDEL;
     private javax.swing.JComboBox cbCaja;
     private javax.swing.JComboBox cbCambioPrecio;
+    private javax.swing.JComboBox cbDesc;
     private javax.swing.JComboBox cbFacturaTipo;
     private javax.swing.JComboBox cbFormaPago;
     private javax.swing.JComboBox cbProductos;
@@ -854,6 +915,7 @@ public class JDFacturaCompra extends javax.swing.JDialog {
     private javax.swing.JTable jTable1;
     private javax.swing.JLabel labelCaja;
     private javax.swing.JLabel labelCodigoNoRegistrado;
+    private javax.swing.JLabel labelDescuento;
     private javax.swing.JLabel labelDias;
     private javax.swing.JLabel labelFacturaNumero;
     private javax.swing.JLabel labelFacturaTipo;
@@ -880,6 +942,7 @@ public class JDFacturaCompra extends javax.swing.JDialog {
     private javax.swing.JTextField tfPercIIBB;
     private javax.swing.JTextField tfPrecioUnitario;
     private javax.swing.JTextField tfProductoCodigo;
+    private javax.swing.JTextField tfProductoDesc;
     private javax.swing.JTextField tfProductoIVA;
     private javax.swing.JTextField tfProductoPrecioActual;
     private javax.swing.JTextField tfTotal;
@@ -1052,6 +1115,13 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         return tfDescuento;
     }
 
+    public JComboBox getCbDesc() {
+        return cbDesc;
+    }
+
+    public JTextField getTfProductoDesc() {
+        return tfProductoDesc;
+    }
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="SETTERS">
     public void setDcFechaFactura(java.util.Date fechaFactura) {
