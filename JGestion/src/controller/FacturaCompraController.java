@@ -144,10 +144,10 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.COMPRA);
         UsuarioHelper uh = new UsuarioHelper();
         if (uh.getSucursales().isEmpty()) {
-            throw new IllegalArgumentException(Main.resourceBundle.getString("unassigned.sucursal"));
+            throw new MessageException(Main.resourceBundle.getString("unassigned.sucursal"));
         }
         if (uh.getCajas(true).isEmpty()) {
-            throw new IllegalArgumentException(Main.resourceBundle.getString("unassigned.caja"));
+            throw new MessageException(Main.resourceBundle.getString("unassigned.caja"));
         }
         jdFactura = new JDFacturaCompra(owner, modal, 1);
         UTIL.getDefaultTableModel(jdFactura.getjTable1(), colsName, colsWidth);
@@ -197,6 +197,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
             public void keyReleased(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     try {
+                        @SuppressWarnings("unchecked")
                         ComboBoxWrapper<Producto> wrap = (ComboBoxWrapper<Producto>) jdFactura.getCbProductos().getSelectedItem();
                         buscarProducto(wrap.getEntity().getCodigo());
                     } catch (ClassCastException ex) {
@@ -232,7 +233,8 @@ public class FacturaCompraController implements ActionListener, KeyListener {
             throw new MessageException("Seleccione un producto");
         }
         int cantidad;
-        double precioUnitario;
+        BigDecimal precioUnitario;
+        BigDecimal descuento = BigDecimal.ZERO;
         try {
             cantidad = Integer.valueOf(jdFactura.getTfCantidad().getText());
             if (cantidad < 1) {
@@ -242,15 +244,42 @@ public class FacturaCompraController implements ActionListener, KeyListener {
             throw new MessageException("Cantidad no válida (solo números enteros)");
         }
         try {
-            precioUnitario = Double.valueOf(jdFactura.getTfPrecioUnitario());
-            if (precioUnitario < 0) {
+            precioUnitario = new BigDecimal(jdFactura.getTfPrecioUnitario());
+            if (precioUnitario.signum() == -1) {
                 throw new MessageException("El precio unitario no puede ser menor a 0");
             }
 
         } catch (NumberFormatException ex) {
             throw new MessageException("Precio Unitario no válido");
         }
+        //<editor-fold defaultstate="collapsed" desc="descuento">
+        int tipoDescuento = jdFactura.getCbDesc().getSelectedIndex();
+        try {
+            if (!jdFactura.getTfProductoDesc().getText().trim().isEmpty()) {
+                descuento = new BigDecimal(jdFactura.getTfProductoDesc().getText().trim());
+                if (descuento.signum() == -1) {
+                    throw new MessageException("Descuento no puede ser menor a 0");
+                }
+                //cuando el descuento es por porcentaje (%)
+                if ((tipoDescuento == 0) && (descuento.doubleValue() > 100)) {
+                    throw new MessageException("El descuento no puede ser superior al 100%, ¿no te parece?");
+                } else if ((tipoDescuento == 1) && (descuento.compareTo(precioUnitario) == -1)) {
+                    // cuando es por un monto fijo ($)
+                    throw new MessageException("El descuento (" + descuento + ") no puede ser superior al precio unitario (" + precioUnitario + ")");
+                }
+            }
+        } catch (NumberFormatException ex) {
+            throw new MessageException("Descuento no válido (solo números y utilice el PUNTO como separador decimal)");
+        }
+        if (descuento.signum() == 1) {
+            if (tipoDescuento == 0) {
+                precioUnitario = precioUnitario.subtract(precioUnitario.multiply((descuento.divide(new BigDecimal("100")))));
+            } else {
+                precioUnitario = precioUnitario.subtract(descuento);
+            }
 
+        }
+        //</editor-fold>
         // agregando a la tabla el producto
         jdFactura.getDtm().addRow(new Object[]{
                     producto_selected.getIva().getIva(),
@@ -258,7 +287,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
                     producto_selected.getNombre() + " " + producto_selected.getMarca().getNombre(),
                     cantidad,
                     UTIL.PRECIO_CON_PUNTO.format(precioUnitario),
-                    UTIL.PRECIO_CON_PUNTO.format((cantidad * precioUnitario)),
+                    UTIL.PRECIO_CON_PUNTO.format((precioUnitario.multiply(BigDecimal.valueOf(cantidad)))),
                     //se le suma uno para q coincidan con los valores en la DB de cambio precio
                     jdFactura.getCbCambioPrecio().getSelectedIndex() + 1
                 });
@@ -311,19 +340,19 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         DefaultTableModel dtm = jdFactura.getDtm();
         for (int i = (dtm.getRowCount() - 1); i > -1; i--) {
             gravado = gravado.add(new BigDecimal(dtm.getValueAt(i, 5).toString()));
-
             if (dtm.getValueAt(i, 0).toString().equalsIgnoreCase("10.5")) {
                 iva10 = iva10.add(BigDecimal.valueOf(UTIL.getPorcentaje(Double.valueOf(dtm.getValueAt(i, 5).toString()), 10.5)));
             } else if (dtm.getValueAt(i, 0).toString().equalsIgnoreCase("21.0")) {
                 iva21 = iva21.add(BigDecimal.valueOf(UTIL.getPorcentaje(Double.valueOf(dtm.getValueAt(i, 5).toString()), 21)));
             }
         }
+        gravado = gravado.subtract(descuento);
         jdFactura.setTfGravado(UTIL.PRECIO_CON_PUNTO.format(gravado));
         jdFactura.setTfTotalIVA105(UTIL.PRECIO_CON_PUNTO.format(iva10));
         jdFactura.setTfTotalIVA21(UTIL.PRECIO_CON_PUNTO.format(iva21));
         jdFactura.getTfTotalPercepcion().setText(UTIL.PRECIO_CON_PUNTO.format(percepcion));
         jdFactura.getTfTotalOtrosImpuestos().setText(UTIL.PRECIO_CON_PUNTO.format(recuperables.add(noRecuperables)));
-        jdFactura.setTfTotal(UTIL.PRECIO_CON_PUNTO.format(gravado.add(iva10).add(iva21).add(percepcion).add(recuperables).add(noRecuperables).subtract(descuento)));
+        jdFactura.setTfTotal(UTIL.PRECIO_CON_PUNTO.format(gravado.add(iva10).add(iva21).add(percepcion).add(recuperables).add(noRecuperables)));
     }
 
     @Override
@@ -441,6 +470,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
             }
             case 3: { // CHEQUE
                 //UNIMPLEMENTED !!!....yet
+                throw new IllegalArgumentException("forma de pago CHEQUE no está implementada");
             }
             default: {
                 throw new IllegalArgumentException("FORMA PAGO NO VáliDA!");
@@ -659,6 +689,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
     private void cargarDtmBuscador(String query) {
         buscador.dtmRemoveAll();
         DefaultTableModel dtm = buscador.getDtm();
+        @SuppressWarnings("unchecked")
         List<FacturaCompra> l = DAO.getEntityManager().createNativeQuery(query, FacturaCompra.class).getResultList();
         for (FacturaCompra facturaCompra : l) {
             dtm.addRow(new Object[]{
@@ -676,6 +707,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void armarQuery() throws MessageException {
         StringBuilder query = new StringBuilder("SELECT o.* FROM factura_compra o"
                 + " WHERE o.anulada = " + buscador.isCheckAnuladaSelected());
