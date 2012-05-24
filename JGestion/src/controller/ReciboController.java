@@ -204,7 +204,9 @@ public class ReciboController implements ActionListener, FocusListener {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                setNextNumeroReRe();
+                if (jdReRe.getCbSucursal().isEnabled()) {
+                    setNextNumeroReRe();
+                }
             }
         });
         jdReRe.getbCancelar().addActionListener(new ActionListener() {
@@ -732,13 +734,11 @@ public class ReciboController implements ActionListener, FocusListener {
         bloquearVentana(true);
         jdReRe.setTfCuarto(UTIL.AGREGAR_CEROS(recibo.getSucursal().getPuntoVenta(), 4));
         jdReRe.setTfOcteto(UTIL.AGREGAR_CEROS(recibo.getNumero(), 8));
-
         //por no redundar en DATOOOOOOOOOSS...!!!
         Cliente cliente = new FacturaVentaController().findFacturaVenta(recibo.getDetalleReciboList().get(0).getFacturaVenta().getId()).getCliente();
 
         jdReRe.setDcFechaReRe(recibo.getFechaRecibo());
         jdReRe.setDcFechaCarga(recibo.getFechaCarga());
-
         //Uso los toString() para que compare String's..
         //por si el combo está vacio <VACIO> o no eligió ninguno
         //van a tirar error de ClassCastException

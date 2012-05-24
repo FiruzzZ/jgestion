@@ -11,8 +11,7 @@ import javax.persistence.*;
  * @author Administrador
  */
 @Entity
-@Table(name = "factura_compra", uniqueConstraints = { //   @UniqueConstraint(columnNames = {"numero", "proveedor"})
-})
+@Table(name = "factura_compra")
 @NamedQueries({
     @NamedQuery(name = "FacturaCompra.findAll", query = "SELECT f FROM FacturaCompra f"),
     @NamedQuery(name = "FacturaCompra.findByNumeroProveedor", query = "SELECT f FROM FacturaCompra f WHERE f.numero = :numero AND f.proveedor.id = :proveedor"),
@@ -326,7 +325,6 @@ public class FacturaCompra implements Serializable {
         this.descuento = descuento;
     }
 
-    
     @Override
     public int hashCode() {
         int hash = 0;
@@ -354,6 +352,10 @@ public class FacturaCompra implements Serializable {
                 + ", actualizaStock=" + actualizaStock + ", facturaCuarto=" + facturaCuarto + ", facturaOcteto=" + facturaOcteto
                 + ", percIva=" + percIva + ", percDgr=" + percDgr + ", iva10=" + iva10 + ", iva21=" + iva21 + ", imp. Recuperable=" + impuestosRecuperables
                 + ", imp. No Recuperable=" + impuestosNoRecuperables
-                + ", movimientoInterno=" + movimientoInterno + ", diasCtaCte=" + diasCtaCte + ", proveedor=" + proveedor.getId() + ", sucursal=" + sucursal.getId() + ", usuario=" + usuario.getId() + ", caja=" + caja.getId() + ", anulada=" + anulada + '}';
+                + ", movimientoInterno=" + movimientoInterno + ", diasCtaCte=" + diasCtaCte
+                + ", proveedor=" + proveedor.getId() + ", sucursal=" + sucursal.getId()
+                + ", usuario=" + usuario.getId() + ", caja=" + caja.getId() + ", anulada=" + anulada
+                + ", descuento=" + descuento
+                + '}';
     }
 }

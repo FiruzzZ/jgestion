@@ -1,9 +1,3 @@
-
-/*
- * JDBuscador.java
- *
- * Created on 05/05/2010, 17:54:59
- */
 package gui;
 
 import java.awt.BorderLayout;
