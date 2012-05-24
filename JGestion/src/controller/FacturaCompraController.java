@@ -44,7 +44,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
     public static final List<String> FORMAS_PAGO;
     public static final String CLASS_NAME = FacturaCompra.class.getSimpleName();
     private final String[] colsName = {"IVA", "Cód. Producto", "Producto", "Cantidad", "Precio U.", "Sub total", "Mod", "Producto.instance"};
-    private final int[] colsWidth = {10, 70, 180, 10, 30, 30, 10, 1};
+    private final int[] colsWidth = {10, 70, 180, 10, 30, 30, 1, 1};
     private JDFacturaCompra jdFactura;
     private Producto producto_selected;
     private FacturaCompra EL_OBJECT;
@@ -125,7 +125,9 @@ public class FacturaCompraController implements ActionListener, KeyListener {
     public FacturaCompra findFacturaCompra(Integer id) {
         EntityManager em = getEntityManager();
         try {
-            return em.find(FacturaCompra.class, id);
+            FacturaCompra o = em.find(FacturaCompra.class, id);
+            em.refresh(o);
+            return o;
         } finally {
             em.close();
         }
@@ -151,7 +153,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         }
         jdFactura = new JDFacturaCompra(owner, modal, 1);
         UTIL.getDefaultTableModel(jdFactura.getjTable1(), colsName, colsWidth);
-        UTIL.hideColumnsTable(jdFactura.getjTable1(), new int[]{0, 7});
+        UTIL.hideColumnsTable(jdFactura.getjTable1(), new int[]{0, 6, 7});
         //set next nº movimiento
         jdFactura.setTfNumMovimiento(String.valueOf(getFacturaCompraCount() + 1));
         UTIL.loadComboBox(jdFactura.getCbProveedor(), new ProveedorController().findEntities(), false);
@@ -337,13 +339,17 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         BigDecimal recuperables = new BigDecimal(jdFactura.getTfOtrosImpuestosRecuperables().getText().trim());
         BigDecimal noRecuperables = new BigDecimal(jdFactura.getTfOtrosImpuestosNoRecuperables().getText().trim());
         BigDecimal descuento = new BigDecimal(jdFactura.getTfDescuento().getText().trim());
+        BigDecimal otrosIvas = BigDecimal.ZERO;
         DefaultTableModel dtm = jdFactura.getDtm();
         for (int i = (dtm.getRowCount() - 1); i > -1; i--) {
             gravado = gravado.add(new BigDecimal(dtm.getValueAt(i, 5).toString()));
-            if (dtm.getValueAt(i, 0).toString().equalsIgnoreCase("10.5")) {
+            String iva = dtm.getValueAt(i, 0).toString();
+            if (iva.equalsIgnoreCase("10.5")) {
                 iva10 = iva10.add(BigDecimal.valueOf(UTIL.getPorcentaje(Double.valueOf(dtm.getValueAt(i, 5).toString()), 10.5)));
-            } else if (dtm.getValueAt(i, 0).toString().equalsIgnoreCase("21.0")) {
+            } else if (iva.equalsIgnoreCase("21.0")) {
                 iva21 = iva21.add(BigDecimal.valueOf(UTIL.getPorcentaje(Double.valueOf(dtm.getValueAt(i, 5).toString()), 21)));
+            } else {
+                otrosIvas = otrosIvas.add(BigDecimal.valueOf(UTIL.getPorcentaje(Double.valueOf(dtm.getValueAt(i, 5).toString()), Float.valueOf(iva))));
             }
         }
         gravado = gravado.subtract(descuento);
@@ -351,8 +357,9 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         jdFactura.setTfTotalIVA105(UTIL.PRECIO_CON_PUNTO.format(iva10));
         jdFactura.setTfTotalIVA21(UTIL.PRECIO_CON_PUNTO.format(iva21));
         jdFactura.getTfTotalPercepcion().setText(UTIL.PRECIO_CON_PUNTO.format(percepcion));
-        jdFactura.getTfTotalOtrosImpuestos().setText(UTIL.PRECIO_CON_PUNTO.format(recuperables.add(noRecuperables)));
-        jdFactura.setTfTotal(UTIL.PRECIO_CON_PUNTO.format(gravado.add(iva10).add(iva21).add(percepcion).add(recuperables).add(noRecuperables)));
+        jdFactura.getTfTotalOtrosImpuestos().setText(UTIL.PRECIO_CON_PUNTO.format(recuperables.add(otrosIvas)));
+        jdFactura.getTfTotalImpuestosNoRecuperables().setText(UTIL.PRECIO_CON_PUNTO.format(noRecuperables));
+        jdFactura.setTfTotal(UTIL.PRECIO_CON_PUNTO.format(gravado.add(iva10).add(iva21).add(percepcion).add(otrosIvas).add(recuperables).add(noRecuperables)));
     }
 
     @Override
@@ -406,8 +413,10 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         newFacturaCompra.setIva21(Double.valueOf(jdFactura.getTfTotalIVA21()));
         newFacturaCompra.setPercDgr(0.0); // <--- no corresponde en la COMPRA ..BURRO!!
         newFacturaCompra.setPercIva(Double.valueOf(jdFactura.getTfPercIIBB()));
-        newFacturaCompra.setImpuestosRecuperables(new BigDecimal(jdFactura.getTfOtrosImpuestosRecuperables().getText().trim()));
-        newFacturaCompra.setImpuestosNoRecuperables(new BigDecimal(jdFactura.getTfOtrosImpuestosNoRecuperables().getText().trim()));
+        BigDecimal impRecuperables = new BigDecimal(jdFactura.getTfOtrosImpuestosRecuperables().getText().trim());
+        BigDecimal otrosIvas = new BigDecimal(jdFactura.getTfTotalOtrosImpuestos().getText().trim());
+        newFacturaCompra.setImpuestosRecuperables(impRecuperables.add(otrosIvas));
+        newFacturaCompra.setImpuestosNoRecuperables(new BigDecimal(jdFactura.getTfTotalImpuestosNoRecuperables().getText().trim()));
         newFacturaCompra.setDescuento(new BigDecimal(jdFactura.getTfDescuento().getText().trim()));
         newFacturaCompra.setRemito(0L);
         newFacturaCompra.setTipo(jdFactura.getCbFacturaTipo().getSelectedItem().toString().charAt(0));
@@ -794,7 +803,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         jdFactura.modoVista(false);
         jdFactura.setLocationRelativeTo(buscador);
         UTIL.getDefaultTableModel(jdFactura.getjTable1(), colsName, colsWidth);
-        UTIL.hideColumnsTable(jdFactura.getjTable1(), new int[]{0, 7});
+        UTIL.hideColumnsTable(jdFactura.getjTable1(), new int[]{0, 6, 7});
         if (paraAnular) {
             jdFactura.getBtnAnular().setEnabled(paraAnular);
             jdFactura.getBtnAnular().addActionListener(new ActionListener() {
