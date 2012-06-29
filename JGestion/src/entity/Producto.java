@@ -1,7 +1,6 @@
 package entity;
 
 import java.io.Serializable;
-import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.*;
@@ -18,11 +17,14 @@ import org.eclipse.persistence.config.QueryHints;
 })
 @NamedQueries({
     @NamedQuery(name = "Producto.findAll", query = "SELECT p FROM Producto p ORDER BY p.nombre",
-    hints = @QueryHint(name = QueryHints.REFRESH, value = "true")),
+    hints =
+    @QueryHint(name = QueryHints.REFRESH, value = "true")),
     @NamedQuery(name = "Producto.findById", query = "SELECT p FROM Producto p WHERE p.id = :id",
-    hints = @QueryHint(name = QueryHints.REFRESH, value = "true")),
+    hints =
+    @QueryHint(name = QueryHints.REFRESH, value = "true")),
     @NamedQuery(name = "Producto.findByCodigo", query = "SELECT p FROM Producto p WHERE p.codigo = :codigo",
-    hints = @QueryHint(name = QueryHints.REFRESH, value = "true")),
+    hints =
+    @QueryHint(name = QueryHints.REFRESH, value = "true")),
     @NamedQuery(name = "Producto.findByNombre", query = "SELECT p FROM Producto p WHERE p.nombre = :nombre")
 })
 @SqlResultSetMappings({
@@ -72,8 +74,8 @@ public class Producto implements Serializable {
     private String ubicacion;
     @Column(name = "costo_compra", precision = 2, scale = 2)
     /**
-     * Precio del costo, cuando se crea el producto es setteado a 0.
-     * Después es modificado por las Factuas de compra.
+     * Precio del costo, cuando se crea el producto es setteado a 0. Después es
+     * modificado por las Facturas de compra.
      */
     private Double costoCompra;
     @Column(name = "descripcion", length = 2000)
@@ -305,7 +307,7 @@ public class Producto implements Serializable {
     public void setIdunidadmedida(Unidadmedida idunidadmedida) {
         this.idunidadmedida = idunidadmedida;
     }
- 
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -332,12 +334,11 @@ public class Producto implements Serializable {
     }
 
     /**
-     * Retorna el mínimo valor (monetario) al cual se podrá vender este.
-     * <ol>
-     * Por prioridad:
-     *  <li> {@link Producto#precioVenta} si está setteado.</li>
-     *  <li> {@link Producto#costoCompra} cuando {@link Producto#precioVenta} <code> == null</code>.</li>
-     * </ol>
+     * Retorna el mínimo valor (monetario) al cual se podrá vender este. <ol>
+     * Por prioridad: <li> {@link Producto#precioVenta} si está setteado.</li>
+     * <li> {@link Producto#costoCompra} cuando {@link Producto#precioVenta}
+     * <code> == null</code>.</li> </ol>
+     *
      * @return precio mínimo.
      */
     public Double getMinimoPrecioDeVenta() {
@@ -345,10 +346,12 @@ public class Producto implements Serializable {
     }
 
     /**
-     * Calcula el margen de ganancia/descuento de ganancia/perdida sobre el monto
-     * - monto cantidad monetaria sobre la cual se harán los cálculos
-     * - tipoDeMargen Indica como se aplicará el margen al monto. 1 = % (porcentaje), 2 = $ (monto fijo), if (tipo > 2 || 1 > tipo) RETURN null!
+     * Calcula el margen de ganancia/descuento de ganancia/perdida sobre el
+     * monto - monto cantidad monetaria sobre la cual se harán los cálculos -
+     * tipoDeMargen Indica como se aplicará el margen al monto. 1 = %
+     * (porcentaje), 2 = $ (monto fijo), if (tipo > 2 || 1 > tipo) RETURN null!
      * - margen monto fijo o porcentual
+     *
      * @return adiviná!
      */
     public Double getMargenDeGananciaIndividual() {
@@ -356,7 +359,7 @@ public class Producto implements Serializable {
             return 0.0;
         }
 
-        double total = 0.0;
+        Double total;
         switch (this.tipomargen) {
             case 1: { // margen en %
                 total = ((getMinimoPrecioDeVenta() * margen) / 100);
@@ -367,7 +370,7 @@ public class Producto implements Serializable {
                 break;
             }
             default:
-                return null;
+                total = null;
         }
         return total;
     }

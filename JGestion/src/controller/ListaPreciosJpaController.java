@@ -368,7 +368,7 @@ public class ListaPreciosJpaController implements ActionListener, MouseListener,
          for (int i = dtmRubrosAfectados.getRowCount() - 1; i >= 0; i--) {
             if (dtmRubrosAfectados.getValueAt(i, 1).toString().equals(rubro.getNombre())) {
                cargarRubroATabla = false;
-               i = -1;
+               break;
             }
          }
          if (cargarRubroATabla) {

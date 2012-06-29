@@ -25,17 +25,18 @@ import utilities.gui.SwingUtil;
  */
 public class JDFacturaVenta extends javax.swing.JDialog {
 
-    private final int modoVista;
+    private final int modoUso;
     private DecimalFormatSymbols decimalFormatSymbols;
     private DecimalFormat decimalFormat;
     private boolean viewMode;
+    private boolean editMode;
 
     /**
      * Creates new form JDVenta
      */
     public JDFacturaVenta(JFrame parent, boolean modal, int factVenta1_Presup2_Remito3) {
         super(parent, modal);
-        modoVista = factVenta1_Presup2_Remito3;
+        modoUso = factVenta1_Presup2_Remito3;
         initComponents();
         labelObservacion.setVisible(false);
         tfObservacion.setVisible(false);
@@ -166,7 +167,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
         btnAnular = new javax.swing.JButton();
         jCheckBox1 = new javax.swing.JCheckBox();
         tfMonto = new javax.swing.JTextField();
-        jLabel3 = new javax.swing.JLabel();
+        labelCambio = new javax.swing.JLabel();
         checkFacturacionElectronica = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -763,7 +764,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
             }
         });
 
-        jLabel3.setText("Cambio");
+        labelCambio.setText("Cambio");
 
         checkFacturacionElectronica.setText("Facturación Electrónica");
         checkFacturacionElectronica.setToolTipText("Realiza la facturación electrónica, obteniendo un CAE como cofirmación");
@@ -781,7 +782,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 706, Short.MAX_VALUE)
                     .addComponent(jPanel6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel3)
+                        .addComponent(labelCambio)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(tfMonto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -813,7 +814,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
                 .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
+                    .addComponent(labelCambio)
                     .addComponent(tfMonto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(tfCambio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -841,18 +842,20 @@ public class JDFacturaVenta extends javax.swing.JDialog {
 
     private void cbFormaPagoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbFormaPagoActionPerformed
         //habilitando el textfield para poner la cantidad de días de cta cte
-        Valores.FormaPago formaPago = (Valores.FormaPago) cbFormaPago.getSelectedItem();
-        boolean habilitarDias = formaPago.equals(Valores.FormaPago.CTA_CTE);
-        tfDias.setEnabled(habilitarDias);
-        tfDias.setRequestFocusEnabled(tfDias.isEnabled());
-        tfDias.setText("");
+        if (cbFormaPago.getItemCount() > 0) {
+            Valores.FormaPago formaPago = (Valores.FormaPago) cbFormaPago.getSelectedItem();
+            boolean habilitarDias = formaPago.equals(Valores.FormaPago.CTA_CTE);
+            tfDias.setEnabled(habilitarDias);
+            tfDias.setRequestFocusEnabled(tfDias.isEnabled());
+            tfDias.setText("");
 
-        boolean habilitarCaja = (formaPago.equals(Valores.FormaPago.CONTADO)
-                || formaPago.equals(Valores.FormaPago.CONTADO_CHEQUE));
+//        boolean habilitarCaja = (formaPago.equals(Valores.FormaPago.CONTADO)
+//                || formaPago.equals(Valores.FormaPago.CONTADO_CHEQUE));
 
-        //deshabilita la selección de caja
-        //ya que cuando es CtaCte o Cheque, no hay movimiento de Caja
-        cbCaja.setEnabled(habilitarCaja);
+            //deshabilita la selección de caja
+            //ya que cuando es CtaCte o Cheque, no hay movimiento de Caja
+            cbCaja.setEnabled(!habilitarDias);
+        }
 }//GEN-LAST:event_cbFormaPagoActionPerformed
 
     private void cbFormaPagoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_cbFormaPagoFocusLost
@@ -932,9 +935,8 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
     }//GEN-LAST:event_tfFacturaOctetoFocusLost
 
     private void tfFacturaOctetoFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfFacturaOctetoFocusGained
-        ((JTextComponent)tfFacturaOcteto).selectAll();
+        ((JTextComponent) tfFacturaOcteto).selectAll();
     }//GEN-LAST:event_tfFacturaOctetoFocusGained
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton bBuscarProducto;
     private javax.swing.JButton btnADD;
@@ -967,7 +969,6 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
     private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel27;
     private javax.swing.JLabel jLabel28;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
@@ -976,6 +977,7 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
     private javax.swing.JTable jTable1;
     private javax.swing.JLabel labeFecha;
     private javax.swing.JLabel labelCaja;
+    private javax.swing.JLabel labelCambio;
     private javax.swing.JLabel labelCodigoNoRegistrado;
     private javax.swing.JLabel labelDescuento;
     private javax.swing.JLabel labelDias;
@@ -1025,7 +1027,7 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
         }
     }
 
-    public void setListener(Object o) {
+    public void addActionAndKeyListener(Object o) {
         btnAceptar.addActionListener((ActionListener) o);
         btnCancelar.addActionListener((ActionListener) o);
         btnFacturar.addActionListener((ActionListener) o);
@@ -1336,10 +1338,11 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
      * @return
      */
     public int getModoUso() {
-        return modoVista;
+        return modoUso;
     }
 
     public void hidePanelCambio() {
+        labelCambio.setVisible(false);
         tfCambio.setVisible(false);
         tfMonto.setVisible(false);
     }
@@ -1450,6 +1453,15 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
         return viewMode;
     }
 
+    /**
+     * Si es modo edición, cambian algunos check constraints
+     *
+     * @return
+     */
+    public boolean isEditMode() {
+        return editMode;
+    }
+
     public void setVisibleListaPrecio(boolean b) {
         cbListaPrecio.setVisible(b);
         labelListaPrecios.setVisible(b);
@@ -1462,7 +1474,7 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
      * @param b
      */
     private void setVisibleChange(boolean b) {
-        jLabel3.setVisible(b);
+        labelCambio.setVisible(b);
         tfCambio.setVisible(b);
         tfMonto.setVisible(b);
     }
@@ -1476,5 +1488,30 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
 
     public void setEnableDcFechaFactura(boolean enable) {
         dcFechaFactura.setEnabled(enable);
+    }
+
+    public void setModoEdicion() {
+        viewMode = false;
+        editMode = true;
+        cbListaPrecio.setEnabled(false);
+//        dcFechaFactura.setEnabled(false);
+//        cbFacturaTipo.setEnabled(false);
+//        cbCaja.setEnabled(false);
+//        cbFormaPago.setEnabled(false);
+//        tfDias.setEditable(false);
+//        tfObservacion.setEnabled(false);
+        //////////////////
+        tfProductoCodigo.setEnabled(false);
+        bBuscarProducto.setEnabled(false);
+        cbProductos.setEnabled(false);
+        tfCantidad.setEnabled(false);
+        tfPrecioUnitario.setEnabled(false);
+        tfProductoIVA.setEnabled(false);
+        cbDesc.setEnabled(false);
+        tfProductoDesc.setEnabled(false);
+        btnADD.setEnabled(false);
+        btnDEL.setEnabled(false);
+        checkFacturacionElectronica.setEnabled(false);
+        btnAnular.setVisible(false);
     }
 }

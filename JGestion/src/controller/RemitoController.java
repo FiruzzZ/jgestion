@@ -314,8 +314,6 @@ public class RemitoController implements ActionListener, KeyListener {
                 newRemito = create(newRemito);
             } catch (PreexistingEntityException ex) {
                 Logger.getLogger(PresupuestoController.class.getName()).error(null, ex);
-            } catch (Exception ex) {
-                throw ex;
             }
             doImprimir(newRemito);
             limpiarPanel();

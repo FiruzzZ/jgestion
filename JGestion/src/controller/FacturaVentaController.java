@@ -13,9 +13,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.Query;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.JTextComponent;
@@ -39,7 +37,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
 
     public static final String CLASS_NAME = FacturaVenta.class.getSimpleName();
     /**
-     * cotiene los nombres de las columnas de la ventana de facturación
+     * contiene los nombres de las columnas de la ventana de facturación
      */
     public static final String[] COLUMN_NAMES = {"IVA", "Cód. Producto", "Producto (IVA)", "Cantidad", "Precio U.", "Precio con IVA", "Desc", "Total", "TipoDescuento", "Producto.id", "HistorialOfertas.id"};
     public static final int[] COLUMN_WIDTHS = {1, 70, 180, 10, 30, 30, 30, 30, 1, 1, 1};
@@ -808,7 +806,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
             throw new MessageException("La factura no puede tener mas de " + LIMITE_DE_ITEMS + " items.");
         }
 
-        if (remitoToFacturar != null && remitoToFacturar.getFacturaVenta() != null) {
+        if (!jdFacturaVenta.isEditMode() && remitoToFacturar != null && remitoToFacturar.getFacturaVenta() != null) {
             throw new MessageException("De alguna forma misteriosa ha seleccionado un Remito que ya fue asociado a una Factura."
                     + "\nFactura F" + JGestionUtils.getNumeracion(remitoToFacturar.getFacturaVenta()));
         }
@@ -818,8 +816,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         HistorialOfertasJpaController historialOfertasController = new HistorialOfertasJpaController();
         for (int rowIndex = 0; rowIndex < dtm.getRowCount(); rowIndex++) {
             ofertaToCheck = (HistorialOfertas) dtm.getValueAt(rowIndex, 10);
-            if (ofertaToCheck != null
-                    && !historialOfertasController.isOfertaVigente(ofertaToCheck.getId())) {
+            if (ofertaToCheck != null && !historialOfertasController.isOfertaVigente(ofertaToCheck.getId())) {
                 throw new MessageException("¡La oferta del Producto:"
                         + "\n" + ofertaToCheck.getProducto().getCodigo()
                         + "\n" + ofertaToCheck.getProducto().getNombre()
@@ -847,10 +844,10 @@ public class FacturaVentaController implements ActionListener, KeyListener {
      * Set a instance of {@link FacturaVenta} from {@link FacturaVentaJpaController#jdFacturaVenta}
      * UI.
      *
-     * @param conFactura si es factura o comprobante interno
+     * @param facturar si es factura o comprobante interno
      * @return a instance of {@link FacturaVenta} ready to persist
      */
-    private FacturaVenta getEntity(boolean conFactura) {
+    private FacturaVenta getEntity(boolean facturar) {
         DefaultTableModel dtm = UTIL.getDtm(jdFacturaVenta.getjTable1());
         //set entity.fields
         FacturaVenta newFacturaVenta = new FacturaVenta();
@@ -865,7 +862,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         newFacturaVenta.setListaPrecios(selectedListaPrecios);
         newFacturaVenta.setRemito(remitoToFacturar);
 
-        if (conFactura) {
+        if (facturar) {
             newFacturaVenta.setMovimientoInterno(0);
             newFacturaVenta.setTipo(jdFacturaVenta.getCbFacturaTipo().getSelectedItem().toString().charAt(0));
             if (unlockedNumeracion) {
@@ -880,37 +877,35 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         }
 
         //setting fields
+        newFacturaVenta.setFormaPago(((Valores.FormaPago) jdFacturaVenta.getCbFormaPago().getSelectedItem()).getId());
         newFacturaVenta.setImporte(Double.valueOf(jdFacturaVenta.getTfTotal()));
         newFacturaVenta.setGravado(Double.valueOf(jdFacturaVenta.getTfGravado()));
         newFacturaVenta.setIva10(Double.valueOf(jdFacturaVenta.getTfTotalIVA105()));
         newFacturaVenta.setIva21(Double.valueOf(jdFacturaVenta.getTfTotalIVA21()));
         newFacturaVenta.setDescuento(Double.valueOf(jdFacturaVenta.getTfTotalDesc()));
-        newFacturaVenta.setDetallesVentaList(new ArrayList<DetalleVenta>());
-        newFacturaVenta.setFormaPago((Valores.FormaPago) jdFacturaVenta.getCbFormaPago().getSelectedItem());
-
-        /// carga de detalleVenta
-        DetalleVenta detalleVenta;
-        ProductoJpaController productoController = new ProductoJpaController();
-        for (int i = 0; i < dtm.getRowCount(); i++) {
-            detalleVenta = new DetalleVenta();
-            detalleVenta.setCantidad(Integer.valueOf(dtm.getValueAt(i, 3).toString()));
-            detalleVenta.setPrecioUnitario(Double.valueOf(dtm.getValueAt(i, 4).toString()));
-            detalleVenta.setDescuento(Double.valueOf(dtm.getValueAt(i, 6).toString()));
-            detalleVenta.setTipoDesc(Integer.valueOf(dtm.getValueAt(i, 8).toString()));
-            detalleVenta.setProducto(productoController.find((Integer) dtm.getValueAt(i, 9)));
-            detalleVenta.setFactura(newFacturaVenta);
-            if (dtm.getValueAt(i, 10) != null) {
-                detalleVenta.setOferta((HistorialOfertas) dtm.getValueAt(i, 10));
-            }
-            newFacturaVenta.getDetallesVentaList().add(detalleVenta);
-        }
-
-        if (!newFacturaVenta.getFormaPagoEnum().equals(Valores.FormaPago.CTA_CTE)) {
+        if (newFacturaVenta.getFormaPagoEnum().equals(Valores.FormaPago.CTA_CTE)) {
+            newFacturaVenta.setDiasCtaCte(Short.parseShort(jdFacturaVenta.getTfDias()));
+        } else {
             newFacturaVenta.setDiasCtaCte((short) 0);
         }
-        if (newFacturaVenta.getFormaPagoEnum().equals(Valores.FormaPago.CTA_CTE)) {
-            newFacturaVenta.setFormaPago(Valores.FormaPago.CTA_CTE.getId());
-            newFacturaVenta.setDiasCtaCte(Short.parseShort(jdFacturaVenta.getTfDias()));
+        if (!jdFacturaVenta.isEditMode()) {
+            newFacturaVenta.setDetallesVentaList(new ArrayList<DetalleVenta>());
+            /// carga de detalleVenta
+            DetalleVenta detalleVenta;
+            ProductoJpaController productoController = new ProductoJpaController();
+            for (int i = 0; i < dtm.getRowCount(); i++) {
+                detalleVenta = new DetalleVenta();
+                detalleVenta.setCantidad(Integer.valueOf(dtm.getValueAt(i, 3).toString()));
+                detalleVenta.setPrecioUnitario(Double.valueOf(dtm.getValueAt(i, 4).toString()));
+                detalleVenta.setDescuento(Double.valueOf(dtm.getValueAt(i, 6).toString()));
+                detalleVenta.setTipoDesc(Integer.valueOf(dtm.getValueAt(i, 8).toString()));
+                detalleVenta.setProducto(productoController.find((Integer) dtm.getValueAt(i, 9)));
+                detalleVenta.setFactura(newFacturaVenta);
+                if (dtm.getValueAt(i, 10) != null) {
+                    detalleVenta.setOferta((HistorialOfertas) dtm.getValueAt(i, 10));
+                }
+                newFacturaVenta.getDetallesVentaList().add(detalleVenta);
+            }
         }
         return newFacturaVenta;
     }
@@ -1006,7 +1001,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                                 ChequeTerceros chequeTercerosBound = new ChequeTercerosJpaController().findChequeTerceros(EL_OBJECT);
                                 EL_OBJECT.setCheque(chequeTercerosBound);
                             }
-                            setDatosEnUI(EL_OBJECT, paraAnular);
+                            setDatosToAnular(EL_OBJECT, paraAnular);
                         } catch (MessageException ex) {
                             buscador.showMessage(ex.getMessage(), "Error de datos", 0);
                         }
@@ -1017,10 +1012,194 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         if (paraAnular) {
             buscador.getCheckAnulada().setEnabled(false);
         }
+        JButton bImprimir = buscador.getbImprimir();
+        bImprimir.setText("Editar");
+        bImprimir.setIcon(new ImageIcon(getClass().getResource("/iconos/32px_configure.png")));
+        bImprimir.setVisible(true);
+        bImprimir.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (buscador.getjTable1().getSelectedRow() > -1) {
+                    try {
+                        EL_OBJECT = jpaController.find(Integer.valueOf(buscador.getDtm().getValueAt(buscador.getjTable1().getSelectedRow(), 0).toString()));
+                        if (EL_OBJECT.getFormaPagoEnum() == Valores.FormaPago.CHEQUE) {
+                            ChequeTerceros chequeTercerosBound = new ChequeTercerosJpaController().findChequeTerceros(EL_OBJECT);
+                            EL_OBJECT.setCheque(chequeTercerosBound);
+                        }
+                        Caja caja = EL_OBJECT.getCaja();
+                        if (caja.isBaja()) {
+                            throw new MessageException("La Caja a la cual afecta esta factura fue dada de BAJA");
+                        }
+                        if (!caja.getEstado()) {
+                            throw new MessageException("La Caja a la cual afecta esta factura está en BAJA");
+
+                        }
+                        if (EL_OBJECT.getAnulada()) {
+                            throw new MessageException("No se puede editar un comprobante ANULADO");
+                        }
+                        if (EL_OBJECT.getFormaPagoEnum().equals(Valores.FormaPago.CONTADO)) {
+                            CajaMovimientos cm = new CajaMovimientosJpaController().findBy(EL_OBJECT.getId(), DetalleCajaMovimientosJpaController.FACTU_VENTA);
+                            if (cm.getFechaCierre() != null) {
+                                throw new MessageException("No se puede editar el comprobante porque la Caja ( N°" + cm.getId() + ") ya fue cerrada."
+                                        + "\nFecha de cierre:" + UTIL.DATE_FORMAT.format(cm.getFechaCierre())
+                                        + "\nFecha de sistema:" + UTIL.TIMESTAMP_FORMAT.format(cm.getSistemaFechaCierre()));
+                            }
+                        } else if (EL_OBJECT.getFormaPagoEnum().equals(Valores.FormaPago.CTA_CTE)) {
+                            CtacteCliente ccc = new CtacteClienteJpaController().findBy(EL_OBJECT);
+                            if (ccc.getEntregado() > 0) {
+                                throw new MessageException("No se puede modificar una Factura cuya forma de pago es a Cta. Cte. y ya tiene asignado pago(s)."
+                                        + "\nEstado de la Cta. Cte. para esta Factura: " + ccc.getEstadoEnum()
+                                        + "\nImporte:   $" + UTIL.PRECIO_CON_PUNTO.format(ccc.getImporte())
+                                        + "\nEntregado: $" + UTIL.PRECIO_CON_PUNTO.format(ccc.getEntregado()));
+                            }
+                        }
+                        setDatosToEdit(EL_OBJECT);
+                        armarQuery();
+                    } catch (MessageException ex) {
+                        buscador.showMessage(ex.getMessage(), "Error de datos", 0);
+                        DAO.getEntityManager().clear();
+                    }
+                } else {
+                    buscador.showMessage("Seleccione la fila que corresponde a la Factura que desea editar", null, JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        });
         viewMode = true;
         buscador.setListeners(this);
         buscador.setLocationRelativeTo(frame);
         buscador.setVisible(true);
+    }
+
+    private void btnAceptarActionWhenEditing(boolean facturar) {
+        try {
+            jdFacturaVenta.getBtnFacturar().setEnabled(false);
+            jdFacturaVenta.getBtnAceptar().setEnabled(false);
+            setAndEdit(facturar);
+            jdFacturaVenta.dispose();
+        } catch (MessageException ex) {
+            jdFacturaVenta.showMessage(ex.getMessage(), CLASS_NAME, 2);
+        } catch (Exception ex) {
+            jdFacturaVenta.showMessage(ex.getMessage(), CLASS_NAME, 0);
+            LOG.error(ex, ex);
+        } finally {
+            jdFacturaVenta.getBtnFacturar().setEnabled(true);
+            jdFacturaVenta.getBtnAceptar().setEnabled(true);
+        }
+    }
+
+    private void setDatosToEdit(FacturaVenta selectedFacturaVenta) throws MessageException {
+        try {
+            if (jdFacturaVenta == null || !jdFacturaVenta.isEditMode()) {
+                initFacturaVenta(null, true, this, 1, false, true);
+                jdFacturaVenta.setModoEdicion();
+                jdFacturaVenta.hidePanelCambio();
+                jdFacturaVenta.addActionAndKeyListener(this);
+                for (ActionListener actionListener : jdFacturaVenta.getBtnAceptar().getActionListeners()) {
+                    jdFacturaVenta.getBtnAceptar().removeActionListener(actionListener);
+                }
+                for (ActionListener actionListener : jdFacturaVenta.getBtnFacturar().getActionListeners()) {
+                    jdFacturaVenta.getBtnAceptar().removeActionListener(actionListener);
+                }
+                jdFacturaVenta.getBtnAceptar().addActionListener(new ActionListener() {
+
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        btnAceptarActionWhenEditing(false);
+                    }
+                });
+                jdFacturaVenta.getBtnFacturar().addActionListener(new ActionListener() {
+
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        btnAceptarActionWhenEditing(true);
+                    }
+                });
+            } else {
+                LOG.info("jdFacturaVenta already initialized and setted ON editing MODE");
+            }
+        } catch (MessageException ex) {
+            jdFacturaVenta.showMessage(ex.getMessage(), CLASS_NAME, 2);
+        }
+        // seteando datos de Factura
+        jdFacturaVenta.setDcFechaFactura(selectedFacturaVenta.getFechaVenta());
+        UTIL.setSelectedItem(jdFacturaVenta.getCbCliente(), selectedFacturaVenta.getCliente());
+        cargarComboTiposFacturas(selectedFacturaVenta.getCliente());
+        if (selectedFacturaVenta.getRemito() != null) {
+            jdFacturaVenta.setTfRemito(JGestionUtils.getNumeracion(selectedFacturaVenta.getRemito(), false));
+        }
+
+        //Los tipos de factura se tienen q cargar antes, sinó modifica el Nº de factura y muestra el siguiente
+        //y no el de Factura seleccionada
+        Sucursal s = selectedFacturaVenta.getSucursal();
+        UTIL.setSelectedItem(jdFacturaVenta.getCbSucursal(), new ComboBoxWrapper<Sucursal>(s, s.getId(), s.getNombre()));
+        UTIL.setSelectedItem(jdFacturaVenta.getCbListaPrecio(), selectedFacturaVenta.getListaPrecios());
+        UTIL.setSelectedItem(jdFacturaVenta.getCbCaja(), selectedFacturaVenta.getCaja());
+        UTIL.setSelectedItem(jdFacturaVenta.getCbFormaPago(), selectedFacturaVenta.getFormaPagoEnum().toString());
+        jdFacturaVenta.setTfFacturaCuarto(UTIL.AGREGAR_CEROS(selectedFacturaVenta.getSucursal().getPuntoVenta(), 4));
+        jdFacturaVenta.setTfFacturaOcteto(UTIL.AGREGAR_CEROS(selectedFacturaVenta.getNumero(), 8));
+        jdFacturaVenta.setTfNumMovimiento(String.valueOf(selectedFacturaVenta.getMovimientoInterno()));
+        if (selectedFacturaVenta.getFormaPagoEnum() == Valores.FormaPago.CHEQUE
+                || selectedFacturaVenta.getFormaPagoEnum() == Valores.FormaPago.CONTADO_CHEQUE) {
+            jdFacturaVenta.getLabelDias().setText("N°");
+            jdFacturaVenta.setTfDias(selectedFacturaVenta.getCheque().getNumero().toString());
+        } else if (selectedFacturaVenta.getFormaPagoEnum() == Valores.FormaPago.CTA_CTE) {
+            if (selectedFacturaVenta.getDiasCtaCte() != null) {
+                jdFacturaVenta.setTfDias(selectedFacturaVenta.getDiasCtaCte().toString());
+            }
+        }
+        // <editor-fold defaultstate="collapsed" desc="Carga de DetallesVenta">
+        
+        List<DetalleVenta> lista = selectedFacturaVenta.getDetallesVentaList();
+        DefaultTableModel dtm = (DefaultTableModel) jdFacturaVenta.getjTable1().getModel();
+        dtm.setRowCount(0);
+        for (DetalleVenta detallesVenta : lista) {
+            Iva iva = detallesVenta.getProducto().getIva();
+            if (iva == null) {
+                iva = new IvaJpaController().findByProducto(detallesVenta.getProducto().getId());
+//                Producto findProducto = (Producto) DAO.findEntity(Producto.class, detallesVenta.getProducto().getId());
+//                iva = findProducto.getIva();
+                System.out.println("IVAAAAAA=" + iva);
+                if (iva == null || iva.getIva() == null) {
+                    throw new MessageException("No se pudo recuperar toda la información relacionada al produto:"
+//                            + "\nCódigo:" + findProducto.getCodigo()
+//                            + "\nNombre:" + findProducto.getNombre()
+                            + "\nIva: " + iva);
+                }
+            }
+            double productoConIVA = detallesVenta.getPrecioUnitario()
+                    + UTIL.getPorcentaje(detallesVenta.getPrecioUnitario(), iva.getIva());
+            //"IVA","Cód. Producto","Producto","Cantidad","P. Unitario","P. final","Desc","Sub total"
+            LOG.debug(detallesVenta.toString());
+            try {
+                dtm.addRow(new Object[]{
+                            null,
+                            detallesVenta.getProducto().getCodigo(),
+                            detallesVenta.getProducto().getNombre() + "(" + detallesVenta.getProducto().getIva().getIva() + ")",
+                            detallesVenta.getCantidad(),
+                            detallesVenta.getPrecioUnitario(),
+                            UTIL.PRECIO_CON_PUNTO.format(productoConIVA),
+                            detallesVenta.getDescuento(),
+                            UTIL.PRECIO_CON_PUNTO.format((detallesVenta.getCantidad() * productoConIVA) - detallesVenta.getDescuento()),
+                            detallesVenta.getTipoDesc(),
+                            detallesVenta.getProducto().getId(),
+                            null
+                        });
+            } catch (NullPointerException e) {
+                throw new MessageException("Ocurrió un error recuperando el detalle y los datos del Producto:"
+                        + "\nCódigo:" + detallesVenta.getProducto().getNombre()
+                        + "\nNombre:" + detallesVenta.getProducto().getCodigo()
+                        + "\nIVA:" + detallesVenta.getProducto().getIva()
+                        + "\n\n   Intente nuevamente.");
+            }
+        }// </editor-fold>
+        //totales
+        jdFacturaVenta.setTfGravado(UTIL.PRECIO_CON_PUNTO.format(selectedFacturaVenta.getImporte() - (selectedFacturaVenta.getIva10() + selectedFacturaVenta.getIva21())));
+        jdFacturaVenta.setTfTotalIVA105(UTIL.PRECIO_CON_PUNTO.format(selectedFacturaVenta.getIva10()));
+        jdFacturaVenta.setTfTotalIVA21(UTIL.PRECIO_CON_PUNTO.format(selectedFacturaVenta.getIva21()));
+        jdFacturaVenta.setTfTotal(UTIL.PRECIO_CON_PUNTO.format(selectedFacturaVenta.getImporte()));
+        jdFacturaVenta.setLocationRelativeTo(buscador);
+        jdFacturaVenta.setVisible(true);
     }
 
     private void cargarTablaBuscador(String query) {
@@ -1116,19 +1295,19 @@ public class FacturaVentaController implements ActionListener, KeyListener {
             }
         }
         query.append(" ORDER BY o.id");
-        Logger.getLogger(FacturaVentaController.class).log(Level.TRACE, "queryBuscador=" + query);
+        LOG.trace("queryBuscador=" + query);
         cargarTablaBuscador(query.toString());
     }
 
     /**
      * Setea los datos de
      * <code>FacturaVenta</code> en la instancia de
-     * {@link JDFacturaVenta} del controlador
+     * {@link JDFacturaVenta} del controlador.
      *
      * @param selectedFacturaVenta
      * @param paraAnular
      */
-    private void setDatosEnUI(FacturaVenta selectedFacturaVenta, final boolean paraAnular) throws MessageException {
+    private void setDatosToAnular(FacturaVenta selectedFacturaVenta, final boolean paraAnular) throws MessageException {
         try {
             initFacturaVenta(null, true, this, 1, false, false);
             jdFacturaVenta.getBtnAceptar().addActionListener(new ActionListener() {
@@ -1259,7 +1438,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
             jdFacturaVenta.getBtnAnular().setVisible(paraAnular);
             jdFacturaVenta.getCheckFacturacionElectronica().setVisible(false);
         }
-        jdFacturaVenta.setListener(this);
+        jdFacturaVenta.addActionAndKeyListener(this);
         jdFacturaVenta.setLocationRelativeTo(buscador);
         jdFacturaVenta.setVisible(true);
     }
@@ -1357,6 +1536,151 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         imprimirFactura(facturaVenta);
         jdFacturaVenta.getBtnFacturar().setEnabled(false);
 //      limpiarPanel();
+    }
+
+    private void setAndEdit(boolean facturar) throws MessageException, Exception {
+        checkConstraints();
+        FacturaVenta editedFacturaVenta = getEntity(facturar);
+        editedFacturaVenta.setId(EL_OBJECT.getId());
+        editedFacturaVenta.setFechaalta(EL_OBJECT.getFechaalta());
+        List<String> modificaciones = new ArrayList<String>(9);
+        boolean cambiaCliente = false;
+        boolean cambiaSucursal = false;
+        boolean cambiaFacturacion = false;
+        boolean cambiaCaja = false;
+        boolean cambiaFormaPago = false;
+        if (0 != UTIL.compararIgnorandoTimeFields(EL_OBJECT.getFechaVenta(), editedFacturaVenta.getFechaVenta())) {
+            modificaciones.add("Se modificará la Fecha del comprobante de: " + UTIL.DATE_FORMAT.format(EL_OBJECT.getFechaVenta())
+                    + ", por: " + UTIL.DATE_FORMAT.format(editedFacturaVenta.getFechaVenta()));
+        }
+        if (!EL_OBJECT.getCliente().equals(editedFacturaVenta.getCliente())) {
+            modificaciones.add("Se modificará el Cliente: " + EL_OBJECT.getCliente().getNombre() + " (" + EL_OBJECT.getCliente().getNumDoc() + ")"
+                    + ", por: " + editedFacturaVenta.getCliente().getNombre() + " (" + editedFacturaVenta.getCliente().getNumDoc() + ")");
+            cambiaCliente = true;
+        }
+        if (!EL_OBJECT.getSucursal().equals(editedFacturaVenta.getSucursal())) {
+            modificaciones.add("Se modificará la Sucursal: " + EL_OBJECT.getSucursal().getNombre() + ", por: " + editedFacturaVenta.getSucursal().getNombre());
+            cambiaSucursal = true;
+        }
+        if (!EL_OBJECT.getCaja().equals(editedFacturaVenta.getCaja())) {
+            modificaciones.add("Se modificará la Caja: " + EL_OBJECT.getCaja().getNombre() + ", por: " + editedFacturaVenta.getCaja().getNombre());
+            cambiaCaja = true;
+        }
+        if (!EL_OBJECT.getFormaPagoEnum().equals(editedFacturaVenta.getFormaPagoEnum())) {
+            modificaciones.add("Se modificará la Forma de Pago: " + EL_OBJECT.getFormaPagoEnum() + ", por: " + editedFacturaVenta.getFormaPagoEnum());
+            cambiaFormaPago = true;
+        }
+        if (editedFacturaVenta.getFormaPagoEnum().equals(Valores.FormaPago.CTA_CTE)) {
+            if (!cambiaFormaPago && EL_OBJECT.getDiasCtaCte() != editedFacturaVenta.getDiasCtaCte()) {
+                modificaciones.add("Se modificará la cantidad de días de la Cta. Cte: " + EL_OBJECT.getDiasCtaCte() + ", por: " + editedFacturaVenta.getDiasCtaCte());
+            }
+        }
+        //siempre va cambiar (ser mayor) el N° de factura cuando le de FACTURAR
+        if ((facturar && !cambiaSucursal && 'I' != Character.toUpperCase(EL_OBJECT.getTipo()))
+                || (!facturar && !cambiaSucursal && 'I' == Character.toUpperCase(EL_OBJECT.getTipo()))) {
+            LOG.debug("Se mantiene la numeración, porque facturar=" + facturar + ", cambiaSucursal=" + cambiaSucursal + ":"
+                    + "\nOld==" + JGestionUtils.getNumeracion(EL_OBJECT)
+                    + "\nEdi==" + JGestionUtils.getNumeracion(editedFacturaVenta));
+            editedFacturaVenta.setMovimientoInterno(EL_OBJECT.getMovimientoInterno());
+            editedFacturaVenta.setNumero(EL_OBJECT.getNumero());
+        } else if ((EL_OBJECT.getMovimientoInterno() != editedFacturaVenta.getMovimientoInterno())
+                || EL_OBJECT.getNumero() != editedFacturaVenta.getNumero()) {
+            modificaciones.add("Se modificará la Numeración: " + JGestionUtils.getNumeracion(EL_OBJECT) + ", por: " + JGestionUtils.getNumeracion(editedFacturaVenta));
+            cambiaFacturacion = true;
+        }
+        if (EL_OBJECT.getRemito() != null && !editedFacturaVenta.getRemito().equals(EL_OBJECT.getRemito())) {
+            Remito remitoToUnbind = EL_OBJECT.getRemito();
+            modificaciones.add("Se desvinculará el Remito N°" + JGestionUtils.getNumeracion(remitoToUnbind, true) + " del comprobante.");
+        }
+        if (editedFacturaVenta.getRemito() != null && !editedFacturaVenta.getRemito().equals(EL_OBJECT.getRemito())) {
+            modificaciones.add("Se vinculará el Remito N°" + JGestionUtils.getNumeracion(remitoToFacturar, true) + " al comprobante.");
+        }
+
+        if (!modificaciones.isEmpty()) {
+            StringBuilder sb = new StringBuilder(modificaciones.size() * 50);
+            for (String string : modificaciones) {
+                sb.append("\n").append(string);
+            }
+            sb.append("\n¿Confirma las modificaciones?");
+            if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(jdFacturaVenta, sb.toString(), "Confirmación de modificaciónes", JOptionPane.YES_NO_OPTION)) {
+                String mensaje = edit(cambiaCaja, cambiaFormaPago, editedFacturaVenta);
+                if (facturar) {
+                    imprimirFactura(editedFacturaVenta);
+                } else if (JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog(jdFacturaVenta,
+                        "¿Imprimir comprobante?", CLASS_NAME, JOptionPane.OK_CANCEL_OPTION)) {
+                    imprimirMovimientoInterno(editedFacturaVenta);
+                }
+                jdFacturaVenta.showMessage("Modificaciones realizadas.\n" + mensaje, null, JOptionPane.INFORMATION_MESSAGE);
+            }
+        } else {
+            throw new MessageException("No han realizado modificaciones en el comprobante");
+        }
+    }
+
+    private String edit(boolean cambiaCaja, boolean cambiaFormaPago, FacturaVenta editedFacturaVenta) throws MessageException, Exception {
+        String mensajeDeQueMierdaPaso = null;
+        CajaMovimientos cm = new CajaMovimientosJpaController().findBy(EL_OBJECT.getId(), DetalleCajaMovimientosJpaController.FACTU_VENTA);
+        if (cm.getFechaCierre() != null) {
+            throw new MessageException("La Caja " + cm.getCaja().getNombre() + " N°" + cm.getId() + " fue cerrada mientras pensabas");
+        }
+        System.out.println("ANTES" + editedFacturaVenta);
+        editedFacturaVenta = jpaController.merge(editedFacturaVenta);
+        System.out.println("DESPU" + editedFacturaVenta);
+        if (EL_OBJECT.getFormaPagoEnum().equals(Valores.FormaPago.CONTADO)) {
+            DetalleCajaMovimientos dcm = new DetalleCajaMovimientosJpaController().findBy(EL_OBJECT.getId(), DetalleCajaMovimientosJpaController.FACTU_VENTA);
+            if (cambiaCaja || cambiaFormaPago) {
+                new DetalleCajaMovimientosJpaController().remove(dcm);
+                mensajeDeQueMierdaPaso = "Se eliminó de la Caja " + cm.getCaja().getNombre() + " N°" + cm.getId()
+                        + "\nEl detalle: " + dcm.getDescripcion() + ", monto $" + UTIL.PRECIO_CON_PUNTO.format(dcm.getMonto());
+                registrarVentaSegunFormaDePago(editedFacturaVenta);
+            } else {
+                //cambió Sucursal, Cliente, Fecha
+                dcm.setDescripcion(JGestionUtils.getNumeracion(editedFacturaVenta) + " " + editedFacturaVenta.getCliente().getNombre());
+                new DetalleCajaMovimientosJpaController().edit(dcm);
+            }
+        } else if (EL_OBJECT.getFormaPagoEnum().equals(Valores.FormaPago.CTA_CTE)) {
+            CtacteClienteJpaController cccController = new CtacteClienteJpaController();
+            CtacteCliente oldCCC = cccController.findCtacteClienteByFactura(EL_OBJECT.getId());
+            if (cambiaFormaPago) {
+                cccController.destroy(oldCCC.getId());
+                mensajeDeQueMierdaPaso = "Se eliminó el DEBE correspondiente a la Factura " + JGestionUtils.getNumeracion(EL_OBJECT)
+                        + "\nde la Cta. Cte. del Cliente " + EL_OBJECT.getCliente().getNombre() + ".";
+                registrarVentaSegunFormaDePago(editedFacturaVenta);
+            } else {
+                //cambió Sucursal, Cliente, Fecha, Dias Ctacte
+                oldCCC.setDias(editedFacturaVenta.getDiasCtaCte());
+                oldCCC.setFactura(editedFacturaVenta);
+                cccController.edit(oldCCC);
+            }
+        } else if (EL_OBJECT.getFormaPagoEnum().equals(Valores.FormaPago.CHEQUE)) {
+            throw new MessageException("Modificación de Forma de pago con CHEQUE no soportadas aún");
+//            ChequeTerceros cheque = null;
+//            if (editedFacturaVenta.getFormaPagoEnum().equals(Valores.FormaPago.CHEQUE)
+//                    || editedFacturaVenta.getFormaPagoEnum().equals(Valores.FormaPago.CONTADO_CHEQUE)) {
+//                //entity Cheque persisted..
+//                cheque = getChequeToBind(editedFacturaVenta);
+//            }
+//            if (cheque != null) {
+//                cheque.setBoundId(editedFacturaVenta.getId().longValue());
+//                new ChequeTercerosJpaController().edit(cheque);
+//                editedFacturaVenta.setCheque(cheque);
+//            }
+        } else {
+            mensajeDeQueMierdaPaso = "Algo salió mal";
+        }
+
+        if (EL_OBJECT.getRemito() != null && !editedFacturaVenta.getRemito().equals(EL_OBJECT.getRemito())) {
+            Remito remitoToUnbind = EL_OBJECT.getRemito();
+            remitoToUnbind.setFacturaVenta(null);
+            new RemitoController().edit(remitoToUnbind);
+        }
+        if (editedFacturaVenta.getRemito() != null && !editedFacturaVenta.getRemito().equals(EL_OBJECT.getRemito())) {
+            Remito remitoToBind = editedFacturaVenta.getRemito();
+            remitoToBind.setFacturaVenta(editedFacturaVenta);
+            new RemitoController().edit(remitoToBind);
+        }
+
+        return mensajeDeQueMierdaPaso;
     }
 
     private void setAndPersist(boolean conFactura) throws MessageException, Exception {
@@ -1535,8 +1859,6 @@ public class FacturaVentaController implements ActionListener, KeyListener {
     private ChequeTerceros getChequeToBind(FacturaVenta newFacturaVenta) throws MessageException {
         ChequeTercerosJpaController ch = new ChequeTercerosJpaController();
         ch.getABMCheque(newFacturaVenta).setVisible(true);
-//        aBMCheque.setVisible(true);
-        System.out.println(" AFTER VISIBLE....");
         ChequeTerceros cheque = ch.getChequeTerceroInstance();
         if (cheque == null) {
             throw new MessageException("Creación de cheque cancelada.");

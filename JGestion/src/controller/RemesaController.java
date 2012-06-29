@@ -195,7 +195,7 @@ public class RemesaController implements ActionListener, FocusListener {
         re.setUsuario(UsuarioJpaController.getCurrentUser());
         re.setEstado(true);
         re.setFechaRemesa(jdReRe.getDcFechaReRe());
-        re.setMontoEntrega(Double.parseDouble(jdReRe.getTfTotalPagado().getText()));
+        re.setMontoEntrega(Double.parseDouble(jdReRe.getTfTotalEfectivo().getText()));
         // 30% faster on ArrayList with initialCapacity
         re.setDetalleRemesaList(new ArrayList<DetalleRemesa>(jdReRe.getDtm().getRowCount()));
         DefaultTableModel dtm = jdReRe.getDtm();
@@ -242,7 +242,7 @@ public class RemesaController implements ActionListener, FocusListener {
         jdReRe.setTfEntrega("");
         jdReRe.setTfObservacion("");
         jdReRe.setTfSaldo("0");
-        jdReRe.getTfTotalPagado().setText("0");
+        jdReRe.getTfTotalEfectivo().setText("0");
         selectedFechaReRe = null;
     }
 
@@ -325,8 +325,8 @@ public class RemesaController implements ActionListener, FocusListener {
                     entrega,
                     acreditado
                 });
-        double totalEntregado = Double.valueOf(jdReRe.getTfTotalPagado().getText());
-        jdReRe.getTfTotalPagado().setText(UTIL.PRECIO_CON_PUNTO.format(totalEntregado + entrega));
+        double totalEntregado = Double.valueOf(jdReRe.getTfTotalEfectivo().getText());
+        jdReRe.getTfTotalEfectivo().setText(UTIL.PRECIO_CON_PUNTO.format(totalEntregado + entrega));
 
     }
 
@@ -334,8 +334,8 @@ public class RemesaController implements ActionListener, FocusListener {
         int selectedRow = jdReRe.getjTable1().getSelectedRow();
         if (selectedRow > -1) {
             double entrega = Double.valueOf(jdReRe.getDtm().getValueAt(selectedRow, 2).toString());
-            double totalEntregado = Double.valueOf(jdReRe.getTfTotalPagado().getText());
-            jdReRe.getTfTotalPagado().setText(UTIL.PRECIO_CON_PUNTO.format(totalEntregado - entrega));
+            double totalEntregado = Double.valueOf(jdReRe.getTfTotalEfectivo().getText());
+            jdReRe.getTfTotalEfectivo().setText(UTIL.PRECIO_CON_PUNTO.format(totalEntregado - entrega));
             jdReRe.getDtm().removeRow(selectedRow);
         }
     }
@@ -499,7 +499,7 @@ public class RemesaController implements ActionListener, FocusListener {
         jdReRe.setTfImporte("");
         jdReRe.setTfPagado("");
         jdReRe.setTfSaldo("");
-        jdReRe.getTfTotalPagado().setText(String.valueOf(remesa.getMonto()));
+        jdReRe.getTfTotalEfectivo().setText(String.valueOf(remesa.getMonto()));
     }
 
     private void cargarDetalleReRe(List<DetalleRemesa> detalleRemesaList) {

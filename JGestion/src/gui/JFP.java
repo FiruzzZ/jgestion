@@ -163,6 +163,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenuItem61 = new javax.swing.JMenuItem();
         jMenuItem62 = new javax.swing.JMenuItem();
         jMenuItem63 = new javax.swing.JMenuItem();
+        jMenuItem65 = new javax.swing.JMenuItem();
         jMenu9 = new javax.swing.JMenu();
         jMenuItem22 = new javax.swing.JMenuItem();
         jMenuItem19 = new javax.swing.JMenuItem();
@@ -710,6 +711,9 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenu22.add(jMenuItem63);
 
         menuTesoreria.add(jMenu22);
+
+        jMenuItem65.setText("Logger");
+        menuTesoreria.add(jMenuItem65);
 
         jMenuBar1.add(menuTesoreria);
 
@@ -1468,6 +1472,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenuItem jMenuItem62;
     private javax.swing.JMenuItem jMenuItem63;
     private javax.swing.JMenuItem jMenuItem64;
+    private javax.swing.JMenuItem jMenuItem65;
     private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JMenuItem jMenuItem8;
     private javax.swing.JMenuItem jMenuItem9;

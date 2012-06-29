@@ -68,7 +68,7 @@ public class JDReRe extends javax.swing.JDialog {
         btnDetalleCreditoDebito = new javax.swing.JButton();
         labelRestanteCreditoDebito = new javax.swing.JLabel();
         tfCreditoDebitoRestante = new javax.swing.JTextField();
-        tfTotalPagado = new javax.swing.JTextField();
+        tfTotalEfectivo = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         bAnular = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
@@ -259,14 +259,14 @@ public class JDReRe extends javax.swing.JDialog {
                         .addComponent(labelRestanteCreditoDebito))))
         );
 
-        tfTotalPagado.setColumns(8);
-        tfTotalPagado.setEditable(false);
-        tfTotalPagado.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        tfTotalPagado.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        tfTotalPagado.setText("0");
-        tfTotalPagado.setToolTipText("NO incluye el monto ACREDITADO ni la RETENCIÓN");
-        tfTotalPagado.setFocusable(false);
-        tfTotalPagado.setRequestFocusEnabled(false);
+        tfTotalEfectivo.setColumns(8);
+        tfTotalEfectivo.setEditable(false);
+        tfTotalEfectivo.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        tfTotalEfectivo.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        tfTotalEfectivo.setText("0");
+        tfTotalEfectivo.setToolTipText("NO incluye el monto ACREDITADO ni la RETENCIÓN");
+        tfTotalEfectivo.setFocusable(false);
+        tfTotalEfectivo.setRequestFocusEnabled(false);
 
         jLabel2.setText("Efectivo");
 
@@ -491,7 +491,7 @@ public class JDReRe extends javax.swing.JDialog {
                     .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(tfTotalPagado, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(tfTotalEfectivo, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(tfTOTAL, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(tfRetencion, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
@@ -540,7 +540,7 @@ public class JDReRe extends javax.swing.JDialog {
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(13, 13, 13)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(tfTotalPagado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(tfTotalEfectivo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabel2)))
                             .addGroup(layout.createSequentialGroup()
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -655,7 +655,7 @@ private void tfEntregaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:even
     private javax.swing.JTextField tfRetencion;
     private javax.swing.JTextField tfSaldo;
     private javax.swing.JTextField tfTOTAL;
-    private javax.swing.JTextField tfTotalPagado;
+    private javax.swing.JTextField tfTotalEfectivo;
     private javax.swing.JTextField tfTotalPorCreditoDebito;
     // End of variables declaration//GEN-END:variables
 
@@ -713,8 +713,8 @@ private void tfEntregaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:even
         return tfRetencion;
     }
 
-    public JTextField getTfTotalPagado() {
-        return tfTotalPagado;
+    public JTextField getTfTotalEfectivo() {
+        return tfTotalEfectivo;
     }
 
     public JTextField getTfTOTAL() {

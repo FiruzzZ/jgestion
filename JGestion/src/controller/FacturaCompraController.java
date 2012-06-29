@@ -703,7 +703,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         for (FacturaCompra facturaCompra : l) {
             dtm.addRow(new Object[]{
                         facturaCompra.getId(),
-                        JGestionUtils.getNumeracion(facturaCompra, true),
+                        JGestionUtils.getNumeracion(facturaCompra),
                         facturaCompra.getMovimientoInterno(),
                         facturaCompra.getProveedor().getNombre(),
                         facturaCompra.getImporte(),

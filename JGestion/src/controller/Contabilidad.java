@@ -30,6 +30,7 @@ import jgestion.JGestionUtils;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import utilities.swing.components.ComboBoxWrapper;
 
 /**
  *
@@ -65,6 +66,7 @@ public class Contabilidad {
     public void initBalanceGeneralUI(JFrame parent) throws MessageException {
         UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
         panelBalanceGeneral = new PanelBalanceGeneral();
+        UTIL.loadComboBox(panelBalanceGeneral.getCbCajas(), new UsuarioHelper().getWrappedCajas(null), false);
         jdBalanceUI = new JDBalance(parent, false, panelBalanceGeneral);
         jdBalanceUI.setTitle("Balance");
         jdBalanceUI.getLabelTotalAux().setVisible(false);
@@ -140,24 +142,37 @@ public class Contabilidad {
      * @return a String with SQL
      */
     private String armarQueryBalance() {
-        //tipo == 7 son las aperturas de caja
-        StringBuilder sb = new StringBuilder("SELECT o.* FROM detalle_caja_movimientos o WHERE tipo <> 7");
+        StringBuilder query = new StringBuilder("SELECT o.* FROM detalle_caja_movimientos o JOIN caja_movimientos cm ON (o.caja_movimientos = cm.id)"
+                + " WHERE o.tipo <> " + DetalleCajaMovimientosJpaController.APERTURA_CAJA); 
+        if (panelBalanceGeneral.getCbCajas().getSelectedIndex() > -1) {
+            query.append(" AND cm.caja=").append(((ComboBoxWrapper<?>)panelBalanceGeneral.getCbCajas().getSelectedItem()).getId());
+        } else {
+            query.append(" AND (");
+            for (int i = 0; i < panelBalanceGeneral.getCbCajas().getItemCount(); i++) {
+                ComboBoxWrapper<?> caja = (ComboBoxWrapper<?>) panelBalanceGeneral.getCbCajas().getItemAt(i);
+                query.append(" cm.caja=").append(caja.getId());
+                if ((i + 1) < panelBalanceGeneral.getCbCajas().getItemCount()) {
+                    query.append(" OR ");
+                }
+            }
+            query.append(")");
+        }
         if (!panelBalanceGeneral.getCheckMovEntreCajas().isSelected()) {
-            sb.append(" AND tipo <> 5");
+            query.append(" AND o.tipo <> ").append(DetalleCajaMovimientosJpaController.MOVIMIENTO_CAJA);
         }
         Date fecha = panelBalanceGeneral.getDcDesde().getDate();
         if (fecha != null) {
-            sb.append(" AND fecha >= '").append(fecha).append("'");
+            query.append(" AND o.fecha >= '").append(fecha).append("'");
         }
         fecha = panelBalanceGeneral.getDcHasta().getDate();
         if (fecha != null) {
-            sb.append(" AND fecha <= '").append(fecha).append("'");
+            query.append(" AND o.fecha <= '").append(fecha).append("'");
         }
         if (panelBalanceGeneral.getCbIngresosEgresos().getSelectedIndex() > 0) {
-            sb.append(" AND o.ingreso=").append(panelBalanceGeneral.getCbIngresosEgresos().getSelectedIndex() == 1);
+            query.append(" AND o.ingreso=").append(panelBalanceGeneral.getCbIngresosEgresos().getSelectedIndex() == 1);
         }
-        sb.append(" ORDER BY o.fecha");
-        return sb.toString();
+        query.append(" ORDER BY o.fecha");
+        return query.toString();
     }
 
     private void cargarTablaBalanceGeneral(List<DetalleCajaMovimientos> lista) {
@@ -339,12 +354,12 @@ public class Contabilidad {
             }
             dtm.addRow(new Object[]{
                         dateFormat.format(factura.getFechaCompra()),
-                        JGestionUtils.getNumeracion(factura, true) + (factura.getAnulada() ? "[ANULADA]" : ""),
+                        JGestionUtils.getNumeracion(factura) + (factura.getAnulada() ? "[ANULADA]" : ""),
                         UTIL.PRECIO_CON_PUNTO.format(factura.getImporte()),
                         efectivo != null ? efectivo : "------",
                         cccpc != null ? cccpc : "------",
                         UTIL.PRECIO_CON_PUNTO.format(totalIngresos)
-                    }); 
+                    });
         }
         jdBalanceUI.getTfTotalAux().setText(UTIL.PRECIO_CON_PUNTO.format(totalIngresos));
         jdBalanceUI.getTfIngresos().setText(UTIL.PRECIO_CON_PUNTO.format(totalEfectivo));
