@@ -1,6 +1,8 @@
 
 package entity;
 
+import controller.Valores;
+import controller.Valores.CtaCteEstado;
 import controller.Valores.FormaPago;
 import java.io.Serializable;
 import java.util.Date;
@@ -148,6 +150,10 @@ public class CtacteCliente implements Serializable {
     @Override
     public String toString() {
         return "CtacteCliente{" + "id=" + id + ", dias=" + dias + ", importe=" + importe + ", estado=" + estado + ", entregado=" + entregado + ", fechaCarga=" + fechaCarga + ", factura=" + factura + '}';
+    }
+
+    public CtaCteEstado getEstadoEnum() {
+        return Valores.CtaCteEstado.getCtaCteEstado(this.estado);
     }
 
    

@@ -3,6 +3,8 @@ package controller;
 import controller.exceptions.MissingReportException;
 import entity.DatosEmpresa;
 import generics.WaitingDialog;
+import java.awt.Dialog;
+import java.awt.print.PrinterException;
 import utilities.general.UTIL;
 import java.io.File;
 import java.io.IOException;
@@ -10,6 +12,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -151,6 +154,8 @@ public class Reportes implements Runnable {
         Logger.getLogger(Reportes.class).trace("Initializing Thread Reportes..");
         try {
             doReport();
+        } catch (PrinterException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Error de impresora", JOptionPane.WARNING_MESSAGE);
         } catch (Exception ex) {
             Logger.getLogger(Reportes.class).trace("Error en Report, trying to close JDBC Connection..");
             try {
@@ -163,7 +168,7 @@ public class Reportes implements Runnable {
         Logger.getLogger(Reportes.class).trace("Finished Thread Reportes..");
     }
 
-    private synchronized void doReport() {
+    private synchronized void doReport() throws PrinterException {
         Logger.getLogger(Reportes.class).trace("Running doReport()..");
         JasperPrint jPrint;
         try {
@@ -173,14 +178,18 @@ public class Reportes implements Runnable {
                 jd.dispose();
                 jViewer.setTitle(tituloReporte);
                 jViewer.setExtendedState(JasperViewer.NORMAL);
-                jViewer.setAlwaysOnTop(true);
+                jViewer.setModalExclusionType(Dialog.ModalExclusionType.APPLICATION_EXCLUDE);
                 jViewer.setVisible(true);
             } else {
                 jd.dispose();
                 JasperPrintManager.printReport(jPrint, withPrintDialog);
             }
         } catch (JRException ex) {
-            Logger.getLogger(Reportes.class).log(Level.ERROR, "Se pudrió todo con el reporte", ex);
+            if (ex.getCause().getClass().equals(PrinterException.class)) {
+                throw new PrinterException("Impresora no disponible\n" + ex.getMessage());
+            } else {
+                Logger.getLogger(Reportes.class).log(Level.ERROR, "Se pudrió todo con el reporte", ex);
+            }
         }
         Logger.getLogger(Reportes.class).trace("Finished doReport()");
     }

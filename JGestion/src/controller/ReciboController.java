@@ -517,7 +517,7 @@ public class ReciboController implements ActionListener, FocusListener {
         BigDecimal disponibleAcreditado = new BigDecimal(jdReRe.getTfCreditoDebitoDisponible().getText());
         jdReRe.getTfCreditoDebitoRestante().setText(UTIL.PRECIO_CON_PUNTO.format(disponibleAcreditado.subtract(totalAcreditado)));
         jdReRe.getTfTotalPorCreditoDebito().setText(UTIL.PRECIO_CON_PUNTO.format(totalAcreditado));
-        jdReRe.getTfTotalPagado().setText(UTIL.PRECIO_CON_PUNTO.format(totalEntrega.subtract(retencion)));
+        jdReRe.getTfTotalEfectivo().setText(UTIL.PRECIO_CON_PUNTO.format(totalEntrega.subtract(retencion)));
         jdReRe.getTfTOTAL().setText(UTIL.PRECIO_CON_PUNTO.format(totalEntrega));
     }
 
@@ -608,7 +608,7 @@ public class ReciboController implements ActionListener, FocusListener {
         jdReRe.getCbClienteProveedor().setSelectedIndex(0);
         setNextNumeroReRe();
         jdReRe.getTfTotalPorCreditoDebito().setText("0");
-        jdReRe.getTfTotalPagado().setText("0");
+        jdReRe.getTfTotalEfectivo().setText("0");
         jdReRe.getTfTOTAL().setText("0");
         jdReRe.getCheckPagoConCheque().setSelected(false);
         jdReRe.getCheckAcreditarEntrega().setSelected(false);
@@ -750,8 +750,8 @@ public class ReciboController implements ActionListener, FocusListener {
         jdReRe.setTfPagado("");
         jdReRe.setTfSaldo("");
         jdReRe.getTfRetencion().setText(UTIL.PRECIO_CON_PUNTO.format(recibo.getRetencion()));
-        jdReRe.getTfTotalPagado().setText(UTIL.PRECIO_CON_PUNTO.format(recibo.getMonto()));
-        jdReRe.getTfTOTAL().setText(UTIL.PRECIO_CON_PUNTO.format(recibo.getMonto() + recibo.getRetencion().doubleValue()));
+        jdReRe.getTfTotalEfectivo().setText(UTIL.PRECIO_CON_PUNTO.format(recibo.getMonto() - recibo.getRetencion().doubleValue()));
+        jdReRe.getTfTOTAL().setText(UTIL.PRECIO_CON_PUNTO.format(recibo.getMonto()));
     }
 
     private void cargarDetalleReRe(List<DetalleRecibo> detalleReciboList) {

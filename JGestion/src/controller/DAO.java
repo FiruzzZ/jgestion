@@ -371,8 +371,8 @@ public abstract class DAO implements Runnable {
             // <editor-fold defaultstate="collapsed" desc="Creación de Iva's">
             if (em.createQuery("SELECT COUNT(o) FROM Iva o ").getSingleResult().toString().equalsIgnoreCase("0")) {
                 System.out.println("CREANDO Iva..");
-                em.persist(new Iva(1, 21.0));
-                em.persist(new Iva(2, 10.5));
+                em.persist(new Iva(1, 21.0f));
+                em.persist(new Iva(2, 10.5f));
 //            em.persist(new Iva(3, 0.0));
             }// </editor-fold>
 

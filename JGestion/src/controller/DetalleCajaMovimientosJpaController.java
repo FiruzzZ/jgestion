@@ -1,16 +1,13 @@
 package controller;
 
 import controller.exceptions.MessageException;
-import controller.exceptions.NonexistentEntityException;
-import entity.DetalleCajaMovimientos;
-import entity.MovimientoConcepto;
+import entity.*;
 import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import javax.persistence.Query;
-import javax.persistence.EntityNotFoundException;
-import entity.CajaMovimientos;
+import javax.persistence.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -37,7 +34,7 @@ public class DetalleCajaMovimientosJpaController {
     public final static short RECIBO = 4;
     /**
      * nº 5, son los movimientos monetarios entre Cajas (tipo de mov. interno).
-     * No son un INGRESO o EGRESO real 
+     * No son un INGRESO o EGRESO real
      */
     public final static short MOVIMIENTO_CAJA = 5;
     /**
@@ -64,10 +61,11 @@ public class DetalleCajaMovimientosJpaController {
      * nº 11
      */
     public final static short CHEQUE_PROPIO = 11;
+    private static Logger LOG = Logger.getLogger(DetalleCajaMovimientosJpaController.class);
 
     public DetalleCajaMovimientosJpaController() {
     }
-    
+
     // <editor-fold defaultstate="collapsed" desc="CRUD...">
     public EntityManager getEntityManager() {
         return DAO.getEntityManager();
@@ -92,7 +90,7 @@ public class DetalleCajaMovimientosJpaController {
             em.getTransaction().commit();
         } catch (EntityNotFoundException ex) {
             throw new MessageException("La Caja en la que intenta hacer el movimiento no está mas disponible."
-                    + "\nIntente cerrar y volver a abrir la ventana.");
+                    + "\nIntente cerrando y volviendo a abrir la ventana.");
         } catch (Exception ex) {
             throw new MessageException(ex.getMessage());
         } finally {
@@ -104,6 +102,16 @@ public class DetalleCajaMovimientosJpaController {
 
     void edit(DetalleCajaMovimientos detalleCajaMovimientos) {
         DAO.doMerge(detalleCajaMovimientos);
+    }
+
+    void remove(DetalleCajaMovimientos o) {
+        LOG.trace("removing: " + o.getId() + ", desc=" + o.getDescripcion());
+        EntityManager em = getEntityManager();
+        em.getTransaction().begin();
+        o = em.merge(o);
+        em.remove(o);
+        em.getTransaction().commit();
+        em.close();
     }
 
     public List<DetalleCajaMovimientos> findDetalleCajaMovimientosEntities() {
@@ -155,7 +163,8 @@ public class DetalleCajaMovimientosJpaController {
     /**
      *
      * @param cajaMovimientosID
-     * @return List de DetalleCajaMovimientos ordenado por DetalleCajaMovimientos.id
+     * @return List de DetalleCajaMovimientos ordenado por
+     * DetalleCajaMovimientos.id
      */
     List<DetalleCajaMovimientos> getDetalleCajaMovimientosByCajaMovimiento(int cajaMovimientosID) {
         return (List<DetalleCajaMovimientos>) DAO.createQuery("SELECT o FROM " + CLASS_NAME + " o"
@@ -165,5 +174,27 @@ public class DetalleCajaMovimientosJpaController {
 
     List<MovimientoConcepto> findDetalleCajaMovimientosBy(MovimientoConcepto movimientoConcepto) {
         return getEntityManager().createQuery("SELECT o FROM " + CLASS_NAME + " o WHERE o.movimientoConcepto.id=" + movimientoConcepto.getId()).getResultList();
+    }
+
+    /**
+     * Busca en los {@link DetalleCajaMovimientos}, el comprobante por número y
+     * tipo; y retorna.
+     *
+     * @param numero
+     * @param tipo
+     * @return instance of {@code DetalleCajaMovimientos} if exist, else {@code null}
+     */
+    public DetalleCajaMovimientos findBy(long numero, short tipo) {
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<DetalleCajaMovimientos> query = cb.createQuery(DetalleCajaMovimientos.class);
+        Root<DetalleCajaMovimientos> from = query.from(DetalleCajaMovimientos.class);
+        query.select(from).
+                where(cb.equal(from.get(DetalleCajaMovimientos_.numero), numero),
+                cb.equal(from.get(DetalleCajaMovimientos_.tipo), tipo));
+        try {
+            return getEntityManager().createQuery(query).getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 }

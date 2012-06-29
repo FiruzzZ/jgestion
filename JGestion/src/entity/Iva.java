@@ -7,6 +7,7 @@ package entity;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
+import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,7 +17,10 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.PostLoad;
 import javax.persistence.Table;
+import org.eclipse.persistence.annotations.Cache;
+import org.eclipse.persistence.annotations.CacheType;
 
 /**
  *
@@ -26,8 +30,7 @@ import javax.persistence.Table;
 @Table(name = "iva")
 @NamedQueries({
     @NamedQuery(name = "Iva.findAll", query = "SELECT i FROM Iva i"),
-    @NamedQuery(name = "Iva.findById", query = "SELECT i FROM Iva i WHERE i.id = :id"),
-    @NamedQuery(name = "Iva.findByIva", query = "SELECT i FROM Iva i WHERE i.iva = :iva")
+    @NamedQuery(name = "Iva.findById", query = "SELECT i FROM Iva i WHERE i.id = :id")
 })
 public class Iva implements Serializable {
 
@@ -38,13 +41,13 @@ public class Iva implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Basic(optional = false)
-    @Column(name = "iva", nullable = false, precision = 4, scale = 1)
-    private Double iva;
+    @Column(name = "iva", nullable = false)
+    private float iva;
 
     public Iva() {
     }
 
-    public Iva(Integer id, Double iva) {
+    public Iva(Integer id, float iva) {
         this.id = id;
         this.iva = iva;
     }
@@ -58,10 +61,10 @@ public class Iva implements Serializable {
     }
 
     public Double getIva() {
-        return iva;
+        return Double.valueOf(iva);
     }
 
-    public void setIva(Double iva) {
+    public void setIva(float iva) {
         this.iva = iva;
     }
 

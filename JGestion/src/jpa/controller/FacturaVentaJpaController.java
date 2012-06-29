@@ -1,9 +1,11 @@
 package jpa.controller;
 
 import controller.DAO;
+import entity.DetalleVenta;
 import entity.FacturaVenta;
 import entity.FacturaVenta_;
 import entity.Sucursal;
+import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;

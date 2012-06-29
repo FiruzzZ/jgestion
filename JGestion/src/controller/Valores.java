@@ -5,8 +5,9 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 /**
- * Clase contenedora de Enums y variables genéricas (estados de cuentas, 
- * tipos de transacción).
+ * Clase contenedora de Enums y variables genéricas (estados de cuentas, tipos
+ * de transacción).
+ *
  * @author FiruzzZ
  */
 public abstract class Valores {
@@ -51,7 +52,6 @@ public abstract class Valores {
         public String toString() {
             return this.nombre;
         }
-        
     }
 
     /**
@@ -59,9 +59,7 @@ public abstract class Valores {
      */
     public enum CtaCteEstado {
 
-        PENDIENTE(1, "PENDIENTE"),
-        PAGADA(2, "PAGADA"),
-        ANULADA(3, "ANULADA");
+        PENDIENTE(1, "PENDIENTE"), PAGADA(2, "PAGADA"), ANULADA(3, "ANULADA");
         private final short id;
         private final String nombre;
 
@@ -75,10 +73,18 @@ public abstract class Valores {
             return this.id;
         }
 
+        public static CtaCteEstado getCtaCteEstado(int id) {
+            for (CtaCteEstado ctaCteEstado : CtaCteEstado.values()) {
+                if (ctaCteEstado.getId() == id) {
+                    return ctaCteEstado;
+                }
+            }
+            return null;
+        }
+
         @Override
         public String toString() {
             return this.nombre;
         }
     }
-    
 }

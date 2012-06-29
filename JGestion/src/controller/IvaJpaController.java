@@ -6,6 +6,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import entity.Producto;
+import entity.Producto_;
 import utilities.general.UTIL;
 import gui.JDMiniABM;
 import java.awt.event.ActionEvent;
@@ -15,6 +16,9 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import javax.swing.JFrame;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
@@ -268,7 +272,7 @@ public class IvaJpaController implements ActionListener, MouseListener {
     private void setEntity() throws MessageException {
         EL_OBJECT = new Iva();
         try {
-            EL_OBJECT.setIva(Double.valueOf(abm.getTfCodigo()));
+            EL_OBJECT.setIva(Float.valueOf(abm.getTfCodigo()));
         } catch (NumberFormatException ex) {
             throw new MessageException("Porcentaje no válido");
         }
@@ -290,5 +294,13 @@ public class IvaJpaController implements ActionListener, MouseListener {
         } else {
             edit(iva);
         }
+    }
+
+    Iva findByProducto(Integer productoID) {
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Iva> query = cb.createQuery(Iva.class);
+        Root<Producto> from = query.from(Producto.class);
+        query.select(from.get(Producto_.iva)).where(cb.equal(from.get(Producto_.id), productoID));
+        return getEntityManager().createQuery(query).getSingleResult();
     }
 }

@@ -31,8 +31,8 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
     }
 
     protected abstract EntityManager getEntityManager();
-//    protected abstract Session getEntityManager();
-//    protected abstract Session getSession();
+//    protected abstract Session getEntityManager(); //Hibernate
+//    protected abstract Session getSession(); //Hibernate
 
     @Override
     public Class<T> getEntityClass() {
@@ -41,7 +41,6 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
 
     @Override
     public void create(T entity) {
-//        getEntityManager().beginTransaction(); // Hibernate
         getEntityManager().getTransaction().begin();
         getEntityManager().persist(entity);
         getEntityManager().getTransaction().commit();
@@ -49,11 +48,10 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
 
     @Override
     public T merge(T entity) {
-//        getEntityManager().beginTransaction(); // Hibernate
         getEntityManager().getTransaction().begin();
-        T merged = getEntityManager().merge(entity);
+        entity = getEntityManager().merge(entity);
         getEntityManager().getTransaction().commit();
-        return merged;
+        return entity;
     }
 
     @Override

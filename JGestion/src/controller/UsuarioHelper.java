@@ -46,11 +46,20 @@ class UsuarioHelper {
         return new CajaController().findCajasPermitidasByUsuario(usuario, estado);
     }
 
+    List<ComboBoxWrapper<Caja>> getWrappedCajas(Boolean estado) {
+        List<Caja> list = getCajas(estado);
+        List<ComboBoxWrapper<Caja>> l = new ArrayList<ComboBoxWrapper<Caja>>(list.size());
+        for (Caja o : list) {
+            l.add(new ComboBoxWrapper<Caja>(o, o.getId(), o.getNombre()));
+        }
+        return l;
+    }
+    
     List<ComboBoxWrapper<Sucursal>> getWrappedSucursales() {
-        List<Sucursal> sucursales = getSucursales();
-        List<ComboBoxWrapper<Sucursal>> l = new ArrayList<ComboBoxWrapper<Sucursal>>(sucursales.size());
-        for (Sucursal sucursal : sucursales) {
-            l.add(new ComboBoxWrapper<Sucursal>(sucursal, sucursal.getId(), sucursal.getNombre()));
+        List<Sucursal> list = getSucursales();
+        List<ComboBoxWrapper<Sucursal>> l = new ArrayList<ComboBoxWrapper<Sucursal>>(list.size());
+        for (Sucursal o : list) {
+            l.add(new ComboBoxWrapper<Sucursal>(o, o.getId(), o.getNombre()));
         }
         return l;
     }

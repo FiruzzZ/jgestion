@@ -14,7 +14,7 @@ public class JGestionUtils {
 
     /**
      * Si es Factura: <br> "F" + TipoFactura + #### (punto de venta) + ########
-     * (número). <br>EJ: A0001-00001234 <br>Si es Interno: <br>"I" + #### (punto
+     * (número). <br>EJ: FA0001-00001234 <br>Si es Interno: <br>"FI" + #### (punto
      * de venta) + ######## (N° Movimiento interno)
      *
      * @param o
@@ -30,20 +30,18 @@ public class JGestionUtils {
 
     /**
      * Si es Factura: <br> "F"+ TipoFactura + #### (punto de venta) + ########
-     * (número). <br>EJ: A0001-00001234 <br>Si es Interno: <br>"FI" + #### (punto
+     * (número). <br>EJ: FA0001-00001234 <br>Si es Interno: <br>"FI" + #### (punto
      * de venta DONDE SER REALIZO LA CARGA) + ######## (N° Movimiento interno)
      *
      * @param o
-     * @param conGuion
      * @return
      */
-    public static String getNumeracion(FacturaCompra o, boolean conGuion) {
-        if (o.getNumero() != 0) {
-            String guion = conGuion ? "-" : "";
-            String numero = UTIL.AGREGAR_CEROS(o.getNumero(), 12);
-            return "F" + o.getTipo() + numero.substring(0, 4) + guion + numero.substring(4);
-        } else {
+    public static String getNumeracion(FacturaCompra o) {
+        if (o.getNumero() == 0) {
             return "FI" + UTIL.AGREGAR_CEROS(o.getSucursal().getPuntoVenta(), 4) + UTIL.AGREGAR_CEROS(o.getMovimientoInterno(), 8);
+        } else {
+            String numero = UTIL.AGREGAR_CEROS(o.getNumero(), 12);
+            return "F" + o.getTipo() + numero.substring(0, 4) + "-" + numero.substring(4);
         }
     }
 
