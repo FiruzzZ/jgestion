@@ -307,13 +307,15 @@ public class FacturaVenta implements Serializable {
         return "FacturaVenta{" + "id=" + id + ", tipo=" + tipo + ", fechaVenta="
                 + fechaVenta + ", importe=" + importe + ", fechaalta=" + fechaalta
                 + ", descuento=" + descuento + ", numero=" + numero
-                + ", sucursal=" + sucursal + ", iva10=" + iva10 + ", iva21="
+                + ", sucursal=" + sucursal.getId() + ", iva10=" + iva10 + ", iva21="
                 + iva21 + ", movimientoInterno=" + movimientoInterno
-                + ", cliente=" + cliente + ", listaPrecios=" + listaPrecios
-                + ", usuario=" + usuario + ", caja=" + caja
+                + ", cliente=" + cliente.getId() + ", listaPrecios=" + listaPrecios
+                + ", usuario=" + usuario.getId() + ", caja=" + caja
                 + ", gravado=" + gravado + ", formaPago=" + formaPago
                 + ", diasCtaCte=" + diasCtaCte + ", anulada=" + anulada
-                + ", remito=" + remito + ", cheque=" + cheque 
+                + ", remito=" + remito + ", cheque=" + cheque
+                + "\n\tDetalle:" + (detallesVentaList != null
+                ? detallesVentaList.toString() : null)
                 + '}';
     }
 }

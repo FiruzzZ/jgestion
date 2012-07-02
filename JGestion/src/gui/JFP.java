@@ -1058,7 +1058,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
     private void jMenuItem27ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem27ActionPerformed
         try {
-            new IvaJpaController().initABM(this, true);
+            new IvaController().initABM(this, true);
         } catch (MessageException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
         }
