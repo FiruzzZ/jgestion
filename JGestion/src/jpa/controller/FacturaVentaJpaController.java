@@ -31,11 +31,27 @@ public class FacturaVentaJpaController extends AbstractDAO<FacturaVenta, Integer
 
     @Override
     public FacturaVenta find(Integer id) {
-        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        CriteriaQuery<FacturaVenta> query = cb.createQuery(getEntityClass());
-        Root<FacturaVenta> from = query.from(getEntityClass());
-        query.where(cb.equal(from.get(FacturaVenta_.id), id));
-        return getEntityManager().createQuery(query).setHint(QueryHints.REFRESH, Boolean.TRUE).getSingleResult();
+        try {
+            CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+            CriteriaQuery<FacturaVenta> query = cb.createQuery(getEntityClass());
+            Root<FacturaVenta> from = query.from(getEntityClass());
+            query.where(cb.equal(from.get(FacturaVenta_.id), id));
+            return getEntityManager().createQuery(query).setHint(QueryHints.REFRESH, Boolean.TRUE).getSingleResult();
+        } finally {
+            getEntityManager().close();
+        }
+    }
+
+    public FacturaVenta find(char tipo, Sucursal sucursal, Integer numero) {
+        try {
+            return getEntityManager().createQuery("SELECT o FROM FacturaVenta o"
+                    + " WHERE o.sucursal.id=" + sucursal.getId()
+                    + " AND o.numero=" + numero
+                    + " AND o.tipo='" + Character.toUpperCase(tipo) + "'", FacturaVenta.class).
+                    getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 
     public Integer getNextNumeroFactura(Sucursal sucursal, char tipo) {
@@ -77,15 +93,9 @@ public class FacturaVentaJpaController extends AbstractDAO<FacturaVenta, Integer
         }
     }
 
-    public FacturaVenta find(char tipo, Sucursal sucursal, Integer numero) {
-        try {
-            return getEntityManager().createQuery("SELECT o FROM FacturaVenta o"
-                    + " WHERE o.sucursal.id=" + sucursal.getId()
-                    + " AND o.numero=" + numero
-                    + " AND o.tipo='" + Character.toUpperCase(tipo) + "'", FacturaVenta.class).
-                    getSingleResult();
-        } catch (NoResultException e) {
-            return null;
-        }
+    public void clearAndClose() {
+        entityManager.clear();
+        entityManager.close();
+        
     }
 }

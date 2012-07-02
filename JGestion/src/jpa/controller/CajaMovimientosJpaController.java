@@ -523,6 +523,8 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
             return getEntityManager().createQuery(query).getSingleResult();
         } catch (NoResultException e) {
             return null;
+        } finally {
+            getEntityManager().close();
         }
     }
 }

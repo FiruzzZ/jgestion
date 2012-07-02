@@ -11,11 +11,10 @@ import utilities.general.UTIL;
 import gui.JDMiniABM;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -23,65 +22,29 @@ import javax.swing.JFrame;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
+import jpa.controller.IvaJpaController;
 import org.apache.log4j.Logger;
 
 /**
  *
  * @author Administrador
  */
-public class IvaJpaController implements ActionListener, MouseListener {
+public class IvaController implements ActionListener {
 
     private JDMiniABM abm;
     private final String[] colsName = {"Nº", "IVA (%)"};
     private final int[] colsWidth = {20, 20};
     private final static String CLASS_NAME = Iva.class.getSimpleName();
     private Iva EL_OBJECT;
+    private IvaJpaController jpaController;
+
+    public IvaController() {
+        jpaController = new IvaJpaController();
+    }
 
     // <editor-fold defaultstate="collapsed" desc="CRUD....">
     public EntityManager getEntityManager() {
         return DAO.getEntityManager();
-    }
-
-    public void create(Iva iva) throws PreexistingEntityException, Exception {
-        EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            em.persist(iva);
-            em.getTransaction().commit();
-        } catch (Exception ex) {
-            if (findIva(iva.getId()) != null) {
-                throw new PreexistingEntityException("Iva " + iva + " already exists.", ex);
-            }
-            throw ex;
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
-    }
-
-    public void edit(Iva iva) throws IllegalOrphanException, NonexistentEntityException, Exception {
-        EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            em.merge(iva);
-            em.getTransaction().commit();
-        } catch (Exception ex) {
-            String msg = ex.getLocalizedMessage();
-            if (msg == null || msg.length() == 0) {
-                Integer id = iva.getId();
-                if (findIva(id) == null) {
-                    throw new NonexistentEntityException("The iva with id " + id + " no longer exists.");
-                }
-            }
-            throw ex;
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
     }
 
     public void destroy(Integer id) throws IllegalOrphanException, NonexistentEntityException {
@@ -125,36 +88,17 @@ public class IvaJpaController implements ActionListener, MouseListener {
     }
 
     private List<Iva> findIvaEntities(boolean all, int maxResults, int firstResult) {
-        EntityManager em = getEntityManager();
-        try {
-            Query q = em.createQuery("select object(o) from Iva as o");
-            if (!all) {
-                q.setMaxResults(maxResults);
-                q.setFirstResult(firstResult);
-            }
-            return q.getResultList();
-        } finally {
-            em.close();
+        if (all) {
+            return jpaController.findAll();
+        } else {
+            return jpaController.findRange(firstResult, maxResults);
         }
     }
 
-    public Iva findIva(Integer id) {
-        EntityManager em = getEntityManager();
-        try {
-            return em.find(Iva.class, id);
-        } finally {
-            em.close();
-        }
+    public Iva find(Integer id) {
+        return jpaController.find(id);
     }
-
-    public int getIvaCount() {
-        EntityManager em = getEntityManager();
-        try {
-            return ((Long) em.createQuery("select count(o) from Iva as o").getSingleResult()).intValue();
-        } finally {
-            em.close();
-        }
-    }// </editor-fold>
+    // </editor-fold>
 
     public void initABM(JFrame owner, boolean modal) throws MessageException {
         UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.ABM_PRODUCTOS);
@@ -166,11 +110,24 @@ public class IvaJpaController implements ActionListener, MouseListener {
         abm.hideFieldNombre();
         abm.hideBtnLock();
         abm.hideFieldExtra();
-        abm.setTitle("ABM - " + CLASS_NAME);
+        abm.setTitle("ABM - " + jpaController.getEntityClass().getSimpleName());
         UTIL.getDefaultTableModel(abm.getjTable1(), colsName, colsWidth, new Class<?>[]{null, String.class});
         UTIL.setHorizonalAlignment(abm.getjTable1(), String.class, SwingConstants.RIGHT);
         cargarTablaIvas(abm.getjTable1(), null);
         abm.setListeners(this);
+        abm.getjTable1().addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                Integer selectedRow = ((javax.swing.JTable) e.getSource()).getSelectedRow();
+                if (selectedRow > -1) {
+                    EL_OBJECT = find(Integer.parseInt(UTIL.getSelectedValue(abm.getjTable1(), 0).toString()));
+                }
+                if (EL_OBJECT != null) {
+                    setPanelFields(EL_OBJECT);
+                }
+            }
+        });
         abm.setVisible(true);
     }
 
@@ -180,7 +137,7 @@ public class IvaJpaController implements ActionListener, MouseListener {
         dtm.setRowCount(0);
         List<Iva> l = null;
         if (nativeQuery == null || nativeQuery.length() < 10) {
-            l = DAO.getEntityManager().createNamedQuery(CLASS_NAME + ".findAll").getResultList();
+            l = jpaController.findAll();
         } else {
             try {
                 // para cuando se usa el Buscador del ABM
@@ -206,17 +163,15 @@ public class IvaJpaController implements ActionListener, MouseListener {
                     if (EL_OBJECT == null) {
                         throw new MessageException("Debe seleccionar la fila que desea borrar");
                     }
+                    jpaController.remove(EL_OBJECT);
                     destroy(EL_OBJECT.getId());
                     clearPanelFields();
                     cargarTablaIvas(abm.getjTable1(), null);
                     abm.showMessage("Eliminado..", CLASS_NAME, 1);
                 } catch (MessageException ex) {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                } catch (NonexistentEntityException ex) {
-                    abm.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    ex.printStackTrace();
                 } catch (IllegalOrphanException ex) {
-                    abm.showMessage("El IVA " + EL_OBJECT.toString() + " no puede ser eliminado por estar relacionado a los siguientes Productos\n"
+                    abm.showMessage("El IVA " + EL_OBJECT.getIva() + " no puede ser eliminado por estar relacionado a los siguientes Productos\n"
                             + ex.getMessage(), CLASS_NAME, 0);
                 } catch (Exception ex) {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 0);
@@ -239,28 +194,6 @@ public class IvaJpaController implements ActionListener, MouseListener {
         }// </editor-fold>
     }
 
-    public void mouseReleased(MouseEvent e) {
-        Integer selectedRow = ((javax.swing.JTable) e.getSource()).getSelectedRow();
-        if (selectedRow > -1) {
-            EL_OBJECT = findIva(Integer.parseInt(UTIL.getSelectedValue(abm.getjTable1(), 0).toString()));
-        }
-        if (EL_OBJECT != null) {
-            setPanelFields(EL_OBJECT);
-        }
-    }
-
-    public void mouseClicked(MouseEvent e) {
-    }
-
-    public void mousePressed(MouseEvent e) {
-    }
-
-    public void mouseEntered(MouseEvent e) {
-    }
-
-    public void mouseExited(MouseEvent e) {
-    }
-
     private void clearPanelFields() {
         EL_OBJECT = null;
         abm.setTfCodigo("");
@@ -272,7 +205,7 @@ public class IvaJpaController implements ActionListener, MouseListener {
     private void setEntity() throws MessageException {
         EL_OBJECT = new Iva();
         try {
-            EL_OBJECT.setIva(Float.valueOf(abm.getTfCodigo()));
+            EL_OBJECT.setIva(Float.parseFloat(abm.getTfCodigo()));
         } catch (NumberFormatException ex) {
             throw new MessageException("Porcentaje no válido");
         }
@@ -290,9 +223,9 @@ public class IvaJpaController implements ActionListener, MouseListener {
 
         //persistiendo......
         if (iva.getId() == null) {
-            create(iva);
+            jpaController.create(iva);
         } else {
-            edit(iva);
+            jpaController.merge(iva);
         }
     }
 
