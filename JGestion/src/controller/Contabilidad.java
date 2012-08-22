@@ -19,6 +19,7 @@ import gui.PanelBalanceComprasVentas;
 import gui.PanelBalanceGeneral;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -448,6 +449,25 @@ public class Contabilidad {
         return precioFinal + iva;
     }
 
+    public static BigDecimal GET_MARGEN(BigDecimal monto, int tipoDeMargen, BigDecimal margen) {
+        if(margen.compareTo(BigDecimal.ZERO) ==0) {
+            return BigDecimal.ZERO;
+        }
+        BigDecimal total;
+        switch (tipoDeMargen) {
+            case 1: { // margen en %
+                total = monto.multiply(margen).divide(new BigDecimal("100"));
+                break;
+            }
+            case 2: { // margen en $ (monto fijo).. no hay mucha science...
+                total = margen;
+                break;
+            }
+            default:
+                return null;
+        }
+        return total;
+    }
     /**
      * Calcula el margen monetario ganancia/perdida sobre el monto.
      *
@@ -463,7 +483,7 @@ public class Contabilidad {
         if (margen == 0) {
             return 0.0;
         }
-        double total = 0.0;
+        double total;
         switch (tipoDeMargen) {
             case 1: { // margen en %
                 total = ((monto * margen) / 100);
@@ -570,5 +590,10 @@ public class Contabilidad {
             }
         }
         return estado;
+    }
+    public static BigDecimal parse(double d) {
+        BigDecimal big = BigDecimal.valueOf(d);
+        big = big.setScale(2);
+        return big;
     }
 }

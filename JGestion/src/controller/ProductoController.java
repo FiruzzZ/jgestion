@@ -272,11 +272,10 @@ public class ProductoController implements ActionListener, KeyListener {
         }
         panel.setTfCodigo(producto.getCodigo());
         panel.setTfNombre(producto.getNombre());
-        panel.getCbTipoMargen().setSelectedIndex(producto.getTipomargen() - 1);
-        panel.setTfMargen(String.valueOf(producto.getMargen()));
         panel.setTfStockMinimo(String.valueOf(producto.getStockminimo()));
         panel.setTfStockMax(String.valueOf(producto.getStockmaximo()));
         panel.setTfStockActual(String.valueOf(producto.getStockactual()));
+        panel.getCheckUpdatePrecioVenta().setSelected(producto.getUpdatePrecioVenta());
         if (producto.getPrecioVenta() != null) {
             panel.setTfPrecio(UTIL.PRECIO_CON_PUNTO.format(producto.getPrecioVenta()));
         }
@@ -330,15 +329,6 @@ public class ProductoController implements ActionListener, KeyListener {
             throw new MessageException("número de stock máximo no válido");
         }
         try {
-            if (panel.getTfMargen().length() > 0) {
-                if (Double.valueOf(panel.getTfMargen()) < 0) {
-                    throw new MessageException("Margen de ganancia no puede ser menor a 0");
-                }
-            }
-        } catch (NumberFormatException ex) {
-            throw new MessageException("número de Margen no válido");
-        }
-        try {
             if (panel.getTfPrecio().length() > 0) {
                 if (Double.valueOf(panel.getTfPrecio()) < 0) {
                     throw new MessageException("El precio no puede ser menor a 0");
@@ -386,10 +376,8 @@ public class ProductoController implements ActionListener, KeyListener {
         } else {
             EL_OBJECT.setSubrubro(null);
         }
-        EL_OBJECT.setTipomargen(panel.getCbTipoMargen().getSelectedIndex() + 1);
-        EL_OBJECT.setMargen((panel.getTfMargen().length() > 0) ? Double.valueOf(panel.getTfMargen()) : 0);
         EL_OBJECT.setPrecioVenta(panel.getTfPrecio().length() > 0 ? Double.valueOf(panel.getTfPrecio()) : 0.0);
-
+        EL_OBJECT.setUpdatePrecioVenta(panel.getCheckUpdatePrecioVenta().isSelected());
         // no setteable desde la GUI
         // default's....
         EL_OBJECT.setRemunerativo(true);
@@ -614,9 +602,14 @@ public class ProductoController implements ActionListener, KeyListener {
 
         } else if (valoracionStock == ANTIGUO) {
             //respeta el costoCompra anterior, o sea.. no hace nada     
+        } else {
+            throw new IllegalArgumentException("parameter valoracionStock no válido");
         }
 
         producto.setUltimaCompra(new Date());
+        if (producto.getUpdatePrecioVenta()) {
+            producto.setPrecioVenta(producto.getCostoCompra());
+        }
         DAO.doMerge(producto);
     }
 
@@ -869,7 +862,7 @@ public class ProductoController implements ActionListener, KeyListener {
         }
         return null;
     }
-    
+
     public List<ComboBoxWrapper<Producto>> findWrappedProductoToCombo() {
         List<Producto> ff = findProductoToCombo();
         List<ComboBoxWrapper<Producto>> l = new ArrayList<ComboBoxWrapper<Producto>>(ff.size());

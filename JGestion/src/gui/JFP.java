@@ -33,17 +33,6 @@ public class JFP extends javax.swing.JFrame implements Runnable {
      * Creates new form JFP
      */
     public JFP() {
-        //<editor-fold defaultstate="collapsed" desc="set Nimbus L&F">
-        try {
-            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (Exception ex) {
-        }
-        //</editor-fold>
         loginUser();
         initComponents();
         setAppIcons();

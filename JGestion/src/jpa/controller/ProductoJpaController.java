@@ -2,12 +2,7 @@ package jpa.controller;
 
 import controller.DAO;
 import entity.Producto;
-import entity.Producto_;
-import java.util.List;
 import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import org.eclipse.persistence.config.QueryHints;
 
 /**

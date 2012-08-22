@@ -1,4 +1,3 @@
-
 /*
  * JPArticulos.java
  *
@@ -9,11 +8,8 @@ package gui;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JEditorPane;
-import javax.swing.JLabel;
-import javax.swing.JTextArea;
+import java.util.Date;
+import javax.swing.*;
 import utilities.general.UTIL;
 
 /**
@@ -62,9 +58,6 @@ public class PanelABMProductos extends javax.swing.JPanel {
         jLabel15 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
-        cbTipoMargen = new javax.swing.JComboBox();
-        tfMargen = new javax.swing.JTextField();
-        jLabel11 = new javax.swing.JLabel();
         cbIVA = new javax.swing.JComboBox();
         jLabel1 = new javax.swing.JLabel();
         tfCodigo = new javax.swing.JTextField();
@@ -86,6 +79,7 @@ public class PanelABMProductos extends javax.swing.JPanel {
         jScrollPane2 = new javax.swing.JScrollPane();
         jEditorPane1 = new javax.swing.JEditorPane();
         btnAddRubros = new javax.swing.JButton();
+        checkUpdatePrecioVenta = new javax.swing.JCheckBox();
 
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
@@ -168,19 +162,6 @@ public class PanelABMProductos extends javax.swing.JPanel {
 
         jLabel13.setText("Descrip.");
 
-        cbTipoMargen.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "%", "$" }));
-        cbTipoMargen.setToolTipText("<html>Margen aplicado al precio\n<br>% - Porcentual\n<br>$  - Monto fijo \n</html>");
-        cbTipoMargen.setVisible(false);
-
-        tfMargen.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        tfMargen.setText("0");
-        tfMargen.setToolTipText("margen de ganancia del producto");
-        tfMargen.setName("tfmargen"); // NOI18N
-        tfMargen.setVisible(false);
-
-        jLabel11.setText("Margen");
-        jLabel11.setVisible(false);
-
         jLabel1.setText("Código");
 
         jLabel2.setText("Nombre");
@@ -248,6 +229,9 @@ public class PanelABMProductos extends javax.swing.JPanel {
             }
         });
 
+        checkUpdatePrecioVenta.setText("Actualizar Precio Venta según compras");
+        checkUpdatePrecioVenta.setToolTipText("<html>\nChequeando está opción, permite al sistema actualizar automáticamente el <b>Precio de Venta</b>\n<br>según el <b>Costo de Compra</b>.\n<br>Cada vez que se registre una compra del producto, el <b>Costo de Compra</b> se modifica y\n<br>así también lo hará el <b>Precio de Venta</b>.\n</html>");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -272,12 +256,8 @@ public class PanelABMProductos extends javax.swing.JPanel {
                         .addComponent(jLabel17)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(tfCostoCompra, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jLabel11)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cbTipoMargen, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(tfMargen, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(checkUpdatePrecioVenta))
                     .addComponent(dateUltimaCompra, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
@@ -366,11 +346,9 @@ public class PanelABMProductos extends javax.swing.JPanel {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel16)
                     .addComponent(tfPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel11)
-                    .addComponent(cbTipoMargen, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(tfMargen, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(tfCostoCompra, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel17))
+                    .addComponent(jLabel17)
+                    .addComponent(checkUpdatePrecioVenta))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel13)
@@ -396,7 +374,7 @@ public class PanelABMProductos extends javax.swing.JPanel {
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(20, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -445,13 +423,12 @@ public class PanelABMProductos extends javax.swing.JPanel {
     private javax.swing.JComboBox cbRubro;
     private javax.swing.JComboBox cbSubRubro;
     private javax.swing.JComboBox cbSucursal;
-    private javax.swing.JComboBox cbTipoMargen;
     private javax.swing.JCheckBox checkBoxSucursalTodas;
+    private javax.swing.JCheckBox checkUpdatePrecioVenta;
     private com.toedter.calendar.JDateChooser dateUltimaCompra;
     private javax.swing.JEditorPane jEditorPane1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
@@ -471,7 +448,6 @@ public class PanelABMProductos extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextField tfCodigo;
     private javax.swing.JTextField tfCostoCompra;
-    private javax.swing.JTextField tfMargen;
     private javax.swing.JTextField tfNombre;
     private javax.swing.JTextField tfPrecio;
     private javax.swing.JTextField tfStockActual;
@@ -486,7 +462,6 @@ public class PanelABMProductos extends javax.swing.JPanel {
         tfStockMax.setText("0");
 //        tfDeposito.setText("");
         jEditorPane1.setText("<p align=\"center\"><b>[Doble click para editar]</b></p>");
-        tfMargen.setText("");
         tfStockActual.setText("0");
         tfPrecio.setText("");
         tfCostoCompra.setText("");
@@ -508,10 +483,6 @@ public class PanelABMProductos extends javax.swing.JPanel {
 
     public void setTfCodigo(String tfCodigo) {
         this.tfCodigo.setText(tfCodigo);
-    }
-
-    public void setTfMargen(String tfMargen) {
-        this.tfMargen.setText(tfMargen);
     }
 
     public void setTfNombre(String tfNombre) {
@@ -564,10 +535,6 @@ public class PanelABMProductos extends javax.swing.JPanel {
         return tfCodigo.getText().trim();
     }
 
-    public String getTfMargen() {
-        return tfMargen.getText().trim();
-    }
-
     public String getTfNombre() {
         return tfNombre.getText().trim();
     }
@@ -604,11 +571,7 @@ public class PanelABMProductos extends javax.swing.JPanel {
         return cbSucursal;
     }
 
-    public JComboBox getCbTipoMargen() {
-        return cbTipoMargen;
-    }
-
-    public java.util.Date getDateUltimaCompra() {
+    public Date getDateUltimaCompra() {
         return dateUltimaCompra.getDate();
     }
 
@@ -635,6 +598,11 @@ public class PanelABMProductos extends javax.swing.JPanel {
     public JButton getBtnAddRubros() {
         return btnAddRubros;
     }
+
+    public JCheckBox getCheckUpdatePrecioVenta() {
+        return checkUpdatePrecioVenta;
+    }
+    
     // </editor-fold>
 
     private void soloNumeros(KeyEvent evt) {

@@ -72,18 +72,16 @@ public class Producto implements Serializable {
     private Integer deposito;
     @Column(name = "ubicacion", length = 50)
     private String ubicacion;
-    @Column(name = "costo_compra", precision = 2, scale = 2)
+    @Column(name = "costo_compra", precision = 10, scale = 2)
     /**
-     * Precio del costo, cuando se crea el producto es setteado a 0. Después es
+     * Cuando se crea el producto es setteado a 0. Después es
      * modificado por las Facturas de compra.
      */
     private Double costoCompra;
     @Column(name = "descripcion", length = 2000)
     private String descripcion;
-    @Column(name = "margen", precision = 2, scale = 2)
-    private Double margen;
-    @Column(name = "tipomargen")
-    private Integer tipomargen;
+    @Column(nullable = false)
+    private boolean updatePrecioVenta;
     @Basic(optional = false)
     @Column(name = "precio_venta", precision = 2, scale = 2, nullable = false)
     private Double precioVenta;
@@ -204,22 +202,6 @@ public class Producto implements Serializable {
         this.descripcion = descripcion;
     }
 
-    public Double getMargen() {
-        return margen;
-    }
-
-    public void setMargen(Double margen) {
-        this.margen = margen;
-    }
-
-    public Integer getTipomargen() {
-        return tipomargen;
-    }
-
-    public void setTipomargen(Integer tipomargen) {
-        this.tipomargen = tipomargen;
-    }
-
     public Double getPrecioVenta() {
         return precioVenta;
     }
@@ -308,6 +290,14 @@ public class Producto implements Serializable {
         this.idunidadmedida = idunidadmedida;
     }
 
+    public void setUpdatePrecioVenta(boolean updatePrecioVenta) {
+        this.updatePrecioVenta = updatePrecioVenta;
+    }
+
+    public boolean getUpdatePrecioVenta() {
+        return updatePrecioVenta;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -330,7 +320,7 @@ public class Producto implements Serializable {
 
     @Override
     public String toString() {
-        return "Producto{" + "id=" + id + ", codigo=" + codigo + ", nombre=" + nombre + ", stockmaximo=" + stockmaximo + ", stockactual=" + stockactual + ", stockminimo=" + stockminimo + ", deposito=" + deposito + ", ubicacion=" + ubicacion + ", costoCompra=" + costoCompra + ", descripcion=" + descripcion + ", margen=" + margen + ", tipomargen=" + tipomargen + ", precioVenta=" + precioVenta + ", foto=" + foto + ", remunerativo=" + remunerativo + ", fechaAlta=" + fechaAlta + ", ultimaCompra=" + ultimaCompra + ", iva=" + iva + ", marca=" + marca + ", rubro=" + rubro + ", subrubro=" + subrubro + ", idunidadmedida=" + idunidadmedida + ", stockList=" + stockList + '}';
+        return "Producto{" + "id=" + id + ", codigo=" + codigo + ", nombre=" + nombre + ", stockmaximo=" + stockmaximo + ", stockactual=" + stockactual + ", stockminimo=" + stockminimo + ", deposito=" + deposito + ", ubicacion=" + ubicacion + ", costoCompra=" + costoCompra + ", descripcion=" + descripcion + ", updatePrecioVenta=" + updatePrecioVenta + ", precioVenta=" + precioVenta + ", remunerativo=" + remunerativo + ", fechaAlta=" + fechaAlta + ", ultimaCompra=" + ultimaCompra + ", iva=" + iva + ", marca=" + marca + ", rubro=" + rubro + ", subrubro=" + subrubro + ", idunidadmedida=" + idunidadmedida + '}';
     }
 
     /**
@@ -343,35 +333,5 @@ public class Producto implements Serializable {
      */
     public Double getMinimoPrecioDeVenta() {
         return this.precioVenta != null ? this.precioVenta : this.costoCompra;
-    }
-
-    /**
-     * Calcula el margen de ganancia/descuento de ganancia/perdida sobre el
-     * monto - monto cantidad monetaria sobre la cual se harán los cálculos -
-     * tipoDeMargen Indica como se aplicará el margen al monto. 1 = %
-     * (porcentaje), 2 = $ (monto fijo), if (tipo > 2 || 1 > tipo) RETURN null!
-     * - margen monto fijo o porcentual
-     *
-     * @return adiviná!
-     */
-    public Double getMargenDeGananciaIndividual() {
-        if (this.margen == 0) {
-            return 0.0;
-        }
-
-        Double total;
-        switch (this.tipomargen) {
-            case 1: { // margen en %
-                total = ((getMinimoPrecioDeVenta() * margen) / 100);
-                break;
-            }
-            case 2: {  // margen en $ (monto fijo).. no hay mucha science...
-                total = margen;
-                break;
-            }
-            default:
-                total = null;
-        }
-        return total;
     }
 }

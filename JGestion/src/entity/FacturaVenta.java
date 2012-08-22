@@ -3,6 +3,7 @@ package entity;
 import controller.Valores.FormaPago;
 import utilities.general.UTIL;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
@@ -93,6 +94,9 @@ public class FacturaVenta implements Serializable {
     private Remito remito;
     @Transient
     private transient ChequeTerceros cheque;
+    @Basic(optional = false)
+    @Column(name = "diferencia_redondeo", nullable = false, precision = 10, scale = 2)
+    private BigDecimal diferenciaRedondeo;
 
     public FacturaVenta() {
     }
@@ -302,6 +306,14 @@ public class FacturaVenta implements Serializable {
         this.cheque = cheque;
     }
 
+    public BigDecimal getDiferenciaRedondeo() {
+        return diferenciaRedondeo;
+    }
+
+    public void setDiferenciaRedondeo(BigDecimal diferenciaRedondeo) {
+        this.diferenciaRedondeo = diferenciaRedondeo;
+    }
+
     @Override
     public String toString() {
         return "FacturaVenta{" + "id=" + id + ", tipo=" + tipo + ", fechaVenta="
@@ -311,7 +323,9 @@ public class FacturaVenta implements Serializable {
                 + iva21 + ", movimientoInterno=" + movimientoInterno
                 + ", cliente=" + cliente.getId() + ", listaPrecios=" + listaPrecios
                 + ", usuario=" + usuario.getId() + ", caja=" + caja
-                + ", gravado=" + gravado + ", formaPago=" + formaPago
+                + ", gravado=" + gravado
+                + ", diferenciaRedondeo=" + diferenciaRedondeo
+                + ", formaPago=" + formaPago
                 + ", diasCtaCte=" + diasCtaCte + ", anulada=" + anulada
                 + ", remito=" + remito + ", cheque=" + cheque
                 + "\n\tDetalle:" + (detallesVentaList != null
