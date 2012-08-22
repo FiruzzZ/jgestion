@@ -171,8 +171,10 @@ public class ProductosWeb implements Serializable {
       return true;
    }
 
-   @Override
-   public String toString() {
-      return "entity.ProductosWeb[id=" + id + "]";
-   }
+    @Override
+    public String toString() {
+        return "ProductosWeb{" + "id=" + id + ", precio=" + precio + ", destacado=" + destacado + ", oferta=" + oferta + ", inicioOferta=" + inicioOferta + ", finOferta=" + finOferta + ", estado=" + estado + ", chequeado=" + chequeado + ", producto=" + producto + '}';
+    }
+
+   
 }

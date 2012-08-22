@@ -15,6 +15,7 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import javax.persistence.PersistenceException;
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
 import jpa.controller.ReciboJpaController;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -31,8 +32,21 @@ public class Main {
     private static boolean OCURRIO_ERROR = false;
     public static ResourceBundle resourceBundle = ResourceBundle.getBundle("resources");
 
+    static {
+        //<editor-fold defaultstate="collapsed" desc="set Nimbus L&F">
+        try {
+            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (Exception ex) {
+        }
+        //</editor-fold>
+    }
+
     private Main() {
-        SplashScreen.getSplashScreen();
         PropertyConfigurator.configure("log4j.properties");
         threadSafe();
         try {
@@ -46,7 +60,6 @@ public class Main {
                 //                invokeFE.setVisible(true);
                 //                System.exit(0);
                 EventQueue.invokeLater(new Runnable() {
-
                     @Override
                     public void run() {
                         JFP jFP = new JFP();
@@ -96,7 +109,6 @@ public class Main {
 
     private static void threadSafe() {
         Thread shutdownThread = new Thread() {
-
             @Override
             public void run() {
                 DAO.closeAllConnections();

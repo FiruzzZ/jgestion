@@ -430,25 +430,28 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         newFacturaCompra.setDetalleCompraList(new ArrayList<DetalleCompra>());
 
         //carga detalleCompra
-        DetalleCompra detalleCompra;
         DefaultTableModel dtm = jdFactura.getDtm();
-        ProductoController productoCtrl = new ProductoController();
         for (int i = 0; i < dtm.getRowCount(); i++) {
-            detalleCompra = new DetalleCompra();
+            DetalleCompra detalleCompra = new DetalleCompra();
             detalleCompra.setProducto(new ProductoController().findProductoByCodigo(dtm.getValueAt(i, 1).toString()));
             detalleCompra.setCantidad(Integer.valueOf(dtm.getValueAt(i, 3).toString()));
             detalleCompra.setPrecioUnitario(Double.valueOf(dtm.getValueAt(i, 4).toString()));
             newFacturaCompra.getDetalleCompraList().add(detalleCompra);
-            productoCtrl.valorizarStock(detalleCompra.getProducto(),
-                    detalleCompra.getPrecioUnitario(),
-                    detalleCompra.getCantidad(),
-                    Integer.parseInt(dtm.getValueAt(i, 6).toString()));
+
         }
 
-        // 1- PERSIST, 2- UPDATE STOCK, 3- UPDATE CAJA
+        // 1- PERSIST, 2- UPDATE STOCK, 3- UPDATE CAJA, 4- update costo 
         try {
             //persistiendo
             create(newFacturaCompra);
+            ProductoController productoCtrl = new ProductoController();
+            for (DetalleCompra detalleCompra : newFacturaCompra.getDetalleCompraList()) {
+                for (int row = 0; row < dtm.getRowCount(); row++) {
+                    if (detalleCompra.getProducto().getCodigo().equals(dtm.getValueAt(row, 1).toString())) {
+                        productoCtrl.valorizarStock(detalleCompra.getProducto(), detalleCompra.getPrecioUnitario(), detalleCompra.getCantidad(), Integer.parseInt(dtm.getValueAt(row, 6).toString()));
+                    }
+                }
+            }
             newFacturaCompra = (FacturaCompra) DAO.findEntity(FacturaCompra.class, newFacturaCompra.getId());
             if (newFacturaCompra.getActualizaStock()) {
                 //y también la variable Producto.stockActual

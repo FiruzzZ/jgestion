@@ -1,3 +1,9 @@
+2012/08/15
+ALTER TABLE factura_venta ADD COLUMN diferencia_redondeo numeric(10,2) NOT NULL DEFAULT 0;
+2012/07/03
+alter table producto add column updateprecioventa boolean default false not null;
+ALTER TABLE producto DROP COLUMN margen;
+ALTER TABLE producto DROP COLUMN tipomargen;
 2012/04/13
 --alter table sucursal add column puntoventa integer not null default 1;
 ALTER TABLE sucursal ADD COLUMN factura_a numeric(8,0) NOT NULL DEFAULT 1;

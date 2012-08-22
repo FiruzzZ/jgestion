@@ -21,7 +21,7 @@
               <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="32767" attributes="0"/>
+              <EmptySpace pref="20" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -148,12 +148,8 @@
                           <Component id="jLabel17" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="tfCostoCompra" min="-2" pref="62" max="-2" attributes="0"/>
-                          <EmptySpace type="separate" max="-2" attributes="0"/>
-                          <Component id="jLabel11" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="cbTipoMargen" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="tfMargen" min="-2" pref="35" max="-2" attributes="0"/>
+                          <Component id="checkUpdatePrecioVenta" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <Component id="dateUltimaCompra" alignment="0" min="-2" pref="120" max="-2" attributes="0"/>
                       <Group type="102" alignment="0" attributes="0">
@@ -261,11 +257,9 @@
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="jLabel16" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="tfPrecio" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="jLabel11" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="cbTipoMargen" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="tfMargen" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="tfCostoCompra" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel17" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="checkUpdatePrecioVenta" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
@@ -376,39 +370,6 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Descrip."/>
           </Properties>
-        </Component>
-        <Component class="javax.swing.JComboBox" name="cbTipoMargen">
-          <Properties>
-            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="2">
-                <StringItem index="0" value="%"/>
-                <StringItem index="1" value="$"/>
-              </StringArray>
-            </Property>
-            <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;Margen aplicado al precio&#xa;&lt;br&gt;% - Porcentual&#xa;&lt;br&gt;$  - Monto fijo &#xa;&lt;/html&gt;"/>
-          </Properties>
-          <AuxValues>
-            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="cbTipoMargen.setVisible(false);"/>
-          </AuxValues>
-        </Component>
-        <Component class="javax.swing.JTextField" name="tfMargen">
-          <Properties>
-            <Property name="horizontalAlignment" type="int" value="4"/>
-            <Property name="text" type="java.lang.String" value="0"/>
-            <Property name="toolTipText" type="java.lang.String" value="margen de ganancia del producto"/>
-            <Property name="name" type="java.lang.String" value="tfmargen" noResource="true"/>
-          </Properties>
-          <AuxValues>
-            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="tfMargen.setVisible(false);"/>
-          </AuxValues>
-        </Component>
-        <Component class="javax.swing.JLabel" name="jLabel11">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="Margen"/>
-          </Properties>
-          <AuxValues>
-            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="jLabel11.setVisible(false);"/>
-          </AuxValues>
         </Component>
         <Component class="javax.swing.JComboBox" name="cbIVA">
           <Properties>
@@ -551,6 +512,12 @@
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnAddRubrosActionPerformed"/>
           </Events>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="checkUpdatePrecioVenta">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Actualizar Precio Venta seg&#xfa;n compras"/>
+            <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;&#xa;Chequeando est&#xe1; opci&#xf3;n, permite al sistema actualizar autom&#xe1;ticamente el &lt;b&gt;Precio de Venta&lt;/b&gt;&#xa;&lt;br&gt;seg&#xfa;n el &lt;b&gt;Costo de Compra&lt;/b&gt;.&#xa;&lt;br&gt;Cada vez que se registre una compra del producto, el &lt;b&gt;Costo de Compra&lt;/b&gt; se modifica y&#xa;&lt;br&gt;as&#xed; tambi&#xe9;n lo har&#xe1; el &lt;b&gt;Precio de Venta&lt;/b&gt;.&#xa;&lt;/html&gt;"/>
+          </Properties>
         </Component>
       </SubComponents>
     </Container>
