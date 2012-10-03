@@ -2,6 +2,8 @@ package controller;
 
 import controller.exceptions.*;
 import entity.Caja;
+import entity.ChequePropio;
+import entity.ChequeTerceros;
 import entity.CtacteProveedor;
 import entity.Remesa;
 import entity.Sucursal;
@@ -20,14 +22,17 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 import javax.persistence.NoResultException;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
+import jgestion.JGestionUtils;
 import jpa.controller.CajaMovimientosJpaController;
 import jpa.controller.RemesaJpaController;
 import org.apache.log4j.Logger;
@@ -59,17 +64,16 @@ public class RemesaController implements ActionListener, FocusListener {
         return DAO.getEntityManager();
     }
 
-    public void initRemesa(JFrame frame, boolean modal) throws MessageException {
-        UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.COMPRA);
-        jdReRe = new JDReRe(frame, modal);
+    public void initRemesa(JFrame owner, boolean modal) throws MessageException {
+        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.COMPRA);
+        jdReRe = new JDReRe(owner, modal);
         jdReRe.setUIForRemesas();
-        UTIL.getDefaultTableModel(jdReRe.getjTable1(), COLUMN_NAMES, COLUMN_WIDTH, COLUMN_CLASS);
+        UTIL.getDefaultTableModel(jdReRe.getTableAPagar(), COLUMN_NAMES, COLUMN_WIDTH, COLUMN_CLASS);
         UTIL.loadComboBox(jdReRe.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), false);
         UTIL.loadComboBox(jdReRe.getCbCaja(), new UsuarioHelper().getCajas(true), false);
         UTIL.loadComboBox(jdReRe.getCbClienteProveedor(), new ProveedorController().findEntities(), true);
         UTIL.loadComboBox(jdReRe.getCbCtaCtes(), null, false);
         jdReRe.getbAnular().addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -84,7 +88,6 @@ public class RemesaController implements ActionListener, FocusListener {
             }
         });
         jdReRe.getbAceptar().addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -109,7 +112,6 @@ public class RemesaController implements ActionListener, FocusListener {
             }
         });
         jdReRe.getBtnADD().addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -123,18 +125,16 @@ public class RemesaController implements ActionListener, FocusListener {
             }
         });
         jdReRe.getBtnDEL().addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 delEntragaFromDetalle();
             }
         });
         jdReRe.getCbClienteProveedor().addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (jdReRe.getCbClienteProveedor().getSelectedIndex() > 0) {
-                    cargarCtaCtes((Proveedor) jdReRe.getCbClienteProveedor().getSelectedItem());
+                    cargarFacturasCtaCtes((Proveedor) jdReRe.getCbClienteProveedor().getSelectedItem());
                 } else {
                     //si no eligió nada.. vacia el combo de cta cte's
                     UTIL.loadComboBox(jdReRe.getCbCtaCtes(), null, false);
@@ -143,12 +143,11 @@ public class RemesaController implements ActionListener, FocusListener {
             }
         });
         jdReRe.getCbCtaCtes().addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
                     try {
-                        selectedCtaCte = (CtacteProveedor) jdReRe.getCbCtaCtes().getSelectedItem();
+                        selectedCtaCte = ((ComboBoxWrapper<CtacteProveedor>) jdReRe.getCbCtaCtes().getSelectedItem()).getEntity();
                         jdReRe.setTfImporte(UTIL.PRECIO_CON_PUNTO.format(selectedCtaCte.getImporte()));
                         jdReRe.setTfPagado(UTIL.PRECIO_CON_PUNTO.format(selectedCtaCte.getEntregado()));
                         jdReRe.setTfSaldo(UTIL.PRECIO_CON_PUNTO.format(selectedCtaCte.getImporte() - selectedCtaCte.getEntregado()));
@@ -161,7 +160,72 @@ public class RemesaController implements ActionListener, FocusListener {
                 }
             }
         });
+        jdReRe.getBtnAddPago().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                displayUIPagos(jdReRe.getCbFormasDePago().getSelectedIndex());
+            }
+
+            /**
+             * Efectivo, Cheque Propio, Cheque Tercero, Nota de Crédito,
+             * Retención
+             */
+            private void displayUIPagos(int formaPago) {
+
+                if (formaPago == 0) {
+                    jdReRe.displayABMEfectivo();
+                } else if (formaPago == 1) {
+                    displayABMChequePropio();
+                } else if (formaPago == 2) {
+                    displayABMChequeTerceros();
+                } else if (formaPago == 3) {
+                    diplayABMNotaCredito();
+                } else if (formaPago == 4) {
+                    diplayABMRetención();
+                }
+                updateTotales();
+            }
+        });
+        jdReRe.getBtnDelPago().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                UTIL.removeSelectedRows(jdReRe.getTablePagos());
+                updateTotales();
+            }
+        });
+        jdReRe.setLocationRelativeTo(owner);
         jdReRe.setVisible(true);
+    }
+
+    private void displayABMChequePropio() {
+        try {
+            ChequePropio cheque = new ChequePropioController().initABM(jdReRe, false, (Proveedor) jdReRe.getCbClienteProveedor().getSelectedItem());
+            if (cheque != null) {
+                DefaultTableModel dtm = jdReRe.getDtmPagos();
+                dtm.addRow(new Object[]{cheque, "CH", cheque.getNumero(), cheque.getImporte()});
+            }
+        } catch (MessageException ex) {
+            ex.displayMessage(jdReRe);
+        }
+    }
+
+    private void displayABMChequeTerceros() {
+        ChequeTerceros cheque = null;
+        JDialog jd = new ChequeTercerosController().initManager(null, null);
+        jd.setLocationRelativeTo(jdReRe);
+        jd.setVisible(true);
+        if (cheque != null) {
+            DefaultTableModel dtm = jdReRe.getDtmPagos();
+            dtm.addRow(new Object[]{cheque, "CH", cheque.getNumero(), cheque.getImporte()});
+        }
+    }
+
+    private void diplayABMNotaCredito() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    private void diplayABMRetención() {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     public void mouseClicked(MouseEvent e) {
@@ -177,7 +241,7 @@ public class RemesaController implements ActionListener, FocusListener {
     }
 
     private void checkConstraints() throws MessageException {
-        if (jdReRe.getDtm().getRowCount() < 1) {
+        if (jdReRe.getDtmAPagar().getRowCount() < 1) {
             throw new MessageException("No ha hecho ninguna entrega");
         }
 
@@ -192,16 +256,15 @@ public class RemesaController implements ActionListener, FocusListener {
         Remesa re = new Remesa();
         re.setCaja((Caja) jdReRe.getCbCaja().getSelectedItem());
         re.setSucursal(((ComboBoxWrapper<Sucursal>) jdReRe.getCbSucursal().getSelectedItem()).getEntity());
-        re.setUsuario(UsuarioJpaController.getCurrentUser());
+        re.setUsuario(UsuarioController.getCurrentUser());
         re.setEstado(true);
         re.setFechaRemesa(jdReRe.getDcFechaReRe());
-        re.setMontoEntrega(Double.parseDouble(jdReRe.getTfTotalEfectivo().getText()));
+        re.setMontoEntrega(Double.parseDouble(jdReRe.getTfTotalPagado().getText()));
         // 30% faster on ArrayList with initialCapacity
-        re.setDetalleRemesaList(new ArrayList<DetalleRemesa>(jdReRe.getDtm().getRowCount()));
-        DefaultTableModel dtm = jdReRe.getDtm();
+        re.setDetalleRemesaList(new ArrayList<DetalleRemesa>(jdReRe.getDtmAPagar().getRowCount()));
+        DefaultTableModel dtm = jdReRe.getDtmAPagar();
         FacturaCompraController fcc = new FacturaCompraController();
         DetalleRemesa detalle;
-//        double montoParaDesacreditar =0.0;
         for (int i = 0; i < dtm.getRowCount(); i++) {
             detalle = new DetalleRemesa();
             detalle.setFacturaCompra(fcc.findFacturaCompra(Integer.valueOf(dtm.getValueAt(i, 0).toString())));
@@ -209,17 +272,9 @@ public class RemesaController implements ActionListener, FocusListener {
             detalle.setMontoEntrega(Double.parseDouble(dtm.getValueAt(i, 3).toString()));
             detalle.setAcreditado((Boolean) dtm.getValueAt(i, 4));
             detalle.setRemesa(re);
-            //detalle.setRemesa(re); <--- no hace falta...
             re.getDetalleRemesaList().add(detalle);
-//            if (detalle.isAcreditado()) {
-//                montoParaDesacreditar += detalle.getMontoEntrega();
-//            }
         }
-        //registrando pago en CAJA
         new CajaMovimientosJpaController().asentarMovimiento(re);
-//        if (montoParaDesacreditar > 0) {
-//            new NotaCreditoJpaController().desacreditar(re, (Cliente) jdReRe.getCbClienteProveedor().getSelectedItem(), montoParaDesacreditar);
-//        }
         return re;
     }
 
@@ -237,12 +292,7 @@ public class RemesaController implements ActionListener, FocusListener {
     }
 
     private void limpiarDetalle() {
-        UTIL.limpiarDtm(jdReRe.getjTable1());
-        jdReRe.setTfImporte("0");
-        jdReRe.setTfEntrega("");
-        jdReRe.setTfObservacion("");
-        jdReRe.setTfSaldo("0");
-        jdReRe.getTfTotalEfectivo().setText("0");
+        jdReRe.limpiarDetalle();
         selectedFechaReRe = null;
     }
 
@@ -264,7 +314,7 @@ public class RemesaController implements ActionListener, FocusListener {
         // si ya se cargó un detalle de entrega
         // y sigue habiendo al menos UN detalle agregado (dtm no vacia)
         // ctrla que la fecha de ReRe siga siendo la misma
-        if ((selectedFechaReRe != null) && (jdReRe.getDtm().getRowCount() > 0)
+        if ((selectedFechaReRe != null) && (jdReRe.getDtmAPagar().getRowCount() > 0)
                 && (!UTIL.DATE_FORMAT.format(selectedFechaReRe).equals(UTIL.DATE_FORMAT.format(jdReRe.getDcFechaReRe())))) {
             throw new MessageException("La fecha de " + CLASS_NAME + " a sido cambiada"
                     + "\nAnterior: " + UTIL.DATE_FORMAT.format(selectedFechaReRe)
@@ -273,75 +323,70 @@ public class RemesaController implements ActionListener, FocusListener {
             selectedFechaReRe = jdReRe.getDcFechaReRe();
         }
         FacturaCompra facturaToAddToDetail = selectedCtaCte.getFactura();
-        double entrega;
-        String observacion = jdReRe.getTfObservacion();
+        Double entrega$;
         try {
-            entrega = Double.parseDouble(jdReRe.getTfEntrega());
-            if (entrega <= 0) {
+            entrega$ = Double.parseDouble(jdReRe.getTfEntrega());
+            if (entrega$ <= 0) {
                 throw new MessageException("Monto de entrega no válido (Debe ser mayor a 0)");
             }
 
-//         if(entrega > (selectedCtaCte.getImporte() - selectedCtaCte.getEntregado()) )
-            if (entrega > (selectedCtaCte.getImporte() - selectedCtaCte.getEntregado())) {
+            if (entrega$ > (selectedCtaCte.getImporte() - selectedCtaCte.getEntregado())) {
                 throw new MessageException("Monto de entrega no puede ser mayor al Saldo restante");
             }
 
         } catch (NumberFormatException e) {
-            throw new MessageException("Monto de entrega no válido");
-        }
-        if (observacion.length() > 200) {
-            throw new MessageException("La Observación no puede superar los 200 caracteres");
+            throw new MessageException("Monto de entrega no válido, ingrese solo números y utilice el punto como separador decimal.");
         }
 
-        boolean acreditado = jdReRe.getCheckAcreditarEntrega().isSelected();
-
-        double entregaParcial = 0;
-        for (int i = 0; i < jdReRe.getDtm().getRowCount(); i++) {
-            if (facturaToAddToDetail.getId() == (Integer) jdReRe.getDtm().getValueAt(i, 0)) {
-                entregaParcial += (Double) jdReRe.getDtm().getValueAt(i, 3);
-                if (acreditado == (Boolean) jdReRe.getDtm().getValueAt(i, 4)) {
-                    throw new MessageException("El detalle ya contiene una entrega "
-                            + (acreditado ? " (ACREDITADA)" : "") + " de esta factura.");
-                }
+        double entregaParcial$ = 0;
+        for (int i = 0; i < jdReRe.getDtmAPagar().getRowCount(); i++) {
+            if (facturaToAddToDetail.getId() == (Integer) jdReRe.getDtmAPagar().getValueAt(i, 0)) {
+                entregaParcial$ += (Double) jdReRe.getDtmAPagar().getValueAt(i, 3);
+                throw new MessageException("El detalle ya contiene una entrega "
+                        + " de esta factura.");
             }
         }
-        if ((entrega + entregaParcial) > (selectedCtaCte.getImporte() - selectedCtaCte.getEntregado())) {
-            throw new MessageException("El monto de esta entrega $" + entrega + " + $" + entregaParcial
+        if ((entrega$ + entregaParcial$) > (selectedCtaCte.getImporte() - selectedCtaCte.getEntregado())) {
+            throw new MessageException("El monto de esta entrega $" + entrega$ + " + $" + entregaParcial$
                     + "\nsuperan la deuda de la Factura $" + (selectedCtaCte.getImporte() - selectedCtaCte.getEntregado()));
         }
-        double restante;
-        if (acreditado) {
-            restante = Double.parseDouble(jdReRe.getTfCreditoDebitoRestante().getText());
-            //si se intenta hacer un pago superior a la deuda
-            if (restante < entrega) {
-                throw new MessageException("La entrega no puede superar el deuda");
-            }
-        }
-        DefaultTableModel dtm = jdReRe.getDtm();
+        DefaultTableModel dtm = jdReRe.getDtmAPagar();
         dtm.addRow(new Object[]{
                     facturaToAddToDetail.getId(),
                     UTIL.AGREGAR_CEROS(String.valueOf(facturaToAddToDetail.getNumero()), 12),
-                    observacion,
-                    entrega,
-                    acreditado
+                    null,
+                    entrega$
                 });
-        double totalEntregado = Double.valueOf(jdReRe.getTfTotalEfectivo().getText());
-        jdReRe.getTfTotalEfectivo().setText(UTIL.PRECIO_CON_PUNTO.format(totalEntregado + entrega));
+        updateTotales();
+    }
 
+    private void updateTotales() {
+        BigDecimal totalAPagar = BigDecimal.ZERO;
+        BigDecimal totalPagado = BigDecimal.ZERO;
+        DefaultTableModel dtm = (DefaultTableModel) jdReRe.getTablePagos().getModel();
+        for (int row = 0; row < dtm.getRowCount(); row++) {
+            Double aPagar = (Double) dtm.getValueAt(row, 3);
+            totalAPagar.add(BigDecimal.valueOf(aPagar));
+        }
+        dtm = (DefaultTableModel) jdReRe.getTablePagos().getModel();
+        for (int row = 0; row < dtm.getRowCount(); row++) {
+            Double pagos = (Double) dtm.getValueAt(row, 3);
+            totalPagado.add(BigDecimal.valueOf(pagos));
+        }
+        jdReRe.getTfTotalAPagar().setText(UTIL.PRECIO_CON_PUNTO.format(totalAPagar));
+        jdReRe.getTfTotalPagado().setText(UTIL.PRECIO_CON_PUNTO.format((totalPagado)));
     }
 
     private void delEntragaFromDetalle() {
-        int selectedRow = jdReRe.getjTable1().getSelectedRow();
+        int selectedRow = jdReRe.getTableAPagar().getSelectedRow();
         if (selectedRow > -1) {
-            double entrega = Double.valueOf(jdReRe.getDtm().getValueAt(selectedRow, 2).toString());
-            double totalEntregado = Double.valueOf(jdReRe.getTfTotalEfectivo().getText());
-            jdReRe.getTfTotalEfectivo().setText(UTIL.PRECIO_CON_PUNTO.format(totalEntregado - entrega));
-            jdReRe.getDtm().removeRow(selectedRow);
+            jdReRe.getDtmAPagar().removeRow(selectedRow);
         }
+        updateTotales();
     }
 
     public JDialog initBuscador(JDialog dialog, boolean modal) throws MessageException {
-        UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.COMPRA);
+        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.COMPRA);
         buscador = new JDBuscadorReRe(dialog, "Buscador - " + CLASS_NAME, modal, "Proveedor", "Nº " + CLASS_NAME);
         buscador.setLocationRelativeTo(dialog);
         buscador.setListeners(this);
@@ -353,7 +398,6 @@ public class RemesaController implements ActionListener, FocusListener {
                 new String[]{"Nº", "Monto", "Fecha", "Sucursal", "Caja", "Usuario", "Fecha/Hora (Sist)"},
                 new int[]{50, 30, 40, 50, 50, 50, 70});
         buscador.getbBuscar().addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -366,7 +410,6 @@ public class RemesaController implements ActionListener, FocusListener {
             }
         });
         buscador.getjTable1().addMouseListener(new MouseAdapter() {
-
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() > 1) {
@@ -376,11 +419,10 @@ public class RemesaController implements ActionListener, FocusListener {
         return buscador;
     }
 
-    private void cargarCtaCtes(Proveedor proveedor) {
+    private void cargarFacturasCtaCtes(Proveedor proveedor) {
         limpiarDetalle();
         List<CtacteProveedor> ctacteProveedorPendientesList = new CtacteProveedorJpaController().findCtacteProveedorByProveedor(proveedor.getId(), Valores.CtaCteEstado.PENDIENTE.getId());
-        UTIL.loadComboBox(jdReRe.getCbCtaCtes(), ctacteProveedorPendientesList, false);
-
+        UTIL.loadComboBox(jdReRe.getCbCtaCtes(), JGestionUtils.getWrappedCtacteProveedor(ctacteProveedorPendientesList), false);
     }
 
     private void resetPanel() {
@@ -495,20 +537,19 @@ public class RemesaController implements ActionListener, FocusListener {
         UTIL.setSelectedItem(jdReRe.getCbClienteProveedor(), p.toString());
 
         cargarDetalleReRe(remesa.getDetalleRemesaList());
-
         jdReRe.setTfImporte("");
         jdReRe.setTfPagado("");
         jdReRe.setTfSaldo("");
-        jdReRe.getTfTotalEfectivo().setText(String.valueOf(remesa.getMonto()));
     }
 
     private void cargarDetalleReRe(List<DetalleRemesa> detalleRemesaList) {
-        UTIL.limpiarDtm(jdReRe.getjTable1());
-        DefaultTableModel dtm = jdReRe.getDtm();
+        DefaultTableModel dtm = jdReRe.getDtmAPagar();
+        dtm.setRowCount(0);
         for (DetalleRemesa r : detalleRemesaList) {
             dtm.addRow(new Object[]{
+                        r.getFacturaCompra().getId(),
                         UTIL.AGREGAR_CEROS(String.valueOf(r.getFacturaCompra().getNumero()), 12),
-                        r.getObservacion(),
+                        null,
                         r.getMontoEntrega()
                     });
         }

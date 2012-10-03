@@ -192,7 +192,7 @@ public class ClienteController implements ActionListener {
      * @throws MessageException
      */
     private void initABM(boolean isEditing, ActionEvent e) throws MessageException {
-        UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.ABM_CLIENTES);
+        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.ABM_CLIENTES);
         if (isEditing && EL_OBJECT == null) {
             throw new MessageException("Debe elegir una fila");
 

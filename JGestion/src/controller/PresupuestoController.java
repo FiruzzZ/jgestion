@@ -265,7 +265,7 @@ public class PresupuestoController implements ActionListener, KeyListener {
             newPresupuesto.setIva21(Double.valueOf(jdFacturaVenta.getTfTotalIVA21()));
             newPresupuesto.setListaPrecios((ListaPrecios) jdFacturaVenta.getCbListaPrecio().getSelectedItem());
             newPresupuesto.setSucursal((Sucursal) jdFacturaVenta.getCbSucursal().getSelectedItem());
-            newPresupuesto.setUsuario(UsuarioJpaController.getCurrentUser());
+            newPresupuesto.setUsuario(UsuarioController.getCurrentUser());
             newPresupuesto.setDetallePresupuestoList(new ArrayList<DetallePresupuesto>(dtm.getRowCount()));
             // carga de detalleVenta
             DetallePresupuesto detallePresupuesto;
@@ -309,7 +309,7 @@ public class PresupuestoController implements ActionListener, KeyListener {
     }
 
     public void initBuscador(JFrame owner) throws MessageException {
-        UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.VENTA);
+        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.VENTA);
         buscador = new JDBuscadorReRe(owner, "Buscador - " + CLASS_NAME, true, "Cliente", "Nº " + CLASS_NAME);
         buscador.getjTable1().addMouseListener(new java.awt.event.MouseAdapter() {
 

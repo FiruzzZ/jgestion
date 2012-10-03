@@ -238,7 +238,7 @@ public class UnidadmedidaJpaController implements ActionListener, MouseListener 
     }
 
     public void initABM(JFrame frame, boolean modal) throws MessageException {
-        UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.ABM_PRODUCTOS);
+        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.ABM_PRODUCTOS);
         abm = new JDMiniABM(frame, modal);
         abm.hideBtnLock();
         abm.hideFieldCodigo();

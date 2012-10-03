@@ -182,7 +182,7 @@ public class CtacteProveedorJpaController implements ActionListener {
    public void iniResumenCtaCte(JFrame owner, boolean modal) {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
+         UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
       } catch (MessageException ex) {
          javax.swing.JOptionPane.showMessageDialog(owner, ex.getMessage());
          return;

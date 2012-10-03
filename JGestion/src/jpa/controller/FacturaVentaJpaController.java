@@ -31,15 +31,15 @@ public class FacturaVentaJpaController extends AbstractDAO<FacturaVenta, Integer
 
     @Override
     public FacturaVenta find(Integer id) {
-        try {
+//        try {
             CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
             CriteriaQuery<FacturaVenta> query = cb.createQuery(getEntityClass());
             Root<FacturaVenta> from = query.from(getEntityClass());
             query.where(cb.equal(from.get(FacturaVenta_.id), id));
             return getEntityManager().createQuery(query).setHint(QueryHints.REFRESH, Boolean.TRUE).getSingleResult();
-        } finally {
-            getEntityManager().close();
-        }
+//        } finally {
+//            getEntityManager().close();
+//        }
     }
 
     public FacturaVenta find(char tipo, Sucursal sucursal, Integer numero) {
@@ -64,13 +64,13 @@ public class FacturaVentaJpaController extends AbstractDAO<FacturaVenta, Integer
         } else {
             throw new IllegalArgumentException("Parameter tipo not valid, no corresponde a ningún tipo de Factura venta.");
         }
-        Object o = em.createQuery("SELECT MAX(o.numero) FROM FacturaVenta o"
+        Object o = em.createQuery("SELECT MAX(o.numero) FROM " + getEntityClass().getSimpleName() + " o"
                 + " WHERE o.tipo ='" + Character.toUpperCase(tipo) + "'"
                 + " AND o.sucursal.id= " + sucursal.getId()).getSingleResult();
         if (o != null) {
             Integer nextNumeroSegunDB = 1 + Integer.valueOf(o.toString());
             if (nextNumeroSegunDB > next) {
-                //quiere decir que la numeración ya supera la configuración
+                //quiere decir que hay registrado un comprobante con mayor numeracion que supera la configuración de la sucursal
                 next = nextNumeroSegunDB;
             }
         }
@@ -96,6 +96,6 @@ public class FacturaVentaJpaController extends AbstractDAO<FacturaVenta, Integer
     public void clearAndClose() {
         entityManager.clear();
         entityManager.close();
-        
+
     }
 }

@@ -59,21 +59,10 @@ public class Recibo implements Serializable {
     private Usuario usuario;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "recibo")
     private List<DetalleRecibo> detalleReciboList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "recibo")
+    private List<ReciboPagos> pagos;
 
     public Recibo() {
-    }
-
-    public Recibo(Integer numero, Date fechaCarga, double monto, BigDecimal retencion, Date fechaRecibo, boolean estado, Caja caja, Sucursal sucursal, Usuario usuario, List<DetalleRecibo> detalleReciboList) {
-        this.numero = numero;
-        this.fechaCarga = fechaCarga;
-        this.monto = monto;
-        this.retencion = retencion;
-        this.fechaRecibo = fechaRecibo;
-        this.estado = estado;
-        this.caja = caja;
-        this.sucursal = sucursal;
-        this.usuario = usuario;
-        this.detalleReciboList = detalleReciboList;
     }
 
     public Integer getNumero() {
@@ -158,6 +147,14 @@ public class Recibo implements Serializable {
 
     public void setDetalleReciboList(List<DetalleRecibo> detalleReciboList) {
         this.detalleReciboList = detalleReciboList;
+    }
+
+    public List<ReciboPagos> getPagos() {
+        return pagos;
+    }
+
+    public void setPagos(List<ReciboPagos> pagos) {
+        this.pagos = pagos;
     }
 
     @Override

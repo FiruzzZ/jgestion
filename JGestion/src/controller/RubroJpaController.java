@@ -206,14 +206,14 @@ public class RubroJpaController implements ActionListener, MouseListener {
     }
 
     public JDialog getABM(JDialog owner) throws MessageException {
-        UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.ABM_PRODUCTOS);
+        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.ABM_PRODUCTOS);
         abm = new JDMiniABM(owner, true);
         initABM();
         return abm;
     }
 
     public JDialog getABM(JFrame owner) throws MessageException {
-        UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.ABM_PRODUCTOS);
+        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.ABM_PRODUCTOS);
         abm = new JDMiniABM(owner, true);
         initABM();
         return abm;

@@ -195,11 +195,12 @@
                   </Group>
                   <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
+                      <Component id="checkCuentasBancarias" min="-2" max="-2" attributes="0"/>
                       <Component id="checkVentaNumeracionManual" min="-2" max="-2" attributes="0"/>
                       <Component id="checkABMOfertas" min="-2" max="-2" attributes="0"/>
                       <Component id="checkVenta" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace pref="27" max="32767" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -231,7 +232,9 @@
                           <Component id="checkVentaNumeracionManual" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
                       </Group>
                   </Group>
-                  <EmptySpace pref="73" max="32767" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="checkCuentasBancarias" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace pref="50" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -317,6 +320,12 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Venta (Numeraci&#xf3;n manual)"/>
             <Property name="toolTipText" type="java.lang.String" value="Permite cargar Comprobantes de Venta (Factura, Remito, Recibo, Nota Cr&#xe9;dito) y asignarle un espec&#xed;fico N&#xb0;"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="checkCuentasBancarias">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="ABM Cuentas Bancarias"/>
+            <Property name="toolTipText" type="java.lang.String" value="Informaci&#xf3;n general usada por el sistema"/>
           </Properties>
         </Component>
       </SubComponents>

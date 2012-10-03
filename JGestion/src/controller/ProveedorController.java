@@ -291,7 +291,7 @@ public class ProveedorController implements ActionListener {
     private void initABM(boolean isEditing, ActionEvent e) throws MessageException {
         // <editor-fold defaultstate="collapsed" desc="checking Permiso">
         try {
-            UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.ABM_PROVEEDORES);
+            UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.ABM_PROVEEDORES);
         } catch (MessageException ex) {
             javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
             return;

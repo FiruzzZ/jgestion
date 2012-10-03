@@ -436,7 +436,7 @@
     <Component class="javax.swing.JButton" name="btnVerNumeracionActual">
       <Properties>
         <Property name="text" type="java.lang.String" value="Ver Numeraci&#xf3;n actual"/>
-        <Property name="name" type="java.lang.String" value="verNumeracionActual"/>
+        <Property name="name" type="java.lang.String" value="verNumeracionActual" noResource="true"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel14">
@@ -444,8 +444,14 @@
         <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
           <Color blue="33" green="0" red="ff" type="rgb"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="&lt;html&gt;Una vez que se haya cargado el primer comprobante, la numeraci&#xf3;n inician no podr&#xe1;s ser re-configurada con un n&#xfa;mero &lt;b&gt;anterior&lt;/b&gt; al de la documentaci&#xf3;n existente. &lt;/html&gt;"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/iconos/16px_blue_system-help.png"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="&lt;html&gt;Una vez que se haya cargado el primer comprobante, la numeraci&#xf3;n inician no podr&#xe1;s ser re-configurada con un n&#xfa;mero &lt;b&gt;anterior&lt;/b&gt; a alg&#xfa;n comprobante existente. (Doble click para ver ejemplo).&lt;/html&gt;"/>
       </Properties>
+      <Events>
+        <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jLabel14MouseClicked"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

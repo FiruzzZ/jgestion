@@ -89,7 +89,7 @@ public class CajaMovimientosController implements ActionListener {
         dcm.setMonto(0);
         dcm.setNumero(-1); //meaningless yet...
         dcm.setTipo(DetalleCajaMovimientosJpaController.APERTURA_CAJA);
-        dcm.setUsuario(UsuarioJpaController.getCurrentUser());
+        dcm.setUsuario(UsuarioController.getCurrentUser());
         dcm.setMovimientoConcepto(MovimientoConceptoJpaController.EFECTIVO);
         dcm.setCajaMovimientos(cm);
         cm.getDetalleCajaMovimientosList().add(dcm);
@@ -120,7 +120,7 @@ public class CajaMovimientosController implements ActionListener {
         dcm.setMonto(nextCaja.getMontoApertura());
         dcm.setNumero(-1); //meaningless yet...
         dcm.setTipo(DetalleCajaMovimientosJpaController.APERTURA_CAJA);
-        dcm.setUsuario(UsuarioJpaController.getCurrentUser());
+        dcm.setUsuario(UsuarioController.getCurrentUser());
         if (dcm.getMovimientoConcepto() == null) {
             //default value
             dcm.setMovimientoConcepto(MovimientoConceptoJpaController.EFECTIVO);
@@ -132,7 +132,7 @@ public class CajaMovimientosController implements ActionListener {
     public void initCierreCaja(JFrame frame, boolean modal) {
         // <editor-fold defaultstate="collapsed" desc="checking Permiso">
         try {
-            UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.CERRAR_CAJAS);
+            UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.CERRAR_CAJAS);
         } catch (MessageException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
             return;
@@ -308,7 +308,7 @@ public class CajaMovimientosController implements ActionListener {
         cajaMovimientos.setMontoCierre(getTotal());
         //datos implicitos
         cajaMovimientos.setSistemaFechaCierre(new Date());
-        cajaMovimientos.setUsuarioCierre(UsuarioJpaController.getCurrentUser());
+        cajaMovimientos.setUsuarioCierre(UsuarioController.getCurrentUser());
         jpaController.merge(cajaMovimientos);
 
         abrirNextCajaMovimiento(cajaMovimientos);
@@ -332,7 +332,7 @@ public class CajaMovimientosController implements ActionListener {
      */
     private List<CajaMovimientos> getCajaMovimientosActivasFromCurrentUser() {
         //get cajas permitidas para ESTE usuario
-        List<Caja> cajasPermitidasList = new CajaController().findCajasPermitidasByUsuario(UsuarioJpaController.getCurrentUser(), true);
+        List<Caja> cajasPermitidasList = new CajaController().findCajasPermitidasByUsuario(UsuarioController.getCurrentUser(), true);
         List<CajaMovimientos> cajaMovimientosAbiertasList = new ArrayList<CajaMovimientos>(cajasPermitidasList.size());
         CajaMovimientos cajaMovimiento;
         for (Caja caja : cajasPermitidasList) {
@@ -358,7 +358,7 @@ public class CajaMovimientosController implements ActionListener {
     }
 
     public void initCajaToCaja(JFrame frame, boolean modal) throws MessageException {
-        UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
+        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
 
         jdCajaToCaja = new JDCajaToCaja(frame, modal);
         jdCajaToCaja.setLocationRelativeTo(frame);
@@ -449,7 +449,7 @@ public class CajaMovimientosController implements ActionListener {
         dcm.setMonto(-monto); // <--- NEGATIVIZAR!
         dcm.setNumero(Integer.parseInt(jdCajaToCaja.getTfMovimiento().getText()));
         dcm.setTipo(DetalleCajaMovimientosJpaController.MOVIMIENTO_CAJA);
-        dcm.setUsuario(UsuarioJpaController.getCurrentUser());
+        dcm.setUsuario(UsuarioController.getCurrentUser());
         new DetalleCajaMovimientosJpaController().create(dcm);// </editor-fold>
 
         // <editor-fold defaultstate="collapsed" desc="Destino to Origen - INGRESO">
@@ -460,7 +460,7 @@ public class CajaMovimientosController implements ActionListener {
         dcm.setMonto(monto);
         dcm.setNumero(Integer.parseInt(jdCajaToCaja.getTfMovimiento().getText()));
         dcm.setTipo(DetalleCajaMovimientosJpaController.MOVIMIENTO_CAJA);
-        dcm.setUsuario(UsuarioJpaController.getCurrentUser());
+        dcm.setUsuario(UsuarioController.getCurrentUser());
         new DetalleCajaMovimientosJpaController().create(dcm);// </editor-fold>
 
         jdCajaToCaja.showMessage("Realizado", "Movimiento entre cajas", 1);
@@ -520,7 +520,7 @@ public class CajaMovimientosController implements ActionListener {
     public void initMovimientosVarios(JFrame frame, boolean modal) {
         // <editor-fold defaultstate="collapsed" desc="checking Permiso">
         try {
-            UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
+            UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
         } catch (MessageException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
             return;
@@ -613,7 +613,7 @@ public class CajaMovimientosController implements ActionListener {
         dcm.setMonto(dcm.getIngreso() ? monto : -monto);
         dcm.setMovimientoConcepto((MovimientoConcepto) panelMovVarios.getCbConcepto().getSelectedItem());
         dcm.setTipo(DetalleCajaMovimientosJpaController.MOVIMIENTO_VARIOS);
-        dcm.setUsuario(UsuarioJpaController.getCurrentUser());
+        dcm.setUsuario(UsuarioController.getCurrentUser());
         dcm.setFechaMovimiento(panelMovVarios.getDcMovimientoFecha());
         return dcm;
     }
@@ -664,8 +664,8 @@ public class CajaMovimientosController implements ActionListener {
 
     private void initBuscadorCajaToCaja(JDialog papiComponent) {
         panelBuscadorCajaToCaja = new PanelBuscadorCajaToCaja();
-        UTIL.loadComboBox(panelBuscadorCajaToCaja.getCbCajaOrigen(), new CajaController().findCajasPermitidasByUsuario(UsuarioJpaController.getCurrentUser(), true), true);
-        UTIL.loadComboBox(panelBuscadorCajaToCaja.getCbCajaDestino(), new CajaController().findCajasPermitidasByUsuario(UsuarioJpaController.getCurrentUser(), true), true);
+        UTIL.loadComboBox(panelBuscadorCajaToCaja.getCbCajaOrigen(), new CajaController().findCajasPermitidasByUsuario(UsuarioController.getCurrentUser(), true), true);
+        UTIL.loadComboBox(panelBuscadorCajaToCaja.getCbCajaDestino(), new CajaController().findCajasPermitidasByUsuario(UsuarioController.getCurrentUser(), true), true);
         buscador = new JDBuscador(papiComponent, false, panelBuscadorCajaToCaja, "Buscardor - Movimientos entre Cajas");
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
@@ -808,7 +808,7 @@ public class CajaMovimientosController implements ActionListener {
 
     private void initBuscadorCierreCaja() {
         panelBuscadorCajasCerradas = new PanelBuscadorCajasCerradas();
-        UTIL.loadComboBox(panelBuscadorCajasCerradas.getCbCaja(), new CajaController().findCajasPermitidasByUsuario(UsuarioJpaController.getCurrentUser(), true), true);
+        UTIL.loadComboBox(panelBuscadorCajasCerradas.getCbCaja(), new CajaController().findCajasPermitidasByUsuario(UsuarioController.getCurrentUser(), true), true);
         buscador = new JDBuscador(jdCierreCaja, true, panelBuscadorCajasCerradas, "Buscador - Cajas cerradas");
         buscador.getbImprimir().setEnabled(false);
         buscador.hideLimpiar();

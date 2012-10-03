@@ -9,6 +9,7 @@ package gui;
 import utilities.general.UTIL;
 import java.awt.event.ActionListener;
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import utilities.gui.SwingUtil;
 
@@ -243,10 +244,16 @@ public class PanelABMSucursal extends javax.swing.JPanel {
         jLabel21.setText("Ayuda");
 
         btnVerNumeracionActual.setText("Ver Numeración actual");
-        btnVerNumeracionActual.setName("verNumeracionActual");
+        btnVerNumeracionActual.setName("verNumeracionActual"); // NOI18N
 
         jLabel14.setForeground(new java.awt.Color(255, 0, 51));
-        jLabel14.setText("<html>Una vez que se haya cargado el primer comprobante, la numeración inician no podrás ser re-configurada con un número <b>anterior</b> al de la documentación existente. </html>");
+        jLabel14.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/16px_blue_system-help.png"))); // NOI18N
+        jLabel14.setText("<html>Una vez que se haya cargado el primer comprobante, la numeración inician no podrás ser re-configurada con un número <b>anterior</b> a algún comprobante existente. (Doble click para ver ejemplo).</html>");
+        jLabel14.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel14MouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -469,6 +476,15 @@ public class PanelABMSucursal extends javax.swing.JPanel {
         UTIL.AGREGAR_CEROS(((JTextField) evt.getSource()).getText(), 8);
 
     }//GEN-LAST:event_tfInicialRemitoFocusLost
+
+    private void jLabel14MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel14MouseClicked
+        if (evt.getClickCount() > 1) {
+            JOptionPane.showMessageDialog(this,
+                    "<html>Si se cargó una Factura Venta N°0001-<b>00000099</b><br>, "
+                    + "no se podrá ingresar un valor menor a <b>100</b> en el campo Facturas \"A\""
+                    + "</html>", "Ejemplo", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }//GEN-LAST:event_jLabel14MouseClicked
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnVerNumeracionActual;
     private javax.swing.JComboBox cbDepartamentos;

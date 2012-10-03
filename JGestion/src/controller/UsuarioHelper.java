@@ -17,7 +17,7 @@ class UsuarioHelper {
     private Usuario usuario;
 
     UsuarioHelper() {
-        usuario = UsuarioJpaController.getCurrentUser();
+        usuario = UsuarioController.getCurrentUser();
         refresh();
     }
 
@@ -42,10 +42,22 @@ class UsuarioHelper {
         return l;
     }
 
+    /**
+     * Recupera las cajas a las cuales el usuario actual tiene acceso
+     *
+     * @param estado
+     * @return
+     */
     List<Caja> getCajas(Boolean estado) {
         return new CajaController().findCajasPermitidasByUsuario(usuario, estado);
     }
 
+    /**
+     * Envuelve las cajas recperadas por {@link #getCajas(java.lang.Boolean) }
+     *
+     * @param estado
+     * @return
+     */
     List<ComboBoxWrapper<Caja>> getWrappedCajas(Boolean estado) {
         List<Caja> list = getCajas(estado);
         List<ComboBoxWrapper<Caja>> l = new ArrayList<ComboBoxWrapper<Caja>>(list.size());
@@ -54,7 +66,12 @@ class UsuarioHelper {
         }
         return l;
     }
-    
+
+    /**
+     * Recupera las sucursales a las cuales el usuario actual tiene acceso
+     *
+     * @return
+     */
     List<ComboBoxWrapper<Sucursal>> getWrappedSucursales() {
         List<Sucursal> list = getSucursales();
         List<ComboBoxWrapper<Sucursal>> l = new ArrayList<ComboBoxWrapper<Sucursal>>(list.size());

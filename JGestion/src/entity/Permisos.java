@@ -73,6 +73,8 @@ public class Permisos implements Serializable {
     private Usuario usuario;
     @Column(name = "ordenes_es", nullable = false)
     private boolean ordenesES;
+    @Column(name = "abm_cuentabancaria", nullable = false)
+    private boolean abmCuentabancaria;
     @Column(name = "venta_numeracion_manual", nullable = false)
     private boolean ventaNumeracionManual;
 
@@ -197,6 +199,14 @@ public class Permisos implements Serializable {
 
     public void setOrdenesES(boolean ordenesES) {
         this.ordenesES = ordenesES;
+    }
+
+    public boolean getAbmCuentabancaria() {
+        return abmCuentabancaria;
+    }
+
+    public void setAbmCuentabancaria(boolean abmCuentabancaria) {
+        this.abmCuentabancaria = abmCuentabancaria;
     }
 
     public boolean getVentaNumeracionManual() {

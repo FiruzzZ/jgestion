@@ -17,62 +17,68 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
-              <EmptySpace max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="1" attributes="0">
-                  <Component id="jLabel6" alignment="1" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel4" alignment="1" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel1" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Component id="labelLibrado" alignment="1" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel2" alignment="1" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel3" alignment="1" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel8" alignment="1" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
-                  <Component id="labelEmisor" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel9" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel11" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel12" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel1" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel6" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Component id="labelEstado" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Component id="labelEmisor" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Component id="labelSucursal" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel4" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel12" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel11" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Component id="labelNcuenta" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="checkPropio" alignment="0" min="-2" max="-2" attributes="0"/>
                   <Group type="102" alignment="1" attributes="0">
                       <Component id="cbEmisor" pref="355" max="32767" attributes="1"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="bAddEmisor" min="-2" pref="22" max="-2" attributes="0"/>
                   </Group>
-                  <Group type="102" alignment="0" attributes="0">
-                      <Component id="dcCheque" min="-2" pref="120" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="dcCobro" min="-2" pref="120" max="-2" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="dcCheque" min="-2" pref="120" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="dcCobro" min="-2" pref="120" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="checkEndosado" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="checkCruzado" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <Component id="dcEndoso" alignment="0" min="-2" pref="120" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                   </Group>
-                  <Group type="102" alignment="0" attributes="0">
-                      <Component id="cbLibrado" min="-2" pref="162" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="checkCruzado" min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <Component id="checkEndosado" alignment="0" min="-2" max="-2" attributes="0"/>
-                  <Component id="tfEstado" alignment="0" min="-2" pref="126" max="-2" attributes="0"/>
-                  <Component id="dcEndoso" alignment="0" min="-2" pref="120" max="-2" attributes="0"/>
                   <Group type="102" alignment="1" attributes="0">
                       <Group type="103" groupAlignment="1" attributes="0">
+                          <Component id="cbLibrado" alignment="0" max="32767" attributes="0"/>
                           <Component id="tfEndosatario" alignment="0" pref="355" max="32767" attributes="0"/>
                           <Component id="jScrollPane1" alignment="0" pref="355" max="32767" attributes="1"/>
                           <Component id="cbBancoSucursales" alignment="0" pref="355" max="32767" attributes="1"/>
                           <Component id="cbBancos" alignment="0" pref="355" max="32767" attributes="1"/>
-                          <Component id="tfSucursalDireccion" alignment="0" pref="355" max="32767" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="tfNumero" min="-2" pref="145" max="-2" attributes="1"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="jLabel7" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="tfImporte" min="-2" pref="104" max="-2" attributes="0"/>
+                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                           </Group>
+                          <Component id="cbCuentaBancaria" alignment="0" max="32767" attributes="0"/>
+                          <Component id="cbChequeEstados" alignment="0" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="bAddBanco" min="-2" pref="22" max="-2" attributes="0"/>
                           <Component id="bAddSucursal" min="-2" pref="22" max="-2" attributes="0"/>
+                          <Component id="bAddCuentaBancaria" alignment="1" min="-2" pref="22" max="-2" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
@@ -82,10 +88,8 @@
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="0" attributes="0">
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="checkPropio" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
+          <Group type="102" attributes="0">
+              <EmptySpace min="-2" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="103" alignment="0" groupAlignment="3" attributes="0">
                       <Component id="cbEmisor" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -101,53 +105,50 @@
                   <Component id="jLabel5" alignment="2" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="2" attributes="0">
+                  <Component id="bAddBanco" alignment="2" min="-2" pref="20" max="-2" attributes="0"/>
+                  <Component id="cbBancos" alignment="2" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel2" alignment="2" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="32767" attributes="0"/>
+              <Group type="103" groupAlignment="2" attributes="0">
+                  <Component id="bAddSucursal" alignment="2" min="-2" pref="20" max="-2" attributes="0"/>
+                  <Component id="cbBancoSucursales" alignment="2" min="-2" max="-2" attributes="0"/>
+                  <Component id="labelSucursal" alignment="2" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="2" attributes="0">
+                  <Component id="labelNcuenta" alignment="2" min="-2" max="-2" attributes="0"/>
+                  <Component id="bAddCuentaBancaria" alignment="2" min="-2" pref="20" max="-2" attributes="0"/>
+                  <Component id="cbCuentaBancaria" alignment="2" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="tfNumero" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel7" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="tfImporte" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="103" alignment="0" groupAlignment="3" attributes="0">
-                      <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="cbBancos" alignment="3" min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <Component id="bAddBanco" alignment="0" min="-2" pref="22" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="bAddSucursal" alignment="0" min="-2" pref="22" max="-2" attributes="0"/>
-                  <Group type="102" alignment="0" attributes="0">
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="cbBancoSucursales" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="tfSucursalDireccion" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jLabel8" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                  </Group>
-              </Group>
-              <EmptySpace max="-2" attributes="0"/>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="cbLibrado" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel10" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="checkCruzado" alignment="3" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
-                  <Component id="jScrollPane1" min="-2" max="-2" attributes="0"/>
+                  <Component id="labelLibrado" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="tfEstado" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel9" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="cbChequeEstados" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="labelEstado" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Component id="checkEndosado" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
+                  <Component id="jScrollPane1" min="-2" pref="74" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="checkEndosado" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="checkCruzado" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="tfEndosatario" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -164,16 +165,6 @@
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Component class="javax.swing.JTextField" name="tfSucursalDireccion">
-      <Properties>
-        <Property name="editable" type="boolean" value="false"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabel8">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Sucursal Direcci&#xf3;n"/>
-      </Properties>
-    </Component>
     <Component class="com.toedter.calendar.JDateChooser" name="dcCobro">
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel5">
@@ -185,7 +176,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel4">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Fecha de Cheque"/>
+        <Property name="text" type="java.lang.String" value="Fecha de emisi&#xf3;n"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="bAddSucursal">
@@ -203,7 +194,7 @@
         </Property>
       </Properties>
     </Component>
-    <Component class="javax.swing.JLabel" name="jLabel3">
+    <Component class="javax.swing.JLabel" name="labelSucursal">
       <Properties>
         <Property name="text" type="java.lang.String" value="Banco Sucursal"/>
       </Properties>
@@ -255,7 +246,7 @@
         </Property>
       </Properties>
     </Component>
-    <Component class="javax.swing.JLabel" name="jLabel10">
+    <Component class="javax.swing.JLabel" name="labelLibrado">
       <Properties>
         <Property name="text" type="java.lang.String" value="Librado"/>
       </Properties>
@@ -283,8 +274,12 @@
         <Component class="javax.swing.JTextArea" name="taObservacion">
           <Properties>
             <Property name="columns" type="int" value="20"/>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Monospaced" size="11" style="0"/>
+            </Property>
             <Property name="lineWrap" type="boolean" value="true"/>
-            <Property name="rows" type="int" value="4"/>
+            <Property name="rows" type="int" value="3"/>
+            <Property name="wrapStyleWord" type="boolean" value="true"/>
           </Properties>
         </Component>
       </SubComponents>
@@ -302,31 +297,14 @@
         <Property name="name" type="java.lang.String" value="Marcas" noResource="true"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JLabel" name="jLabel9">
+    <Component class="javax.swing.JLabel" name="labelEstado">
       <Properties>
         <Property name="text" type="java.lang.String" value="Estado"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JTextField" name="tfEstado">
-      <Properties>
-        <Property name="editable" type="boolean" value="false"/>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Tahoma" size="11" style="1"/>
-        </Property>
-        <Property name="horizontalAlignment" type="int" value="0"/>
-        <Property name="text" type="java.lang.String" value="---"/>
-        <Property name="enabled" type="boolean" value="false"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JCheckBox" name="checkPropio">
-      <Properties>
-        <Property name="mnemonic" type="int" value="114"/>
-        <Property name="text" type="java.lang.String" value="Propio"/>
-      </Properties>
-    </Component>
     <Component class="javax.swing.JLabel" name="labelEmisor">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Emisor Clien/Prov"/>
+        <Property name="text" type="java.lang.String" value="Cliente"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JCheckBox" name="checkEndosado">
@@ -339,6 +317,9 @@
       </Events>
     </Component>
     <Component class="javax.swing.JTextField" name="tfEndosatario">
+      <Properties>
+        <Property name="enabled" type="boolean" value="false"/>
+      </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel11">
       <Properties>
@@ -351,6 +332,26 @@
       </Properties>
     </Component>
     <Component class="com.toedter.calendar.JDateChooser" name="dcEndoso">
+      <Properties>
+        <Property name="enabled" type="boolean" value="false"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="cbChequeEstados">
+    </Component>
+    <Component class="javax.swing.JComboBox" name="cbCuentaBancaria">
+    </Component>
+    <Component class="javax.swing.JLabel" name="labelNcuenta">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="N&#xb0; Cuenta"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="bAddCuentaBancaria">
+      <Properties>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/iconos/16px_add.png"/>
+        </Property>
+        <Property name="name" type="java.lang.String" value="Marcas" noResource="true"/>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>

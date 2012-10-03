@@ -171,7 +171,7 @@ public class OrdenJpaController {
     }
 
     public void initOrden(JFrame owner, boolean visible) throws MessageException {
-        UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.ORDENES_IO);
+        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.ORDENES_IO);
         jdFactura = new JDFacturaCompra(owner, true, 1);
         jdFactura.getBtnAnular().setVisible(false);
         jdFactura.panelToOrden();
@@ -332,7 +332,7 @@ public class OrdenJpaController {
             throw new MessageException("Sucursal no válida");
         }
         orden.setNumero(getNextNumeroOrden());
-        orden.setUsuario(UsuarioJpaController.getCurrentUser());
+        orden.setUsuario(UsuarioController.getCurrentUser());
         orden.setDetalleOrdenList(new ArrayList<DetalleOrden>(rowCant));
         for (int i = 0; i < rowCant; i++) {
             DetalleOrden detalleOrden = new DetalleOrden();
@@ -369,7 +369,7 @@ public class OrdenJpaController {
     }
 
     public void initBuscador(JFrame owner) throws MessageException {
-        UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.ORDENES_IO);
+        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.ORDENES_IO);
         panel = new PanelBuscadorOrdenes();
         UTIL.loadComboBox(panel.getCbSucursales(), new UsuarioHelper().getWrappedSucursales(), "<Todas>");
         buscador = new JDBuscador(owner, true, panel, "Buscador de " + CLASS_NAME);

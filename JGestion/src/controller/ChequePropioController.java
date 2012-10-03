@@ -2,44 +2,46 @@ package controller;
 
 import controller.exceptions.DatabaseErrorException;
 import controller.exceptions.MessageException;
-import controller.exceptions.NonexistentEntityException;
 import entity.Banco;
 import entity.BancoSucursal;
 import entity.ChequePropio;
+import entity.ChequeTerceros;
+import entity.Cliente;
+import entity.Cuentabancaria;
 import entity.Librado;
 import entity.Proveedor;
 import entity.enums.ChequeEstado;
 import gui.JDABM;
 import gui.JDChequesManager;
 import gui.JDContenedor;
+import gui.JDReRe;
 import gui.PanelABMCheques;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.table.DefaultTableModel;
+import jgestion.JGestionUtils;
+import jpa.controller.ChequePropioJpaController;
 import org.apache.log4j.Logger;
 import utilities.general.UTIL;
+import utilities.swing.components.ComboBoxWrapper;
 
 /**
  *
  * @author Administrador
  */
-public class ChequePropioJpaController implements Serializable, ActionListener {
+public class ChequePropioController implements ActionListener {
 
     public final String CLASS_NAME = ChequePropio.class.getSimpleName();
     private ChequePropio EL_OBJECT;
@@ -47,139 +49,14 @@ public class ChequePropioJpaController implements Serializable, ActionListener {
     private final int[] columnWidths = {1, 60, 50, 50, 150, 50, 50, 50};
     private final Class[] columnClassTypes = {};
     private JDContenedor contenedor;
-    private EntityManager entityManager;
-    private static Logger LOGGER = Logger.getLogger(ChequePropioJpaController.class);
+    private static Logger LOGGER = Logger.getLogger(ChequePropioController.class);
     private JDABM abm;
     private PanelABMCheques panelABM;
     private JDChequesManager jdChequeManager;
+    private ChequePropioJpaController jpaController;
 
-    public ChequePropioJpaController() {
-    }
-
-    public EntityManager getEntityManager() {
-        if (entityManager == null || !entityManager.isOpen()) {
-            entityManager = DAO.getEntityManager();
-        }
-        return entityManager;
-    }
-
-    //<editor-fold defaultstate="collapsed" desc="DAO - CRUD Methods">
-    public void create(ChequePropio chequePropio) {
-        EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            em.persist(chequePropio);
-            em.getTransaction().commit();
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
-    }
-
-    public void edit(ChequePropio chequePropio) throws NonexistentEntityException, Exception {
-        EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            chequePropio = em.merge(chequePropio);
-            em.getTransaction().commit();
-        } catch (Exception ex) {
-            String msg = ex.getLocalizedMessage();
-            if (msg == null || msg.length() == 0) {
-                Integer id = chequePropio.getId();
-                if (findChequePropio(id) == null) {
-                    throw new NonexistentEntityException("The chequePropio with id " + id + " no longer exists.");
-                }
-            }
-            throw ex;
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
-    }
-
-    public void destroy(Integer id) throws NonexistentEntityException {
-        EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            ChequePropio chequePropio;
-            try {
-                chequePropio = em.getReference(ChequePropio.class, id);
-                chequePropio.getId();
-            } catch (EntityNotFoundException enfe) {
-                throw new NonexistentEntityException("The chequePropio with id " + id + " no longer exists.", enfe);
-            }
-            em.remove(chequePropio);
-            em.getTransaction().commit();
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
-    }
-
-    public List<ChequePropio> findChequePropioEntities() {
-        return findChequePropioEntities(true, -1, -1);
-    }
-
-    public List<ChequePropio> findChequePropioEntities(int maxResults, int firstResult) {
-        return findChequePropioEntities(false, maxResults, firstResult);
-    }
-
-    private List<ChequePropio> findChequePropioEntities(boolean all, int maxResults, int firstResult) {
-        EntityManager em = getEntityManager();
-        try {
-            Query q = em.createQuery("select object(o) from ChequePropio as o");
-            if (!all) {
-                q.setMaxResults(maxResults);
-                q.setFirstResult(firstResult);
-            }
-            return q.getResultList();
-        } finally {
-            em.close();
-        }
-    }
-
-    public ChequePropio findChequePropio(Integer id) {
-        EntityManager em = getEntityManager();
-        try {
-            return em.find(ChequePropio.class, id);
-        } finally {
-            em.close();
-        }
-    }
-
-    public int getChequePropioCount() {
-        EntityManager em = getEntityManager();
-        try {
-            Query q = em.createQuery("select count(o) from ChequePropio as o");
-            return ((Long) q.getSingleResult()).intValue();
-        } finally {
-            em.close();
-        }
-    }
-    //</editor-fold>
-
-    public JDialog initContenedor(JFrame frame, boolean modal) {
-        contenedor = new JDContenedor(frame, modal, "ABM - " + CLASS_NAME + "s");
-        contenedor.setSize(800, contenedor.getHeight());
-        contenedor.getLabelMensaje().setText("Puede filtrar los cheques por número");
-        contenedor.getTfFiltro().addKeyListener(new KeyAdapter() {
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-                armarQuery(contenedor.getTfFiltro().getText().trim());
-            }
-        });
-        UTIL.getDefaultTableModel(contenedor.getjTable1(), columnNames, columnWidths);
-        UTIL.hideColumnTable(contenedor.getjTable1(), 0);
-        cargarContenedorTabla(null);
-        contenedor.setListener(this);
-        return contenedor;
+    public ChequePropioController() {
+        jpaController = new ChequePropioJpaController();
     }
 
     private void cargarContenedorTabla(String query) {
@@ -208,41 +85,31 @@ public class ChequePropioJpaController implements Serializable, ActionListener {
     }
 
     /**
-     * 
-     * @param isEditing 
-     * @param ee se posicionará a la ventana en relación a este, can be null.
-     * @throws MessageException 
+     *
+     *
+     * @param isEditing
+     * @throws MessageException
      */
-    private JDialog initABM(boolean isEditing, ActionEvent ee) throws MessageException {
-        UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
+    private JDialog initABM(boolean isEditing) throws MessageException {
+        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
         panelABM = new PanelABMCheques();
+        UTIL.loadComboBox(panelABM.getCbBancos(), new BancoController().findEntities(), true);
+        UTIL.loadComboBox(panelABM.getCbBancoSucursales(), null, null, "<Seleccionar un Banco>");
+        UTIL.loadComboBox(panelABM.getCbEmisor(), new ProveedorController().findEntities(), false);
+        UTIL.loadComboBox(panelABM.getCbLibrado(), new LibradoJpaController().findEntities(), false);
         //Default para ChequePropio
         panelABM.getLabelEmisor().setText("Emisor (Proveedor)");
-        panelABM.getCheckPropio().setVisible(false);
         panelABM.getCheckEndosado().setSelected(false);
         panelABM.getCheckEndosado().setEnabled(false);
 
         panelABM.getCbBancos().addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (panelABM.getCbBancos().getSelectedIndex() > 0) {
                     Banco banco = (Banco) panelABM.getCbBancos().getSelectedItem();
-                    UTIL.loadComboBox(panelABM.getCbBancoSucursales(), new BancoSucursalJpaController().findEntitiesFrom(banco), false);
+                    UTIL.loadComboBox(panelABM.getCbBancoSucursales(), new BancoSucursalController().findBy(banco), false);
                 } else {
                     UTIL.loadComboBox(panelABM.getCbBancoSucursales(), null, null, "<Seleccionar un Banco>");
-                }
-            }
-        });
-        panelABM.getCbBancoSucursales().addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    BancoSucursal bs = (BancoSucursal) panelABM.getCbBancoSucursales().getSelectedItem();
-                    panelABM.getTfSucursalDireccion().setText(bs.getDireccion());
-                } catch (Exception ex) {
-                    panelABM.getTfSucursalDireccion().setText("");
                 }
             }
         });
@@ -250,19 +117,12 @@ public class ChequePropioJpaController implements Serializable, ActionListener {
         panelABM.getbAddEmisor().addActionListener(this);
         panelABM.getbAddBanco().addActionListener(this);
         panelABM.getbAddSucursal().addActionListener(this);
-        UTIL.loadComboBox(panelABM.getCbBancos(), new BancoJpaController().findEntities(), true);
-        UTIL.loadComboBox(panelABM.getCbBancoSucursales(), null, null, "<Seleccionar un Banco>");
-        UTIL.loadComboBox(panelABM.getCbEmisor(), new ProveedorController().findEntities(), false);
-        UTIL.loadComboBox(panelABM.getCbLibrado(), new LibradoJpaController().findEntities(), false);
+
         if (isEditing) {
             setPanel(EL_OBJECT);
         }
         abm = new JDABM(true, contenedor, panelABM);
         abm.setTitle("ABM - " + CLASS_NAME + "s");
-        if (ee != null) {
-            abm.setLocation(((java.awt.Component) ee.getSource()).getLocation());
-        }
-
         abm.setListener(this);
         return abm;
     }
@@ -277,7 +137,7 @@ public class ChequePropioJpaController implements Serializable, ActionListener {
                 if (boton.equals(contenedor.getbNuevo())) {
                     try {
                         EL_OBJECT = null;
-                        initABM(false, e);
+                        initABM(false);
                         abm.setVisible(true);
                     } catch (MessageException ex) {
                         contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
@@ -289,12 +149,11 @@ public class ChequePropioJpaController implements Serializable, ActionListener {
                     try {
                         int selectedRow = contenedor.getjTable1().getSelectedRow();
                         if (selectedRow > -1) {
-                            EL_OBJECT = DAO.getEntityManager().find(ChequePropio.class,
-                                    Integer.valueOf((contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
+                            EL_OBJECT = jpaController.find(Integer.valueOf((contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
                             if (EL_OBJECT == null) {
                                 throw new MessageException("Debe elegir una fila de la tabla");
                             }
-                            initABM(true, e);
+                            initABM(true);
                             abm.setVisible(true);
 
                         }
@@ -315,12 +174,9 @@ public class ChequePropioJpaController implements Serializable, ActionListener {
                         if (EL_OBJECT == null) {
                             throw new MessageException("No hay " + CLASS_NAME + " seleccionado");
                         }
-                        destroy(EL_OBJECT.getId());
+                        jpaController.remove(EL_OBJECT);
                     } catch (MessageException ex) {
                         contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                    } catch (NonexistentEntityException ex) {
-                        contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                        LOGGER.error(ex);
                     } catch (Exception ex) {
                         contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
                         LOGGER.error(ex);
@@ -343,9 +199,9 @@ public class ChequePropioJpaController implements Serializable, ActionListener {
                         checkConstraints(EL_OBJECT);
                         String msg = EL_OBJECT.getId() == null ? "Registrado" : "Modificado";
                         if (EL_OBJECT.getId() == null) {
-                            create(EL_OBJECT);
+                            jpaController.create(EL_OBJECT);
                         } else {
-                            edit(EL_OBJECT);
+                            jpaController.merge(EL_OBJECT);
                         }
                         abm.showMessage(msg, CLASS_NAME, 1);
                         cargarContenedorTabla(null);
@@ -363,18 +219,18 @@ public class ChequePropioJpaController implements Serializable, ActionListener {
                     EL_OBJECT = null;
                 } else if (boton.equals(panelABM.getbAddBanco())) {
                     try {
-                        JDialog initABM = new BancoJpaController().initABM(abm);
+                        JDialog initABM = new BancoController().initABM(abm);
                         initABM.setLocationRelativeTo(abm);
                         initABM.setVisible(true);
                     } catch (MessageException ex) {
                         abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
                     }
-                    UTIL.loadComboBox(panelABM.getCbBancos(), new BancoJpaController().findEntities(), true);
+                    UTIL.loadComboBox(panelABM.getCbBancos(), new BancoController().findEntities(), true);
                     UTIL.loadComboBox(panelABM.getCbBancoSucursales(), null, null, "<Seleccionar Banco>");
                 } else if (boton.equals(panelABM.getbAddSucursal())) {
                     Banco bancoSelected = (Banco) panelABM.getCbBancos().getSelectedItem();
                     try {
-                        JDialog initABM = new BancoSucursalJpaController().initABM(abm);
+                        JDialog initABM = new BancoSucursalController().initABM(abm);
                         initABM.setLocationRelativeTo(abm);
                         initABM.setVisible(true);
                         UTIL.setSelectedItem(panelABM.getCbBancos(), bancoSelected);
@@ -406,6 +262,7 @@ public class ChequePropioJpaController implements Serializable, ActionListener {
 
     /**
      * Arma la query, para filtrar filas en la tabla del JDContenedor
+     *
      * @param filtro atributo "nombre" del objeto; ej.: o.nombre ILIKE 'filtro%'
      */
     private void armarQuery(String filtro) {
@@ -436,69 +293,58 @@ public class ChequePropioJpaController implements Serializable, ActionListener {
 //            panelABM.getTfEndosatario().setText(o.getEndosatario());
 //            panelABM.setDcEndoso(o.getFechaEndoso());
 //        }
-        panelABM.getTfEstado().setText(o.getEstado().toString());
+        UTIL.setSelectedItem(panelABM.getCbChequeEstados(), o.getChequeEstado());
     }
 
     private ChequePropio setEntity(ChequePropio o) throws MessageException {
-        List<String> erroresList = new ArrayList<String>(0);
-        Date fechaCheque, fechaCobro = null, fechaEndoso = null;
+        Date fechaCheque, fechaCobro, fechaEndoso = null;
         Long numero = null;
         BigDecimal importe = null;
         Banco banco;
         BancoSucursal sucursal = null;
-        Librado librado;
+        Librado librado = null;
         Proveedor proveedor = null;
         boolean cruzado, propio, endosado;
         String endosatario = null, observacion = null;
 
         if (panelABM.getDcCheque() == null) {
-            erroresList.add("Debe ingresar la Fecha del Cheque.");
+            throw new MessageException("Debe ingresar la Fecha del Cheque.");
+        }
+        if (panelABM.getDcCobro() == null) {
+            throw new MessageException("Debe ingresar la Fecha de cobro del Cheque.");
         }
         fechaCheque = panelABM.getDcCheque();
-        if (panelABM.getDcCobro() != null) {
-            fechaCobro = panelABM.getDcCobro();
-            fechaCheque = UTIL.getDateYYYYMMDD(fechaCheque);
-            fechaCobro = UTIL.getDateYYYYMMDD(fechaCobro);
-            if (fechaCheque.after(fechaCobro)) {
-                erroresList.add("Fecha de cobro no puede ser anterior a Fecha de cheque.");
-            }
+        fechaCobro = panelABM.getDcCobro();
+
+        if (UTIL.compararIgnorandoTimeFields(fechaCheque, fechaCobro) < 0) {
+            throw new MessageException("Fecha de cobro no puede ser anterior a Fecha de cheque.");
         }
         try {
             numero = Long.valueOf(panelABM.getTfNumero().getText());
         } catch (NumberFormatException numberFormatException) {
-            erroresList.add("Número de cheque no válido");
+            throw new MessageException("Número de cheque no válido");
         }
         try {
-            importe = BigDecimal.valueOf(Double.valueOf(panelABM.getTfImporte().getText()));
+            importe = new BigDecimal(panelABM.getTfImporte().getText());
         } catch (NumberFormatException numberFormatException) {
-            erroresList.add("Importe no válido");
+            throw new MessageException("Importe no válido (ingrese solo números y utilice el punto como separador decimal");
         }
         if (panelABM.getCbBancos().getSelectedIndex() < 1) {
-            erroresList.add("Debe elegir un Banco");
+            throw new MessageException("Debe elegir un Banco");
         }
         banco = (Banco) panelABM.getCbBancos().getSelectedItem();
         try {
             sucursal = (BancoSucursal) panelABM.getCbBancoSucursales().getSelectedItem();
         } catch (ClassCastException e) {
-            erroresList.add("Sucursal de Banco no válida");
+//            throw new MessageException("Sucursal de Banco no válida");
         }
-        librado = (Librado) panelABM.getCbLibrado().getSelectedItem();
-        if (librado.getId() == 1) {
-            proveedor = (Proveedor) panelABM.getCbEmisor().getSelectedItem();
-        }
+//        librado = (Librado) panelABM.getCbLibrado().getSelectedItem();
+//        if (librado.getId() == 1) {
+//            proveedor = (Proveedor) panelABM.getCbEmisor().getSelectedItem();
+//        }
         cruzado = panelABM.getCheckCruzado().isSelected();
         observacion = panelABM.getTaObservacion().getText();
-        if (!erroresList.isEmpty()) {
-            StringBuilder sb = new StringBuilder();
-            for (String string : erroresList) {
-                sb.append(string);
-                sb.append("\n");
-            }
-            throw new MessageException(sb.toString());
-        }
-        ChequePropio newCheque = new ChequePropio(o.getId(), numero, fechaCheque,
-                cruzado, observacion, ChequeEstado.CARTERA, fechaCobro, endosatario, fechaEndoso, importe,
-                UsuarioJpaController.getCurrentUser(), proveedor, librado, sucursal, banco);
+        ChequePropio newCheque = new ChequePropio(proveedor, numero, banco, sucursal, importe, fechaCheque, fechaCobro, cruzado, observacion, ChequeEstado.CARTERA, endosatario, fechaEndoso, UsuarioController.getCurrentUser(), librado);
         return newCheque;
     }
 
@@ -517,7 +363,7 @@ public class ChequePropioJpaController implements Serializable, ActionListener {
     }
 
     public JDialog initManager(JFrame parent, ActionListener buttonListener) {
-        jdChequeManager = (JDChequesManager) new ChequeTercerosJpaController().initManager(parent, buttonListener);
+        jdChequeManager = (JDChequesManager) new ChequeTercerosController().initManager(parent, buttonListener);
         jdChequeManager.getLabelEmisor().setText("Emitido a");
         UTIL.loadComboBox(jdChequeManager.getCbEmisor(), new ProveedorController().findEntities(), true);
         jdChequeManager.setTitle("Administración de Cheques Propios");
@@ -526,22 +372,23 @@ public class ChequePropioJpaController implements Serializable, ActionListener {
 
     JDialog initManager(JFrame parent, boolean selectionMode) {
         jdChequeManager = new JDChequesManager(parent, true);
-        UTIL.loadComboBox(jdChequeManager.getCbBancos(), new BancoJpaController().findEntities(), true);
+        UTIL.loadComboBox(jdChequeManager.getCbBancos(), JGestionUtils.getWrappedBancos(new BancoController().findWithCuentasBancarias()), true);
         UTIL.loadComboBox(jdChequeManager.getCbBancoSucursales(), null, null, "<Seleccionar un Banco>");
         UTIL.loadComboBox(jdChequeManager.getCbEmisor(), new ProveedorController().findEntities(), true);
         UTIL.loadComboBox(jdChequeManager.getCbLibrado(), new LibradoJpaController().findEntities(), true);
         UTIL.loadComboBox(jdChequeManager.getCbEstados(), Arrays.asList(ChequeEstado.values()), true);
-        UTIL.getDefaultTableModel(jdChequeManager.getjTable1(),
-                new String[]{},
-                new int[]{},
-                new Class[]{});
+//        UTIL.getDefaultTableModel(jdChequeManager.getjTable1(),
+//                new String[]{},
+//                new int[]{},
+//                new Class[]{});
         jdChequeManager.getCbBancos().addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (jdChequeManager.getCbBancos().getSelectedIndex() > 0) {
-                    Banco banco = (Banco) jdChequeManager.getCbBancos().getSelectedItem();
-                    UTIL.loadComboBox(jdChequeManager.getCbBancoSucursales(), new BancoSucursalJpaController().findEntitiesFrom(banco), true);
+                    Banco banco = ((ComboBoxWrapper<Banco>) jdChequeManager.getCbBancos().getSelectedItem()).getEntity();
+                    List<Cuentabancaria> cuentasbancaria = banco.getCuentasbancaria();
+                    UTIL.loadComboBox(jdChequeManager.getCbCuentaBancaria(), JGestionUtils.getWrappedCuentasBancarias(cuentasbancaria), true);
+                    UTIL.loadComboBox(jdChequeManager.getCbBancoSucursales(), new BancoSucursalController().findBy(banco), true);
                 } else {
                     UTIL.loadComboBox(jdChequeManager.getCbBancoSucursales(), null, null, "<Seleccionar un Banco>");
                 }
@@ -549,5 +396,40 @@ public class ChequePropioJpaController implements Serializable, ActionListener {
         });
         jdChequeManager.addButtonListener(this);
         return jdChequeManager;
+    }
+
+    ChequePropio initABM(Window owner, boolean isEditing, Proveedor proveedor) throws MessageException {
+        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
+        if (isEditing && EL_OBJECT == null) {
+            throw new MessageException("Debe elegir una fila de la tabla");
+        }
+
+        panelABM = new PanelABMCheques();
+        panelABM.setUIChequeTerceros();
+        UTIL.loadComboBox(panelABM.getCbBancos(), new BancoController().findEntities(), true);
+//        UTIL.loadComboBox(panelABM.getCbBancoSucursales(), null, null, "<Seleccionar un Banco>");
+        UTIL.loadComboBox(panelABM.getCbEmisor(), new ProveedorController().findEntities(), false);
+        UTIL.setSelectedItem(panelABM.getCbEmisor(), proveedor);
+//        UTIL.loadComboBox(panelABM.getCbLibrado(), new LibradoJpaController().findEntities(), false);
+
+        panelABM.getCbBancos().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (panelABM.getCbBancos().getSelectedIndex() > 0) {
+                    Banco banco = (Banco) panelABM.getCbBancos().getSelectedItem();
+                    UTIL.loadComboBox(panelABM.getCbBancoSucursales(), new BancoSucursalController().findBy(banco), false);
+                } else {
+                    UTIL.loadComboBox(panelABM.getCbBancoSucursales(), null, null, "<Seleccionar un Banco>");
+                }
+            }
+        });
+        if (isEditing) {
+            setPanel(EL_OBJECT);
+        }
+        abm = new JDABM(owner, panelABM);
+        abm.setTitle("ABM - Cheque Propio");
+        abm.setListener(this);
+        abm.setVisible(true);
+        return EL_OBJECT;
     }
 }

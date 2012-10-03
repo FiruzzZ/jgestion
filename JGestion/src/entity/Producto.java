@@ -74,8 +74,8 @@ public class Producto implements Serializable {
     private String ubicacion;
     @Column(name = "costo_compra", precision = 10, scale = 2)
     /**
-     * Cuando se crea el producto es setteado a 0. Después es
-     * modificado por las Facturas de compra.
+     * Cuando se crea el producto es setteado a 0. Después es modificado por las
+     * Facturas de compra.
      */
     private Double costoCompra;
     @Column(name = "descripcion", length = 2000)
@@ -97,7 +97,7 @@ public class Producto implements Serializable {
     @Temporal(value = TemporalType.DATE)
     private Date ultimaCompra;
     @JoinColumn(name = "iva", referencedColumnName = "id", nullable = false)
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     private Iva iva;
     @JoinColumn(name = "marca", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)

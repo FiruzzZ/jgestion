@@ -35,7 +35,7 @@ import org.eclipse.persistence.config.QueryHints;
  *
  * @author FiruzzZ
  */
-public class UsuarioJpaController implements ActionListener, MouseListener, KeyListener {
+public class UsuarioController implements ActionListener, MouseListener, KeyListener {
 
     public static final String ESTADO_ACTIVO = "Activo";
     public static final String ESTADO_BAJA = "Baja";
@@ -289,7 +289,7 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
                     jDLogin.getjLabel3().setText(ex.getMessage());
                 } catch (Exception ex) {
                     jDLogin.showMessage(ex.getMessage(), "Error Login usuario", 0);
-                    Logger.getLogger(UsuarioJpaController.class.getName()).log(Level.FATAL, null, ex);
+                    Logger.getLogger(UsuarioController.class.getName()).log(Level.FATAL, null, ex);
                 }
             }// </editor-fold>
         } else if (e.getComponent().getClass().equals(javax.swing.JPasswordField.class)) {
@@ -308,7 +308,7 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
                 } catch (Exception ex) {
                     System.out.println("Excep.......");
                     jDLogin.showMessage(ex.getMessage(), "Error Login usuario", 0);
-                    Logger.getLogger(UsuarioJpaController.class.getName()).log(Level.FATAL, null, ex);
+                    Logger.getLogger(UsuarioController.class.getName()).log(Level.FATAL, null, ex);
                 }
             }// </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="JDCambiarPass">
@@ -344,7 +344,7 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
     }
 
     public void initContenedor(javax.swing.JFrame frame) throws MessageException {
-        UsuarioJpaController.checkPermiso(PermisoDe.ABM_USUARIOS);
+        UsuarioController.checkPermiso(PermisoDe.ABM_USUARIOS);
         contenedor = new JDContenedor(frame, true, "ABM - " + CLASS_NAME + "s");
         contenedor.getTfFiltro().setToolTipText("Filtra por nombre de " + CLASS_NAME);
         contenedor.setModoBuscador(false);
@@ -407,12 +407,12 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
             contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
         } catch (Exception ex) {
             contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
-            Logger.getLogger(UsuarioJpaController.class).error(ex.getLocalizedMessage(), ex);
+            Logger.getLogger(UsuarioController.class).error(ex.getLocalizedMessage(), ex);
         }
     }
 
     private void initABM(boolean isEditing) throws MessageException {
-        UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.ABM_USUARIOS);
+        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.ABM_USUARIOS);
         if (isEditing) {
             mouseReleased(null);
             if (EL_OBJECT == null) {
@@ -449,22 +449,24 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
     private void setPanelABM(Usuario u) {
         panel.setEnableTfNick(false);
         panel.setTfNick(u.getNick());
+        Permisos p = u.getPermisos();
         panel.getCbEstado().setSelectedIndex(u.getEstado() - 1);
-        panel.getCheckCajas().setSelected(u.getPermisos().getAbmCajas());
-        panel.getCheckClientes().setSelected(u.getPermisos().getAbmClientes());
-        panel.getCheckCompra().setSelected(u.getPermisos().getCompra());
-        panel.getCheckDatosGeneral().setSelected(u.getPermisos().getDatosGeneral());
-        panel.getCheckListaPrecios().setSelected(u.getPermisos().getAbmListaPrecios());
-        panel.getCheckProductos().setSelected(u.getPermisos().getAbmProductos());
-        panel.getCheckProveedores().setSelected(u.getPermisos().getAbmProveedores());
-        panel.getCheckTesoreria().setSelected(u.getPermisos().getTesoreria());
-        panel.getCheckUsuarios().setSelected(u.getPermisos().getAbmUsuarios());
-        panel.getCheckVenta().setSelected(u.getPermisos().getVenta());
-        panel.getCheckCerrarCajas().setSelected(u.getPermisos().getCerrarCajas());
-        panel.getCheckABMCatalogoweb().setSelected(u.getPermisos().getAbmCatalogoweb());
-        panel.getCheckABMOfertas().setSelected(u.getPermisos().getAbmOfertasweb());
-        panel.getCheckOrdenesES().setSelected(u.getPermisos().getOrdenesES());
-        panel.getCheckVentaNumeracionManual().setSelected(u.getPermisos().getVentaNumeracionManual());
+        panel.getCheckCajas().setSelected(p.getAbmCajas());
+        panel.getCheckClientes().setSelected(p.getAbmClientes());
+        panel.getCheckCompra().setSelected(p.getCompra());
+        panel.getCheckDatosGeneral().setSelected(p.getDatosGeneral());
+        panel.getCheckListaPrecios().setSelected(p.getAbmListaPrecios());
+        panel.getCheckProductos().setSelected(p.getAbmProductos());
+        panel.getCheckProveedores().setSelected(p.getAbmProveedores());
+        panel.getCheckTesoreria().setSelected(p.getTesoreria());
+        panel.getCheckUsuarios().setSelected(p.getAbmUsuarios());
+        panel.getCheckVenta().setSelected(p.getVenta());
+        panel.getCheckCerrarCajas().setSelected(p.getCerrarCajas());
+        panel.getCheckABMCatalogoweb().setSelected(p.getAbmCatalogoweb());
+        panel.getCheckABMOfertas().setSelected(p.getAbmOfertasweb());
+        panel.getCheckOrdenesES().setSelected(p.getOrdenesES());
+        panel.getCheckCuentasBancarias().setSelected(p.getAbmCuentabancaria());
+        panel.getCheckVentaNumeracionManual().setSelected(p.getVentaNumeracionManual());
         setCajasPermitidas(u.getPermisosCajaList());
         setSucursalesPermitidas(u.getSucursales());
     }
@@ -519,15 +521,15 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
 
         if (EL_OBJECT.getId() == null) {
             Permisos permisos = new Permisos();
-            EL_OBJECT.setPermisos(setPermisos(permisos));
+            EL_OBJECT.setPermisos(getPermisos(permisos));
             create(EL_OBJECT);
         } else {
-            setPermisos(EL_OBJECT.getPermisos());
+            getPermisos(EL_OBJECT.getPermisos());
             edit(EL_OBJECT);
         }
     }
 
-    private Permisos setPermisos(Permisos permisos) {
+    private Permisos getPermisos(Permisos permisos) {
         permisos.setAbmCajas(panel.getCheckCajas().isSelected());
         permisos.setAbmClientes(panel.getCheckClientes().isSelected());
         permisos.setAbmListaPrecios(panel.getCheckListaPrecios().isSelected());
@@ -542,6 +544,7 @@ public class UsuarioJpaController implements ActionListener, MouseListener, KeyL
         permisos.setAbmCatalogoweb(panel.getCheckABMCatalogoweb().isSelected());
         permisos.setAbmOfertasweb(panel.getCheckABMOfertas().isSelected());
         permisos.setOrdenesES(panel.getCheckOrdenesES().isSelected());
+        permisos.setAbmCuentabancaria(panel.getCheckCuentasBancarias().isSelected());
         permisos.setVentaNumeracionManual(panel.getCheckVentaNumeracionManual().isSelected());
         return permisos;
     }
