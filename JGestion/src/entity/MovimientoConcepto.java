@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -35,6 +36,7 @@ public class MovimientoConcepto implements Serializable {
    private Integer id;
    @Basic(optional = false)
    @Column(name = "nombre", nullable = false, length = 30)
+   @OrderBy(value = "nombre")
    private String nombre;
 
    public MovimientoConcepto() {

@@ -12,22 +12,22 @@ import gui.PanelNumeracionActual;
 import java.awt.event.*;
 import java.math.BigInteger;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import jgestion.Main;
 import jpa.controller.*;
+import org.apache.log4j.Logger;
 import utilities.general.UTIL;
 
 /**
  *
  * @author FiruzzZ
  */
-public class SucursalController implements ActionListener, MouseListener {
+public class SucursalController implements ActionListener {
 
+    private static final Logger LOG = Logger.getLogger(SucursalController.class.getName());
     public final String CLASS_NAME = "Sucursal";
     private JDContenedor contenedor = null;
     private JDABM abm;
@@ -46,7 +46,7 @@ public class SucursalController implements ActionListener, MouseListener {
     }
 
     private void initABM(boolean isEditting, ActionEvent e) throws MessageException {
-        UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.DATOS_GENERAL);
+        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.DATOS_GENERAL);
         if (isEditting && entity == null) {
             throw new MessageException("Debe elegir una fila");
         }
@@ -87,11 +87,10 @@ public class SucursalController implements ActionListener, MouseListener {
         try {
             UTIL.getDefaultTableModel(contenedor.getjTable1(), colsName, colsWidth);
         } catch (Exception ex) {
-            Logger.getLogger(SucursalController.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.error(ex.getLocalizedMessage(), ex);
         }
         cargarDTM(contenedor.getDTM(), null);
         contenedor.getTfFiltro().addKeyListener(new KeyAdapter() {
-
             @Override
             public void keyReleased(KeyEvent e) {
                 armarQuery(contenedor.getTfFiltro().getText().trim());
@@ -133,18 +132,6 @@ public class SucursalController implements ActionListener, MouseListener {
             entity = (Sucursal) DAO.getEntityManager().find(Sucursal.class,
                     Integer.valueOf((((javax.swing.JTable) e.getSource()).getValueAt(selectedRow, 0)).toString()));
         }
-    }
-
-    public void mouseClicked(MouseEvent e) {
-    }
-
-    public void mousePressed(MouseEvent e) {
-    }
-
-    public void mouseEntered(MouseEvent e) {
-    }
-
-    public void mouseExited(MouseEvent e) {
     }
 
     private void setEntity() throws MessageException, Exception {
@@ -407,16 +394,17 @@ public class SucursalController implements ActionListener, MouseListener {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    Logger.getLogger(SucursalController.class.getName()).log(Level.SEVERE, null, ex);
+                    LOG.error(ex.getLocalizedMessage(), ex);
                 }
             } else if (boton.getName().equalsIgnoreCase("edit")) {
                 try {
+                    entity = getSelectedFromContendor();
                     initABM(true, e);
                 } catch (MessageException ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    Logger.getLogger(SucursalController.class.getName()).log(Level.SEVERE, null, ex);
+                    LOG.error(ex.getLocalizedMessage(), ex);
                 }
 
             } else if (boton.getName().equalsIgnoreCase("del")) {
@@ -430,7 +418,7 @@ public class SucursalController implements ActionListener, MouseListener {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    Logger.getLogger(SucursalController.class.getName()).log(Level.SEVERE, null, ex);
+                    LOG.error(ex.getLocalizedMessage(), ex);
                 }
             } else if (boton.getName().equalsIgnoreCase("Print")) {
             } else if (boton.getName().equalsIgnoreCase("exit")) {
@@ -455,7 +443,7 @@ public class SucursalController implements ActionListener, MouseListener {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                    Logger.getLogger(SucursalController.class.getName()).log(Level.SEVERE, null, ex);
+                    LOG.error(ex.getLocalizedMessage(), ex);
                 }
             } else if (boton.getName().equalsIgnoreCase("cancelar")) {
                 abm.dispose();
@@ -522,5 +510,14 @@ public class SucursalController implements ActionListener, MouseListener {
         jd.setLocationRelativeTo(abm);
         jd.setVisible(true);
 
+    }
+
+    private Sucursal getSelectedFromContendor() {
+        Integer selectedRow = contenedor.getjTable1().getSelectedRow();
+        if (selectedRow > -1) {
+            return jpaController.find(Integer.valueOf((contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
+        } else {
+            return null;
+        }
     }
 }

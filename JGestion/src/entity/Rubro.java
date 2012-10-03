@@ -45,10 +45,10 @@ public class Rubro implements Serializable {
     @Basic(optional = false)
     @Column(name = "tipo", nullable = false)
     private short tipo;
-    @OneToMany(mappedBy = "rubro")
-    private List<Cliente> clienteList;
-    @OneToMany(mappedBy = "rubro")
-    private List<Proveedor> proveedorList;
+//    @OneToMany(mappedBy = "rubro")
+//    private List<Cliente> clienteList;
+//    @OneToMany(mappedBy = "rubro")
+//    private List<Proveedor> proveedorList;
 
     public Rubro() {
     }
@@ -95,21 +95,21 @@ public class Rubro implements Serializable {
         this.tipo = tipo;
     }
 
-    public List<Cliente> getClienteList() {
-        return clienteList;
-    }
+//    public List<Cliente> getClienteList() {
+//        return clienteList;
+//    }
 
-    public void setClienteList(List<Cliente> clienteList) {
-        this.clienteList = clienteList;
-    }
+//    public void setClienteList(List<Cliente> clienteList) {
+//        this.clienteList = clienteList;
+//    }
 
-    public List<Proveedor> getProveedorList() {
-        return proveedorList;
-    }
+//    public List<Proveedor> getProveedorList() {
+//        return proveedorList;
+//    }
 
-    public void setProveedorList(List<Proveedor> proveedorList) {
-        this.proveedorList = proveedorList;
-    }
+//    public void setProveedorList(List<Proveedor> proveedorList) {
+//        this.proveedorList = proveedorList;
+//    }
 
     @Override
     public int hashCode() {

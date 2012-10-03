@@ -299,7 +299,7 @@ public class RemitoController implements ActionListener, KeyListener {
             newRemito.setCliente(selectedCliente);
             newRemito.setSucursal(selectedSucursal);
             newRemito.setFechaRemito(facturaVentaUI.getDcFechaFactura());
-            newRemito.setUsuario(UsuarioJpaController.getCurrentUser());
+            newRemito.setUsuario(UsuarioController.getCurrentUser());
             newRemito.setDetalleRemitoList(new ArrayList<DetalleRemito>(dtm.getRowCount()));
             // carga de detalleVenta
             DetalleRemito detalleRemito;
@@ -356,7 +356,7 @@ public class RemitoController implements ActionListener, KeyListener {
      * @throws MessageException
      */
     public void initBuscador(JFrame frame, boolean modal, boolean setVisible) throws MessageException {
-        UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.VENTA);
+        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.VENTA);
         buscador = new JDBuscadorReRe(frame, "Buscador - " + CLASS_NAME, modal, "Cliente", "Nº " + CLASS_NAME);
         initBuscador(setVisible);
     }
@@ -552,7 +552,7 @@ public class RemitoController implements ActionListener, KeyListener {
     }
 
     public void unlockedABM(JFrame owner) throws MessageException {
-        UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.VENTA_NUMERACION_MANUAL);
+        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.VENTA_NUMERACION_MANUAL);
         initRemito(owner, true, false, true);
         unlockedNumeracion = true;
         facturaVentaController.getContenedor().setNumeroFacturaEditable(true);

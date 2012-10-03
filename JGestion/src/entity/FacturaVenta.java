@@ -81,6 +81,9 @@ public class FacturaVenta implements Serializable {
     @Column(name = "gravado", nullable = false)
     private Double gravado;
     @Basic(optional = false)
+    @Column(name = "no_gravado", nullable = false, precision = 12, scale = 2)
+    private BigDecimal noGravado;
+    @Basic(optional = false)
     @Column(name = "forma_pago", nullable = false)
     private int formaPago;
     @Basic(optional = false)
@@ -238,6 +241,14 @@ public class FacturaVenta implements Serializable {
         this.gravado = gravado;
     }
 
+    public BigDecimal getNoGravado() {
+        return noGravado;
+    }
+
+    public void setNoGravado(BigDecimal noGravado) {
+        this.noGravado = noGravado;
+    }
+
     public int getFormaPago() {
         return formaPago;
     }
@@ -324,6 +335,7 @@ public class FacturaVenta implements Serializable {
                 + ", cliente=" + cliente.getId() + ", listaPrecios=" + listaPrecios
                 + ", usuario=" + usuario.getId() + ", caja=" + caja
                 + ", gravado=" + gravado
+                + ", noGravado=" + noGravado
                 + ", diferenciaRedondeo=" + diferenciaRedondeo
                 + ", formaPago=" + formaPago
                 + ", diasCtaCte=" + diasCtaCte + ", anulada=" + anulada

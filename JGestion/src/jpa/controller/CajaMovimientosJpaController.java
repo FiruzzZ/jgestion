@@ -53,7 +53,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
             newDetalleCajaMovimiento.setNumero(facturaCompra.getId());
             newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.FACTU_COMPRA);
             newDetalleCajaMovimiento.setDescripcion(JGestionUtils.getNumeracion(facturaCompra) + " " + facturaCompra.getProveedor().getNombre());
-            newDetalleCajaMovimiento.setUsuario(UsuarioJpaController.getCurrentUser());
+            newDetalleCajaMovimiento.setUsuario(UsuarioController.getCurrentUser());
             new DetalleCajaMovimientosJpaController().create(newDetalleCajaMovimiento);
         } catch (Exception e) {
             em.getTransaction().rollback();
@@ -78,12 +78,12 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
             newDetalleCajaMovimiento.setIngreso(true);
             if (facturaVenta.getFormaPagoEnum().equals(Valores.FormaPago.CONTADO)) {
                 newDetalleCajaMovimiento.setMonto(facturaVenta.getImporte());
-            } else if (facturaVenta.getFormaPagoEnum().equals(Valores.FormaPago.CONTADO_CHEQUE)) {
-                BigDecimal importe = new BigDecimal(facturaVenta.getImporte());
-                ChequeTerceros chequeTerceros = new ChequeTercerosJpaController().findChequeTerceros(facturaVenta);
-                BigDecimal noEfectivo = chequeTerceros.getImporte();
-                //obtain the income cash from the sale 
-                newDetalleCajaMovimiento.setMonto(noEfectivo.subtract(importe).doubleValue());
+//            } else if (facturaVenta.getFormaPagoEnum().equals(Valores.FormaPago.CONTADO_CHEQUE)) {
+//                BigDecimal importe = new BigDecimal(facturaVenta.getImporte());
+//                ChequeTerceros chequeTerceros = new ChequeTercerosController().findChequeTerceros(facturaVenta);
+//                BigDecimal noEfectivo = chequeTerceros.getImporte();
+//                //obtain the income cash from the sale 
+//                newDetalleCajaMovimiento.setMonto(noEfectivo.subtract(importe).doubleValue());
             } else {
                 throw new IllegalArgumentException(facturaVenta.getClass() + ".id=" + facturaVenta.getId()
                         + " contiene FormaPago=" + facturaVenta.getFormaPagoEnum() + " NO ASENTABLE COMO MOVIMIENTO CONTABLE.");
@@ -91,7 +91,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
             newDetalleCajaMovimiento.setNumero(facturaVenta.getId());
             newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.FACTU_VENTA);
             newDetalleCajaMovimiento.setDescripcion(JGestionUtils.getNumeracion(facturaVenta) + " " + facturaVenta.getCliente().getNombre());
-            newDetalleCajaMovimiento.setUsuario(UsuarioJpaController.getCurrentUser());
+            newDetalleCajaMovimiento.setUsuario(UsuarioController.getCurrentUser());
             new DetalleCajaMovimientosJpaController().create(newDetalleCajaMovimiento);
             em.getTransaction().commit();
         } catch (Exception ex) {
@@ -120,7 +120,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
             newDetalleCajaMovimiento.setNumero(Long.valueOf(recibo.getId()));
             newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.RECIBO);
             newDetalleCajaMovimiento.setDescripcion("R" + JGestionUtils.getNumeracion(recibo, true));
-            newDetalleCajaMovimiento.setUsuario(UsuarioJpaController.getCurrentUser());
+            newDetalleCajaMovimiento.setUsuario(UsuarioController.getCurrentUser());
             new DetalleCajaMovimientosJpaController().create(newDetalleCajaMovimiento);
         } catch (Exception e) {
             em.getTransaction().rollback();
@@ -147,7 +147,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
             newDetalleCajaMovimiento.setNumero(remesa.getId());
             newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.REMESA);
             newDetalleCajaMovimiento.setDescripcion("RM" + JGestionUtils.getNumeracion(remesa, true));
-            newDetalleCajaMovimiento.setUsuario(UsuarioJpaController.getCurrentUser());
+            newDetalleCajaMovimiento.setUsuario(UsuarioController.getCurrentUser());
             new DetalleCajaMovimientosJpaController().create(newDetalleCajaMovimiento);
         } catch (Exception e) {
             em.getTransaction().rollback();
@@ -172,7 +172,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
             newDetalleCajaMovimiento.setNumero(cheque.getId());
             newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.CHEQUE_TERCEROS);
             newDetalleCajaMovimiento.setDescripcion("CH" + cheque.getNumero() + " (" + cheque.getCliente().getNombre() + ")");
-            newDetalleCajaMovimiento.setUsuario(UsuarioJpaController.getCurrentUser());
+            newDetalleCajaMovimiento.setUsuario(UsuarioController.getCurrentUser());
             new DetalleCajaMovimientosJpaController().create(newDetalleCajaMovimiento);
         } catch (Exception e) {
             em.getTransaction().rollback();
@@ -197,7 +197,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
             newDetalleCajaMovimiento.setNumero(cheque.getId());
             newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.CHEQUE_PROPIO);
             newDetalleCajaMovimiento.setDescripcion("CH" + cheque.getNumero() + " (" + cheque.getProveedor().getNombre() + ")");
-            newDetalleCajaMovimiento.setUsuario(UsuarioJpaController.getCurrentUser());
+            newDetalleCajaMovimiento.setUsuario(UsuarioController.getCurrentUser());
             new DetalleCajaMovimientosJpaController().create(newDetalleCajaMovimiento);
         } catch (Exception e) {
             em.getTransaction().rollback();
@@ -226,7 +226,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
             newDetalleCajaMovimiento.setNumero(Long.valueOf(recibo.getId()));
             newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.RECIBO);
             newDetalleCajaMovimiento.setDescripcion("R" + JGestionUtils.getNumeracion(recibo, true) + " [ANULADO]");
-            newDetalleCajaMovimiento.setUsuario(UsuarioJpaController.getCurrentUser());
+            newDetalleCajaMovimiento.setUsuario(UsuarioController.getCurrentUser());
             new DetalleCajaMovimientosJpaController().create(newDetalleCajaMovimiento);
         } catch (Exception e) {
             em.getTransaction().rollback();
@@ -256,14 +256,14 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
             em.getTransaction().begin();
             facturaVenta = em.find(FacturaVenta.class, facturaVenta.getId());
             cajaMovimientoDestino = em.find(CajaMovimientos.class, cajaMovimientoDestino.getId());
-            em.lock(facturaVenta, LockModeType.PESSIMISTIC_WRITE);
+//            em.lock(facturaVenta, LockModeType.PESSIMISTIC_WRITE);
 
             //generic info in case of anullation..
             DetalleCajaMovimientos newDetalleCajaMovimiento = new DetalleCajaMovimientos();
             newDetalleCajaMovimiento.setCajaMovimientos(cajaMovimientoDestino);
             newDetalleCajaMovimiento.setIngreso(false);
             newDetalleCajaMovimiento.setNumero(facturaVenta.getId());
-            newDetalleCajaMovimiento.setUsuario(UsuarioJpaController.getCurrentUser());
+            newDetalleCajaMovimiento.setUsuario(UsuarioController.getCurrentUser());
             newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.ANULACION);
 
             if (facturaVenta.getFormaPagoEnum().equals(Valores.FormaPago.CONTADO)) {
@@ -304,10 +304,6 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
                 }
                 ccc.setEstado(Valores.CtaCteEstado.ANULADA.getId());
                 em.merge(ccc);
-            } else if (facturaVenta.getFormaPago() == Valores.FormaPago.CHEQUE.getId()) {
-                throw new UnsupportedOperationException("Anulación de Facturas, FormaPago = CHEQUE no implementada aún");
-            } else if (facturaVenta.getFormaPago() == Valores.FormaPago.CONTADO_CHEQUE.getId()) {
-                throw new UnsupportedOperationException("Anulación de Facturas, FormaPago = CONTADO/CHEQUE no implementada aún");
             }
 
             facturaVenta.setAnulada(true);
@@ -360,7 +356,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
                 newDetalleCajaMovimiento.setNumero(facturaCompra.getId());
                 newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.ANULACION);
                 newDetalleCajaMovimiento.setDescripcion(JGestionUtils.getNumeracion(facturaCompra) + " [ANULADA]");
-                newDetalleCajaMovimiento.setUsuario(UsuarioJpaController.getCurrentUser());
+                newDetalleCajaMovimiento.setUsuario(UsuarioController.getCurrentUser());
                 new DetalleCajaMovimientosJpaController().create(newDetalleCajaMovimiento);
             } else if (facturaCompra.getFormaPago() == Valores.FormaPago.CTA_CTE.getId()) {
                 // o CTA CTE..
@@ -387,7 +383,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
                                 newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.ANULACION);
                                 newDetalleCajaMovimiento.setDescripcion(JGestionUtils.getNumeracion(facturaCompra)
                                         + " -> R" + remesaQueEnSuDetalleContieneLaFactura.getNumero() + " [ANULADA]");
-                                newDetalleCajaMovimiento.setUsuario(UsuarioJpaController.getCurrentUser());
+                                newDetalleCajaMovimiento.setUsuario(UsuarioController.getCurrentUser());
                                 em.persist(newDetalleCajaMovimiento);
                                 em.merge(detalleRemesa);
                                 if (detalleUnico) {
@@ -478,7 +474,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
         dcm.setMonto(cm.getMontoApertura());
         dcm.setNumero(-1); //meaningless yet...
         dcm.setTipo(DetalleCajaMovimientosJpaController.APERTURA_CAJA);
-        dcm.setUsuario(UsuarioJpaController.getCurrentUser());
+        dcm.setUsuario(UsuarioController.getCurrentUser());
         if (dcm.getMovimientoConcepto() == null) {
             //default value
             dcm.setMovimientoConcepto(MovimientoConceptoJpaController.EFECTIVO);

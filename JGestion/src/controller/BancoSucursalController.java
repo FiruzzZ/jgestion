@@ -1,11 +1,10 @@
 package controller;
 
-import controller.exceptions.DatabaseErrorException;
-import controller.exceptions.IllegalOrphanException;
-import controller.exceptions.MessageException;
-import controller.exceptions.NonexistentEntityException;
+import controller.exceptions.*;
 import entity.Banco;
 import entity.BancoSucursal;
+import entity.ChequePropio;
+import entity.ChequeTerceros;
 import gui.JDABM;
 import gui.JDContenedor;
 import gui.PanelABMBancoSucursales;
@@ -22,32 +21,31 @@ import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import utilities.general.UTIL;
 
 /**
  *
- * @author Administrador
+ * @author FiruzzZ
  */
-public class BancoJpaController implements Serializable {
+public class BancoSucursalController implements Serializable {
 
-    public final String CLASS_NAME = Banco.class.getSimpleName();
-    private Banco EL_OBJECT;
-    private final String[] colsName = {"Nº", "Nombre"};
-    private final int[] colsWidth = {20, 120};
-    private JDContenedor contenedor;
+    public final String CLASS_NAME = BancoSucursal.class.getSimpleName();
+    private BancoSucursal EL_OBJECT;
+    private final String[] colsName = {"SucursalBanco.id", "Código", "Nombre", "Banco", "Dirección", "Teléfono"};
+    private final int[] colsWidth = {20, 40, 100, 100, 100, 50};
     private JDABM abm;
     private PanelABMBancoSucursales panelABM;
+    private JDContenedor contenedor;
     private boolean permitirFiltroVacio;
     private EntityManager entityManager;
-    private static Logger LOGGER = Logger.getLogger(BancoJpaController.class);
+    private static Logger LOGGER = Logger.getLogger(BancoSucursalController.class);
 
-    public BancoJpaController() {
+    public BancoSucursalController() {
     }
 
-    //<editor-fold defaultstate="collapsed" desc="DAO - CRUD Methods">
     public EntityManager getEntityManager() {
         if (entityManager == null || !entityManager.isOpen()) {
             LOGGER.trace(this.getClass() + " -> getting EntityManager");
@@ -56,27 +54,34 @@ public class BancoJpaController implements Serializable {
         return entityManager;
     }
 
-    public void create(Banco banco) {
-        try {
-            DAO.create(banco);
-        } catch (Exception ex) {
-            Logger.getLogger(BancoJpaController.class.getName()).fatal(ex, ex);
-        }
-    }
-
-    public void edit(Banco banco) throws NonexistentEntityException, Exception {
+    //<editor-fold defaultstate="collapsed" desc="DAO - CRUD Methods">
+    public void create(BancoSucursal bancoSucursal) {
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            banco = em.merge(banco);
+            em.persist(bancoSucursal);
+            em.getTransaction().commit();
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+        }
+    }
+
+    public void edit(BancoSucursal bancoSucursal) throws NonexistentEntityException, Exception {
+        EntityManager em = null;
+        try {
+            em = getEntityManager();
+            em.getTransaction().begin();
+            bancoSucursal = em.merge(bancoSucursal);
             em.getTransaction().commit();
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
             if (msg == null || msg.length() == 0) {
-                Integer id = banco.getId();
-                if (findBanco(id) == null) {
-                    throw new NonexistentEntityException("The banco with id " + id + " no longer exists.");
+                Integer id = bancoSucursal.getId();
+                if (findBancoSucursal(id) == null) {
+                    throw new NonexistentEntityException("The bancoSucursal with id " + id + " no longer exists.");
                 }
             }
             throw ex;
@@ -92,25 +97,23 @@ public class BancoJpaController implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            Banco banco;
+            BancoSucursal bancoSucursal;
             try {
-                banco = em.getReference(Banco.class, id);
-                //check if exist a BancoSucursal bound to this Banco
-                List<BancoSucursal> bancoSucursalEntitiesBound = new BancoSucursalJpaController().findEntitiesFrom(banco);
-                if (bancoSucursalEntitiesBound != null
-                        && !bancoSucursalEntitiesBound.isEmpty()) {
-                    List<String> msg = new ArrayList<String>(bancoSucursalEntitiesBound.size() + 1);
-                    msg.add("Este " + CLASS_NAME + " está relacionado a " + bancoSucursalEntitiesBound.size() + " sucursal/es:");
-                    for (BancoSucursal bancoSucursal : bancoSucursalEntitiesBound) {
-                        msg.add(bancoSucursal.getNombre() + ", " + bancoSucursal.getDireccion());
-                    }
+                bancoSucursal = em.getReference(BancoSucursal.class, id);
+                bancoSucursal.getId();
+                List chequesPropiosList = em.createQuery("SELECT o.id FROM " + ChequePropio.class.getSimpleName() + " o WHERE o.bancoSucursal.id = " + bancoSucursal.getId()).getResultList();
+                List chequesTercerosList = em.createQuery("SELECT o.id FROM " + ChequeTerceros.class.getSimpleName() + " o WHERE o.bancoSucursal.id = " + bancoSucursal.getId()).getResultList();
+                if (!chequesPropiosList.isEmpty() || !chequesTercerosList.isEmpty()) {
+                    List<String> msg = new ArrayList<String>(2);
+                    msg.add("La Sucursal de Banco \"" + bancoSucursal.getNombre() + "\" no puede ser eliminda porque está relacionada a "
+                            + chequesPropiosList.size() + " Cheque(s).");
                     throw new IllegalOrphanException(msg);
                 }
-                banco.getId();
+
             } catch (EntityNotFoundException enfe) {
-                throw new NonexistentEntityException("The banco with id " + id + " no longer exists.", enfe);
+                throw new NonexistentEntityException("The bancoSucursal with id " + id + " no longer exists.", enfe);
             }
-            em.remove(banco);
+            em.remove(bancoSucursal);
             em.getTransaction().commit();
         } finally {
             if (em != null) {
@@ -119,18 +122,18 @@ public class BancoJpaController implements Serializable {
         }
     }
 
-    public List<Banco> findEntities() {
-        return findBancoEntities(true, -1, -1);
+    public List<BancoSucursal> findBancoSucursalEntities() {
+        return findBancoSucursalEntities(true, -1, -1);
     }
 
-    public List<Banco> findBancoEntities(int maxResults, int firstResult) {
-        return findBancoEntities(false, maxResults, firstResult);
+    public List<BancoSucursal> findBancoSucursalEntities(int maxResults, int firstResult) {
+        return findBancoSucursalEntities(false, maxResults, firstResult);
     }
 
-    private List<Banco> findBancoEntities(boolean all, int maxResults, int firstResult) {
+    private List<BancoSucursal> findBancoSucursalEntities(boolean all, int maxResults, int firstResult) {
         EntityManager em = getEntityManager();
         try {
-            Query q = em.createQuery("select object(o) from Banco as o");
+            Query q = em.createQuery("select object(o) from BancoSucursal as o ORDER BY o.nombre");
             if (!all) {
                 q.setMaxResults(maxResults);
                 q.setFirstResult(firstResult);
@@ -141,20 +144,37 @@ public class BancoJpaController implements Serializable {
         }
     }
 
-    public Banco findBanco(Integer id) {
+    public BancoSucursal findBancoSucursal(Integer id) {
         EntityManager em = getEntityManager();
         try {
-            return em.find(Banco.class, id);
+            return em.find(BancoSucursal.class, id);
         } finally {
             em.close();
         }
     }
+
+    public int getBancoSucursalCount() {
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("select count(o) from BancoSucursal as o");
+            return ((Long) q.getSingleResult()).intValue();
+        } finally {
+            em.close();
+        }
+    }
+
+    List<BancoSucursal> findBy(Banco banco) {
+        EntityManager em = getEntityManager();
+        List<BancoSucursal> l = null;
+        l = em.createQuery("SELECT o FROM " + CLASS_NAME + " o "
+                + "WHERE o.banco.id=" + banco.getId()).getResultList();
+        return l;
+    }
     //</editor-fold>
 
     public JDialog initContenedor(JFrame owner, boolean modal, boolean modoBuscador) throws DatabaseErrorException {
-        contenedor = new JDContenedor(owner, modal, "ABM - " + CLASS_NAME);
-        contenedor.hideBtmImprimir();
-        contenedor.getTfFiltro().setToolTipText("Filtra por nombre del " + CLASS_NAME);
+        contenedor = new JDContenedor(owner, modal, "ABM - Sucursales de Banco");
+        contenedor.getTfFiltro().setToolTipText("Filtra por nombre de la Sucursal de Banco");
         contenedor.getTfFiltro().addKeyListener(new KeyAdapter() {
 
             @Override
@@ -164,7 +184,7 @@ public class BancoJpaController implements Serializable {
                     try {
                         armarQuery(contenedor.getTfFiltro().getText().trim());
                     } catch (DatabaseErrorException ex) {
-                        contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
+                        JOptionPane.showMessageDialog(null, ex);
                     }
                 } else {
                     if (permitirFiltroVacio) {
@@ -172,7 +192,7 @@ public class BancoJpaController implements Serializable {
                         try {
                             armarQuery(contenedor.getTfFiltro().getText().trim());
                         } catch (DatabaseErrorException ex) {
-                            contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
+                            JOptionPane.showMessageDialog(null, ex);
                         }
                     }
                 }
@@ -188,11 +208,6 @@ public class BancoJpaController implements Serializable {
                     initABM(contenedor, false);
                     abm.setLocationRelativeTo(contenedor);
                     abm.setVisible(true);
-                    try {
-                        cargarContenedorTabla(null);
-                    } catch (DatabaseErrorException ex) {
-                        contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                    }
                 } catch (MessageException ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 }
@@ -206,16 +221,11 @@ public class BancoJpaController implements Serializable {
                     initABM(contenedor, true);
                     abm.setLocationRelativeTo(contenedor);
                     abm.setVisible(true);
-                    try {
-                        cargarContenedorTabla(null);
-                    } catch (DatabaseErrorException ex) {
-                        contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                    }
                 } catch (MessageException ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    LOGGER.error(ex);
+                    LOGGER.error(ex.getMessage(), ex);
                 }
             }
         });
@@ -225,18 +235,19 @@ public class BancoJpaController implements Serializable {
             public void actionPerformed(ActionEvent e) {
                 try {
                     destroy(Integer.valueOf(UTIL.getSelectedValue(contenedor.getjTable1(), 0).toString()));
-                    try {
-                        cargarContenedorTabla(null);
-                    } catch (DatabaseErrorException ex) {
-                        contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                    }
                     contenedor.showMessage("Eliminado..", CLASS_NAME, 1);
                 } catch (IllegalOrphanException ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (NonexistentEntityException ex) {
-                    Logger.getLogger(BancoJpaController.class.getName()).log(Level.ERROR, null, ex);
+                    LOGGER.error(ex.getMessage(), ex);
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
                 }
+            }
+        });
+        contenedor.getbImprimir().addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
             }
         });
         UTIL.getDefaultTableModel(contenedor.getjTable1(), colsName, colsWidth);
@@ -244,6 +255,7 @@ public class BancoJpaController implements Serializable {
         //no permite filtro de vacio en el inicio
         permitirFiltroVacio = false;
         cargarContenedorTabla(null);
+//        contenedor.setListener(this);
         return contenedor;
     }
 
@@ -263,16 +275,21 @@ public class BancoJpaController implements Serializable {
         if (contenedor != null) {
             DefaultTableModel dtm = contenedor.getDTM();
             UTIL.limpiarDtm(dtm);
-            List<Banco> l;
+            List<BancoSucursal> l;
             if (query == null) {
-                l = (List<Banco>) findEntities();
+                l = (List<BancoSucursal>) findBancoSucursalEntities();
             } else {
-                l = (List<Banco>) DAO.getNativeQueryResultList(query, EL_OBJECT.getClass());
+                l = (List<BancoSucursal>) DAO.getNativeQueryResultList(query, EL_OBJECT.getClass());
             }
-            for (Banco o : l) {
+            for (BancoSucursal o : l) {
                 dtm.addRow(new Object[]{
                             o.getId(),
-                            o.getNombre(),});
+                            o.getCodigo(),
+                            o.getNombre(),
+                            o.getBanco().getNombre(),
+                            o.getDireccion(),
+                            o.getTelefono()
+                        });
             }
         }
     }
@@ -288,26 +305,26 @@ public class BancoJpaController implements Serializable {
     }
 
     /**
-     * Crea una instancia del ABM
+     * Crea una instancia modal del ABM
      * @param parent
      * @param isEditing
-     * @return una ventana para la creación de Bancos
+     * @return una ventana ABM
      * @throws MessageException 
      */
     private JDialog initABM(JDialog parent, boolean isEditing) throws MessageException {
-        UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.DATOS_GENERAL);
+        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.DATOS_GENERAL);
         if (isEditing) {
             EL_OBJECT = getSelectedFromContenedor();
             if (EL_OBJECT == null) {
                 throw new MessageException("Debe elegir una fila");
             }
         }
-        return settingABM(parent, isEditing);
+        return getJDialogABM(parent, isEditing);
     }
 
-    private JDialog settingABM(JDialog parent, boolean isEditing) {
+    private JDialog getJDialogABM(JDialog parent, boolean isEditing) {
         panelABM = new PanelABMBancoSucursales();
-        panelABM.hideFieldsSucursal();
+        UTIL.loadComboBox(panelABM.getCbBancos(), new BancoController().findEntities(), false);
         abm = new JDABM(true, parent, panelABM);
         if (isEditing) {
             setPanelABM(EL_OBJECT);
@@ -318,7 +335,7 @@ public class BancoJpaController implements Serializable {
             public void actionPerformed(ActionEvent e) {
                 try {
                     if (EL_OBJECT == null) {
-                        EL_OBJECT = new Banco();
+                        EL_OBJECT = new BancoSucursal();
                     }
                     setEntity(EL_OBJECT);
                     checkConstraints(EL_OBJECT);
@@ -337,7 +354,7 @@ public class BancoJpaController implements Serializable {
                 } catch (MessageException ex) {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
-                    LOGGER.error(ex);
+                    LOGGER.error(ex.getMessage(), ex);
                 }
             }
         });
@@ -353,15 +370,10 @@ public class BancoJpaController implements Serializable {
         return abm;
     }
 
-    private void setPanelABM(Banco o) {
-//        panel.getTfCodigo().setText(o.getCodigo());
-        panelABM.getTfNombre().setText(o.getNombre());
-    }
-
-    private Banco getSelectedFromContenedor() {
+    private BancoSucursal getSelectedFromContenedor() {
         Integer selectedRow = contenedor.getjTable1().getSelectedRow();
         if (selectedRow > -1) {
-            return (Banco) DAO.getEntityManager().find(Banco.class,
+            return (BancoSucursal) DAO.getEntityManager().find(BancoSucursal.class,
                     Integer.valueOf(
                     (contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
         } else {
@@ -369,33 +381,79 @@ public class BancoJpaController implements Serializable {
         }
     }
 
-    private void checkConstraints(Banco o) throws MessageException {
+    /**
+     * Chequea que:
+     * <ul>
+     * <li>El nombre de la sucursal sea único para ese banco</li>
+     * <li>El código sea único</li>
+     * </ul>
+     * @param o
+     * @throws MessageException
+     */
+    private void checkConstraints(BancoSucursal o) throws MessageException {
         String idQuery = "";
         if (o.getId() != null) {
-            idQuery = "o.id!=" + o.getId() + " AND ";
+            idQuery = "o.id<>" + o.getId() + " AND ";
         }
         try {
-            DAO.getEntityManager().createNativeQuery("SELECT * FROM " + CLASS_NAME + " o "
-                    + " WHERE " + idQuery + " o.nombre='" + o.getNombre() + "' ", o.getClass()).getSingleResult();
-            throw new MessageException("Ya existe otra " + CLASS_NAME + " con este nombre.");
+            DAO.getEntityManager().createQuery("SELECT o FROM " + CLASS_NAME + " o "
+                    + " WHERE " + idQuery + " o.nombre='" + o.getNombre() + "' AND o.banco.id=" + o.getBanco().getId(), o.getClass()).getSingleResult();
+            throw new MessageException("Ya existe otra Sucursal de Banco con este nombre.");
+        } catch (NoResultException ex) {
+        }
+        try {
+            DAO.getEntityManager().createQuery("SELECT o FROM " + CLASS_NAME + " o "
+                    + " WHERE " + idQuery + " o.codigo='" + o.getCodigo() + "' ", o.getClass()).getSingleResult();
+            throw new MessageException("Ya existe otra Sucursal de Banco con este código.");
         } catch (NoResultException ex) {
         }
     }
 
-    private void setEntity(Banco o) throws MessageException {
-        String nombre;
+    private void setPanelABM(BancoSucursal bancoSucursal) {
+        UTIL.setSelectedItem(panelABM.getCbBancos(), bancoSucursal.getBanco());
+        panelABM.getTfCodigo().setText(bancoSucursal.getCodigo());
+        panelABM.getTfNombre().setText(bancoSucursal.getNombre());
+        panelABM.getTfDireccion().setText(bancoSucursal.getDireccion());
+        if (bancoSucursal.getTelefono() != null) {
+            panelABM.getTfTelefono().setText(bancoSucursal.getTelefono().toString());
+        }
+    }
 
-//        if (panel.getTfCodigo().getText() == null || panel.getTfCodigo().getText().trim().length() < 1) {
-//            throw new MessageException("Debe ingresar un código");
-//        }
+    private void setEntity(BancoSucursal o) throws MessageException {
+        String nombre, codigo, direccion;
+        Long telefono = null;
+        Banco banco = null;
+
+        if (panelABM.getTfCodigo().getText() == null || panelABM.getTfCodigo().getText().trim().length() < 1) {
+            throw new MessageException("Debe ingresar un código");
+        }
 
         if (panelABM.getTfNombre().getText() == null || panelABM.getTfNombre().getText().trim().length() < 1) {
             throw new MessageException("Debe ingresar un nombre");
         }
 
+        if (panelABM.getTfDireccion().getText() == null || panelABM.getTfDireccion().getText().trim().length() < 1) {
+            throw new MessageException("Debe ingresar una dirección");
+        }
+
+        if (panelABM.getTfTelefono().getText() != null) {
+            try {
+                if(panelABM.getTfTelefono().getText().trim().length() > 12) {
+                    throw new MessageException("Número de teléfono no puede tener mas de 12 dígitos.");
+                }
+                telefono = Long.valueOf(panelABM.getTfTelefono().getText());
+            } catch (NumberFormatException numberFormatException) {
+                throw new MessageException("Número de teléfono no válido, debe ingresar solo números.");
+            }
+        }
         nombre = panelABM.getTfNombre().getText();
-//        codigo = panel.getTfCodigo().getText();
+        codigo = panelABM.getTfCodigo().getText();
+        direccion = panelABM.getTfDireccion().getText();
+        banco = (Banco) panelABM.getCbBancos().getSelectedItem();
         o.setNombre(nombre);
-//        o.setCodigo(codigo);
+        o.setCodigo(codigo);
+        o.setDireccion(direccion);
+        o.setTelefono(telefono);
+        o.setBanco(banco);
     }
 }

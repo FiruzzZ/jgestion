@@ -1,48 +1,41 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package entity.enums;
 
 import entity.ChequePropio;
 import entity.ChequeTerceros;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 
 /**
  * Estados posibles de un cheque.
+ *
  * @author FiruzzZ
  */
-//@Entity
-//@Table(name = "cheque_estado", uniqueConstraints = {
-//    @UniqueConstraint(columnNames = {"nombre"})})
 public enum ChequeEstado {
 
     /**
-     * Estado exclusivo de {@link ChequePropio}, e indica que fue debitado (cobrado).
+     * {@link ChequeTerceros} : Son los recibidos, aún no está
+     * {@link ChequeEstado#DEPOSITADO} o cobrados {@link ChequeEstado#CAJA}.
+     * <br>{@link ChequePropio} : Los emitidos (LIBRADOS) que aun no fueron
+     * debitados efectivamente de las cuentas (no conciliados).
      */
-    DEBIDATO(1),
-    /**
-     * {@link ChequeTerceros} : Son los recibidos, aún no está {@link ChequeEstado#DEPOSITADO}
-     * o cobrados {@link ChequeEstado#CAJA}.
-     * <br>{@link ChequePropio} : Los emitidos (LIBRADOS) que aun no fueron debitados 
-     * efectivamente de las cuentas (no conciliados).
-     */
-    CARTERA(2),
+    CARTERA(1),
     /**
      * Fue depositado en una cuenta bancaria.
      */
-    DEPOSITADO(3),
+    DEPOSITADO(2),
+    /**
+     * Estado exclusivo de {@link ChequePropio}, e indica que fue debitado
+     * (cobrado).
+     */
+    DEBITADO(3),
     /**
      * Pasó a formar parte de una Caja (se hizo dinero efectivo).
      */
-    CAJA(4),
+    ACREDITADO_EN_CAJA(4),
     /**
      * Hace falta explicación?
      */
-    RECHAZADO(5);
+    RECHAZADO(5),
+    ENVIADO_SUCURSAL(6),
+    ENDOSADO(7);
     private final int id;
 
     private ChequeEstado(int id) {
@@ -54,9 +47,9 @@ public enum ChequeEstado {
     }
 
     /**
-     * 
+     *
      * @param id
-     * @return 
+     * @return
      * @throws IllegalArgumentException if the id doesn't exist
      */
     public static ChequeEstado findById(Integer id) {
@@ -66,5 +59,10 @@ public enum ChequeEstado {
             }
         }
         throw new IllegalArgumentException("ID ChequeEstado no válido");
+    }
+
+    @Override
+    public String toString() {
+        return this.name().replaceAll("_", " ");
     }
 }

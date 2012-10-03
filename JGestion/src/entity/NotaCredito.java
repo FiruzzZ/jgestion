@@ -1,6 +1,7 @@
 package entity;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Basic;
@@ -26,211 +27,233 @@ import javax.persistence.UniqueConstraint;
  */
 @Entity
 @Table(name = "nota_credito", uniqueConstraints = {
-   @UniqueConstraint(columnNames = {"numero"})})
+    @UniqueConstraint(columnNames = {"numero"})})
 @NamedQueries({
-   @NamedQuery(name = "NotaCredito.findAll", query = "SELECT n FROM NotaCredito n"),
-   @NamedQuery(name = "NotaCredito.findById", query = "SELECT n FROM NotaCredito n WHERE n.id = :id"),
-   @NamedQuery(name = "NotaCredito.findByNumero", query = "SELECT n FROM NotaCredito n WHERE n.numero = :numero")
+    @NamedQuery(name = "NotaCredito.findAll", query = "SELECT n FROM NotaCredito n"),
+    @NamedQuery(name = "NotaCredito.findById", query = "SELECT n FROM NotaCredito n WHERE n.id = :id"),
+    @NamedQuery(name = "NotaCredito.findByNumero", query = "SELECT n FROM NotaCredito n WHERE n.numero = :numero")
 })
 public class NotaCredito implements Serializable {
 
-   private static final long serialVersionUID = 1L;
-   @Id
-   @Basic(optional = false)
-   @Column(name = "id", nullable = false)
-   @GeneratedValue(strategy = GenerationType.IDENTITY)
-   private Integer id;
-   @Basic(optional = false)
-   @Column(name = "numero", nullable = false)
-   private long numero;
-   @Basic(optional = false)
-   @Column(name = "fecha_nota_credito", nullable = false)
-   @Temporal(TemporalType.DATE)
-   private Date fechaNotaCredito;
-   @Basic(optional = false)
-   @Column(name = "fecha_carga", nullable = false, updatable = false, insertable = false, columnDefinition = "timestamp with time zone NOT NULL DEFAULT now()")
-   @Temporal(TemporalType.TIMESTAMP)
-   private Date fechaCarga;
-   @Basic(optional = false)
-   @Column(name = "importe", nullable = false)
-   private double importe;
-   @Column(name = "observacion", length = 250)
-   private String observacion;
-   @Basic(optional = false)
-   @Column(name = "gravado", nullable = false)
-   private double gravado;
-   @Basic(optional = false)
-   @Column(name = "iva10", nullable = false)
-   private double iva10;
-   @Basic(optional = false)
-   @Column(name = "iva21", nullable = false)
-   private double iva21;
-   @Basic(optional = false)
-   @Column(name = "anulada", nullable = false)
-   private boolean anulada;
-   @ManyToOne(optional = false)
-   @JoinColumn(name = "cliente", referencedColumnName = "id", nullable = false)
-   private Cliente cliente;
-   @JoinColumn(name = "usuario", referencedColumnName = "id", nullable = false)
-   @ManyToOne(optional = false)
-   private Usuario usuario;
-   @JoinColumn(name = "sucursal", referencedColumnName = "id", nullable = false)
-   @ManyToOne(optional = false)
-   private Sucursal sucursal;
-   @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "notaCredito")
-   private Collection<DetalleNotaCredito> detalleNotaCreditoCollection;
-   @Column(name = "desacreditado", nullable = false)
-   private double desacreditado;
+    private static final long serialVersionUID = 1L;
+    @Id
+    @Basic(optional = false)
+    @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+    @Basic(optional = false)
+    @Column(name = "numero", nullable = false)
+    private long numero;
+    @Basic(optional = false)
+    @Column(name = "fecha_nota_credito", nullable = false)
+    @Temporal(TemporalType.DATE)
+    private Date fechaNotaCredito;
+    @Basic(optional = false)
+    @Column(name = "fecha_carga", nullable = false, updatable = false, insertable = false, columnDefinition = "timestamp with time zone NOT NULL DEFAULT now()")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fechaCarga;
+    @Basic(optional = false)
+    @Column(name = "importe", nullable = false, precision = 10, scale = 2)
+    private BigDecimal importe;
+    @Column(name = "observacion", length = 250)
+    private String observacion;
+    @Basic(optional = false)
+    @Column(name = "gravado", nullable = false)
+    private double gravado;
+    @Basic(optional = false)
+    @Column(name = "no_gravado", nullable = false, precision = 12, scale = 2)
+    private BigDecimal noGravado;
+    @Basic(optional = false)
+    @Column(name = "impuestos_recuperables", nullable = false, precision = 12, scale = 2)
+    private BigDecimal impuestosRecuperables;
+    @Basic(optional = false)
+    @Column(name = "iva10", nullable = false)
+    private double iva10;
+    @Basic(optional = false)
+    @Column(name = "iva21", nullable = false)
+    private double iva21;
+    @Basic(optional = false)
+    @Column(name = "anulada", nullable = false)
+    private boolean anulada;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "cliente", referencedColumnName = "id", nullable = false)
+    private Cliente cliente;
+    @JoinColumn(name = "usuario", referencedColumnName = "id", nullable = false)
+    @ManyToOne(optional = false)
+    private Usuario usuario;
+    @JoinColumn(name = "sucursal", referencedColumnName = "id", nullable = false)
+    @ManyToOne(optional = false)
+    private Sucursal sucursal;
+    @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "notaCredito")
+    private Collection<DetalleNotaCredito> detalleNotaCreditoCollection;
+    @Column(name = "desacreditado", nullable = false, precision = 10, scale = 2)
+    private BigDecimal desacreditado;
 
-   public NotaCredito() {
-   }
+    public NotaCredito() {
+    }
 
-   public NotaCredito(Integer id) {
-      this.id = id;
-   }
+    public NotaCredito(Integer id) {
+        this.id = id;
+    }
 
-   public Integer getId() {
-      return id;
-   }
+    public Integer getId() {
+        return id;
+    }
 
-   public void setId(Integer id) {
-      this.id = id;
-   }
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-   public long getNumero() {
-      return numero;
-   }
+    public long getNumero() {
+        return numero;
+    }
 
-   public void setNumero(long numero) {
-      this.numero = numero;
-   }
+    public void setNumero(long numero) {
+        this.numero = numero;
+    }
 
-   public Date getFechaNotaCredito() {
-      return fechaNotaCredito;
-   }
+    public Date getFechaNotaCredito() {
+        return fechaNotaCredito;
+    }
 
-   public void setFechaNotaCredito(Date fechaNotaCredito) {
-      this.fechaNotaCredito = fechaNotaCredito;
-   }
+    public void setFechaNotaCredito(Date fechaNotaCredito) {
+        this.fechaNotaCredito = fechaNotaCredito;
+    }
 
-   public Date getFechaCarga() {
-      return fechaCarga;
-   }
+    public Date getFechaCarga() {
+        return fechaCarga;
+    }
 
-   public void setFechaCarga(Date fechaCarga) {
-      this.fechaCarga = fechaCarga;
-   }
+    public void setFechaCarga(Date fechaCarga) {
+        this.fechaCarga = fechaCarga;
+    }
 
-   public double getImporte() {
-      return importe;
-   }
+    public BigDecimal getImporte() {
+        return importe;
+    }
 
-   public void setImporte(double importe) {
-      this.importe = importe;
-   }
+    public void setImporte(BigDecimal importe) {
+        this.importe = importe;
+    }
 
-   public String getObservacion() {
-      return observacion;
-   }
+    public String getObservacion() {
+        return observacion;
+    }
 
-   public void setObservacion(String observacion) {
-      this.observacion = observacion;
-   }
+    public void setObservacion(String observacion) {
+        this.observacion = observacion;
+    }
 
-   public double getGravado() {
-      return gravado;
-   }
+    public double getGravado() {
+        return gravado;
+    }
 
-   public void setGravado(double gravado) {
-      this.gravado = gravado;
-   }
+    public void setGravado(double gravado) {
+        this.gravado = gravado;
+    }
 
-   public double getIva10() {
-      return iva10;
-   }
+    public BigDecimal getNoGravado() {
+        return noGravado;
+    }
 
-   public void setIva10(double iva10) {
-      this.iva10 = iva10;
-   }
+    public void setNoGravado(BigDecimal noGravado) {
+        this.noGravado = noGravado;
+    }
 
-   public double getIva21() {
-      return iva21;
-   }
+    public BigDecimal getImpuestosRecuperables() {
+        return impuestosRecuperables;
+    }
 
-   public void setIva21(double iva21) {
-      this.iva21 = iva21;
-   }
+    public void setImpuestosRecuperables(BigDecimal impuestosRecuperables) {
+        this.impuestosRecuperables = impuestosRecuperables;
+    }
 
-   public boolean getAnulada() {
-      return anulada;
-   }
+    public double getIva10() {
+        return iva10;
+    }
 
-   public void setAnulada(boolean anulada) {
-      this.anulada = anulada;
-   }
+    public void setIva10(double iva10) {
+        this.iva10 = iva10;
+    }
 
-   public Cliente getCliente() {
-      return cliente;
-   }
+    public double getIva21() {
+        return iva21;
+    }
 
-   public Sucursal getSucursal() {
-      return sucursal;
-   }
+    public void setIva21(double iva21) {
+        this.iva21 = iva21;
+    }
 
-   public Usuario getUsuario() {
-      return usuario;
-   }
+    public boolean getAnulada() {
+        return anulada;
+    }
 
-   public void setCliente(Cliente cliente) {
-      this.cliente = cliente;
-   }
+    public void setAnulada(boolean anulada) {
+        this.anulada = anulada;
+    }
 
-   public void setSucursal(Sucursal sucursal) {
-      this.sucursal = sucursal;
-   }
+    public Cliente getCliente() {
+        return cliente;
+    }
 
-   public void setUsuario(Usuario usuario) {
-      this.usuario = usuario;
-   }
+    public Sucursal getSucursal() {
+        return sucursal;
+    }
 
-   public Collection<DetalleNotaCredito> getDetalleNotaCreditoCollection() {
-      return detalleNotaCreditoCollection;
-   }
+    public Usuario getUsuario() {
+        return usuario;
+    }
 
-   public void setDetalleNotaCreditoCollection(Collection<DetalleNotaCredito> detalleNotaCreditoCollection) {
-      this.detalleNotaCreditoCollection = detalleNotaCreditoCollection;
-   }
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
 
-   public double getDesacreditado() {
-      return desacreditado;
-   }
+    public void setSucursal(Sucursal sucursal) {
+        this.sucursal = sucursal;
+    }
 
-   public void setDesacreditado(double desacreditado) {
-      this.desacreditado = desacreditado;
-   }
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
 
-   @Override
-   public int hashCode() {
-      int hash = 0;
-      hash += (id != null ? id.hashCode() : 0);
-      return hash;
-   }
+    public Collection<DetalleNotaCredito> getDetalleNotaCreditoCollection() {
+        return detalleNotaCreditoCollection;
+    }
 
-   @Override
-   public boolean equals(Object object) {
-      // TODO: Warning - this method won't work in the case the id fields are not set
-      if (!(object instanceof NotaCredito)) {
-         return false;
-      }
-      NotaCredito other = (NotaCredito) object;
-      if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-         return false;
-      }
-      return true;
-   }
+    public void setDetalleNotaCreditoCollection(Collection<DetalleNotaCredito> detalleNotaCreditoCollection) {
+        this.detalleNotaCreditoCollection = detalleNotaCreditoCollection;
+    }
 
-   @Override
-   public String toString() {
-      return "entity.NotaCredito[id=" + id + ", número=" + numero + ", importe=" + importe + ",desacreditado=" + desacreditado + ", fechaNotaCredito=" + fechaNotaCredito + ", fechaCarga=" + fechaCarga + ", Cliente=" + cliente + ", Usuario=" + usuario + ", Sucursal=" + sucursal + ", detalle.size=" + detalleNotaCreditoCollection.size() + "]";
-   }
+    public BigDecimal getDesacreditado() {
+        return desacreditado;
+    }
+
+    public void setDesacreditado(BigDecimal desacreditado) {
+        this.desacreditado = desacreditado;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof NotaCredito)) {
+            return false;
+        }
+        NotaCredito other = (NotaCredito) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "entity.NotaCredito[id=" + id + ", número=" + numero + ", importe=" + importe + ",desacreditado=" + desacreditado + ", fechaNotaCredito=" + fechaNotaCredito + ", fechaCarga=" + fechaCarga + ", Cliente=" + cliente + ", Usuario=" + usuario + ", Sucursal=" + sucursal + ", detalle.size=" + detalleNotaCreditoCollection.size() + "]";
+    }
 }

@@ -165,7 +165,7 @@ public class DatosEmpresaJpaController implements ActionListener {
     public void initJD(java.awt.Frame frame, boolean modal) throws Exception {
         // <editor-fold defaultstate="collapsed" desc="checking Permiso">
         try {
-            UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.DATOS_GENERAL);
+            UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.DATOS_GENERAL);
         } catch (MessageException ex) {
             javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
             return;

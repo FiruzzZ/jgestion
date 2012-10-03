@@ -7,18 +7,19 @@ package gui;
 
 import java.awt.Color;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseListener;
+import java.math.BigDecimal;
 import java.util.Date;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import utilities.general.UTIL;
 import utilities.gui.SwingUtil;
+import utilities.swing.components.NumberRenderer;
 
 /**
  * Ventana usada para el ABM de Recibos y Remitos
@@ -33,6 +34,8 @@ public class JDReRe extends javax.swing.JDialog {
     public JDReRe(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        tablePagos.getColumnModel().getColumn(3).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        UTIL.hideColumnTable(tablePagos, 0);
     }
 
     /**
@@ -45,7 +48,7 @@ public class JDReRe extends javax.swing.JDialog {
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tableAPagar = new javax.swing.JTable();
         bImprimir = new javax.swing.JButton();
         bAceptar = new javax.swing.JButton();
         bCancelar = new javax.swing.JButton();
@@ -68,14 +71,9 @@ public class JDReRe extends javax.swing.JDialog {
         btnDetalleCreditoDebito = new javax.swing.JButton();
         labelRestanteCreditoDebito = new javax.swing.JLabel();
         tfCreditoDebitoRestante = new javax.swing.JTextField();
-        tfTotalEfectivo = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
         bAnular = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
-        tfEntrega = new javax.swing.JTextField();
-        tfObservacion = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
         btnADD = new javax.swing.JButton();
         btnDEL = new javax.swing.JButton();
         jLabel21 = new javax.swing.JLabel();
@@ -86,22 +84,24 @@ public class JDReRe extends javax.swing.JDialog {
         tfPagado = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         tfSaldo = new javax.swing.JTextField();
-        checkAcreditarEntrega = new javax.swing.JCheckBox();
-        tfTotalPorCreditoDebito = new javax.swing.JTextField();
-        labelPorCreditoDebito = new javax.swing.JLabel();
-        tfTOTAL = new javax.swing.JTextField();
+        tfEntrega = new javax.swing.JTextField();
+        tfTotalAPagar = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
-        jCheckBox1 = new javax.swing.JCheckBox();
-        jLabel10 = new javax.swing.JLabel();
-        checkPagoConCheque = new javax.swing.JCheckBox();
-        tfRetencion = new javax.swing.JTextField();
-        labelRetencionPercepcion = new javax.swing.JLabel();
+        checkOcultarDatos = new javax.swing.JCheckBox();
+        jPanel3 = new javax.swing.JPanel();
+        cbFormasDePago = new javax.swing.JComboBox();
+        btnAddPago = new javax.swing.JButton();
+        btnDelPago = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        tablePagos = new javax.swing.JTable();
+        jLabel12 = new javax.swing.JLabel();
+        tfTotalPagado = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("setear título!");
         setResizable(false);
 
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(tableAPagar);
 
         bImprimir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px-Crystal_Clear_action_fileprint.png"))); // NOI18N
         bImprimir.setMnemonic('i');
@@ -118,10 +118,10 @@ public class JDReRe extends javax.swing.JDialog {
         bCancelar.setText("Cancelar");
         bCancelar.setName("cancelar"); // NOI18N
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Datos", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 11), new java.awt.Color(0, 0, 0))); // NOI18N
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Datos", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, null, new java.awt.Color(0, 0, 0)));
 
-        tfCuarto.setColumns(4);
         tfCuarto.setEditable(false);
+        tfCuarto.setColumns(4);
         tfCuarto.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         tfCuarto.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         tfCuarto.setRequestFocusEnabled(false);
@@ -140,8 +140,8 @@ public class JDReRe extends javax.swing.JDialog {
 
         jLabel4.setText("Fecha");
 
-        tfOcteto.setColumns(8);
         tfOcteto.setEditable(false);
+        tfOcteto.setColumns(8);
         tfOcteto.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         tfOcteto.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         tfOcteto.setRequestFocusEnabled(false);
@@ -164,9 +164,9 @@ public class JDReRe extends javax.swing.JDialog {
 
         labelCreditoDebito.setText("Crédito");
 
-        tfCreditoDebitoDisponible.setColumns(8);
         tfCreditoDebitoDisponible.setEditable(false);
-        tfCreditoDebitoDisponible.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        tfCreditoDebitoDisponible.setColumns(6);
+        tfCreditoDebitoDisponible.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         tfCreditoDebitoDisponible.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         tfCreditoDebitoDisponible.setText("0");
         tfCreditoDebitoDisponible.setFocusable(false);
@@ -176,9 +176,9 @@ public class JDReRe extends javax.swing.JDialog {
 
         labelRestanteCreditoDebito.setText("Restante");
 
-        tfCreditoDebitoRestante.setColumns(8);
         tfCreditoDebitoRestante.setEditable(false);
-        tfCreditoDebitoRestante.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        tfCreditoDebitoRestante.setColumns(6);
+        tfCreditoDebitoRestante.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         tfCreditoDebitoRestante.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         tfCreditoDebitoRestante.setText("0");
         tfCreditoDebitoRestante.setFocusable(false);
@@ -191,40 +191,40 @@ public class JDReRe extends javax.swing.JDialog {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(labelCreditoDebito)
                     .addComponent(jLabel20)
                     .addComponent(labelClienteProveedor)
                     .addComponent(labelReRe)
                     .addComponent(jLabel4))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addGroup(jPanel1Layout.createSequentialGroup()
-                            .addComponent(cbSucursal, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(jLabel15)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(cbCaja, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(jPanel1Layout.createSequentialGroup()
-                            .addComponent(dcFechaReRe, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(18, 18, 18)
-                            .addComponent(jLabel7)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(dcFechaCarga, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(jPanel1Layout.createSequentialGroup()
-                            .addComponent(tfCuarto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addComponent(tfOcteto, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addComponent(cbClienteProveedor, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(tfCreditoDebitoDisponible, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(cbSucursal, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnDetalleCreditoDebito, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(36, 36, 36)
-                        .addComponent(labelRestanteCreditoDebito)
+                        .addComponent(jLabel15)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(tfCreditoDebitoRestante, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(cbCaja, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(dcFechaReRe, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel7)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(dcFechaCarga, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(tfCuarto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(tfOcteto, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cbClienteProveedor, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(labelCreditoDebito)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(tfCreditoDebitoDisponible, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnDetalleCreditoDebito, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(labelRestanteCreditoDebito)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(tfCreditoDebitoRestante, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(30, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -246,29 +246,16 @@ public class JDReRe extends javax.swing.JDialog {
                     .addComponent(cbCaja, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel15))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(labelClienteProveedor)
-                    .addComponent(cbClienteProveedor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(tfCreditoDebitoRestante, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cbClienteProveedor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(labelRestanteCreditoDebito)
+                    .addComponent(labelClienteProveedor)
                     .addComponent(labelCreditoDebito)
-                    .addComponent(tfCreditoDebitoDisponible, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnDetalleCreditoDebito)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(tfCreditoDebitoRestante, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(labelRestanteCreditoDebito))))
+                    .addComponent(tfCreditoDebitoDisponible, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-
-        tfTotalEfectivo.setColumns(8);
-        tfTotalEfectivo.setEditable(false);
-        tfTotalEfectivo.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        tfTotalEfectivo.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        tfTotalEfectivo.setText("0");
-        tfTotalEfectivo.setToolTipText("NO incluye el monto ACREDITADO ni la RETENCIÓN");
-        tfTotalEfectivo.setFocusable(false);
-        tfTotalEfectivo.setRequestFocusEnabled(false);
-
-        jLabel2.setText("Efectivo");
 
         bAnular.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px-Crystal_Clear_action_editdelete.png"))); // NOI18N
         bAnular.setText("Anular");
@@ -277,29 +264,9 @@ public class JDReRe extends javax.swing.JDialog {
         bAnular.setName("anular"); // NOI18N
         bAnular.setRequestFocusEnabled(false);
 
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Detalle", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 11), new java.awt.Color(0, 0, 0))); // NOI18N
-
-        tfEntrega.setColumns(10);
-        tfEntrega.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        tfEntrega.setToolTipText("Monto ($)");
-        tfEntrega.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                selectAllText(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                tfEntregaFocusLost(evt);
-            }
-        });
-
-        tfObservacion.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                selectAllText(evt);
-            }
-        });
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Detalle a Pagar", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, null, new java.awt.Color(0, 0, 0)));
 
         jLabel8.setText("Entrega");
-
-        jLabel9.setText("Observación");
 
         btnADD.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px-Crystal_Clear_action_edit_add.png"))); // NOI18N
         btnADD.setToolTipText("Agregar entrega al detalle");
@@ -322,9 +289,9 @@ public class JDReRe extends javax.swing.JDialog {
 
         jLabel5.setText("Importe");
 
-        tfImporte.setColumns(8);
         tfImporte.setEditable(false);
-        tfImporte.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        tfImporte.setColumns(6);
+        tfImporte.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         tfImporte.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         tfImporte.setText("0");
         tfImporte.setFocusable(false);
@@ -332,144 +299,204 @@ public class JDReRe extends javax.swing.JDialog {
 
         jLabel6.setText("Pagado");
 
-        tfPagado.setColumns(8);
         tfPagado.setEditable(false);
-        tfPagado.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        tfPagado.setColumns(6);
+        tfPagado.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         tfPagado.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         tfPagado.setText("0");
+        tfPagado.setToolTipText("");
         tfPagado.setFocusable(false);
         tfPagado.setRequestFocusEnabled(false);
 
         jLabel3.setText("Saldo");
 
-        tfSaldo.setColumns(8);
         tfSaldo.setEditable(false);
-        tfSaldo.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        tfSaldo.setColumns(6);
+        tfSaldo.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         tfSaldo.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         tfSaldo.setText("0");
         tfSaldo.setToolTipText("Saldo restante");
         tfSaldo.setFocusable(false);
         tfSaldo.setRequestFocusEnabled(false);
 
-        checkAcreditarEntrega.setMnemonic('r');
-        checkAcreditarEntrega.setText("desacreditar entrega");
-        checkAcreditarEntrega.setToolTipText("La entrega será ");
+        tfEntrega.setColumns(6);
+        tfEntrega.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        tfEntrega.setToolTipText("Monto ($)");
+        tfEntrega.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                selectAllText(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                tfEntregaFocusLost(evt);
+            }
+        });
+        tfEntrega.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                tfEntregaKeyTyped(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel21, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.TRAILING))
+                    .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(tfObservacion, javax.swing.GroupLayout.PREFERRED_SIZE, 316, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnADD, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnDEL, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(cbCtaCtes, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(tfEntrega, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(tfImporte, javax.swing.GroupLayout.Alignment.LEADING))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(tfEntrega)
+                            .addComponent(tfImporte))
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabel6)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(tfPagado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabel3)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(tfSaldo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(checkAcreditarEntrega))))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                                .addGap(136, 136, 136)
+                                .addComponent(btnADD, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnDEL, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cbCtaCtes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel21))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
-                    .addComponent(tfImporte, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6)
-                    .addComponent(tfPagado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3)
-                    .addComponent(tfSaldo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel8)
-                    .addComponent(tfEntrega, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(checkAcreditarEntrega))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                    .addComponent(tfObservacion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel9)
-                    .addComponent(btnADD, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnDEL, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)))
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                        .addComponent(btnADD, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnDEL, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(cbCtaCtes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel21))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel5)
+                            .addComponent(tfImporte, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel6)
+                            .addComponent(tfPagado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel3)
+                            .addComponent(tfSaldo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel8)
+                            .addComponent(tfEntrega, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        tfTotalPorCreditoDebito.setColumns(8);
-        tfTotalPorCreditoDebito.setEditable(false);
-        tfTotalPorCreditoDebito.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        tfTotalPorCreditoDebito.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        tfTotalPorCreditoDebito.setText("0");
-        tfTotalPorCreditoDebito.setFocusable(false);
-        tfTotalPorCreditoDebito.setRequestFocusEnabled(false);
+        tfTotalAPagar.setEditable(false);
+        tfTotalAPagar.setColumns(6);
+        tfTotalAPagar.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        tfTotalAPagar.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        tfTotalAPagar.setText("0");
+        tfTotalAPagar.setFocusable(false);
+        tfTotalAPagar.setRequestFocusEnabled(false);
 
-        labelPorCreditoDebito.setText("Acreditado");
+        jLabel1.setText("Total a pagar");
 
-        tfTOTAL.setColumns(8);
-        tfTOTAL.setEditable(false);
-        tfTOTAL.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        tfTOTAL.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        tfTOTAL.setText("0");
-        tfTOTAL.setFocusable(false);
-        tfTOTAL.setRequestFocusEnabled(false);
-
-        jLabel1.setText("Total pagado");
-
-        jCheckBox1.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jCheckBox1.setMnemonic('o');
-        jCheckBox1.setText("Ocultar Datos");
-        jCheckBox1.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
-        jCheckBox1.setRequestFocusEnabled(false);
-        jCheckBox1.addChangeListener(new javax.swing.event.ChangeListener() {
+        checkOcultarDatos.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        checkOcultarDatos.setMnemonic('o');
+        checkOcultarDatos.setText("Ocultar Datos");
+        checkOcultarDatos.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        checkOcultarDatos.setMargin(new java.awt.Insets(1, 1, 1, 1));
+        checkOcultarDatos.setRequestFocusEnabled(false);
+        checkOcultarDatos.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                jCheckBox1StateChanged(evt);
+                checkOcultarDatosStateChanged(evt);
             }
         });
 
-        jLabel10.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jLabel10.setText("** Desacreditado");
+        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Formas de Pago"));
 
-        checkPagoConCheque.setText("Pago con cheque");
-        checkPagoConCheque.setToolTipText("Seleccione para relacionar el pago del documento con un Cheque");
+        cbFormasDePago.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Efectivo", "Cheque Propio", "Cheque Tercero", "Nota de Crédito", "Retención" }));
 
-        tfRetencion.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        tfRetencion.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        tfRetencion.setText("0");
-        tfRetencion.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                tfRetencionFocusLost(evt);
+        btnAddPago.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px-Crystal_Clear_action_edit_add.png"))); // NOI18N
+
+        btnDelPago.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px-Crystal_Clear_action_edit_remove.png"))); // NOI18N
+        btnDelPago.setToolTipText("Eliminar entrega");
+        btnDelPago.setFocusable(false);
+        btnDelPago.setName("del"); // NOI18N
+        btnDelPago.setRequestFocusEnabled(false);
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(cbFormasDePago, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnAddPago, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnDelPago, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(43, Short.MAX_VALUE))
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(cbFormasDePago, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnAddPago, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnDelPago, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        tablePagos.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Object", "Tipo", "Descripción", "Importe"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Double.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
             }
         });
-        tfRetencion.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                tfRetencionKeyTyped(evt);
-            }
-        });
+        tablePagos.getTableHeader().setReorderingAllowed(false);
+        jScrollPane2.setViewportView(tablePagos);
+        tablePagos.getColumnModel().getColumn(0).setResizable(false);
+        tablePagos.getColumnModel().getColumn(0).setPreferredWidth(10);
+        tablePagos.getColumnModel().getColumn(1).setResizable(false);
+        tablePagos.getColumnModel().getColumn(1).setPreferredWidth(20);
+        tablePagos.getColumnModel().getColumn(2).setResizable(false);
+        tablePagos.getColumnModel().getColumn(2).setPreferredWidth(200);
+        tablePagos.getColumnModel().getColumn(3).setResizable(false);
+        tablePagos.getColumnModel().getColumn(3).setPreferredWidth(60);
 
-        labelRetencionPercepcion.setText("Retención");
+        jLabel12.setText("Total");
+
+        tfTotalPagado.setEditable(false);
+        tfTotalPagado.setColumns(6);
+        tfTotalPagado.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        tfTotalPagado.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        tfTotalPagado.setText("0");
+        tfTotalPagado.setFocusable(false);
+        tfTotalPagado.setRequestFocusEnabled(false);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -478,83 +505,58 @@ public class JDReRe extends javax.swing.JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel10)
-                    .addComponent(checkPagoConCheque))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(labelPorCreditoDebito)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(tfTotalPorCreditoDebito, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(labelRetencionPercepcion, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(tfTotalEfectivo, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(tfTOTAL, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(tfRetencion, javax.swing.GroupLayout.Alignment.TRAILING))
-                .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jCheckBox1)
-                .addGap(10, 10, 10))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(bAnular)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(bImprimir)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(bAceptar)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(bCancelar)
-                .addGap(10, 10, 10))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(10, 10, 10)
-                .addComponent(jScrollPane1)
-                .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addGap(10, 10, 10)
-                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addGap(10, 10, 10)
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(56, 56, 56)
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(tfTotalAPagar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(jLabel12)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(tfTotalPagado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 397, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(bAnular)
+                        .addGap(329, 329, 329)
+                        .addComponent(bImprimir)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(bAceptar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(bCancelar))
+                    .addComponent(checkOcultarDatos))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jCheckBox1)
+                .addContainerGap()
+                .addComponent(checkOcultarDatos)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(8, 8, 8)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel10)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(13, 13, 13)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(tfTotalEfectivo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel2)))
-                            .addGroup(layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(checkPagoConCheque))))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(tfTotalPorCreditoDebito, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(labelPorCreditoDebito)
-                        .addComponent(tfRetencion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(labelRetencionPercepcion)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(tfTOTAL, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 24, Short.MAX_VALUE)
+                    .addComponent(tfTotalAPagar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel12)
+                    .addComponent(tfTotalPagado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(bCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(bAceptar, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -574,10 +576,10 @@ public class JDReRe extends javax.swing.JDialog {
        cbCtaCtes.requestFocus();
    }//GEN-LAST:event_btnADDFocusLost
 
-private void jCheckBox1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jCheckBox1StateChanged
-    jPanel1.setVisible(!jCheckBox1.isSelected());
+private void checkOcultarDatosStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_checkOcultarDatosStateChanged
+    jPanel1.setVisible(!checkOcultarDatos.isSelected());
     pack();
-}//GEN-LAST:event_jCheckBox1StateChanged
+}//GEN-LAST:event_checkOcultarDatosStateChanged
 
 private void tfEntregaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfEntregaFocusLost
     try {
@@ -592,39 +594,30 @@ private void tfEntregaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:even
         SwingUtil.checkInputDigit(tfOcteto, evt, 8);
     }//GEN-LAST:event_tfOctetoKeyTyped
 
-    private void tfRetencionKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfRetencionKeyTyped
-        SwingUtil.checkInputDigit(evt, true, 11);
-    }//GEN-LAST:event_tfRetencionKeyTyped
-
-    private void tfRetencionFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfRetencionFocusLost
-        try {
-            UTIL.PRECIO_CON_PUNTO.format(Double.valueOf(tfRetencion.getText()));
-            tfRetencion.setForeground(Color.BLACK);
-        } catch (Exception exception) {
-            tfRetencion.setForeground(Color.RED);
-        }
-    }//GEN-LAST:event_tfRetencionFocusLost
+    private void tfEntregaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfEntregaKeyTyped
+        SwingUtil.checkInputDigit(evt, true);
+    }//GEN-LAST:event_tfEntregaKeyTyped
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton bAceptar;
     private javax.swing.JButton bAnular;
     private javax.swing.JButton bCancelar;
     private javax.swing.JButton bImprimir;
     private javax.swing.JButton btnADD;
+    private javax.swing.JButton btnAddPago;
     private javax.swing.JButton btnDEL;
+    private javax.swing.JButton btnDelPago;
     private javax.swing.JButton btnDetalleCreditoDebito;
     private javax.swing.JComboBox cbCaja;
     private javax.swing.JComboBox cbClienteProveedor;
     private javax.swing.JComboBox cbCtaCtes;
+    private javax.swing.JComboBox cbFormasDePago;
     private javax.swing.JComboBox cbSucursal;
-    private javax.swing.JCheckBox checkAcreditarEntrega;
-    private javax.swing.JCheckBox checkPagoConCheque;
+    private javax.swing.JCheckBox checkOcultarDatos;
     private com.toedter.calendar.JDateChooser dcFechaCarga;
     private com.toedter.calendar.JDateChooser dcFechaReRe;
-    private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel15;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel3;
@@ -633,30 +626,27 @@ private void tfEntregaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:even
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel labelClienteProveedor;
     private javax.swing.JLabel labelCreditoDebito;
-    private javax.swing.JLabel labelPorCreditoDebito;
     private javax.swing.JLabel labelReRe;
     private javax.swing.JLabel labelRestanteCreditoDebito;
-    private javax.swing.JLabel labelRetencionPercepcion;
+    private javax.swing.JTable tableAPagar;
+    private javax.swing.JTable tablePagos;
     private javax.swing.JTextField tfCreditoDebitoDisponible;
     private javax.swing.JTextField tfCreditoDebitoRestante;
     private javax.swing.JTextField tfCuarto;
     private javax.swing.JTextField tfEntrega;
     private javax.swing.JTextField tfImporte;
-    private javax.swing.JTextField tfObservacion;
     private javax.swing.JTextField tfOcteto;
     private javax.swing.JTextField tfPagado;
-    private javax.swing.JTextField tfRetencion;
     private javax.swing.JTextField tfSaldo;
-    private javax.swing.JTextField tfTOTAL;
-    private javax.swing.JTextField tfTotalEfectivo;
-    private javax.swing.JTextField tfTotalPorCreditoDebito;
+    private javax.swing.JTextField tfTotalAPagar;
+    private javax.swing.JTextField tfTotalPagado;
     // End of variables declaration//GEN-END:variables
 
     /**
@@ -687,13 +677,12 @@ private void tfEntregaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:even
     }
 
     public void limpiarDetalle() {
-        DefaultTableModel dtm = (DefaultTableModel) jTable1.getModel();
+        DefaultTableModel dtm = (DefaultTableModel) tableAPagar.getModel();
         dtm.setRowCount(0);
         tfImporte.setText("");
         tfPagado.setText("");
         tfSaldo.setText("");
         tfEntrega.setText("");
-        tfObservacion.setText("");
         tfCreditoDebitoRestante.setText("0");
     }
 
@@ -705,20 +694,24 @@ private void tfEntregaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:even
     }
 
     // <editor-fold defaultstate="collapsed" desc="GETTERS">
-    public JTextField getTfTotalPorCreditoDebito() {
-        return tfTotalPorCreditoDebito;
+    public JButton getBtnAddPago() {
+        return btnAddPago;
     }
 
-    public JTextField getTfRetencion() {
-        return tfRetencion;
+    public JButton getBtnDelPago() {
+        return btnDelPago;
     }
 
-    public JTextField getTfTotalEfectivo() {
-        return tfTotalEfectivo;
+    public JComboBox getCbFormasDePago() {
+        return cbFormasDePago;
     }
 
-    public JTextField getTfTOTAL() {
-        return tfTOTAL;
+    public JTextField getTfTotalPagado() {
+        return tfTotalPagado;
+    }
+
+    public JTextField getTfTotalAPagar() {
+        return tfTotalAPagar;
     }
 
     public JButton getBtnDetalleCreditoDebito() {
@@ -731,14 +724,6 @@ private void tfEntregaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:even
 
     public JTextField getTfCreditoDebitoRestante() {
         return tfCreditoDebitoRestante;
-    }
-
-    public JCheckBox getCheckAcreditarEntrega() {
-        return checkAcreditarEntrega;
-    }
-
-    public JCheckBox getCheckPagoConCheque() {
-        return checkPagoConCheque;
     }
 
     public JComboBox getCbCaja() {
@@ -777,16 +762,16 @@ private void tfEntregaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:even
         return tfEntrega.getText().trim();
     }
 
-    public String getTfObservacion() {
-        return tfObservacion.getText().trim();
+    public JTable getTableAPagar() {
+        return tableAPagar;
     }
 
-    public JTable getjTable1() {
-        return jTable1;
+    public JTable getTablePagos() {
+        return tablePagos;
     }
 
-    public DefaultTableModel getDtm() {
-        return (DefaultTableModel) jTable1.getModel();
+    public DefaultTableModel getDtmAPagar() {
+        return (DefaultTableModel) tableAPagar.getModel();
     }
 
     public String getTfCuarto() {
@@ -843,10 +828,6 @@ private void tfEntregaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:even
         this.tfImporte.setText(tfImporte);
     }
 
-    public void setTfObservacion(String tfObservacion) {
-        this.tfObservacion.setText(tfObservacion);
-    }
-
     public void setTfOcteto(String tfOcteto) {
         this.tfOcteto.setText(tfOcteto);
     }
@@ -875,8 +856,6 @@ private void tfEntregaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:even
         labelCreditoDebito.setText("Crédito");
         btnDetalleCreditoDebito.setToolTipText("Ver detalle de Crédito");
         labelRestanteCreditoDebito.setText("Crédito restante");
-        labelPorCreditoDebito.setText("Por crédito");
-        labelRetencionPercepcion.setText("Retención");
     }
 
     public void setUIForRemesas() {
@@ -886,11 +865,9 @@ private void tfEntregaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:even
         labelCreditoDebito.setText("Débito");
         btnDetalleCreditoDebito.setToolTipText("Ver detalle de débito");
         labelRestanteCreditoDebito.setText("Débito restante");
-        labelPorCreditoDebito.setText("Por débito");
         labelReRe.setVisible(false);
         tfCuarto.setVisible(false);
         tfOcteto.setVisible(false);
-        labelRetencionPercepcion.setText("Percepción");
     }
 
     public void setTfOctetoEditable(boolean b) {
@@ -898,5 +875,27 @@ private void tfEntregaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:even
         tfOcteto.setEditable(true);
         tfOcteto.setFocusable(true);
         tfOcteto.setRequestFocusEnabled(true);
+    }
+
+    public DefaultTableModel getDtmPagos() {
+        return (DefaultTableModel) tablePagos.getModel();
+    }
+
+    public void displayABMEfectivo() {
+        String monto = JOptionPane.showInputDialog("Ingrese el monton en efectivo:", BigDecimal.ZERO);
+        if (!monto.isEmpty()) {
+            try {
+                DefaultTableModel dtm = getDtmPagos();
+                for (int row = 0; row < dtm.getRowCount(); row++) {
+                    if (dtm.getValueAt(row, 1).toString().equalsIgnoreCase("EF")) {
+                        JOptionPane.showMessageDialog(this, "Ya existe un pago en Efectivo en el detalle", "Error", JOptionPane.WARNING_MESSAGE);
+                        return;
+                    }
+                }
+                dtm.addRow(new Object[]{null, "EF", "Efectivo", new BigDecimal(monto)});
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Monto no válido, ingrese solo números y utilicé el punto como separador decimal.");
+            }
+        }
     }
 }

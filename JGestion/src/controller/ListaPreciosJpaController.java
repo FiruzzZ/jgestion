@@ -143,7 +143,7 @@ public class ListaPreciosJpaController implements ActionListener, MouseListener,
    public void initContenedor(java.awt.Frame frame, boolean modal) {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.ABM_LISTA_PRECIOS);
+         UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.ABM_LISTA_PRECIOS);
       } catch (MessageException ex) {
          javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
          return;
@@ -186,7 +186,7 @@ public class ListaPreciosJpaController implements ActionListener, MouseListener,
    private void initABM(boolean isEditing, ActionEvent e) throws MessageException {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.ABM_LISTA_PRECIOS);
+         UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.ABM_LISTA_PRECIOS);
       } catch (MessageException ex) {
          javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
          return;

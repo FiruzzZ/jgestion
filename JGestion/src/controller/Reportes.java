@@ -9,6 +9,7 @@ import utilities.general.UTIL;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JDialog;
@@ -18,6 +19,7 @@ import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperPrintManager;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.view.JasperViewer;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -28,7 +30,7 @@ import org.apache.log4j.Logger;
  */
 public class Reportes implements Runnable {
 
-    private Map parameters;
+    private Map<String, Object> parameters;
     private final String pathReport;
     private final String tituloReporte;
     /**
@@ -47,6 +49,8 @@ public class Reportes implements Runnable {
      */
     private boolean withPrintDialog;
     private JDialog jd;
+    private JRBeanCollectionDataSource beanCollectionDataSource;
+    private static final Logger LOG = Logger.getLogger(Reportes.class.getName());
 
     /**
      *
@@ -72,7 +76,7 @@ public class Reportes implements Runnable {
         }
         jd = new WaitingDialog((JDialog) null, "Imprimiendo", false, "Preparando reporte....");
         jd.setVisible(true);
-        parameters = new HashMap();
+        parameters = new HashMap<String, Object>();
         this.pathReport = pathReport;
         tituloReporte = title;
         reporteFinalizado = false;
@@ -111,11 +115,11 @@ public class Reportes implements Runnable {
         JasperExportManager.exportReportToPdfFile(jprint, filePathSafer);
     }
 
-    public void addParameter(Object key, Object parametro) {
+    public void addParameter(String key, Object parametro) {
         parameters.put(key, parametro);
     }
 
-    public void setParameterMap(java.util.HashMap map) {
+    public void setParameterMap(HashMap<String, Object> map) {
         parameters = map;
     }
 
@@ -146,33 +150,37 @@ public class Reportes implements Runnable {
      * Add a parameter CURRENT_USER to the report
      */
     public void addCurrent_User() {
-        addParameter("CURRENT_USER", UsuarioJpaController.getCurrentUser().getNick());
+        addParameter("CURRENT_USER", UsuarioController.getCurrentUser().getNick());
     }
 
     @Override
     public void run() {
-        Logger.getLogger(Reportes.class).trace("Initializing Thread Reportes..");
+        LOG.trace("Initializing Thread Reportes..");
         try {
             doReport();
         } catch (PrinterException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage(), "Error de impresora", JOptionPane.WARNING_MESSAGE);
         } catch (Exception ex) {
-            Logger.getLogger(Reportes.class).trace("Error en Report, trying to close JDBC Connection..");
+            JOptionPane.showMessageDialog(null, pathReport + "\n" + ex.getLocalizedMessage(), "Error generando reporte", JOptionPane.WARNING_MESSAGE);
+            LOG.error("Error en Report, trying to close JDBC Connection: " + ex.getLocalizedMessage(), ex);
             try {
                 DAO.getJDBCConnection().close();
             } catch (SQLException ex1) {
-                Logger.getLogger(Reportes.class).log(Level.ERROR, null, ex1);
+                LOG.error(ex1, ex1);
             }
-            Logger.getLogger(Reportes.class).log(Level.ERROR, null, ex);
         }
-        Logger.getLogger(Reportes.class).trace("Finished Thread Reportes..");
+        LOG.trace("Finished Thread Reportes..");
     }
 
     private synchronized void doReport() throws PrinterException {
-        Logger.getLogger(Reportes.class).trace("Running doReport()..");
+        LOG.trace("Running doReport()..");
         JasperPrint jPrint;
         try {
-            jPrint = JasperFillManager.fillReport(pathReport, parameters, controller.DAO.getJDBCConnection());
+            if (beanCollectionDataSource == null) {
+                jPrint = JasperFillManager.fillReport(pathReport, parameters, controller.DAO.getJDBCConnection());
+            } else {
+                jPrint = JasperFillManager.fillReport(pathReport, parameters, beanCollectionDataSource);
+            }
             if (isViewerReport) {
                 JasperViewer jViewer = new JasperViewer(jPrint, false);
                 jd.dispose();
@@ -188,10 +196,14 @@ public class Reportes implements Runnable {
             if (ex.getCause().getClass().equals(PrinterException.class)) {
                 throw new PrinterException("Impresora no disponible\n" + ex.getMessage());
             } else {
-                Logger.getLogger(Reportes.class).log(Level.ERROR, "Se pudrió todo con el reporte", ex);
+                LOG.error("Se pudrió todo con el reporte", ex);
+            }
+        } finally {
+            if (jd.isVisible()) {
+                jd.dispose();
             }
         }
-        Logger.getLogger(Reportes.class).trace("Finished doReport()");
+        LOG.trace("Finished doReport()");
     }
 
     public boolean isReporteFinalizado() {
@@ -200,5 +212,13 @@ public class Reportes implements Runnable {
 
     void addEmpresaReport() {
         parameters.put("SUBREPORT_DIR", FOLDER_REPORTES);
+    }
+
+    void setDataSource(Collection<?> data) {
+        beanCollectionDataSource = new JRBeanCollectionDataSource(data);
+    }
+
+    void addConnection() {
+        parameters.put("REPORT_CONNECTION", controller.DAO.getJDBCConnection());
     }
 }

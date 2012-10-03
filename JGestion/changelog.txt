@@ -1,5 +1,59 @@
+2012/09/23
+ALTER TABLE banco ADD COLUMN webpage character varying(100);
+ALTER TABLE banco ADD UNIQUE (webpage);
+CREATE TABLE operaciones_bancarias (
+  id serial NOT NULL,
+  nombre character varying(60) NOT NULL,
+  CONSTRAINT operaciones_bancarias_pkey PRIMARY KEY (id),
+  CONSTRAINT operaciones_bancarias_nombre_key UNIQUE (nombre)
+)
+WITH ( OIDS=FALSE);
+CREATE TABLE cuentabancaria_movimientos (
+  id serial NOT NULL,
+  cuentabancaria_id integer NOT NULL,
+  fecha_operacion date NOT NULL,
+  descripcion character varying(200),
+  fecha_credito_debito date,
+  credito numeric(10,2) NOT NULL,
+  debito numeric(10,2) NOT NULL,
+  operaciones_bancarias_id integer NOT NULL,
+  usuario_id integer NOT NULL,
+  fecha_sistema timestamp with time zone NOT NULL DEFAULT now(),
+  cheque_propio_id integer,
+  cheque_terceros_id integer,
+  anulada boolean NOT NULL,
+  CONSTRAINT cuentabancaria_movimientos_pkey PRIMARY KEY (id),
+  CONSTRAINT cuentabancaria_movimientos_cheque_propio_id_fkey FOREIGN KEY (cheque_propio_id)
+      REFERENCES cheque_propio (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT cuentabancaria_movimientos_cheque_terceros_id_fkey FOREIGN KEY (cheque_terceros_id)
+      REFERENCES cheque_terceros (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT cuentabancaria_movimientos_cuentabancaria_id_fkey FOREIGN KEY (cuentabancaria_id)
+      REFERENCES cuentabancaria (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT cuentabancaria_movimientos_operaciones_bancarias_id_fkey FOREIGN KEY (operaciones_bancarias_id)
+      REFERENCES operaciones_bancarias (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT cuentabancaria_movimientos_usuario_id_fkey FOREIGN KEY (usuario_id)
+      REFERENCES usuario (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH ( OIDS=FALSE);
+ALTER TABLE permisos ADD COLUMN abm_cuentabancaria boolean NOT NULL DEFAULT false;
+ALTER TABLE permisos ALTER COLUMN abm_cuentabancaria DROP NOT NULL;
+2012/08/26
+ALTER TABLE factura_venta ADD COLUMN no_gravado numeric(12,2) NOT NULL DEFAULT 0;
+ALTER TABLE nota_credito ADD COLUMN no_gravado numeric(12,2) NOT NULL DEFAULT 0;
+ALTER TABLE nota_credito ADD COLUMN impuestos_recuperables numeric(12,2) NOT NULL DEFAULT 0;
+ALTER TABLE factura_compra ADD COLUMN no_gravado numeric(12,2) NOT NULL DEFAULT 0;
+ALTER TABLE factura_compra ADD COLUMN gravado numeric(12,2) NOT NULL DEFAULT 0;
+ALTER TABLE factura_compra ALTER impuestos_recuperables TYPE numeric(12,2);
+ALTER TABLE factura_compra ALTER impuestos_norecuperables TYPE numeric(12,2);
+ALTER TABLE factura_compra ALTER descuento TYPE numeric(12,2);
 2012/08/15
-ALTER TABLE factura_venta ADD COLUMN diferencia_redondeo numeric(10,2) NOT NULL DEFAULT 0;
+ALTER TABLE nota_credito ALTER numero TYPE numeric(8,0);
+ALTER TABLE factura_venta ADD COLUMN diferencia_redondeo numeric(12,2) NOT NULL DEFAULT 0;
 2012/07/03
 alter table producto add column updateprecioventa boolean default false not null;
 ALTER TABLE producto DROP COLUMN margen;

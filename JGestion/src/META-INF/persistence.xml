@@ -55,12 +55,19 @@
     <class>entity.Librado</class>
     <class>entity.FacturaElectronica</class>
     <class>entity.PermisosSucursal</class>
+    <class>entity.Cuentabancaria</class>
+    <class>entity.ComprobanteRetencion</class>
+    <class>entity.ReciboPagos</class>
+    <class>entity.CuentabancariaMovimientos</class>
+    <class>entity.OperacionesBancarias</class>
     <properties>
       <!--      <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://jgestion.no-ip.org:5433/jgestionahinco"/>-->
       <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
       <property name="javax.persistence.jdbc.user" value="jgestion"/>
       <property name="javax.persistence.jdbc.password" value="jgestion"/>
       <property name="eclipselink.logging.level" value="INFO"/>
+      <property name="eclipselink.create-ddl-jdbc-file-name" value="createDDL.jdbc"/>
+      <property name="eclipselink.ddl-generation.output-mode" value="both"/>
     </properties>
   </persistence-unit>
 </persistence>

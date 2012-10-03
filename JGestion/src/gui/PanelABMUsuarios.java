@@ -60,6 +60,7 @@ public class PanelABMUsuarios extends javax.swing.JPanel {
         checkABMOfertas = new javax.swing.JCheckBox();
         checkOrdenesES = new javax.swing.JCheckBox();
         checkVentaNumeracionManual = new javax.swing.JCheckBox();
+        checkCuentasBancarias = new javax.swing.JCheckBox();
         jScrollPane1 = new javax.swing.JScrollPane();
         tableCajas = new javax.swing.JTable();
         jLabel8 = new javax.swing.JLabel();
@@ -91,7 +92,7 @@ public class PanelABMUsuarios extends javax.swing.JPanel {
             }
         });
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Permisos", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 11), new java.awt.Color(0, 0, 0))); // NOI18N
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Permisos", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, null, new java.awt.Color(0, 0, 0)));
 
         checkClientes.setText("ABM Clientes");
 
@@ -130,6 +131,9 @@ public class PanelABMUsuarios extends javax.swing.JPanel {
         checkVentaNumeracionManual.setText("Venta (Numeración manual)");
         checkVentaNumeracionManual.setToolTipText("Permite cargar Comprobantes de Venta (Factura, Remito, Recibo, Nota Crédito) y asignarle un específico N°");
 
+        checkCuentasBancarias.setText("ABM Cuentas Bancarias");
+        checkCuentasBancarias.setToolTipText("Información general usada por el sistema");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -157,10 +161,11 @@ public class PanelABMUsuarios extends javax.swing.JPanel {
                     .addComponent(checkABMCatalogoweb))
                 .addGap(14, 14, 14)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(checkCuentasBancarias)
                     .addComponent(checkVentaNumeracionManual)
                     .addComponent(checkABMOfertas)
                     .addComponent(checkVenta))
-                .addContainerGap(27, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -186,7 +191,9 @@ public class PanelABMUsuarios extends javax.swing.JPanel {
                         .addComponent(checkCerrarCajas)
                         .addComponent(checkABMCatalogoweb, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(checkVentaNumeracionManual, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(73, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(checkCuentasBancarias)
+                .addContainerGap(50, Short.MAX_VALUE))
         );
 
         tableCajas.setModel(new javax.swing.table.DefaultTableModel(
@@ -336,6 +343,7 @@ public class PanelABMUsuarios extends javax.swing.JPanel {
     private javax.swing.JCheckBox checkCerrarCajas;
     private javax.swing.JCheckBox checkClientes;
     private javax.swing.JCheckBox checkCompra;
+    private javax.swing.JCheckBox checkCuentasBancarias;
     private javax.swing.JCheckBox checkDatosGeneral;
     private javax.swing.JCheckBox checkListaPrecios;
     private javax.swing.JCheckBox checkOrdenesES;
@@ -461,6 +469,10 @@ public class PanelABMUsuarios extends javax.swing.JPanel {
 
     public JCheckBox getCheckVentaNumeracionManual() {
         return checkVentaNumeracionManual;
+    }
+
+    public JCheckBox getCheckCuentasBancarias() {
+        return checkCuentasBancarias;
     }
 
     public void setEnableTfNick(boolean habilitar) {

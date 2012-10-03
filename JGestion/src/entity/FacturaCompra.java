@@ -73,6 +73,12 @@ public class FacturaCompra implements Serializable {
     @Column(name = "iva21", nullable = false)
     private double iva21;
     @Basic(optional = false)
+    @Column(nullable = false, precision = 12, scale = 2)
+    private BigDecimal gravado;
+    @Basic(optional = false)
+    @Column(name = "no_gravado", nullable = false, precision = 12, scale = 2)
+    private BigDecimal noGravado;
+    @Basic(optional = false)
     @Column(name = "movimiento_interno", nullable = false)
     private int movimientoInterno;
     @Column(name = "dias_cta_cte")
@@ -95,13 +101,13 @@ public class FacturaCompra implements Serializable {
     @Column(name = "anulada", nullable = false)
     private boolean anulada;
     @Basic(optional = false)
-    @Column(name = "impuestos_recuperables", nullable = false, precision = 10, scale = 2)
+    @Column(name = "impuestos_recuperables", nullable = false, precision = 12, scale = 2)
     private BigDecimal impuestosRecuperables;
     @Basic(optional = false)
-    @Column(name = "impuestos_norecuperables", nullable = false, precision = 10, scale = 2)
+    @Column(name = "impuestos_norecuperables", nullable = false, precision = 12, scale = 2)
     private BigDecimal impuestosNoRecuperables;
     @Basic(optional = false)
-    @Column(nullable = false, precision = 10, scale = 2)
+    @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal descuento;
 
     public FacturaCompra() {
@@ -325,6 +331,22 @@ public class FacturaCompra implements Serializable {
         this.descuento = descuento;
     }
 
+    public BigDecimal getGravado() {
+        return gravado;
+    }
+
+    public void setGravado(BigDecimal gravado) {
+        this.gravado = gravado;
+    }
+
+    public BigDecimal getNoGravado() {
+        return noGravado;
+    }
+
+    public void setNoGravado(BigDecimal noGravado) {
+        this.noGravado = noGravado;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -350,12 +372,13 @@ public class FacturaCompra implements Serializable {
         return "FacturaCompra{" + "id=" + id + ", numero=" + numero + ", tipo=" + tipo + ", importe=" + importe
                 + ", fechaCompra=" + fechaCompra + ", fechaalta=" + fechaalta + ", formaPago=" + formaPago + ", remito=" + remito
                 + ", actualizaStock=" + actualizaStock + ", facturaCuarto=" + facturaCuarto + ", facturaOcteto=" + facturaOcteto
+                + ", gravado=" + gravado + ", noGravado=" + noGravado
+                + ", descuento=" + descuento
                 + ", percIva=" + percIva + ", percDgr=" + percDgr + ", iva10=" + iva10 + ", iva21=" + iva21 + ", imp. Recuperable=" + impuestosRecuperables
                 + ", imp. No Recuperable=" + impuestosNoRecuperables
                 + ", movimientoInterno=" + movimientoInterno + ", diasCtaCte=" + diasCtaCte
                 + ", proveedor=" + proveedor.getId() + ", sucursal=" + sucursal.getId()
                 + ", usuario=" + usuario.getId() + ", caja=" + caja.getId() + ", anulada=" + anulada
-                + ", descuento=" + descuento
                 + '}';
     }
 }

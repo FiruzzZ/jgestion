@@ -102,8 +102,9 @@ public abstract class DAO implements Runnable {
 
     /**
      * Devuelve un {@link java.sql.Connection} Este método leave a
-     * EntityManager.getTransaction.begin() opened! Which must be closed with {@code closeEntityManager()}
-     * manually when the returned Connection oebject will no longer be used
+     * EntityManager.getTransaction.begin() opened! Which must be closed with
+     * {@code closeEntityManager()} manually when the returned Connection
+     * oebject will no longer be used
      *
      * @return
      */
@@ -233,11 +234,22 @@ public abstract class DAO implements Runnable {
             if (resultClass != null) {
                 l = em.createNativeQuery(sqlString, resultClass).setHint(QueryHints.REFRESH, true).getResultList();
             } else {
-                l = em.createNativeQuery(sqlString).setHint(QueryHints.REFRESH, true).getResultList();
+                l = getNativeQueryResultList(sqlString);
             }
             return l;
         } catch (DatabaseException e) {
             throw new DatabaseErrorException();
+        } finally {
+            em.close();
+        }
+    }
+
+    static List<?> getNativeQueryResultList(String sqlString) throws DatabaseErrorException {
+        EntityManager em = getEntityManager();
+        try {
+            return em.createNativeQuery(sqlString).getResultList();
+        } catch (DatabaseException e) {
+            throw new DatabaseErrorException(e);
         } finally {
             em.close();
         }
@@ -249,7 +261,7 @@ public abstract class DAO implements Runnable {
             if (resultSetMapping != null) {
                 return em.createNativeQuery(sqlString, resultSetMapping).setHint(QueryHints.REFRESH, true).getResultList();
             } else {
-                return em.createNativeQuery(sqlString).setHint(QueryHints.REFRESH, true).getResultList();
+                return getNativeQueryResultList(sqlString);
             }
         } catch (DatabaseException e) {
             throw new DatabaseErrorException(e);
@@ -265,8 +277,7 @@ public abstract class DAO implements Runnable {
      *
      * @param object La clase de la cual se buscará la instancia
      * @param id valor único identificador
-     * @return Una instancia del tipo
-     * <code>object</code>
+     * @return Una instancia del tipo <code>object</code>
      */
     public static Object findEntity(Class<?> object, Integer id) {
         if (object == null) {
@@ -292,9 +303,8 @@ public abstract class DAO implements Runnable {
      * @param conditions a String with filters to obtain the collections
      * entities. Example
      * <code>conditions = "o.id > 777 AND o.aField != null"</code>, and this
-     * will be contated to
-     * <code>"WHERE " + conditions</code>. Must be null is there is no
-     * conditions.
+     * will be contated to <code>"WHERE " + conditions</code>. Must be null is
+     * there is no conditions.
      * @return a List of object
      */
     static List<?> findEntities(Class object, String conditions) {
@@ -413,32 +423,31 @@ public abstract class DAO implements Runnable {
                         + "(9,'Jujuy'), (10,'La Pampa'), (11,'La Rioja'), (12,'Mendoza'),"
                         + "(13,'Misiones'),(14,'Neuquén'),(15,'Río Negro'),(16,'Salta'),"
                         + "(17,'San Juan'),(18,'San Luis'),(19,'Santa Cruz'),(20,'Santa Fe'),"
-                        + "(21,'Santiago del Estero'),(22,'Tierra del Fuego'),(23,'Tucumán');");
-//                        + " INSERT INTO depto (iddepto, idprovincia, nombre) VALUES "
-//                        + "(1,5,'Corrientes'),(2,5,'Concepción'),(3,5,'Santo Tomé'),"
-//                        + "(4,13,'Posadas'), (5,13,'Concepción'), (6,13,'Eldorado'),"
-//                        + "(7,13,'General Manuel Belgrano'),(8,13,'Guaraní'),(9,13,'Iguazú'),"
-//                        + "(10,13,'Leandro N. Alem'),(11,13,'Libertador General San Martín'),"
-//                        + "(12,13,'Montecarlo'),(13,13,'OBERÁ'),(14,13,'San Ignacio'),"
-//                        + "(15,13,'San Javier'),(16,13,'San Pedro'),(17,13,'Veinticinco de Mayo'),"
-//                        + "(18,13,'APÓSTOLES'),(19,13,'Cainguás'),(20,13,'Candelaria');"
-//                        + " INSERT INTO municipio (iddepto, nombre) VALUES "
-//                        + "(4,'GARUPÁ'),(4,'POSADAS'),(4,'FACHINAL'),(5,'CONCEPCIÓN DE LA SIERRA'),(5,'SANTA MARIA'),(6,'COLONIA DELICIA'),(6,'9 DE JULIO'),"
-//                        + "(6,'EL DORADO'),(6,'COLONIA VICTORIA'),(7,'BERNARDO DE IRIGOYEN'),(7,'CMDTE ANDRESITO'),(7,'SAN ANTONIO'),(8,'SAN VICENTE'),"
-//                        + "(8,'EL SOBERBIO'),(9,'WANDA'),(9,'PUERTO LIBERTAD'),(9,'PUERTO ESPERANZA'),(9,'PUERTO IGUAZU'),(10,'ARROYO DEL MEDIO'),"
-//                        + "(10,'L.N ALEM'),(10,'DOS ARROYOS'),(10,'CAÁ-YARÍ'),(10,'OLEGARIO V. ANDRADE'),(10,'CERRO AZUL'),(10,'ALMAFUERTE'),"
-//                        + "(11,'PUERTO LEONI'),(11,'CAPIOVI'),(11,'PUERTO RICO'),(11,'RUIZ DE MONTOYA'),(12,'CARAGUATAY'),(13,'SAN MARTIN '),"
-//                        + "(13,'CAMPO VIERA'),(13,'COLONIA ALBERDI'),(13,'GRAL ALVEAR'),(13,'PANAMBI'),(13,'CAMPO RAMON'),(13,'GUARANI'),"
-//                        + "(14,'GRAL URQUIZA'),(14,'SANTO PIPO'),(14,'COLONIA POLANA'),(14,'SAN IGNACIO'),(14,'CORPUS'),(14,'JARDIN AMERICA'),"
-//                        + "(14,'HIPOLITO YRIGOYEN'),(15,'MOJON GRANDE'),(15,'SAN JAVIER'),(15,'Florentino Ameghino'),(16,'SAN PEDRO'),(17,'ALBA POSSE'),"
-//                        + "(17,'COLONIA AURORA'),(17,'25 DE MAYO'),(18,'AZARA'),(18,'APÓSTOLES'),(18,'SAN JOSE'),(18,'TRES CAPONES'),(19,'DOS DE MAYO'),"
-//                        + "(19,'CAMPO GRANDE'),(20,'MARTIRES'),(20,'BOMPLAN'),(20,'CERRO CORA'),(20,'CANDELARIA'),(20,'LORETO'),(20,'PROFUNDIDAD'),"
-//                        + "(20,'SANTA ANA');");
+                        + "(21,'Santiago del Estero'),(22,'Tierra del Fuego'),(23,'Tucumán');"
+                        + " INSERT INTO depto (iddepto, idprovincia, nombre) VALUES "
+                        + "(1,5,'Corrientes'),(2,5,'Concepción'),(3,5,'Santo Tomé'),"
+                        + "(4,13,'Posadas'), (5,13,'Concepción'), (6,13,'Eldorado'),"
+                        + "(7,13,'General Manuel Belgrano'),(8,13,'Guaraní'),(9,13,'Iguazú'),"
+                        + "(10,13,'Leandro N. Alem'),(11,13,'Libertador General San Martín'),"
+                        + "(12,13,'Montecarlo'),(13,13,'OBERÁ'),(14,13,'San Ignacio'),"
+                        + "(15,13,'San Javier'),(16,13,'San Pedro'),(17,13,'Veinticinco de Mayo'),"
+                        + "(18,13,'APÓSTOLES'),(19,13,'Cainguás'),(20,13,'Candelaria');"
+                        + " INSERT INTO municipio (iddepto, nombre) VALUES "
+                        + "(4,'POSADAS'), (4,'GARUPÁ'),(4,'FACHINAL'),(5,'CONCEPCIÓN DE LA SIERRA'),(5,'SANTA MARIA'),(6,'COLONIA DELICIA'),(6,'9 DE JULIO'),"
+                        + "(6,'EL DORADO'),(6,'COLONIA VICTORIA'),(7,'BERNARDO DE IRIGOYEN'),(7,'CMDTE ANDRESITO'),(7,'SAN ANTONIO'),(8,'SAN VICENTE'),"
+                        + "(8,'EL SOBERBIO'),(9,'WANDA'),(9,'PUERTO LIBERTAD'),(9,'PUERTO ESPERANZA'),(9,'PUERTO IGUAZU'),(10,'ARROYO DEL MEDIO'),"
+                        + "(10,'L.N ALEM'),(10,'DOS ARROYOS'),(10,'CAÁ-YARÍ'),(10,'OLEGARIO V. ANDRADE'),(10,'CERRO AZUL'),(10,'ALMAFUERTE'),"
+                        + "(11,'PUERTO LEONI'),(11,'CAPIOVI'),(11,'PUERTO RICO'),(11,'RUIZ DE MONTOYA'),(12,'CARAGUATAY'),(13,'SAN MARTIN '),"
+                        + "(13,'CAMPO VIERA'),(13,'COLONIA ALBERDI'),(13,'GRAL ALVEAR'),(13,'PANAMBI'),(13,'CAMPO RAMON'),(13,'GUARANI'),"
+                        + "(14,'GRAL URQUIZA'),(14,'SANTO PIPO'),(14,'COLONIA POLANA'),(14,'SAN IGNACIO'),(14,'CORPUS'),(14,'JARDIN AMERICA'),"
+                        + "(14,'HIPOLITO YRIGOYEN'),(15,'MOJON GRANDE'),(15,'SAN JAVIER'),(15,'Florentino Ameghino'),(16,'SAN PEDRO'),(17,'ALBA POSSE'),"
+                        + "(17,'COLONIA AURORA'),(17,'25 DE MAYO'),(18,'AZARA'),(18,'APÓSTOLES'),(18,'SAN JOSE'),(18,'TRES CAPONES'),(19,'DOS DE MAYO'),"
+                        + "(19,'CAMPO GRANDE'),(20,'MARTIRES'),(20,'BOMPLAN'),(20,'CERRO CORA'),(20,'CANDELARIA'),(20,'LORETO'),(20,'PROFUNDIDAD'),"
+                        + "(20,'SANTA ANA');");
                 getJDBCConnection().commit();
                 getJDBCConnection().close();
 //            DAO.getEntityManager().getTransaction().commit();
             }// </editor-fold>
-            ChequesController chequesController = new ChequesController();
             em.getTransaction().commit();
         } catch (Exception ex) {
             if (em.getTransaction().isActive()) {

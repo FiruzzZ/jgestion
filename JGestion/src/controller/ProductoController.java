@@ -95,7 +95,7 @@ public class ProductoController implements ActionListener, KeyListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.ABM_PRODUCTOS);
+                    UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.ABM_PRODUCTOS);
                     eliminarProducto();
                     contenedor.showMessage("Producto eliminado..", CLASS_NAME, 1);
                 } catch (NonexistentEntityException ex) {
@@ -132,7 +132,7 @@ public class ProductoController implements ActionListener, KeyListener {
     }
 
     private void initABM(boolean isEditing) throws MessageException, IOException {
-        UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.ABM_PRODUCTOS);
+        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.ABM_PRODUCTOS);
         if (isEditing) {
             EL_OBJECT = getSelectedFromContenedor();
             if (EL_OBJECT == null) {
@@ -490,8 +490,6 @@ public class ProductoController implements ActionListener, KeyListener {
         // <editor-fold defaultstate="collapsed" desc="Button">
         if (e.getSource().getClass().equals(JButton.class)) {
             JButton boton = (JButton) e.getSource();
-
-
             if (boton.getName().equalsIgnoreCase("exit")) {
                 contenedor.dispose();
                 if (!contenedor.isModoBuscador()) {

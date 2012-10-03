@@ -218,7 +218,7 @@ public class CtacteClienteJpaController implements ActionListener {
     }
 
     public void initResumenCtaCte(JFrame frame, boolean modal) throws MessageException {
-        UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
+        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
         resumenCtaCtes = new JDResumenCtaCtes(frame, modal, true);
         resumenCtaCtes.getjTableResumen().addMouseListener(new MouseAdapter() {
 
@@ -439,7 +439,7 @@ public class CtacteClienteJpaController implements ActionListener {
      * @param owner el papi de la ventana
      */
     public void initCheckVencimientos(JFrame owner) throws MessageException {
-        UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
+        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
         panelCCCheck = new PanelCtaCteCheckVencimientos();
         panelCCCheck.getCbEntidadElegida().addActionListener(new ActionListener() {
 

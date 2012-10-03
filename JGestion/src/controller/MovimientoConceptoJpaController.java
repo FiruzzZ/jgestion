@@ -166,7 +166,7 @@ public class MovimientoConceptoJpaController implements Serializable {
     * @throws MessageException End-User messages
     */
    public void initUIABM(JFrame jFrame) throws MessageException {
-      UsuarioJpaController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
+      UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
       abm = new JDMiniABM(jFrame, true);
       abm.hideBtnLock();
       abm.hideFieldCodigo();

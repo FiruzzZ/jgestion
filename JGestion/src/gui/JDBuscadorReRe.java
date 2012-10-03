@@ -8,17 +8,23 @@ package gui;
 import utilities.general.UTIL;
 import java.awt.Dialog;
 import java.awt.Frame;
+import java.awt.Window;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseListener;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
+import utilities.gui.SwingUtil;
 
 /**
  *
@@ -61,16 +67,22 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
         tfFactu8.setVisible(false);
     }
 
+    public JDBuscadorReRe(Window owner, String title, boolean modal, String labelClieProv, String labelReRe) {
+        super(owner, DEFAULT_MODALITY_TYPE);
+        initComponents();
+        init(title, labelClieProv, labelReRe);
+    }
+
     private void init(String title, String labelClieProv, String labelReRe) {
-        if (getOwner() != null) {
-            this.setLocationRelativeTo(getOwner());
-        }
         this.setTitle(title);
         bImprimir.setVisible(false);
         this.labelClieProv.setText(labelClieProv);
         this.labelReRe.setText(labelReRe);
         rootPane.setDefaultButton(bBuscar);
-        setLocation(getOwner().getX() + 100, getY() + 50);
+        if (getOwner() != null) {
+            this.setLocationRelativeTo(getOwner());
+            setLocation(getOwner().getX() + 100, getY() + 50);
+        }
 
     }
 
@@ -103,6 +115,10 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
         checkAnulada = new javax.swing.JCheckBox();
         labelFormasDePago = new javax.swing.JLabel();
         cbFormasDePago = new javax.swing.JComboBox();
+        dcDesdeSistema = new com.toedter.calendar.JDateChooser();
+        jLabel4 = new javax.swing.JLabel();
+        dcHastaSistema = new com.toedter.calendar.JDateChooser();
+        jLabel5 = new javax.swing.JLabel();
         bLimpiar = new javax.swing.JButton();
         bBuscar = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -113,7 +129,7 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(900, 300));
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Filtro", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 11), new java.awt.Color(0, 0, 0))); // NOI18N
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Filtro", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, null, new java.awt.Color(0, 0, 0)));
 
         labelCaja.setText("Caja");
 
@@ -173,48 +189,66 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
 
         labelFormasDePago.setText("Forma pago");
 
+        jLabel4.setText("Sistema Desde");
+
+        jLabel5.setText("Sistema Hasta");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+            .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(labelCaja)
                     .addComponent(labelReRe)
                     .addComponent(labelN_Factura))
                 .addGap(16, 16, 16)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(tfFactu4, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(tfFactu4, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(tfFactu8))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(tfCuarto, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(tfOcteto))
+                            .addComponent(cbCaja, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(labelClieProv, javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addGroup(jPanel1Layout.createSequentialGroup()
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel8)))
+                            .addComponent(labelFormasDePago))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(tfFactu8))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(tfCuarto, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(cbClieProv, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(cbSucursal, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel3)
+                                    .addComponent(jLabel2))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(dcDesde, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(dcHasta, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(cbFormasDePago, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel4)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(dcDesdeSistema, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(checkAnulada)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(tfOcteto))
-                    .addComponent(cbCaja, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(labelClieProv, javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addGroup(jPanel1Layout.createSequentialGroup()
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel8)))
-                    .addComponent(labelFormasDePago))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(cbFormasDePago, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cbClieProv, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cbSucursal, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(dcDesde, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(checkAnulada)
-                    .addComponent(dcHasta, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(dcHastaSistema, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -222,13 +256,28 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(dcDesde, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(dcDesde, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                                    .addComponent(jLabel3)
+                                    .addComponent(dcHasta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(3, 3, 3)
+                                .addComponent(labelClieProv))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(cbClieProv, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel2))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel8)
+                                    .addComponent(cbSucursal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                            .addComponent(jLabel3)
-                            .addComponent(dcHasta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(checkAnulada))
+                            .addComponent(jLabel4)
+                            .addComponent(dcDesdeSistema, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(tfCuarto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -243,24 +292,17 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
                             .addComponent(labelN_Factura)
                             .addComponent(tfFactu4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(tfFactu8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addGroup(javax.swing.GroupLayout.Alignment.CENTER, jPanel1Layout.createSequentialGroup()
+                        .addGap(51, 51, 51)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(3, 3, 3)
-                                .addComponent(labelClieProv))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(cbClieProv, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel2))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel8)
-                                    .addComponent(cbSucursal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                            .addComponent(cbFormasDePago, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(labelFormasDePago))))
-                .addContainerGap(18, Short.MAX_VALUE))
+                            .addComponent(labelFormasDePago, javax.swing.GroupLayout.Alignment.CENTER)
+                            .addComponent(cbFormasDePago, javax.swing.GroupLayout.Alignment.CENTER, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(5, 5, 5)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(jLabel5)
+                    .addComponent(dcHastaSistema, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(checkAnulada))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         bLimpiar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/broom32x32.png"))); // NOI18N
@@ -276,11 +318,6 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
         bBuscar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/lupa.png"))); // NOI18N
         bBuscar.setText("Buscar");
         bBuscar.setName("filtrarReRe"); // NOI18N
-        bBuscar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                bBuscarActionPerformed(evt);
-            }
-        });
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel());
         jTable1.addComponentListener(new java.awt.event.ComponentAdapter() {
@@ -293,11 +330,6 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
         bImprimir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/impresora.png"))); // NOI18N
         bImprimir.setText("Imprimir");
         bImprimir.setName("imprimirFiltro"); // NOI18N
-        bImprimir.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                bImprimirActionPerformed(evt);
-            }
-        });
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 10)); // NOI18N
         jLabel1.setText("Nº Registros: 0");
@@ -333,7 +365,7 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
                         .addComponent(bImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 187, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 168, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel1))
         );
@@ -341,43 +373,24 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void bBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bBuscarActionPerformed
-}//GEN-LAST:event_bBuscarActionPerformed
-
     private void bLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bLimpiarActionPerformed
         limpiarVentana();
 }//GEN-LAST:event_bLimpiarActionPerformed
 
     private void tfCuartoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfCuartoKeyTyped
-        if (tfCuarto.getText().trim().length() < 4) {
-            soloNumeros(evt);       // TODO add your handling code here:
-        } else {
-            evt.setKeyChar((char) java.awt.event.KeyEvent.VK_CLEAR);
-        }
+        SwingUtil.checkInputDigit(evt, false, 4);
     }//GEN-LAST:event_tfCuartoKeyTyped
 
     private void tfOctetoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfOctetoKeyTyped
-        if (tfOcteto.getText().trim().length() < 8) {
-            soloNumeros(evt);       // TODO add your handling code here:
-        } else {
-            evt.setKeyChar((char) java.awt.event.KeyEvent.VK_CLEAR);
-        }
+        SwingUtil.checkInputDigit(evt, false, 8);
     }//GEN-LAST:event_tfOctetoKeyTyped
 
-    private void bImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bImprimirActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_bImprimirActionPerformed
-
     private void tfFactu4KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfFactu4KeyTyped
-        if (tfFactu4.getText().trim().length() <= 4) {
-            soloNumeros(evt);       // TODO add your handling code here:
-        } else {
-            evt.setKeyChar((char) java.awt.event.KeyEvent.VK_CLEAR);
-        }
+        SwingUtil.checkInputDigit(evt, false, 4);
     }//GEN-LAST:event_tfFactu4KeyTyped
 
     private void tfFactu8KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfFactu8KeyTyped
-        // TODO add your handling code here:
+        SwingUtil.checkInputDigit(evt, false, 8);
     }//GEN-LAST:event_tfFactu8KeyTyped
 
     private void tfCuartoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfCuartoFocusLost
@@ -405,10 +418,14 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
     private javax.swing.JComboBox cbSucursal;
     private javax.swing.JCheckBox checkAnulada;
     private com.toedter.calendar.JDateChooser dcDesde;
+    private com.toedter.calendar.JDateChooser dcDesdeSistema;
     private com.toedter.calendar.JDateChooser dcHasta;
+    private com.toedter.calendar.JDateChooser dcHastaSistema;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
@@ -444,6 +461,7 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
     public void setListeners(Object o) {
         bBuscar.addActionListener((ActionListener) o);
         bLimpiar.addActionListener((ActionListener) o);
+        bImprimir.addActionListener((ActionListener) o);
         try {
             jTable1.addMouseListener((MouseListener) o);
         } catch (ClassCastException ex) {
@@ -500,11 +518,11 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
         return cbSucursal;
     }
 
-    public java.util.Date getDcDesde() {
+    public Date getDcDesde() {
         return dcDesde.getDate();
     }
 
-    public java.util.Date getDcHasta() {
+    public Date getDcHasta() {
         return dcHasta.getDate();
     }
 
@@ -530,7 +548,28 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
 
     public boolean isCheckAnuladaSelected() {
         return checkAnulada.isSelected();
-    }// </editor-fold>
+    }
+
+    public JLabel getLabelReRe() {
+        return labelReRe;
+    }
+
+    public JTextField getjTfCuarto() {
+        return tfCuarto;
+    }
+
+    public JTextField getjTfOcteto() {
+        return tfOcteto;
+    }
+
+    public Date getDcDesdeSistema() {
+        return dcDesdeSistema.getDate();
+    }
+
+    public Date getDcHastaSistema() {
+        return dcHastaSistema.getDate();
+    }
+    // </editor-fold>
 
     void limpiarVentana() {
         tfCuarto.setText("");
@@ -547,13 +586,6 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
         dcHasta.setDate(null);
         checkAnulada.setSelected(false);
         dtmRemoveAll();
-    }
-
-    private void soloNumeros(KeyEvent evt) {
-        int k = evt.getKeyChar();
-        if (k < 48 || k > 57) {
-            evt.setKeyChar((char) java.awt.event.KeyEvent.VK_CLEAR);
-        }
     }
 
     public void dtmRemoveAll() {
@@ -584,18 +616,6 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
         cbCaja.setVisible(false);
     }
 
-    public JLabel getLabelReRe() {
-        return labelReRe;
-    }
-
-    public JTextField getjTfCuarto() {
-        return tfCuarto;
-    }
-
-    public JTextField getjTfOcteto() {
-        return tfOcteto;
-    }
-
     public void setPanelInfoParaRemitos() {
         labelReRe.setText("Nº Remito");
         hideCaja();
@@ -619,5 +639,18 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
         cbFormasDePago.setVisible(false);
         labelN_Factura.setVisible(false);
         tfFactu4.setVisible(false);
+    }
+
+    public Map<String, Object> getData() {
+        Map<String, Object> data = new HashMap<String, Object>();
+
+        return data;
+    }
+
+    public void setFechaSistemaFieldsVisible(boolean visible) {
+        jLabel4.setVisible(visible);
+        jLabel5.setVisible(visible);
+        dcDesdeSistema.setVisible(visible);
+        dcHastaSistema.setVisible(visible);
     }
 }

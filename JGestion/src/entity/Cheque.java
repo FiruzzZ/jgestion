@@ -1,5 +1,6 @@
 package entity;
 
+import entity.enums.ChequeEstado;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -9,12 +10,18 @@ import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+import javax.persistence.Version;
 
 /**
  * Basic model of a Check.
+ *
  * @author FiruzzZ
  */
 @MappedSuperclass
@@ -25,6 +32,13 @@ public abstract class Cheque implements Serializable {
     private static final long serialVersionUID = 1L;
     @Column(nullable = false, precision = 8)
     protected Long numero;
+    @JoinColumn(name = "banco", nullable = false)
+    @ManyToOne(optional = false)
+    protected Banco banco;
+//    @JoinColumn(name = "banco_sucursal", nullable = false)
+    @JoinColumn(name = "banco_sucursal")
+    @ManyToOne//(optional = false)
+    protected BancoSucursal bancoSucursal;
     @Basic(optional = false)
     @Column(name = "importe", nullable = false, precision = 10, scale = 2)
     protected BigDecimal importe;
@@ -45,8 +59,44 @@ public abstract class Cheque implements Serializable {
     @Column(name = "fecha_creacion", nullable = false, insertable = false, updatable = false, columnDefinition = "timestamp with time zone NOT NULL DEFAULT now()")
     @Temporal(TemporalType.TIMESTAMP)
     protected Date fechaCreacion;
+    @Basic(optional = false)
+    @Column(name = "estado", nullable = false)
+    protected int estado;
+    @Transient
+    protected transient ChequeEstado chequeEstado;
+    @Column(name = "endosatario", length = 200)
+    protected String endosatario;
+    @Column(name = "fecha_endoso")
+    @Temporal(TemporalType.DATE)
+    protected Date fechaEndoso;
+    @JoinColumn(name = "usuario", nullable = false)
+    @ManyToOne(optional = false)
+    protected Usuario usuario;
+    @JoinColumn(name = "librado")
+    @ManyToOne//(optional = false)
+    protected Librado librado;
+    @Version
+    @Column(name = "version_cheque")
+    protected Long version;
 
     protected Cheque() {
+    }
+
+    protected Cheque(Long numero, Banco banco, BancoSucursal bancoSucursal, BigDecimal importe, Date fechaCheque, Date fechaCobro, boolean cruzado, String observacion, ChequeEstado chequeEstado, String endosatario, Date fechaEndoso, Usuario usuario, Librado librado) {
+        this.numero = numero;
+        this.banco = banco;
+        this.bancoSucursal = bancoSucursal;
+        this.importe = importe;
+        this.fechaCheque = fechaCheque;
+        this.cruzado = cruzado;
+        this.observacion = observacion;
+        this.fechaCobro = fechaCobro;
+        this.chequeEstado = chequeEstado;
+        this.estado = chequeEstado.getId();
+        this.endosatario = endosatario;
+        this.fechaEndoso = fechaEndoso;
+        this.usuario = usuario;
+        this.librado = librado;
     }
 
     /**
@@ -65,6 +115,22 @@ public abstract class Cheque implements Serializable {
      */
     public void setNumero(Long numero) {
         this.numero = numero;
+    }
+
+    public Banco getBanco() {
+        return banco;
+    }
+
+    public void setBanco(Banco banco) {
+        this.banco = banco;
+    }
+
+    public BancoSucursal getBancoSucursal() {
+        return bancoSucursal;
+    }
+
+    public void setBancoSucursal(BancoSucursal bancoSucursal) {
+        this.bancoSucursal = bancoSucursal;
     }
 
     public boolean isCruzado() {
@@ -115,6 +181,58 @@ public abstract class Cheque implements Serializable {
         this.observacion = observacion;
     }
 
+    public int getEstado() {
+        return estado;
+    }
+
+    public void setEstado(int estado) {
+        this.estado = estado;
+    }
+
+    public ChequeEstado getChequeEstado() {
+        return ChequeEstado.findById(this.estado);
+    }
+
+    public String getEndosatario() {
+        return endosatario;
+    }
+
+    public void setEndosatario(String endosatario) {
+        this.endosatario = endosatario;
+    }
+
+    public Date getFechaEndoso() {
+        return fechaEndoso;
+    }
+
+    public void setFechaEndoso(Date fechaEndoso) {
+        this.fechaEndoso = fechaEndoso;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
+    public Librado getLibrado() {
+        return librado;
+    }
+
+    public void setLibrado(Librado librado) {
+        this.librado = librado;
+    }
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -139,6 +257,6 @@ public abstract class Cheque implements Serializable {
 
     @Override
     public String toString() {
-        return "Cheque{" + "numero=" + numero + ", importe=" + importe + ", fechaCheque=" + fechaCheque + ", cruzado=" + cruzado + ", observacion=" + observacion + ", fechaCobro=" + fechaCobro + ", fechaCreacion=" + fechaCreacion + '}';
+        return "Cheque{" + "numero=" + numero + ", banco=" + banco.getId() + ", bancoSucursal=" + bancoSucursal.getId() + ", importe=" + importe + ", fechaCheque=" + fechaCheque + ", cruzado=" + cruzado + ", observacion=" + observacion + ", fechaCobro=" + fechaCobro + ", fechaCreacion=" + fechaCreacion + ", estado=" + estado + ", chequeEstado=" + chequeEstado + ", endosatario=" + endosatario + ", fechaEndoso=" + fechaEndoso + ", usuario=" + usuario + ", librado=" + librado + ", version=" + version + '}';
     }
 }
