@@ -679,6 +679,8 @@ private void tfEntregaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:even
     public void limpiarDetalle() {
         DefaultTableModel dtm = (DefaultTableModel) tableAPagar.getModel();
         dtm.setRowCount(0);
+        dtm = (DefaultTableModel) tablePagos.getModel();
+        dtm.setRowCount(0);
         tfImporte.setText("");
         tfPagado.setText("");
         tfSaldo.setText("");
@@ -883,7 +885,7 @@ private void tfEntregaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:even
 
     public void displayABMEfectivo() {
         String monto = JOptionPane.showInputDialog("Ingrese el monton en efectivo:", BigDecimal.ZERO);
-        if (!monto.isEmpty()) {
+        if (monto != null && !monto.isEmpty()) {
             try {
                 DefaultTableModel dtm = getDtmPagos();
                 for (int row = 0; row < dtm.getRowCount(); row++) {

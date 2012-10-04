@@ -1,6 +1,7 @@
 package entity;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import javax.persistence.*;
 
 /**
@@ -23,8 +24,8 @@ public class DetalleRecibo implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Basic(optional = false)
-    @Column(name = "monto_entrega", nullable = false)
-    private double montoEntrega;
+    @Column(name = "monto_entrega", nullable = false, precision = 12, scale = 2)
+    private BigDecimal montoEntrega;
     @Column(name = "observacion", length = 200)
     private String observacion;
     @JoinColumn(name = "factura_venta", referencedColumnName = "id", nullable = false)
@@ -36,6 +37,7 @@ public class DetalleRecibo implements Serializable {
     @Column(nullable = false)
     private boolean anulado;
     @Column(name = "acreditado", insertable = true, updatable = false, nullable = false)
+    @Deprecated
     private boolean acreditado;
 
     public DetalleRecibo() {
@@ -49,11 +51,11 @@ public class DetalleRecibo implements Serializable {
         this.id = id;
     }
 
-    public double getMontoEntrega() {
+    public BigDecimal getMontoEntrega() {
         return montoEntrega;
     }
 
-    public void setMontoEntrega(double montoEntrega) {
+    public void setMontoEntrega(BigDecimal montoEntrega) {
         this.montoEntrega = montoEntrega;
     }
 
@@ -89,10 +91,12 @@ public class DetalleRecibo implements Serializable {
         this.anulado = anulado;
     }
 
+    @Deprecated
     public void setAcreditado(boolean acreditado) {
         this.acreditado = acreditado;
     }
 
+    @Deprecated
     public boolean isAcreditado() {
         return acreditado;
     }

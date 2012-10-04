@@ -67,7 +67,7 @@ public class ChequeTercerosController implements ActionListener {
 //        UTIL.loadComboBox(panelABM.getCbBancoSucursales(), null, null, "<Seleccionar un Banco>");
         UTIL.loadComboBox(panelABM.getCbEmisor(), new ClienteController().findEntities(), false);
         UTIL.setSelectedItem(panelABM.getCbEmisor(), cliente);
-//        UTIL.loadComboBox(panelABM.getCbLibrado(), new LibradoJpaController().findEntities(), false);
+        UTIL.loadComboBox(panelABM.getCbLibrado(), new LibradoJpaController().findEntities(), false);
 
         panelABM.getCbBancos().addActionListener(new ActionListener() {
             @Override
@@ -136,7 +136,7 @@ public class ChequeTercerosController implements ActionListener {
         } catch (ClassCastException e) {
 //            throw new MessageException("Sucursal de Banco no válida");
         }
-//        librado = (Librado) panelABM.getCbLibrado().getSelectedItem();
+        librado = (Librado) panelABM.getCbLibrado().getSelectedItem();
         cliente = (Cliente) panelABM.getCbEmisor().getSelectedItem();
         cruzado = panelABM.getCheckCruzado().isSelected();
         observacion = panelABM.getTaObservacion().getText();

@@ -17,8 +17,12 @@ public class IvaJpaController extends AbstractDAO<Iva, Integer> {
 
     private EntityManager entityManager;
 
+    public IvaJpaController() {
+        getEntityManager();
+    }
+
     @Override
-    protected EntityManager getEntityManager() {
+    protected final EntityManager getEntityManager() {
         if (entityManager == null || !entityManager.isOpen()) {
             entityManager = DAO.getEntityManager();
         }
