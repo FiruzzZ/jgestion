@@ -649,9 +649,6 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         contenedor.setTfTotalIVA105(UTIL.PRECIO_CON_PUNTO.format(iva10));
         contenedor.setTfTotalIVA21(UTIL.PRECIO_CON_PUNTO.format(iva21));
         contenedor.setTfTotalOtrosImps(UTIL.PRECIO_CON_PUNTO.format(otrosImps));
-//        if (subTotal.intValue() < 0) {
-//            subTotal = BigDecimal.ZERO;
-//        }
         redondeoTotal = iva10.add(iva21).add(otrosImps).subtract(redondeoTotal);
         contenedor.getTfDiferenciaRedondeo().setText(UTIL.PRECIO_CON_PUNTO.format(redondeoTotal));
         contenedor.setTfTotal(UTIL.PRECIO_CON_PUNTO.format(subTotal));
@@ -1312,19 +1309,11 @@ public class FacturaVentaController implements ActionListener, KeyListener {
             }
         }
         // <editor-fold defaultstate="collapsed" desc="Carga de DetallesVenta">
-        List<DetalleVenta> lista = selectedFacturaVenta.getDetallesVentaList();
+        selectedFacturaVenta = jpaController.find(selectedFacturaVenta.getId());
+        IvaJpaController ivaJpa = new IvaJpaController();
         DefaultTableModel dtm = (DefaultTableModel) jdFacturaVenta.getjTable1().getModel();
-        for (DetalleVenta detallesVenta : lista) {
+        for (DetalleVenta detallesVenta : selectedFacturaVenta.getDetallesVentaList()) {
             Iva iva = detallesVenta.getProducto().getIva();
-            if (iva == null) {
-                Producto findProducto = (Producto) DAO.findEntity(Producto.class, detallesVenta.getProducto().getId());
-                iva = findProducto.getIva();
-                LOG.debug("Producto con Iva NULL!!" + detallesVenta.getProducto());
-                while (iva == null || iva.getIva() == null) {
-                    System.out.print(".");
-                    iva = new IvaController().findByProducto(detallesVenta.getProducto().getId());
-                }
-            }
             try {
                 double productoConIVA = detallesVenta.getPrecioUnitario()
                         + UTIL.getPorcentaje(detallesVenta.getPrecioUnitario(), iva.getIva());
@@ -1332,7 +1321,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                 dtm.addRow(new Object[]{
                             iva.getIva(),
                             detallesVenta.getProducto().getCodigo(),
-                            detallesVenta.getProducto().getNombre() + "(" + detallesVenta.getProducto().getIva().getIva() + ")",
+                            detallesVenta.getProducto().getNombre() + "(" + iva.getIva() + ")",
                             detallesVenta.getCantidad(),
                             detallesVenta.getPrecioUnitario(),
                             UTIL.PRECIO_CON_PUNTO.format(productoConIVA),
@@ -1350,13 +1339,6 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                         + "\n\n   Intente nuevamente.");
             }
         }// </editor-fold>
-        jdFacturaVenta.setTfGravado(UTIL.PRECIO_CON_PUNTO.format(selectedFacturaVenta.getImporte() - (selectedFacturaVenta.getIva10() + selectedFacturaVenta.getIva21())));
-        jdFacturaVenta.setTfTotalIVA105(UTIL.PRECIO_CON_PUNTO.format(selectedFacturaVenta.getIva10()));
-        jdFacturaVenta.setTfTotalIVA21(UTIL.PRECIO_CON_PUNTO.format(selectedFacturaVenta.getIva21()));
-//        jdFacturaVenta.setTfTotalOtrosImps(UTIL.PRECIO_CON_PUNTO.format(selectedFacturaVenta.getIva21()));
-        jdFacturaVenta.setTfTotalDesc(UTIL.PRECIO_CON_PUNTO.format(selectedFacturaVenta.getDescuento()));
-        jdFacturaVenta.getTfDiferenciaRedondeo().setText(UTIL.PRECIO_CON_PUNTO.format(selectedFacturaVenta.getDiferenciaRedondeo()));
-        jdFacturaVenta.setTfTotal(UTIL.PRECIO_CON_PUNTO.format(selectedFacturaVenta.getImporte()));
         refreshResumen(jdFacturaVenta);
         jdFacturaVenta.modoVista();
 

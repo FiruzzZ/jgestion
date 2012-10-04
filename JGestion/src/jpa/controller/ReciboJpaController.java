@@ -5,9 +5,12 @@ import controller.DAO;
 import controller.Valores;
 import controller.exceptions.MessageException;
 import entity.*;
+import entity.enums.ChequeEstado;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import jgestion.JGestionUtils;
 
 /**
  *
@@ -17,8 +20,12 @@ public class ReciboJpaController extends AbstractDAO<Recibo, Integer> {
 
     private EntityManager entityManager;
 
+    public ReciboJpaController() {
+        getEntityManager();
+    }
+
     @Override
-    protected EntityManager getEntityManager() {
+    protected final EntityManager getEntityManager() {
         if (entityManager == null || !entityManager.isOpen()) {
             entityManager = DAO.getEntityManager();
         }
@@ -66,7 +73,7 @@ public class ReciboJpaController extends AbstractDAO<Recibo, Integer> {
             for (DetalleRecibo dr : detalleReciboList) {
                 //se resta la entrega ($) que implicaba este detalle con respecto a CADA factura
                 ctaCteCliente = new CtacteClienteJpaController().findCtacteClienteByFactura(dr.getFacturaVenta().getId());
-                ctaCteCliente.setEntregado(ctaCteCliente.getEntregado() - dr.getMontoEntrega());
+                ctaCteCliente.setEntregado(ctaCteCliente.getEntregado() - dr.getMontoEntrega().doubleValue());
                 // y si había sido pagada en su totalidad..
                 if (ctaCteCliente.getEstado() == Valores.CtaCteEstado.PAGADA.getId()) {
                     ctaCteCliente.setEstado(Valores.CtaCteEstado.PENDIENTE.getId());
@@ -103,5 +110,78 @@ public class ReciboJpaController extends AbstractDAO<Recibo, Integer> {
         return getEntityManager().
                 createNamedQuery("DetalleRecibo.findByFacturaVenta").
                 setParameter("facturaVenta", factura).getResultList();
+    }
+
+    @Override
+    public void create(Recibo recibo) {
+        entityManager = getEntityManager();
+        if (!entityManager.getTransaction().isActive()) {
+            entityManager.getTransaction().begin();
+        } else {
+//            entityManager.getTransaction().commit();
+//            entityManager.getTransaction().begin();
+        }
+        entityManager.persist(recibo);
+        List<Object> pagosPost = new ArrayList<Object>(recibo.getPagosEntities().size());
+        for (Object object : recibo.getPagosEntities()) {
+            System.out.println(object.toString());
+            Integer tipo, id;
+            if (object instanceof ChequePropio) {
+                ChequePropio pago = (ChequePropio) object;
+                pago.setComprobanteIngreso("Recibo " + JGestionUtils.getNumeracion(recibo, true));
+                entityManager.merge(pago);
+                pagosPost.add(pago);
+                tipo = 1;
+                id = pago.getId();
+            } else if (object instanceof ChequeTerceros) {
+                ChequeTerceros pago = (ChequeTerceros) object;
+                pago.setComprobanteIngreso("Recibo " + JGestionUtils.getNumeracion(recibo, true));
+                entityManager.persist(pago);
+                pagosPost.add(pago);
+                tipo = 2;
+                id = pago.getId();
+            } else if (object instanceof NotaCredito) {
+                NotaCredito pago = (NotaCredito) object;
+                pago.setDesacreditado(pago.getImporte());
+                entityManager.merge(object);
+                pagosPost.add(pago);
+                tipo = 3;
+                id = pago.getId();
+            } else {
+                ComprobanteRetencion pago = (ComprobanteRetencion) object;
+                entityManager.persist(pago);
+                pagosPost.add(pago);
+                tipo = 4;
+                id = pago.getId();
+            }
+        }
+        entityManager.getTransaction().commit();
+        entityManager.getTransaction().begin();
+        for (Object object : pagosPost) {
+            System.out.println(object.toString());
+            Integer tipo, id;
+            if (object instanceof ChequePropio) {
+                ChequePropio pago = (ChequePropio) object;
+                tipo = 1;
+                id = pago.getId();
+            } else if (object instanceof ChequeTerceros) {
+                ChequeTerceros pago = (ChequeTerceros) object;
+                tipo = 2;
+                id = pago.getId();
+            } else if (object instanceof NotaCredito) {
+                NotaCredito pago = (NotaCredito) object;
+                tipo = 3;
+                id = pago.getId();
+            } else {
+                ComprobanteRetencion pago = (ComprobanteRetencion) object;
+                tipo = 4;
+                id = pago.getId();
+            }
+
+            System.out.println(tipo + ", " + id + ", " + recibo.getId());
+            ReciboPagos rp = new ReciboPagos(null, tipo, id, recibo);
+            entityManager.persist(rp);
+        }
+        entityManager.getTransaction().commit();
     }
 }

@@ -97,7 +97,7 @@ public class Producto implements Serializable {
     @Temporal(value = TemporalType.DATE)
     private Date ultimaCompra;
     @JoinColumn(name = "iva", referencedColumnName = "id", nullable = false)
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER, cascade = {CascadeType.REFRESH, CascadeType.DETACH})
     private Iva iva;
     @JoinColumn(name = "marca", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)

@@ -30,7 +30,7 @@ import javax.persistence.Version;
 public abstract class Cheque implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @Column(nullable = false, precision = 8)
+    @Column(nullable = false, precision = 12)
     protected Long numero;
     @JoinColumn(name = "banco", nullable = false)
     @ManyToOne(optional = false)
@@ -78,6 +78,10 @@ public abstract class Cheque implements Serializable {
     @Version
     @Column(name = "version_cheque")
     protected Long version;
+    @Column(name = "comprobante_egreso")
+    protected String comprobanteEgreso;
+    @Column(name = "comprobante_ingreso")
+    protected String comprobanteIngreso;
 
     protected Cheque() {
     }
@@ -233,6 +237,22 @@ public abstract class Cheque implements Serializable {
         this.version = version;
     }
 
+    public String getComprobanteEgreso() {
+        return comprobanteEgreso;
+    }
+
+    public void setComprobanteEgreso(String comprobanteEgreso) {
+        this.comprobanteEgreso = comprobanteEgreso;
+    }
+
+    public String getComprobanteIngreso() {
+        return comprobanteIngreso;
+    }
+
+    public void setComprobanteIngreso(String comprobanteIngreso) {
+        this.comprobanteIngreso = comprobanteIngreso;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -257,6 +277,6 @@ public abstract class Cheque implements Serializable {
 
     @Override
     public String toString() {
-        return "Cheque{" + "numero=" + numero + ", banco=" + banco.getId() + ", bancoSucursal=" + bancoSucursal.getId() + ", importe=" + importe + ", fechaCheque=" + fechaCheque + ", cruzado=" + cruzado + ", observacion=" + observacion + ", fechaCobro=" + fechaCobro + ", fechaCreacion=" + fechaCreacion + ", estado=" + estado + ", chequeEstado=" + chequeEstado + ", endosatario=" + endosatario + ", fechaEndoso=" + fechaEndoso + ", usuario=" + usuario + ", librado=" + librado + ", version=" + version + '}';
+        return "Cheque{" + "numero=" + numero + ", banco=" + banco.getId() + ", bancoSucursal=" + bancoSucursal + ", importe=" + importe + ", fechaCheque=" + fechaCheque + ", cruzado=" + cruzado + ", observacion=" + observacion + ", fechaCobro=" + fechaCobro + ", fechaCreacion=" + fechaCreacion + ", estado=" + estado + ", chequeEstado=" + chequeEstado + ", endosatario=" + endosatario + ", fechaEndoso=" + fechaEndoso + ", usuario=" + usuario + ", librado=" + librado + ", ingreso=" + comprobanteIngreso + ", egreso=" + comprobanteEgreso + ", version=" + version + '}';
     }
 }

@@ -40,6 +40,7 @@ public class Recibo implements Serializable {
     private double monto;
     @Basic(optional = false)
     @Column(name = "retencion", nullable = false, precision = 10, scale = 2)
+    @Deprecated
     private BigDecimal retencion;
     @Basic(optional = false)
     @Column(name = "fecha_recibo", nullable = false)
@@ -61,6 +62,8 @@ public class Recibo implements Serializable {
     private List<DetalleRecibo> detalleReciboList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "recibo")
     private List<ReciboPagos> pagos;
+    @Transient
+    private transient List<Object> pagosEntities;
 
     public Recibo() {
     }
@@ -155,6 +158,14 @@ public class Recibo implements Serializable {
 
     public void setPagos(List<ReciboPagos> pagos) {
         this.pagos = pagos;
+    }
+
+    public List<Object> getPagosEntities() {
+        return pagosEntities;
+    }
+
+    public void setPagosEntities(List<Object> pagosEntities) {
+        this.pagosEntities = pagosEntities;
     }
 
     @Override

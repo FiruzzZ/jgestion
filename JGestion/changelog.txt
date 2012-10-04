@@ -1,6 +1,45 @@
 2012/09/23
+ALTER TABLE recibo ALTER COLUMN retencion SET DEFAULT 0;
 ALTER TABLE banco ADD COLUMN webpage character varying(100);
 ALTER TABLE banco ADD UNIQUE (webpage);
+CREATE TABLE recibo_pagos (
+  id serial NOT NULL,
+  comprobante_id integer NOT NULL,
+  forma_pago integer NOT NULL, -- 0=Efectivo, 1=Cheque Propio, 2=Cheque Tercero, 3=Nota de Crédito, 4=Retención
+  recibo_id integer NOT NULL,
+  CONSTRAINT recibo_pagos_pkey PRIMARY KEY (id),
+  CONSTRAINT fk_recibo_pagos_recibo_id FOREIGN KEY (recibo_id)
+      REFERENCES recibo (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+COMMENT ON COLUMN recibo_pagos.forma_pago IS '0=Efectivo, 1=Cheque Propio, 2=Cheque Tercero, 3=Nota de Crédito, 4=Retención';
+
+CREATE TABLE comprobante_retencion (
+  id serial NOT NULL,
+  fecha date NOT NULL,
+  importe numeric(12,2) NOT NULL,
+  numero bigint NOT NULL,
+  CONSTRAINT comprobante_retencion_pkey PRIMARY KEY (id),
+  CONSTRAINT unq_comprobante_retencion_0 UNIQUE (numero)
+)
+WITH (  OIDS=FALSE);
+CREATE TABLE cuentabancaria(
+  id serial NOT NULL,
+  activa boolean NOT NULL,
+  numero bigint NOT NULL,
+  saldo numeric(12,2) NOT NULL,
+  banco_id integer NOT NULL,
+  CONSTRAINT cuentabancaria_pkey PRIMARY KEY (id),
+  CONSTRAINT fk_cuentabancaria_banco_id FOREIGN KEY (banco_id)
+      REFERENCES banco (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT unq_cuentabancaria_0 UNIQUE (banco_id, numero)
+)
+WITH (  OIDS=FALSE);
+
 CREATE TABLE operaciones_bancarias (
   id serial NOT NULL,
   nombre character varying(60) NOT NULL,

@@ -13,8 +13,8 @@ public enum ChequeEstado {
     /**
      * {@link ChequeTerceros} : Son los recibidos, aún no está
      * {@link ChequeEstado#DEPOSITADO} o cobrados {@link ChequeEstado#CAJA}.
-     * <br>{@link ChequePropio} : Los emitidos (LIBRADOS) que aun no fueron
-     * debitados efectivamente de las cuentas (no conciliados).
+     * <br>{@link ChequePropio} : Los emitidos que aun no fueron debitados
+     * efectivamente de las cuentas (no conciliados).
      */
     CARTERA(1),
     /**

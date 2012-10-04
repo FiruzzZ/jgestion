@@ -519,7 +519,7 @@ public class NotaCreditoController {
                 if (montoEntrega.doubleValue() <= 0) {
                     detalleRecibo = detalleReciboIterator.next();
                     System.out.println("DET:" + detalleRecibo);
-                    montoEntrega = BigDecimal.valueOf(detalleRecibo.getMontoEntrega());
+                    montoEntrega = detalleRecibo.getMontoEntrega();
                 }
                 detalleAcreditacion = new DetalleAcreditacion();
 
