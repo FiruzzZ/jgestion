@@ -975,6 +975,7 @@
             </Property>
             <Property name="horizontalAlignment" type="int" value="4"/>
             <Property name="text" type="java.lang.String" value="0.00"/>
+            <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;&#xa;Indica la perdida o ganancia por redondeo:&#xa;&lt;br&gt;Positivo: a favor del comerciante.&#xa;&lt;br&gt;Negativo: del Cliente (comprador).&#xa;&lt;br&gt;&lt;b&gt;Este item SOLO es visible en las Facturas que no discriminan impuestos/alicuotas&lt;/b&gt;&#xa;&lt;/html&gt;&#xa;"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel29">

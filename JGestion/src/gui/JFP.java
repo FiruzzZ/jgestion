@@ -1348,7 +1348,7 @@ private void jMenuItem60ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
 }//GEN-LAST:event_jMenuItem60ActionPerformed
 
 private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem56ActionPerformed
-    new ChequeTercerosController().initManager((JFrame) this, null).setVisible(true);
+    new ChequeTercerosController().initManager(this, null).setVisible(true);
 }//GEN-LAST:event_jMenuItem56ActionPerformed
 
     private void jMenuItem55ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem55ActionPerformed

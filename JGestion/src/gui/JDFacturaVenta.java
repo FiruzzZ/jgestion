@@ -5,6 +5,7 @@
  */
 package gui;
 
+import controller.Contabilidad;
 import controller.Valores;
 import java.awt.Color;
 import java.awt.event.ActionListener;
@@ -661,6 +662,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
         tfDiferenciaRedondeo.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         tfDiferenciaRedondeo.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         tfDiferenciaRedondeo.setText("0.00");
+        tfDiferenciaRedondeo.setToolTipText("<html>\nIndica la perdida o ganancia por redondeo:\n<br>Positivo: a favor del comerciante.\n<br>Negativo: del Cliente (comprador).\n<br><b>Este item SOLO es visible en las Facturas que no discriminan impuestos/alicuotas</b>\n</html>\n");
 
         jLabel29.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel29.setText("Dif. Redondeo");
@@ -943,7 +945,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
 
 private void tfPrecioUnitarioFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfPrecioUnitarioFocusLost
     try {
-        tfPrecioUnitario.setText(UTIL.PRECIO_CON_PUNTO.format(Double.valueOf(tfPrecioUnitario.getText())));
+        tfPrecioUnitario.setText(Contabilidad.PU_FORMAT.format(Double.valueOf(tfPrecioUnitario.getText())));
         tfPrecioUnitario.setForeground(Color.BLACK);
     } catch (Exception exception) {
         tfPrecioUnitario.setForeground(Color.RED);

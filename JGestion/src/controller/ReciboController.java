@@ -115,7 +115,7 @@ public class ReciboController implements ActionListener, FocusListener {
             public void actionPerformed(ActionEvent e) {
                 try {
                     checkConstraints();
-                    Recibo recibo = setEntity();
+                    Recibo recibo = getEntity();
                     persist(recibo);
                     rereSelected = recibo;
                     jdReRe.showMessage(CLASS_NAME + " creado..", CLASS_NAME, 1);
@@ -139,7 +139,7 @@ public class ReciboController implements ActionListener, FocusListener {
                     } else {
                         //cuando se está creando un recibo y se va imprimir al tokesaun!
                         checkConstraints();
-                        Recibo recibo = setEntity();
+                        Recibo recibo = getEntity();
                         persist(recibo);
                         rereSelected = recibo;
                         imprimirRecibo(rereSelected);
@@ -385,7 +385,7 @@ public class ReciboController implements ActionListener, FocusListener {
         return cbw.getEntity();
     }
 
-    private Recibo setEntity() throws Exception {
+    private Recibo getEntity() throws Exception {
         Recibo recibo = new Recibo();
         recibo.setCaja((Caja) jdReRe.getCbCaja().getSelectedItem());
         recibo.setSucursal(getSelectedSucursalFromJD());
@@ -427,19 +427,7 @@ public class ReciboController implements ActionListener, FocusListener {
             DetalleRecibo detalle = iterator.next();
             //actuliza saldo pagado de cada ctacte
             actualizarMontoEntrega(detalle.getFacturaVenta(), detalle.getMontoEntrega());
-
-
-            //aprovechando el bucle, sumamos el importe acreditado
-//            if (detalle.isAcreditado()) {
-//                montoParaDesacreditar = montoParaDesacreditar.add(detalle.getMontoEntrega());
-//            }
         }
-//        if (montoParaDesacreditar.doubleValue() > 0) {
-//            new NotaCreditoController().desacreditar(
-//                    recibo,
-//                    (Cliente) jdReRe.getCbClienteProveedor().getSelectedItem(),
-//                    montoParaDesacreditar);
-//        }
     }
 
     private void actualizarMontoEntrega(FacturaVenta factu, BigDecimal monto) {
@@ -448,7 +436,7 @@ public class ReciboController implements ActionListener, FocusListener {
         ctacte.setEntregado(ctacte.getEntregado() + monto.doubleValue());
         if (ctacte.getImporte() == ctacte.getEntregado()) {
             ctacte.setEstado(Valores.CtaCteEstado.PAGADA.getId());
-            LOG.debug("CtaCte Nº:" + ctacte.getId() + " PAGADA");
+            LOG.trace("CtaCte Nº:" + ctacte.getId() + " PAGADA");
         }
         DAO.doMerge(ctacte);
     }
