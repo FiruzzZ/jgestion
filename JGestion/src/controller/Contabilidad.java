@@ -31,6 +31,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.math.BigDecimal;
+import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -61,6 +62,7 @@ import utilities.swing.components.NumberRenderer;
  */
 public class Contabilidad {
 
+    public static final DecimalFormat PU_FORMAT;
     private JDBalance jdBalanceUI;
     private PanelBalanceGeneral panelBalanceGeneral;
     private static final String columnNamesBalanceGeneral[] = {"FECHA", "DESCRIPCIÓN", "INGRESOS", "EGRESOS", "TOTAL ACUM."};
@@ -73,6 +75,9 @@ public class Contabilidad {
     private static final Logger LOG = Logger.getLogger(Contabilidad.class.getName());
 
     static {
+        DecimalFormatSymbols simbolos = new DecimalFormatSymbols();
+        simbolos.setDecimalSeparator('.');
+        PU_FORMAT = new DecimalFormat("#0.0000", simbolos);
 //        PRECIO_CON_PUNTO = UTIL.PRECIO_CON_PUNTO;
 //        DecimalFormatSymbols simbolos = new DecimalFormatSymbols();
 //        simbolos.setDecimalSeparator('.');
@@ -678,8 +683,7 @@ public class Contabilidad {
                             dtm.getValueAt(row, 8),
                             dtm.getValueAt(row, 10),
                             dtm.getValueAt(row, 12),
-                            null
-                            ));
+                            null));
                 }
                 Reportes r = new Reportes("JGestion_ComprobantesCompras.jasper", "Listado Comprobantes");
                 r.setDataSource(data);

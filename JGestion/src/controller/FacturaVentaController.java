@@ -431,7 +431,12 @@ public class FacturaVentaController implements ActionListener, KeyListener {
             throw new MessageException("Debe elegir una lista de precios antes."
                     + "\nSi no existe ninguna debe crearla en el Menú -> Productos -> Lista de precios.");
         }
-
+        for (int row = 0; row < jdFacturaVenta.getDTM().getRowCount(); row++) {
+            Integer productoID = (Integer) jdFacturaVenta.getDTM().getValueAt(row, 9);
+            if (selectedProducto.getId() == productoID) {
+                throw new MessageException("Este ha agregado este producto al detalle.");
+            }
+        }
         int cantidad;
         BigDecimal precioUnitarioSinIVA; // (precioUnitario + margen listaPrecios)
         BigDecimal descuentoUnitario;
@@ -453,7 +458,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                 throw new MessageException("El precio unitario no puede ser menor a 0");
             }
             if (!isPrecioVentaMinimoValido(precioUnitarioSinIVA.doubleValue())) {
-                throw new MessageException("El precio unitario de venta ($" + UTIL.PRECIO_CON_PUNTO.format(precioUnitarioSinIVA) + ") no puede"
+                throw new MessageException("El precio unitario de venta ($" + Contabilidad.PU_FORMAT.format(precioUnitarioSinIVA) + ") no puede"
                         + " ser menor al mínimo de Venta establecido ($" + selectedProducto.getMinimoPrecioDeVenta() + ")"
                         + "\nPara poder vender el producto al precio deseado, debe cambiar el \"precio de venta\" del producto."
                         + "\nUtilice el botón a la izquierda del campo CÓDIGO o"
@@ -499,7 +504,6 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         } catch (NumberFormatException ex) {
             throw new MessageException("Descuento no válido");
         }// </editor-fold>
-
         //adiciona el descuento
         descuentoUnitario = new BigDecimal(UTIL.PRECIO_CON_PUNTO.format(descuentoUnitario));
         precioUnitarioSinIVA = precioUnitarioSinIVA.subtract(descuentoUnitario);
@@ -514,7 +518,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
             }
         }
         //quitando decimes indeseados..
-        precioUnitarioSinIVA = new BigDecimal(UTIL.PRECIO_CON_PUNTO.format(precioUnitarioSinIVA));
+        precioUnitarioSinIVA = precioUnitarioSinIVA.setScale(4, RoundingMode.HALF_EVEN);
         BigDecimal alicuota = BigDecimal.valueOf(selectedProducto.getIva().getIva());
         //carga detallesVenta en tabla
         jdFacturaVenta.getDTM().addRow(new Object[]{
@@ -522,8 +526,8 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                     selectedProducto.getCodigo(),
                     selectedProducto.getNombre() + "(" + selectedProducto.getIva().getIva() + ")",
                     cantidad,
-                    precioUnitarioSinIVA, //columnIndex == 4
-                    precioUnitarioSinIVA.multiply((alicuota.divide(new BigDecimal("100")).add(BigDecimal.ONE))),
+                    precioUnitarioSinIVA.setScale(4, RoundingMode.HALF_EVEN), //columnIndex == 4
+                    precioUnitarioSinIVA.multiply((alicuota.divide(new BigDecimal("100")).add(BigDecimal.ONE))).setScale(4, RoundingMode.HALF_EVEN),
                     descuentoUnitario.multiply(BigDecimal.valueOf(cantidad)),
                     precioUnitarioSinIVA.multiply(BigDecimal.valueOf(cantidad)).multiply((alicuota.divide(new BigDecimal("100")).add(BigDecimal.ONE))).setScale(2, RoundingMode.HALF_EVEN), //subTotal
                     (descuentoUnitario.intValue() == 0) ? -1 : (jdFacturaVenta.getCbDesc().getSelectedIndex() + 1),//Tipo de descuento
@@ -602,57 +606,49 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         for (int index = 0; index < dtm.getRowCount(); index++) {
             BigDecimal cantidad = new BigDecimal(dtm.getValueAt(index, 3).toString());
             BigDecimal precioUnitario = new BigDecimal(dtm.getValueAt(index, 4).toString());
-            // NETO/GRAVADO (precioSinIVA + cantidad)
-            gravado = gravado.add(precioUnitario.multiply(cantidad));
-
             BigDecimal alicuota = new BigDecimal(dtm.getValueAt(index, 0).toString());
-            BigDecimal alicuotaDelProducto = UTIL.getPorcentaje(precioUnitario, alicuota).setScale(2, RoundingMode.HALF_EVEN);
+
+            // NETO/GRAVADO (precioSinIVA + cantidad)
+            if (!alicuota.equals(BigDecimal.ZERO)) {
+                gravado = gravado.add(precioUnitario.multiply(cantidad));
+                BigDecimal precioUnitarioConIva = new BigDecimal(dtm.getValueAt(index, 5).toString());
+                redondeoTotal = redondeoTotal.add(precioUnitarioConIva.multiply(cantidad));
+            }
             /**
              * Se calcula sin aplicar ningún redondeo (se trabaja posiblemente
              * mas de 2 decimales).
              */
             BigDecimal sinRedondeo = precioUnitario.multiply(cantidad).multiply(alicuota.divide(new BigDecimal("100")));
-            if (alicuota.compareTo(BigDecimal.ZERO) != 1) {
+            if (alicuota.equals(BigDecimal.ZERO)) {
                 noGravado = noGravado.add(cantidad.multiply(precioUnitario));
                 gravado = gravado.subtract(precioUnitario.multiply(cantidad));
             } else if (alicuota.toString().equalsIgnoreCase("10.5")) {
-                //REDONDEO.. a dos decimales
-//                alicuotaDelProducto = new BigDecimal(UTIL.PRECIO_CON_PUNTO.format(alicuotaDelProducto));
-                //REDONDEO.. a dos decimales
                 iva10 = iva10.add(cantidad.multiply(precioUnitario).multiply((alicuota.divide(new BigDecimal("100")))));
             } else if (alicuota.toString().equalsIgnoreCase("21.0")) {
-                //REDONDEO.. a dos decimales
-//                alicuotaDelProducto = new BigDecimal(UTIL.PRECIO_CON_PUNTO.format(alicuotaDelProducto));
-                //REDONDEO.. a dos decimales
                 iva21 = iva21.add(cantidad.multiply(precioUnitario).multiply((alicuota.divide(new BigDecimal("100")))));
             } else {
-                //REDONDEO.. a dos decimales
-//                alicuotaDelProducto = new BigDecimal(UTIL.PRECIO_CON_PUNTO.format(alicuotaDelProducto));
-                //REDONDEO.. a dos decimales
-                otrosImps = otrosImps.add(cantidad.multiply(alicuotaDelProducto));//.setScale(2, RoundingMode.HALF_EVEN));
-                LOG.trace("Alicuota no standart=" + alicuota
-                        + ", alicDel Producto=" + alicuotaDelProducto + ", total Otros Imps=" + otrosImps.toString());
+                otrosImps = otrosImps.add(cantidad.multiply(alicuota.divide(new BigDecimal("100"))));
             }
             //Descuento++
             //si el subtotal es > 0... para no dar resultados negativos!!!
             if (new BigDecimal(dtm.getValueAt(index, 7).toString()).intValue() >= 0) {
                 desc = desc.add(new BigDecimal(dtm.getValueAt(index, 6).toString()));
             }
-            LOG.debug("alicuota=" + alicuota + ", alic x Producto=" + alicuotaDelProducto + ", redondeo=" + sinRedondeo);
-            redondeoTotal = redondeoTotal.add(sinRedondeo);
+            LOG.debug("alicuota=" + alicuota + ", redondeo=" + sinRedondeo);
+
             subTotal = subTotal.add(new BigDecimal(dtm.getValueAt(index, 7).toString()));
         }
-        LOG.debug("Gravado:" + gravado + ", Desc.:" + desc + ", IVA105:" + iva10 + ", IVA21:" + iva21 + ", OtrosImp.:" + otrosImps + "");
         contenedor.setTfGravado(UTIL.PRECIO_CON_PUNTO.format(gravado));
         contenedor.setTfTotalNoGravado(UTIL.PRECIO_CON_PUNTO.format(noGravado));
         contenedor.setTfTotalDesc(UTIL.PRECIO_CON_PUNTO.format(desc));
         contenedor.setTfTotalIVA105(UTIL.PRECIO_CON_PUNTO.format(iva10));
         contenedor.setTfTotalIVA21(UTIL.PRECIO_CON_PUNTO.format(iva21));
         contenedor.setTfTotalOtrosImps(UTIL.PRECIO_CON_PUNTO.format(otrosImps));
-        redondeoTotal = iva10.add(iva21).add(otrosImps).subtract(redondeoTotal);
+        redondeoTotal = gravado.add(iva10).add(iva21).add(otrosImps).subtract(redondeoTotal);
         contenedor.getTfDiferenciaRedondeo().setText(UTIL.PRECIO_CON_PUNTO.format(redondeoTotal));
         contenedor.setTfTotal(UTIL.PRECIO_CON_PUNTO.format(subTotal));
         contenedor.setTfCambio(UTIL.PRECIO_CON_PUNTO.format(subTotal));
+        LOG.debug("Gravado:" + gravado + ", Desc.:" + desc + ", IVA105:" + iva10 + ", IVA21:" + iva21 + ", OtrosImp.:" + otrosImps + ", Redondeo:" + redondeoTotal);
     }
 
     /**
@@ -669,7 +665,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         if (margen == 0) {
             return 0.0;
         }
-        double total = 0.0;
+        Double total;
         switch (tipoDeMargen) {
             case 1: { // margen en %
                 total = ((monto * margen) / 100);
@@ -680,7 +676,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                 break;
             }
             default:
-                return null;
+                total = null;
         }
         return total;
     }
@@ -863,7 +859,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
             for (int i = 0; i < dtm.getRowCount(); i++) {
                 detalleVenta = new DetalleVenta();
                 detalleVenta.setCantidad(Integer.valueOf(dtm.getValueAt(i, 3).toString()));
-                detalleVenta.setPrecioUnitario(Double.valueOf(dtm.getValueAt(i, 4).toString()));
+                detalleVenta.setPrecioUnitario(((BigDecimal) dtm.getValueAt(i, 4)).doubleValue());
                 detalleVenta.setDescuento(Double.valueOf(dtm.getValueAt(i, 6).toString()));
                 detalleVenta.setTipoDesc(Integer.valueOf(dtm.getValueAt(i, 8).toString()));
                 detalleVenta.setProducto(productoController.find((Integer) dtm.getValueAt(i, 9)));
@@ -1613,20 +1609,9 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                         + "\nNota: No se pueden generar Movimientos Internos antiguos.");
             }
             FacturaVenta newFacturaVenta = getEntity(conFactura);
-//            Cheque cheque = null;
-//            if (newFacturaVenta.getFormaPagoEnum().equals(Valores.FormaPago.CHEQUE)
-//                    || newFacturaVenta.getFormaPagoEnum().equals(Valores.FormaPago.CONTADO_CHEQUE)) {
-//                //entity Cheque persisted..
-//                cheque = getChequeToBind(newFacturaVenta);
-//            }
             jpaController.create(newFacturaVenta);
             //refreshing the entity from DB
             newFacturaVenta = (FacturaVenta) DAO.findEntity(FacturaVenta.class, newFacturaVenta.getId());
-//            if (cheque != null) {
-//                cheque.setBoundId(newFacturaVenta.getId().longValue());
-//                new ChequeTercerosJpaController().edit(cheque);
-//                newFacturaVenta.setCheque(cheque);
-//            }
             if (newFacturaVenta.getRemito() != null) {
                 remitoToFacturar.setFacturaVenta(newFacturaVenta);
                 new RemitoController().edit(remitoToFacturar);

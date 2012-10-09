@@ -1,6 +1,7 @@
 package jgestion;
 
 import entity.*;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import utilities.general.UTIL;
@@ -14,19 +15,42 @@ public class JGestionUtils {
 
     public static List<ComboBoxWrapper<CtacteProveedor>> getWrappedCtacteProveedor(List<CtacteProveedor> list) {
         List<ComboBoxWrapper<CtacteProveedor>> l = new ArrayList<ComboBoxWrapper<CtacteProveedor>>(list.size());
-        for (CtacteProveedor ctacteProveedor : list) {
-            l.add(new ComboBoxWrapper<CtacteProveedor>(ctacteProveedor, ctacteProveedor.getId(), getNumeracion(ctacteProveedor.getFactura())));
+        for (CtacteProveedor o : list) {
+            l.add(new ComboBoxWrapper<CtacteProveedor>(o, o.getId(), getNumeracion(o.getFactura())));
         }
         return l;
     }
 
     public static List<ComboBoxWrapper<CtacteCliente>> getWrappedCtacteCliente(List<CtacteCliente> list) {
         List<ComboBoxWrapper<CtacteCliente>> wrappedList = new ArrayList<ComboBoxWrapper<CtacteCliente>>(list.size());
-        for (CtacteCliente ctacteCliente : list) {
-            FacturaVenta factura = ctacteCliente.getFactura();
-            wrappedList.add(new ComboBoxWrapper<CtacteCliente>(ctacteCliente, ctacteCliente.getId(), JGestionUtils.getNumeracion(factura)));
+        for (CtacteCliente o : list) {
+            wrappedList.add(new ComboBoxWrapper<CtacteCliente>(o, o.getId(), getNumeracion(o.getFactura())));
         }
         return wrappedList;
+    }
+
+    public static List<ComboBoxWrapper<Librado>> getWrappedLibrado(List<Librado> list) {
+        List<ComboBoxWrapper<Librado>> l = new ArrayList<ComboBoxWrapper<Librado>>(list.size());
+        for (Librado o : list) {
+            l.add(new ComboBoxWrapper<Librado>(o, o.getId(), o.getNombre()));
+        }
+        return l;
+    }
+
+    public static List<ComboBoxWrapper<Cliente>> getWrappedClientes(List<Cliente> list) {
+        List<ComboBoxWrapper<Cliente>> l = new ArrayList<ComboBoxWrapper<Cliente>>(list.size());
+        for (Cliente o : list) {
+            l.add(new ComboBoxWrapper<Cliente>(o, o.getId(), o.getNombre()));
+        }
+        return l;
+    }
+
+    public static List<ComboBoxWrapper<Proveedor>> getWrappedProveedores(List<Proveedor> list) {
+        List<ComboBoxWrapper<Proveedor>> l = new ArrayList<ComboBoxWrapper<Proveedor>>(list.size());
+        for (Proveedor o : list) {
+            l.add(new ComboBoxWrapper<Proveedor>(o, o.getId(), o.getNombre()));
+        }
+        return l;
     }
 
     private JGestionUtils() {
@@ -34,8 +58,8 @@ public class JGestionUtils {
 
     public static List<ComboBoxWrapper<Cuentabancaria>> getWrappedCuentasBancarias(List<Cuentabancaria> list) {
         List<ComboBoxWrapper<Cuentabancaria>> l = new ArrayList<ComboBoxWrapper<Cuentabancaria>>(list.size());
-        for (Cuentabancaria cuentabancaria : list) {
-            l.add(new ComboBoxWrapper<Cuentabancaria>(cuentabancaria, cuentabancaria.getId(), cuentabancaria.getNumero().toString()));
+        for (Cuentabancaria o : list) {
+            l.add(new ComboBoxWrapper<Cuentabancaria>(o, o.getId(), o.getNumero().toString()));
         }
         return l;
     }
@@ -113,5 +137,19 @@ public class JGestionUtils {
     public static String getNumeracion(Remesa o, boolean conGuion) {
         String guion = conGuion ? "-" : "";
         return UTIL.AGREGAR_CEROS(o.getSucursal().getPuntoVenta(), 4) + guion + UTIL.AGREGAR_CEROS(o.getNumero(), 8);
+    }
+
+    public final class Wrapper<T> {
+
+        public List<ComboBoxWrapper<T>> getWrapped(List<T> list) throws NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+            List<ComboBoxWrapper<T>> l = new ArrayList<ComboBoxWrapper<T>>(list.size());
+            for (T t : list) {
+                Object c = t;
+                Integer id = (Integer) c.getClass().getMethod("getId").invoke(c, new Object[]{null});
+                String nombre = (String) c.getClass().getMethod("getNombre").invoke(c, new Object[]{null});
+                l.add(new ComboBoxWrapper<T>(t, id, nombre));
+            }
+            return l;
+        }
     }
 }

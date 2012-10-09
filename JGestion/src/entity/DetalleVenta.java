@@ -25,7 +25,7 @@ public class DetalleVenta implements Serializable {
     @Column(name = "cantidad", nullable = false)
     private int cantidad;
     @Basic(optional = false)
-    @Column(name = "precio_unitario", nullable = false, precision = 9, scale = 2)
+    @Column(name = "precio_unitario", nullable = false, precision = 12, scale = 4)
     private Double precioUnitario;
     @Basic(optional = false)
     @Column(name = "tipo_desc", nullable = false)

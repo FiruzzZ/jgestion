@@ -1,3 +1,11 @@
+2012/10/08
+CREATE TABLE cheque_estado (
+  id integer NOT NULL,
+  nombre character varying(25) NOT NULL,
+  CONSTRAINT cheque_estado_pkey PRIMARY KEY (id),
+  CONSTRAINT cheque_estado_nombre_key UNIQUE (nombre)
+)
+WITH (  OIDS=FALSE);
 2012/09/23
 ALTER TABLE recibo ALTER COLUMN retencion SET DEFAULT 0;
 ALTER TABLE banco ADD COLUMN webpage character varying(100);

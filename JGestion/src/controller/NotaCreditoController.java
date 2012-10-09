@@ -194,7 +194,7 @@ public class NotaCreditoController {
         DefaultTableModel dtm = jdFacturaVenta.getDTM();
         if (dtm.getRowCount() < 1) {
             throw new MessageException("No ha agregado ningún item al detalle.");
-        } else if (dtm.getRowCount() > FacturaVentaController.LIMITE_DE_ITEMS) {
+        } else if (dtm.getRowCount() >= FacturaVentaController.LIMITE_DE_ITEMS) {
             throw new MessageException("El límite del detalle son " + FacturaVentaController.LIMITE_DE_ITEMS + " items.");
         }
 
@@ -202,6 +202,7 @@ public class NotaCreditoController {
         newNotaCredito.setNumero(jpaController.getNextNumero(sucursal));
         newNotaCredito.setFechaNotaCredito(fechaNotaCredito);
         newNotaCredito.setImporte(new BigDecimal(jdFacturaVenta.getTfTotal()));
+        newNotaCredito.setDesacreditado(BigDecimal.ZERO);
         newNotaCredito.setGravado(Double.valueOf(jdFacturaVenta.getTfGravado()));
         newNotaCredito.setNoGravado(new BigDecimal(jdFacturaVenta.getTfTotalNoGravado()));
         newNotaCredito.setIva10(Double.valueOf(jdFacturaVenta.getTfTotalIVA105()));
@@ -212,11 +213,10 @@ public class NotaCreditoController {
         newNotaCredito.setUsuario(UsuarioController.getCurrentUser());
         newNotaCredito.setObservacion(observacion);
         newNotaCredito.setDetalleNotaCreditoCollection(new ArrayList<DetalleNotaCredito>(dtm.getRowCount()));
-        DetalleNotaCredito detalleVenta;
         ProductoJpaController productoJpaController = new ProductoJpaController();
         for (int i = 0; i < dtm.getRowCount(); i++) {
-            detalleVenta = new DetalleNotaCredito();
-            detalleVenta.setCantidad(Integer.valueOf(dtm.getValueAt(i, 3).toString()));
+            DetalleNotaCredito detalleVenta = new DetalleNotaCredito();
+            detalleVenta.setCantidad((Integer) dtm.getValueAt(i, 3));
             detalleVenta.setPrecioUnitario(Double.valueOf(dtm.getValueAt(i, 4).toString()));
             detalleVenta.setProducto(productoJpaController.find((Integer) dtm.getValueAt(i, 9)));
             newNotaCredito.getDetalleNotaCreditoCollection().add(detalleVenta);
@@ -234,7 +234,7 @@ public class NotaCreditoController {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    cargarDtmBuscador(armarQuery());
+                    cargarDtmBuscador(armarQuery(selectingMode));
                 } catch (MessageException ex) {
                     ex.displayMessage(buscador);
                 }
@@ -263,7 +263,7 @@ public class NotaCreditoController {
                             setDatosEnUI(EL_OBJECT, paraAnular);
                             //refresh post anulación...
                             if (EL_OBJECT == null) {
-                                cargarDtmBuscador(armarQuery());
+                                cargarDtmBuscador(armarQuery(selectingMode));
                             }
                         } catch (MessageException ex) {
                             ex.displayMessage(buscador);
@@ -297,10 +297,12 @@ public class NotaCreditoController {
      * @throws MessageException
      */
     @SuppressWarnings("unchecked")
-    private String armarQuery() throws MessageException {
+    private String armarQuery(boolean selecting) throws MessageException {
         StringBuilder query = new StringBuilder("SELECT o.* FROM nota_credito o"
                 + " WHERE o.anulada = " + buscador.isCheckAnuladaSelected());
-
+        if (selecting) {
+            query.append(" AND o.desacreditado=0");
+        }
         long numero;
         //filtro por nº de ReRe
         if (buscador.getTfOcteto().length() > 0) {

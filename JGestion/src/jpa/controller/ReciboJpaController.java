@@ -117,48 +117,35 @@ public class ReciboJpaController extends AbstractDAO<Recibo, Integer> {
         entityManager = getEntityManager();
         if (!entityManager.getTransaction().isActive()) {
             entityManager.getTransaction().begin();
-        } else {
-//            entityManager.getTransaction().commit();
-//            entityManager.getTransaction().begin();
         }
         entityManager.persist(recibo);
         List<Object> pagosPost = new ArrayList<Object>(recibo.getPagosEntities().size());
         for (Object object : recibo.getPagosEntities()) {
             System.out.println(object.toString());
-            Integer tipo, id;
             if (object instanceof ChequePropio) {
                 ChequePropio pago = (ChequePropio) object;
                 pago.setComprobanteIngreso("Recibo " + JGestionUtils.getNumeracion(recibo, true));
                 entityManager.merge(pago);
                 pagosPost.add(pago);
-                tipo = 1;
-                id = pago.getId();
             } else if (object instanceof ChequeTerceros) {
                 ChequeTerceros pago = (ChequeTerceros) object;
                 pago.setComprobanteIngreso("Recibo " + JGestionUtils.getNumeracion(recibo, true));
                 entityManager.persist(pago);
                 pagosPost.add(pago);
-                tipo = 2;
-                id = pago.getId();
             } else if (object instanceof NotaCredito) {
                 NotaCredito pago = (NotaCredito) object;
                 pago.setDesacreditado(pago.getImporte());
                 entityManager.merge(object);
                 pagosPost.add(pago);
-                tipo = 3;
-                id = pago.getId();
             } else {
                 ComprobanteRetencion pago = (ComprobanteRetencion) object;
                 entityManager.persist(pago);
                 pagosPost.add(pago);
-                tipo = 4;
-                id = pago.getId();
             }
         }
         entityManager.getTransaction().commit();
         entityManager.getTransaction().begin();
         for (Object object : pagosPost) {
-            System.out.println(object.toString());
             Integer tipo, id;
             if (object instanceof ChequePropio) {
                 ChequePropio pago = (ChequePropio) object;
