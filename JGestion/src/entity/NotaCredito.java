@@ -27,7 +27,7 @@ import javax.persistence.UniqueConstraint;
  */
 @Entity
 @Table(name = "nota_credito", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"numero"})})
+    @UniqueConstraint(columnNames = {"sucursal", "numero"})})
 @NamedQueries({
     @NamedQuery(name = "NotaCredito.findAll", query = "SELECT n FROM NotaCredito n"),
     @NamedQuery(name = "NotaCredito.findById", query = "SELECT n FROM NotaCredito n WHERE n.id = :id"),
@@ -53,7 +53,7 @@ public class NotaCredito implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaCarga;
     @Basic(optional = false)
-    @Column(name = "importe", nullable = false, precision = 10, scale = 2)
+    @Column(name = "importe", nullable = false, precision = 12, scale = 2)
     private BigDecimal importe;
     @Column(name = "observacion", length = 250)
     private String observacion;
@@ -86,8 +86,19 @@ public class NotaCredito implements Serializable {
     private Sucursal sucursal;
     @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "notaCredito")
     private Collection<DetalleNotaCredito> detalleNotaCreditoCollection;
-    @Column(name = "desacreditado", nullable = false, precision = 10, scale = 2)
+    /**
+     * Antes se podía ir desacreditando en porciones una nota de crédito, ya no
+     * mas. Cuando una nota de credito sea utilizada
+     * {@link #desacreditado} == {@link #importe}
+     *
+     * @deprecated
+     */
+    @Deprecated
+    @Column(name = "desacreditado", nullable = false, precision = 12, scale = 2)
     private BigDecimal desacreditado;
+    @JoinColumn(name = "recibo")
+    @ManyToOne
+    private Recibo recibo;
 
     public NotaCredito() {
     }
@@ -224,12 +235,38 @@ public class NotaCredito implements Serializable {
         this.detalleNotaCreditoCollection = detalleNotaCreditoCollection;
     }
 
+    /**
+     * Antes se podía ir desacreditando en porciones una nota de crédito, ya no
+     * mas. Cuando una nota de credito sea utilizada
+     * {@link #desacreditado} == {@link #importe}
+     *
+     * @return
+     * @deprecated
+     */
+    @Deprecated
     public BigDecimal getDesacreditado() {
         return desacreditado;
     }
 
+    /**
+     * Antes se podía ir desacreditando en porciones una nota de crédito, ya no
+     * mas. Cuando una nota de credito sea utilizada
+     * {@link #desacreditado} == {@link #importe}
+     *
+     * @param desacreditado
+     * @deprecated
+     */
+    @Deprecated
     public void setDesacreditado(BigDecimal desacreditado) {
         this.desacreditado = desacreditado;
+    }
+
+    public Recibo getRecibo() {
+        return recibo;
+    }
+
+    public void setRecibo(Recibo recibo) {
+        this.recibo = recibo;
     }
 
     @Override

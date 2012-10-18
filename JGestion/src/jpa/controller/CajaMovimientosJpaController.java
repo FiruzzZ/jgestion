@@ -132,8 +132,12 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
         }
     }
 
+    @Deprecated
     public void asentarMovimiento(Remesa remesa) throws Exception {
         Logger.getLogger(this.getClass()).trace("asentarMovimiento (Remesa)");
+        for (Object object : remesa.getPagosEntities()) {
+            
+        }
         //caja en la q se va asentar
         CajaMovimientos cm = findCajaMovimientoAbierta(remesa.getCaja());
         EntityManager em = getEntityManager();
@@ -362,7 +366,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
                 // o CTA CTE..
                 CtacteProveedor ccp = new CtacteProveedorJpaController().findCtacteProveedorByFactura(facturaCompra.getId());
                 //si se hicieron REMESA's de pago de esta deuda
-                if (ccp.getEntregado() > 0) {
+                if (ccp.getEntregado().doubleValue() > 0) {
                     List<Remesa> remesaList = new RemesaJpaController().findByFactura(facturaCompra);
                     boolean detalleUnico; //Therefore, the entire Recibo must be annulled
                     for (Remesa remesaQueEnSuDetalleContieneLaFactura : remesaList) {
@@ -374,11 +378,11 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
                             if (detalleRemesa.getFacturaCompra().equals(facturaCompra)) {
                                 detalleRemesa.setObservacion("ANULADO - " + detalleRemesa.getObservacion());
                                 detalleRemesa.setAnulado(true);
-                                remesaQueEnSuDetalleContieneLaFactura.setMontoEntrega(remesaQueEnSuDetalleContieneLaFactura.getMonto() - detalleRemesa.getMontoEntrega());
+                                remesaQueEnSuDetalleContieneLaFactura.setMontoEntrega(remesaQueEnSuDetalleContieneLaFactura.getMonto() - detalleRemesa.getMontoEntrega().doubleValue());
                                 newDetalleCajaMovimiento = new DetalleCajaMovimientos();
                                 newDetalleCajaMovimiento.setCajaMovimientos(cajaMovimientoDestino);
                                 newDetalleCajaMovimiento.setIngreso(true);
-                                newDetalleCajaMovimiento.setMonto(detalleRemesa.getMontoEntrega());
+                                newDetalleCajaMovimiento.setMonto(detalleRemesa.getMontoEntrega().doubleValue());
                                 newDetalleCajaMovimiento.setNumero(facturaCompra.getId());
                                 newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.ANULACION);
                                 newDetalleCajaMovimiento.setDescripcion(JGestionUtils.getNumeracion(facturaCompra)
@@ -477,7 +481,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
         dcm.setUsuario(UsuarioController.getCurrentUser());
         if (dcm.getMovimientoConcepto() == null) {
             //default value
-            dcm.setMovimientoConcepto(MovimientoConceptoJpaController.EFECTIVO);
+            dcm.setMovimientoConcepto(MovimientoConceptoController.EFECTIVO);
         }
         cm.getDetalleCajaMovimientosList().add(dcm);
         create(cm);

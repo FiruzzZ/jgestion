@@ -62,6 +62,9 @@ import utilities.swing.components.NumberRenderer;
  */
 public class Contabilidad {
 
+    /**
+     * #0.0000
+     */
     public static final DecimalFormat PU_FORMAT;
     private JDBalance jdBalanceUI;
     private PanelBalanceGeneral panelBalanceGeneral;
@@ -366,8 +369,7 @@ public class Contabilidad {
                     efectivo = factura.getImporte();
                     totalEfectivo += efectivo;
                 } else if (Valores.FormaPago.CTA_CTE.getId() == factura.getFormaPago()) {
-                    efectivo = null;
-                    entregado = new CtacteProveedorJpaController().findCtacteProveedorByFactura(factura.getId()).getEntregado();
+                    entregado = new CtacteProveedorJpaController().findCtacteProveedorByFactura(factura.getId()).getEntregado().doubleValue();
                     cccpc = (factura.getImporte() - entregado);
                     totalCCPPC += cccpc;
                     efectivo = entregado > 0 ? entregado : null;
@@ -687,7 +689,7 @@ public class Contabilidad {
                 }
                 Reportes r = new Reportes("JGestion_ComprobantesCompras.jasper", "Listado Comprobantes");
                 r.setDataSource(data);
-                r.addEmpresaReport();
+                r.addMembreteParameter();
                 r.addConnection();
                 r.viewReport();
             }

@@ -284,8 +284,7 @@ public class MunicipioJpaController implements ActionListener, MouseListener, Ke
         if (isEditting) {
             cargarPanelABM(municipio);
         }
-        abm = new JDABM(true, contenedor, panel);
-        abm.setTitle("ABM - " + CLASS_NAME + "s");
+        abm = new JDABM(contenedor, "ABM - " + CLASS_NAME + "s", true, panel);
         if (e != null) {
             abm.setLocationRelativeTo((java.awt.Component) e.getSource());
         }

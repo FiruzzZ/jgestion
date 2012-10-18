@@ -1,14 +1,14 @@
 package jpa.controller;
 
 import controller.DAO;
-import entity.Cuentabancaria;
+import entity.enums.CuentaBancaria;
 import javax.persistence.EntityManager;
 
 /**
  *
  * @author FiruzzZ
  */
-public class CuentabancariaJpaController extends AbstractDAO<Cuentabancaria, Integer> {
+public class CuentabancariaJpaController extends AbstractDAO<CuentaBancaria, Integer> {
 
     private EntityManager entityManager;
 

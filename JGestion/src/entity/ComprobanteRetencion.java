@@ -21,12 +21,14 @@ import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 
 /**
+ * Para saber si es una retención de un cliente o hecha por la empresa, ver las
+ * tablas intermedias {@link ReciboPagos} y {@link RemesaPagos}.
  *
  * @author FiruzzZ
  */
 @Entity
 @Table(name = "comprobante_retencion", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"numero"})})
+    @UniqueConstraint(columnNames = {"propio", "numero"})})
 @NamedQueries({
     @NamedQuery(name = "ComprobanteRetencion.findAll", query = "SELECT c FROM ComprobanteRetencion c")})
 public class ComprobanteRetencion implements Serializable {
@@ -47,6 +49,12 @@ public class ComprobanteRetencion implements Serializable {
     @Basic(optional = false)
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal importe;
+    /**
+     * Si el comprobante es emitido por la propia empresa, o la retención
+     * proviene de otro Cliente
+     */
+    @Column(nullable = false)
+    private boolean propio;
 
     public ComprobanteRetencion() {
     }
@@ -55,11 +63,12 @@ public class ComprobanteRetencion implements Serializable {
         this.id = id;
     }
 
-    public ComprobanteRetencion(Integer id, Long numero, Date fecha, BigDecimal importe) {
+    public ComprobanteRetencion(Integer id, Long numero, Date fecha, BigDecimal importe, boolean propia) {
         this.id = id;
         this.numero = numero;
         this.fecha = fecha;
         this.importe = importe;
+        this.propio = propia;
     }
 
     public Integer getId() {
@@ -101,6 +110,14 @@ public class ComprobanteRetencion implements Serializable {
         return hash;
     }
 
+    public boolean isPropio() {
+        return propio;
+    }
+
+    public void setPropio(boolean propio) {
+        this.propio = propio;
+    }
+
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
@@ -116,6 +133,6 @@ public class ComprobanteRetencion implements Serializable {
 
     @Override
     public String toString() {
-        return "ComprobanteRetencion{" + "id=" + id + ", numero=" + numero + ", fecha=" + fecha + ", importe=" + importe + '}';
+        return "ComprobanteRetencion{" + "id=" + id + ", numero=" + numero + ", fecha=" + fecha + ", importe=" + importe + ", propia=" + propio + '}';
     }
 }

@@ -436,12 +436,11 @@ public class UsuarioController implements ActionListener, MouseListener, KeyList
         panel.getCbEstado().addItem(ESTADO_ACTIVO);
         panel.getCbEstado().addItem(ESTADO_BAJA);
 
-        abm = new JDABM(true, contenedor, panel);
+        abm = new JDABM(contenedor, "ABM - " + CLASS_NAME + "s", true,panel);
         if (isEditing) {
             setPanelABM(EL_OBJECT);
             panel.setEnabledPwdFields(false);
         }
-        abm.setTitle("ABM - " + CLASS_NAME + "s");
         abm.setListener(this);
         abm.setVisible(true);
     }

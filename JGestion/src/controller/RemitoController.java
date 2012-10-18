@@ -12,6 +12,7 @@ import javax.persistence.Query;
 import utilities.general.UTIL;
 import gui.JDBuscadorReRe;
 import gui.JFP;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -157,7 +158,6 @@ public class RemitoController implements ActionListener, KeyListener {
         facturaVentaController.initFacturaVenta(owner, modal, this, 3, setVisible, loadDefaultData);
         //implementación del boton Aceptar
         facturaVentaController.getContenedor().getBtnAceptar().addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -166,7 +166,7 @@ public class RemitoController implements ActionListener, KeyListener {
                         createRemito();
                     } else {
                         editRemito(selectedRemito);
-                        
+
                         buscador.setVisible(true);
                     }
                 } catch (MessageException ex) {
@@ -283,7 +283,7 @@ public class RemitoController implements ActionListener, KeyListener {
                     throw new MessageException("Número de Remito no válido, ingrese solo dígitos");
                 }
             }
-            DefaultTableModel dtm = facturaVentaUI.getDTM();
+            DefaultTableModel dtm = facturaVentaUI.getDtm();
             if (dtm.getRowCount() < 1) {
                 throw new MessageException("El Detalle no contiene ningún item.");
             }
@@ -343,7 +343,8 @@ public class RemitoController implements ActionListener, KeyListener {
     }
 
     public void initBuscador(JDialog dialog, boolean modal, boolean setVisible) {
-        buscador = new JDBuscadorReRe(dialog, "Buscador - " + CLASS_NAME, modal, "Cliente", "Nº " + CLASS_NAME);
+        buscador = new JDBuscadorReRe((Window) dialog, "Buscador - " + CLASS_NAME, modal, "Cliente", "Nº " + CLASS_NAME);
+        buscador.hideFormaPago();
         initBuscador(setVisible);
     }
 
@@ -363,7 +364,6 @@ public class RemitoController implements ActionListener, KeyListener {
 
     private void initBuscador(boolean setVisible) {
         buscador.getjTable1().addMouseListener(new java.awt.event.MouseAdapter() {
-
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 if (evt.getClickCount() >= 2) {
@@ -425,7 +425,7 @@ public class RemitoController implements ActionListener, KeyListener {
         jdFacturaVenta.setDcFechaFactura(remito.getFechaRemito());
 
         List<DetalleRemito> lista = remito.getDetalleRemitoList();
-        DefaultTableModel dtm = jdFacturaVenta.getDTM();
+        DefaultTableModel dtm = jdFacturaVenta.getDtm();
         for (DetalleRemito detallesPresupuesto : lista) {
             dtm.addRow(new Object[]{
                         null,
@@ -541,7 +541,8 @@ public class RemitoController implements ActionListener, KeyListener {
      * @param cliente entity {@link Cliente} del cual se van a buscar el Remito
      */
     void initBuscadorToFacturar(JDialog owner, Cliente cliente) {
-        buscador = new JDBuscadorReRe(owner, "Buscador - " + CLASS_NAME, true, "Cliente", "Nº " + CLASS_NAME);
+        buscador = new JDBuscadorReRe((Window) owner, "Buscador - " + CLASS_NAME, true, "Cliente", "Nº " + CLASS_NAME);
+        buscador.hideFormaPago();
         initBuscador(false);
         setToFacturar();
         UTIL.setSelectedItem(buscador.getCbClieProv(), cliente);

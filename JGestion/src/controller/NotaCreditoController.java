@@ -46,8 +46,8 @@ import utilities.swing.components.NumberRenderer;
 public class NotaCreditoController {
 
     private static final Logger LOG = Logger.getLogger(NotaCreditoController.class.getName());
-    private JDFacturaVenta jdFacturaVenta;
     private FacturaVentaController facturaVentaController;
+    private JDFacturaVenta jdFacturaVenta;
     private JDBuscadorReRe buscador;
     private NotaCredito EL_OBJECT;
     private static int OBSERVACION_PROPERTY_LIMIT_LENGHT = 200;
@@ -191,7 +191,7 @@ public class NotaCreditoController {
                 throw new MessageException("La obsevación no puede tener mas de 250 caracteres (tamaño actual=" + observacion.length() + ").");
             }
         }
-        DefaultTableModel dtm = jdFacturaVenta.getDTM();
+        DefaultTableModel dtm = jdFacturaVenta.getDtm();
         if (dtm.getRowCount() < 1) {
             throw new MessageException("No ha agregado ningún item al detalle.");
         } else if (dtm.getRowCount() >= FacturaVentaController.LIMITE_DE_ITEMS) {
@@ -372,9 +372,9 @@ public class NotaCreditoController {
         jdFacturaVenta.setDcFechaFactura(notaCredito.getFechaNotaCredito());
         jdFacturaVenta.getTfObservacion().setText(notaCredito.getObservacion());
         Collection<DetalleNotaCredito> lista = notaCredito.getDetalleNotaCreditoCollection();
-        DefaultTableModel dtm = jdFacturaVenta.getDTM();
+        DefaultTableModel dtm = jdFacturaVenta.getDtm();
         for (DetalleNotaCredito detalle : lista) {
-            Double alicuota = UTIL.getPorcentaje(detalle.getPrecioUnitario(), detalle.getProducto().getIva().getIva());
+            Double alicuota = UTIL.getPorcentaje(detalle.getPrecioUnitario(), Double.valueOf(detalle.getProducto().getIva().getIva()));
             alicuota = Double.valueOf(UTIL.PRECIO_CON_PUNTO.format(alicuota));
             System.out.println(detalle.toString());
             double productoConIVA = detalle.getPrecioUnitario() + alicuota;

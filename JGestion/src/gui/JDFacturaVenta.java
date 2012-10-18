@@ -1110,7 +1110,7 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
         return cbCaja;
     }
 
-    public DefaultTableModel getDTM() {
+    public DefaultTableModel getDtm() {
         return (DefaultTableModel) getjTable1().getModel();
     }
 

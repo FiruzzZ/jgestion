@@ -116,7 +116,6 @@ public class IvaController implements ActionListener {
         cargarTablaIvas(abm.getjTable1(), null);
         abm.setListeners(this);
         abm.getjTable1().addMouseListener(new MouseAdapter() {
-
             @Override
             public void mouseReleased(MouseEvent e) {
                 Integer selectedRow = ((javax.swing.JTable) e.getSource()).getSelectedRow();
@@ -214,7 +213,7 @@ public class IvaController implements ActionListener {
     private void checkConstraints(Iva iva) throws MessageException, PreexistingEntityException, Exception {
         DefaultTableModel dtm = abm.getDTM();
         for (int i = dtm.getRowCount() - 1; i > -1; i--) {
-            if (iva.getIva() == Double.valueOf(dtm.getValueAt(i, 1).toString())) {
+            if (Double.valueOf(iva.getIva()) == Double.valueOf(dtm.getValueAt(i, 1).toString())) {
                 if (iva.getId() != null && (iva.getId() == Integer.valueOf(dtm.getValueAt(i, 0).toString()))) {
                     throw new MessageException("Ya existe un IVA con este porcentaje");
                 }

@@ -98,7 +98,7 @@ public class ReciboJpaController extends AbstractDAO<Recibo, Integer> {
 
     public Recibo find(Sucursal sucursal, Integer numero) {
         try {
-            return getEntityManager().createQuery("SELECT o FROM Recibo o "
+            return getEntityManager().createQuery("SELECT o FROM " + getEntityClass().getSimpleName() + " o "
                     + "WHERE o.sucursal.id=" + sucursal.getId() + " AND o.numero=" + numero, getEntityClass()).getSingleResult();
         } catch (NoResultException e) {
             return null;
@@ -119,26 +119,38 @@ public class ReciboJpaController extends AbstractDAO<Recibo, Integer> {
             entityManager.getTransaction().begin();
         }
         entityManager.persist(recibo);
+        entityManager.getTransaction().commit();
+
+        entityManager.getTransaction().begin();
         List<Object> pagosPost = new ArrayList<Object>(recibo.getPagosEntities().size());
         for (Object object : recibo.getPagosEntities()) {
-            System.out.println(object.toString());
+//            System.out.println(object.toString());
             if (object instanceof ChequePropio) {
                 ChequePropio pago = (ChequePropio) object;
-                pago.setComprobanteIngreso("Recibo " + JGestionUtils.getNumeracion(recibo, true));
+                pago.setComprobanteIngreso(getEntityClass().getSimpleName() + " " + JGestionUtils.getNumeracion(recibo, true));
                 entityManager.merge(pago);
                 pagosPost.add(pago);
             } else if (object instanceof ChequeTerceros) {
                 ChequeTerceros pago = (ChequeTerceros) object;
-                pago.setComprobanteIngreso("Recibo " + JGestionUtils.getNumeracion(recibo, true));
+                pago.setComprobanteIngreso(getEntityClass().getSimpleName() + " " + JGestionUtils.getNumeracion(recibo, true));
                 entityManager.persist(pago);
                 pagosPost.add(pago);
             } else if (object instanceof NotaCredito) {
                 NotaCredito pago = (NotaCredito) object;
                 pago.setDesacreditado(pago.getImporte());
+                pago.setRecibo(recibo);
                 entityManager.merge(object);
                 pagosPost.add(pago);
-            } else {
+            } else if (object instanceof ComprobanteRetencion) {
                 ComprobanteRetencion pago = (ComprobanteRetencion) object;
+                entityManager.persist(pago);
+                pagosPost.add(pago);
+            } else if (object instanceof DetalleCajaMovimientos) {
+                DetalleCajaMovimientos pago = (DetalleCajaMovimientos) object;
+                CajaMovimientos cm = new CajaMovimientosJpaController().findCajaMovimientoAbierta(recibo.getCaja());
+                pago.setCajaMovimientos(cm);
+                pago.setDescripcion(getEntityClass().getSimpleName() + " " + JGestionUtils.getNumeracion(recibo, true));
+                pago.setNumero(Long.valueOf(recibo.getId()));
                 entityManager.persist(pago);
                 pagosPost.add(pago);
             }
@@ -147,7 +159,11 @@ public class ReciboJpaController extends AbstractDAO<Recibo, Integer> {
         entityManager.getTransaction().begin();
         for (Object object : pagosPost) {
             Integer tipo, id;
-            if (object instanceof ChequePropio) {
+            if (object instanceof DetalleCajaMovimientos) {
+                DetalleCajaMovimientos pago = (DetalleCajaMovimientos) object;
+                tipo = 0;
+                id = pago.getId();
+            } else if (object instanceof ChequePropio) {
                 ChequePropio pago = (ChequePropio) object;
                 tipo = 1;
                 id = pago.getId();
@@ -165,7 +181,6 @@ public class ReciboJpaController extends AbstractDAO<Recibo, Integer> {
                 id = pago.getId();
             }
 
-            System.out.println(tipo + ", " + id + ", " + recibo.getId());
             ReciboPagos rp = new ReciboPagos(null, tipo, id, recibo);
             entityManager.persist(rp);
         }

@@ -12,6 +12,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import utilities.gui.SwingUtil;
 
 /**
  *
@@ -78,7 +79,11 @@ public class PanelABMCheques extends javax.swing.JPanel {
         labelNcuenta = new javax.swing.JLabel();
         bAddCuentaBancaria = new javax.swing.JButton();
 
+        dcCobro.setMinSelectableDate(new java.util.Date(-2177433676000L));
+
         jLabel5.setText("Fecha de Cobro");
+
+        dcCheque.setMinSelectableDate(new java.util.Date(-2177433676000L));
 
         jLabel4.setText("Fecha de emisión");
 
@@ -95,10 +100,20 @@ public class PanelABMCheques extends javax.swing.JPanel {
         jLabel1.setText("N° de Cheque");
 
         tfNumero.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        tfNumero.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                tfNumeroKeyTyped(evt);
+            }
+        });
 
         jLabel7.setText("Importe");
 
         tfImporte.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        tfImporte.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                tfImporteKeyTyped(evt);
+            }
+        });
 
         labelLibrado.setText("Librado");
 
@@ -274,6 +289,14 @@ private void checkEndosadoStateChanged(javax.swing.event.ChangeEvent evt) {//GEN
     }
 }//GEN-LAST:event_checkEndosadoStateChanged
 
+    private void tfImporteKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfImporteKeyTyped
+        SwingUtil.checkInputDigit(evt, true, 12);
+    }//GEN-LAST:event_tfImporteKeyTyped
+
+    private void tfNumeroKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfNumeroKeyTyped
+        SwingUtil.checkInputDigit(evt, false, 8);
+    }//GEN-LAST:event_tfNumeroKeyTyped
+
     public JLabel getLabelEstado() {
         return labelEstado;
     }
@@ -308,6 +331,10 @@ private void checkEndosadoStateChanged(javax.swing.event.ChangeEvent evt) {//GEN
 
     public JComboBox getCbBancoSucursales() {
         return cbBancoSucursales;
+    }
+
+    public JComboBox getCbCuentaBancaria() {
+        return cbCuentaBancaria;
     }
 
     public JCheckBox getCheckCruzado() {
@@ -386,14 +413,14 @@ private void checkEndosadoStateChanged(javax.swing.event.ChangeEvent evt) {//GEN
         labelSucursal.setVisible(false);
         cbBancoSucursales.setVisible(false);
         bAddSucursal.setVisible(false);
-        labelNcuenta.setVisible(false);
-        cbCuentaBancaria.setVisible(false);
-        bAddCuentaBancaria.setVisible(false);
+//        labelNcuenta.setVisible(false);
+//        cbCuentaBancaria.setVisible(false);
+//        bAddCuentaBancaria.setVisible(false);
         labelLibrado.setVisible(false);
         cbLibrado.setVisible(false);
         labelEstado.setVisible(false);
         cbChequeEstados.setVisible(false);
-        tercero = true;
+        tercero = false;
     }
 
     public boolean isTercero() {
@@ -437,5 +464,9 @@ private void checkEndosadoStateChanged(javax.swing.event.ChangeEvent evt) {//GEN
 
     public boolean persist() {
         return persistible;
+    }
+
+    public void setPersistible(boolean persistible) {
+        this.persistible = persistible;
     }
 }

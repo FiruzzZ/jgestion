@@ -253,8 +253,15 @@ public abstract class Cheque implements Serializable {
         this.comprobanteIngreso = comprobanteIngreso;
     }
 
+    /**
+     *
+     * @param obj
+     * @return {@code true} if {@link #numero} are not null and equals and
+     * {@link #banco} are not null and equals.
+     */
     @Override
     public boolean equals(Object obj) {
+        System.out.println(getClass() + ".equals()");
         if (obj == null) {
             return false;
         }
@@ -262,7 +269,10 @@ public abstract class Cheque implements Serializable {
             return false;
         }
         final Cheque other = (Cheque) obj;
-        if (this.numero != other.numero && (this.numero == null || !this.numero.equals(other.numero))) {
+        if (this.numero == null || other.numero == null || (this.numero != other.numero)) {
+            return false;
+        }
+        if (this.banco == null || other.banco == null || !this.banco.equals(other.banco)) {
             return false;
         }
         return true;
@@ -277,6 +287,6 @@ public abstract class Cheque implements Serializable {
 
     @Override
     public String toString() {
-        return "Cheque{" + "numero=" + numero + ", banco=" + banco.getId() + ", bancoSucursal=" + bancoSucursal + ", importe=" + importe + ", fechaCheque=" + fechaCheque + ", cruzado=" + cruzado + ", observacion=" + observacion + ", fechaCobro=" + fechaCobro + ", fechaCreacion=" + fechaCreacion + ", estado=" + estado + ", chequeEstado=" + chequeEstado + ", endosatario=" + endosatario + ", fechaEndoso=" + fechaEndoso + ", usuario=" + usuario + ", librado=" + librado + ", ingreso=" + comprobanteIngreso + ", egreso=" + comprobanteEgreso + ", version=" + version + '}';
+        return "Cheque{" + "numero=" + numero + ", banco=" + banco.getId() + ", bancoSucursal=" + bancoSucursal + ", importe=" + importe + ", fechaCheque=" + fechaCheque + ", cruzado=" + cruzado + ", observacion=" + observacion + ", fechaCobro=" + fechaCobro + ", fechaCreacion=" + fechaCreacion + ", estado=" + estado + ", chequeEstado=" + chequeEstado + ", endosatario=" + endosatario + ", fechaEndoso=" + fechaEndoso + ", usuario=" + usuario + ", librado=" + librado + ", comprobanteIngreso=" + comprobanteIngreso + ", comprobanteEgreso=" + comprobanteEgreso + ", version=" + version + '}';
     }
 }

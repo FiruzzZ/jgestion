@@ -18,6 +18,7 @@ import javax.persistence.NoResultException;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+import jgestion.JGestionUtils;
 import jpa.controller.ProductoJpaController;
 import net.atlanticbb.tantlinger.shef.HTMLEditorPane;
 import net.sf.jasperreports.engine.JRException;
@@ -190,18 +191,17 @@ public class ProductoController implements ActionListener, KeyListener {
             }
         });
         UTIL.loadComboBox(panel.getCbIVA(), new IvaController().findIvaEntities(), false);
-        UTIL.loadComboBox(panel.getCbMarcas(), new MarcaJpaController().findMarcaEntities(), false);
+        UTIL.loadComboBox(panel.getCbMarcas(), JGestionUtils.getWrappedMarcas(new MarcaJpaController().findMarcaEntities()), false);
         UTIL.loadComboBox(panel.getCbMedicion(), new UnidadmedidaJpaController().findUnidadmedidaEntities(), false);
         UTIL.loadComboBox(panel.getCbRubro(), new RubroJpaController().findRubros(), false);
         UTIL.loadComboBox(panel.getCbSubRubro(), new RubroJpaController().findRubros(), true);
 
-        abm = new JDABM(true, contenedor, panel);
+        abm = new JDABM(contenedor, "ABM - " + CLASS_NAME + "s", true, panel);
         if (isEditing) {
             setPanelABM(EL_OBJECT);
         } else {
             fotoFile = null;
         }
-        abm.setTitle("ABM - " + CLASS_NAME + "s");
         abm.setLocationRelativeTo(contenedor);
         abm.setListener(this);
         abm.setVisible(true);
@@ -295,6 +295,7 @@ public class ProductoController implements ActionListener, KeyListener {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void setEntity() throws MessageException, IOException, Exception {
         if (EL_OBJECT == null) {
             EL_OBJECT = new Producto();
@@ -338,7 +339,7 @@ public class ProductoController implements ActionListener, KeyListener {
             throw new MessageException("monto de Precio no válido");
         }
         try {
-            EL_OBJECT.setMarca((Marca) panel.getCbMarcas().getSelectedItem());
+            EL_OBJECT.setMarca(((ComboBoxWrapper<Marca>) panel.getCbMarcas().getSelectedItem()).getEntity());
         } catch (ClassCastException ex) {
             throw new MessageException("Debe especificar una Marca");
         }
@@ -694,11 +695,11 @@ public class ProductoController implements ActionListener, KeyListener {
 
     public void initMovimientoProducto(JFrame frame, boolean modal) {
         panelito = new PanelBuscadorMovimientosPro();
-        UTIL.loadComboBox(panelito.getCbMarcas(), new MarcaJpaController().findMarcaEntities(), true);
+        UTIL.loadComboBox(panelito.getCbMarcas(), JGestionUtils.getWrappedMarcas(new MarcaJpaController().findMarcaEntities()), true);
         UTIL.loadComboBox(panelito.getCbRubros(), new RubroJpaController().findRubros(), true);
         UTIL.loadComboBox(panelito.getCbSubRubros(), new RubroJpaController().findRubros(), true);
         UTIL.loadComboBox(panelito.getCbSucursales(), new UsuarioHelper().getSucursales(), true);
-        buscador = new JDBuscador(frame, modal, panelito, "Movimientos de productos");
+        buscador = new JDBuscador(frame, "Movimientos de productos", modal, panelito);
         buscador.agrandar(200, 0);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
@@ -822,7 +823,7 @@ public class ProductoController implements ActionListener, KeyListener {
             sb.append(" AND p.nombre ILIKE '").append(panelito.getTfNombre().getText().trim()).append("%'");
         }
         if (panelito.getCbMarcas().getSelectedIndex() > 0) {
-            sb.append(" AND p.marca = ").append(((Marca) panelito.getCbMarcas().getSelectedItem()).getId());
+            sb.append(" AND p.marca = ").append(((ComboBoxWrapper<Marca>) panelito.getCbMarcas().getSelectedItem()).getId());
         }
         if (panelito.getCbRubros().getSelectedIndex() > 0) {
             sb.append(" AND p.rubro = ").append(((Rubro) panelito.getCbRubros().getSelectedItem()).getIdrubro());
@@ -872,8 +873,8 @@ public class ProductoController implements ActionListener, KeyListener {
 
     public void initListadoProducto(JFrame owner) {
         panelProductoListados = new PanelProductoListados();
-        buscador = new JDBuscador(owner, false, panelProductoListados, "Productos - Listados");
-        UTIL.loadComboBox(panelProductoListados.getCbMarcas(), new MarcaJpaController().findMarcaEntities(), "<Todas>");
+        buscador = new JDBuscador(owner, "Productos - Listados", false, panelProductoListados);
+        UTIL.loadComboBox(panelProductoListados.getCbMarcas(),JGestionUtils.getWrappedMarcas(new MarcaJpaController().findMarcaEntities()), "<Todas>");
         UTIL.loadComboBox(panelProductoListados.getCbRubros(), new RubroJpaController().findRubros(), "<Todos>");
         UTIL.loadComboBox(panelProductoListados.getCbSubRubros(), new RubroJpaController().findRubros(), "<Todos>");
         UTIL.getDefaultTableModel(
@@ -915,7 +916,7 @@ public class ProductoController implements ActionListener, KeyListener {
                 + " WHERE p.id IS NOT NULL";
 
         if (panelProductoListados.getCbMarcas().getSelectedIndex() > 0) {
-            query += " AND p.marca = " + ((Marca) panelProductoListados.getCbMarcas().getSelectedItem()).getId();
+            query += " AND p.marca = " + ((ComboBoxWrapper<?>) panelProductoListados.getCbMarcas().getSelectedItem()).getId();
         }
 
         if (panelProductoListados.getCbRubros().getSelectedIndex() > 0) {

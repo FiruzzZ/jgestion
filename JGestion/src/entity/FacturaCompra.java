@@ -33,7 +33,7 @@ public class FacturaCompra implements Serializable {
     @Column(name = "tipo", nullable = false)
     private char tipo;
     @Basic(optional = false)
-    @Column(name = "importe", nullable = false)
+    @Column(name = "importe", nullable = false, precision = 12, scale = 2)
     private double importe;
     @Basic(optional = false)
     @Column(name = "fecha_compra", nullable = false)
@@ -64,13 +64,13 @@ public class FacturaCompra implements Serializable {
     @Column(name = "perc_iva", nullable = false)
     private double percIva;
     @Basic(optional = false)
-    @Column(name = "perc_dgr", nullable = false)
+    @Column(name = "perc_dgr", nullable = false, precision = 12, scale = 2)
     private double percDgr;
     @Basic(optional = false)
-    @Column(name = "iva10", nullable = false)
+    @Column(name = "iva10", nullable = false, precision = 12, scale = 2)
     private double iva10;
     @Basic(optional = false)
-    @Column(name = "iva21", nullable = false)
+    @Column(name = "iva21", nullable = false, precision = 12, scale = 2)
     private double iva21;
     @Basic(optional = false)
     @Column(nullable = false, precision = 12, scale = 2)
@@ -377,8 +377,8 @@ public class FacturaCompra implements Serializable {
                 + ", percIva=" + percIva + ", percDgr=" + percDgr + ", iva10=" + iva10 + ", iva21=" + iva21 + ", imp. Recuperable=" + impuestosRecuperables
                 + ", imp. No Recuperable=" + impuestosNoRecuperables
                 + ", movimientoInterno=" + movimientoInterno + ", diasCtaCte=" + diasCtaCte
-                + ", proveedor=" + proveedor.getId() + ", sucursal=" + sucursal.getId()
-                + ", usuario=" + usuario.getId() + ", caja=" + caja.getId() + ", anulada=" + anulada
+                + ", proveedor=" + proveedor.getId() + ", sucursal=" + (sucursal == null ? null : sucursal.getId()) 
+                + ", usuario=" + (usuario == null ? null : usuario.getId()) + ", caja=" + (caja == null ? null : caja.getId()) + ", anulada=" + anulada
                 + '}';
     }
 }

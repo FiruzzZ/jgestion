@@ -6,6 +6,7 @@ import gui.JDSystemMessages;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import javax.persistence.*;
@@ -402,7 +403,7 @@ public abstract class DAO implements Runnable {
             }// </editor-fold>
 
             // <editor-fold defaultstate="collapsed" desc="MovimientoConcepto.EFECTIVO">
-            if (em.createQuery("SELECT COUNT(o) FROM " + MovimientoConceptoJpaController.CLASS_NAME + " o").getSingleResult().toString().equalsIgnoreCase("0")) {
+            if (em.createQuery("SELECT COUNT(o) FROM " + MovimientoConceptoController.CLASS_NAME + " o").getSingleResult().toString().equalsIgnoreCase("0")) {
                 System.out.println("Creando MovimientoConcepto..");
                 MovimientoConcepto o = new MovimientoConcepto();
                 o.setId(1);
@@ -493,5 +494,9 @@ public abstract class DAO implements Runnable {
         List<T> l = new ArrayList<T>();
         return l;
 
+    }
+
+    public static Date getDateFromDB() {
+        return (Date) getEntityManager().createNativeQuery("SELECT CURRENT_TIMESTAMP").getSingleResult();
     }
 }

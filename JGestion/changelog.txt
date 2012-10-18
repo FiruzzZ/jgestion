@@ -1,11 +1,80 @@
+ALTER TABLE nota_credito ADD COLUMN recibo integer;
+ALTER TABLE nota_credito ADD FOREIGN KEY (recibo) REFERENCES recibo (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE ctacte_proveedor ALTER entregado TYPE numeric(12,2);
+ALTER TABLE ctacte_proveedor ALTER importe TYPE numeric(12,2);
+ALTER TABLE ctacte_cliente ALTER entregado TYPE numeric(12,2);
+ALTER TABLE ctacte_cliente ALTER importe TYPE numeric(12,2);
+ALTER TABLE detalle_remesa ADD UNIQUE (remesa, factura_compra);
+ALTER TABLE detalle_recibo ADD UNIQUE (recibo, factura_venta);
+2012/10/14
+ALTER TABLE cheque_propio ADD COLUMN cuentabancaria_id integer NOT NULL;
+ALTER TABLE cheque_propio ADD FOREIGN KEY (cuentabancaria_id) REFERENCES cuentabancaria (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE comprobante_retencion DROP CONSTRAINT unq_comprobante_retencion_0;
+ALTER TABLE comprobante_retencion ADD COLUMN propio boolean NOT NULL DEFAULT false;
+ALTER TABLE comprobante_retencion ADD UNIQUE (numero, propio);
+ALTER TABLE comprobante_retencion ALTER COLUMN propio DROP DEFAULT;
+ALTER TABLE remesa DROP CONSTRAINT remesa_unique_añofiajwñoefijawo;
+ALTER TABLE remesa ADD UNIQUE (sucursal, numero);
+2012/10/10
+ALTER TABLE iva ALTER iva TYPE numeric(5,2);
+ALTER TABLE nota_credito DROP CONSTRAINT unq_nota_credito_0;
+ALTER TABLE nota_credito ADD UNIQUE (sucursal, numero);
+CREATE TABLE nota_credito_proveedor (
+  id serial NOT NULL,
+  anulada boolean NOT NULL,
+  desacreditado numeric(12,2) NOT NULL,
+  fecha_carga timestamp with time zone NOT NULL DEFAULT now(),
+  fecha_nota_credito_proveedor date NOT NULL,
+  gravado numeric(12,2) NOT NULL,
+  importe numeric(12,2) NOT NULL,
+  impuestos_recuperables numeric(12,2) NOT NULL,
+  iva10 numeric(12,2) NOT NULL,
+  iva21 numeric(12,2) NOT NULL,
+  no_gravado numeric(12,2) NOT NULL,
+  numero bigint NOT NULL,
+  observacion character varying(250),
+  proveedor integer NOT NULL,
+  usuario integer NOT NULL,
+  remesa integer,
+  PRIMARY KEY (id),
+  FOREIGN KEY (proveedor) REFERENCES proveedor (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION,
+  FOREIGN KEY (usuario) REFERENCES usuario (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION,
+  FOREIGN KEY (remesa) REFERENCES remesa (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION,
+  UNIQUE (proveedor, numero)
+)
+WITH ( OIDS=FALSE );
+
+CREATE TABLE detalle_nota_credito_proveedor (
+  id serial NOT NULL,
+  cantidad integer NOT NULL,
+  precio_unitario numeric(12,4) NOT NULL,
+  nota_credito_proveedor integer NOT NULL,
+  producto integer NOT NULL,
+  CONSTRAINT detalle_nota_credito_proveedor_pkey PRIMARY KEY (id),
+  CONSTRAINT fk_detalle_nota_credito_proveedor_nota_credito_proveedor FOREIGN KEY (nota_credito_proveedor)
+      REFERENCES nota_credito_proveedor (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT fk_detalle_nota_credito_proveedor_producto FOREIGN KEY (producto)
+      REFERENCES producto (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH ( OIDS=FALSE );
 2012/10/08
+CREATE TABLE remesa_pagos (
+   id serial NOT NULL, 
+   comprobante_id integer NOT NULL, 
+   forma_pago integer NOT NULL, 
+   remesa_id integer NOT NULL, 
+    PRIMARY KEY (id), 
+    FOREIGN KEY (remesa_id) REFERENCES remesa (id) ON UPDATE NO ACTION ON DELETE NO ACTION
+) WITH (  OIDS = FALSE);
+COMMENT ON COLUMN remesa_pagos.forma_pago IS '0=Efectivo, 1=Cheque Propio, 2=Cheque Tercero, 3=Nota de Crédito, 4=Retención';
 CREATE TABLE cheque_estado (
   id integer NOT NULL,
   nombre character varying(25) NOT NULL,
   CONSTRAINT cheque_estado_pkey PRIMARY KEY (id),
   CONSTRAINT cheque_estado_nombre_key UNIQUE (nombre)
-)
-WITH (  OIDS=FALSE);
+) WITH (  OIDS=FALSE);
 2012/09/23
 ALTER TABLE recibo ALTER COLUMN retencion SET DEFAULT 0;
 ALTER TABLE banco ADD COLUMN webpage character varying(100);
@@ -19,10 +88,7 @@ CREATE TABLE recibo_pagos (
   CONSTRAINT fk_recibo_pagos_recibo_id FOREIGN KEY (recibo_id)
       REFERENCES recibo (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION
-)
-WITH (
-  OIDS=FALSE
-);
+) WITH (  OIDS=FALSE);
 COMMENT ON COLUMN recibo_pagos.forma_pago IS '0=Efectivo, 1=Cheque Propio, 2=Cheque Tercero, 3=Nota de Crédito, 4=Retención';
 
 CREATE TABLE comprobante_retencion (
@@ -32,8 +98,7 @@ CREATE TABLE comprobante_retencion (
   numero bigint NOT NULL,
   CONSTRAINT comprobante_retencion_pkey PRIMARY KEY (id),
   CONSTRAINT unq_comprobante_retencion_0 UNIQUE (numero)
-)
-WITH (  OIDS=FALSE);
+) WITH (  OIDS=FALSE);
 CREATE TABLE cuentabancaria(
   id serial NOT NULL,
   activa boolean NOT NULL,

@@ -172,7 +172,7 @@ public class Reportes implements Runnable {
         LOG.trace("Finished Thread Reportes..");
     }
 
-    private synchronized void doReport() throws PrinterException {
+    private synchronized void doReport() throws PrinterException, JRException {
         LOG.trace("Running doReport()..");
         JasperPrint jPrint;
         try {
@@ -193,10 +193,10 @@ public class Reportes implements Runnable {
                 JasperPrintManager.printReport(jPrint, withPrintDialog);
             }
         } catch (JRException ex) {
-            if (ex.getCause().getClass().equals(PrinterException.class)) {
+            if (ex.getCause() != null && ex.getCause().getClass().equals(PrinterException.class)) {
                 throw new PrinterException("Impresora no disponible\n" + ex.getMessage());
             } else {
-                LOG.error("Se pudrió todo con el reporte", ex);
+                throw ex;
             }
         } finally {
             if (jd.isVisible()) {
@@ -210,7 +210,7 @@ public class Reportes implements Runnable {
         return reporteFinalizado;
     }
 
-    void addEmpresaReport() {
+    void addMembreteParameter() {
         parameters.put("SUBREPORT_DIR", FOLDER_REPORTES);
     }
 

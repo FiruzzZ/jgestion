@@ -235,7 +235,7 @@ public class PresupuestoController implements ActionListener, KeyListener {
                 throw new MessageException("Fecha de factura no válida");
             }
 
-            javax.swing.table.DefaultTableModel dtm = jdFacturaVenta.getDTM();
+            javax.swing.table.DefaultTableModel dtm = jdFacturaVenta.getDtm();
             if (dtm.getRowCount() < 1) {
                 throw new MessageException(CLASS_NAME + " debe tener al menos un item.");
             }
@@ -419,9 +419,9 @@ public class PresupuestoController implements ActionListener, KeyListener {
         }
         jdFacturaVenta.setTfNumMovimiento(String.valueOf(presupuesto.getId()));
         List<DetallePresupuesto> lista = presupuesto.getDetallePresupuestoList();
-        javax.swing.table.DefaultTableModel dtm = jdFacturaVenta.getDTM();
+        javax.swing.table.DefaultTableModel dtm = jdFacturaVenta.getDtm();
         for (DetallePresupuesto detallesPresupuesto : lista) {
-            double productoConIVA = detallesPresupuesto.getPrecioUnitario() + UTIL.getPorcentaje(detallesPresupuesto.getPrecioUnitario(), detallesPresupuesto.getProducto().getIva().getIva());
+            double productoConIVA = detallesPresupuesto.getPrecioUnitario() + UTIL.getPorcentaje(detallesPresupuesto.getPrecioUnitario(), Double.valueOf(detallesPresupuesto.getProducto().getIva().getIva()));
 //         "IVA","Cód. Producto","Producto","Cantidad","P. Unitario","P. final","Desc","Sub total"
             dtm.addRow(new Object[]{
                         null,

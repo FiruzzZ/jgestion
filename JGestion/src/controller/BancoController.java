@@ -6,7 +6,7 @@ import controller.exceptions.MessageException;
 import controller.exceptions.NonexistentEntityException;
 import entity.Banco;
 import entity.BancoSucursal;
-import entity.Cuentabancaria;
+import entity.enums.CuentaBancaria;
 import gui.JDABM;
 import gui.JDContenedor;
 import gui.PanelABMBancoSucursales;
@@ -309,7 +309,7 @@ public class BancoController {
     private JDialog settingABM(JDialog parent, boolean isEditing) {
         panelABM = new PanelABMBancoSucursales();
         panelABM.hideFieldsSucursal();
-        abm = new JDABM(true, parent, panelABM);
+        abm = new JDABM(parent, "ABM - " + CLASS_NAME, true, panelABM);
         if (isEditing) {
             setPanelABM(EL_OBJECT);
         }
@@ -348,7 +348,6 @@ public class BancoController {
                 abm.dispose();
             }
         });
-        abm.setTitle("ABM - " + CLASS_NAME);
         return abm;
     }
 
@@ -404,6 +403,6 @@ public class BancoController {
 
     @SuppressWarnings("unchecked")
     public List<Banco> findWithCuentasBancarias() {
-        return DAO.getEntityManager().createQuery("SELECT o.banco FROM " + Cuentabancaria.class.getSimpleName() + " o").getResultList();
+        return DAO.getEntityManager().createQuery("SELECT o.banco FROM " + CuentaBancaria.class.getSimpleName() + " o").getResultList();
     }
 }

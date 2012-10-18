@@ -88,10 +88,12 @@ public class Recibo implements Serializable {
         this.monto = monto;
     }
 
+    @Deprecated
     public BigDecimal getRetencion() {
         return retencion;
     }
 
+    @Deprecated
     public void setRetencion(BigDecimal retencion) {
         this.retencion = retencion;
     }

@@ -346,8 +346,7 @@ public class DepartamentoController implements ActionListener, MouseListener, Ke
         if (isEditting) {
             setPanel(entity);
         }
-        abm = new JDABM(true, contenedor, panel);
-        abm.setTitle((isEditting ? "Editando" : "Nuevo") + " Departamento");
+        abm = new JDABM(contenedor, (isEditting ? "Editando" : "Nuevo") + " Departamento", true, panel);
         if (e != null) {
             abm.setLocationRelativeTo((java.awt.Component) e.getSource());
         }

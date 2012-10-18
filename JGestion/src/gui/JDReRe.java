@@ -101,7 +101,27 @@ public class JDReRe extends javax.swing.JDialog {
         setTitle("setear título!");
         setResizable(false);
 
+        tableAPagar.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Object", "Factura", "Observación", "Importe"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, true, true
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jScrollPane1.setViewportView(tableAPagar);
+        tableAPagar.getColumnModel().getColumn(0).setResizable(false);
+        tableAPagar.getColumnModel().getColumn(1).setResizable(false);
+        tableAPagar.getColumnModel().getColumn(2).setResizable(false);
+        tableAPagar.getColumnModel().getColumn(3).setResizable(false);
 
         bImprimir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px-Crystal_Clear_action_fileprint.png"))); // NOI18N
         bImprimir.setMnemonic('i');
@@ -118,7 +138,7 @@ public class JDReRe extends javax.swing.JDialog {
         bCancelar.setText("Cancelar");
         bCancelar.setName("cancelar"); // NOI18N
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Datos", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, null, new java.awt.Color(0, 0, 0)));
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Datos"));
 
         tfCuarto.setEditable(false);
         tfCuarto.setColumns(4);
@@ -224,7 +244,7 @@ public class JDReRe extends javax.swing.JDialog {
                 .addComponent(labelRestanteCreditoDebito)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(tfCreditoDebitoRestante, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(30, Short.MAX_VALUE))
+                .addContainerGap(28, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -264,7 +284,7 @@ public class JDReRe extends javax.swing.JDialog {
         bAnular.setName("anular"); // NOI18N
         bAnular.setRequestFocusEnabled(false);
 
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Detalle a Pagar", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, null, new java.awt.Color(0, 0, 0)));
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Detalle a Pagar"));
 
         jLabel8.setText("Entrega");
 
@@ -304,7 +324,6 @@ public class JDReRe extends javax.swing.JDialog {
         tfPagado.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         tfPagado.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         tfPagado.setText("0");
-        tfPagado.setToolTipText("");
         tfPagado.setFocusable(false);
         tfPagado.setRequestFocusEnabled(false);
 
@@ -397,7 +416,7 @@ public class JDReRe extends javax.swing.JDialog {
         );
 
         tfTotalAPagar.setEditable(false);
-        tfTotalAPagar.setColumns(6);
+        tfTotalAPagar.setColumns(10);
         tfTotalAPagar.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         tfTotalAPagar.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         tfTotalAPagar.setText("0");
@@ -409,6 +428,7 @@ public class JDReRe extends javax.swing.JDialog {
         checkOcultarDatos.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         checkOcultarDatos.setMnemonic('o');
         checkOcultarDatos.setText("Ocultar Datos");
+        checkOcultarDatos.setFocusable(false);
         checkOcultarDatos.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
         checkOcultarDatos.setMargin(new java.awt.Insets(1, 1, 1, 1));
         checkOcultarDatos.setRequestFocusEnabled(false);
@@ -441,7 +461,7 @@ public class JDReRe extends javax.swing.JDialog {
                 .addComponent(btnAddPago, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnDelPago, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(43, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -491,7 +511,7 @@ public class JDReRe extends javax.swing.JDialog {
         jLabel12.setText("Total");
 
         tfTotalPagado.setEditable(false);
-        tfTotalPagado.setColumns(6);
+        tfTotalPagado.setColumns(10);
         tfTotalPagado.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         tfTotalPagado.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         tfTotalPagado.setText("0");
@@ -504,7 +524,7 @@ public class JDReRe extends javax.swing.JDialog {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addGroup(layout.createSequentialGroup()
@@ -512,18 +532,17 @@ public class JDReRe extends javax.swing.JDialog {
                                 .addComponent(jLabel1)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(tfTotalAPagar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(jLabel12)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(tfTotalPagado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 397, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 395, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel12)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(tfTotalPagado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(bAnular)
                         .addGap(329, 329, 329)
@@ -532,7 +551,8 @@ public class JDReRe extends javax.swing.JDialog {
                         .addComponent(bAceptar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(bCancelar))
-                    .addComponent(checkOcultarDatos))
+                    .addComponent(checkOcultarDatos)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -542,13 +562,13 @@ public class JDReRe extends javax.swing.JDialog {
                 .addComponent(checkOcultarDatos)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(8, 8, 8)
+                .addGap(0, 0, 0)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -867,9 +887,13 @@ private void tfEntregaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:even
         labelCreditoDebito.setText("Débito");
         btnDetalleCreditoDebito.setToolTipText("Ver detalle de débito");
         labelRestanteCreditoDebito.setText("Débito restante");
-        labelReRe.setVisible(false);
-        tfCuarto.setVisible(false);
-        tfOcteto.setVisible(false);
+//        labelReRe.setVisible(false);
+        tfCuarto.setText(null);
+        tfCuarto.setFocusable(false);
+        tfCuarto.setRequestFocusEnabled(false);
+        tfOcteto.setText(null);
+        tfOcteto.setFocusable(false);
+        tfOcteto.setRequestFocusEnabled(false);
     }
 
     public void setTfOctetoEditable(boolean b) {
@@ -883,21 +907,28 @@ private void tfEntregaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:even
         return (DefaultTableModel) tablePagos.getModel();
     }
 
-    public void displayABMEfectivo() {
-        String monto = JOptionPane.showInputDialog("Ingrese el monton en efectivo:", BigDecimal.ZERO);
-        if (monto != null && !monto.isEmpty()) {
-            try {
-                DefaultTableModel dtm = getDtmPagos();
-                for (int row = 0; row < dtm.getRowCount(); row++) {
-                    if (dtm.getValueAt(row, 1).toString().equalsIgnoreCase("EF")) {
-                        JOptionPane.showMessageDialog(this, "Ya existe un pago en Efectivo en el detalle", "Error", JOptionPane.WARNING_MESSAGE);
-                        return;
-                    }
-                }
-                dtm.addRow(new Object[]{null, "EF", "Efectivo", new BigDecimal(monto)});
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, "Monto no válido, ingrese solo números y utilicé el punto como separador decimal.");
+    public BigDecimal displayABMEfectivo() {
+        DefaultTableModel dtm = getDtmPagos();
+        for (int row = 0; row < dtm.getRowCount(); row++) {
+            if (dtm.getValueAt(row, 1).toString().equalsIgnoreCase("EF")) {
+                JOptionPane.showMessageDialog(this, "Ya existe un pago en Efectivo en el detalle", "Error", JOptionPane.WARNING_MESSAGE);
+                return null;
             }
         }
+        String monto = JOptionPane.showInputDialog(this, "Ingrese el monton en efectivo:", BigDecimal.ZERO);
+        if (monto != null && !monto.isEmpty()) {
+            try {
+                monto = UTIL.PRECIO_CON_PUNTO.format(Double.valueOf(monto));
+                if (new BigDecimal(monto).compareTo(BigDecimal.ZERO) != 1) {
+                    throw new Exception();
+                }
+                return new BigDecimal(monto);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Monto no válido, ingrese solo números y utilicé el punto como separador decimal.");
+                //recursive method..
+                return displayABMEfectivo();
+            }
+        }
+        return null;
     }
 }

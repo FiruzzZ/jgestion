@@ -100,7 +100,7 @@ public class Producto implements Serializable {
     @ManyToOne(optional = false, fetch = FetchType.EAGER, cascade = {CascadeType.REFRESH, CascadeType.DETACH})
     private Iva iva;
     @JoinColumn(name = "marca", referencedColumnName = "id", nullable = false)
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER, cascade = {CascadeType.REFRESH})
     private Marca marca;
     @JoinColumn(name = "rubro", referencedColumnName = "idrubro", nullable = false)
     @ManyToOne(optional = false)

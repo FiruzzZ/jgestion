@@ -215,8 +215,7 @@ public class ListaPreciosJpaController implements ActionListener, MouseListener,
       }
 
       cargarRubros();
-      abm = new JDABM(true, contenedor, panel);
-      abm.setTitle("ABM " + CLASS_NAME);
+      abm = new JDABM(contenedor, "ABM " + CLASS_NAME, true, panel);
       if (e != null) {
          abm.setLocation(((java.awt.Component) e.getSource()).getLocation());
       }

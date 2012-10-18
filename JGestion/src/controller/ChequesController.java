@@ -1,19 +1,32 @@
 package controller;
 
+import controller.exceptions.MessageException;
+import entity.Cheque;
 import entity.enums.ChequeEstado;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
 import javax.persistence.EntityManager;
+import javax.swing.table.DefaultTableModel;
 import org.apache.log4j.Logger;
-import org.postgresql.util.PSQLException;
 
 /**
  *
  * @author Administrador
  */
 public class ChequesController {
+
+    static void checkUniquenessOnTable(DefaultTableModel dtm, Cheque cheque) throws MessageException {
+        for (int row = 0; row < dtm.getRowCount(); row++) {
+            Object obj = dtm.getValueAt(row, 0);
+            if (obj instanceof Cheque) {
+                Cheque old = (Cheque) obj;
+//                if (old.equals(cheque)) {
+                if (old.getNumero() == cheque.getNumero() && old.getBanco().equals(cheque.getBanco())) {
+                    throw new MessageException("Ya se agrego el Cheque N°" + old.getNumero() + " del Banco " + old.getBanco().getNombre());
+                }
+            }
+        }
+    }
 
     public ChequesController() throws SQLException {
         checkDefaultData();
@@ -44,7 +57,6 @@ public class ChequesController {
             con.commit();
         }
     }
-    
     private static final String DDL_SQL_ENTITY = "CREATE TABLE cheque_estado ("
             + "id integer NOT NULL,"
             + "nombre character varying(20) NOT NULL,"

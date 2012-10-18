@@ -1,5 +1,6 @@
 package entity;
 
+import entity.enums.CuentaBancaria;
 import entity.enums.ChequeEstado;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -29,13 +30,17 @@ public class ChequePropio extends Cheque implements Serializable {
     @JoinColumn(name = "proveedor", nullable = false)
     @ManyToOne(optional = false)
     private Proveedor proveedor;
+    @JoinColumn(name = "cuentabancaria_id", nullable = false)
+    @ManyToOne(optional = false)
+    private CuentaBancaria cuentabancaria;
 
     public ChequePropio() {
     }
 
-    public ChequePropio(Proveedor proveedor, Long numero, Banco banco, BancoSucursal bancoSucursal, BigDecimal importe, Date fechaCheque, Date fechaCobro, boolean cruzado, String observacion, ChequeEstado chequeEstado, String endosatario, Date fechaEndoso, Usuario usuario, Librado librado) {
+    public ChequePropio(Proveedor proveedor, Long numero, Banco banco, BancoSucursal bancoSucursal, BigDecimal importe, Date fechaCheque, Date fechaCobro, boolean cruzado, String observacion, ChequeEstado chequeEstado, String endosatario, Date fechaEndoso, Usuario usuario, Librado librado, CuentaBancaria cuentabancaria) {
         super(numero, banco, bancoSucursal, importe, fechaCheque, fechaCobro, cruzado, observacion, chequeEstado, endosatario, fechaEndoso, usuario, librado);
         this.proveedor = proveedor;
+        this.cuentabancaria = cuentabancaria;
     }
 
     public Integer getId() {
@@ -58,6 +63,14 @@ public class ChequePropio extends Cheque implements Serializable {
         this.proveedor = proveedor;
     }
 
+    public CuentaBancaria getCuentabancaria() {
+        return cuentabancaria;
+    }
+
+    public void setCuentabancaria(CuentaBancaria cuentabancaria) {
+        this.cuentabancaria = cuentabancaria;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -67,7 +80,8 @@ public class ChequePropio extends Cheque implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
+        super.equals(object);
+        System.out.println(getClass() + ".equals()");
         if (!(object instanceof ChequePropio)) {
             return false;
         }
