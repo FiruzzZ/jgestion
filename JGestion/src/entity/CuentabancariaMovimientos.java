@@ -4,7 +4,6 @@
  */
 package entity;
 
-import entity.enums.CuentaBancaria;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;

@@ -6,7 +6,7 @@ import controller.exceptions.MessageException;
 import controller.exceptions.NonexistentEntityException;
 import entity.Banco;
 import entity.BancoSucursal;
-import entity.enums.CuentaBancaria;
+import entity.CuentaBancaria;
 import gui.JDABM;
 import gui.JDContenedor;
 import gui.PanelABMBancoSucursales;
