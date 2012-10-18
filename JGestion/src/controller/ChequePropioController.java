@@ -7,7 +7,7 @@ import entity.BancoSucursal;
 import entity.ChequePropio;
 import entity.ChequeTerceros;
 import entity.Cliente;
-import entity.enums.CuentaBancaria;
+import entity.CuentaBancaria;
 import entity.Librado;
 import entity.Proveedor;
 import entity.enums.ChequeEstado;

@@ -1,4 +1,4 @@
-package entity.enums;
+package entity;
 
 import entity.Banco;
 import java.io.Serializable;

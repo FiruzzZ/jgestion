@@ -1,6 +1,5 @@
 package entity;
 
-import entity.enums.CuentaBancaria;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Collection;
