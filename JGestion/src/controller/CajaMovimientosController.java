@@ -5,6 +5,7 @@ import controller.exceptions.MissingReportException;
 import entity.*;
 import gui.*;
 import java.awt.Component;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -72,8 +73,7 @@ public class CajaMovimientosController implements ActionListener {
      * <code>Caja</code>, así como el 1er
      * <code>DetalleCajaMovimientos</code> con monto inicial $0.
      *
-     * @param caja a la cual se van a vincular la
-     * <code>CajaMovimientos</code> y
+     * @param caja a la cual se van a vincular la <code>CajaMovimientos</code> y
      * <code>DetalleCajaMovimientos</code>.
      */
     void nueva(Caja caja) {
@@ -90,7 +90,7 @@ public class CajaMovimientosController implements ActionListener {
         dcm.setNumero(-1); //meaningless yet...
         dcm.setTipo(DetalleCajaMovimientosJpaController.APERTURA_CAJA);
         dcm.setUsuario(UsuarioController.getCurrentUser());
-        dcm.setMovimientoConcepto(MovimientoConceptoJpaController.EFECTIVO);
+        dcm.setMovimientoConcepto(MovimientoConceptoController.EFECTIVO);
         dcm.setCajaMovimientos(cm);
         cm.getDetalleCajaMovimientosList().add(dcm);
         jpaController.create(cm);
@@ -123,7 +123,7 @@ public class CajaMovimientosController implements ActionListener {
         dcm.setUsuario(UsuarioController.getCurrentUser());
         if (dcm.getMovimientoConcepto() == null) {
             //default value
-            dcm.setMovimientoConcepto(MovimientoConceptoJpaController.EFECTIVO);
+            dcm.setMovimientoConcepto(MovimientoConceptoController.EFECTIVO);
         }
         nextCaja.getDetalleCajaMovimientosList().add(dcm);
         jpaController.create(nextCaja);
@@ -148,14 +148,12 @@ public class CajaMovimientosController implements ActionListener {
             UTIL.setHorizonalAlignment(jdCierreCaja.getjTable1(), String.class, JLabel.RIGHT);
             UTIL.loadComboBox(jdCierreCaja.getCbCaja(), getCajaMovimientosActivasFromCurrentUser(), true);
             jdCierreCaja.getbBuscar().addActionListener(new ActionListener() {
-
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     initBuscadorCierreCaja();
                 }
             });
             jdCierreCaja.getbImprimir().addActionListener(new ActionListener() {
-
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     try {
@@ -176,7 +174,6 @@ public class CajaMovimientosController implements ActionListener {
                 }
             });
             jdCierreCaja.getbCerrar().addActionListener(new ActionListener() {
-
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     if (jdCierreCaja.getCbCaja().getSelectedIndex() > 0) {
@@ -194,7 +191,6 @@ public class CajaMovimientosController implements ActionListener {
                 }
             });
             jdCierreCaja.getCbCaja().addActionListener(new ActionListener() {
-
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     if (jdCierreCaja.getCbCaja().getSelectedIndex() > 0) {
@@ -366,7 +362,6 @@ public class CajaMovimientosController implements ActionListener {
         UTIL.loadComboBox(jdCajaToCaja.getCbCajaDestino(), getCajaMovimientosActivasFromCurrentUser(), true);
         jdCajaToCaja.getTfMovimiento().setText(String.valueOf(getNextMovimientoCajaToCaja()));
         jdCajaToCaja.getbAceptar().addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -380,21 +375,18 @@ public class CajaMovimientosController implements ActionListener {
             }
         });
         jdCajaToCaja.getbBuscar().addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 initBuscadorCajaToCaja(jdCajaToCaja);
             }
         });
         jdCajaToCaja.getCbCajaOrigen().addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 setDatosCajaToCajaCombo("cajaOrigen");
             }
         });
         jdCajaToCaja.getCbCajaDestino().addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 setDatosCajaToCajaCombo("y si no es origen tiene q ser destino.. no ?");
@@ -514,26 +506,25 @@ public class CajaMovimientosController implements ActionListener {
     /**
      * Desplega la GUI para realizar Movimientos varios
      *
-     * @param frame papi Component
+     * @param owner papi Component
      * @param modal
      */
-    public void initMovimientosVarios(JFrame frame, boolean modal) {
+    public void initMovimientosVarios(Window owner, boolean modal) {
         // <editor-fold defaultstate="collapsed" desc="checking Permiso">
         try {
             UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
         } catch (MessageException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage());
+            JOptionPane.showMessageDialog(owner, ex.getMessage());
             return;
         }// </editor-fold>
-        initMovimientosVarios(frame, modal, true, null);
+        initMovimientosVarios(owner, modal, true, null);
     }
 
-    private void initMovimientosVarios(JFrame frame, boolean modal, final boolean visible, final DetalleCajaMovimientos toEdit) {
+    private void initMovimientosVarios(Window owner, boolean modal, final boolean visible, final DetalleCajaMovimientos toEdit) {
         if (panelMovVarios == null) {
             panelMovVarios = new PanelMovimientosVarios();
             panelMovVarios.setVisibleResponsables(false);
             panelMovVarios.getbBuscar().addActionListener(new ActionListener() {
-
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     initBuscadorMovimientosVarios((JFrame) abm.getOwner());
@@ -542,11 +533,9 @@ public class CajaMovimientosController implements ActionListener {
             });
         }
         UTIL.loadComboBox(panelMovVarios.getCbCaja(), getCajaMovimientosActivasFromCurrentUser(), false);
-        UTIL.loadComboBox(panelMovVarios.getCbConcepto(), new MovimientoConceptoJpaController(null).findMovimientoConceptoEntities(), false);
-        abm = new JDABM(frame, modal, panelMovVarios);
-        abm.setTitle("Movimientos Varios");
+        UTIL.loadComboBox(panelMovVarios.getCbConcepto(), new MovimientoConceptoController(null).findMovimientoConceptoEntities(), false);
+        abm = new JDABM(owner, "Movimientos Varios", modal, panelMovVarios);
         abm.getbAceptar().addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -573,7 +562,7 @@ public class CajaMovimientosController implements ActionListener {
                 }
             }
         });
-        abm.setLocationRelativeTo(frame);
+        abm.setLocationRelativeTo(owner);
         abm.toFront();
         abm.setVisible(visible);
     }
@@ -625,8 +614,8 @@ public class CajaMovimientosController implements ActionListener {
             cajaList.add(cajaMovimientos.getCaja());
         }
         UTIL.loadComboBox(panelBuscadorMovimientosVarios.getCbCaja(), cajaList, true);
-        UTIL.loadComboBox(panelBuscadorMovimientosVarios.getCbMovimientoConceptos(), new MovimientoConceptoJpaController(null).findMovimientoConceptoEntities(), true);
-        buscador = new JDBuscador(owner, false, panelBuscadorMovimientosVarios, "Buscardor - Movimientos varios");
+        UTIL.loadComboBox(panelBuscadorMovimientosVarios.getCbMovimientoConceptos(), new MovimientoConceptoController(null).findMovimientoConceptoEntities(), true);
+        buscador = new JDBuscador(owner, "Buscardor - Movimientos varios", false, panelBuscadorMovimientosVarios);
         try {
             UTIL.getDefaultTableModel(
                     buscador.getjTable1(),
@@ -636,7 +625,6 @@ public class CajaMovimientosController implements ActionListener {
             Logger.getLogger(CajaMovimientosController.class.getName()).log(Level.ERROR, null, ex);
         }
         buscador.getbBuscar().addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -647,7 +635,6 @@ public class CajaMovimientosController implements ActionListener {
             }
         });
         buscador.getbImprimir().addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -662,11 +649,11 @@ public class CajaMovimientosController implements ActionListener {
         buscador.setVisible(true);
     }
 
-    private void initBuscadorCajaToCaja(JDialog papiComponent) {
+    private void initBuscadorCajaToCaja(JDialog owner) {
         panelBuscadorCajaToCaja = new PanelBuscadorCajaToCaja();
         UTIL.loadComboBox(panelBuscadorCajaToCaja.getCbCajaOrigen(), new CajaController().findCajasPermitidasByUsuario(UsuarioController.getCurrentUser(), true), true);
         UTIL.loadComboBox(panelBuscadorCajaToCaja.getCbCajaDestino(), new CajaController().findCajasPermitidasByUsuario(UsuarioController.getCurrentUser(), true), true);
-        buscador = new JDBuscador(papiComponent, false, panelBuscadorCajaToCaja, "Buscardor - Movimientos entre Cajas");
+        buscador = new JDBuscador(owner, "Buscardor - Movimientos entre Cajas", false, panelBuscadorCajaToCaja);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
                 new String[]{"Descripción", "Monto", "Fecha (Hora)", "Usuario"},
@@ -674,7 +661,6 @@ public class CajaMovimientosController implements ActionListener {
         buscador.hideLimpiar();
         buscador.setListener(this);
         buscador.getbBuscar().addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -685,7 +671,6 @@ public class CajaMovimientosController implements ActionListener {
             }
         });
         buscador.getbImprimir().addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -695,7 +680,7 @@ public class CajaMovimientosController implements ActionListener {
                 }
             }
         });
-        buscador.setLocationRelativeTo((Component) papiComponent);
+        buscador.setLocationRelativeTo((Component) owner);
         buscador.setVisible(true);
     }
 
@@ -809,7 +794,7 @@ public class CajaMovimientosController implements ActionListener {
     private void initBuscadorCierreCaja() {
         panelBuscadorCajasCerradas = new PanelBuscadorCajasCerradas();
         UTIL.loadComboBox(panelBuscadorCajasCerradas.getCbCaja(), new CajaController().findCajasPermitidasByUsuario(UsuarioController.getCurrentUser(), true), true);
-        buscador = new JDBuscador(jdCierreCaja, true, panelBuscadorCajasCerradas, "Buscador - Cajas cerradas");
+        buscador = new JDBuscador(jdCierreCaja, "Buscador - Cajas cerradas", true, panelBuscadorCajasCerradas);
         buscador.getbImprimir().setEnabled(false);
         buscador.hideLimpiar();
         // <editor-fold defaultstate="collapsed" desc="InitJTable">
@@ -819,7 +804,6 @@ public class CajaMovimientosController implements ActionListener {
                 new int[]{70, 50, 50, 30, 60});// </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="Action mouseClicked">
         buscador.getjTable1().addMouseListener(new MouseAdapter() {
-
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() >= 2) {
@@ -831,7 +815,6 @@ public class CajaMovimientosController implements ActionListener {
             }
         });// </editor-fold>
         buscador.getbBuscar().addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {

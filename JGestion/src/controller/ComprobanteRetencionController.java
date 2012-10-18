@@ -39,7 +39,7 @@ public class ComprobanteRetencionController {
             panelABM.getTfNumero().setText(toEdit.getNumero().toString());
             panelABM.getDcFecha().setDate(toEdit.getFecha());
         }
-        final JDABM jd = new JDABM(owner, panelABM);
+        final JDABM jd = new JDABM(owner, null, true, panelABM);
         jd.getbAceptar().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -47,15 +47,6 @@ public class ComprobanteRetencionController {
                     validate();
                     setEntity();
                     checkConstraints(entity);
-//                    if (panelABM.persist()) {
-//                        String msg = entity.getId() == null ? "Registrado" : "Modificado";
-//                        if (entity.getId() == null) {
-//                            jpaController.create(entity);
-//                        } else {
-//                            jpaController.merge(entity);
-//                        }
-//                        jd.showMessage(msg, jpaController.getEntityClass().getSimpleName(), 1);
-//                    }
                     jd.dispose();
                 } catch (MessageException ex) {
                     ex.displayMessage(null);

@@ -13,6 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -142,11 +143,11 @@ public class CtacteProveedorJpaController implements ActionListener {
    void nuevaCtaCte(FacturaCompra facturaCompra) {
       CtacteProveedor ccp = new CtacteProveedor();
       ccp.setDias(facturaCompra.getDiasCtaCte());
-      ccp.setEntregado(0.0); //monto $$
+      ccp.setEntregado(BigDecimal.ZERO); //monto $$
       ccp.setEstado(Valores.CtaCteEstado.PENDIENTE.getId());
       ccp.setFactura(facturaCompra);
       ccp.setFechaCarga(facturaCompra.getFechaCompra());
-      ccp.setImporte(facturaCompra.getImporte());
+      ccp.setImporte(BigDecimal.valueOf(facturaCompra.getImporte()));
       create(ccp);
    }
 
@@ -294,8 +295,8 @@ public class CtacteProveedorJpaController implements ActionListener {
       List<CtacteProveedor> lista = DAO.getEntityManager().createNativeQuery(query, CtacteProveedor.class).getResultList();
       for (CtacteProveedor ccc : lista) {
          if (ccc.getEstado() != 3) { // 3 == anulado
-            totalDebe += ccc.getImporte();
-            totalHaber += ccc.getEntregado();
+            totalDebe += ccc.getImporte().doubleValue();
+            totalHaber += ccc.getEntregado().doubleValue();
          }
       }
    }
@@ -306,14 +307,14 @@ public class CtacteProveedorJpaController implements ActionListener {
       List<CtacteProveedor> lista = DAO.getEntityManager().createNativeQuery(query, CtacteProveedor.class).getResultList();
 
       //agregar la 1er fila a la tabla
-      double saldoAcumulativo = (totalDebe - totalHaber);
+      BigDecimal saldoAcumulativo = BigDecimal.valueOf(totalDebe - totalHaber);
       dtm.addRow(new Object[]{null, "RESUMEN PREVIOS", null, null, UTIL.PRECIO_CON_PUNTO.format(totalDebe), UTIL.PRECIO_CON_PUNTO.format(totalHaber), null, UTIL.PRECIO_CON_PUNTO.format(saldoAcumulativo)});
       for (CtacteProveedor ctaCte : lista) {
          FacturaCompra factura = ctaCte.getFactura();
          //checkea que no esté anulada la ccc
          boolean isAnulada = (ctaCte.getEstado() == 3);
          if (!isAnulada) {
-            saldoAcumulativo += ctaCte.getImporte() - ctaCte.getEntregado();
+            saldoAcumulativo = saldoAcumulativo.add(ctaCte.getImporte().subtract(ctaCte.getEntregado()));
          }
 
          dtm.addRow(new Object[]{
@@ -323,7 +324,7 @@ public class CtacteProveedorJpaController implements ActionListener {
                     UTIL.DATE_FORMAT.format(UTIL.customDateByDays(factura.getFechaCompra(), ctaCte.getDias())),
                     UTIL.PRECIO_CON_PUNTO.format(ctaCte.getImporte()),
                     isAnulada ? "ANULADA" : UTIL.PRECIO_CON_PUNTO.format(ctaCte.getEntregado()),
-                    isAnulada ? "ANULADA" : UTIL.PRECIO_CON_PUNTO.format(ctaCte.getImporte() - ctaCte.getEntregado()),
+                    isAnulada ? "ANULADA" : UTIL.PRECIO_CON_PUNTO.format(ctaCte.getImporte().subtract(ctaCte.getEntregado())),
                     isAnulada ? "ANULADA" : UTIL.PRECIO_CON_PUNTO.format(saldoAcumulativo),
                     ctaCte.getEstado()
                  });

@@ -23,31 +23,8 @@ public class JDABM extends javax.swing.JDialog {
     private JPanel panel;
     private JButton lastButtonPressed;
 
-    /**
-     * Creates new form JDABM
-     */
-    public JDABM(java.awt.Frame parent, boolean modal, javax.swing.JPanel panelNEW) {
-        super(parent, modal);
-        this.panel = panelNEW;
-        getContentPane().add(this.panel);
-        pack();
-        initComponents();
-        setLocationRelativeTo(parent);
-        ajustarABMSizeToPanel();
-    }
-
-    public JDABM(Window owner, JPanel panel) {
-        super(owner, DEFAULT_MODALITY_TYPE);
-        this.panel = panel;
-        getContentPane().add(this.panel);
-        pack();
-        initComponents();
-        setLocationRelativeTo(owner);
-        ajustarABMSizeToPanel();
-    }
-
-    public JDABM(boolean modal, javax.swing.JDialog owner, javax.swing.JPanel panel) {
-        super(owner, modal);
+    public JDABM(Window owner, String title, boolean modal, JPanel panel) {
+        super(owner, title, modal ? DEFAULT_MODALITY_TYPE : ModalityType.MODELESS);
         this.panel = panel;
         getContentPane().add(this.panel);
         pack();

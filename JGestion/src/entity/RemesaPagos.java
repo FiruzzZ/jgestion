@@ -11,57 +11,56 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * 0=Efectivo ({@link DetalleCajaMovimientos}), 1=Cheque Propio, 2=Cheque
- * Tercero, 3=Nota de Crédito, 4=Retención
+ * Tercero, 3=Nota de Crédito
+ * {@link NotaCreditoProveedor}, 4= {@link ComprobanteRetencion}
  *
  * @author FiruzzZ
  */
 @Entity
-@Table(name = "recibo_pagos")
+@Table(name = "remesa_pagos")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "ReciboPagos.findAll", query = "SELECT r FROM ReciboPagos r"),
-    @NamedQuery(name = "ReciboPagos.findById", query = "SELECT r FROM ReciboPagos r WHERE r.id = :id")
-})
-public class ReciboPagos implements Serializable {
+    @NamedQuery(name = "RemesaPagos.findAll", query = "SELECT r FROM RemesaPagos r")})
+public class RemesaPagos implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @Basic(optional = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Basic(optional = false)
+    @Column(nullable = false)
     private Integer id;
+    @Basic(optional = false)
+    @Column(name = "comprobante_id", nullable = false)
+    private int comprobanteId;
     /**
      * 0=Efectivo ({@link DetalleCajaMovimientos}), 1=Cheque Propio, 2=Cheque
-     * Tercero, 3=Nota de Crédito, 4=Retención
+     * Tercero, 3=Nota de Crédito
+     * {@link NotaCreditoProveedor}, 4= {@link ComprobanteRetencion}
      */
     @Basic(optional = false)
     @Column(name = "forma_pago", nullable = false)
     private int formaPago;
-    @Basic(optional = false)
-    @Column(name = "comprobante_id", nullable = false)
-    private int comprobanteId;
     @JoinColumn(nullable = false)
     @ManyToOne(optional = false)
-    private Recibo recibo;
+    private Remesa remesa;
 
-    public ReciboPagos() {
+    public RemesaPagos() {
     }
 
-    public ReciboPagos(Integer id) {
+    public RemesaPagos(Integer id) {
         this.id = id;
     }
 
-    public ReciboPagos(Integer id, int formaPago, int comprobanteId, Recibo recibo) {
+    public RemesaPagos(Integer id, int formaPago, int comprobanteId, Remesa remesa) {
         this.id = id;
-        this.formaPago = formaPago;
         this.comprobanteId = comprobanteId;
-        this.recibo = recibo;
+        this.formaPago = formaPago;
+        this.remesa = remesa;
     }
 
     public Integer getId() {
@@ -72,19 +71,6 @@ public class ReciboPagos implements Serializable {
         this.id = id;
     }
 
-    public int getFormaPago() {
-        return formaPago;
-    }
-
-    /**
-     *
-     * @param formaPago 0=Efectivo ({@link DetalleCajaMovimientos}), 1=Cheque
-     * Propio, 2=Cheque Tercero, 3=Nota de Crédito, 4=Retención
-     */
-    public void setFormaPago(int formaPago) {
-        this.formaPago = formaPago;
-    }
-
     public int getComprobanteId() {
         return comprobanteId;
     }
@@ -93,12 +79,32 @@ public class ReciboPagos implements Serializable {
         this.comprobanteId = comprobanteId;
     }
 
-    public Recibo getRecibo() {
-        return recibo;
+    /**
+     *
+     * @return 0=Efectivo ({@link DetalleCajaMovimientos}), 1=Cheque Propio,
+     * 2=Cheque Tercero, 3=Nota de Crédito
+     * {@link NotaCreditoProveedor}, 4= {@link ComprobanteRetencion}
+     */
+    public int getFormaPago() {
+        return formaPago;
     }
 
-    public void setRecibo(Recibo recibo) {
-        this.recibo = recibo;
+    /**
+     *
+     * @param formaPago 0=Efectivo ({@link DetalleCajaMovimientos}), 1=Cheque
+     * Propio, 2=Cheque Tercero, 3=Nota de Crédito {@link NotaCreditoProveedor}, 4=
+     * {@link ComprobanteRetencion}
+     */
+    public void setFormaPago(int formaPago) {
+        this.formaPago = formaPago;
+    }
+
+    public Remesa getRemesa() {
+        return remesa;
+    }
+
+    public void setRemesa(Remesa remesa) {
+        this.remesa = remesa;
     }
 
     @Override
@@ -111,10 +117,10 @@ public class ReciboPagos implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof ReciboPagos)) {
+        if (!(object instanceof RemesaPagos)) {
             return false;
         }
-        ReciboPagos other = (ReciboPagos) object;
+        RemesaPagos other = (RemesaPagos) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -123,6 +129,6 @@ public class ReciboPagos implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.ReciboPagos[ id=" + id + " ]";
+        return "RemesaPagos{" + "id=" + id + ", comprobanteId=" + comprobanteId + ", formaPago=" + formaPago + ", remesa=" + remesa + '}';
     }
 }

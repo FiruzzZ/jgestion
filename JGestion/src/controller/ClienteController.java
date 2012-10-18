@@ -213,8 +213,7 @@ public class ClienteController implements ActionListener {
             panelABM.setTfCodigo(String.valueOf(getClienteCount() + 1));
         }
 
-        abm = new JDABM(true, contenedor, panelABM);
-        abm.setTitle("ABM " + CLASS_NAME + "s");
+        abm = new JDABM(contenedor, "ABM " + CLASS_NAME + "s", true, panelABM);
         if (e != null) {
             abm.setLocation(((java.awt.Component) e.getSource()).getLocation());
         }

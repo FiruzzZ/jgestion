@@ -172,9 +172,9 @@ public class OrdenJpaController {
 
     public void initOrden(JFrame owner, boolean visible) throws MessageException {
         UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.ORDENES_IO);
-        jdFactura = new JDFacturaCompra(owner, true, 1);
+        jdFactura = new JDFacturaCompra(owner, true);
         jdFactura.getBtnAnular().setVisible(false);
-        jdFactura.panelToOrden();
+        jdFactura.setUIToOrden();
         jdFactura.setTitle("ORDEN de Entrada/Salida");
         UTIL.getDefaultTableModel(jdFactura.getjTable1(),
                 new String[]{"entity", "CÓDIGO", "PRODUCTO", "CANT."},
@@ -372,7 +372,7 @@ public class OrdenJpaController {
         UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.ORDENES_IO);
         panel = new PanelBuscadorOrdenes();
         UTIL.loadComboBox(panel.getCbSucursales(), new UsuarioHelper().getWrappedSucursales(), "<Todas>");
-        buscador = new JDBuscador(owner, true, panel, "Buscador de " + CLASS_NAME);
+        buscador = new JDBuscador(owner, "Buscador de " + CLASS_NAME, true, panel);
         UTIL.getDefaultTableModel(buscador.getjTable1(),
                 new String[]{"entity", "Nº", "Sucursal", "Fecha", "Usuario"},
                 new int[]{1, 40, 60, 60, 60});
@@ -483,7 +483,7 @@ public class OrdenJpaController {
 
     private void doReport(int numeroOrden) throws MissingReportException, JRException {
         Reportes r = new Reportes("JGestion_ordenio.jasper", "Orden IO N°" + numeroOrden);
-        r.addEmpresaReport();
+        r.addMembreteParameter();
         r.addParameter("ORDEN_ID", numeroOrden);
         r.printReport(true);
     }

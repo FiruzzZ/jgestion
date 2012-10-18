@@ -4,6 +4,7 @@
  */
 package entity;
 
+import entity.enums.CuentaBancaria;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -64,15 +65,17 @@ public class CuentabancariaMovimientos implements Serializable {
     @JoinColumn(nullable = false)
     @ManyToOne(optional = false)
     private Usuario usuario;
-    @JoinColumn(nullable = false)
+    @JoinColumn(nullable = false, name = "operaciones_bancarias_id")
     @ManyToOne(optional = false)
     private OperacionesBancarias operacionesBancarias;
     @JoinColumn(nullable = false)
     @ManyToOne(optional = false)
-    private Cuentabancaria cuentabancaria;
+    private CuentaBancaria cuentaBancaria;
     @ManyToOne
+    @JoinColumn(name = "cheque_terceros_id")
     private ChequeTerceros chequeTerceros;
     @ManyToOne
+    @JoinColumn(name = "cheque_propio_id")
     private ChequePropio chequePropio;
 
     public CuentabancariaMovimientos() {
@@ -82,7 +85,7 @@ public class CuentabancariaMovimientos implements Serializable {
         this.id = id;
     }
 
-    public CuentabancariaMovimientos(Date fechaOperacion, String descripcion, Date fechaCreditoDebito, BigDecimal credito, BigDecimal debito, boolean anulada, Usuario usuario, OperacionesBancarias movimientoConcepto, Cuentabancaria cuentabancaria, ChequeTerceros chequeTerceros, ChequePropio chequePropio) {
+    public CuentabancariaMovimientos(Date fechaOperacion, String descripcion, Date fechaCreditoDebito, BigDecimal credito, BigDecimal debito, boolean anulada, Usuario usuario, OperacionesBancarias movimientoConcepto, CuentaBancaria cuentaBancaria, ChequeTerceros chequeTerceros, ChequePropio chequePropio) {
         this.fechaOperacion = fechaOperacion;
         this.descripcion = descripcion;
         this.fechaCreditoDebito = fechaCreditoDebito;
@@ -91,7 +94,7 @@ public class CuentabancariaMovimientos implements Serializable {
         this.anulada = anulada;
         this.usuario = usuario;
         this.operacionesBancarias = movimientoConcepto;
-        this.cuentabancaria = cuentabancaria;
+        this.cuentaBancaria = cuentaBancaria;
         this.chequeTerceros = chequeTerceros;
         this.chequePropio = chequePropio;
     }
@@ -176,12 +179,12 @@ public class CuentabancariaMovimientos implements Serializable {
         this.operacionesBancarias = operacionesBancarias;
     }
 
-    public Cuentabancaria getCuentabancaria() {
-        return cuentabancaria;
+    public CuentaBancaria getCuentaBancaria() {
+        return cuentaBancaria;
     }
 
-    public void setCuentabancaria(Cuentabancaria cuentabancaria) {
-        this.cuentabancaria = cuentabancaria;
+    public void setCuentaBancaria(CuentaBancaria cuentaBancaria) {
+        this.cuentaBancaria = cuentaBancaria;
     }
 
     public ChequeTerceros getChequeTerceros() {
@@ -222,6 +225,6 @@ public class CuentabancariaMovimientos implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.CuentabancariaMovimientos[ id=" + id + " ]";
+        return "CuentabancariaMovimientos{" + "id=" + id + ", fechaOperacion=" + fechaOperacion + ", descripcion=" + descripcion + ", fechaCreditoDebito=" + fechaCreditoDebito + ", credito=" + credito + ", debito=" + debito + ", fechaSistema=" + fechaSistema + ", anulada=" + anulada + ", operacionesBancarias=" + operacionesBancarias + ", cuentaBancaria=" + (cuentaBancaria == null ? null : cuentaBancaria.getId()) + ", chequeTerceros=" + chequeTerceros + ", chequePropio=" + chequePropio + '}';
     }
 }

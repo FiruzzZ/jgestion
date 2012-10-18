@@ -2,7 +2,7 @@ package controller;
 
 import controller.exceptions.MessageException;
 import entity.Banco;
-import entity.Cuentabancaria;
+import entity.enums.CuentaBancaria;
 import gui.JDABM;
 import gui.JDContenedor;
 import gui.PanelABMCuentabancaria;
@@ -31,7 +31,7 @@ public class CuentabancariaController {
     private JDABM abm;
     private JDContenedor contenedor;
     private boolean permitirFiltroVacio;
-    private Cuentabancaria EL_OBJECT;
+    private CuentaBancaria EL_OBJECT;
     private static final Logger LOG = Logger.getLogger(CuentabancariaController.class.getName());
     private PanelABMCuentabancaria panelABM;
 
@@ -130,7 +130,7 @@ public class CuentabancariaController {
         return settingABM(parent, isEditing);
     }
 
-    private Cuentabancaria getSelectedFromContenedor() {
+    private CuentaBancaria getSelectedFromContenedor() {
         Integer selectedRow = contenedor.getjTable1().getSelectedRow();
         if (selectedRow > -1) {
             return jpaController.find(Integer.valueOf(contenedor.getDTM().getValueAt(selectedRow, 0).toString()));
@@ -145,13 +145,13 @@ public class CuentabancariaController {
         if (isEditing) {
             setPanelABM(EL_OBJECT);
         }
-        abm = new JDABM(true, parent, panelABM);
+        abm = new JDABM(parent, "ABM - " + jpaController.getEntityClass().getSimpleName(), true, panelABM);
         abm.getbAceptar().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
                     if (EL_OBJECT == null) {
-                        EL_OBJECT = new Cuentabancaria();
+                        EL_OBJECT = new CuentaBancaria();
                         EL_OBJECT.setSaldo(BigDecimal.ZERO);
                     }
                     setEntity(EL_OBJECT);
@@ -182,11 +182,10 @@ public class CuentabancariaController {
                 abm.dispose();
             }
         });
-        abm.setTitle("ABM - " + jpaController.getEntityClass().getSimpleName());
         return abm;
     }
 
-    private void setEntity(Cuentabancaria o) throws MessageException {
+    private void setEntity(CuentaBancaria o) throws MessageException {
         o.setBanco(((ComboBoxWrapper<Banco>) panelABM.getCbBancos().getSelectedItem()).getEntity());
         String numeroCuenta = panelABM.getTfNumero().getText();
         if (numeroCuenta == null || numeroCuenta.trim().length() < 1) {
@@ -203,7 +202,7 @@ public class CuentabancariaController {
         o.setActiva(panelABM.getjCheckBox1().isSelected());
     }
 
-    private void checkConstraints(Cuentabancaria o) throws MessageException {
+    private void checkConstraints(CuentaBancaria o) throws MessageException {
         String idquery = o.getId() != null ? "o.id <>" + o.getId() + " AND " : "";
         if (!jpaController.findByQuery("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o "
                 + "WHERE " + idquery + " o.banco.id=" + o.getBanco().getId() + " AND o.numero=" + o.getNumero()).isEmpty()) {
@@ -223,19 +222,19 @@ public class CuentabancariaController {
         if (contenedor != null) {
             DefaultTableModel dtm = contenedor.getDTM();
             dtm.setRowCount(0);
-            List<Cuentabancaria> l;
+            List<CuentaBancaria> l;
             if (query == null) {
                 l = jpaController.findAll();
             } else {
                 l = jpaController.findByNativeQuery(query);
             }
-            for (Cuentabancaria o : l) {
+            for (CuentaBancaria o : l) {
                 dtm.addRow(new Object[]{o.getId(), o.getBanco().getNombre(), o.getNumero(), o.getActiva()});
             }
         }
     }
 
-    private void remove(Cuentabancaria find) throws MessageException {
+    private void remove(CuentaBancaria find) throws MessageException {
         try {
             jpaController.remove(find);
         } catch (Exception e) {
@@ -243,7 +242,7 @@ public class CuentabancariaController {
         }
     }
 
-    private void setPanelABM(Cuentabancaria o) {
+    private void setPanelABM(CuentaBancaria o) {
         UTIL.setSelectedItem(panelABM.getCbBancos(), o.getBanco().getNombre());
         panelABM.getTfNumero().setText(o.getNumero().toString());
         panelABM.getjCheckBox1().setSelected(o.getActiva());

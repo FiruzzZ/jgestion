@@ -1,6 +1,5 @@
 package entity;
 
-import utilities.general.UTIL;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -13,7 +12,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "remesa",
 uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"numero"})
+    @UniqueConstraint(columnNames = {"sucursal", "numero"})
 })
 @NamedQueries({
     @NamedQuery(name = "Remesa.findAll", query = "SELECT r FROM Remesa r"),
@@ -29,8 +28,8 @@ public class Remesa implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Basic(optional = false)
-    @Column(name = "numero", nullable = false, unique = true)
-    private Long numero;
+    @Column(name = "numero", nullable = false, precision = 8)
+    private Integer numero;
     @Basic(optional = false)
     @Column(name = "fecha_carga", nullable = false, insertable = false, updatable = false, columnDefinition = "timestamp with time zone DEFAULT now()")
     @Temporal(TemporalType.TIMESTAMP)
@@ -45,7 +44,7 @@ public class Remesa implements Serializable {
     @Basic(optional = false)
     @Column(name = "estado", nullable = false)
     private boolean estado;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "remesa")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "remesa", orphanRemoval = true)
     private List<DetalleRemesa> detalleRemesaList;
     @JoinColumn(name = "caja", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
@@ -56,6 +55,10 @@ public class Remesa implements Serializable {
     @JoinColumn(name = "usuario", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
     private Usuario usuario;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "remesa", orphanRemoval = true)
+    private List<RemesaPagos> pagos;
+    @Transient
+    private transient List<Object> pagosEntities;
 
     public Remesa() {
     }
@@ -68,11 +71,11 @@ public class Remesa implements Serializable {
         this.id = id;
     }
 
-    public Long getNumero() {
+    public Integer getNumero() {
         return numero;
     }
 
-    public void setNumero(Long numero) {
+    public void setNumero(Integer numero) {
         this.numero = numero;
     }
 
@@ -81,7 +84,6 @@ public class Remesa implements Serializable {
     }
 
     public void setFechaCarga(Date fechaCarga) {
-        System.out.println("alguien me llamó!!!!!!!!!!!!!");
         this.fechaCarga = fechaCarga;
     }
 
@@ -141,6 +143,22 @@ public class Remesa implements Serializable {
         this.usuario = usuario;
     }
 
+    public List<RemesaPagos> getPagos() {
+        return pagos;
+    }
+
+    public void setPagos(List<RemesaPagos> pagos) {
+        this.pagos = pagos;
+    }
+
+    public List<Object> getPagosEntities() {
+        return pagosEntities;
+    }
+
+    public void setPagosEntities(List<Object> pagosEntities) {
+        this.pagosEntities = pagosEntities;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -163,6 +181,6 @@ public class Remesa implements Serializable {
 
     @Override
     public String toString() {
-        return UTIL.AGREGAR_CEROS(this.getNumero(), 12);
+        return "Remesa{" + "id=" + id + ", numero=" + numero + ", fechaCarga=" + fechaCarga + ", montoEntrega=" + montoEntrega + ", fechaRemesa=" + fechaRemesa + ", estado=" + estado + ", detalleRemesaList=" + detalleRemesaList + ", caja=" + caja + ", sucursal=" + sucursal + ", usuario=" + usuario + ", pagos=" + pagos + ", pagosEntities=" + pagosEntities + '}';
     }
 }

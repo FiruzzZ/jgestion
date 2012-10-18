@@ -13,6 +13,7 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import jpa.controller.OperacionesBancariasJpaController;
 import org.apache.log4j.Logger;
+import org.omg.CORBA.TRANSACTION_MODE;
 import utilities.general.UTIL;
 
 /**
@@ -25,9 +26,25 @@ public class OperacionesBancariasController {
     private OperacionesBancariasJpaController jpaController;
     private OperacionesBancarias selectedEntity;
     private JDMiniABM abm;
+    public static final int DEPOSITO = 1;
+    public static final int TRASNFERENCIA = 2;
+    public static final int EXTRACCION = 3;
 
     public OperacionesBancariasController() {
         jpaController = new OperacionesBancariasJpaController();
+    }
+
+    /**
+     *
+     * @param defaultOB
+     * {@link #DEPOSITO}, {@link #TRASNFERENCIA}, {@link #EXTRACIION}
+     * @return
+     */
+    public OperacionesBancarias getOperacion(int defaultOB) {
+        if (defaultOB != DEPOSITO && defaultOB != TRASNFERENCIA && defaultOB != EXTRACCION) {
+            throw new IllegalArgumentException("default " + jpaController.getEntityClass().getSimpleName() + " no válida");
+        }
+        return jpaController.find(defaultOB);
     }
 
     /**

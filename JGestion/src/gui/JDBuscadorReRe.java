@@ -6,12 +6,10 @@
 package gui;
 
 import utilities.general.UTIL;
-import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.Window;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusListener;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseListener;
 import java.util.Date;
 import java.util.HashMap;
@@ -19,7 +17,6 @@ import java.util.Map;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -31,23 +28,6 @@ import utilities.gui.SwingUtil;
  * @author FiruzzZ
  */
 public class JDBuscadorReRe extends javax.swing.JDialog {
-
-    /**
-     * Bucador para Remesas y Recibos
-     *
-     * @param owner
-     * @param title
-     * @param modal
-     * @param labelClieProv
-     * @param labelReRe
-     */
-    public JDBuscadorReRe(Dialog owner, String title, boolean modal, String labelClieProv, String labelReRe) {
-        super(owner, modal);
-        initComponents();
-        init(title, labelClieProv, labelReRe);
-        cbFormasDePago.setVisible(false);
-        labelFormasDePago.setVisible(false);
-    }
 
     /**
      * Este constructor es para facturas compra/venta.
@@ -101,7 +81,7 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
         cbClieProv = new javax.swing.JComboBox();
         labelClieProv = new javax.swing.JLabel();
         cbSucursal = new javax.swing.JComboBox();
-        jLabel8 = new javax.swing.JLabel();
+        labelSucursal = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         dcDesde = new com.toedter.calendar.JDateChooser();
         jLabel3 = new javax.swing.JLabel();
@@ -135,7 +115,7 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
 
         labelClieProv.setText("Clie/provee");
 
-        jLabel8.setText("Sucursal");
+        labelSucursal.setText("Sucursal");
 
         jLabel2.setText("Desde");
 
@@ -221,7 +201,7 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
                                 .addComponent(labelClieProv, javax.swing.GroupLayout.Alignment.TRAILING)
                                 .addGroup(jPanel1Layout.createSequentialGroup()
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel8)))
+                                    .addComponent(labelSucursal)))
                             .addComponent(labelFormasDePago))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -272,7 +252,7 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
                                     .addComponent(jLabel2))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel8)
+                                    .addComponent(labelSucursal)
                                     .addComponent(cbSucursal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
@@ -426,7 +406,6 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
@@ -435,6 +414,7 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
     private javax.swing.JLabel labelFormasDePago;
     private javax.swing.JLabel labelN_Factura;
     private javax.swing.JLabel labelReRe;
+    private javax.swing.JLabel labelSucursal;
     private javax.swing.JTextField tfCuarto;
     private javax.swing.JTextField tfFactu4;
     private javax.swing.JTextField tfFactu8;
@@ -623,6 +603,24 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
         hideCheckAnulado();
         //reutilización del combo FormaDePago para saber si el Remito fue facturado
         labelFormasDePago.setText("Facturado");
+        labelFormasDePago.setVisible(true);
+        cbFormasDePago.setVisible(true);
+        cbFormasDePago.removeAllItems();
+        cbFormasDePago.addItem("<Elegir>");
+        cbFormasDePago.addItem("No");
+        cbFormasDePago.addItem("Si");
+    }
+
+    public void setParaNotaCreditoProveedor() {
+        this.setTitle("Buscador de Notas de Crédito de Proveedores");
+        labelReRe.setText("Nº Nota Crédito");
+        hideCaja();
+        labelSucursal.setVisible(false);
+        cbSucursal.setVisible(false);
+        labelN_Factura.setText("N° Remesa");
+        hideCheckAnulado();
+        //reutilización del combo FormaDePago para saber si la NotaCredito fue acreditada (utilizada)
+        labelFormasDePago.setText("Acreditada");
         labelFormasDePago.setVisible(true);
         cbFormasDePago.setVisible(true);
         cbFormasDePago.removeAllItems();

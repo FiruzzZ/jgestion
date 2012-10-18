@@ -109,7 +109,7 @@
                                   <Component id="labelClieProv" alignment="1" min="-2" max="-2" attributes="0"/>
                                   <Group type="102" alignment="0" attributes="0">
                                       <EmptySpace pref="15" max="-2" attributes="0"/>
-                                      <Component id="jLabel8" min="-2" max="-2" attributes="0"/>
+                                      <Component id="labelSucursal" min="-2" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
                               <Component id="labelFormasDePago" min="-2" max="-2" attributes="0"/>
@@ -178,7 +178,7 @@
                                   </Group>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="3" attributes="0">
-                                      <Component id="jLabel8" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="labelSucursal" alignment="3" min="-2" max="-2" attributes="0"/>
                                       <Component id="cbSucursal" alignment="3" min="-2" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
@@ -258,7 +258,7 @@
             </Property>
           </Properties>
         </Component>
-        <Component class="javax.swing.JLabel" name="jLabel8">
+        <Component class="javax.swing.JLabel" name="labelSucursal">
           <Properties>
             <Property name="text" type="java.lang.String" value="Sucursal"/>
           </Properties>

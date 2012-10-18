@@ -325,7 +325,7 @@ public class BancoSucursalController implements Serializable {
     private JDialog getJDialogABM(JDialog parent, boolean isEditing) {
         panelABM = new PanelABMBancoSucursales();
         UTIL.loadComboBox(panelABM.getCbBancos(), new BancoController().findEntities(), false);
-        abm = new JDABM(true, parent, panelABM);
+        abm = new JDABM(parent, "ABM - " + CLASS_NAME, true, panelABM);
         if (isEditing) {
             setPanelABM(EL_OBJECT);
         }
@@ -366,7 +366,6 @@ public class BancoSucursalController implements Serializable {
                 abm.dispose();
             }
         });
-        abm.setTitle("ABM - " + CLASS_NAME);
         return abm;
     }
 

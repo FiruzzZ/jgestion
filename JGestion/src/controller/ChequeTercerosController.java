@@ -31,6 +31,7 @@ import jgestion.JGestionUtils;
 import jpa.controller.ChequeTercerosJpaController;
 import org.apache.log4j.Logger;
 import utilities.general.UTIL;
+import utilities.swing.components.ComboBoxWrapper;
 
 /**
  *
@@ -86,7 +87,7 @@ public class ChequeTercerosController implements ActionListener {
         if (isEditing) {
             setPanel(EL_OBJECT);
         }
-        abm = new JDABM(owner, panelABM);
+        abm = new JDABM(owner, null, true, panelABM);
         abm.setTitle("ABM - Cheque Terceros");
         abm.setListener(this);
         abm.setVisible(true);
@@ -117,7 +118,7 @@ public class ChequeTercerosController implements ActionListener {
         fechaCheque = panelABM.getDcCheque();
         fechaCobro = panelABM.getDcCobro();
 
-        if (UTIL.compararIgnorandoTimeFields(fechaCheque, fechaCobro) == 1) {
+        if (UTIL.compararIgnorandoTimeFields(fechaCheque, fechaCobro) > 0) {
             throw new MessageException("Fecha de cobro no puede ser anterior a Fecha de cheque.");
         }
         try {
@@ -268,10 +269,17 @@ public class ChequeTercerosController implements ActionListener {
      * @param owner JFrame padre.
      * @param listener Para los botones laterales. Si
      * <code>listener == null</code> se asignará <code>this</code> por defecto.
+     * @param estado
      * @return una instancia de {@link JDChequesManager}.
+     * @throws MessageException
      */
-    public JDialog initManager(Window owner, ActionListener listener) {
+    public JDialog initManager(Window owner, ActionListener listener, ChequeEstado estado) throws MessageException {
+        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
         initManager(owner);
+        if (estado != null) {
+            UTIL.setSelectedItem(jdChequeManager.getCbEstados(), estado.toString());
+            jdChequeManager.getCbEstados().setEnabled(false);
+        }
         if (listener != null) {
             jdChequeManager.addButtonListener(listener);
         } else {
@@ -283,10 +291,10 @@ public class ChequeTercerosController implements ActionListener {
         return jdChequeManager;
     }
 
-    private JDialog initManager(Window owner) {
+    private void initManager(Window owner) {
         jdChequeManager = new JDChequesManager(owner, true);
         UTIL.loadComboBox(jdChequeManager.getCbBancos(), JGestionUtils.getWrappedBancos(new BancoController().findEntities()), true);
-        UTIL.loadComboBox(jdChequeManager.getCbBancoSucursales(), null, null, "<Seleccionar un Banco>");
+//        UTIL.loadComboBox(jdChequeManager.getCbBancoSucursales(), null, null, "<Seleccionar un Banco>");
         UTIL.loadComboBox(jdChequeManager.getCbLibrado(), JGestionUtils.getWrappedLibrado(new LibradoJpaController().findEntities()), true);
         UTIL.loadComboBox(jdChequeManager.getCbEstados(), Arrays.asList(ChequeEstado.values()), true);
         UTIL.loadComboBox(jdChequeManager.getCbOrderBy(), Arrays.asList(orderByToComboBoxList), false);
@@ -296,14 +304,13 @@ public class ChequeTercerosController implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (jdChequeManager.getCbBancos().getSelectedIndex() > 0) {
-                    Banco banco = (Banco) jdChequeManager.getCbBancos().getSelectedItem();
+                    Banco banco = ((ComboBoxWrapper<Banco>) jdChequeManager.getCbBancos().getSelectedItem()).getEntity();
                     UTIL.loadComboBox(jdChequeManager.getCbBancoSucursales(), new BancoSucursalController().findBy(banco), true);
                 } else {
                     UTIL.loadComboBox(jdChequeManager.getCbBancoSucursales(), null, null, "<Seleccionar un Banco>");
                 }
             }
         });
-        return jdChequeManager;
     }
 
     private void cargarTablaChequeManager(String query) throws DatabaseErrorException {
@@ -401,8 +408,7 @@ public class ChequeTercerosController implements ActionListener {
         final JComboBox cbCajas = new JComboBox();
         UTIL.loadComboBox(cbCajas, new CajaController().findCajasPermitidasByUsuario(UsuarioController.getCurrentUser(), Boolean.TRUE), false);
         p.add(cbCajas);
-        abm = new JDABM(true, jdChequeManager, p);
-        abm.setTitle("Asentar Cheque a Caja");
+        abm = new JDABM(jdChequeManager, "Asentar Cheque a Caja", true, p);
         abm.getbAceptar().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

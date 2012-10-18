@@ -1,4 +1,3 @@
-
 package entity;
 
 import java.io.Serializable;
@@ -21,21 +20,21 @@ import javax.persistence.UniqueConstraint;
  */
 @Entity
 @Table(name = "cliente", uniqueConstraints = {
-   @UniqueConstraint(columnNames = {"tipodoc", "num_doc"}),
-   @UniqueConstraint(columnNames = {"codigo"})
+    @UniqueConstraint(columnNames = {"tipodoc", "num_doc"}),
+    @UniqueConstraint(columnNames = {"codigo"})
 })
 @NamedQueries({
     @NamedQuery(name = "Cliente.findAll", query = "SELECT c FROM Cliente c order by c.nombre"),
     @NamedQuery(name = "Cliente.findById", query = "SELECT c FROM Cliente c WHERE c.id = :id"),
     @NamedQuery(name = "Cliente.findByCodigo", query = "SELECT c FROM Cliente c WHERE c.codigo = :codigo")
 })
-
 public class Cliente implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
     @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Basic(optional = false)
     @Column(name = "nombre", nullable = false, length = 100)
@@ -59,7 +58,7 @@ public class Cliente implements Serializable {
     private Integer interno2;
     @Column(name = "email", length = 100)
     private String email;
-    @Column(name = "estado", nullable = false )
+    @Column(name = "estado", nullable = false)
     private Integer estado;
     @Column(name = "codigopostal")
     private Integer codigopostal;
@@ -86,7 +85,7 @@ public class Cliente implements Serializable {
     @JoinColumn(name = "rubro", referencedColumnName = "idrubro")
     @ManyToOne
     private Rubro rubro;
-    @JoinColumn(name = "sucursal", referencedColumnName = "id" )
+    @JoinColumn(name = "sucursal", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Sucursal sucursal;
 
@@ -297,5 +296,4 @@ public class Cliente implements Serializable {
     public String toString() {
         return this.getNombre();
     }
-
 }

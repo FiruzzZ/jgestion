@@ -246,7 +246,6 @@ public class ProveedorController implements ActionListener {
     public JDialog initContenedor(JFrame frame, boolean modal) {
         contenedor = new JDContenedor(frame, modal, "ABM - " + CLASS_NAME);
         contenedor.getTfFiltro().addKeyListener(new KeyAdapter() {
-
             @Override
             public void keyReleased(KeyEvent e) {
                 armarQuery(contenedor.getTfFiltro().getText().trim());
@@ -308,8 +307,7 @@ public class ProveedorController implements ActionListener {
         if (isEditing) {
             setPanel(EL_OBJECT);
         }
-        abm = new JDABM(true, ((javax.swing.JDialog) contenedor), panelABM);
-        abm.setTitle("ABM " + CLASS_NAME + "es");
+        abm = new JDABM(contenedor, "ABM " + CLASS_NAME + "es", true, panelABM);
         abm.setListener(this);
         abm.setLocationRelativeTo(contenedor);
         abm.setVisible(true);
@@ -400,7 +398,7 @@ public class ProveedorController implements ActionListener {
         Provincia provincia = (Provincia) panelABM.getSelectedProvincia();
         Departamento departamento = (Departamento) panelABM.getSelectedDepartamento();
         Municipio municipio = (Municipio) panelABM.getSelectedMunicipio();
-        
+
         // NOT NULLABLE's
         EL_OBJECT.setCodigo(panelABM.getTfCodigo());
         EL_OBJECT.setNombre(panelABM.getTfNombre().toUpperCase());
@@ -517,7 +515,6 @@ public class ProveedorController implements ActionListener {
         contenedor.getbNuevo().setText("Convertir");
         contenedor.getbNuevo().removeActionListener(this);
         contenedor.getbNuevo().addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 Integer proveedorID = (Integer) UTIL.getSelectedValue(contenedor.getjTable1(), 0);

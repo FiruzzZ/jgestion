@@ -58,8 +58,7 @@ public class SucursalController implements ActionListener {
         if (isEditting) {
             setPanel(entity);
         }
-        abm = new JDABM(true, contenedor, panel);
-        abm.setTitle("ABM " + CLASS_NAME + "es");
+        abm = new JDABM(contenedor, "ABM " + CLASS_NAME + "es", true, panel);
         abm.setLocationRelativeTo(contenedor);
         abm.setListener(this);
         abm.setVisible(true);

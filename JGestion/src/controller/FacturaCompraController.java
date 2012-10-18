@@ -19,6 +19,7 @@ import gui.JDBuscadorReRe;
 import gui.JDFacturaCompra;
 import java.awt.event.*;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -48,9 +49,9 @@ public class FacturaCompraController implements ActionListener, KeyListener {
     public static final List<String> FORMAS_PAGO;
     public static final String CLASS_NAME = FacturaCompra.class.getSimpleName();
     private final String[] colsName = {"IVA", "Cód. Producto", "Producto", "Cantidad", "Precio U.", "Sub total", "Mod", "Producto.instance"};
-    private final int[] colsWidth = {10, 70, 180, 10, 30, 30, 1, 1};
+    private final int[] colsWidth = {1, 70, 180, 10, 30, 30, 1, 1};
     private JDFacturaCompra jdFactura;
-    private Producto producto_selected;
+    private Producto selectedProducto;
     private FacturaCompra EL_OBJECT;
     private JDBuscadorReRe buscador;
     private static final Logger LOG = Logger.getLogger(FacturaCompraController.class.getName());
@@ -145,7 +146,8 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         } finally {
             em.close();
         }
-    }// </editor-fold>
+    }
+    // </editor-fold>
 
     public void initABMFacturaCompra(JFrame owner, boolean modal) throws MessageException {
         UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.COMPRA);
@@ -156,11 +158,14 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         if (uh.getCajas(true).isEmpty()) {
             throw new MessageException(Main.resourceBundle.getString("unassigned.caja"));
         }
-        jdFactura = new JDFacturaCompra(owner, modal, 1);
+        jdFactura = new JDFacturaCompra(owner, modal);
         UTIL.getDefaultTableModel(jdFactura.getjTable1(), colsName, colsWidth);
+        jdFactura.getjTable1().getColumnModel().getColumn(3).setCellRenderer(NumberRenderer.getIntegerRenderer());
+        jdFactura.getjTable1().getColumnModel().getColumn(4).setCellRenderer(NumberRenderer.getCurrencyRenderer(4));
+        jdFactura.getjTable1().getColumnModel().getColumn(5).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         UTIL.hideColumnsTable(jdFactura.getjTable1(), new int[]{0, 6, 7});
         //set next nº movimiento
-        jdFactura.setTfNumMovimiento(String.valueOf(getFacturaCompraCount() + 1));
+        jdFactura.setTfNumMovimiento("");
         UTIL.loadComboBox(jdFactura.getCbProveedor(), new ProveedorController().findEntities(), false);
         UTIL.loadComboBox(jdFactura.getCbSucursal(), uh.getWrappedSucursales(), false);
         UTIL.loadComboBox(jdFactura.getCbCaja(), uh.getCajas(true), false);
@@ -216,8 +221,8 @@ public class FacturaCompraController implements ActionListener, KeyListener {
             @Override
             public void keyReleased(KeyEvent e) {
                 if (e.getKeyCode() == 10) {
-                    producto_selected = new ProductoController().findProductoByCodigo(jdFactura.getTfProductoCodigo().getText());
-                    setProducto(producto_selected);
+                    selectedProducto = new ProductoController().findProductoByCodigo(jdFactura.getTfProductoCodigo().getText());
+                    setProducto(selectedProducto);
                 }
             }
         });
@@ -226,18 +231,19 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         jdFactura.setVisible(true);
     }
 
-    private void buscarProducto(String codigoProducto) {
-        producto_selected = new ProductoController().findProductoByCodigo(codigoProducto);
-        setProducto(producto_selected);
+    void buscarProducto(String codigoProducto) {
+        selectedProducto = new ProductoController().findProductoByCodigo(codigoProducto);
+        setProducto(selectedProducto);
     }
 
     private void addProductoToDetalle() throws MessageException {
-        if (producto_selected == null) {
+        if (selectedProducto == null) {
             throw new MessageException("Seleccione un producto");
         }
         int cantidad;
         BigDecimal precioUnitario;
         BigDecimal descuento = BigDecimal.ZERO;
+        // <editor-fold defaultstate="collapsed" desc="ctrl tfCantidad">
         try {
             cantidad = Integer.valueOf(jdFactura.getTfCantidad().getText());
             if (cantidad < 1) {
@@ -245,9 +251,9 @@ public class FacturaCompraController implements ActionListener, KeyListener {
             }
         } catch (NumberFormatException ex) {
             throw new MessageException("Cantidad no válida (solo números enteros)");
-        }
+        }// </editor-fold>
         try {
-            precioUnitario = new BigDecimal(jdFactura.getTfPrecioUnitario());
+            precioUnitario = new BigDecimal(jdFactura.getTfPrecioUnitario()).setScale(4, RoundingMode.HALF_EVEN);
             if (precioUnitario.signum() == -1) {
                 throw new MessageException("El precio unitario no puede ser menor a 0");
             }
@@ -284,20 +290,21 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         }
         //</editor-fold>
         // agregando a la tabla el producto
+        precioUnitario = precioUnitario.setScale(4, RoundingMode.HALF_EVEN);
         jdFactura.getDtm().addRow(new Object[]{
-                    producto_selected.getIva().getIva(),
-                    producto_selected.getCodigo(),
-                    producto_selected.getNombre() + " " + producto_selected.getMarca().getNombre(),
+                    selectedProducto.getIva().getIva(),
+                    selectedProducto.getCodigo(),
+                    selectedProducto.getNombre() + " " + selectedProducto.getMarca().getNombre(),
                     cantidad,
-                    UTIL.PRECIO_CON_PUNTO.format(precioUnitario),
-                    UTIL.PRECIO_CON_PUNTO.format((precioUnitario.multiply(BigDecimal.valueOf(cantidad)))),
+                    precioUnitario,
+                    precioUnitario.multiply(BigDecimal.valueOf(cantidad)).setScale(2, RoundingMode.HALF_EVEN),
                     //se le suma uno para q coincidan con los valores en la DB de cambio precio
                     jdFactura.getCbCambioPrecio().getSelectedIndex() + 1
                 });
 
         refreshResumen();
     }
-
+    
     private void deleteProductoFromDetalle() {
         int cant = UTIL.removeSelectedRows(jdFactura.getjTable1());
         if (cant > 0) {
@@ -305,7 +312,12 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         }
     }
 
-    private void setProducto(Producto producto) {
+    /**
+     * share to {@link NotaCreditoProveedorController}
+     *
+     * @param producto
+     */
+    void setProducto(Producto producto) {
         if (producto != null) {
             jdFactura.labelCodigoNoRegistrado(false);
             jdFactura.setTfProductoCodigo(producto.getCodigo());
@@ -320,7 +332,12 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         }
     }
 
-    private void refreshResumen() {
+    /**
+     * share to {@link NotaCreditoProveedorController}
+     *
+     * @param producto
+     */
+    void refreshResumen() {
         if (jdFactura.getTfPercIIBB().trim().isEmpty()) {
             jdFactura.setTfPercIIBB("0");
         }
@@ -346,7 +363,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         for (int i = (dtm.getRowCount() - 1); i > -1; i--) {
             String iva = dtm.getValueAt(i, 0).toString();
             Double subTotalSinIVA = Double.valueOf(dtm.getValueAt(i, 5).toString());
-            if (new BigDecimal(iva).compareTo(BigDecimal.ZERO) != 1) {
+            if (new BigDecimal(iva).compareTo(BigDecimal.ZERO) == 0) {
                 noGravado = noGravado.add(BigDecimal.valueOf(subTotalSinIVA));
             } else if (iva.equalsIgnoreCase("10.5")) {
                 gravado = gravado.add(new BigDecimal(subTotalSinIVA));
@@ -436,7 +453,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         if (newFacturaCompra.getFormaPago() == Valores.FormaPago.CTA_CTE.getId()) {
             newFacturaCompra.setDiasCtaCte(Short.valueOf(jdFactura.getTfDias()));
         }
-        newFacturaCompra.setMovimientoInterno(Integer.valueOf(jdFactura.getTfNumMovimiento().getText()));
+        newFacturaCompra.setMovimientoInterno(getFacturaCompraCount() + 1);
         newFacturaCompra.setDetalleCompraList(new ArrayList<DetalleCompra>());
 
         //carga detalleCompra
@@ -447,7 +464,6 @@ public class FacturaCompraController implements ActionListener, KeyListener {
             detalleCompra.setCantidad(Integer.valueOf(dtm.getValueAt(i, 3).toString()));
             detalleCompra.setPrecioUnitario(Double.valueOf(dtm.getValueAt(i, 4).toString()));
             newFacturaCompra.getDetalleCompraList().add(detalleCompra);
-
         }
 
         // 1- PERSIST, 2- UPDATE STOCK, 3- UPDATE CAJA, 4- update costo 
@@ -590,14 +606,6 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         }
     }
 
-    private void limpiarPanel() {
-        jdFactura.limpiarPanelDatos();
-        jdFactura.limpiarPanelProducto();
-        jdFactura.getDtm().setRowCount(0);
-        jdFactura.limpiarResumen();
-        jdFactura.setTfNumMovimiento(String.valueOf(getFacturaCompraCount() + 1));
-    }
-
     @Override
     public void actionPerformed(ActionEvent e) {
         // <editor-fold defaultstate="collapsed" desc="JButton">
@@ -608,7 +616,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
                     checkConstraints();
                     setEntityAndPersist();
                     jdFactura.showMessage("Factura cargada..", CLASS_NAME, 1);
-                    limpiarPanel();
+                    jdFactura.limpiarPanel();
                 } catch (MessageException ex) {
                     jdFactura.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
@@ -839,7 +847,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
     }
 
     private void setDatosFactura(final FacturaCompra factura, boolean paraAnular) throws MessageException {
-        jdFactura = new JDFacturaCompra(null, true, 1);
+        jdFactura = new JDFacturaCompra(null, true);
         jdFactura.modoVista(false);
         jdFactura.setLocationRelativeTo(buscador);
         UTIL.getDefaultTableModel(jdFactura.getjTable1(), colsName, colsWidth);
@@ -880,6 +888,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         jdFactura.getCbFormaPago().setSelectedIndex(factura.getFormaPago() - 1);
         List<DetalleCompra> lista = new DetalleCompraJpaController().findByFactura(factura);
         DefaultTableModel dtm = jdFactura.getDtm();
+        IvaController ivaController = new IvaController();
         for (DetalleCompra detalle : lista) {
             Iva iva = detalle.getProducto().getIva();
             if (iva == null) {
@@ -888,22 +897,23 @@ public class FacturaCompraController implements ActionListener, KeyListener {
                 LOG.debug("Producto con Iva NULL!!" + detalle.getProducto());
                 while (iva == null || iva.getIva() == null) {
                     System.out.print(".");
-                    iva = new IvaController().findByProducto(detalle.getProducto().getId());
+                    iva = ivaController.findByProducto(detalle.getProducto().getId());
                 }
             }
             try {
                 //"IVA", "Cód. Producto", "Producto", "Cantidad", "Precio U.", "Sub total", "Mod
                 dtm.addRow(new Object[]{
-                            detalle.getProducto().getIva().getIva(),
+                            iva.getIva(),
                             detalle.getProducto().getCodigo(),
                             detalle.getProducto().getNombre() + " " + detalle.getProducto().getMarca().getNombre(),
                             detalle.getCantidad(),
                             detalle.getPrecioUnitario(),
-                            UTIL.PRECIO_CON_PUNTO.format((detalle.getCantidad() * detalle.getPrecioUnitario())),
+                            detalle.getCantidad() * detalle.getPrecioUnitario(),
                             null});
             } catch (NullPointerException e) {
                 throw new MessageException("Ocurrió un error recuperando el detalle y los datos del Producto:"
                         + "\nCódigo:" + detalle.getProducto().getNombre()
+                        + "\nMarca:" + detalle.getProducto().getMarca()
                         + "\nNombre:" + detalle.getProducto().getCodigo()
                         + "\nIVA:" + detalle.getProducto().getIva()
                         + "\n\n   Intente nuevamente.");
@@ -996,8 +1006,12 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         }
         Reportes r = new Reportes("JGestion_ListadoFacturasCompra.jasper", "Listado Facturas Compra");
         r.setDataSource(data);
-        r.addEmpresaReport();
+        r.addMembreteParameter();
         r.addConnection();
         r.viewReport();
+    }
+
+    void setContenedor(JDFacturaCompra jDFacturaCompra) {
+        jdFactura = jDFacturaCompra;
     }
 }

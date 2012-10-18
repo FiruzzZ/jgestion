@@ -31,9 +31,9 @@ import utilities.general.UTIL;
 
 /**
  *
- * @author Administrador
+ * @author FiruzzZ
  */
-public class MovimientoConceptoJpaController implements Serializable {
+public class MovimientoConceptoController implements Serializable {
 
    public static final String CLASS_NAME = MovimientoConcepto.class.getSimpleName();
    private JDMiniABM abm;
@@ -45,7 +45,7 @@ public class MovimientoConceptoJpaController implements Serializable {
       EFECTIVO = DAO.getEntityManager().find(MovimientoConcepto.class, 1);
    }
 
-   public MovimientoConceptoJpaController(EntityManagerFactory emf) {
+   public MovimientoConceptoController(EntityManagerFactory emf) {
       this.emf = emf;
    }
 
@@ -204,10 +204,10 @@ public class MovimientoConceptoJpaController implements Serializable {
                ELOBJECT = null;
             } catch (MessageException ex) {
                JOptionPane.showMessageDialog(abm, ex.getMessage(), ex.getClass().toString(), JOptionPane.WARNING_MESSAGE);
-               Logger.getLogger(MovimientoConceptoJpaController.class.getName()).log(Level.ERROR, null, ex);
+               Logger.getLogger(MovimientoConceptoController.class.getName()).log(Level.ERROR, null, ex);
             } catch (Exception ex) {
                JOptionPane.showMessageDialog(abm, ex.getMessage(), ex.getClass().toString(), JOptionPane.WARNING_MESSAGE);
-               Logger.getLogger(MovimientoConceptoJpaController.class.getName()).log(Level.ERROR, null, ex);
+               Logger.getLogger(MovimientoConceptoController.class.getName()).log(Level.ERROR, null, ex);
             } finally {
                abm.getbAceptar().setEnabled(true);
             }
@@ -231,7 +231,7 @@ public class MovimientoConceptoJpaController implements Serializable {
                   JOptionPane.showMessageDialog(abm, ex.getMessage());
                } catch (Exception ex) {
                   JOptionPane.showMessageDialog(abm, ex.getMessage(), ex.getClass().toString(), JOptionPane.ERROR_MESSAGE);
-                  Logger.getLogger(MovimientoConceptoJpaController.class).log(Level.ERROR, ex);
+                  Logger.getLogger(MovimientoConceptoController.class).log(Level.ERROR, ex);
                } finally {
                   abm.getbEliminar().setEnabled(true);
                }

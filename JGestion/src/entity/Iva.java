@@ -42,13 +42,13 @@ public class Iva implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Basic(fetch = FetchType.EAGER, optional = false)
-    @Column(name = "iva", nullable = false)
-    private float iva;
+    @Column(name = "iva", nullable = false, precision = 10, scale = 4)
+    private Float iva;
 
     public Iva() {
     }
 
-    public Iva(Integer id, float iva) {
+    public Iva(Integer id, Float iva) {
         this.id = id;
         this.iva = iva;
     }
@@ -61,11 +61,11 @@ public class Iva implements Serializable {
         this.id = id;
     }
 
-    public Double getIva() {
-        return Double.valueOf(iva);
+    public Float getIva() {
+        return iva;
     }
 
-    public void setIva(float iva) {
+    public void setIva(Float iva) {
         this.iva = iva;
     }
 

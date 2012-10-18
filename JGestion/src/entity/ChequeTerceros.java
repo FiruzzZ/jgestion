@@ -67,7 +67,8 @@ public class ChequeTerceros extends Cheque implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
+        super.equals(object);
+        System.out.println(getClass() + ".equals()");
         if (!(object instanceof ChequeTerceros)) {
             return false;
         }

@@ -88,13 +88,15 @@ public class AFIPWSController {
 
     /**
      * Parse the content of the given file as an XML document and return a new
-     * DOM {@link org.w3c.dom.Document} object normalized ({@link org.w3c.dom.Document#normalize()}).
-     * An IllegalArgumentException is thrown if the File is null null.
+     * DOM {@link org.w3c.dom.Document} object normalized
+     * ({@link org.w3c.dom.Document#normalize()}). An IllegalArgumentException
+     * is thrown if the File is null null.
+     *
      * @param file
      * @return A new DOM Document object.
      * @throws ParserConfigurationException
      * @throws SAXException
-     * @throws IOException 
+     * @throws IOException
      */
     private Document getDocument(File file) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -303,7 +305,7 @@ public class AFIPWSController {
             boolean unknownIVA = true;
             int cantidad = detalleVenta.getCantidad();
             Double precioUnitario = detalleVenta.getPrecioUnitario() - detalleVenta.getDescuento();
-            Double productoIVA = detalleVenta.getProducto().getIva().getIva();
+            Double productoIVA = Double.valueOf(detalleVenta.getProducto().getIva().getIva());
             //identificando el IVA de cada item del detalle
             for (IvaTipo o : iVATipoList) {
                 Double AFIP_IVA = Double.valueOf(o.getDesc().replaceAll("%", ""));
@@ -483,8 +485,10 @@ public class AFIPWSController {
 
     /**
      * Convert a Date to a formatted XML Date String (yyyyMMdd)
+     *
      * @param fecha To be converted
-     * @return A XML Date String formatted. If <tt>fecha</tt> == null, returns null.
+     * @return A XML Date String formatted. If <tt>fecha</tt> == null, returns
+     * null.
      */
     private String getXMLDate(Date fecha) {
         if (fecha == null) {
@@ -503,7 +507,6 @@ public class AFIPWSController {
             panelWSFE = new WSFEVetificacionPanel();
             //implement del botón para obtener cotización de moneda según AFIP
             panelWSFE.getBtnGetCotizAFIP().addActionListener(new ActionListener() {
-
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     try {
@@ -541,9 +544,8 @@ public class AFIPWSController {
         panelWSFE.getTfTotalIVAs().setText(UTIL.PRECIO_CON_PUNTO.format(fv.getImporte() - fv.getGravado()));
         panelWSFE.getTfTotalTributos().setText(UTIL.PRECIO_CON_PUNTO.format(0));
         panelWSFE.getTfTotal().setText(UTIL.PRECIO_CON_PUNTO.format(fv.getImporte()));
-        final JDABM jDABM1 = new JDABM(null, true, panelWSFE);
+        final JDABM jDABM1 = new JDABM(null, null, true, panelWSFE);
         jDABM1.getbAceptar().addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 CbteTipo cbteTipo = (CbteTipo) panelWSFE.getCbComprobantes().getSelectedItem();
@@ -568,7 +570,6 @@ public class AFIPWSController {
             }
         });
         jDABM1.getbCancelar().addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 jDABM1.dispose();

@@ -1,6 +1,7 @@
 package entity;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,13 +13,16 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 /**
  *
  * @author Administrador
  */
 @Entity
-@Table(name = "detalle_remesa")
+@Table(name = "detalle_remesa", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"remesa", "factura_compra"})
+})
 @NamedQueries({
     @NamedQuery(name = "DetalleRemesa.findAll", query = "SELECT d FROM DetalleRemesa d"),
     @NamedQuery(name = "DetalleRemesa.findById", query = "SELECT d FROM DetalleRemesa d WHERE d.id = :id")
@@ -32,8 +36,8 @@ public class DetalleRemesa implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Basic(optional = false)
-    @Column(name = "monto_entrega", nullable = false)
-    private double montoEntrega;
+    @Column(name = "monto_entrega", nullable = false, precision = 12, scale = 2)
+    private BigDecimal montoEntrega;
     @Column(name = "observacion", length = 200)
     private String observacion;
     @JoinColumn(name = "factura_compra", referencedColumnName = "id", nullable = false)
@@ -45,6 +49,7 @@ public class DetalleRemesa implements Serializable {
     @Basic(optional = false)
     @Column(nullable = false)
     private boolean anulado;
+    @Deprecated
     @Column(name = "acreditado", insertable = true, updatable = false, nullable = false)
     private boolean acreditado;
 
@@ -55,11 +60,6 @@ public class DetalleRemesa implements Serializable {
         this.id = id;
     }
 
-    public DetalleRemesa(Integer id, double montoEntrega) {
-        this.id = id;
-        this.montoEntrega = montoEntrega;
-    }
-
     public Integer getId() {
         return id;
     }
@@ -68,11 +68,11 @@ public class DetalleRemesa implements Serializable {
         this.id = id;
     }
 
-    public double getMontoEntrega() {
+    public BigDecimal getMontoEntrega() {
         return montoEntrega;
     }
 
-    public void setMontoEntrega(double montoEntrega) {
+    public void setMontoEntrega(BigDecimal montoEntrega) {
         this.montoEntrega = montoEntrega;
     }
 
@@ -108,10 +108,12 @@ public class DetalleRemesa implements Serializable {
         this.anulado = anulado;
     }
 
+    @Deprecated
     public boolean isAcreditado() {
         return acreditado;
     }
 
+    @Deprecated
     public void setAcreditado(boolean acreditado) {
         this.acreditado = acreditado;
     }
@@ -138,6 +140,6 @@ public class DetalleRemesa implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.DetalleRemesa[id=" + id + "]";
+        return "DetalleRemesa{" + "id=" + id + ", montoEntrega=" + montoEntrega + ", observacion=" + observacion + ", facturaCompra=" + facturaCompra + ", anulado=" + anulado + ", acreditado=" + acreditado + '}';
     }
 }

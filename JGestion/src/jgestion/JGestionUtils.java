@@ -1,5 +1,6 @@
 package jgestion;
 
+import entity.enums.CuentaBancaria;
 import entity.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -53,13 +54,21 @@ public class JGestionUtils {
         return l;
     }
 
+    public static List<ComboBoxWrapper<Marca>> getWrappedMarcas(List<Marca> list) {
+        List<ComboBoxWrapper<Marca>> l = new ArrayList<ComboBoxWrapper<Marca>>(list.size());
+        for (Marca o : list) {
+            l.add(new ComboBoxWrapper<Marca>(o, o.getId(), o.getNombre()));
+        }
+        return l;
+    }
+
     private JGestionUtils() {
     }
 
-    public static List<ComboBoxWrapper<Cuentabancaria>> getWrappedCuentasBancarias(List<Cuentabancaria> list) {
-        List<ComboBoxWrapper<Cuentabancaria>> l = new ArrayList<ComboBoxWrapper<Cuentabancaria>>(list.size());
-        for (Cuentabancaria o : list) {
-            l.add(new ComboBoxWrapper<Cuentabancaria>(o, o.getId(), o.getNumero().toString()));
+    public static List<ComboBoxWrapper<CuentaBancaria>> getWrappedCuentasBancarias(List<CuentaBancaria> list) {
+        List<ComboBoxWrapper<CuentaBancaria>> l = new ArrayList<ComboBoxWrapper<CuentaBancaria>>(list.size());
+        for (CuentaBancaria o : list) {
+            l.add(new ComboBoxWrapper<CuentaBancaria>(o, o.getId(), o.getNumero().toString()));
         }
         return l;
     }
@@ -92,7 +101,7 @@ public class JGestionUtils {
         if (o.getNumero() == 0) {
             return "FI" + UTIL.AGREGAR_CEROS(o.getSucursal().getPuntoVenta(), 4) + "-" + UTIL.AGREGAR_CEROS(o.getMovimientoInterno(), 8);
         } else {
-            return o.getTipo() + UTIL.AGREGAR_CEROS(o.getSucursal().getPuntoVenta(), 4) + "-" + UTIL.AGREGAR_CEROS(o.getNumero(), 8);
+            return "F" + o.getTipo() + UTIL.AGREGAR_CEROS(o.getSucursal().getPuntoVenta(), 4) + "-" + UTIL.AGREGAR_CEROS(o.getNumero(), 8);
         }
     }
 
@@ -132,6 +141,12 @@ public class JGestionUtils {
     public static String getNumeracion(NotaCredito o, boolean conGuion) {
         String guion = conGuion ? "-" : "";
         return UTIL.AGREGAR_CEROS(o.getSucursal().getPuntoVenta(), 4) + guion + UTIL.AGREGAR_CEROS(o.getNumero(), 8);
+    }
+    
+    public static String getNumeracion(NotaCreditoProveedor o, boolean conGuion) {
+        String guion = conGuion ? "-" : "";
+        String numero  = UTIL.AGREGAR_CEROS(o.getNumero(), 12);
+        return numero.substring(0, 4) + guion + numero.substring(4);
     }
 
     public static String getNumeracion(Remesa o, boolean conGuion) {

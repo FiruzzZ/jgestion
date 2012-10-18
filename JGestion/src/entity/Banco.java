@@ -1,5 +1,6 @@
 package entity;
 
+import entity.enums.CuentaBancaria;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Collection;
@@ -44,7 +45,7 @@ public class Banco implements Serializable {
     @Column(length = 100)
     private String webpage;
     @OneToMany(mappedBy = "banco")
-    private List<Cuentabancaria> cuentasbancaria;
+    private List<CuentaBancaria> cuentasbancaria;
 
     public Banco() {
     }
@@ -79,11 +80,11 @@ public class Banco implements Serializable {
         this.webpage = webpage;
     }
 
-    public List<Cuentabancaria> getCuentasbancaria() {
+    public List<CuentaBancaria> getCuentasbancaria() {
         return cuentasbancaria;
     }
 
-    public void setCuentasbancaria(List<Cuentabancaria> cuentasbancaria) {
+    public void setCuentasbancaria(List<CuentaBancaria> cuentasbancaria) {
         this.cuentasbancaria = cuentasbancaria;
     }
 

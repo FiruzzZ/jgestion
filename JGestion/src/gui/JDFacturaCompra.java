@@ -6,6 +6,7 @@
 package gui;
 
 import java.awt.Color;
+import java.awt.Window;
 import java.awt.event.*;
 import utilities.general.UTIL;
 import javax.swing.JButton;
@@ -29,14 +30,13 @@ public class JDFacturaCompra extends javax.swing.JDialog {
      *
      * @param parent
      * @param modal
-     * @param modo_view 1= FacturaCompra, 2= OrdenCompra
+     * @param modo_view 1= FacturaCompra, 2= OrdenCompra, 3=NotaCreditoProveedor
      */
-    public JDFacturaCompra(JFrame parent, boolean modal, int modo_view) {
-        super(parent, modal);
+    public JDFacturaCompra(Window parent, boolean modal) {
+        super(parent, modal ? DEFAULT_MODALITY_TYPE : ModalityType.MODELESS);
         initComponents();
         setLocation(this.getOwner().getX() + 100, this.getOwner().getY() + 50);
         labelCodigoNoRegistrado.setVisible(false);
-        dcFechaFactura.setDate(new java.util.Date());
     }
 
     /**
@@ -62,7 +62,7 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         tfFacturaCuarto = new javax.swing.JTextField();
         tfFacturaOcteto = new javax.swing.JTextField();
         labelFacturaTipo = new javax.swing.JLabel();
-        jLabel20 = new javax.swing.JLabel();
+        labelSucursal = new javax.swing.JLabel();
         cbSucursal = new javax.swing.JComboBox();
         cbCaja = new javax.swing.JComboBox();
         labelCaja = new javax.swing.JLabel();
@@ -198,7 +198,7 @@ public class JDFacturaCompra extends javax.swing.JDialog {
 
         labelFacturaTipo.setText("Tipo");
 
-        jLabel20.setText("Sucursal");
+        labelSucursal.setText("Sucursal");
 
         cbCaja.setName("caja"); // NOI18N
 
@@ -222,7 +222,7 @@ public class JDFacturaCompra extends javax.swing.JDialog {
             .addGroup(panelDatosCompraLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panelDatosCompraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel20)
+                    .addComponent(labelSucursal)
                     .addComponent(labelProveedor)
                     .addComponent(labelFecha))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -284,7 +284,7 @@ public class JDFacturaCompra extends javax.swing.JDialog {
                     .addComponent(cbFormaPago, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelDatosCompraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel20)
+                    .addComponent(labelSucursal)
                     .addComponent(cbSucursal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(labelCaja)
                     .addComponent(cbCaja, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -307,6 +307,8 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         tfGravado.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         tfGravado.setText("0");
         tfGravado.setToolTipText("Neto - Descuento");
+        tfGravado.setFocusable(false);
+        tfGravado.setRequestFocusEnabled(false);
 
         tfTotal.setEditable(false);
         tfTotal.setColumns(8);
@@ -314,6 +316,8 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         tfTotal.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         tfTotal.setText("0");
         tfTotal.setToolTipText(getDetailTotal());
+        tfTotal.setFocusable(false);
+        tfTotal.setRequestFocusEnabled(false);
 
         jLabel13.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel13.setText("Total");
@@ -325,6 +329,8 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         tfTotalIVA21.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         tfTotalIVA21.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         tfTotalIVA21.setText("0");
+        tfTotalIVA21.setFocusable(false);
+        tfTotalIVA21.setRequestFocusEnabled(false);
 
         jLabel16.setText("IVA 10,5%");
 
@@ -333,6 +339,8 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         tfTotalIVA105.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         tfTotalIVA105.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         tfTotalIVA105.setText("0");
+        tfTotalIVA105.setFocusable(false);
+        tfTotalIVA105.setRequestFocusEnabled(false);
 
         jLabel1.setText("Perc. IIBB");
 
@@ -341,6 +349,8 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         tfTotalPercepcion.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         tfTotalPercepcion.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         tfTotalPercepcion.setText("0");
+        tfTotalPercepcion.setFocusable(false);
+        tfTotalPercepcion.setRequestFocusEnabled(false);
 
         jLabel2.setText("Otros Imp. Recup.");
 
@@ -350,6 +360,8 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         tfTotalOtrosImpuestos.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         tfTotalOtrosImpuestos.setText("0");
         tfTotalOtrosImpuestos.setToolTipText("Otros Impuestos Recuperables (Ej.: IVA 27%)");
+        tfTotalOtrosImpuestos.setFocusable(false);
+        tfTotalOtrosImpuestos.setRequestFocusEnabled(false);
 
         jLabel5.setText("Imp. No Recu");
 
@@ -358,7 +370,10 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         tfTotalImpuestosNoRecuperables.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         tfTotalImpuestosNoRecuperables.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         tfTotalImpuestosNoRecuperables.setText("0");
-        tfTotalImpuestosNoRecuperables.setToolTipText("Otros Impuestos Recuperables (Ej.: IVA 27%)");
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("resources"); // NOI18N
+        tfTotalImpuestosNoRecuperables.setToolTipText(bundle.getString("help.impuestosnorecuperables")); // NOI18N
+        tfTotalImpuestosNoRecuperables.setFocusable(false);
+        tfTotalImpuestosNoRecuperables.setRequestFocusEnabled(false);
 
         jLabel30.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel30.setText("No Gravado");
@@ -367,7 +382,9 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         tfTotalNoGravado.setColumns(6);
         tfTotalNoGravado.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         tfTotalNoGravado.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        tfTotalNoGravado.setText("0.00");
+        tfTotalNoGravado.setText("0");
+        tfTotalNoGravado.setFocusable(false);
+        tfTotalNoGravado.setRequestFocusEnabled(false);
 
         javax.swing.GroupLayout panelResumenLayout = new javax.swing.GroupLayout(panelResumen);
         panelResumen.setLayout(panelResumenLayout);
@@ -476,7 +493,7 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         tfOtrosImpuestosRecuperables.setColumns(8);
         tfOtrosImpuestosRecuperables.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         tfOtrosImpuestosRecuperables.setText("0");
-        tfOtrosImpuestosRecuperables.setToolTipText("");
+        tfOtrosImpuestosRecuperables.setToolTipText(bundle.getString("help.impuestosrecuperables")); // NOI18N
         tfOtrosImpuestosRecuperables.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 xxx(evt);
@@ -507,7 +524,6 @@ public class JDFacturaCompra extends javax.swing.JDialog {
 
         jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/16px_blue_system-help.png"))); // NOI18N
         jLabel3.setText(" ");
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("resources"); // NOI18N
         jLabel3.setToolTipText(bundle.getString("help.impuestosnorecuperables")); // NOI18N
 
         jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/16px_blue_system-help.png"))); // NOI18N
@@ -659,11 +675,13 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         btnDEL.setRequestFocusEnabled(false);
 
         labelPrecioActual.setText("Precio Ac.");
+        labelPrecioActual.setToolTipText("Precio Actual");
 
         tfProductoPrecioActual.setEditable(false);
         tfProductoPrecioActual.setColumns(6);
         tfProductoPrecioActual.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         tfProductoPrecioActual.setToolTipText("<html>\nPrecio actual del producto\n<br>(última compra)\n</html>");
+        tfProductoPrecioActual.setFocusable(false);
         tfProductoPrecioActual.setRequestFocusEnabled(false);
 
         labelCodigoNoRegistrado.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
@@ -843,7 +861,8 @@ public class JDFacturaCompra extends javax.swing.JDialog {
     }//GEN-LAST:event_cbFormaPagoActionPerformed
 
     private void tfDiasKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfDiasKeyTyped
-        soloNumeros(evt);
+        SwingUtil.checkInputDigit(evt);
+
     }//GEN-LAST:event_tfDiasKeyTyped
 
     private void tfFacturaCuartoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfFacturaCuartoFocusLost
@@ -855,11 +874,13 @@ public class JDFacturaCompra extends javax.swing.JDialog {
     }//GEN-LAST:event_tfFacturaOctetoFocusLost
 
     private void tfFacturaCuartoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfFacturaCuartoKeyTyped
-        soloNumeros(evt);
+        SwingUtil.checkInputDigit(evt, false, 4);
+
     }//GEN-LAST:event_tfFacturaCuartoKeyTyped
 
     private void tfFacturaOctetoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfFacturaOctetoKeyTyped
-        soloNumeros(evt);
+        SwingUtil.checkInputDigit(evt, false, 8);
+
     }//GEN-LAST:event_tfFacturaOctetoKeyTyped
 
     private void cbFormaPagoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_cbFormaPagoFocusLost
@@ -955,7 +976,6 @@ public class JDFacturaCompra extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel30;
@@ -979,6 +999,7 @@ public class JDFacturaCompra extends javax.swing.JDialog {
     private javax.swing.JLabel labelPrecioActual;
     private javax.swing.JLabel labelPrecioUnit;
     private javax.swing.JLabel labelProveedor;
+    private javax.swing.JLabel labelSucursal;
     private javax.swing.JPanel panelDatosCompra;
     private javax.swing.JPanel panelOpcionesCompra;
     private javax.swing.JPanel panelProducto;
@@ -1031,14 +1052,15 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         try {
             jTable1.addMouseListener((MouseListener) o);
         } catch (ClassCastException e) {
+            //ignored..
         }
-        tfProductoCodigo.addKeyListener((KeyListener) o);
-        tfFacturaCuarto.addKeyListener((KeyListener) o);
-        tfFacturaOcteto.addKeyListener((KeyListener) o);
-    }
-
-    private void soloNumeros(KeyEvent evt) {
-        SwingUtil.checkInputDigit(evt);
+        try {
+            tfProductoCodigo.addKeyListener((KeyListener) o);
+            tfFacturaCuarto.addKeyListener((KeyListener) o);
+            tfFacturaOcteto.addKeyListener((KeyListener) o);
+        } catch (ClassCastException e) {
+            //ignored..
+        }
     }
 
     public JTextField getTfProductoCodigo() {
@@ -1257,7 +1279,7 @@ public class JDFacturaCompra extends javax.swing.JDialog {
     public void limpiarPanelDatos() {
         tfFacturaCuarto.setText("");
         tfFacturaOcteto.setText("");
-        cbFormaPago.setSelectedIndex(0);
+        cbFormaPago.setSelectedIndex(cbFormaPago.getItemCount() > 0 ? 0 : -1);
         tfDias.setText("");
         tfPercIIBB.setText("0");
         tfOtrosImpuestosRecuperables.setText("0");
@@ -1310,7 +1332,7 @@ public class JDFacturaCompra extends javax.swing.JDialog {
      * labelPrecioActual y tfProductoPrecioActual se usan para mostrar el stock
      * general del producto seleccionado.
      */
-    public void panelToOrden() {
+    public void setUIToOrden() {
         bBuscarProducto.setVisible(false);
         panelResumen.setVisible(false);
         labelProveedor.setVisible(false);
@@ -1347,6 +1369,31 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         tfOtrosImpuestosRecuperables.setVisible(false);
         jLabel19.setVisible(false);
         tfOtrosImpuestosNoRecuperables.setVisible(false);
+    }
+
+    public void setUIToNotaCredito() {
+        ((TitledBorder) panelDatosCompra.getBorder()).setTitle("Datos de Nota Crédito");
+        labelFacturaTipo.setVisible(false);
+        cbFacturaTipo.setVisible(false);
+        labelFormaPago.setVisible(false);
+        cbFormaPago.setVisible(false);
+        labelDias.setVisible(false);
+        tfDias.setVisible(false);
+        labelMovimiento.setVisible(false);
+        tfNumMovimiento.setVisible(false);
+        labelSucursal.setVisible(false);
+        cbSucursal.setVisible(false);
+        labelCaja.setVisible(false);
+        cbCaja.setVisible(false);
+        labelDescuento.setVisible(false);
+        cbDesc.setVisible(false);
+        tfDescuento.setVisible(false);
+        panelOpcionesCompra.setVisible(false);
+        jLabel1.setVisible(false);
+        tfTotalImpuestosNoRecuperables.setVisible(false);
+        jLabel5.setVisible(false);
+        tfTotalPercepcion.setVisible(false);
+        pack();
     }
 
     public JButton getbBuscarProducto() {
@@ -1393,5 +1440,13 @@ public class JDFacturaCompra extends javax.swing.JDialog {
                 + "<br>No Gravado: <b>$" + tfTotalNoGravado.getText() + "</b>"
                 + "<br>TOTAL     : <b>$" + tfTotal.getText() + "</b>"
                 + "</html>";
+    }
+
+    public void limpiarPanel() {
+        limpiarPanelDatos();
+        limpiarPanelProducto();
+        getDtm().setRowCount(0);
+        limpiarResumen();
+        setTfNumMovimiento("");
     }
 }
