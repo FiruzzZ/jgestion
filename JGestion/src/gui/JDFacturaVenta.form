@@ -275,6 +275,7 @@
             </Property>
             <Property name="horizontalAlignment" type="int" value="0"/>
             <Property name="text" type="java.lang.String" value="12345678"/>
+            <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;&#xa;D&#xe9;bido a la caracter&#xed;stica multi-usuario del sistema, el n&#xfa;mero de comprobante es representativo y puede&#xa;&lt;br&gt; diferir del n&#xfa;mero final que se asignar&#xe1; una vez finalizada y aceptada la creaci&#xf3;n del mismo.&#xa;&lt;/html&gt;"/>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="requestFocusEnabled" type="boolean" value="false"/>
           </Properties>

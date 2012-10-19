@@ -268,7 +268,7 @@ public class RemesaController implements ActionListener, FocusListener {
 
     private void displayABMChequeTerceros() throws MessageException {
         ChequeTerceros cheque = null;
-        JDialog jd = new ChequeTercerosController().initManager(jdReRe, null, ChequeEstado.CARTERA);
+        JDialog jd = new ChequeTercerosController().initManagerTerceros(jdReRe, null, ChequeEstado.CARTERA);
         jd.setLocationRelativeTo(jdReRe);
         jd.setVisible(true);
         System.out.println("COLGO?");

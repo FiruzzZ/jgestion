@@ -1139,8 +1139,8 @@ public class JFP extends javax.swing.JFrame implements Runnable {
     private void jMenuItem30ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem30ActionPerformed
         try {
             new CtacteClienteJpaController().initResumenCtaCte(this, false);
-        } catch (Exception ex) {
-            showError(ex.getMessage());
+        } catch (MessageException ex) {
+            ex.displayMessage(this);
         }
         refreshConnectionDB();
     }//GEN-LAST:event_jMenuItem30ActionPerformed
@@ -1361,19 +1361,19 @@ private void jMenuItem59ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
 }//GEN-LAST:event_jMenuItem59ActionPerformed
 
 private void jMenuItem60ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem60ActionPerformed
-        try {
-    new ChequePropioController().initManager(this, null).setVisible(true);
-        } catch (MessageException ex) {
+    try {
+        new ChequePropioController().initManager(this, null).setVisible(true);
+    } catch (MessageException ex) {
         JOptionPane.showMessageDialog(this, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
     }
 }//GEN-LAST:event_jMenuItem60ActionPerformed
 
 private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem56ActionPerformed
-        try {
-            new ChequeTercerosController().initManager(this, null, null).setVisible(true);
-        } catch (MessageException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
-        }
+    try {
+        new ChequeTercerosController().initManagerTerceros(this, null, null).setVisible(true);
+    } catch (MessageException ex) {
+        JOptionPane.showMessageDialog(this, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+    }
 }//GEN-LAST:event_jMenuItem56ActionPerformed
 
     private void jMenuItem55ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem55ActionPerformed

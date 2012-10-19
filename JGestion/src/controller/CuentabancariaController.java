@@ -2,7 +2,6 @@ package controller;
 
 import controller.exceptions.MessageException;
 import entity.Banco;
-import entity.CuentaBancaria;
 import gui.JDABM;
 import gui.JDContenedor;
 import gui.PanelABMCuentabancaria;

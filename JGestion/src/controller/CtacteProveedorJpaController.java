@@ -340,7 +340,7 @@ public class CtacteProveedorJpaController implements ActionListener {
          filter_date = "";
       }
       r.addParameter("FILTER_DATE", filter_date);
-      r.printReport(true);
+      r.viewReport();
    }
 
    private void cargarComboBoxRecibosDeCtaCte(CtacteProveedor ctacteProveedor) {

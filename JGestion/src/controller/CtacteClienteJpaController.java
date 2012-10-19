@@ -10,6 +10,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -29,6 +31,7 @@ import javax.swing.table.DefaultTableModel;
 import jgestion.JGestionUtils;
 import org.apache.log4j.Logger;
 import utilities.swing.components.ComboBoxWrapper;
+import utilities.swing.components.NumberRenderer;
 
 /**
  *
@@ -221,7 +224,6 @@ public class CtacteClienteJpaController implements ActionListener {
         UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
         resumenCtaCtes = new JDResumenCtaCtes(frame, modal, true);
         resumenCtaCtes.getjTableResumen().addMouseListener(new MouseAdapter() {
-
             @Override
             public void mouseReleased(MouseEvent e) {
                 Integer selectedRow = resumenCtaCtes.getjTableResumen().getSelectedRow();
@@ -232,7 +234,6 @@ public class CtacteClienteJpaController implements ActionListener {
             }
         });
         resumenCtaCtes.getbBuscar().addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -246,7 +247,6 @@ public class CtacteClienteJpaController implements ActionListener {
             }
         });
         resumenCtaCtes.getbImprimir().addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -260,7 +260,6 @@ public class CtacteClienteJpaController implements ActionListener {
             }
         });
         resumenCtaCtes.getCbReRes().addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (resumenCtaCtes.getCbReRes().isFocusOwner()) {
@@ -274,11 +273,16 @@ public class CtacteClienteJpaController implements ActionListener {
                 resumenCtaCtes.getjTableResumen(),
                 new String[]{"ctacteClienteID", "Detalle", "Fecha", "Vencimiento", "Debe", "Haber", "Saldo", "Acumulativo", "estadoCCC"},
                 new int[]{1, 60, 50, 50, 30, 30, 30, 50, 1});
+        resumenCtaCtes.getjTableResumen().getColumnModel().getColumn(4).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        resumenCtaCtes.getjTableResumen().getColumnModel().getColumn(5).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        resumenCtaCtes.getjTableResumen().getColumnModel().getColumn(6).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        resumenCtaCtes.getjTableResumen().getColumnModel().getColumn(7).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         UTIL.hideColumnsTable(resumenCtaCtes.getjTableResumen(), new int[]{0, 8});
         UTIL.getDefaultTableModel(
                 resumenCtaCtes.getjTableDetalle(),
                 new String[]{"Nº Factura", "Observación", "Monton"},
                 new int[]{60, 100, 50});
+        resumenCtaCtes.getjTableDetalle().getColumnModel().getColumn(0).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         resumenCtaCtes.setListener(this);
         resumenCtaCtes.setLocation(resumenCtaCtes.getOwner().getX() + 100, resumenCtaCtes.getY() + 100);
         resumenCtaCtes.setVisible(true);
@@ -331,19 +335,19 @@ public class CtacteClienteJpaController implements ActionListener {
     }
 
     private void cargarTablaResumen(String query) {
-        DefaultTableModel dtm = resumenCtaCtes.getDtmResumen();
-        UTIL.limpiarDtm(dtm);
+        DefaultTableModel dtm = (DefaultTableModel) resumenCtaCtes.getjTableResumen().getModel();
+        dtm.setRowCount(0);
         List<CtacteCliente> cccList = DAO.getEntityManager().createNativeQuery(query, CtacteCliente.class).getResultList();
 
         //agregar la 1er fila a la tabla
-        double saldoAcumulativo = (totalDebe - totalHaber);
-        dtm.addRow(new Object[]{null, "RESUMEN PREVIO", null, null, UTIL.PRECIO_CON_PUNTO.format(totalDebe), UTIL.PRECIO_CON_PUNTO.format(totalHaber), null, UTIL.PRECIO_CON_PUNTO.format(saldoAcumulativo)});
+        BigDecimal saldoAcumulativo = BigDecimal.valueOf(totalDebe - totalHaber).setScale(2, RoundingMode.HALF_EVEN);
+        dtm.addRow(new Object[]{null, "RESUMEN PREVIO", null, null, BigDecimal.valueOf(totalDebe), BigDecimal.valueOf(totalHaber), null, saldoAcumulativo});
         for (CtacteCliente ctaCte : cccList) {
             FacturaVenta factura = ctaCte.getFactura();
             //checkea que no esté anulada la ccc
             boolean isAnulada = (ctaCte.getEstado() == 3);
             if (!isAnulada) {
-                saldoAcumulativo += ctaCte.getImporte() - ctaCte.getEntregado();
+                saldoAcumulativo = saldoAcumulativo.add(BigDecimal.valueOf(ctaCte.getImporte() - ctaCte.getEntregado()));
             }
 
             dtm.addRow(new Object[]{
@@ -351,10 +355,10 @@ public class CtacteClienteJpaController implements ActionListener {
                         JGestionUtils.getNumeracion(factura),
                         UTIL.DATE_FORMAT.format(factura.getFechaVenta()),
                         UTIL.DATE_FORMAT.format(UTIL.customDateByDays(factura.getFechaVenta(), ctaCte.getDias())),
-                        UTIL.PRECIO_CON_PUNTO.format(ctaCte.getImporte()),
-                        isAnulada ? "ANULADA" : UTIL.PRECIO_CON_PUNTO.format(ctaCte.getEntregado()),
-                        isAnulada ? "ANULADA" : UTIL.PRECIO_CON_PUNTO.format(ctaCte.getImporte() - ctaCte.getEntregado()),
-                        isAnulada ? "ANULADA" : UTIL.PRECIO_CON_PUNTO.format(saldoAcumulativo),
+                        BigDecimal.valueOf(ctaCte.getImporte()),
+                        isAnulada ? "ANULADA" : BigDecimal.valueOf(ctaCte.getEntregado()),
+                        isAnulada ? "ANULADA" : BigDecimal.valueOf(ctaCte.getImporte() - ctaCte.getEntregado()),
+                        isAnulada ? "ANULADA" : saldoAcumulativo,
                         ctaCte.getEstado()
                     });
         }
@@ -366,7 +370,7 @@ public class CtacteClienteJpaController implements ActionListener {
         r.addParameter("CLIENTE_ID", cliente.getId());
         r.addParameter("SUBREPORT_DIR", Reportes.FOLDER_REPORTES);
         r.addParameter("FILTER_DATE", filterdate == null ? "" : filterdate);
-        r.printReport(true);
+        r.viewReport();
     }
 
     /**
@@ -404,14 +408,14 @@ public class CtacteClienteJpaController implements ActionListener {
     }
 
     private void cargarTablaDetallesDeCtaCte(Recibo recibo) {
-        DefaultTableModel dtm = resumenCtaCtes.getDtmDetalle();
-        UTIL.limpiarDtm(dtm);
+        DefaultTableModel dtm = (DefaultTableModel) resumenCtaCtes.getjTableDetalle().getModel();
+        dtm.setRowCount(0);
         List<DetalleRecibo> detalleReciboList = recibo.getDetalleReciboList();
         for (DetalleRecibo detalleRecibo : detalleReciboList) {
             dtm.addRow(new Object[]{
-                        UTIL.AGREGAR_CEROS(detalleRecibo.getFacturaVenta().getNumero(), 12),
+                        JGestionUtils.getNumeracion(detalleRecibo.getFacturaVenta()),
                         detalleRecibo.getObservacion(),
-                        UTIL.PRECIO_CON_PUNTO.format(detalleRecibo.getMontoEntrega())
+                        detalleRecibo.getMontoEntrega()
                     });
         }
     }
@@ -433,8 +437,8 @@ public class CtacteClienteJpaController implements ActionListener {
     }
 
     /**
-     * Inicia una UI de busqueda y chequeo de vencimientos de {@link CtacteCliente}
-     * y {@link CtacteProveedor}
+     * Inicia una UI de busqueda y chequeo de vencimientos de
+     * {@link CtacteCliente} y {@link CtacteProveedor}
      *
      * @param owner el papi de la ventana
      */
@@ -442,7 +446,6 @@ public class CtacteClienteJpaController implements ActionListener {
         UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
         panelCCCheck = new PanelCtaCteCheckVencimientos();
         panelCCCheck.getCbEntidadElegida().addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 int index = panelCCCheck.getCbEntidadElegida().getSelectedIndex();
@@ -466,7 +469,6 @@ public class CtacteClienteJpaController implements ActionListener {
         defaultTableCellRender.setHorizontalAlignment(JLabel.RIGHT);
         buscador.getjTable1().setDefaultRenderer(String.class, defaultTableCellRender);
         buscador.getbBuscar().addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -483,7 +485,6 @@ public class CtacteClienteJpaController implements ActionListener {
             }
         });
         buscador.getbImprimir().addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {

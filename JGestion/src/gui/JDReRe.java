@@ -88,7 +88,7 @@ public class JDReRe extends javax.swing.JDialog {
         tfTotalAPagar = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         checkOcultarDatos = new javax.swing.JCheckBox();
-        jPanel3 = new javax.swing.JPanel();
+        panelPagos = new javax.swing.JPanel();
         cbFormasDePago = new javax.swing.JComboBox();
         btnAddPago = new javax.swing.JButton();
         btnDelPago = new javax.swing.JButton();
@@ -438,7 +438,7 @@ public class JDReRe extends javax.swing.JDialog {
             }
         });
 
-        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Formas de Pago"));
+        panelPagos.setBorder(javax.swing.BorderFactory.createTitledBorder("Formas de Pago"));
 
         cbFormasDePago.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Efectivo", "Cheque Propio", "Cheque Tercero", "Nota de Crédito", "Retención" }));
 
@@ -450,11 +450,11 @@ public class JDReRe extends javax.swing.JDialog {
         btnDelPago.setName("del"); // NOI18N
         btnDelPago.setRequestFocusEnabled(false);
 
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
+        javax.swing.GroupLayout panelPagosLayout = new javax.swing.GroupLayout(panelPagos);
+        panelPagos.setLayout(panelPagosLayout);
+        panelPagosLayout.setHorizontalGroup(
+            panelPagosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelPagosLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(cbFormasDePago, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -463,11 +463,11 @@ public class JDReRe extends javax.swing.JDialog {
                 .addComponent(btnDelPago, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+        panelPagosLayout.setVerticalGroup(
+            panelPagosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelPagosLayout.createSequentialGroup()
+                .addGroup(panelPagosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelPagosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(cbFormasDePago, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(btnAddPago, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(btnDelPago, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -538,7 +538,7 @@ public class JDReRe extends javax.swing.JDialog {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 395, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(panelPagos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel12)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -565,7 +565,7 @@ public class JDReRe extends javax.swing.JDialog {
                 .addGap(0, 0, 0)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(panelPagos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
@@ -648,13 +648,13 @@ private void tfEntregaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:even
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel labelClienteProveedor;
     private javax.swing.JLabel labelCreditoDebito;
     private javax.swing.JLabel labelReRe;
     private javax.swing.JLabel labelRestanteCreditoDebito;
+    private javax.swing.JPanel panelPagos;
     private javax.swing.JTable tableAPagar;
     private javax.swing.JTable tablePagos;
     private javax.swing.JTextField tfCreditoDebitoDisponible;
@@ -831,8 +831,12 @@ private void tfEntregaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:even
     public JPanel getjPanel2() {
         return jPanel2;
     }
-    // </editor-fold>
 
+    public JPanel getPanelPagos() {
+        return panelPagos;
+    }
+
+    // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="SETTERS">
     public void setDcFechaReRe(Date dcFecha) {
         this.dcFechaReRe.setDate(dcFecha);

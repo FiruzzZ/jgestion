@@ -1,6 +1,6 @@
 package jgestion;
 
-import entity.CuentaBancaria;
+import controller.CuentaBancaria;
 import entity.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;

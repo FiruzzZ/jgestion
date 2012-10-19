@@ -32,6 +32,7 @@ import jpa.controller.ChequeTercerosJpaController;
 import org.apache.log4j.Logger;
 import utilities.general.UTIL;
 import utilities.swing.components.ComboBoxWrapper;
+import utilities.swing.components.NumberRenderer;
 
 /**
  *
@@ -48,7 +49,7 @@ public class ChequeTercerosController implements ActionListener {
     //exclusively related to the GUI
     private JDChequesManager jdChequeManager;
     private final String[] columnNames = {"id", "Nº Cheque", "F. Cheque", "Emisor", "F. Cobro", "Banco", "Sucursal", "Importe", "Estado", "Librado", "Cruzado", "Endosatario", "F. Endoso", "C. Ingreso", "C. Egreso", "Observacion", "Usuario"};
-    private final int[] columnWidths = {1, 50, 50, 100, 50, 70, 70, 50, 30, 30, 20, 50};
+    private final int[] columnWidths = {1,          80,             80,     100,        80,         100,    100,        100,        80,         80,     50,         100,            100,        150,        150,            100,        80};
     private final Class[] columnClassTypes = {Integer.class, Number.class, null, null, null, null, null, Number.class, null, null, Boolean.class, null};
     //Este se pone en el comboBox
     private final String[] orderByToComboBoxList = {"N° Cheque", "Fecha de Emisión", "Fecha de Cobro", "Importe", "Banco/Sucursal", "Cliente", "Estado"};
@@ -73,17 +74,17 @@ public class ChequeTercerosController implements ActionListener {
         UTIL.setSelectedItem(panelABM.getCbEmisor(), cliente);
         UTIL.loadComboBox(panelABM.getCbLibrado(), new LibradoJpaController().findEntities(), false);
 
-        panelABM.getCbBancos().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (panelABM.getCbBancos().getSelectedIndex() > 0) {
-                    Banco banco = (Banco) panelABM.getCbBancos().getSelectedItem();
-                    UTIL.loadComboBox(panelABM.getCbBancoSucursales(), new BancoSucursalController().findBy(banco), false);
-                } else {
-                    UTIL.loadComboBox(panelABM.getCbBancoSucursales(), null, null, "<Seleccionar un Banco>");
-                }
-            }
-        });
+//        panelABM.getCbBancos().addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                if (panelABM.getCbBancos().getSelectedIndex() > 0 && panelABM.getCbBancoSucursales().isVisible()) {
+//                    Banco banco = (Banco) panelABM.getCbBancos().getSelectedItem();
+//                    UTIL.loadComboBox(panelABM.getCbBancoSucursales(), new BancoSucursalController().findBy(banco), false);
+//                } else {
+//                    UTIL.loadComboBox(panelABM.getCbBancoSucursales(), null, null, "<Seleccionar un Banco>");
+//                }
+//            }
+//        });
         if (isEditing) {
             setPanel(EL_OBJECT);
         }
@@ -273,7 +274,7 @@ public class ChequeTercerosController implements ActionListener {
      * @return una instancia de {@link JDChequesManager}.
      * @throws MessageException
      */
-    public JDialog initManager(Window owner, ActionListener listener, ChequeEstado estado) throws MessageException {
+    public JDialog initManagerTerceros(Window owner, ActionListener listener, ChequeEstado estado) throws MessageException {
         UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
         initManager(owner);
         if (estado != null) {
@@ -288,6 +289,7 @@ public class ChequeTercerosController implements ActionListener {
             UTIL.loadComboBox(jdChequeManager.getCbEmisor(), JGestionUtils.getWrappedClientes(new ClienteController().findEntities()), true);
             jdChequeManager.setTitle("Administración de Cheques Terceros");
         }
+        jdChequeManager.setLocationRelativeTo(owner);
         return jdChequeManager;
     }
 
@@ -295,22 +297,27 @@ public class ChequeTercerosController implements ActionListener {
         jdChequeManager = new JDChequesManager(owner, true);
         UTIL.loadComboBox(jdChequeManager.getCbBancos(), JGestionUtils.getWrappedBancos(new BancoController().findEntities()), true);
 //        UTIL.loadComboBox(jdChequeManager.getCbBancoSucursales(), null, null, "<Seleccionar un Banco>");
+        jdChequeManager.getCbBancoSucursales().setVisible(false);
+        jdChequeManager.getLabelSucursales().setVisible(false);
+        jdChequeManager.getCbCuentaBancaria().setVisible(false);
+        jdChequeManager.getLabelCuentaBancaria().setVisible(false);
         UTIL.loadComboBox(jdChequeManager.getCbLibrado(), JGestionUtils.getWrappedLibrado(new LibradoJpaController().findEntities()), true);
         UTIL.loadComboBox(jdChequeManager.getCbEstados(), Arrays.asList(ChequeEstado.values()), true);
         UTIL.loadComboBox(jdChequeManager.getCbOrderBy(), Arrays.asList(orderByToComboBoxList), false);
         UTIL.getDefaultTableModel(jdChequeManager.getjTable1(), columnNames, columnWidths, columnClassTypes);
+        jdChequeManager.getjTable1().getColumnModel().getColumn(7).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         UTIL.hideColumnTable(jdChequeManager.getjTable1(), 0);
-        jdChequeManager.getCbBancos().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (jdChequeManager.getCbBancos().getSelectedIndex() > 0) {
-                    Banco banco = ((ComboBoxWrapper<Banco>) jdChequeManager.getCbBancos().getSelectedItem()).getEntity();
-                    UTIL.loadComboBox(jdChequeManager.getCbBancoSucursales(), new BancoSucursalController().findBy(banco), true);
-                } else {
-                    UTIL.loadComboBox(jdChequeManager.getCbBancoSucursales(), null, null, "<Seleccionar un Banco>");
-                }
-            }
-        });
+//        jdChequeManager.getCbBancos().addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                if (jdChequeManager.getCbBancos().getSelectedIndex() > 0) {
+//                    Banco banco = ((ComboBoxWrapper<Banco>) jdChequeManager.getCbBancos().getSelectedItem()).getEntity();
+//                    UTIL.loadComboBox(jdChequeManager.getCbBancoSucursales(), new BancoSucursalController().findBy(banco), true);
+//                } else {
+//                    UTIL.loadComboBox(jdChequeManager.getCbBancoSucursales(), null, null, "<Seleccionar un Banco>");
+//                }
+//            }
+//        });
     }
 
     private void cargarTablaChequeManager(String query) throws DatabaseErrorException {
@@ -365,11 +372,11 @@ public class ChequeTercerosController implements ActionListener {
             }
         }
         if (jdChequeManager.getCbBancos().getSelectedIndex() > 0) {
-            query.append(" AND c.banco=").append(((Banco) jdChequeManager.getCbBancos().getSelectedItem()).getId());
+            query.append(" AND c.banco=").append(((ComboBoxWrapper<Banco>) jdChequeManager.getCbBancos().getSelectedItem()).getId());
         }
-        if (jdChequeManager.getCbBancoSucursales().getSelectedIndex() > 0) {
-            query.append(" AND c.banco_sucursal=").append(((BancoSucursal) jdChequeManager.getCbBancoSucursales().getSelectedItem()).getId());
-        }
+//        if (jdChequeManager.getCbBancoSucursales().getSelectedIndex() > 0) {
+//            query.append(" AND c.banco_sucursal=").append(((BancoSucursal) jdChequeManager.getCbBancoSucursales().getSelectedItem()).getId());
+//        }
         if (jdChequeManager.getCbEmisor().getSelectedIndex() > 0) {
             query.append(" AND c.cliente=").append(((Cliente) jdChequeManager.getCbEmisor().getSelectedItem()).getId());
         }

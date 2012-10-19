@@ -101,15 +101,16 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
         jLabel5 = new javax.swing.JLabel();
         bLimpiar = new javax.swing.JButton();
         bBuscar = new javax.swing.JButton();
+        bImprimir = new javax.swing.JButton();
+        bExtra = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
-        bImprimir = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(900, 300));
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Filtro", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, null, new java.awt.Color(0, 0, 0)));
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Filtro"));
 
         labelCaja.setText("Caja");
 
@@ -296,8 +297,19 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
         });
 
         bBuscar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/lupa.png"))); // NOI18N
+        bBuscar.setMnemonic('b');
         bBuscar.setText("Buscar");
         bBuscar.setName("filtrarReRe"); // NOI18N
+
+        bImprimir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/impresora.png"))); // NOI18N
+        bImprimir.setMnemonic('i');
+        bImprimir.setText("Imprimir");
+        bImprimir.setName("imprimirFiltro"); // NOI18N
+
+        bExtra.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px_configure.png"))); // NOI18N
+        bExtra.setVisible(false);
+        bExtra.setMnemonic('e');
+        bExtra.setText("Editar");
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel());
         jTable1.addComponentListener(new java.awt.event.ComponentAdapter() {
@@ -306,10 +318,6 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
             }
         });
         jScrollPane1.setViewportView(jTable1);
-
-        bImprimir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/impresora.png"))); // NOI18N
-        bImprimir.setText("Imprimir");
-        bImprimir.setName("imprimirFiltro"); // NOI18N
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 10)); // NOI18N
         jLabel1.setText("Nº Registros: 0");
@@ -324,11 +332,12 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 902, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 49, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(bImprimir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(bBuscar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(bLimpiar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addComponent(bLimpiar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(bExtra, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING))
                 .addContainerGap())
         );
@@ -337,15 +346,17 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(bLimpiar, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(bBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(bImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 168, Short.MAX_VALUE)
+                        .addComponent(bImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(bExtra, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel1))
         );
@@ -390,6 +401,7 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
     }//GEN-LAST:event_jTable1ComponentResized
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton bBuscar;
+    private javax.swing.JButton bExtra;
     private javax.swing.JButton bImprimir;
     private javax.swing.JButton bLimpiar;
     private javax.swing.JComboBox cbCaja;
@@ -442,6 +454,7 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
         bBuscar.addActionListener((ActionListener) o);
         bLimpiar.addActionListener((ActionListener) o);
         bImprimir.addActionListener((ActionListener) o);
+        bExtra.addActionListener((ActionListener) o);
         try {
             jTable1.addMouseListener((MouseListener) o);
         } catch (ClassCastException ex) {
@@ -462,6 +475,10 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
 
     public JButton getbImprimir() {
         return bImprimir;
+    }
+
+    public JButton getbExtra() {
+        return bExtra;
     }
 
     public JButton getbLimpiar() {
