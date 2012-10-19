@@ -100,8 +100,11 @@ public class CuentabancariaController {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    remove(jpaController.find(Integer.valueOf(UTIL.getSelectedValue(contenedor.getjTable1(), 0).toString())));
-                    contenedor.showMessage("Eliminado..", jpaController.getEntityClass().getSimpleName(), 1);
+                    if (contenedor.getjTable1().getSelectedRow() > -1) {
+                        CuentaBancaria cb = getSelectedFromContenedor();
+                        remove(cb);
+                        contenedor.showMessage("Eliminado..", jpaController.getEntityClass().getSimpleName(), 1);
+                    }
                 } catch (MessageException ex) {
                     contenedor.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 2);
                 } catch (Exception ex) {

@@ -847,7 +847,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
     }
 
     private void setDatosFactura(final FacturaCompra factura, boolean paraAnular) throws MessageException {
-        jdFactura = new JDFacturaCompra(null, true);
+        jdFactura = new JDFacturaCompra(buscador, true);
         jdFactura.modoVista(false);
         jdFactura.setLocationRelativeTo(buscador);
         UTIL.getDefaultTableModel(jdFactura.getjTable1(), colsName, colsWidth);
