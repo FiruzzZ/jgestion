@@ -1360,8 +1360,8 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         for (DetalleVenta detallesVenta : selectedFacturaVenta.getDetallesVentaList()) {
             Iva iva = detallesVenta.getProducto().getIva();
             try {
-                double productoConIVA = detallesVenta.getPrecioUnitario()
-                        + UTIL.getPorcentaje(detallesVenta.getPrecioUnitario(), iva.getIva());
+                BigDecimal productoConIVA = BigDecimal.valueOf(detallesVenta.getPrecioUnitario()
+                        + UTIL.getPorcentaje(detallesVenta.getPrecioUnitario(), iva.getIva())).setScale(4, RoundingMode.HALF_EVEN);
                 //"IVA","Cód. Producto","Producto","Cantidad","P. Unitario","P. final","Desc","Sub total"
                 dtm.addRow(new Object[]{
                             iva.getIva(),
@@ -1369,9 +1369,9 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                             detallesVenta.getProducto().getNombre() + "(" + iva.getIva() + ")",
                             detallesVenta.getCantidad(),
                             detallesVenta.getPrecioUnitario(),
-                            UTIL.PRECIO_CON_PUNTO.format(productoConIVA),
+                            productoConIVA,
                             detallesVenta.getDescuento(),
-                            UTIL.PRECIO_CON_PUNTO.format((detallesVenta.getCantidad() * productoConIVA) - detallesVenta.getDescuento()),
+                            UTIL.PRECIO_CON_PUNTO.format((detallesVenta.getCantidad() * productoConIVA.doubleValue()) - detallesVenta.getDescuento()),
                             detallesVenta.getTipoDesc(),
                             detallesVenta.getProducto().getId(),
                             null
