@@ -24,6 +24,7 @@ import jpa.controller.CajaMovimientosJpaController;
 import jpa.controller.ReciboJpaController;
 import org.apache.log4j.Logger;
 import utilities.general.UTIL;
+import utilities.gui.SwingUtil;
 import utilities.swing.components.ComboBoxWrapper;
 import utilities.swing.components.NumberRenderer;
 
@@ -69,8 +70,7 @@ public class ReciboController implements ActionListener, FocusListener {
         jdReRe.setUIForRecibos();
         UTIL.getDefaultTableModel(jdReRe.getTableAPagar(),
                 new String[]{"facturaID", "Factura", "Observación", "Entrega"},
-                new int[]{1, 50, 150, 30},
-                new Class<?>[]{null, null, null, Double.class});
+                new int[]{1, 50, 150, 30});
         jdReRe.getTableAPagar().getColumnModel().getColumn(3).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         UTIL.hideColumnTable(jdReRe.getTableAPagar(), 0);
         UTIL.loadComboBox(jdReRe.getCbSucursal(), uh.getWrappedSucursales(), false);
@@ -164,10 +164,12 @@ public class ReciboController implements ActionListener, FocusListener {
                     double credito = new NotaCreditoController().getCreditoDisponible(cliente);
                     jdReRe.getTfCreditoDebitoDisponible().setText(UTIL.PRECIO_CON_PUNTO.format(credito));
                     jdReRe.getTfCreditoDebitoRestante().setText(UTIL.PRECIO_CON_PUNTO.format(credito));
+                    SwingUtil.setComponentsEnabled(jdReRe.getPanelPagos().getComponents(), true, true);
                 } else {
                     //si no eligió nada.. vacia el combo de cta cte's
                     UTIL.loadComboBox(jdReRe.getCbCtaCtes(), null, false);
                     limpiarDetalle();
+                    SwingUtil.setComponentsEnabled(jdReRe.getPanelPagos().getComponents(), false, true);
                 }
             }
         });
@@ -412,7 +414,11 @@ public class ReciboController implements ActionListener, FocusListener {
 
     private Recibo getEntity() throws Exception {
         Recibo recibo = new Recibo();
-        recibo.setCaja((Caja) jdReRe.getCbCaja().getSelectedItem());
+        try {
+            recibo.setCaja((Caja) jdReRe.getCbCaja().getSelectedItem());
+        } catch (ClassCastException e) {
+            recibo.setCaja(null);
+        }
         recibo.setSucursal(getSelectedSucursalFromJD());
         if (unlockedNumeracion) {
             recibo.setNumero(Integer.valueOf(jdReRe.getTfOcteto()));

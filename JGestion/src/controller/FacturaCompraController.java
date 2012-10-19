@@ -647,14 +647,14 @@ public class FacturaCompraController implements ActionListener, KeyListener {
             } else if (boton.getName().equalsIgnoreCase("filtrarReRe")) {
                 try {
                     String query = armarQuery();
-                    cargarDtmBuscador(query);
+                    cargarTablaBuscador(query);
                 } catch (MessageException ex) {
                     ex.displayMessage(buscador);
                 }
             } else if (boton.equals(buscador.getbImprimir())) {
                 try {
                     String query = armarQuery();
-                    cargarDtmBuscador(query);
+                    cargarTablaBuscador(query);
                     doReportFacturas();
                 } catch (JRException ex) {
                     JOptionPane.showMessageDialog(null, ex.getMessage());
@@ -737,7 +737,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         buscador.setVisible(true);
     }
 
-    private void cargarDtmBuscador(String query) {
+    private void cargarTablaBuscador(String query) {
         buscador.dtmRemoveAll();
         DefaultTableModel dtm = buscador.getDtm();
         @SuppressWarnings("unchecked")

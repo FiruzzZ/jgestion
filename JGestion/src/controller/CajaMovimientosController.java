@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -24,6 +25,7 @@ import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import utilities.general.UTIL;
+import utilities.swing.components.NumberRenderer;
 
 /**
  * Encargada de registrar todos los asientos (ingresos/egresos) de las cajas..
@@ -527,7 +529,7 @@ public class CajaMovimientosController implements ActionListener {
             panelMovVarios.getbBuscar().addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    initBuscadorMovimientosVarios((JFrame) abm.getOwner());
+                    initBuscadorMovimientosVarios(abm);
                     buscador.setVisible(true);
                 }
             });
@@ -607,7 +609,7 @@ public class CajaMovimientosController implements ActionListener {
         return dcm;
     }
 
-    private void initBuscadorMovimientosVarios(JFrame owner) {
+    private void initBuscadorMovimientosVarios(Window owner) {
         panelBuscadorMovimientosVarios = new PanelBuscadorMovimientosVarios();
         List<Caja> cajaList = new ArrayList<Caja>();
         for (CajaMovimientos cajaMovimientos : getCajaMovimientosActivasFromCurrentUser()) {
@@ -616,14 +618,11 @@ public class CajaMovimientosController implements ActionListener {
         UTIL.loadComboBox(panelBuscadorMovimientosVarios.getCbCaja(), cajaList, true);
         UTIL.loadComboBox(panelBuscadorMovimientosVarios.getCbMovimientoConceptos(), new MovimientoConceptoController(null).findMovimientoConceptoEntities(), true);
         buscador = new JDBuscador(owner, "Buscardor - Movimientos varios", false, panelBuscadorMovimientosVarios);
-        try {
-            UTIL.getDefaultTableModel(
-                    buscador.getjTable1(),
-                    new String[]{"Caja", "Descripción", "Mov. Concepto", "Mov. Fecha", "Monto", "Fecha (Sistema)", "Usuario"},
-                    new int[]{70, 160, 60, 40, 20, 60, 50});
-        } catch (Exception ex) {
-            Logger.getLogger(CajaMovimientosController.class.getName()).log(Level.ERROR, null, ex);
-        }
+        UTIL.getDefaultTableModel(
+                buscador.getjTable1(),
+                new String[]{"Caja", "Descripción", "Mov. Concepto", "Mov. Fecha", "Monto", "Fecha (Sistema)", "Usuario"},
+                new int[]{70, 160, 60, 40, 20, 60, 50});
+        buscador.getjTable1().getColumnModel().getColumn(4).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         buscador.getbBuscar().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -729,7 +728,7 @@ public class CajaMovimientosController implements ActionListener {
             query += " AND o.movimiento_concepto = " + ((MovimientoConcepto) panelBuscadorMovimientosVarios.getCbMovimientoConceptos().getSelectedItem()).getId();
         }
         Logger.getLogger(this.getClass()).debug(query);
-        cargarDtmBuscador(query);
+        cargarTablaBuscador(query);
         if (doReport) {
             doReport(query);
         }
@@ -748,12 +747,12 @@ public class CajaMovimientosController implements ActionListener {
         }
         r.addParameter("SUBREPORT_DIR", Reportes.FOLDER_REPORTES);
         r.addCurrent_User();
-        r.printReport(true);
+        r.viewReport();
     }
 
-    private void cargarDtmBuscador(String query) {
-        DefaultTableModel dtm = buscador.getDtm();
-        UTIL.limpiarDtm(dtm);
+    private void cargarTablaBuscador(String query) {
+        DefaultTableModel dtm = (DefaultTableModel) buscador.getjTable1().getModel();
+        dtm.setRowCount(0);
         List<DetalleCajaMovimientos> lista = DAO.createNativeQuery(query, DetalleCajaMovimientos.class, true).getResultList();
         for (DetalleCajaMovimientos dcm : lista) {
             //dependiendo del buscador que esté activo..
@@ -770,7 +769,7 @@ public class CajaMovimientosController implements ActionListener {
                             dcm.getDescripcion(),
                             dcm.getMovimientoConcepto(),
                             dcm.getFechaMovimiento() != null ? UTIL.DATE_FORMAT.format(dcm.getFechaMovimiento()) : null,
-                            UTIL.PRECIO_CON_PUNTO.format(dcm.getMonto()),
+                            BigDecimal.valueOf(dcm.getMonto()),
                             UTIL.DATE_FORMAT.format(dcm.getFecha()) + "(" + UTIL.TIME_FORMAT.format(dcm.getFecha()) + ")",
                             dcm.getUsuario()
                         });
@@ -962,7 +961,7 @@ public class CajaMovimientosController implements ActionListener {
         query += " ORDER BY b.id";
 
         System.out.println(query);
-        cargarDtmBuscador(query);
+        cargarTablaBuscador(query);
         if (doReport) {
             doReport(query);
         }

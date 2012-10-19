@@ -7,7 +7,6 @@ import entity.BancoSucursal;
 import entity.ChequePropio;
 import entity.ChequeTerceros;
 import entity.Cliente;
-import entity.CuentaBancaria;
 import entity.Librado;
 import entity.Proveedor;
 import entity.enums.ChequeEstado;
@@ -378,8 +377,8 @@ public class ChequePropioController implements ActionListener {
         }
     }
 
-    public JDialog initManager(JFrame owner, ActionListener buttonListener) throws MessageException {
-        jdChequeManager = (JDChequesManager) new ChequeTercerosController().initManager(owner, buttonListener, null);
+    public JDialog initManager(Window owner, ActionListener buttonListener) throws MessageException {
+        jdChequeManager = (JDChequesManager) new ChequeTercerosController().initManagerTerceros(owner, buttonListener, null);
         jdChequeManager.getLabelEmisor().setText("Emitido a");
         UTIL.loadComboBox(jdChequeManager.getCbEmisor(), JGestionUtils.getWrappedProveedores(new ProveedorController().findEntities()), true);
         jdChequeManager.setTitle("Administración de Cheques Propios");

@@ -198,6 +198,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
         tfFacturaOcteto.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         tfFacturaOcteto.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         tfFacturaOcteto.setText("12345678");
+        tfFacturaOcteto.setToolTipText("<html>\nDébido a la característica multi-usuario del sistema, el número de comprobante es representativo y puede\n<br> diferir del número final que se asignará una vez finalizada y aceptada la creación del mismo.\n</html>");
         tfFacturaOcteto.setFocusable(false);
         tfFacturaOcteto.setRequestFocusEnabled(false);
         tfFacturaOcteto.addFocusListener(new java.awt.event.FocusAdapter() {

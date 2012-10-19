@@ -158,14 +158,15 @@ public class NotaCreditoController {
                 }
             }
         });
-//        if (loadDefaultData) {
-//            try {
-//                Sucursal s = (Sucursal) facturaVentaController.getContenedor().getCbSucursal().getSelectedItem();
-//                facturaVentaController.setNumeroFactura(s, jpaController.getNextNumero(s));
-//            } catch (Exception e) {
-//                throw new MessageException("Para realizar una Nota de Crédito debe tener habilitada al menos una Sucursal");
-//            }
-//        }
+        if (loadDefaultData) {
+            try {
+                @SuppressWarnings("unchecked")
+                Sucursal s = ((ComboBoxWrapper<Sucursal>) facturaVentaController.getContenedor().getCbSucursal().getSelectedItem()).getEntity();
+                facturaVentaController.setNumeroFactura(s, jpaController.getNextNumero(s));
+            } catch (Exception e) {
+                throw new MessageException("Para realizar una Nota de Crédito debe tener habilitada al menos una Sucursal");
+            }
+        }
         facturaVentaController.getContenedor().setUIToNotaCredito();
         jdFacturaVenta = facturaVentaController.getContenedor();
         jdFacturaVenta.setVisible(setVisible);

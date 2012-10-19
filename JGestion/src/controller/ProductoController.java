@@ -443,7 +443,7 @@ public class ProductoController implements ActionListener, KeyListener {
     private void armarQueryContenedor(String filtro) {
         String query = "SELECT id, codigo, nombre, marca, stockactual FROM producto ";
         if (filtro != null && filtro.length() > 0) {
-            query += " WHERE nombre ILIKE '" + filtro + "%'";
+            query += " WHERE nombre ILIKE '%" + filtro + "%'";
         }
         query += " ORDER BY nombre";
         cargarContenedorTabla(query);

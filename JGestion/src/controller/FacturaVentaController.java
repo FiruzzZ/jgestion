@@ -2,8 +2,10 @@ package controller;
 
 import controller.exceptions.DatabaseErrorException;
 import controller.exceptions.MessageException;
+import controller.exceptions.MissingReportException;
 import entity.*;
 import generics.AutoCompleteComboBox;
+import generics.GenericBeanCollection;
 import gui.JDABM;
 import gui.JDBuscadorReRe;
 import gui.JDFacturaVenta;
@@ -21,10 +23,12 @@ import javax.swing.text.JTextComponent;
 import jgestion.JGestionUtils;
 import jgestion.Main;
 import jpa.controller.*;
+import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import utilities.general.UTIL;
 import utilities.swing.components.ComboBoxWrapper;
+import utilities.swing.components.NumberRenderer;
 
 /**
  * Clase (Ventana) usada para crear FacturaVenta, Remitos, Presupuestos
@@ -717,16 +721,9 @@ public class FacturaVentaController implements ActionListener, KeyListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource().getClass().equals(JButton.class)) {
-            JButton boton = (JButton) e.getSource();
-            if (boton.getName().equalsIgnoreCase("filtrarReRe")) {
-                try {
-                    armarQuery();
-                } catch (MessageException ex) {
-                    buscador.showMessage(ex.getMessage(), "Buscador - " + jpaController.getEntityClass().getSimpleName(), 0);
-                }
-            }
-        }
+//        if (e.getSource().getClass().equals(JButton.class)) {
+//            JButton boton = (JButton) e.getSource();
+//        }
     }
 
     private void checkConstraints() throws MessageException {
@@ -949,9 +946,10 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         UTIL.loadComboBox(buscador.getCbFormasDePago(), Valores.FormaPago.getFormasDePago(), true);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
-                new String[]{"facturaID", "Nº factura", "Mov.", "Cliente", "Forma Pago", "Importe", "Fecha", "Caja", "Usuario", "Fecha (Sistema)"},
+                new String[]{"facturaID", "Nº factura", "Mov.", "Cliente", "Importe", "Fecha", "Sucursal", "Caja", "Usuario", "Fecha (Sistema)"},
                 new int[]{1, 90, 10, 50, 40, 50, 50, 80, 50, 70},
                 new Class<?>[]{Integer.class, null, Integer.class, null, null, String.class, null, null, null, null});
+        buscador.getjTable1().getColumnModel().getColumn(4).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         UTIL.hideColumnTable(buscador.getjTable1(), 0);
         UTIL.setHorizonalAlignment(buscador.getjTable1(), String.class, SwingConstants.RIGHT);
         buscador.getjTable1().addMouseListener(new MouseAdapter() {
@@ -972,11 +970,36 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         if (paraAnular) {
             buscador.getCheckAnulada().setEnabled(false);
         }
-        JButton btnEditar = buscador.getbImprimir();
-        btnEditar.setText("Editar");
-        btnEditar.setIcon(new ImageIcon(getClass().getResource("/iconos/32px_configure.png")));
-        btnEditar.setVisible(true);
-        btnEditar.addActionListener(new ActionListener() {
+        buscador.getbBuscar().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    String query = armarQuery();
+                    cargarTablaBuscador(query);
+                } catch (MessageException ex) {
+                    buscador.showMessage(ex.getMessage(), "Buscador - " + jpaController.getEntityClass().getSimpleName(), 0);
+                }
+            }
+        });
+        buscador.getbImprimir().setVisible(true);
+        buscador.getbImprimir().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    String query = armarQuery();
+                    cargarTablaBuscador(query);
+                    doReportFacturas();
+                } catch (JRException ex) {
+                    JOptionPane.showMessageDialog(null, ex.getMessage());
+                } catch (MissingReportException ex) {
+                    JOptionPane.showMessageDialog(null, ex.getMessage());
+                } catch (MessageException ex) {
+                    ex.displayMessage(buscador);
+                }
+            }
+        });
+        buscador.getbExtra().setVisible(true);
+        buscador.getbExtra().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (buscador.getjTable1().getSelectedRow() > -1) {
@@ -1010,7 +1033,8 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                             }
                         }
                         setDatosToEdit();
-                        armarQuery();
+                        String query = armarQuery();
+                        cargarTablaBuscador(query);
                     } catch (MessageException ex) {
                         buscador.showMessage(ex.getMessage(), "Error de datos", 0);
                     }
@@ -1023,6 +1047,31 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         buscador.setListeners(this);
         buscador.setLocationRelativeTo(frame);
         buscador.setVisible(true);
+    }
+
+    private void doReportFacturas() throws MissingReportException, JRException {
+        List<GenericBeanCollection> data = new ArrayList<GenericBeanCollection>(buscador.getjTable1().getRowCount());
+        DefaultTableModel dtm = (DefaultTableModel) buscador.getjTable1().getModel();
+        for (int row = 0; row < dtm.getRowCount(); row++) {
+
+            data.add(new GenericBeanCollection(
+                    dtm.getValueAt(row, 1),
+                    dtm.getValueAt(row, 2),
+                    dtm.getValueAt(row, 3),
+                    dtm.getValueAt(row, 4),
+                    dtm.getValueAt(row, 5),
+                    dtm.getValueAt(row, 6),
+                    dtm.getValueAt(row, 7),
+                    dtm.getValueAt(row, 8),
+                    dtm.getValueAt(row, 9),
+                    null, null, null));
+        }
+        Reportes r = new Reportes("JGestion_ListadoFacturasCompra.jasper", "Listado Facturas Venta");
+        r.setDataSource(data);
+        r.addParameter("IS_COMPRA", false);
+        r.addMembreteParameter();
+        r.addConnection();
+        r.viewReport();
     }
 
     private void btnAceptarActionWhenEditing(boolean facturar) {
@@ -1138,7 +1187,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
     }
 
     private void cargarTablaBuscador(String query) {
-        DefaultTableModel dtm = buscador.getDtm();
+        DefaultTableModel dtm = (DefaultTableModel) buscador.getjTable1().getModel();
         dtm.setRowCount(0);
         List<FacturaVenta> l = jpaController.findByNativeQuery(query);
         for (FacturaVenta facturaVenta : l) {
@@ -1147,9 +1196,9 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                         JGestionUtils.getNumeracion(facturaVenta),
                         facturaVenta.getMovimientoInterno(),
                         facturaVenta.getCliente().getNombre(),
-                        facturaVenta.getFormaPagoEnum(),
-                        UTIL.PRECIO_CON_PUNTO.format(facturaVenta.getImporte()),
+                        BigDecimal.valueOf(facturaVenta.getImporte()),
                         UTIL.DATE_FORMAT.format(facturaVenta.getFechaVenta()),
+                        facturaVenta.getSucursal().getNombre(),
                         facturaVenta.getCaja().getNombre(),
                         facturaVenta.getUsuario().getNick(),
                         UTIL.TIMESTAMP_FORMAT.format(facturaVenta.getFechaalta())
@@ -1157,7 +1206,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         }
     }
 
-    private void armarQuery() throws MessageException {
+    private String armarQuery() throws MessageException {
         StringBuilder query = new StringBuilder("SELECT o.* FROM factura_venta o"
                 + " WHERE o.anulada = " + buscador.isCheckAnuladaSelected());
 
@@ -1231,7 +1280,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         }
         query.append(" ORDER BY o.id");
         LOG.trace("queryBuscador=" + query);
-        cargarTablaBuscador(query.toString());
+        return query.toString();
     }
 
     /**
