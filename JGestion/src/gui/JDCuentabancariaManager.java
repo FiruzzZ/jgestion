@@ -244,8 +244,7 @@ public class JDCuentabancariaManager extends javax.swing.JDialog {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(tfObservacion, javax.swing.GroupLayout.PREFERRED_SIZE, 325, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnAgregar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 59, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(btnAgregar))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel8)
@@ -344,7 +343,7 @@ public class JDCuentabancariaManager extends javax.swing.JDialog {
                             .addComponent(jScrollPane1))
                         .addContainerGap())))
             .addGroup(layout.createSequentialGroup()
-                .addGap(194, 194, 194)
+                .addGap(158, 158, 158)
                 .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(tfTotalCredito, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -513,7 +512,7 @@ public class JDCuentabancariaManager extends javax.swing.JDialog {
             c = c.add((BigDecimal) dtm.getValueAt(row, 2));
             d = d.add((BigDecimal) dtm.getValueAt(row, 3));
         }
-        tfTotalCredito.setText(UTIL.DECIMAL_FORMAT.format(d));
+        tfTotalCredito.setText(UTIL.DECIMAL_FORMAT.format(c));
         tfTotalDebito.setText(UTIL.DECIMAL_FORMAT.format(d));
     }
 }

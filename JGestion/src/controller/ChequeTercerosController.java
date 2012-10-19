@@ -238,6 +238,11 @@ public class ChequeTercerosController implements ActionListener {
                     } else if (boton.equals(jdChequeManager.getbACaja())) {
                     } else if (boton.equals(jdChequeManager.getbAnular())) {
                     } else if (boton.equals(jdChequeManager.getbDeposito())) {
+                        int row = jdChequeManager.getjTable1().getSelectedRow();
+                        if(row > -1) {
+                            ChequeTerceros find = jpaController.find((Integer) jdChequeManager.getjTable1().getModel().getValueAt(row, 0));
+                            new CuentabancariaController().displayDepositoUI(find);
+                        }
                     } else if (boton.equals(jdChequeManager.getbImprimir())) {
                         try {
                             armarQuery(true);

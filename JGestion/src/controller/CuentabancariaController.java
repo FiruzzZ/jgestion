@@ -2,22 +2,34 @@ package controller;
 
 import controller.exceptions.MessageException;
 import entity.Banco;
+import entity.ChequeTerceros;
+import entity.CuentabancariaMovimientos;
+import entity.Librado;
+import entity.enums.ChequeEstado;
 import gui.JDABM;
 import gui.JDContenedor;
 import gui.PanelABMCuentabancaria;
+import gui.PanelDepositoCheque;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import javax.swing.Action;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import jgestion.JGestionUtils;
+import jpa.controller.ChequeTercerosJpaController;
 import jpa.controller.CuentabancariaJpaController;
+import jpa.controller.CuentabancariaMovimientosJpaController;
 import org.apache.log4j.Logger;
 import utilities.general.UTIL;
+import utilities.gui.SwingUtil;
 import utilities.swing.components.ComboBoxWrapper;
 
 /**
@@ -33,6 +45,7 @@ public class CuentabancariaController {
     private CuentaBancaria EL_OBJECT;
     private static final Logger LOG = Logger.getLogger(CuentabancariaController.class.getName());
     private PanelABMCuentabancaria panelABM;
+    private PanelDepositoCheque panelDeposito;
 
     public CuentabancariaController() {
         jpaController = new CuentabancariaJpaController();
@@ -245,5 +258,85 @@ public class CuentabancariaController {
         UTIL.setSelectedItem(panelABM.getCbBancos(), o.getBanco().getNombre());
         panelABM.getTfNumero().setText(o.getNumero().toString());
         panelABM.getjCheckBox1().setSelected(o.getActiva());
+    }
+
+    void displayDepositoUI(final ChequeTerceros cheque) {
+        panelDeposito = new PanelDepositoCheque();
+        panelDeposito.getLabelNcuenta().setVisible(false);
+        panelDeposito.getCbCuentaBancaria().setVisible(false);
+        SwingUtil.setComponentsEnabled(panelDeposito.getPanelInfoCheque().getComponents(), false, true);
+        setChequePanelDeposito(cheque);
+        panelDeposito.getCbDepositoBancos().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (panelDeposito.getCbDepositoBancos().getSelectedIndex() > 0) {
+                    @SuppressWarnings("unchecked")
+                    Banco b = ((ComboBoxWrapper<Banco>) panelDeposito.getCbDepositoBancos().getSelectedItem()).getEntity();
+                    UTIL.loadComboBox(panelDeposito.getCbDepositoCuentaBancaria(), JGestionUtils.getWrappedCuentasBancarias(b.getCuentasbancaria()), false);
+                }
+            }
+        });
+        UTIL.loadComboBox(panelDeposito.getCbDepositoBancos(), JGestionUtils.getWrappedBancos(new BancoController().findWithCuentasBancarias()), true);
+        panelDeposito.getCbOperacionesBancarias().addItem(new OperacionesBancariasController().getOperacion(OperacionesBancariasController.DEPOSITO).getNombre());
+        abm = new JDABM(null, "Deposito de cheque", true, panelDeposito);
+        abm.getbAceptar().addActionListener(new ActionListener() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    ChequeTerceros chequeToDeposit = cheque;
+                    Date fechaOperacion = panelDeposito.getDcFechaOperacion().getDate();
+                    Date fechaCreditoDebito = panelDeposito.getDcFechaCreditoDebito().getDate();
+                    String descripcion = panelDeposito.getTfDescripcion().getText().trim();
+                    CuentaBancaria cb;
+                    if (panelDeposito.getCbDepositoBancos().getSelectedIndex() <= 0) {
+                        throw new MessageException("Banco no válido");
+                    }
+                    cb = ((ComboBoxWrapper<CuentaBancaria>) panelDeposito.getCbDepositoCuentaBancaria().getSelectedItem()).getEntity();
+                    if (fechaOperacion == null) {
+                        throw new MessageException("Fecha de operación no válida");
+                    }
+                    if (descripcion.isEmpty()) {
+                        throw new MessageException("Descripción de operación no válida");
+                    }
+                    CuentabancariaMovimientos cbm = new CuentabancariaMovimientos(fechaOperacion, descripcion, fechaCreditoDebito, chequeToDeposit.getImporte(), BigDecimal.ZERO, false, UsuarioController.getCurrentUser(),
+                            new OperacionesBancariasController().getOperacion(OperacionesBancariasController.DEPOSITO), cb, chequeToDeposit, null);
+                    new CuentabancariaMovimientosJpaController().create(cbm);
+                    chequeToDeposit.setEstado(ChequeEstado.DEPOSITADO.getId());
+                    new ChequeTercerosJpaController().merge(chequeToDeposit);
+                    JOptionPane.showMessageDialog(abm, "Movimiento de cuenta N° " + cbm.getId() + " creado.", null, JOptionPane.INFORMATION_MESSAGE);
+                    abm.dispose();
+                } catch (MessageException ex) {
+                    ex.displayMessage(abm);
+                }
+            }
+        });
+        abm.getbCancelar().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                abm.dispose();
+            }
+        });
+        abm.setVisible(true);
+    }
+
+    private void setChequePanelDeposito(ChequeTerceros cheque) {
+        panelDeposito.getCbEmisor().addItem(cheque.getCliente());
+        panelDeposito.getDcCheque().setDate(cheque.getFechaCheque());
+        panelDeposito.getDcCobro().setDate(cheque.getFechaCobro());
+        panelDeposito.getCbBancos().addItem(cheque.getBanco().getNombre());
+        panelDeposito.getTfNumero().setText(cheque.getNumero().toString());
+        panelDeposito.getTfImporte().setText(UTIL.DECIMAL_FORMAT.format(cheque.getImporte()));
+        panelDeposito.getCbLibrado().addItem(cheque.getLibrado().getNombre());
+        panelDeposito.getCbChequeEstados().addItem(ChequeEstado.findById(cheque.getEstado()));
+        panelDeposito.getTaObservacion().setText(cheque.getObservacion());
+        panelDeposito.getCheckEndosado().setSelected(cheque.getEndosatario() != null);
+        panelDeposito.getTfEndosatario().setText(cheque.getEndosatario());
+        panelDeposito.getDcEndoso().setDate(cheque.getFechaEndoso());
+        panelDeposito.getCheckCruzado().setSelected(cheque.isCruzado());
+        panelDeposito.getDcFechaOperacion().setMinSelectableDate(cheque.getFechaCobro());
+        panelDeposito.getDcFechaCreditoDebito().setMinSelectableDate(cheque.getFechaCobro());
+        panelDeposito.getDcFechaOperacion().setDate(cheque.getFechaCobro());
+        panelDeposito.getTfDescripcion().setText("Cheque N°" + cheque.getNumero());
     }
 }
