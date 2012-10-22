@@ -49,7 +49,7 @@ public class ChequeTercerosController implements ActionListener {
     //exclusively related to the GUI
     private JDChequesManager jdChequeManager;
     private final String[] columnNames = {"id", "Nº Cheque", "F. Cheque", "Emisor", "F. Cobro", "Banco", "Sucursal", "Importe", "Estado", "Librado", "Cruzado", "Endosatario", "F. Endoso", "C. Ingreso", "C. Egreso", "Observacion", "Usuario"};
-    private final int[] columnWidths = {1,          80,             80,     100,        80,         100,    100,        100,        80,         80,     50,         100,            100,        150,        150,            100,        80};
+    private final int[] columnWidths = {1, 80, 80, 100, 80, 100, 100, 100, 80, 80, 50, 100, 100, 150, 150, 100, 80};
     private final Class[] columnClassTypes = {Integer.class, Number.class, null, null, null, null, null, Number.class, null, null, Boolean.class, null};
     //Este se pone en el comboBox
     private final String[] orderByToComboBoxList = {"N° Cheque", "Fecha de Emisión", "Fecha de Cobro", "Importe", "Banco/Sucursal", "Cliente", "Estado"};
@@ -239,7 +239,7 @@ public class ChequeTercerosController implements ActionListener {
                     } else if (boton.equals(jdChequeManager.getbAnular())) {
                     } else if (boton.equals(jdChequeManager.getbDeposito())) {
                         int row = jdChequeManager.getjTable1().getSelectedRow();
-                        if(row > -1) {
+                        if (row > -1) {
                             ChequeTerceros find = jpaController.find((Integer) jdChequeManager.getjTable1().getModel().getValueAt(row, 0));
                             new CuentabancariaController().displayDepositoUI(find);
                         }
@@ -265,7 +265,9 @@ public class ChequeTercerosController implements ActionListener {
             throw new MessageException("Ya existe un Cheque del banco " + cheque.getBanco().getNombre() + " con el N° " + cheque.getNumero()
                     + "\nFecha emisión:" + UTIL.DATE_FORMAT.format(cheque.getFechaCheque())
                     + "\nFecha cobro: " + UTIL.DATE_FORMAT.format(cheque.getFechaCobro())
-                    + "\nEstado:" + cheque.getChequeEstado());
+                    + "\nEstado:" + cheque.getChequeEstado()
+                    + "\nIngreso:" + cheque.getComprobanteIngreso()
+                    + "\nEgreso:" + cheque.getComprobanteEgreso());
         }
     }
 

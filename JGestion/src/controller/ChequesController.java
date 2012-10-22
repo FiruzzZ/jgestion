@@ -20,8 +20,10 @@ public class ChequesController {
             Object obj = dtm.getValueAt(row, 0);
             if (obj instanceof Cheque) {
                 Cheque old = (Cheque) obj;
+                System.out.println(old.toString());
+                System.out.println(cheque.toString());
 //                if (old.equals(cheque)) {
-                if (old.getNumero() == cheque.getNumero() && old.getBanco().equals(cheque.getBanco())) {
+                if (old.getNumero().equals(cheque.getNumero()) && old.getBanco().equals(cheque.getBanco())) {
                     throw new MessageException("Ya se agrego el Cheque N°" + old.getNumero() + " del Banco " + old.getBanco().getNombre());
                 }
             }

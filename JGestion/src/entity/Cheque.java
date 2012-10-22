@@ -286,6 +286,6 @@ public abstract class Cheque implements Serializable {
 
     @Override
     public String toString() {
-        return "Cheque{" + "numero=" + numero + ", banco=" + banco.getId() + ", bancoSucursal=" + bancoSucursal + ", importe=" + importe + ", fechaCheque=" + fechaCheque + ", cruzado=" + cruzado + ", observacion=" + observacion + ", fechaCobro=" + fechaCobro + ", fechaCreacion=" + fechaCreacion + ", estado=" + estado + ", chequeEstado=" + chequeEstado + ", endosatario=" + endosatario + ", fechaEndoso=" + fechaEndoso + ", usuario=" + usuario + ", librado=" + librado + ", comprobanteIngreso=" + comprobanteIngreso + ", comprobanteEgreso=" + comprobanteEgreso + ", version=" + version + '}';
+        return "Cheque{" + "numero=" + numero + ", banco=" + banco + ", bancoSucursal=" + bancoSucursal + ", importe=" + importe + ", fechaCheque=" + fechaCheque + ", cruzado=" + cruzado + ", observacion=" + observacion + ", fechaCobro=" + fechaCobro + ", fechaCreacion=" + fechaCreacion + ", estado=" + estado + ", chequeEstado=" + chequeEstado + ", endosatario=" + endosatario + ", fechaEndoso=" + fechaEndoso + ", usuario=" + usuario + ", librado=" + librado + ", comprobanteIngreso=" + comprobanteIngreso + ", comprobanteEgreso=" + comprobanteEgreso + ", version=" + version + '}';
     }
 }

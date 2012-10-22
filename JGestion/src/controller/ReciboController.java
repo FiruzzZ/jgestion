@@ -471,7 +471,7 @@ public class ReciboController implements ActionListener, FocusListener {
         ctacte.setEntregado(ctacte.getEntregado() + monto.doubleValue());
         if (ctacte.getImporte() == ctacte.getEntregado()) {
             ctacte.setEstado(Valores.CtaCteEstado.PAGADA.getId());
-            LOG.trace("CtaCte Nº:" + ctacte.getId() + " PAGADA");
+            LOG.debug("CtaCte Nº:" + ctacte.getId() + " PAGADA");
         }
         DAO.doMerge(ctacte);
     }

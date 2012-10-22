@@ -123,6 +123,6 @@ public class ReciboPagos implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.ReciboPagos[ id=" + id + " ]";
+        return "ReciboPagos{" + "id=" + id + ", formaPago=" + formaPago + ", comprobanteId=" + comprobanteId + ", recibo=" + (recibo != null ? recibo.getId() : null) + '}';
     }
 }

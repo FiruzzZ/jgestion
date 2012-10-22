@@ -58,9 +58,9 @@ public class Recibo implements Serializable {
     @JoinColumn(name = "usuario", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
     private Usuario usuario;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "recibo")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "recibo", orphanRemoval = true)
     private List<DetalleRecibo> detalleReciboList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "recibo")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "recibo", orphanRemoval = true)
     private List<ReciboPagos> pagos;
     @Transient
     private transient List<Object> pagosEntities;
