@@ -10,6 +10,7 @@ import javax.swing.JDialog;
 import javax.swing.table.DefaultTableModel;
 import jpa.controller.CuentabancariaMovimientosJpaController;
 import org.apache.log4j.Logger;
+import utilities.general.UTIL;
 import utilities.swing.components.ComboBoxWrapper;
 
 /**
@@ -66,17 +67,17 @@ public class CuentabancariaMovimientosController {
         if (manager.getDcDesde() != null || manager.getDcHasta() != null) {
             if (manager.getRbOperacion()) {
                 if (manager.getDcDesde() != null) {
-                    query.append(" AND o.fechaOperacion >='").append(manager.getDcDesde()).append("'");
+                    query.append(" AND o.fechaOperacion >='").append(UTIL.DATE_FORMAT.format(manager.getDcDesde())).append("'");
                 }
                 if (manager.getDcHasta() != null) {
-                    query.append(" AND o.fechaOperacion <='").append(manager.getDcHasta()).append("'");
+                    query.append(" AND o.fechaOperacion <='").append(UTIL.DATE_FORMAT.format(manager.getDcHasta())).append("'");
                 }
             } else {
                 if (manager.getDcDesde() != null) {
-                    query.append(" AND o.fechaCreditoDebito >='").append(manager.getDcDesde()).append("'");
+                    query.append(" AND o.fechaCreditoDebito >='").append(UTIL.DATE_FORMAT.format(manager.getDcDesde())).append("'");
                 }
                 if (manager.getDcHasta() != null) {
-                    query.append(" AND o.fechaCreditoDebito <='").append(manager.getDcHasta()).append("'");
+                    query.append(" AND o.fechaCreditoDebito <='").append(UTIL.DATE_FORMAT.format(manager.getDcHasta())).append("'");
                 }
             }
         }

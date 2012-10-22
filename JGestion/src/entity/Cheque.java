@@ -261,7 +261,6 @@ public abstract class Cheque implements Serializable {
      */
     @Override
     public boolean equals(Object obj) {
-        System.out.println(getClass() + ".equals()");
         if (obj == null) {
             return false;
         }

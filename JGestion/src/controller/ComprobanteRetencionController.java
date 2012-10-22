@@ -66,9 +66,14 @@ public class ComprobanteRetencionController {
                 } catch (Exception exception) {
                     throw new MessageException("Número de comprobante no válido");
                 }
-                double importe = Double.parseDouble(panelABM.getTfImporte().getText());
-                if (importe <= 0) {
-                    throw new MessageException("Importe no puede ser menor a cero.");
+                BigDecimal importe;
+                try {
+                    importe = new BigDecimal(panelABM.getTfImporte().getText().trim());
+                } catch (Exception ex) {
+                    throw new MessageException("Importe no válido");
+                }
+                if (importe.compareTo(BigDecimal.ZERO) != 1) {
+                    throw new MessageException("Importe debe ser mayor a cero.");
                 }
                 if (panelABM.getDcFecha().getDate() == null) {
                     throw new MessageException("Fecha de comprobante no válida");
@@ -90,7 +95,7 @@ public class ComprobanteRetencionController {
         if (entity == null) {
             entity = new ComprobanteRetencion();
         }
-        entity.setImporte(new BigDecimal(panelABM.getTfImporte().getText()));
+        entity.setImporte(new BigDecimal(panelABM.getTfImporte().getText().trim()));
         entity.setNumero(Long.parseLong(panelABM.getTfNumero().getText()));
         entity.setFecha(panelABM.getDcFecha().getDate());
     }

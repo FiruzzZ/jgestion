@@ -14,6 +14,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import entity.DetalleNotaCredito;
 import entity.FacturaVenta;
+import entity.Iva;
+import entity.Producto;
 import entity.Recibo;
 import entity.Sucursal;
 import utilities.general.UTIL;
@@ -25,6 +27,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -375,28 +378,44 @@ public class NotaCreditoController {
         Collection<DetalleNotaCredito> lista = notaCredito.getDetalleNotaCreditoCollection();
         DefaultTableModel dtm = jdFacturaVenta.getDtm();
         for (DetalleNotaCredito detalle : lista) {
-            Double alicuota = UTIL.getPorcentaje(detalle.getPrecioUnitario(), Double.valueOf(detalle.getProducto().getIva().getIva()));
-            alicuota = Double.valueOf(UTIL.PRECIO_CON_PUNTO.format(alicuota));
-            System.out.println(detalle.toString());
-            double productoConIVA = detalle.getPrecioUnitario() + alicuota;
-            //"IVA","Cód. Producto","Producto","Cantidad","P. Unitario","P. final","Desc","Sub total"
-            dtm.addRow(new Object[]{
-                        null,
-                        detalle.getProducto().getCodigo(),
-                        detalle.getProducto(),
-                        detalle.getCantidad(),
-                        detalle.getPrecioUnitario(),
-                        UTIL.PRECIO_CON_PUNTO.format(productoConIVA),
-                        0.0,
-                        UTIL.PRECIO_CON_PUNTO.format((detalle.getCantidad() * productoConIVA))
-                    });
+            Iva iva = detalle.getProducto().getIva();
+            if (iva == null) {
+                Producto findProducto = (Producto) DAO.findEntity(Producto.class, detalle.getProducto().getId());
+                iva = findProducto.getIva();
+                LOG.debug("Producto con Iva NULL!!" + detalle.getProducto());
+                while (iva == null || iva.getIva() == null) {
+                    System.out.print(".");
+                    iva = new IvaController().findByProducto(detalle.getProducto().getId());
+                }
+            }
+            try {
+                BigDecimal productoConIVA = BigDecimal.valueOf(detalle.getPrecioUnitario()
+                        + UTIL.getPorcentaje(detalle.getPrecioUnitario(), Double.valueOf(iva.getIva()))).setScale(4, RoundingMode.HALF_EVEN);
+                //"IVA","Cód. Producto","Producto","Cantidad","P. Unitario","P. final","Desc","Sub total"
+                dtm.addRow(new Object[]{
+                            iva.getIva(),
+                            detalle.getProducto().getCodigo(),
+                            detalle.getProducto().getNombre() + "(" + iva.getIva() + ")",
+                            detalle.getCantidad(),
+                            detalle.getPrecioUnitario(),
+                            productoConIVA,
+                            0.0,
+                            productoConIVA.multiply(BigDecimal.valueOf(detalle.getCantidad())).setScale(2, RoundingMode.HALF_EVEN)
+                        });
+            } catch (NullPointerException e) {
+                throw new MessageException("Ocurrió un error recuperando el detalle y los datos del Producto:"
+                        + "\nCódigo:" + detalle.getProducto().getNombre()
+                        + "\nNombre:" + detalle.getProducto().getCodigo()
+                        + "\nIVA:" + detalle.getProducto().getIva()
+                        + "\n\n   Intente nuevamente.");
+            }
         }
         //totales
-        jdFacturaVenta.setTfGravado(UTIL.PRECIO_CON_PUNTO.format(notaCredito.getGravado()));
-        jdFacturaVenta.setTfTotalNoGravado(UTIL.PRECIO_CON_PUNTO.format(notaCredito.getNoGravado()));
-        jdFacturaVenta.setTfTotalIVA105(UTIL.PRECIO_CON_PUNTO.format(notaCredito.getIva10()));
-        jdFacturaVenta.setTfTotalIVA21(UTIL.PRECIO_CON_PUNTO.format(notaCredito.getIva21()));
-        jdFacturaVenta.setTfTotal(UTIL.PRECIO_CON_PUNTO.format(notaCredito.getImporte()));
+        jdFacturaVenta.setTfGravado(UTIL.DECIMAL_FORMAT.format(notaCredito.getGravado()));
+        jdFacturaVenta.setTfTotalNoGravado(UTIL.DECIMAL_FORMAT.format(notaCredito.getNoGravado()));
+        jdFacturaVenta.setTfTotalIVA105(UTIL.DECIMAL_FORMAT.format(notaCredito.getIva10()));
+        jdFacturaVenta.setTfTotalIVA21(UTIL.DECIMAL_FORMAT.format(notaCredito.getIva21()));
+        jdFacturaVenta.setTfTotal(UTIL.DECIMAL_FORMAT.format(notaCredito.getImporte()));
         jdFacturaVenta.setVisibleListaPrecio(false);// EXCLU NotaCredito
         if (paraAnular) {
             jdFacturaVenta.hidePanelCambio();
@@ -442,13 +461,16 @@ public class NotaCreditoController {
     }
 
     double getCreditoDisponible(Cliente cliente) {
-        Object[] o = (Object[]) getEntityManager().createQuery(""
-                + "SELECT sum(o.importe), sum (o.desacreditado) "
+//        Object[] o = (Object[]) getEntityManager().createQuery(
+//                " SELECT sum(o.importe), sum (o.desacreditado) "
+        BigDecimal o = (BigDecimal) getEntityManager().createQuery(
+                " SELECT sum(o.importe)"
                 + "FROM " + jpaController.getEntityClass().getSimpleName() + " o "
-                + "WHERE o.anulada = FALSE AND o.cliente.id =" + cliente.getId()).getSingleResult();
+                + "WHERE o.recibo IS NULL AND o.anulada = FALSE AND o.cliente.id =" + cliente.getId()).getSingleResult();
         double creditoDisponible;
         try {
-            creditoDisponible = ((Double) o[0]) - ((Double) o[1]);
+//            creditoDisponible = ((Double) o[0]) - ((Double) o[1]);
+            creditoDisponible = o.doubleValue();
         } catch (NullPointerException e) {
             //Cliente hasn't got registers on table NotaCredito.. so o[0] and o[1] are null
             creditoDisponible = 0;
