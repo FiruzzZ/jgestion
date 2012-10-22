@@ -29,8 +29,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @UniqueConstraint(columnNames = {"nombre"})})
 @NamedQueries({
     @NamedQuery(name = "Banco.findAll", query = "SELECT b FROM Banco b"),
-    @NamedQuery(name = "Banco.findById", query = "SELECT b FROM Banco b WHERE b.id = :id"),
-    @NamedQuery(name = "Banco.findByNombre", query = "SELECT b FROM Banco b WHERE b.nombre = :nombre")})
+    @NamedQuery(name = "Banco.findById", query = "SELECT b FROM Banco b WHERE b.id = :id")
+})
 public class Banco implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -96,13 +96,15 @@ public class Banco implements Serializable {
     }
 
     @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Banco)) {
+    public boolean equals(Object obj) {
+        if (obj == null) {
             return false;
         }
-        Banco other = (Banco) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Banco other = (Banco) obj;
+        if (this.id != other.id && (this.id == null || !this.id.equals(other.id))) {
             return false;
         }
         return true;
