@@ -80,8 +80,6 @@ public class ChequePropio extends Cheque implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        super.equals(object);
-        System.out.println(getClass() + ".equals()");
         if (!(object instanceof ChequePropio)) {
             return false;
         }
@@ -89,6 +87,6 @@ public class ChequePropio extends Cheque implements Serializable {
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
-        return true;
+        return super.equals(object);
     }
 }

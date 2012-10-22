@@ -36,7 +36,7 @@ public class Recibo implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaCarga;
     @Basic(optional = false)
-    @Column(name = "monto", nullable = false)
+    @Column(name = "monto", nullable = false, precision = 12, scale = 2)
     private double monto;
     @Basic(optional = false)
     @Column(name = "retencion", nullable = false, precision = 10, scale = 2)

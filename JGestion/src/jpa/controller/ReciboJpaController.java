@@ -125,7 +125,15 @@ public class ReciboJpaController extends AbstractDAO<Recibo, Integer> {
         List<Object> pagosPost = new ArrayList<Object>(recibo.getPagosEntities().size());
         for (Object object : recibo.getPagosEntities()) {
 //            System.out.println(object.toString());
-            if (object instanceof ChequePropio) {
+                if (object instanceof DetalleCajaMovimientos) {
+                DetalleCajaMovimientos pago = (DetalleCajaMovimientos) object;
+                CajaMovimientos cm = new CajaMovimientosJpaController().findCajaMovimientoAbierta(recibo.getCaja());
+                pago.setCajaMovimientos(cm);
+                pago.setDescripcion(getEntityClass().getSimpleName() + " " + JGestionUtils.getNumeracion(recibo, true));
+                pago.setNumero(Long.valueOf(recibo.getId()));
+                entityManager.persist(pago);
+                pagosPost.add(pago);
+            } else if (object instanceof ChequePropio) {
                 ChequePropio pago = (ChequePropio) object;
                 pago.setComprobanteIngreso(getEntityClass().getSimpleName() + " " + JGestionUtils.getNumeracion(recibo, true));
                 entityManager.merge(pago);
@@ -145,15 +153,7 @@ public class ReciboJpaController extends AbstractDAO<Recibo, Integer> {
                 ComprobanteRetencion pago = (ComprobanteRetencion) object;
                 entityManager.persist(pago);
                 pagosPost.add(pago);
-            } else if (object instanceof DetalleCajaMovimientos) {
-                DetalleCajaMovimientos pago = (DetalleCajaMovimientos) object;
-                CajaMovimientos cm = new CajaMovimientosJpaController().findCajaMovimientoAbierta(recibo.getCaja());
-                pago.setCajaMovimientos(cm);
-                pago.setDescripcion(getEntityClass().getSimpleName() + " " + JGestionUtils.getNumeracion(recibo, true));
-                pago.setNumero(Long.valueOf(recibo.getId()));
-                entityManager.persist(pago);
-                pagosPost.add(pago);
-            }
+            } 
         }
         entityManager.getTransaction().commit();
         entityManager.getTransaction().begin();

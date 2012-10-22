@@ -155,7 +155,7 @@ public class Reportes implements Runnable {
 
     @Override
     public void run() {
-        LOG.trace("Initializing Thread Reportes..");
+        LOG.trace("Initializing Thread Reportes:" + pathReport);
         try {
             doReport();
         } catch (PrinterException ex) {

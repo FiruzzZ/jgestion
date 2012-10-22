@@ -66,16 +66,15 @@ public class ChequeTerceros extends Cheque implements Serializable {
     }
 
     @Override
-    public boolean equals(Object object) {
-        super.equals(object);
-        System.out.println(getClass() + ".equals()");
-        if (!(object instanceof ChequeTerceros)) {
+    public boolean equals(Object obj) {
+        if (obj == null) {
             return false;
         }
-        ChequeTerceros other = (ChequeTerceros) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if (getClass() != obj.getClass()) {
             return false;
-        } else if ((!this.getBanco().equals(other.getBanco())) || (!this.getNumero().equals(other.getNumero()))) {
+        }
+        final ChequeTerceros other = (ChequeTerceros) obj;
+        if (this.id != other.id && (this.id == null || !this.id.equals(other.id))) {
             return false;
         }
         return true;

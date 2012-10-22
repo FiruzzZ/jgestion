@@ -26,6 +26,7 @@ import org.apache.log4j.Logger;
 import utilities.general.UTIL;
 import utilities.gui.SwingUtil;
 import utilities.swing.components.ComboBoxWrapper;
+import utilities.swing.components.FormatRenderer;
 import utilities.swing.components.NumberRenderer;
 
 /**
@@ -577,11 +578,15 @@ public class ReciboController implements ActionListener, FocusListener {
         UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), true);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
-                new String[]{"Instance", "Nº Recibo", "Monto", "Retención", "Fecha", "Caja", "Usuario", "Fecha/Hora (Sist)"},
-                new int[]{1, 80, 30, 30, 40, 50, 50, 70},
-                new Class<?>[]{null, null, String.class, String.class, String.class, null, null, null});
+                new String[]{"Instance", "Nº Recibo", "Monto", "Fecha", "Caja", "Usuario", "Fecha/Hora (Sist)"},
+                new int[]{1, 80, 50, 40, 50, 50, 70} //                ,new Class<?>[]{null, null, null, null, String.class, null, null, null}
+                );
+        buscador.getjTable1().getColumnModel().getColumn(2).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        buscador.getjTable1().getColumnModel().getColumn(3).setCellRenderer(FormatRenderer.getDateRenderer());
+        buscador.getjTable1().getColumnModel().getColumn(6).setCellRenderer(FormatRenderer.getDateTimeRenderer());
         UTIL.hideColumnTable(buscador.getjTable1(), 0);
-        UTIL.setHorizonalAlignment(buscador.getjTable1(), String.class, SwingConstants.RIGHT);
+
+//        UTIL.setHorizonalAlignment(buscador.getjTable1(), String.class, SwingConstants.RIGHT);
         buscador.getjTable1().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -629,7 +634,7 @@ public class ReciboController implements ActionListener, FocusListener {
         rereSelected = null;
     }
 
-    @SuppressWarnings({"unchecked", "unchecked"})
+    @SuppressWarnings("unchecked")
     private void armarQuery() throws MessageException {
         StringBuilder query = new StringBuilder(
                 "SELECT o.*"
@@ -699,23 +704,23 @@ public class ReciboController implements ActionListener, FocusListener {
 
         query.append(" GROUP BY o.id, o.numero, o.fecha_carga, o.monto, o.retencion, o.usuario, o.caja, o.sucursal, o.fecha_recibo, o.estado"
                 + " ORDER BY o.sucursal, o.numero");
+        LOG.debug(query.toString());
         cargarBuscador(query.toString());
     }
 
     private void cargarBuscador(String query) {
-        buscador.dtmRemoveAll();
         DefaultTableModel dtm = (DefaultTableModel) buscador.getjTable1().getModel();
+        dtm.setRowCount(0);
         List<Recibo> l = jpaController.findByNativeQuery(query);
         for (Recibo o : l) {
             dtm.addRow(new Object[]{
                         o.getId(),
                         JGestionUtils.getNumeracion(o, true),
-                        UTIL.PRECIO_CON_PUNTO.format(o.getMonto()),
-                        UTIL.PRECIO_CON_PUNTO.format(o.getRetencion()),
-                        UTIL.DATE_FORMAT.format(o.getFechaRecibo()),
+                        BigDecimal.valueOf(o.getMonto()),
+                        o.getFechaRecibo(),
                         o.getCaja().getNombre(),
                         o.getUsuario().getNick(),
-                        UTIL.TIMESTAMP_FORMAT.format(o.getFechaCarga())
+                        o.getFechaCarga()
                     });
         }
     }
@@ -745,7 +750,6 @@ public class ReciboController implements ActionListener, FocusListener {
         if (jdReRe == null) {
             initRecibos(null, true, false);
         }
-        bloquearVentana(true);
         jdReRe.setTfCuarto(UTIL.AGREGAR_CEROS(recibo.getSucursal().getPuntoVenta(), 4));
         jdReRe.setTfOcteto(UTIL.AGREGAR_CEROS(recibo.getNumero(), 8));
         //por no redundar en DATOOOOOOOOOSS...!!!
@@ -764,6 +768,7 @@ public class ReciboController implements ActionListener, FocusListener {
         jdReRe.setTfPagado("");
         jdReRe.setTfSaldo("");
         updateTotales();
+        bloquearVentana(true);
     }
 
     private void cargarDetalleReRe(Recibo recibo) {
@@ -781,7 +786,10 @@ public class ReciboController implements ActionListener, FocusListener {
         dtm = jdReRe.getDtmPagos();
         dtm.setRowCount(0);
         for (ReciboPagos reciboPagos : recibo.getPagos()) {
-            if (reciboPagos.getFormaPago() == 1) {
+            if (reciboPagos.getFormaPago() == 0) {
+                DetalleCajaMovimientos o = (DetalleCajaMovimientos) DAO.findEntity(DetalleCajaMovimientos.class, reciboPagos.getComprobanteId());
+                dtm.addRow(new Object[]{o, "EF", null, BigDecimal.valueOf(o.getMonto())});
+            } else if (reciboPagos.getFormaPago() == 1) {
                 ChequePropio o = (ChequePropio) DAO.findEntity(ChequePropio.class, reciboPagos.getComprobanteId());
                 dtm.addRow(new Object[]{o, "CHP", o.getBanco().getNombre() + " " + o.getNumero(), o.getImporte()});
             } else if (reciboPagos.getFormaPago() == 2) {
@@ -820,6 +828,7 @@ public class ReciboController implements ActionListener, FocusListener {
 
     private void bloquearVentana(boolean habilitar) {
         jdReRe.getbAnular().setEnabled(habilitar);
+        jdReRe.getbCancelar().setVisible(false);
 //      contenedor.getbImprimir().setEnabled(habilitar);
         // !habilitar
         jdReRe.getBtnADD().setEnabled(!habilitar);

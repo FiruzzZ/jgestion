@@ -1,6 +1,7 @@
 ALTER TABLE detalle_compra ALTER precio_unitario TYPE numeric(12,4);
 ALTER TABLE nota_credito ADD COLUMN recibo integer;
 ALTER TABLE nota_credito ADD FOREIGN KEY (recibo) REFERENCES recibo (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE detalle_nota_credito ALTER precio_unitario TYPE numeric(12,4);
 ALTER TABLE ctacte_proveedor ALTER entregado TYPE numeric(12,2);
 ALTER TABLE ctacte_proveedor ALTER importe TYPE numeric(12,2);
 ALTER TABLE ctacte_cliente ALTER entregado TYPE numeric(12,2);
