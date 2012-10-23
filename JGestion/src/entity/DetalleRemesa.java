@@ -49,9 +49,6 @@ public class DetalleRemesa implements Serializable {
     @Basic(optional = false)
     @Column(nullable = false)
     private boolean anulado;
-    @Deprecated
-    @Column(name = "acreditado", insertable = true, updatable = false, nullable = false)
-    private boolean acreditado;
 
     public DetalleRemesa() {
     }
@@ -108,16 +105,6 @@ public class DetalleRemesa implements Serializable {
         this.anulado = anulado;
     }
 
-    @Deprecated
-    public boolean isAcreditado() {
-        return acreditado;
-    }
-
-    @Deprecated
-    public void setAcreditado(boolean acreditado) {
-        this.acreditado = acreditado;
-    }
-
     @Override
     public int hashCode() {
         int hash = 0;
@@ -140,6 +127,6 @@ public class DetalleRemesa implements Serializable {
 
     @Override
     public String toString() {
-        return "DetalleRemesa{" + "id=" + id + ", montoEntrega=" + montoEntrega + ", observacion=" + observacion + ", facturaCompra=" + facturaCompra + ", anulado=" + anulado + ", acreditado=" + acreditado + '}';
+        return "DetalleRemesa{" + "id=" + id + ", montoEntrega=" + montoEntrega + ", observacion=" + observacion + ", facturaCompra=" + facturaCompra + ", anulado=" + anulado + '}';
     }
 }

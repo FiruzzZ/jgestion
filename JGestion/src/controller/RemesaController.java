@@ -58,13 +58,12 @@ public class RemesaController implements ActionListener, FocusListener {
     private final String CLASS_NAME = Remesa.class.getSimpleName();
     private static final String[] COLUMN_NAMES = {"facturaID", "Factura", "Observación", "Entrega"};
     private static final int[] COLUMN_WIDTH = {1, 50, 100, 50};
-    private static final Class[] COLUMN_CLASS = {null, null, null, null};
     private JDReRe jdReRe;
     private CtacteProveedor selectedCtaCte;
     private Date selectedFechaReRe = null;
     private JDBuscadorReRe buscador;
     private Remesa rereSelected;
-    private static Logger LOGGER = Logger.getLogger(RemesaController.class);
+    private static Logger LOG = Logger.getLogger(RemesaController.class);
     private RemesaJpaController jpaController;
     private boolean unlockedNumeracion = false;
 
@@ -80,7 +79,7 @@ public class RemesaController implements ActionListener, FocusListener {
         UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.COMPRA);
         jdReRe = new JDReRe(owner, modal);
         jdReRe.setUIForRemesas();
-        UTIL.getDefaultTableModel(jdReRe.getTableAPagar(), COLUMN_NAMES, COLUMN_WIDTH, COLUMN_CLASS);
+        UTIL.getDefaultTableModel(jdReRe.getTableAPagar(), COLUMN_NAMES, COLUMN_WIDTH);
         jdReRe.getTableAPagar().getColumnModel().getColumn(3).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         UTIL.hideColumnTable(jdReRe.getTableAPagar(), 0);
         UTIL.loadComboBox(jdReRe.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), false);
@@ -115,7 +114,7 @@ public class RemesaController implements ActionListener, FocusListener {
                     jdReRe.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
                     jdReRe.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    LOGGER.error(ex.getMessage(), ex);
+                    LOG.error(ex.getMessage(), ex);
                 }
             }
         });
@@ -128,7 +127,7 @@ public class RemesaController implements ActionListener, FocusListener {
                     jdReRe.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
                     jdReRe.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    LOGGER.error(ex.getMessage(), ex);
+                    LOG.error(ex.getMessage(), ex);
                 }
             }
         });
@@ -156,13 +155,13 @@ public class RemesaController implements ActionListener, FocusListener {
                 try {
                     try {
                         selectedCtaCte = ((ComboBoxWrapper<CtacteProveedor>) jdReRe.getCbCtaCtes().getSelectedItem()).getEntity();
-                        jdReRe.setTfImporte(UTIL.PRECIO_CON_PUNTO.format(selectedCtaCte.getImporte()));
-                        jdReRe.setTfPagado(UTIL.PRECIO_CON_PUNTO.format(selectedCtaCte.getEntregado()));
-                        jdReRe.setTfSaldo(UTIL.PRECIO_CON_PUNTO.format(selectedCtaCte.getImporte().subtract(selectedCtaCte.getEntregado())));
+                        jdReRe.setTfImporte(UTIL.DECIMAL_FORMAT.format(selectedCtaCte.getImporte()));
+                        jdReRe.setTfPagado(UTIL.DECIMAL_FORMAT.format(selectedCtaCte.getEntregado()));
+                        jdReRe.setTfSaldo(UTIL.DECIMAL_FORMAT.format(selectedCtaCte.getImporte().subtract(selectedCtaCte.getEntregado())));
                         jdReRe.setTfEntrega(UTIL.PRECIO_CON_PUNTO.format(selectedCtaCte.getImporte().subtract(selectedCtaCte.getEntregado())));
                     } catch (ClassCastException ex) {
                         selectedCtaCte = null;
-                        LOGGER.trace("No se pudo caster a CtaCteProveedor -> " + jdReRe.getCbCtaCtes().getSelectedItem());
+                        LOG.trace("No se pudo caster a CtaCteProveedor -> " + jdReRe.getCbCtaCtes().getSelectedItem());
                     }
                 } catch (NullPointerException ex) {
                     //cuando no eligio una ctacte aún o el cliente/proveedor no tiene ninguna
@@ -237,7 +236,7 @@ public class RemesaController implements ActionListener, FocusListener {
     }
 
     private void displayABMEfectivo() {
-        BigDecimal monto = jdReRe.displayABMEfectivo();
+        BigDecimal monto = jdReRe.displayABMEfectivo(null);
         if (monto != null) {
             DetalleCajaMovimientos d = new DetalleCajaMovimientos();
             d.setIngreso(false);
@@ -336,7 +335,7 @@ public class RemesaController implements ActionListener, FocusListener {
         if (jdReRe.getDcFechaReRe() == null) {
             throw new MessageException("Fecha de " + jpaController.getEntityClass().getSimpleName() + " no válida");
         }
-        if (0 != new BigDecimal(jdReRe.getTfTotalAPagar().getText()).compareTo(new BigDecimal(jdReRe.getTfTotalPagado().getText()))) {
+        if (0 != jdReRe.getTfTotalAPagar().getText().compareTo(jdReRe.getTfTotalPagado().getText())) {
             throw new MessageException("El importe a pagar no coincide el detalle de pagos.");
         }
         if (unlockedNumeracion) {
@@ -471,8 +470,8 @@ public class RemesaController implements ActionListener, FocusListener {
             BigDecimal monto = (BigDecimal) dtm.getValueAt(row, 3);
             totalPagado = totalPagado.add(monto);
         }
-        jdReRe.getTfTotalAPagar().setText(UTIL.PRECIO_CON_PUNTO.format(totalAPagar));
-        jdReRe.getTfTotalPagado().setText(UTIL.PRECIO_CON_PUNTO.format(totalPagado));
+        jdReRe.getTfTotalAPagar().setText(UTIL.DECIMAL_FORMAT.format(totalAPagar));
+        jdReRe.getTfTotalPagado().setText(UTIL.DECIMAL_FORMAT.format(totalPagado));
     }
 
     private void delEntragaFromDetalle() {
