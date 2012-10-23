@@ -493,9 +493,9 @@ public class RemesaController implements ActionListener, FocusListener {
         UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getSucursales(), true);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
-                new String[]{"ID", "Nº", "Monto", "Fecha", "Caja", "Usuario", "Fecha/Hora (Sist)"},
-                new int[]{1, 50, 50, 50, 50, 50, 80});
-        buscador.getjTable1().getColumnModel().getColumn(2).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+                new String[]{"ID", "(Sucursal) Nº", "Proveedor", "Monto", "Fecha", "Caja", "Usuario", "Fecha/Hora (Sist)"},
+                new int[]{1, 50, 150, 50, 50, 50, 50, 80});
+        buscador.getjTable1().getColumnModel().getColumn(3).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         UTIL.hideColumnTable(buscador.getjTable1(), 0);
         buscador.getbBuscar().addActionListener(new ActionListener() {
             @Override
@@ -517,8 +517,6 @@ public class RemesaController implements ActionListener, FocusListener {
                     try {
                         setComprobanteUI(rereSelected);
                         jdReRe.setLocationRelativeTo(buscador);
-//                        jdReRe.getbAceptar().setEnabled(false);
-//                        jdReRe.getbCancelar().setEnabled(false);
                         jdReRe.setVisible(true);
                     } catch (MessageException ex) {
                         ex.displayMessage(buscador);
@@ -542,12 +540,10 @@ public class RemesaController implements ActionListener, FocusListener {
     }
 
     private void armarQuery() throws MessageException {
-        String query = "SELECT o.* FROM remesa o, proveedor p , caja c, detalle_remesa dr, factura_compra f, usuario u, sucursal s  "
-                + " WHERE o.id = dr.remesa "
-                + " AND o.caja = c.id "
-                + " AND o.sucursal = s.id "
-                + " AND f.id = dr.factura_compra "
-                + " AND p.id = f.proveedor ";
+        String query = "SELECT o.* "
+                + "FROM remesa o JOIN detalle_remesa dr ON o.id = dr.remesa JOIN sucursal s ON o.sucursal = s.id"
+                + " JOIN factura_compra f ON f.id = dr.factura_compra JOIN proveedor p ON p.id = f.proveedor"
+                + " JOIN caja c ON o.caja = c.id JOIN usuario u ON o.usuario = u.id";
 
         long numero;
         //filtro por nº de ReRe
@@ -587,15 +583,13 @@ public class RemesaController implements ActionListener, FocusListener {
         if (buscador.getCbClieProv().getSelectedIndex() > 0) {
             query += " AND p.id = " + ((Proveedor) buscador.getCbClieProv().getSelectedItem()).getId();
         }
-
-//        query += " GROUP BY o.id, o.fecha_carga, o.monto_entrega, o.usuario, o.caja, o.sucursal, o.fecha_remesa, o.estado"
         query += " ORDER BY o.id";
         System.out.println("QUERY: " + query);
         cargarDtmBuscador(query);
     }
 
     private void cargarDtmBuscador(String query) {
-        DefaultTableModel dtm = buscador.getDtm();
+        DefaultTableModel dtm = (DefaultTableModel) buscador.getjTable1().getModel();
         dtm.setRowCount(0);
         List<Remesa> l = jpaController.findByNativeQuery(query);
         if (l.isEmpty()) {
@@ -607,9 +601,9 @@ public class RemesaController implements ActionListener, FocusListener {
             dtm.addRow(new Object[]{
                         remesa.getId(),
                         JGestionUtils.getNumeracion(remesa, true),
+                        remesa.getDetalleRemesaList().get(0).getFacturaCompra().getProveedor().getNombre(),
                         remesa.getMonto(),
                         UTIL.DATE_FORMAT.format(remesa.getFechaRemesa()),
-                        //                        remesa.getSucursal().getNombre(),
                         remesa.getCaja().getNombre() + "(" + remesa.getCaja().getId() + ")",
                         remesa.getUsuario(),
                         UTIL.TIMESTAMP_FORMAT.format(remesa.getFechaCarga())
@@ -633,23 +627,31 @@ public class RemesaController implements ActionListener, FocusListener {
         if (jdReRe == null) {
             initRemesa(null, true, false);
         }
-        SwingUtil.setComponentsEnabled(jdReRe.getComponents(), false, true);
-        jdReRe.getbAnular().setEnabled(true);
-        jdReRe.getbImprimir().setEnabled(true);
-        jdReRe.setTfCuarto(UTIL.AGREGAR_CEROS(remesa.getSucursal().getPuntoVenta(), 4));
-        jdReRe.setTfOcteto(UTIL.AGREGAR_CEROS(String.valueOf(remesa.getNumero()), 8));
-
         //por no redundar en DATOOOOOOOOOSS...!!!
         Proveedor p = new FacturaCompraController().findFacturaCompra(remesa.getDetalleRemesaList().get(0).getFacturaCompra().getId()).getProveedor();
-
-        jdReRe.setDcFechaReRe(remesa.getFechaRemesa());
-        jdReRe.setDcFechaCarga(remesa.getFechaCarga());
-
-        //Uso los .toString por el 1er Item de los combos <Vacio> o <Elegir>
-        // van a tirar error de ClassCastException
+        //que compare por String's..
+        //por si el combo está vacio <VACIO> o no eligió ninguno
+        //van a tirar error de ClassCastException
         UTIL.setSelectedItem(jdReRe.getCbSucursal(), remesa.getSucursal().getNombre());
         UTIL.setSelectedItem(jdReRe.getCbCaja(), remesa.getCaja().getNombre());
         UTIL.setSelectedItem(jdReRe.getCbClienteProveedor(), p.getNombre());
+        jdReRe.setTfCuarto(UTIL.AGREGAR_CEROS(remesa.getSucursal().getPuntoVenta(), 4));
+        jdReRe.setTfOcteto(UTIL.AGREGAR_CEROS(String.valueOf(remesa.getNumero()), 8));
+        jdReRe.setDcFechaReRe(remesa.getFechaRemesa());
+        jdReRe.setDcFechaCarga(remesa.getFechaCarga());
+        cargarDetalleReRe(remesa);
+        updateTotales();
+        jdReRe.setTfImporte("");
+        jdReRe.setTfPagado("");
+        jdReRe.setTfSaldo("");
+        SwingUtil.setComponentsEnabled(jdReRe.getPanelDatos().getComponents(), false, true);
+        SwingUtil.setComponentsEnabled(jdReRe.getPanelAPagar().getComponents(), false, true);
+        SwingUtil.setComponentsEnabled(jdReRe.getPanelPagos().getComponents(), false, true);
+        
+        jdReRe.getbImprimir().setEnabled(true);
+    }
+
+    private void cargarDetalleReRe(Remesa remesa) {
         List<DetalleRemesa> detalle = remesa.getDetalleRemesaList();
         DefaultTableModel dtm = jdReRe.getDtmAPagar();
         dtm.setRowCount(0);
@@ -682,10 +684,6 @@ public class RemesaController implements ActionListener, FocusListener {
                 dtm.addRow(new Object[]{pago, "EF", null, BigDecimal.valueOf(-pago.getMonto())});
             }
         }
-        updateTotales();
-        jdReRe.setTfImporte("");
-        jdReRe.setTfPagado("");
-        jdReRe.setTfSaldo("");
     }
 
     public void focusGained(FocusEvent e) {

@@ -32,6 +32,7 @@ import jpa.controller.ChequePropioJpaController;
 import org.apache.log4j.Logger;
 import utilities.general.UTIL;
 import utilities.swing.components.ComboBoxWrapper;
+import utilities.swing.components.NumberRenderer;
 
 /**
  *
@@ -408,7 +409,6 @@ public class ChequePropioController implements ActionListener {
     }
 
     public JDialog initManager(Window owner) throws MessageException {
-
         initManager(owner, false);
         jdChequeManager.getCbCuentaBancaria().setVisible(true);
         jdChequeManager.getLabelCuentaBancaria().setVisible(true);
@@ -429,8 +429,13 @@ public class ChequePropioController implements ActionListener {
                     + "\nDatos Generales > Bancos/Sucursales/Cuentas > Cuentas Bancarias");
         }
         jdChequeManager = new JDChequesManager(parent, true);
+        jdChequeManager.getCbBancoSucursales().setVisible(false);
+        jdChequeManager.getLabelSucursales().setVisible(false);
+        UTIL.getDefaultTableModel(jdChequeManager.getjTable1(), columnNames, columnWidths, columnClassTypes);
+        jdChequeManager.getjTable1().getColumnModel().getColumn(7).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        UTIL.hideColumnTable(jdChequeManager.getjTable1(), 0);
         UTIL.loadComboBox(jdChequeManager.getCbBancos(), JGestionUtils.getWrappedBancos(l), true);
-        UTIL.loadComboBox(jdChequeManager.getCbBancoSucursales(), null, null, "<Seleccionar un Banco>");
+//        UTIL.loadComboBox(jdChequeManager.getCbBancoSucursales(), null, null, "<Seleccionar un Banco>");
         UTIL.loadComboBox(jdChequeManager.getCbEmisor(), JGestionUtils.getWrappedProveedores(new ProveedorController().findEntities()), true);
         UTIL.loadComboBox(jdChequeManager.getCbLibrado(), JGestionUtils.getWrappedLibrado(new LibradoJpaController().findEntities()), true);
         UTIL.loadComboBox(jdChequeManager.getCbEstados(), Arrays.asList(ChequeEstado.values()), true);
@@ -443,6 +448,7 @@ public class ChequePropioController implements ActionListener {
                     UTIL.loadComboBox(jdChequeManager.getCbCuentaBancaria(), JGestionUtils.getWrappedCuentasBancarias(cuentasbancaria), true);
 //                    UTIL.loadComboBox(jdChequeManager.getCbBancoSucursales(), new BancoSucursalController().findBy(banco), true);
                 } else {
+                    UTIL.loadComboBox(jdChequeManager.getCbCuentaBancaria(), null, true);
 //                    UTIL.loadComboBox(jdChequeManager.getCbBancoSucursales(), null, null, "<Seleccionar un Banco>");
                 }
             }
