@@ -41,7 +41,7 @@ public class ReciboController implements ActionListener, FocusListener {
     private CtacteCliente selectedCtaCte;
     private Date selectedFechaReRe = null;
     private JDBuscadorReRe buscador;
-    private Recibo rereSelected;
+    private Recibo selectedRecibo;
     private ReciboJpaController jpaController;
     private boolean unlockedNumeracion = false;
 
@@ -83,7 +83,7 @@ public class ReciboController implements ActionListener, FocusListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    jpaController.anular(rereSelected);
+                    jpaController.anular(selectedRecibo);
                     jdReRe.showMessage(CLASS_NAME + " anulada..", CLASS_NAME, 1);
                     resetPanel();
                 } catch (MessageException ex) {
@@ -119,7 +119,7 @@ public class ReciboController implements ActionListener, FocusListener {
                     checkConstraints();
                     Recibo re = getEntity();
                     persist(re);
-                    rereSelected = re;
+                    selectedRecibo = re;
                     jdReRe.showMessage(jpaController.getEntityClass().getSimpleName() + "Nº" + JGestionUtils.getNumeracion(re, true) + " registrada..", null, 1);
                     limpiarDetalle();
                     resetPanel();
@@ -135,16 +135,16 @@ public class ReciboController implements ActionListener, FocusListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    if (rereSelected != null) {
+                    if (selectedRecibo != null) {
                         // cuando se re-imprime un recibo elegido desde el buscador (uno pre existente)
-                        imprimirRecibo(rereSelected);
+                        imprimirRecibo(selectedRecibo);
                     } else {
                         //cuando se está creando un recibo y se va imprimir al tokesaun!
                         checkConstraints();
                         Recibo recibo = getEntity();
                         persist(recibo);
-                        rereSelected = recibo;
-                        imprimirRecibo(rereSelected);
+                        selectedRecibo = recibo;
+                        imprimirRecibo(selectedRecibo);
                         limpiarDetalle();
                         resetPanel();
                     }
@@ -164,7 +164,6 @@ public class ReciboController implements ActionListener, FocusListener {
                     cargarFacturasCtaCtes(cliente);
                     double credito = new NotaCreditoController().getCreditoDisponible(cliente);
                     jdReRe.getTfCreditoDebitoDisponible().setText(UTIL.PRECIO_CON_PUNTO.format(credito));
-                    jdReRe.getTfCreditoDebitoRestante().setText(UTIL.PRECIO_CON_PUNTO.format(credito));
                     SwingUtil.setComponentsEnabled(jdReRe.getPanelPagos().getComponents(), true, true);
                 } else {
                     //si no eligió nada.. vacia el combo de cta cte's
@@ -229,6 +228,24 @@ public class ReciboController implements ActionListener, FocusListener {
                 updateTotales();
             }
         });
+        jdReRe.getTablePagos().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (selectedRecibo == null) {
+                    int selectedRow = jdReRe.getTablePagos().getSelectedRow();
+                    if (e.getClickCount() > 1 && selectedRow > -1) {
+                        Object o = jdReRe.getTablePagos().getModel().getValueAt(selectedRow, 0);
+                        if (o instanceof DetalleCajaMovimientos) {
+                            displayABMEfectivo((DetalleCajaMovimientos) o);
+                        } else if (o instanceof ComprobanteRetencion) {
+                            displayABMRetencion((ComprobanteRetencion) o);
+                        } else if (o instanceof ChequePropio) {
+                            JOptionPane.showMessageDialog(jdReRe, "Los cheques propios no puede ser editados", null, JOptionPane.WARNING_MESSAGE);
+                        }
+                    }
+                }
+            }
+        });
         jdReRe.getBtnDetalleCreditoDebito().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -250,7 +267,7 @@ public class ReciboController implements ActionListener, FocusListener {
     private void displayUIPagos(int formaPago) throws MessageException {
 
         if (formaPago == 0) {
-            displayABMEfectivo();
+            displayABMEfectivo(null);
         } else if (formaPago == 1) {
             displayABMChequePropio();
         } else if (formaPago == 2) {
@@ -258,24 +275,32 @@ public class ReciboController implements ActionListener, FocusListener {
         } else if (formaPago == 3) {
             displayABMNotaCredito();
         } else if (formaPago == 4) {
-            displayABMRetencion();
+            displayABMRetencion(null);
         }
     }
 
-    private void displayABMEfectivo() {
-        BigDecimal monto = jdReRe.displayABMEfectivo();
+    private void displayABMEfectivo(DetalleCajaMovimientos toEdit) {
+        BigDecimal monto = jdReRe.displayABMEfectivo(toEdit == null ? null : BigDecimal.valueOf(toEdit.getMonto()));
         if (monto != null) {
-            DetalleCajaMovimientos d = new DetalleCajaMovimientos();
-            d.setIngreso(true);
-            d.setTipo(DetalleCajaMovimientosJpaController.RECIBO);
-            d.setUsuario(UsuarioController.getCurrentUser());
-            d.setMovimientoConcepto(MovimientoConceptoController.EFECTIVO);
-            d.setDescripcion(null); // <--- setear con el N° del comprobante
-            d.setCajaMovimientos(null); // no te olvides este tampoco!! 
-            d.setNumero(0l); // Comprobante.id!!!!
-            d.setMonto(monto.doubleValue());
             DefaultTableModel dtm = jdReRe.getDtmPagos();
-            dtm.addRow(new Object[]{d, "EF", null, monto});
+            if (toEdit == null) {
+                DetalleCajaMovimientos d = new DetalleCajaMovimientos();
+                d.setIngreso(true);
+                d.setTipo(DetalleCajaMovimientosJpaController.RECIBO);
+                d.setUsuario(UsuarioController.getCurrentUser());
+                d.setMovimientoConcepto(MovimientoConceptoController.EFECTIVO);
+                d.setDescripcion(null); // <--- setear con el N° del comprobante
+                d.setCajaMovimientos(null); // no te olvides este tampoco!! 
+                d.setNumero(0l); // Comprobante.id!!!!
+                d.setMonto(monto.doubleValue());
+                dtm.addRow(new Object[]{d, "EF", null, monto});
+            } else {
+                toEdit.setMonto(monto.doubleValue());
+                int selectedRow = jdReRe.getTablePagos().getSelectedRow();
+                dtm.setValueAt(toEdit, selectedRow, 0);
+                dtm.setValueAt(toEdit.getNumero(), selectedRow, 2);
+                dtm.setValueAt(monto, selectedRow, 3);
+            }
         }
     }
 
@@ -328,11 +353,11 @@ public class ReciboController implements ActionListener, FocusListener {
         }
     }
 
-    private void displayABMRetencion() {
-        ComprobanteRetencion comprobante = new ComprobanteRetencionController().displayComprobanteRetencion(jdReRe, null);
+    private void displayABMRetencion(ComprobanteRetencion toEdit) {
+        ComprobanteRetencion comprobante = new ComprobanteRetencionController().displayComprobanteRetencion(jdReRe, toEdit);
         if (comprobante != null) {
-            comprobante.setPropio(false);
             DefaultTableModel dtm = jdReRe.getDtmPagos();
+            comprobante.setPropio(false);
             try {
                 for (int row = 0; row < dtm.getRowCount(); row++) {
                     if (dtm.getValueAt(row, 0) instanceof ComprobanteRetencion) {
@@ -342,7 +367,14 @@ public class ReciboController implements ActionListener, FocusListener {
                         }
                     }
                 }
-                dtm.addRow(new Object[]{comprobante, "RE", comprobante.getNumero(), comprobante.getImporte()});
+                if (toEdit == null) {
+                    dtm.addRow(new Object[]{comprobante, "RE", comprobante.getNumero(), comprobante.getImporte()});
+                } else {
+                    int selectedRow = jdReRe.getTablePagos().getSelectedRow();
+                    dtm.setValueAt(comprobante, selectedRow, 0);
+                    dtm.setValueAt(comprobante.getNumero(), selectedRow, 2);
+                    dtm.setValueAt(comprobante.getImporte(), selectedRow, 3);
+                }
             } catch (MessageException ex) {
                 ex.displayMessage(jdReRe);
             }
@@ -351,23 +383,24 @@ public class ReciboController implements ActionListener, FocusListener {
 
     private void displayDetalleCredito(Cliente cliente) {
         JTable tabla = UTIL.getDefaultTableModel(null,
-                new String[]{"Nº Nota crédito", "Fecha", "Importe", "Desacreditado", "Total Acum."},
+                new String[]{"Nº Nota crédito", "Fecha", "Importe", "Recibo", "Total Acum."},
                 new int[]{50, 50, 50, 50, 100},
                 new Class<?>[]{null, null, Double.class, Double.class, Double.class});
         TableColumnModel tcm = tabla.getColumnModel();
         tcm.getColumn(2).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         tcm.getColumn(3).setCellRenderer(NumberRenderer.getCurrencyRenderer());
-        tcm.getColumn(4).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         List<NotaCredito> lista = new NotaCreditoController().findNotaCreditoFrom(cliente, false);
         DefaultTableModel dtm = (DefaultTableModel) tabla.getModel();
         BigDecimal acumulativo = BigDecimal.ZERO;
         for (NotaCredito notaCredito : lista) {
-            acumulativo = acumulativo.add(notaCredito.getImporte().subtract(notaCredito.getDesacreditado()));
+            if (notaCredito.getRecibo() == null) {
+                acumulativo = acumulativo.add(notaCredito.getImporte());
+            }
             dtm.addRow(new Object[]{
                         JGestionUtils.getNumeracion(notaCredito, true),
                         UTIL.DATE_FORMAT.format(notaCredito.getFechaNotaCredito()),
                         notaCredito.getImporte(),
-                        notaCredito.getDesacreditado(),
+                        JGestionUtils.getNumeracion(notaCredito.getRecibo(), true),
                         acumulativo});
         }
         JDialogTable jd = new JDialogTable(jdReRe, "Detalle de crédito: " + cliente.getNombre(), true, dtm);
@@ -388,7 +421,7 @@ public class ReciboController implements ActionListener, FocusListener {
             throw new MessageException("Fecha de " + jpaController.getEntityClass().getSimpleName() + " no válida");
         }
 
-        if (0 != new BigDecimal(jdReRe.getTfTotalAPagar().getText()).compareTo(new BigDecimal(jdReRe.getTfTotalPagado().getText()))) {
+        if (0 != jdReRe.getTfTotalAPagar().getText().compareTo(jdReRe.getTfTotalPagado().getText())) {
             throw new MessageException("El importe a pagar no coincide el detalle de pagos.");
         }
         if (unlockedNumeracion) {
@@ -546,8 +579,8 @@ public class ReciboController implements ActionListener, FocusListener {
             BigDecimal monto = (BigDecimal) dtm.getValueAt(row, 3);
             totalPagado = totalPagado.add(monto);
         }
-        jdReRe.getTfTotalAPagar().setText(UTIL.PRECIO_CON_PUNTO.format(totalAPagar));
-        jdReRe.getTfTotalPagado().setText(UTIL.PRECIO_CON_PUNTO.format(totalPagado));
+        jdReRe.getTfTotalAPagar().setText(UTIL.DECIMAL_FORMAT.format(totalAPagar));
+        jdReRe.getTfTotalPagado().setText(UTIL.DECIMAL_FORMAT.format(totalPagado));
     }
 
     /**
@@ -628,10 +661,9 @@ public class ReciboController implements ActionListener, FocusListener {
         jdReRe.getCbClienteProveedor().setSelectedIndex(0);
         setNextNumeroReRe();
         jdReRe.getTfCreditoDebitoDisponible().setText(null);
-        jdReRe.getTfCreditoDebitoRestante().setText(null);
         jdReRe.getTfTotalPagado().setText("0");
         jdReRe.getTfTotalAPagar().setText("0");
-        rereSelected = null;
+        selectedRecibo = null;
     }
 
     @SuppressWarnings("unchecked")
@@ -728,10 +760,10 @@ public class ReciboController implements ActionListener, FocusListener {
     private void setSelectedRecibo() {
         int rowIndex = buscador.getjTable1().getSelectedRow();
         int id = Integer.valueOf(buscador.getjTable1().getModel().getValueAt(rowIndex, 0).toString());
-        rereSelected = jpaController.find(id);
-        if (rereSelected != null) {
+        selectedRecibo = jpaController.find(id);
+        if (selectedRecibo != null) {
             try {
-                setComprobanteUI(rereSelected);
+                setComprobanteUI(selectedRecibo);
                 jdReRe.setLocationRelativeTo(buscador);
                 jdReRe.setVisible(true);
             } catch (MessageException ex) {

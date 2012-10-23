@@ -84,8 +84,10 @@ public class ComprobanteRetencionController {
             @Override
             public void actionPerformed(ActionEvent e) {
                 entity = null;
+                jd.dispose();
             }
         });
+        
         jd.setLocationRelativeTo(owner);
         jd.setVisible(true);
         return entity;

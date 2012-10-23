@@ -1362,7 +1362,7 @@ private void jMenuItem59ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
 
 private void jMenuItem60ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem60ActionPerformed
     try {
-        new ChequePropioController().initManager(this, null).setVisible(true);
+        new ChequePropioController().initManager(this).setVisible(true);
     } catch (MessageException ex) {
         JOptionPane.showMessageDialog(this, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
     }
