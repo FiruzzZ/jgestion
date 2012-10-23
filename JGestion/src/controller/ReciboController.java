@@ -7,6 +7,7 @@ import entity.*;
 import gui.JDBuscadorReRe;
 import gui.JDReRe;
 import gui.generics.JDialogTable;
+import java.awt.Component;
 import java.awt.event.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -612,14 +613,11 @@ public class ReciboController implements ActionListener, FocusListener {
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
                 new String[]{"Instance", "Nº Recibo", "Monto", "Fecha", "Caja", "Usuario", "Fecha/Hora (Sist)"},
-                new int[]{1, 80, 50, 40, 50, 50, 70} //                ,new Class<?>[]{null, null, null, null, String.class, null, null, null}
-                );
+                new int[]{1, 80, 50, 40, 50, 50, 70});
         buscador.getjTable1().getColumnModel().getColumn(2).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         buscador.getjTable1().getColumnModel().getColumn(3).setCellRenderer(FormatRenderer.getDateRenderer());
         buscador.getjTable1().getColumnModel().getColumn(6).setCellRenderer(FormatRenderer.getDateTimeRenderer());
         UTIL.hideColumnTable(buscador.getjTable1(), 0);
-
-//        UTIL.setHorizonalAlignment(buscador.getjTable1(), String.class, SwingConstants.RIGHT);
         buscador.getjTable1().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -782,25 +780,28 @@ public class ReciboController implements ActionListener, FocusListener {
         if (jdReRe == null) {
             initRecibos(null, true, false);
         }
-        jdReRe.setTfCuarto(UTIL.AGREGAR_CEROS(recibo.getSucursal().getPuntoVenta(), 4));
-        jdReRe.setTfOcteto(UTIL.AGREGAR_CEROS(recibo.getNumero(), 8));
+//        bloquearVentana(true);
         //por no redundar en DATOOOOOOOOOSS...!!!
         Cliente cliente = new FacturaVentaController().findFacturaVenta(recibo.getDetalleReciboList().get(0).getFacturaVenta().getId()).getCliente();
-
-        jdReRe.setDcFechaReRe(recibo.getFechaRecibo());
-        jdReRe.setDcFechaCarga(recibo.getFechaCarga());
         //que compare por String's..
         //por si el combo está vacio <VACIO> o no eligió ninguno
         //van a tirar error de ClassCastException
         UTIL.setSelectedItem(jdReRe.getCbSucursal(), recibo.getSucursal().getNombre());
         UTIL.setSelectedItem(jdReRe.getCbCaja(), recibo.getCaja().toString());
         UTIL.setSelectedItem(jdReRe.getCbClienteProveedor(), cliente.getNombre());
+        jdReRe.setTfCuarto(UTIL.AGREGAR_CEROS(recibo.getSucursal().getPuntoVenta(), 4));
+        jdReRe.setTfOcteto(UTIL.AGREGAR_CEROS(recibo.getNumero(), 8));
+        jdReRe.setDcFechaReRe(recibo.getFechaRecibo());
+        jdReRe.setDcFechaCarga(recibo.getFechaCarga());
         cargarDetalleReRe(recibo);
+        updateTotales();
         jdReRe.setTfImporte("");
         jdReRe.setTfPagado("");
         jdReRe.setTfSaldo("");
-        updateTotales();
-        bloquearVentana(true);
+        SwingUtil.setComponentsEnabled(jdReRe.getPanelDatos().getComponents(), false, true);
+        SwingUtil.setComponentsEnabled(jdReRe.getPanelAPagar().getComponents(), false, true);
+        SwingUtil.setComponentsEnabled(jdReRe.getPanelPagos().getComponents(), false, true);
+        jdReRe.getbImprimir().setEnabled(true);
     }
 
     private void cargarDetalleReRe(Recibo recibo) {
