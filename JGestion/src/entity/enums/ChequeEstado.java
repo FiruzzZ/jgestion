@@ -1,10 +1,11 @@
 package entity.enums;
 
+import entity.Cheque;
 import entity.ChequePropio;
 import entity.ChequeTerceros;
 
 /**
- * Estados posibles de un cheque.
+ * Estados posibles de un {@link Cheque}.
  *
  * @author FiruzzZ
  */
@@ -33,9 +34,9 @@ public enum ChequeEstado {
     /**
      * Hace falta explicación?
      */
-    RECHAZADO(5),
+    ANULADO(5),
     ENVIADO_SUCURSAL(6),
-    ENDOSADO(7);
+    REEMPLAZADO(7);
     private final int id;
 
     private ChequeEstado(int id) {

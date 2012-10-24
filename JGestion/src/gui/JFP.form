@@ -672,7 +672,7 @@
             </MenuItem>
             <Menu class="javax.swing.JMenu" name="jMenu18">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Bancos/Sucursales/Cuentas"/>
+                <Property name="text" type="java.lang.String" value="Bancos/Cuentas Bancarias"/>
               </Properties>
               <SubComponents>
                 <MenuItem class="javax.swing.JMenuItem" name="jMenuItem58">
@@ -686,6 +686,7 @@
                 <MenuItem class="javax.swing.JMenuItem" name="jMenuItem59">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="Sucursales Bancarias"/>
+                    <Property name="enabled" type="boolean" value="false"/>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem59ActionPerformed"/>

@@ -30,7 +30,7 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="1" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jScrollPane1" pref="831" max="32767" attributes="0"/>
+                          <Component id="jScrollPane1" pref="829" max="32767" attributes="0"/>
                           <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
@@ -182,7 +182,7 @@
                       <Component id="bACaja" alignment="0" max="32767" attributes="1"/>
                       <Component id="bDeposito" alignment="0" max="32767" attributes="1"/>
                       <Component id="bAnular" alignment="1" max="32767" attributes="1"/>
-                      <Component id="bDetail" alignment="0" max="32767" attributes="1"/>
+                      <Component id="btnReemplazar" alignment="0" max="32767" attributes="1"/>
                       <Component id="bImprimir" alignment="0" max="32767" attributes="1"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
@@ -205,7 +205,7 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="bAnular" min="-2" pref="34" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="bDetail" min="-2" pref="34" max="-2" attributes="0"/>
+                  <Component id="btnReemplazar" min="-2" pref="34" max="-2" attributes="0"/>
                   <EmptySpace pref="69" max="32767" attributes="0"/>
                   <Component id="bImprimir" min="-2" pref="34" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
@@ -239,7 +239,6 @@
               <Image iconType="3" name="/iconos/32px_coins.png"/>
             </Property>
             <Property name="text" type="java.lang.String" value="A Caja"/>
-            <Property name="name" type="java.lang.String" value="imprimirBuscador" noResource="true"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JButton" name="bDeposito">
@@ -248,7 +247,6 @@
               <Image iconType="3" name="/iconos/32px_bank.png"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Dep&#xf3;sito"/>
-            <Property name="name" type="java.lang.String" value="imprimirBuscador" noResource="true"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JButton" name="bAnular">
@@ -257,16 +255,15 @@
               <Image iconType="3" name="/iconos/cancelar.png"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Anular"/>
-            <Property name="name" type="java.lang.String" value="imprimirBuscador" noResource="true"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JButton" name="bDetail">
+        <Component class="javax.swing.JButton" name="btnReemplazar">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/iconos/32px_view_detail.png"/>
+              <Image iconType="3" name="/iconos/32px_change_values.png"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="Detalle"/>
-            <Property name="name" type="java.lang.String" value="imprimirBuscador" noResource="true"/>
+            <Property name="text" type="java.lang.String" value="Reemplazar"/>
+            <Property name="toolTipText" type="java.lang.String" value="Anula el cheque seleccionado mientras que genera otro en reemplazo"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JSeparator" name="jSeparator1">
@@ -277,7 +274,6 @@
               <Image iconType="3" name="/iconos/impresora.png"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Imprimir"/>
-            <Property name="name" type="java.lang.String" value="imprimirBuscador" noResource="true"/>
           </Properties>
         </Component>
       </SubComponents>
@@ -303,11 +299,10 @@
                       <Component id="labelSucursales" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="1" attributes="0">
-                      <Component id="cbBancoSucursales" min="-2" pref="318" max="-2" attributes="1"/>
-                      <Component id="cbEmisor" min="-2" pref="318" max="-2" attributes="1"/>
-                      <Group type="102" alignment="0" attributes="0">
-                          <Group type="103" groupAlignment="1" attributes="0">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Component id="cbEmisor" alignment="1" min="-2" pref="318" max="-2" attributes="1"/>
+                      <Group type="102" attributes="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="cbBancos" alignment="0" min="-2" pref="318" max="-2" attributes="1"/>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="tfChequeNumero" min="-2" pref="121" max="-2" attributes="0"/>
@@ -318,11 +313,12 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="tfImporte" min="-2" pref="104" max="-2" attributes="0"/>
                               </Group>
+                              <Component id="cbBancoSucursales" min="-2" pref="318" max="-2" attributes="1"/>
                           </Group>
                           <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                       </Group>
                   </Group>
-                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
                           <Group type="103" groupAlignment="0" attributes="0">
@@ -404,15 +400,15 @@
                               <Component id="jLabel8" alignment="2" min="-2" max="-2" attributes="0"/>
                               <Component id="dcCobroDesde" alignment="2" min="-2" max="-2" attributes="0"/>
                               <Component id="jLabel7" alignment="2" min="-2" max="-2" attributes="0"/>
-                              <Component id="cbBancoSucursales" alignment="2" min="-2" max="-2" attributes="0"/>
-                              <Component id="labelSucursales" alignment="2" min="-2" max="-2" attributes="0"/>
+                              <Component id="cbEmisor" alignment="2" min="-2" max="-2" attributes="0"/>
+                              <Component id="labelEmisor" alignment="2" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="jLabel13" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="cbEstados" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="cbEmisor" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="labelEmisor" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="cbBancoSucursales" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="labelSucursales" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">

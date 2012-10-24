@@ -5,6 +5,7 @@
  */
 package gui;
 
+import com.toedter.calendar.JDateChooser;
 import java.util.Date;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -345,16 +346,16 @@ private void checkEndosadoStateChanged(javax.swing.event.ChangeEvent evt) {//GEN
         return checkEndosado;
     }
 
-    public Date getDcCheque() {
-        return dcCheque.getDate();
+    public JDateChooser getDcCheque() {
+        return dcCheque;
     }
 
-    public Date getDcEndoso() {
-        return dcEndoso.getDate();
+    public JDateChooser getDcEndoso() {
+        return dcEndoso;
     }
 
-    public Date getDcCobro() {
-        return dcCobro.getDate();
+    public JDateChooser getDcCobro() {
+        return dcCobro;
     }
 
     public JLabel getLabelEmisor() {

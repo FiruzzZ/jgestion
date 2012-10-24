@@ -263,7 +263,7 @@ public class CuentabancariaController {
         panelABM.getjCheckBox1().setSelected(o.getActiva());
     }
 
-    void displayDepositoUI(final ChequeTerceros cheque) {
+    void initDepositoUI(final ChequeTerceros cheque) {
         panelDeposito = new PanelDepositoCheque();
         panelDeposito.getLabelNcuenta().setVisible(false);
         panelDeposito.getCbCuentaBancaria().setVisible(false);
