@@ -773,7 +773,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         });
         jMenu9.add(jMenuItem15);
 
-        jMenu18.setText("Bancos/Sucursales/Cuentas");
+        jMenu18.setText("Bancos/Cuentas Bancarias");
 
         jMenuItem58.setText("Bancos");
         jMenuItem58.addActionListener(new java.awt.event.ActionListener() {
@@ -784,6 +784,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenu18.add(jMenuItem58);
 
         jMenuItem59.setText("Sucursales Bancarias");
+        jMenuItem59.setEnabled(false);
         jMenuItem59.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem59ActionPerformed(evt);
@@ -1370,7 +1371,7 @@ private void jMenuItem60ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
 
 private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem56ActionPerformed
     try {
-        new ChequeTercerosController().initManagerTerceros(this, null, null).setVisible(true);
+        new ChequeTercerosController().gettManagerTerceros(this, null, null).setVisible(true);
     } catch (MessageException ex) {
         JOptionPane.showMessageDialog(this, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
     }

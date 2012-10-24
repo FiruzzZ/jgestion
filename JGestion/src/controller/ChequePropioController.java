@@ -342,27 +342,27 @@ public class ChequePropioController implements ActionListener {
 
     @SuppressWarnings("unchecked")
     private ChequePropio getEntity() throws MessageException {
-        Date fechaEmisionCheque, fechaCobro, fechaEndoso = null;
+        Date fechaCheque, fechaCobro, fechaEndoso = null;
         Long numero = null;
         BigDecimal importe = null;
         Banco banco;
         BancoSucursal sucursal = null;
         Librado librado;
         Proveedor proveedor = ((ComboBoxWrapper<Proveedor>) panelABM.getCbEmisor().getSelectedItem()).getEntity();
-        boolean cruzado, propio, endosado;
+        boolean cruzado;
         String endosatario = null, observacion = null;
         CuentaBancaria cuentaBancaria;
 
-        if (panelABM.getDcCheque() == null) {
+        if (panelABM.getDcCheque().getDate() == null) {
             throw new MessageException("Debe ingresar la Fecha del Cheque.");
         }
-        if (panelABM.getDcCobro() == null) {
+        if (panelABM.getDcCobro().getDate() == null) {
             throw new MessageException("Debe ingresar la Fecha de cobro del Cheque.");
         }
-        fechaEmisionCheque = panelABM.getDcCheque();
-        fechaCobro = panelABM.getDcCobro();
+        fechaCheque = panelABM.getDcCheque().getDate();
+        fechaCobro = panelABM.getDcCobro().getDate();
 
-        if (UTIL.compararIgnorandoTimeFields(fechaEmisionCheque, fechaCobro) > 0) {
+        if (UTIL.compararIgnorandoTimeFields(fechaCheque, fechaCobro) > 0) {
             throw new MessageException("Fecha de cobro no puede ser anterior a Fecha de cheque.");
         }
         try {
@@ -390,7 +390,7 @@ public class ChequePropioController implements ActionListener {
         if (!panelABM.getTaObservacion().getText().isEmpty()) {
             observacion = panelABM.getTaObservacion().getText();
         }
-        ChequePropio newCheque = new ChequePropio(proveedor, numero, banco, sucursal, importe, fechaEmisionCheque, fechaCobro, cruzado, observacion, ChequeEstado.CARTERA, endosatario, fechaEndoso, UsuarioController.getCurrentUser(), librado, cuentaBancaria);
+        ChequePropio newCheque = new ChequePropio(proveedor, numero, banco, sucursal, importe, fechaCheque, fechaCobro, cruzado, observacion, ChequeEstado.CARTERA, endosatario, fechaEndoso, UsuarioController.getCurrentUser(), librado, cuentaBancaria);
         return newCheque;
     }
 
