@@ -27,8 +27,8 @@ public class OperacionesBancariasController {
     private OperacionesBancarias selectedEntity;
     private JDMiniABM abm;
     public static final int DEPOSITO = 1;
-    public static final int TRASNFERENCIA = 2;
-    public static final int EXTRACCION = 3;
+    public static final int EXTRACCION = 2;
+    public static final int TRASNFERENCIA = 3;
 
     public OperacionesBancariasController() {
         jpaController = new OperacionesBancariasJpaController();

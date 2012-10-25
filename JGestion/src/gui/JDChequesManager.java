@@ -13,7 +13,6 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import utilities.general.UTIL;
 import utilities.gui.SwingUtil;
 
 /**
@@ -77,8 +76,6 @@ public class JDChequesManager extends javax.swing.JDialog {
         cbBancoSucursales = new javax.swing.JComboBox();
         labelEmisor = new javax.swing.JLabel();
         cbEmisor = new javax.swing.JComboBox();
-        jLabel12 = new javax.swing.JLabel();
-        cbLibrado = new javax.swing.JComboBox();
         jLabel13 = new javax.swing.JLabel();
         cbEstados = new javax.swing.JComboBox();
         jLabel14 = new javax.swing.JLabel();
@@ -261,8 +258,6 @@ public class JDChequesManager extends javax.swing.JDialog {
 
         labelEmisor.setText("Client/Provee");
 
-        jLabel12.setText("Librado");
-
         jLabel13.setText("Estado");
 
         jLabel14.setText("Ordenar por");
@@ -326,14 +321,12 @@ public class JDChequesManager extends javax.swing.JDialog {
                                 .addComponent(dcEmisionHasta, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel12, javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addComponent(jLabel14, javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addComponent(jLabel13, javax.swing.GroupLayout.Alignment.TRAILING))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(cbOrderBy, 0, 253, Short.MAX_VALUE)
-                                    .addComponent(cbEstados, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(cbLibrado, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
+                                    .addComponent(cbEstados, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(labelCuentaBancaria)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -373,10 +366,6 @@ public class JDChequesManager extends javax.swing.JDialog {
                             .addComponent(cbEstados, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(cbBancoSucursales, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(labelSucursales))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel12)
-                            .addComponent(cbLibrado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel14)
@@ -451,7 +440,6 @@ private void tfImporteKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_t
     private javax.swing.JComboBox cbEmisor;
     private javax.swing.JComboBox cbEstados;
     private javax.swing.JComboBox cbImporteCondicion;
-    private javax.swing.JComboBox cbLibrado;
     private javax.swing.JComboBox cbOrderBy;
     private com.toedter.calendar.JDateChooser dcCobroDesde;
     private com.toedter.calendar.JDateChooser dcCobroHasta;
@@ -459,7 +447,6 @@ private void tfImporteKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_t
     private com.toedter.calendar.JDateChooser dcEmisionHasta;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel2;
@@ -528,10 +515,6 @@ private void tfImporteKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_t
 
     public JComboBox getCbImporteCondicion() {
         return cbImporteCondicion;
-    }
-
-    public JComboBox getCbLibrado() {
-        return cbLibrado;
     }
 
     public Date getDcEmisionDesde() {

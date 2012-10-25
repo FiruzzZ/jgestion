@@ -206,18 +206,12 @@ public class CtacteClienteJpaController implements ActionListener {
     List<CtacteCliente> findCtacteClienteByCliente(Integer clienteID, short estadoCtaCte) {
         EntityManager em = getEntityManager();
         em.getTransaction().begin();
-        List<CtacteCliente> listaCtaCteCliente = null;
-        try {
-            listaCtaCteCliente = em.createNativeQuery(
-                    "SELECT o.* FROM ctacte_cliente o, factura_venta f, cliente c"
-                    + " WHERE c.id = f.cliente AND f.id = o.factura "
-                    + " AND o.estado = " + estadoCtaCte + " AND c.id =" + clienteID
-                    + " ORDER BY o.id",
-                    CtacteCliente.class).getResultList();
-        } catch (Exception ex) {
-            LOG.error(ex, ex);
-        }
-        return listaCtaCteCliente;
+        List<CtacteCliente> l = em.createQuery(
+                "SELECT o FROM " + CtacteCliente.class.getSimpleName() + " o"
+                + " WHERE o.estado = " + estadoCtaCte + " AND o.factura.cliente.id =" + clienteID
+                + " ORDER BY o.factura.sucursal.puntoVenta, o.factura.numero",
+                CtacteCliente.class).getResultList();
+        return l;
     }
 
     public void initResumenCtaCte(JFrame frame, boolean modal) throws MessageException {

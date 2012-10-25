@@ -30,13 +30,13 @@ public class JGestionUtils {
         return wrappedList;
     }
 
-    public static List<ComboBoxWrapper<Librado>> getWrappedLibrado(List<Librado> list) {
-        List<ComboBoxWrapper<Librado>> l = new ArrayList<ComboBoxWrapper<Librado>>(list.size());
-        for (Librado o : list) {
-            l.add(new ComboBoxWrapper<Librado>(o, o.getId(), o.getNombre()));
-        }
-        return l;
-    }
+//    public static List<ComboBoxWrapper<Librado>> getWrappedLibrado(List<Librado> list) {
+//        List<ComboBoxWrapper<Librado>> l = new ArrayList<ComboBoxWrapper<Librado>>(list.size());
+//        for (Librado o : list) {
+//            l.add(new ComboBoxWrapper<Librado>(o, o.getId(), o.getNombre()));
+//        }
+//        return l;
+//    }
 
     public static List<ComboBoxWrapper<Cliente>> getWrappedClientes(List<Cliente> list) {
         List<ComboBoxWrapper<Cliente>> l = new ArrayList<ComboBoxWrapper<Cliente>>(list.size());

@@ -45,25 +45,33 @@ public class CuentabancariaMovimientosController {
         if (manager.getCbBancos().getSelectedIndex() > 0) {
             query.append(" AND o.cuentaBancaria.banco.id=").append(((ComboBoxWrapper<?>) manager.getCbBancos().getSelectedItem()).getId());
         } else {
+            query.append(" AND (");
             for (int i = 1; i < manager.getCbBancos().getItemCount(); i++) {
-                query.append(" AND o.cuentaBancaria.banco.id=").append(((ComboBoxWrapper<?>) manager.getCbBancos().getItemAt(i)).getId());
-
+                query.append(" o.cuentaBancaria.banco.id=").append(((ComboBoxWrapper<?>) manager.getCbBancos().getItemAt(i)).getId());
+                if ((i + 1) < manager.getCbBancos().getItemCount()) {
+                    query.append(" OR ");
+                }
             }
+            query.append(")");
         }
         if (manager.getCbCuentabancaria().getSelectedIndex() > 0) {
             query.append(" AND o.cuentaBancaria.id=").append(((ComboBoxWrapper<?>) manager.getCbCuentabancaria().getSelectedItem()).getId());
         } else {
             //if (no seleccionó banco) => cuentas bancarias está vacía
             if (manager.getCbBancos().getSelectedIndex() > 0) {
-                for (int i = 1; i < manager.getCbBancos().getItemCount(); i++) {
-                    query.append(" AND o.cuentaBancaria.id=").append(((ComboBoxWrapper<?>) manager.getCbCuentabancaria().getItemAt(i)).getId());
-
+                query.append(" AND (");
+                for (int i = 1; i < manager.getCbCuentabancaria().getItemCount(); i++) {
+                    query.append(" o.cuentaBancaria.id=").append(((ComboBoxWrapper<?>) manager.getCbCuentabancaria().getItemAt(i)).getId());
+                    if ((i + 1) < manager.getCbCuentabancaria().getItemCount()) {
+                        query.append(" OR ");
+                    }
                 }
+                query.append(")");
             }
         }
         if (manager.getCbOperacionesBancariasFiltro().getSelectedIndex() > 0) {
             query.append(" AND o.operacionesBancarias.id=").append(((ComboBoxWrapper<?>) manager.getCbOperacionesBancariasFiltro().getSelectedItem()).getId());
-        } 
+        }
         if (manager.getDcDesde() != null || manager.getDcHasta() != null) {
             if (manager.getRbOperacion()) {
                 if (manager.getDcDesde() != null) {

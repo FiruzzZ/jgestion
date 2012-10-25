@@ -1,6 +1,5 @@
 package gui;
 
-import com.toedter.calendar.JDateChooser;
 import com.toedter.calendar.JDateChooserCellEditor;
 import controller.BancoController;
 import controller.CuentaBancaria;
@@ -17,15 +16,13 @@ import java.util.Date;
 import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JRadioButton;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import jgestion.JGestionUtils;
 import jpa.controller.CuentabancariaMovimientosJpaController;
 import jpa.controller.OperacionesBancariasJpaController;
-import org.bushe.swing.action.ActionList;
 import utilities.general.UTIL;
-import utilities.gui.SwingUtil;
 import utilities.swing.components.ComboBoxWrapper;
 import utilities.swing.components.FormatRenderer;
 import utilities.swing.components.NumberRenderer;
@@ -319,7 +316,9 @@ public class JDCuentabancariaManager extends javax.swing.JDialog {
         if (op.getNombre().equalsIgnoreCase("DEPÓSITO")) {
             displayDepositoGUI();
         } else if (op.getNombre().equalsIgnoreCase("EXTRACCIÓN")) {
+            displayExtraccionGUI();
         } else if (op.getNombre().equalsIgnoreCase("TRANSFERENCIA")) {
+            displayTransferenciaGUI();
         }
     }//GEN-LAST:event_btnAgregarActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -407,22 +406,28 @@ public class JDCuentabancariaManager extends javax.swing.JDialog {
                     CuentaBancaria cb;
                     BigDecimal monto;
                     try {
-                        cb = ((ComboBoxWrapper<CuentaBancaria>) panelDeposito.getCbBancos().getSelectedItem()).getEntity();
+                        cb = ((ComboBoxWrapper<CuentaBancaria>) panelDeposito.getCbCuentabancaria().getSelectedItem()).getEntity();
                     } catch (ClassCastException ex) {
                         throw new MessageException("Cuenta bancanria no válida");
                     }
                     try {
                         monto = new BigDecimal(panelDeposito.getTfDebe().getText());
+                        if (monto.compareTo(BigDecimal.ZERO) != 1) {
+                            throw new MessageException("Importe no válido, debe ser mayor a cero");
+                        }
                     } catch (Exception ex) {
                         throw new MessageException("Importe no válido, ingrese solo números y utilice el punto como separador decimal");
                     }
-                    String descrip = panelDeposito.getTfDescripcionMov().getText();
-                    Date fechaCre = panelDeposito.getDcFechaCreditoDebito().getDate();
+                    String descrip = panelDeposito.getTfDescripcionMov().getText().trim();
+                    if (descrip.isEmpty()) {
+                        throw new MessageException("Descripción de depósito no válida");
+                    }
                     Date fechaOP = panelDeposito.getDcFechaOperacion().getDate();
+                    Date fechaCre = panelDeposito.getDcFechaCreditoDebito().getDate();
                     OperacionesBancarias op = ((ComboBoxWrapper<OperacionesBancarias>) cbOperacionesBancarias.getSelectedItem()).getEntity();
                     CuentabancariaMovimientos cbm = new CuentabancariaMovimientos(fechaOP, descrip, fechaCre, monto, BigDecimal.ZERO, false, UsuarioController.getCurrentUser(), op, cb, null, null);
                     new CuentabancariaMovimientosJpaController().create(cbm);
-                    abm.showMessage("operación n° " + cbm.getId() +" realizada", null, 1);
+                    abm.showMessage("operación n° " + cbm.getId() + " realizada", null, 1);
                 } catch (MessageException ex) {
                     ex.displayMessage(abm);
                 }
@@ -436,5 +441,123 @@ public class JDCuentabancariaManager extends javax.swing.JDialog {
         });
         abm.setLocationRelativeTo(this);
         abm.setVisible(true);
+    }
+
+    private void displayExtraccionGUI() {
+        final PanelOperacionBancariaDeposito panelDeposito = new PanelOperacionBancariaDeposito();
+        abm = new JDABM(this, "Extracción", true, panelDeposito);
+        abm.getbAceptar().addActionListener(new ActionListener() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    CuentaBancaria cb;
+                    BigDecimal monto;
+                    try {
+                        cb = ((ComboBoxWrapper<CuentaBancaria>) panelDeposito.getCbCuentabancaria().getSelectedItem()).getEntity();
+                    } catch (ClassCastException ex) {
+                        throw new MessageException("Cuenta bancanria no válida");
+                    }
+                    try {
+                        monto = new BigDecimal(panelDeposito.getTfDebe().getText());
+                        if (monto.compareTo(BigDecimal.ZERO) != 1) {
+                            throw new MessageException("Importe no válido, debe ser mayor a cero");
+                        }
+                    } catch (Exception ex) {
+                        throw new MessageException("Importe no válido, ingrese solo números y utilice el punto como separador decimal");
+                    }
+                    String descrip = panelDeposito.getTfDescripcionMov().getText().trim();
+                    if (descrip.isEmpty()) {
+                        throw new MessageException("Descripción de extracción no válida");
+                    }
+                    Date fechaOP = panelDeposito.getDcFechaOperacion().getDate();
+                    Date fechaCre = panelDeposito.getDcFechaCreditoDebito().getDate();
+                    OperacionesBancarias op = ((ComboBoxWrapper<OperacionesBancarias>) cbOperacionesBancarias.getSelectedItem()).getEntity();
+                    CuentabancariaMovimientos cbm = new CuentabancariaMovimientos(fechaOP, descrip, fechaCre, BigDecimal.ZERO, monto, false, UsuarioController.getCurrentUser(), op, cb, null, null);
+                    new CuentabancariaMovimientosJpaController().create(cbm);
+                    abm.showMessage("operación n° " + cbm.getId() + " realizada", null, 1);
+                } catch (MessageException ex) {
+                    ex.displayMessage(abm);
+                }
+            }
+        });
+        abm.getbCancelar().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                abm.dispose();
+            }
+        });
+        abm.setLocationRelativeTo(this);
+        abm.setVisible(true);
+    }
+
+    private void displayTransferenciaGUI() {
+        final PanelOperacionBancariaTransferencia panelTransf = new PanelOperacionBancariaTransferencia();
+        abm = new JDABM(this, "Extracción", true, panelTransf);
+        abm.getbAceptar().addActionListener(new ActionListener() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    CuentaBancaria origen;
+                    CuentabancariaMovimientos cbmDes = null;
+                    CuentaBancaria destino;
+                    String descripDestino;
+                    BigDecimal monto;
+                    try {
+                        origen = ((ComboBoxWrapper<CuentaBancaria>) panelTransf.getCbCuentabancaria().getSelectedItem()).getEntity();
+                    } catch (ClassCastException ex) {
+                        throw new MessageException("Cuenta bancaria origen no válida");
+                    }
+
+                    try {
+                        monto = new BigDecimal(panelTransf.getTfMonto().getText());
+                        if (monto.compareTo(BigDecimal.ZERO) != 1) {
+                            throw new MessageException("Importe no válido, debe ser mayor a cero");
+                        }
+                    } catch (Exception ex) {
+                        throw new MessageException("Importe no válido, ingrese solo números y utilice el punto como separador decimal");
+                    }
+                    String descrip = panelTransf.getTfDescripcionMov().getText().trim();
+                    if (descrip.isEmpty()) {
+                        throw new MessageException("Descripción de transferencia no válida");
+                    }
+                    Date fechaOP = panelTransf.getDcFechaOperacion().getDate();
+                    OperacionesBancarias op = ((ComboBoxWrapper<OperacionesBancarias>) cbOperacionesBancarias.getSelectedItem()).getEntity();
+                    CuentabancariaMovimientos cbm = new CuentabancariaMovimientos(fechaOP, descrip, null, BigDecimal.ZERO, monto, false, UsuarioController.getCurrentUser(), op, origen, null, null);
+                    if (panelTransf.getRbPropia().isSelected()) {
+                        try {
+                            destino = ((ComboBoxWrapper<CuentaBancaria>) panelTransf.getCbCuentabancaria().getSelectedItem()).getEntity();
+                            if(origen.equals(destino)) {
+                                throw new MessageException("Las Cuentas bancarias Origen y Destino no pueden ser la misma.");
+                            }
+                        } catch (ClassCastException ex) {
+                            throw new MessageException("Cuenta bancaria destino no válida");
+                        }
+                        descripDestino = "Interna: " + destino.getBanco().getNombre() + " N° " + destino.getNumero();
+                        cbmDes = new CuentabancariaMovimientos(fechaOP, descripDestino, null, monto, BigDecimal.ZERO, false, UsuarioController.getCurrentUser(), op, origen, null, null);
+                    }
+                    new CuentabancariaMovimientosJpaController().create(cbm);
+                    String x = "Operación de Transferencia n° " + cbm.getId() + " realizada";
+                    if (cbmDes != null) {
+                        new CuentabancariaMovimientosJpaController().create(cbmDes);
+                        x = "\nOperación de Transferencia (depósito) n° " + cbmDes.getId() + " realizada";
+                    }
+                    JOptionPane.showMessageDialog(abm, x);
+
+                } catch (MessageException ex) {
+                    ex.displayMessage(abm);
+                }
+            }
+        });
+        abm.getbCancelar().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                abm.dispose();
+            }
+        });
+        abm.setLocationRelativeTo(this);
+        abm.setVisible(true);
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 }

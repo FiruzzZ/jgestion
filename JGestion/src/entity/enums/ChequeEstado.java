@@ -1,5 +1,6 @@
 package entity.enums;
 
+import controller.CuentaBancaria;
 import entity.Cheque;
 import entity.ChequePropio;
 import entity.ChequeTerceros;
@@ -12,14 +13,15 @@ import entity.ChequeTerceros;
 public enum ChequeEstado {
 
     /**
-     * {@link ChequeTerceros} : Son los recibidos, aún no está
-     * {@link ChequeEstado#DEPOSITADO} o cobrados {@link ChequeEstado#CAJA}.
-     * <br>{@link ChequePropio} : Los emitidos que aun no fueron debitados
-     * efectivamente de las cuentas (no conciliados).
+     * {@link ChequeTerceros} : Son los recibidos, que aún no está
+     * {@link #DEPOSITADO} o cobrados
+     * {@link #ACREDITADO_EN_CAJA}. <br>{@link ChequePropio} : Los
+     * emitidos que aún no fue {@link #DEBITADO} o {@link #ANULADO}
      */
     CARTERA(1),
     /**
-     * Fue depositado en una cuenta bancaria.
+     * Estado exclusivo de {@link ChequeTerceros}, fue depositado en una
+     * {@link CuentaBancaria}
      */
     DEPOSITADO(2),
     /**
@@ -36,7 +38,12 @@ public enum ChequeEstado {
      */
     ANULADO(5),
     ENVIADO_SUCURSAL(6),
-    REEMPLAZADO(7);
+    REEMPLAZADO(7),
+    /**
+     * Estado exclusivo de {@link ChequePropio}, e indica que fue utilizado como
+     * medio de pago.
+     */
+    ENDOSADO(8);
     private final int id;
 
     private ChequeEstado(int id) {

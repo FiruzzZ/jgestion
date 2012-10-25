@@ -24,16 +24,18 @@
                   <Component id="jLabel8" alignment="1" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel11" alignment="1" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel1" alignment="1" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel12" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Component id="labelMonto" alignment="1" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="tfDebe" alignment="0" min="-2" pref="75" max="-2" attributes="0"/>
                   <Component id="dcFechaOperacion" alignment="0" min="-2" pref="120" max="-2" attributes="0"/>
                   <Component id="tfDescripcionMov" alignment="0" min="-2" pref="325" max="-2" attributes="0"/>
                   <Component id="cbCuentabancaria" alignment="0" min="-2" pref="309" max="-2" attributes="1"/>
                   <Component id="cbBancos" alignment="0" min="-2" pref="309" max="-2" attributes="1"/>
-                  <Component id="dcFechaCreditoDebito" alignment="0" min="-2" pref="120" max="-2" attributes="0"/>
+                  <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
+                      <Component id="tfDebe" alignment="0" max="32767" attributes="0"/>
+                      <Component id="dcFechaCreditoDebito" alignment="0" pref="120" max="32767" attributes="0"/>
+                  </Group>
               </Group>
               <EmptySpace max="32767" attributes="0"/>
           </Group>
@@ -69,7 +71,7 @@
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="jLabel12" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="labelMonto" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="tfDebe" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="32767" attributes="0"/>
@@ -99,9 +101,9 @@
     </Component>
     <Component class="com.toedter.calendar.JDateChooser" name="dcFechaCreditoDebito">
     </Component>
-    <Component class="javax.swing.JLabel" name="jLabel12">
+    <Component class="javax.swing.JLabel" name="labelMonto">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Debe/Haber"/>
+        <Property name="text" type="java.lang.String" value="Monto"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="tfDebe">

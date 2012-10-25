@@ -891,7 +891,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         IvaController ivaController = new IvaController();
         for (DetalleCompra detalle : lista) {
             Iva iva = detalle.getProducto().getIva();
-            if (iva == null) {
+            if (iva == null || iva.getIva() == null) {
                 Producto findProducto = (Producto) DAO.findEntity(Producto.class, detalle.getProducto().getId());
                 iva = findProducto.getIva();
                 LOG.debug("Producto con Iva NULL!!" + detalle.getProducto());

@@ -71,8 +71,6 @@ public class PanelDepositoCheque extends javax.swing.JPanel {
         tfNumero = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
         tfImporte = new javax.swing.JTextField();
-        cbLibrado = new javax.swing.JComboBox();
-        labelLibrado = new javax.swing.JLabel();
         checkCruzado = new javax.swing.JCheckBox();
         cbEmisor = new javax.swing.JComboBox();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -191,8 +189,6 @@ public class PanelDepositoCheque extends javax.swing.JPanel {
 
         tfImporte.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
 
-        labelLibrado.setText("Librado");
-
         checkCruzado.setMnemonic('z');
         checkCruzado.setText("Cruzado");
 
@@ -210,7 +206,6 @@ public class PanelDepositoCheque extends javax.swing.JPanel {
             .addGroup(panelInfoChequeLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panelInfoChequeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(labelLibrado)
                     .addComponent(jLabel3)
                     .addComponent(jLabel8)
                     .addComponent(jLabel6)
@@ -246,7 +241,6 @@ public class PanelDepositoCheque extends javax.swing.JPanel {
                                 .addComponent(tfImporte, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 0, Short.MAX_VALUE))
                             .addComponent(cbEmisor, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(cbLibrado, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(tfEndosatario)
                             .addComponent(jScrollPane1)
                             .addComponent(cbBancos, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -281,10 +275,6 @@ public class PanelDepositoCheque extends javax.swing.JPanel {
                     .addComponent(jLabel9)
                     .addComponent(tfImporte, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel8))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelInfoChequeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cbLibrado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(labelLibrado))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelInfoChequeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cbChequeEstados, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -336,7 +326,6 @@ public class PanelDepositoCheque extends javax.swing.JPanel {
     private javax.swing.JComboBox cbDepositoBancos;
     private javax.swing.JComboBox cbDepositoCuentaBancaria;
     private javax.swing.JComboBox cbEmisor;
-    private javax.swing.JComboBox cbLibrado;
     private javax.swing.JComboBox cbOperacionesBancarias;
     private javax.swing.JCheckBox checkCruzado;
     private javax.swing.JCheckBox checkEndosado;
@@ -362,7 +351,6 @@ public class PanelDepositoCheque extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel labelEmisor;
     private javax.swing.JLabel labelEstado;
-    private javax.swing.JLabel labelLibrado;
     private javax.swing.JLabel labelNcuenta;
     private javax.swing.JLabel labelNcuentaawefwe;
     private javax.swing.JPanel panelInfoCheque;
@@ -395,10 +383,6 @@ public class PanelDepositoCheque extends javax.swing.JPanel {
 
     public JComboBox getCbEmisor() {
         return cbEmisor;
-    }
-
-    public JComboBox getCbLibrado() {
-        return cbLibrado;
     }
 
     public JComboBox getCbOperacionesBancarias() {
@@ -460,6 +444,4 @@ public class PanelDepositoCheque extends javax.swing.JPanel {
     public JPanel getPanelInfoCheque() {
         return panelInfoCheque;
     }
-    
-    
 }

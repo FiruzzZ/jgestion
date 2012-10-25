@@ -72,9 +72,6 @@ public abstract class Cheque implements Serializable {
     @JoinColumn(name = "usuario", nullable = false)
     @ManyToOne(optional = false)
     protected Usuario usuario;
-    @JoinColumn(name = "librado")
-    @ManyToOne//(optional = false)
-    protected Librado librado;
     @Version
     @Column(name = "version_cheque")
     protected Long version;
@@ -86,7 +83,7 @@ public abstract class Cheque implements Serializable {
     protected Cheque() {
     }
 
-    protected Cheque(Long numero, Banco banco, BancoSucursal bancoSucursal, BigDecimal importe, Date fechaCheque, Date fechaCobro, boolean cruzado, String observacion, ChequeEstado chequeEstado, String endosatario, Date fechaEndoso, Usuario usuario, Librado librado) {
+    protected Cheque(Long numero, Banco banco, BancoSucursal bancoSucursal, BigDecimal importe, Date fechaCheque, Date fechaCobro, boolean cruzado, String observacion, ChequeEstado chequeEstado, String endosatario, Date fechaEndoso, Usuario usuario) {
         this.numero = numero;
         this.banco = banco;
         this.bancoSucursal = bancoSucursal;
@@ -100,7 +97,6 @@ public abstract class Cheque implements Serializable {
         this.endosatario = endosatario;
         this.fechaEndoso = fechaEndoso;
         this.usuario = usuario;
-        this.librado = librado;
     }
 
     /**
@@ -221,14 +217,6 @@ public abstract class Cheque implements Serializable {
         this.usuario = usuario;
     }
 
-    public Librado getLibrado() {
-        return librado;
-    }
-
-    public void setLibrado(Librado librado) {
-        this.librado = librado;
-    }
-
     public Long getVersion() {
         return version;
     }
@@ -286,6 +274,6 @@ public abstract class Cheque implements Serializable {
 
     @Override
     public String toString() {
-        return "Cheque{" + "numero=" + numero + ", banco=" + banco + ", bancoSucursal=" + bancoSucursal + ", importe=" + importe + ", fechaCheque=" + fechaCheque + ", cruzado=" + cruzado + ", observacion=" + observacion + ", fechaCobro=" + fechaCobro + ", fechaCreacion=" + fechaCreacion + ", estado=" + estado + ", chequeEstado=" + chequeEstado + ", endosatario=" + endosatario + ", fechaEndoso=" + fechaEndoso + ", usuario=" + usuario + ", librado=" + librado + ", comprobanteIngreso=" + comprobanteIngreso + ", comprobanteEgreso=" + comprobanteEgreso + ", version=" + version + '}';
+        return "Cheque{" + "numero=" + numero + ", banco=" + banco + ", bancoSucursal=" + bancoSucursal + ", importe=" + importe + ", fechaCheque=" + fechaCheque + ", cruzado=" + cruzado + ", observacion=" + observacion + ", fechaCobro=" + fechaCobro + ", fechaCreacion=" + fechaCreacion + ", estado=" + estado + ", chequeEstado=" + chequeEstado + ", endosatario=" + endosatario + ", fechaEndoso=" + fechaEndoso + ", usuario=" + usuario + ", comprobanteIngreso=" + comprobanteIngreso + ", comprobanteEgreso=" + comprobanteEgreso + ", version=" + version + '}';
     }
 }

@@ -39,12 +39,17 @@
 		<variableExpression><![CDATA[$F{o11}]]></variableExpression>
 	</variable>
 	<title>
-		<band height="70" splitType="Stretch">
+		<band height="80" splitType="Stretch">
 			<subreport>
-				<reportElement x="0" y="0" width="350" height="70"/>
+				<reportElement x="0" y="0" width="350" height="80"/>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "JGestion_membrete.jasper"]]></subreportExpression>
 			</subreport>
+			<textField pattern="dd/MM/yyyy HH.mm.ss">
+				<reportElement x="702" y="0" width="100" height="20"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
 		</band>
 	</title>
 	<pageHeader>
@@ -56,11 +61,6 @@
 				</textElement>
 				<text><![CDATA[Informe: Comprobantes de compra]]></text>
 			</staticText>
-			<textField pattern="dd/MM/yyyy HH.mm.ss">
-				<reportElement x="663" y="0" width="138" height="20"/>
-				<textElement textAlignment="Right"/>
-				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
-			</textField>
 		</band>
 	</pageHeader>
 	<columnHeader>
