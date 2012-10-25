@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package gui;
 
 import com.toedter.calendar.JDateChooser;
@@ -43,7 +39,7 @@ public class PanelOperacionBancariaDeposito extends javax.swing.JPanel {
         tfDescripcionMov = new javax.swing.JTextField();
         jLabel11 = new javax.swing.JLabel();
         dcFechaCreditoDebito = new com.toedter.calendar.JDateChooser();
-        jLabel12 = new javax.swing.JLabel();
+        labelMonto = new javax.swing.JLabel();
         tfDebe = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
         cbBancos = new javax.swing.JComboBox();
@@ -56,7 +52,7 @@ public class PanelOperacionBancariaDeposito extends javax.swing.JPanel {
 
         jLabel11.setText("Fecha Débito/Crédito");
 
-        jLabel12.setText("Debe/Haber");
+        labelMonto.setText("Monto");
 
         tfDebe.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         tfDebe.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -87,15 +83,16 @@ public class PanelOperacionBancariaDeposito extends javax.swing.JPanel {
                     .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel11, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel12, javax.swing.GroupLayout.Alignment.TRAILING))
+                    .addComponent(labelMonto, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(tfDebe, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(dcFechaOperacion, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(tfDescripcionMov, javax.swing.GroupLayout.PREFERRED_SIZE, 325, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(cbCuentabancaria, javax.swing.GroupLayout.PREFERRED_SIZE, 309, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(cbBancos, javax.swing.GroupLayout.PREFERRED_SIZE, 309, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(dcFechaCreditoDebito, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(tfDebe, javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(dcFechaCreditoDebito, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -123,7 +120,7 @@ public class PanelOperacionBancariaDeposito extends javax.swing.JPanel {
                     .addComponent(jLabel11))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel12)
+                    .addComponent(labelMonto)
                     .addComponent(tfDebe, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -147,9 +144,9 @@ public class PanelOperacionBancariaDeposito extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel labelMonto;
     private javax.swing.JTextField tfDebe;
     private javax.swing.JTextField tfDescripcionMov;
     // End of variables declaration//GEN-END:variables

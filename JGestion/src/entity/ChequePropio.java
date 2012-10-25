@@ -37,8 +37,8 @@ public class ChequePropio extends Cheque implements Serializable {
     public ChequePropio() {
     }
 
-    public ChequePropio(Proveedor proveedor, Long numero, Banco banco, BancoSucursal bancoSucursal, BigDecimal importe, Date fechaCheque, Date fechaCobro, boolean cruzado, String observacion, ChequeEstado chequeEstado, String endosatario, Date fechaEndoso, Usuario usuario, Librado librado, CuentaBancaria cuentabancaria) {
-        super(numero, banco, bancoSucursal, importe, fechaCheque, fechaCobro, cruzado, observacion, chequeEstado, endosatario, fechaEndoso, usuario, librado);
+    public ChequePropio(Proveedor proveedor, Long numero, Banco banco, BancoSucursal bancoSucursal, BigDecimal importe, Date fechaCheque, Date fechaCobro, boolean cruzado, String observacion, ChequeEstado chequeEstado, String endosatario, Date fechaEndoso, Usuario usuario, CuentaBancaria cuentabancaria) {
+        super(numero, banco, bancoSucursal, importe, fechaCheque, fechaCobro, cruzado, observacion, chequeEstado, endosatario, fechaEndoso, usuario);
         this.proveedor = proveedor;
         this.cuentabancaria = cuentabancaria;
     }

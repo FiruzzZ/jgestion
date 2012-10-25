@@ -6,6 +6,7 @@ import javax.persistence.*;
 /**
  *
  * @author FiruzzZ
+ * @deprecated 
  */
 @Entity
 @Table(name = "librado", uniqueConstraints = {
@@ -14,7 +15,7 @@ import javax.persistence.*;
     @NamedQuery(name = "Librado.findAll", query = "SELECT l FROM Librado l"),
     @NamedQuery(name = "Librado.findById", query = "SELECT l FROM Librado l WHERE l.id = :id"),
     @NamedQuery(name = "Librado.findByNombre", query = "SELECT l FROM Librado l WHERE l.nombre = :nombre")})
-
+@Deprecated
 public class Librado implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id

@@ -5,9 +5,7 @@ import controller.exceptions.MessageException;
 import entity.Banco;
 import entity.BancoSucursal;
 import entity.ChequePropio;
-import entity.ChequeTerceros;
 import entity.Cliente;
-import entity.Librado;
 import entity.Proveedor;
 import entity.enums.ChequeEstado;
 import gui.JDABM;
@@ -42,9 +40,6 @@ public class ChequePropioController implements ActionListener {
 
     public final String CLASS_NAME = ChequePropio.class.getSimpleName();
     private ChequePropio EL_OBJECT;
-//    private final String[] columnNames = {"id", "Nº Cheque", "Fecha Cheque", "Vencimiento", "Banco/Sucursal", "Estado", "Importe", "Librado"};
-//    private final int[] columnWidths = {1, 60, 50, 50, 150, 50, 50, 50};
-//    private final Class[] columnClassTypes = {};
     private JDContenedor contenedor;
     private static Logger LOG = Logger.getLogger(ChequePropioController.class);
     private JDABM abm;
@@ -52,9 +47,9 @@ public class ChequePropioController implements ActionListener {
     private ChequePropioJpaController jpaController;
     private JDChequesManager jdChequeManager;
     //exclusively related to the GUI
-    private final String[] columnNames = {"id", "Nº Cheque", "F. Cheque", "Emisor", "F. Cobro", "Banco", "Sucursal", "Importe", "Estado", "Librado", "Cruzado", "Endosatario", "F. Endoso", "C. Ingreso", "C. Egreso", "Observacion", "Usuario"};
-    private final int[] columnWidths = {1, 80, 80, 100, 80, 100, 100, 100, 80, 80, 50, 100, 100, 150, 150, 100, 80};
-    private final Class[] columnClassTypes = {Integer.class, Number.class, null, null, null, null, null, Number.class, null, null, Boolean.class, null};
+    private final String[] columnNames = {"id", "Nº Cheque", "F. Cheque", "Emitido a", "F. Cobro", "Banco", "Sucursal", "Importe", "Estado", "Cruzado", "Endosatario", "F. Endoso", "C. Ingreso", "C. Egreso", "Observacion", "Usuario"};
+    private final int[] columnWidths = {1, 80, 80, 100, 80, 100, 100, 100, 80, 50, 100, 100, 150, 150, 100, 80};
+    private final Class[] columnClassTypes = {Integer.class, Number.class, null, null, null, null, null, Number.class, null, Boolean.class, null};
     //Este se pone en el comboBox
     private final String[] orderByToComboBoxList = {"N° Cheque", "Fecha de Emisión", "Fecha de Cobro", "Importe", "Banco/Sucursal", "Proveedor", "Estado"};
     //Y este es el equivalente (de lo seleccionado en el combo) para el SQL.
@@ -64,31 +59,29 @@ public class ChequePropioController implements ActionListener {
         jpaController = new ChequePropioJpaController();
     }
 
-    private void cargarContenedorTabla(String query) {
-        DefaultTableModel dtm = (DefaultTableModel) contenedor.getjTable1().getModel();
-        UTIL.limpiarDtm(dtm);
-        List<ChequePropio> l;
-        if (query == null || query.length() < 1) {
-            l = DAO.getEntityManager().createNamedQuery(CLASS_NAME + ".findAll").getResultList();
-        } else {
-            // para cuando se usa el Buscador del ABM
-            l = DAO.getEntityManager().createNativeQuery(query).getResultList();
-        }
-
-        for (ChequePropio o : l) {
-            dtm.addRow(new Object[]{
-                        o.getId(),
-                        o.getNumero(),
-                        UTIL.DATE_FORMAT.format(o.getFechaCheque()),
-                        o.getFechaCobro() != null ? UTIL.DATE_FORMAT.format(o.getFechaCobro()) : null,
-                        o.getBanco().getNombre() + "/" + o.getBancoSucursal().getNombre(),
-                        o.getEstado(),
-                        UTIL.PRECIO_CON_PUNTO.format(o.getImporte()),
-                        o.getLibrado().getNombre()
-                    });
-        }
-    }
-
+//    private void cargarContenedorTabla(String query) {
+//        DefaultTableModel dtm = (DefaultTableModel) contenedor.getjTable1().getModel();
+//        UTIL.limpiarDtm(dtm);
+//        List<ChequePropio> l;
+//        if (query == null || query.length() < 1) {
+//            l = DAO.getEntityManager().createNamedQuery(CLASS_NAME + ".findAll").getResultList();
+//        } else {
+//            // para cuando se usa el Buscador del ABM
+//            l = DAO.getEntityManager().createNativeQuery(query).getResultList();
+//        }
+//
+//        for (ChequePropio o : l) {
+//            dtm.addRow(new Object[]{
+//                        o.getId(),
+//                        o.getNumero(),
+//                        UTIL.DATE_FORMAT.format(o.getFechaCheque()),
+//                        o.getFechaCobro() != null ? UTIL.DATE_FORMAT.format(o.getFechaCobro()) : null,
+//                        o.getBanco().getNombre() + "/" + o.getBancoSucursal().getNombre(),
+//                        o.getEstado(),
+//                        UTIL.PRECIO_CON_PUNTO.format(o.getImporte()),
+//                    });
+//        }
+//    }
     /**
      *
      *
@@ -293,28 +286,8 @@ public class ChequePropioController implements ActionListener {
             //<editor-fold defaultstate="collapsed" desc="JComboBox">
             else if (e.getSource() instanceof JComboBox) {
                 JComboBox combo = (JComboBox) e.getSource();
-                //<editor-fold defaultstate="collapsed" desc="abm Actions">
-                if (combo.equals(panelABM.getCbLibrado())) {
-                    Librado libradoSelected = (Librado) panelABM.getCbLibrado().getSelectedItem();
-                    //Cuando librado == 2 (AL PORTADOR)
-                    panelABM.getCbEmisor().setEnabled(libradoSelected.getId() != 2);
-                }
-                //</editor-fold>
             }//</editor-fold>
         }// </editor-fold>
-    }
-
-    /**
-     * Arma la query, para filtrar filas en la tabla del JDContenedor
-     *
-     * @param filtro atributo "nombre" del objeto; ej.: o.nombre ILIKE 'filtro%'
-     */
-    private void armarContenedorQuery(String filtro) {
-        String query = null;
-        if (filtro != null && filtro.length() > 0) {
-            query = "SELECT * FROM " + CLASS_NAME + " o WHERE o.numero >= " + filtro;
-        }
-        cargarContenedorTabla(query);
     }
 
     private void setPanel(ChequePropio o) {
@@ -324,12 +297,7 @@ public class ChequePropioController implements ActionListener {
         panelABM.getTfImporte().setText(UTIL.PRECIO_CON_PUNTO.format(o.getImporte()));
         UTIL.setSelectedItem(panelABM.getCbBancos(), o.getBanco().getNombre());
         UTIL.setSelectedItem(panelABM.getCbBancoSucursales(), o.getBancoSucursal().getNombre());
-        UTIL.setSelectedItem(panelABM.getCbLibrado(), o.getLibrado().getNombre());
-        if (o.getLibrado().getId() == 1) {
-            UTIL.setSelectedItem(panelABM.getCbEmisor(), o.getProveedor());
-        } else {
-            // AL PORTADOR, no se emitió a nadie
-        }
+        UTIL.setSelectedItem(panelABM.getCbEmisor(), o.getProveedor());
         panelABM.getTaObservacion().setText(o.getObservacion());
         panelABM.getCheckCruzado().setSelected(o.getCruzado());
 //        if(o.getEndosatario() != null) {
@@ -347,7 +315,6 @@ public class ChequePropioController implements ActionListener {
         BigDecimal importe = null;
         Banco banco;
         BancoSucursal sucursal = null;
-        Librado librado;
         Proveedor proveedor = ((ComboBoxWrapper<Proveedor>) panelABM.getCbEmisor().getSelectedItem()).getEntity();
         boolean cruzado;
         String endosatario = null, observacion = null;
@@ -382,15 +349,11 @@ public class ChequePropioController implements ActionListener {
         } catch (ClassCastException e) {
 //            throw new MessageException("Sucursal de Banco no válida");
         }
-        librado = (Librado) panelABM.getCbLibrado().getSelectedItem();
-//        if (librado.getId() == 1) {
-//            proveedor = (Proveedor) panelABM.getCbEmisor().getSelectedItem();
-//        }
         cruzado = panelABM.getCheckCruzado().isSelected();
         if (!panelABM.getTaObservacion().getText().isEmpty()) {
             observacion = panelABM.getTaObservacion().getText();
         }
-        ChequePropio newCheque = new ChequePropio(proveedor, numero, banco, sucursal, importe, fechaCheque, fechaCobro, cruzado, observacion, ChequeEstado.CARTERA, endosatario, fechaEndoso, UsuarioController.getCurrentUser(), librado, cuentaBancaria);
+        ChequePropio newCheque = new ChequePropio(proveedor, numero, banco, sucursal, importe, fechaCheque, fechaCobro, cruzado, observacion, ChequeEstado.CARTERA, endosatario, fechaEndoso, UsuarioController.getCurrentUser(), cuentaBancaria);
         return newCheque;
     }
 
@@ -437,7 +400,7 @@ public class ChequePropioController implements ActionListener {
         UTIL.loadComboBox(jdChequeManager.getCbBancos(), JGestionUtils.getWrappedBancos(l), true);
 //        UTIL.loadComboBox(jdChequeManager.getCbBancoSucursales(), null, null, "<Seleccionar un Banco>");
         UTIL.loadComboBox(jdChequeManager.getCbEmisor(), JGestionUtils.getWrappedProveedores(new ProveedorController().findEntities()), true);
-        UTIL.loadComboBox(jdChequeManager.getCbLibrado(), JGestionUtils.getWrappedLibrado(new LibradoJpaController().findEntities()), true);
+//        UTIL.loadComboBox(jdChequeManager.getCbLibrado(), JGestionUtils.getWrappedLibrado(new LibradoJpaController().findEntities()), true);
         UTIL.loadComboBox(jdChequeManager.getCbEstados(), Arrays.asList(ChequeEstado.values()), true);
         jdChequeManager.getCbBancos().addActionListener(new ActionListener() {
             @Override
@@ -498,7 +461,7 @@ public class ChequePropioController implements ActionListener {
     private void armarQuery(boolean imprimir) throws DatabaseErrorException {
         StringBuilder query = new StringBuilder("SELECT "
                 + " c.id, c.numero, TO_CHAR(c.fecha_cheque,'DD/MM/YYYY') as fecha_cheque, ccc.nombre as cliente, TO_CHAR(c.fecha_cobro,'DD/MM/YYYY') as fecha_cobro,"
-                + " banco.nombre as banco, banco_sucursal.nombre as sucursal, c.importe, cheque_estado.nombre as estado, librado.nombre as librado, c.cruzado"
+                + " banco.nombre as banco, banco_sucursal.nombre as sucursal, c.importe, cheque_estado.nombre as estado, c.cruzado"
                 + ", c.endosatario, c.fecha_endoso"
                 + ", c.comprobante_ingreso, c.comprobante_egreso, c.observacion"
                 + ", usuario.nick as usuario "
@@ -509,7 +472,6 @@ public class ChequePropioController implements ActionListener {
                 + " JOIN usuario ON (c.usuario = usuario.id) "
                 + " JOIN cheque_estado  ON (c.estado  = cheque_estado.id)"
                 + " LEFT JOIN banco_sucursal ON (c.banco_sucursal = banco_sucursal.id) "
-                + " LEFT JOIN librado ON (c.librado = librado.id) "
                 + " WHERE c.id > -1");
         if (jdChequeManager.getTfChequeNumero().getText().trim().length() > 0) {
             try {
@@ -546,9 +508,9 @@ public class ChequePropioController implements ActionListener {
         if (jdChequeManager.getCbEmisor().getSelectedIndex() > 0) {
             query.append(" AND c.cliente=").append(((Cliente) jdChequeManager.getCbEmisor().getSelectedItem()).getId());
         }
-        if (jdChequeManager.getCbLibrado().getSelectedIndex() > 0) {
-            query.append(" AND c.librado=").append(((Librado) jdChequeManager.getCbLibrado().getSelectedItem()).getId());
-        }
+//        if (jdChequeManager.getCbLibrado().getSelectedIndex() > 0) {
+//            query.append(" AND c.librado=").append(((Librado) jdChequeManager.getCbLibrado().getSelectedItem()).getId());
+//        }
         if (jdChequeManager.getCbEstados().getSelectedIndex() > 0) {
             query.append(" AND c.estado=").append(((ChequeEstado) jdChequeManager.getCbEstados().getSelectedItem()).getId());
         }
@@ -566,10 +528,11 @@ public class ChequePropioController implements ActionListener {
         dtm.setRowCount(0);
         List<?> l = DAO.getNativeQueryResultList(query);
         for (Object object : l) {
-            //"id", "Nº Cheque", "F. Cheque", "Emisor", "F. Cobro", "Banco", "Sucursal", "Importe", "Estado", "Librado", "Cruzado", "Endosatario", "F. Endoso", "C. Ingreso", "C. Egreso", "Observacion", "Usuario"};
+            //"id", "Nº Cheque", "F. Cheque", "Emisor", "F. Cobro", "Banco", "Sucursal", "Importe", "Estado", "Cruzado", "Endosatario", "F. Endoso", "C. Ingreso", "C. Egreso", "Observacion", "Usuario"};
             dtm.addRow((Object[]) object);
         }
     }
+
     private void doChequePropioReport(String query) {
         throw new UnsupportedOperationException("Not yet implemented");
     }

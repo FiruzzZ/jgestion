@@ -102,6 +102,7 @@ public class RemesaJpaController extends AbstractDAO<Remesa, Integer> {
         }
         entityManager.getTransaction().commit();
         entityManager.getTransaction().begin();
+//        remesa = entityManager.find(remesa.getClass(), remesa.getId());
         for (Object object : pagosPost) {
             Integer tipo = null, id = null;
             if (object instanceof DetalleCajaMovimientos) {
