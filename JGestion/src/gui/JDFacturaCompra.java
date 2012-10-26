@@ -1313,14 +1313,15 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         tfCantidad.setEnabled(enable);
         cbCambioPrecio.setEnabled(enable);
         bBuscarProducto.setEnabled(enable);
+        tfPrecioUnitario.setEnabled(enable);
         btnADD.setEnabled(enable);
         btnDEL.setEnabled(enable);
         btnAceptar.setEnabled(enable);
         btnCancelar.setEnabled(enable);
         btnAnular.setEnabled(enable);
-        tfOtrosImpuestosRecuperables.setEditable(enable);
-        tfOtrosImpuestosNoRecuperables.setEditable(enable);
-        tfDescuento.setEditable(enable);
+        tfOtrosImpuestosRecuperables.setEnabled(enable);
+        tfOtrosImpuestosNoRecuperables.setEnabled(enable);
+        tfDescuento.setEnabled(enable);
     }
 
     public void labelCodigoNoRegistrado(boolean visible) {

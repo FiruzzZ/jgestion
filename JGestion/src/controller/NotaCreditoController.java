@@ -205,13 +205,13 @@ public class NotaCreditoController {
         NotaCredito newNotaCredito = new NotaCredito();
         newNotaCredito.setNumero(jpaController.getNextNumero(sucursal));
         newNotaCredito.setFechaNotaCredito(fechaNotaCredito);
-        newNotaCredito.setImporte(new BigDecimal(jdFacturaVenta.getTfTotal()));
+        newNotaCredito.setImporte(new BigDecimal(UTIL.parseToDouble(jdFacturaVenta.getTfTotal())));
         newNotaCredito.setDesacreditado(BigDecimal.ZERO);
-        newNotaCredito.setGravado(Double.valueOf(jdFacturaVenta.getTfGravado()));
-        newNotaCredito.setNoGravado(new BigDecimal(jdFacturaVenta.getTfTotalNoGravado()));
-        newNotaCredito.setIva10(Double.valueOf(jdFacturaVenta.getTfTotalIVA105()));
-        newNotaCredito.setIva21(Double.valueOf(jdFacturaVenta.getTfTotalIVA21()));
-        newNotaCredito.setImpuestosRecuperables(new BigDecimal(jdFacturaVenta.getTfTotalOtrosImps()));
+        newNotaCredito.setGravado(UTIL.parseToDouble(jdFacturaVenta.getTfGravado()));
+        newNotaCredito.setNoGravado(new BigDecimal(UTIL.parseToDouble(jdFacturaVenta.getTfTotalNoGravado())));
+        newNotaCredito.setIva10(UTIL.parseToDouble(jdFacturaVenta.getTfTotalIVA105()));
+        newNotaCredito.setIva21(UTIL.parseToDouble(jdFacturaVenta.getTfTotalIVA21()));
+        newNotaCredito.setImpuestosRecuperables(new BigDecimal(UTIL.parseToDouble(jdFacturaVenta.getTfTotalOtrosImps())));
         newNotaCredito.setCliente(cliente);
         newNotaCredito.setSucursal(sucursal);
         newNotaCredito.setUsuario(UsuarioController.getCurrentUser());
@@ -356,7 +356,7 @@ public class NotaCreditoController {
                         o.getImporte(),
                         o.getDesacreditado(),
                         UTIL.DATE_FORMAT.format(o.getFechaNotaCredito()),
-                        o.getSucursal().getNombre(),
+//                        o.getSucursal().getNombre(),
                         o.getUsuario().getNick(),
                         UTIL.DATE_FORMAT.format(o.getFechaCarga()) + " (" + UTIL.TIME_FORMAT.format(o.getFechaCarga()) + ")"
                     });

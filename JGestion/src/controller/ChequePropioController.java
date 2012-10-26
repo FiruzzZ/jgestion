@@ -59,29 +59,6 @@ public class ChequePropioController implements ActionListener {
         jpaController = new ChequePropioJpaController();
     }
 
-//    private void cargarContenedorTabla(String query) {
-//        DefaultTableModel dtm = (DefaultTableModel) contenedor.getjTable1().getModel();
-//        UTIL.limpiarDtm(dtm);
-//        List<ChequePropio> l;
-//        if (query == null || query.length() < 1) {
-//            l = DAO.getEntityManager().createNamedQuery(CLASS_NAME + ".findAll").getResultList();
-//        } else {
-//            // para cuando se usa el Buscador del ABM
-//            l = DAO.getEntityManager().createNativeQuery(query).getResultList();
-//        }
-//
-//        for (ChequePropio o : l) {
-//            dtm.addRow(new Object[]{
-//                        o.getId(),
-//                        o.getNumero(),
-//                        UTIL.DATE_FORMAT.format(o.getFechaCheque()),
-//                        o.getFechaCobro() != null ? UTIL.DATE_FORMAT.format(o.getFechaCobro()) : null,
-//                        o.getBanco().getNombre() + "/" + o.getBancoSucursal().getNombre(),
-//                        o.getEstado(),
-//                        UTIL.PRECIO_CON_PUNTO.format(o.getImporte()),
-//                    });
-//        }
-//    }
     /**
      *
      *
@@ -431,7 +408,7 @@ public class ChequePropioController implements ActionListener {
         UTIL.loadComboBox(panelABM.getCbBancos(), JGestionUtils.getWrappedBancos(new BancoController().findWithCuentasBancarias()), false);
 //        UTIL.loadComboBox(panelABM.getCbBancoSucursales(), null, null, "<Seleccionar un Banco>");
         UTIL.loadComboBox(panelABM.getCbEmisor(), JGestionUtils.getWrappedProveedores(new ProveedorController().findEntities()), false);
-        UTIL.loadComboBox(panelABM.getCbLibrado(), new LibradoJpaController().findEntities(), false);
+//        UTIL.loadComboBox(panelABM.getCbLibrado(), new LibradoJpaController().findEntities(), false);
 
         panelABM.getCbBancos().addActionListener(new ActionListener() {
             @Override
@@ -452,10 +429,8 @@ public class ChequePropioController implements ActionListener {
         panelABM.getLabelEmisor().setText("Proveedor");
         panelABM.getCheckEndosado().setSelected(false);
         panelABM.getCheckEndosado().setEnabled(false);
-        panelABM.getCbLibrado().addActionListener(this);
         panelABM.getbAddEmisor().addActionListener(this);
         panelABM.getbAddBanco().addActionListener(this);
-        panelABM.getbAddSucursal().addActionListener(this);
     }
 
     private void armarQuery(boolean imprimir) throws DatabaseErrorException {

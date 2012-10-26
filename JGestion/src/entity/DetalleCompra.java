@@ -1,6 +1,7 @@
 package entity;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import javax.persistence.*;
 
 /**
@@ -26,7 +27,7 @@ public class DetalleCompra implements Serializable {
     private int cantidad;
     @Basic(optional = false)
     @Column(name = "precio_unitario", nullable = false, precision = 12, scale = 4)
-    private Double precioUnitario;
+    private BigDecimal precioUnitario;
     @JoinColumn(name = "factura", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
     private FacturaCompra factura;
@@ -39,12 +40,6 @@ public class DetalleCompra implements Serializable {
 
     public DetalleCompra(Integer id) {
         this.id = id;
-    }
-
-    public DetalleCompra(Integer id, int cantidad, Double precioUnitario) {
-        this.id = id;
-        this.cantidad = cantidad;
-        this.precioUnitario = precioUnitario;
     }
 
     public Integer getId() {
@@ -63,11 +58,11 @@ public class DetalleCompra implements Serializable {
         this.cantidad = cantidad;
     }
 
-    public Double getPrecioUnitario() {
+    public BigDecimal getPrecioUnitario() {
         return precioUnitario;
     }
 
-    public void setPrecioUnitario(double precioUnitario) {
+    public void setPrecioUnitario(BigDecimal precioUnitario) {
         this.precioUnitario = precioUnitario;
     }
 

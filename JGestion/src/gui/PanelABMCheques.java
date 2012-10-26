@@ -60,8 +60,6 @@ public class PanelABMCheques extends javax.swing.JPanel {
         tfNumero = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
         tfImporte = new javax.swing.JTextField();
-        cbLibrado = new javax.swing.JComboBox();
-        labelLibrado = new javax.swing.JLabel();
         checkCruzado = new javax.swing.JCheckBox();
         cbEmisor = new javax.swing.JComboBox();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -116,8 +114,6 @@ public class PanelABMCheques extends javax.swing.JPanel {
             }
         });
 
-        labelLibrado.setText("Librado");
-
         checkCruzado.setMnemonic('z');
         checkCruzado.setText("Cruzado");
 
@@ -165,7 +161,6 @@ public class PanelABMCheques extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addGap(14, 14, 14)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(labelLibrado)
                     .addComponent(jLabel2)
                     .addComponent(jLabel1)
                     .addComponent(jLabel6)
@@ -198,7 +193,6 @@ public class PanelABMCheques extends javax.swing.JPanel {
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(cbLibrado, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(tfEndosatario, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 355, Short.MAX_VALUE)
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 355, Short.MAX_VALUE)
                             .addComponent(cbBancoSucursales, javax.swing.GroupLayout.Alignment.LEADING, 0, 355, Short.MAX_VALUE)
@@ -257,10 +251,6 @@ public class PanelABMCheques extends javax.swing.JPanel {
                     .addComponent(jLabel1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cbLibrado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(labelLibrado))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cbChequeEstados, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(labelEstado))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -302,10 +292,6 @@ private void checkEndosadoStateChanged(javax.swing.event.ChangeEvent evt) {//GEN
         return labelEstado;
     }
 
-    public JLabel getLabelLibrado() {
-        return labelLibrado;
-    }
-
     public JButton getbAddBanco() {
         return bAddBanco;
     }
@@ -324,10 +310,6 @@ private void checkEndosadoStateChanged(javax.swing.event.ChangeEvent evt) {//GEN
 
     public JComboBox getCbEmisor() {
         return cbEmisor;
-    }
-
-    public JComboBox getCbLibrado() {
-        return cbLibrado;
     }
 
     public JComboBox getCbBancoSucursales() {
@@ -402,8 +384,6 @@ private void checkEndosadoStateChanged(javax.swing.event.ChangeEvent evt) {//GEN
         labelNcuenta.setVisible(false);
         cbCuentaBancaria.setVisible(false);
         bAddCuentaBancaria.setVisible(false);
-        labelLibrado.setVisible(false);
-        cbLibrado.setVisible(false);
         labelEstado.setVisible(false);
         cbChequeEstados.setVisible(false);
         tercero = true;
@@ -417,8 +397,6 @@ private void checkEndosadoStateChanged(javax.swing.event.ChangeEvent evt) {//GEN
 //        labelNcuenta.setVisible(false);
 //        cbCuentaBancaria.setVisible(false);
 //        bAddCuentaBancaria.setVisible(false);
-        labelLibrado.setVisible(false);
-        cbLibrado.setVisible(false);
         labelEstado.setVisible(false);
         cbChequeEstados.setVisible(false);
         tercero = false;
@@ -437,7 +415,6 @@ private void checkEndosadoStateChanged(javax.swing.event.ChangeEvent evt) {//GEN
     private javax.swing.JComboBox cbChequeEstados;
     private javax.swing.JComboBox cbCuentaBancaria;
     private javax.swing.JComboBox cbEmisor;
-    private javax.swing.JComboBox cbLibrado;
     private javax.swing.JCheckBox checkCruzado;
     private javax.swing.JCheckBox checkEndosado;
     private com.toedter.calendar.JDateChooser dcCheque;
@@ -454,7 +431,6 @@ private void checkEndosadoStateChanged(javax.swing.event.ChangeEvent evt) {//GEN
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel labelEmisor;
     private javax.swing.JLabel labelEstado;
-    private javax.swing.JLabel labelLibrado;
     private javax.swing.JLabel labelNcuenta;
     private javax.swing.JLabel labelSucursal;
     private javax.swing.JTextArea taObservacion;
