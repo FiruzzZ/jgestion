@@ -1194,6 +1194,12 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         if (buscador.getDcHasta() != null) {
             query.append(" AND o.fecha_venta <= '").append(buscador.getDcHasta()).append("'");
         }
+        if (buscador.getDcDesdeSistema() != null) {
+            query.append(" AND o.fechaalta >= '").append(UTIL.clearTimeFields(buscador.getDcDesdeSistema())).append("'");
+        }
+        if (buscador.getDcHastaSistema() != null) {
+            query.append(" AND o.fechaalta <= '").append(UTIL.clearTimeFields(buscador.getDcHastaSistema())).append("'");
+        }
         if (buscador.getCbCaja().getSelectedIndex() > 0) {
             query.append(" AND o.caja = ").append(((Caja) buscador.getCbCaja().getSelectedItem()).getId());
         } else {

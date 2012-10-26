@@ -95,7 +95,6 @@ public class ChequeTercerosController implements ActionListener {
         UTIL.loadComboBox(panelABM.getCbBancos(), new BancoController().findEntities(), true);
 //        UTIL.loadComboBox(panelABM.getCbBancoSucursales(), null, null, "<Seleccionar un Banco>");
         UTIL.loadComboBox(panelABM.getCbEmisor(), new ClienteController().findEntities(), false);
-        UTIL.loadComboBox(panelABM.getCbLibrado(), new LibradoJpaController().findEntities(), false);
     }
 
     private void setPanel(ChequeTerceros cheque) {
@@ -223,24 +222,13 @@ public class ChequeTercerosController implements ActionListener {
                             abm.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 2);
                         }
                         UTIL.loadComboBox(panelABM.getCbBancos(), new BancoController().findEntities(), true);
-                        UTIL.loadComboBox(panelABM.getCbBancoSucursales(), null, null, "<Seleccionar Banco>");
-//                    } else if (boton.equals(panelABM.getbAddSucursal())) {
-//                        Banco bancoSelected = (Banco) panelABM.getCbBancos().getSelectedItem();
-//                        try {
-//                            JDialog initABM = new BancoSucursalController().initABM(abm);
-//                            initABM.setLocationRelativeTo(abm);
-//                            initABM.setVisible(true);
-//                            UTIL.setSelectedItem(panelABM.getCbBancos(), bancoSelected);
-//                        } catch (MessageException ex) {
-//                            abm.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 2);
-//                        }
                     } else if (boton.equals(panelABM.getbAddEmisor())) {
                         JDialog initContenedor = new ClienteController().initContenedor(null, true);
                         initContenedor.setVisible(true);
                     }
                 } //</editor-fold>
                 //<editor-fold defaultstate="collapsed" desc="jdChequeManager EVENTS">
-                else if (jdChequeManager != null) {
+                if (jdChequeManager != null) {
                     if (boton.equals(jdChequeManager.getbBuscar())) {
                         try {
                             armarQuery(false);

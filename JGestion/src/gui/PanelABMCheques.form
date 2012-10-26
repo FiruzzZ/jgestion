@@ -19,7 +19,6 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="1" attributes="0">
-                  <Component id="labelLibrado" alignment="1" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel2" alignment="1" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel1" alignment="1" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel6" alignment="1" min="-2" max="-2" attributes="0"/>
@@ -58,7 +57,6 @@
                   </Group>
                   <Group type="102" alignment="1" attributes="0">
                       <Group type="103" groupAlignment="1" attributes="0">
-                          <Component id="cbLibrado" alignment="0" max="32767" attributes="0"/>
                           <Component id="tfEndosatario" alignment="0" pref="355" max="32767" attributes="0"/>
                           <Component id="jScrollPane1" alignment="0" pref="355" max="32767" attributes="1"/>
                           <Component id="cbBancoSucursales" alignment="0" pref="355" max="32767" attributes="1"/>
@@ -130,11 +128,6 @@
                   <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace min="-2" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="cbLibrado" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="labelLibrado" alignment="3" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="cbChequeEstados" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="labelEstado" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -254,18 +247,6 @@
       <Events>
         <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="tfImporteKeyTyped"/>
       </Events>
-    </Component>
-    <Component class="javax.swing.JComboBox" name="cbLibrado">
-      <Properties>
-        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-          <StringArray count="0"/>
-        </Property>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="labelLibrado">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Librado"/>
-      </Properties>
     </Component>
     <Component class="javax.swing.JCheckBox" name="checkCruzado">
       <Properties>

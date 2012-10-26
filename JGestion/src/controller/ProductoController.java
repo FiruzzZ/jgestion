@@ -10,6 +10,7 @@ import java.awt.BorderLayout;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -582,9 +583,9 @@ public class ProductoController implements ActionListener, KeyListener {
      * @param valoracionStock 1 = ULTIMA_COMPRA, 2 = ANTIGUO (o sea no cambia
      * nada), 3 = PPP
      */
-    void valorizarStock(Producto producto, double newPrecioUnitario, int cantidad, int valoracionStock) throws Exception {
+    void valorizarStock(Producto producto, BigDecimal newPrecioUnitario, int cantidad, int valoracionStock) throws Exception {
         if (valoracionStock == ULTIMA_COMPRA) {
-            producto.setCostoCompra(newPrecioUnitario);
+            producto.setCostoCompra(newPrecioUnitario.doubleValue());
 
         } else if (valoracionStock == PPP) {
             if (producto.getStockactual() < 0) {
@@ -594,7 +595,7 @@ public class ProductoController implements ActionListener, KeyListener {
                         + "\nStock actual: " + producto.getStockactual());
             }
             double ppp = ((producto.getCostoCompra() * producto.getStockactual())
-                    + (newPrecioUnitario * cantidad));
+                    + (newPrecioUnitario.doubleValue() * cantidad));
             int totalStock = producto.getStockactual() + cantidad;
             ppp = (ppp / totalStock);
             producto.setCostoCompra(Double.parseDouble(UTIL.PRECIO_CON_PUNTO.format(ppp)));

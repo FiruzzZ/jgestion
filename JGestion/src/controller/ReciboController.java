@@ -699,6 +699,12 @@ public class ReciboController implements ActionListener, FocusListener {
         if (buscador.getDcHasta() != null) {
             query.append(" AND o.fecha_recibo <= '").append(buscador.getDcHasta()).append("'");
         }
+        if (buscador.getDcDesdeSistema() != null) {
+            query.append(" AND o.fecha_carga >= '").append(UTIL.clearTimeFields(buscador.getDcDesdeSistema())).append("'");
+        }
+        if (buscador.getDcHastaSistema() != null) {
+            query.append(" AND o.fecha_carga <= '").append(UTIL.clearTimeFields(buscador.getDcHastaSistema())).append("'");
+        }
         if (buscador.getCbCaja().getSelectedIndex() > 0) {
             query.append(" AND o.caja = ").append(((Caja) buscador.getCbCaja().getSelectedItem()).getId());
         } else {

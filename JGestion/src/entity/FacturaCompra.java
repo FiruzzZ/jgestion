@@ -109,6 +109,9 @@ public class FacturaCompra implements Serializable {
     @Basic(optional = false)
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal descuento;
+    @Basic(optional = false)
+    @Column(name = "otros_ivas", nullable = false, precision = 12, scale = 2)
+    private BigDecimal otrosIvas;
 
     public FacturaCompra() {
     }
@@ -321,6 +324,14 @@ public class FacturaCompra implements Serializable {
 
     public void setImpuestosRecuperables(BigDecimal impuestosRecuperables) {
         this.impuestosRecuperables = impuestosRecuperables;
+    }
+
+    public BigDecimal getOtrosIvas() {
+        return otrosIvas;
+    }
+
+    public void setOtrosIvas(BigDecimal otrosIvas) {
+        this.otrosIvas = otrosIvas;
     }
 
     public BigDecimal getDescuento() {

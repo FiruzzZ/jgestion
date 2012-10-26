@@ -639,9 +639,9 @@ public class Contabilidad {
         UTIL.loadComboBox(buscador.getCbFormasDePago(), Valores.FormaPago.getFormasDePago(), true);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
-                new String[]{"Nº y Tipo", "Fecha", "Proveedor", "CUIT", "Gravado", "IVA105", "IVA21", "Perc. IIBB", "Otros Imp.", "No Recup", "No Gravado", "Descuento", "Importe"},
-                new int[]{90, 50, 50, 60, 50, 50, 50, 50, 70, 60, 60, 60, 60},
-                new Class<?>[]{null, null, null, Long.class, null, null, null, null, null, null, null, null, null});
+                new String[]{"Nº y Tipo", "Fecha", "Proveedor", "CUIT", "Gravado", "IVA105", "IVA21", "Otros IVA's", "Perc. IIBB", "Otros Imp.", "No Recup", "No Gravado", "Descuento", "Importe"},
+                new int[]{90, 50, 50, 60, 50, 50, 50, 50, 50, 70, 60, 60, 60, 60},
+                new Class<?>[]{null, null, null, Long.class, null, null, null, null, null, null, null, null, null, null});
         TableColumnModel tc = buscador.getjTable1().getColumnModel();
         tc.getColumn(1).setCellRenderer(FormatRenderer.getDateRenderer());
         tc.getColumn(4).setCellRenderer(NumberRenderer.getCurrencyRenderer());
@@ -653,6 +653,7 @@ public class Contabilidad {
         tc.getColumn(10).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         tc.getColumn(11).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         tc.getColumn(12).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        tc.getColumn(13).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         buscador.getbImprimir().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -685,7 +686,8 @@ public class Contabilidad {
                             dtm.getValueAt(row, 8),
                             dtm.getValueAt(row, 10),
                             dtm.getValueAt(row, 12),
-                            null));
+                            dtm.getValueAt(row, 13)
+                            ));
                 }
                 Reportes r = new Reportes("JGestion_ComprobantesCompras.jasper", "Listado Comprobantes");
                 r.setDataSource(data);
@@ -803,10 +805,11 @@ public class Contabilidad {
 //                //la mentirita del GRAVADO :O jejejej
 //                + " case when o.gravado <=0 then (o.importe-o.iva10-o.iva21-o.perc_iva-o.impuestos_recuperables) else o.gravado end,"
 //                + " o.iva10, o.iva21, o.perc_iva, o.impuestos_recuperables, o.impuestos_norecuperables, o.no_gravado, o.descuento, o.importe"
-                + " SELECT 'F' || o.tipo || to_char(o.numero, '0000-00000000') as comprobante,	o.fecha_compra as fecha, proveedor.nombre, proveedor.cuit, cast(case when o.gravado <=0 then (o.importe-o.iva10-o.iva21-o.perc_iva-o.impuestos_recuperables) else o.gravado end as numeric(12,2)),	cast(o.iva10 as numeric(12,2)),	cast(o.iva21 as numeric(12,2)),	cast(o.perc_iva as numeric(12,2)),	cast( o.impuestos_recuperables as numeric(12,2)),    cast( o.impuestos_norecuperables as numeric(12,2)), cast( o.no_gravado as numeric(12,2)), cast( o.descuento as numeric(12,2)), cast( o.importe as numeric(12,2))"
-                + " FROM public.factura_compra o, public.proveedor"
-                + " WHERE "
-                + " o.proveedor = proveedor.id"
+                + " SELECT 'F' || o.tipo || to_char(o.numero, '0000-00000000') as comprobante,	o.fecha_compra as fecha, proveedor.nombre, proveedor.cuit,"
+                + " cast(case when o.gravado <=0 then (o.importe-o.iva10-o.iva21-o.perc_iva-o.impuestos_recuperables) else o.gravado end as numeric(12,2)),	cast(o.iva10 as numeric(12,2)),	cast(o.iva21 as numeric(12,2)), o.otros_ivas, "
+                + "	cast(o.perc_iva as numeric(12,2)),	cast( o.impuestos_recuperables as numeric(12,2)),    cast( o.impuestos_norecuperables as numeric(12,2)), cast( o.no_gravado as numeric(12,2)), cast( o.descuento as numeric(12,2)), cast( o.importe as numeric(12,2))"
+                + " FROM factura_compra o, proveedor"
+                + " WHERE o.proveedor = proveedor.id "
                 + queryFactuCompra.toString()
                 + " ORDER BY"
                 + " o.fecha_compra ASC) com"
@@ -815,7 +818,7 @@ public class Contabilidad {
 //                + " 'NC' || to_char(sucursal.puntoventa, '0000') || to_char(o.numero,'-00000000'),"
 //                + " o.fecha_nota_credito as fecha, cliente.nombre, cliente.num_doc,"
 //                + " o.gravado, o.iva10, o.iva21, 0, o.impuestos_recuperables, 0, o.no_gravado, 0 as descuento, o.importe"
-                + " SELECT 'NC' || to_char(sucursal.puntoventa, '0000') || to_char(o.numero,'-00000000'), o.fecha_nota_credito as fecha, cliente.nombre, cliente.num_doc, cast(o.gravado as numeric(12,2)), cast(o.iva10 as numeric(12,2)), cast(o.iva21 as numeric(12,2)), cast(0 as numeric(12,2)), cast(o.impuestos_recuperables as numeric(12,2)), cast(0 as numeric(12,2)),	cast(o.no_gravado as numeric(12,2)), cast(0 as numeric(12,2)) as descuento, cast(o.importe as numeric(12,2))"
+                + " SELECT 'NC' || to_char(sucursal.puntoventa, '0000') || to_char(o.numero,'-00000000'), o.fecha_nota_credito as fecha, cliente.nombre, cliente.num_doc, cast(o.gravado as numeric(12,2)), cast(o.iva10 as numeric(12,2)), cast(o.iva21 as numeric(12,2)), cast(o.impuestos_recuperables as numeric(12,2)), cast(0 as numeric(12,2)), cast(0 as numeric(12,2)), cast(0 as numeric(12,2)),	cast(o.no_gravado as numeric(12,2)), cast(0 as numeric(12,2)) as descuento, cast(o.importe as numeric(12,2))"
                 + " FROM public.nota_credito o, public.cliente, public.sucursal"
                 + " WHERE "
                 + " o.cliente = cliente.id AND"

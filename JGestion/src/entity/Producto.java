@@ -72,7 +72,7 @@ public class Producto implements Serializable {
     private Integer deposito;
     @Column(name = "ubicacion", length = 50)
     private String ubicacion;
-    @Column(name = "costo_compra", precision = 10, scale = 2)
+    @Column(name = "costo_compra", precision = 12, scale = 4)
     /**
      * Cuando se crea el producto es setteado a 0. Después es modificado por las
      * Facturas de compra.
