@@ -7,6 +7,7 @@ import java.util.List;
 import javax.swing.JComboBox;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
+import javax.swing.border.TitledBorder;
 import jgestion.JGestionUtils;
 import utilities.general.UTIL;
 import utilities.gui.SwingUtil;
@@ -26,6 +27,7 @@ public class PanelOperacionBancariaTransferencia extends javax.swing.JPanel {
         List<ComboBoxWrapper<Banco>> l = JGestionUtils.getWrappedBancos(new BancoController().findWithCuentasBancarias());
         UTIL.loadComboBox(cbBancos, l, false);
         UTIL.loadComboBox(cbBancos1, l, false);
+        UTIL.loadComboBox(cbBancosExternos, JGestionUtils.getWrappedBancos(new BancoController().findEntities()), false);
     }
 
     /**
@@ -53,11 +55,14 @@ public class PanelOperacionBancariaTransferencia extends javax.swing.JPanel {
         jLabel2 = new javax.swing.JLabel();
         cbCuentabancariaDestino = new javax.swing.JComboBox();
         rbPropia = new javax.swing.JRadioButton();
-        rbExterna = new javax.swing.JRadioButton();
         jLabel3 = new javax.swing.JLabel();
         tfCuentaExterna = new javax.swing.JTextField();
-        jLabel8 = new javax.swing.JLabel();
+        cbBancosExternos = new javax.swing.JComboBox();
+        jLabel12 = new javax.swing.JLabel();
+        rbExterna = new javax.swing.JRadioButton();
         tfDescripcionMov = new javax.swing.JTextField();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
 
         bgDestino.add(rbPropia);
         bgDestino.add(rbExterna);
@@ -145,6 +150,18 @@ public class PanelOperacionBancariaTransferencia extends javax.swing.JPanel {
         rbPropia.setSelected(true);
         rbPropia.setText("Cuenta propia");
 
+        jLabel3.setText("N° Cuenta");
+
+        tfCuentaExterna.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        tfCuentaExterna.setEnabled(false);
+        tfCuentaExterna.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                tfCuentaExternaKeyTyped(evt);
+            }
+        });
+
+        jLabel12.setText("Banco");
+
         rbExterna.setText("Cuenta externa");
         rbExterna.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -157,15 +174,7 @@ public class PanelOperacionBancariaTransferencia extends javax.swing.JPanel {
             }
         });
 
-        jLabel3.setText("N° Cuenta");
-
-        tfCuentaExterna.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        tfCuentaExterna.setEnabled(false);
-        tfCuentaExterna.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                tfCuentaExternaKeyReleased(evt);
-            }
-        });
+        jLabel8.setText("Descripción");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -174,20 +183,27 @@ public class PanelOperacionBancariaTransferencia extends javax.swing.JPanel {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel12, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel11, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(cbCuentabancariaDestino, javax.swing.GroupLayout.PREFERRED_SIZE, 309, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cbBancos1, javax.swing.GroupLayout.PREFERRED_SIZE, 309, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(tfCuentaExterna, javax.swing.GroupLayout.PREFERRED_SIZE, 308, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(cbBancos1, javax.swing.GroupLayout.Alignment.TRAILING, 0, 309, Short.MAX_VALUE)
+                    .addComponent(cbCuentabancariaDestino, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(cbBancosExternos, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(tfCuentaExterna)
+                    .addComponent(tfDescripcionMov))
                 .addContainerGap())
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(6, 6, 6)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(rbPropia)
-                    .addComponent(rbExterna))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addComponent(rbPropia))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(rbExterna)))
                 .addGap(307, 307, 307))
         );
         jPanel2Layout.setVerticalGroup(
@@ -206,11 +222,21 @@ public class PanelOperacionBancariaTransferencia extends javax.swing.JPanel {
                 .addComponent(rbExterna)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cbBancosExternos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel12))
+                .addGap(3, 3, 3)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(tfCuentaExterna, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(tfCuentaExterna, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(tfDescripcionMov, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel8))
+                .addContainerGap())
         );
 
-        jLabel8.setText("Descripción");
+        jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/information.png"))); // NOI18N
+        jLabel4.setText("<html>La descripción de la transferencia será precedida por el Banco + N° Cuenta + Descripción</html>");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -222,11 +248,7 @@ public class PanelOperacionBancariaTransferencia extends javax.swing.JPanel {
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                         .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(43, 43, 43)
-                        .addComponent(jLabel8)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(tfDescripcionMov, javax.swing.GroupLayout.PREFERRED_SIZE, 308, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 304, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -237,9 +259,7 @@ public class PanelOperacionBancariaTransferencia extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(tfDescripcionMov, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel8))
+                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -267,31 +287,33 @@ public class PanelOperacionBancariaTransferencia extends javax.swing.JPanel {
     }//GEN-LAST:event_rbExternaStateChanged
 
     private void cbCuentabancariaDestinoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbCuentabancariaDestinoActionPerformed
-        if(cbCuentabancariaDestino.getItemCount() > 0) {
+        if (cbCuentabancariaDestino.getItemCount() > 0) {
             tfDescripcionMov.setText("Interna:" + cbBancos1.getSelectedItem().toString() + " N° " + cbCuentabancariaDestino.getSelectedItem().toString());
         }
     }//GEN-LAST:event_cbCuentabancariaDestinoActionPerformed
 
     private void rbExternaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbExternaActionPerformed
-        
     }//GEN-LAST:event_rbExternaActionPerformed
 
-    private void tfCuentaExternaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfCuentaExternaKeyReleased
-        tfDescripcionMov.setText("Externa: " + tfCuentaExterna.getText().trim());
-    }//GEN-LAST:event_tfCuentaExternaKeyReleased
+    private void tfCuentaExternaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfCuentaExternaKeyTyped
+        SwingUtil.checkInputDigit(evt, false, 22);
+    }//GEN-LAST:event_tfCuentaExternaKeyTyped
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup bgDestino;
     private javax.swing.JComboBox cbBancos;
     private javax.swing.JComboBox cbBancos1;
+    private javax.swing.JComboBox cbBancosExternos;
     private javax.swing.JComboBox cbCuentabancaria;
     private javax.swing.JComboBox cbCuentabancariaDestino;
     private com.toedter.calendar.JDateChooser dcFechaOperacion;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
@@ -305,8 +327,10 @@ public class PanelOperacionBancariaTransferencia extends javax.swing.JPanel {
     // End of variables declaration//GEN-END:variables
 
     private void habilitarDestino() {
-        tfCuentaExterna.setEnabled(rbExterna.isSelected());
         cbBancos1.setEnabled(!rbExterna.isEnabled());
+        cbCuentabancariaDestino.setEnabled(!rbExterna.isSelected());
+        cbBancosExternos.setEnabled(rbExterna.isSelected());
+        tfCuentaExterna.setEnabled(rbExterna.isSelected());
     }
 
     public JRadioButton getRbPropia() {
@@ -335,5 +359,12 @@ public class PanelOperacionBancariaTransferencia extends javax.swing.JPanel {
 
     public JTextField getTfMonto() {
         return tfMonto;
+    }
+
+    public void invertirOrigenDestino() {
+        TitledBorder tb = (TitledBorder) jPanel1.getBorder();
+        tb.setTitle("Destino");
+        tb = (TitledBorder) jPanel2.getBorder();
+        tb.setTitle("Origen");
     }
 }

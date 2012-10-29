@@ -108,12 +108,13 @@ public class CuentabancariaController {
                 }
             }
         });
-        contenedor.getbImprimir().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-            }
-        });
-        UTIL.getDefaultTableModel(contenedor.getjTable1(), new String[]{"id", "Banco", "N° Cuenta", "Activa"}, new int[]{1, 200, 80, 30});
+        contenedor.getbImprimir().setVisible(false);
+//        contenedor.getbImprimir().addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//            }
+//        });
+        UTIL.getDefaultTableModel(contenedor.getjTable1(), new String[]{"id", "Banco", "N° Cuenta", "Activa"}, new int[]{1, 200, 80, 30}, new Class<?>[]{null, null, null, Boolean.class});
         UTIL.hideColumnTable(contenedor.getjTable1(), 0);
         //no permite filtro de vacio en el inicio
         permitirFiltroVacio = false;

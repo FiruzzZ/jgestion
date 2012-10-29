@@ -1363,7 +1363,7 @@ private void jMenuItem59ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
 
 private void jMenuItem60ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem60ActionPerformed
     try {
-        new ChequePropioController().initManager(this).setVisible(true);
+        new ChequePropioController().getManager(this).setVisible(true);
     } catch (MessageException ex) {
         JOptionPane.showMessageDialog(this, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
     }
@@ -1371,7 +1371,7 @@ private void jMenuItem60ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
 
 private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem56ActionPerformed
     try {
-        new ChequeTercerosController().gettManagerTerceros(this, null, null).setVisible(true);
+        new ChequeTercerosController().getManager(this).setVisible(true);
     } catch (MessageException ex) {
         JOptionPane.showMessageDialog(this, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
     }
@@ -1441,7 +1441,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     }//GEN-LAST:event_jMenuItemCuentasBancariasActionPerformed
 
     private void jMenuItem66ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem66ActionPerformed
-        JDialog jd = new CuentabancariaMovimientosController().getContenedor(this);
+        JDialog jd = new CuentabancariaMovimientosController().getManager(this);
         jd.setLocationRelativeTo(this);
         jd.setVisible(true);
     }//GEN-LAST:event_jMenuItem66ActionPerformed
