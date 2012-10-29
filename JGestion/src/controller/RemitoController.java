@@ -44,8 +44,10 @@ public class RemitoController implements ActionListener, KeyListener {
     private boolean toFacturar;
     private boolean unlockedNumeracion = false;
     private RemitoJpaController jpaController;
+    private static final Logger LOG = Logger.getLogger(RemitoController.class.getName());
     //global mutable
     private boolean editing = false;
+    private boolean anulando;
 
     public RemitoController() {
         jpaController = new RemitoJpaController();
@@ -166,7 +168,6 @@ public class RemitoController implements ActionListener, KeyListener {
                         createRemito();
                     } else {
                         editRemito(selectedRemito);
-
                         buscador.setVisible(true);
                     }
                 } catch (MessageException ex) {
@@ -219,7 +220,7 @@ public class RemitoController implements ActionListener, KeyListener {
         //todo las demás acciones son manejadas (delegadas) -> FacturaVentaJpaController
         if (e.getSource() instanceof JButton) {
             JButton boton = (JButton) e.getSource();
-            if (boton.getName().equalsIgnoreCase("filtrarReRe")) {
+            if (buscador != null && buscador.isActive() && boton.equals(buscador.getbBuscar())) {
                 try {
                     armarQuery();
                 } catch (MessageException ex) {
@@ -373,9 +374,9 @@ public class RemitoController implements ActionListener, KeyListener {
                         buscador.dispose();
                     } else {
                         try {
-                            if (editing && selectedRemito.getFacturaVenta() != null) {
-                                throw new MessageException("No se puede modificar el Remito " + JGestionUtils.getNumeracion(selectedRemito, true)
-                                        + "\nporque ya fue relacionado a una Factura (" + JGestionUtils.getNumeracion(selectedRemito.getFacturaVenta()) + ")");
+                            if ((editing || anulando) && selectedRemito.getFacturaVenta() != null) {
+                                throw new MessageException("No se puede " + (editing ? "modificar" : "anular") + " el Remito " + JGestionUtils.getNumeracion(selectedRemito, true)
+                                        + "\nporque ya fue relacionado a la Factura " + JGestionUtils.getNumeracion(selectedRemito.getFacturaVenta()));
                             }
                             setDatos(selectedRemito);
                         } catch (MessageException ex) {
@@ -414,12 +415,32 @@ public class RemitoController implements ActionListener, KeyListener {
         if (editing) {
             UTIL.setSelectedItem(jdFacturaVenta.getCbCliente(), remito.getCliente());
             UTIL.setSelectedItem(jdFacturaVenta.getCbSucursal(), new ComboBoxWrapper<Sucursal>(remito.getSucursal(), remito.getSucursal().getId(), remito.getSucursal().getNombre()));
+            jdFacturaVenta.getCbCliente().setEnabled(true);
+            jdFacturaVenta.getCbSucursal().setEnabled(true);
+            jdFacturaVenta.setEnableDcFechaFactura(true);
+            JButton btnAceptar = jdFacturaVenta.getBtnAceptar();
+            btnAceptar.setEnabled(true);
+            btnAceptar.setText("Modificar");
+            btnAceptar.setSize(btnAceptar.getWidth() + 10, btnAceptar.getHeight());
+            btnAceptar.setMnemonic('f');
+            btnAceptar.setEnabled(true);
         } else {
             jdFacturaVenta.getCbCliente().removeAllItems();
             jdFacturaVenta.getCbCliente().addItem(remito.getCliente());
             jdFacturaVenta.getCbSucursal().removeAllItems();
             jdFacturaVenta.getCbSucursal().addItem(new ComboBoxWrapper<Sucursal>(remito.getSucursal(), remito.getSucursal().getId(), remito.getSucursal().getNombre()));
-
+            if (anulando) {
+                jdFacturaVenta.getBtnAceptar().setVisible(false);
+                jdFacturaVenta.getBtnAnular().setVisible(true);
+                jdFacturaVenta.getBtnAnular().setEnabled(true);
+                jdFacturaVenta.getBtnAnular().addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        selectedRemito.setAnulada(DAO.getDateFromDB());
+                        jpaController.merge(selectedRemito);
+                    }
+                });
+            }
         }
 //      jdFacturaVenta.getCbUsuario().addItem(remito.getUsuario());
         jdFacturaVenta.setDcFechaFactura(remito.getFechaRemito());
@@ -439,17 +460,6 @@ public class RemitoController implements ActionListener, KeyListener {
                     });
         }
         jdFacturaVenta.modoVista();
-        if (editing) {
-            jdFacturaVenta.getCbCliente().setEnabled(true);
-            jdFacturaVenta.getCbSucursal().setEnabled(true);
-            jdFacturaVenta.setEnableDcFechaFactura(true);
-            JButton btnAceptar = jdFacturaVenta.getBtnAceptar();
-            btnAceptar.setEnabled(true);
-            btnAceptar.setText("Modificar");
-            btnAceptar.setSize(btnAceptar.getWidth() + 10, btnAceptar.getHeight());
-            btnAceptar.setMnemonic('f');
-            btnAceptar.setEnabled(true);
-        }
         jdFacturaVenta.setVisible(true);
     }
 
@@ -571,6 +581,14 @@ public class RemitoController implements ActionListener, KeyListener {
 //        initRemito(owner, true, false, true);
         initBuscador(owner, true, false);
         MODO_VISTA = false;
+        buscador.setVisible(true);
+    }
+
+    public void initBuscadorToAnular(Window owner) throws MessageException {
+        this.editing = false;
+        this.anulando = true;
+        MODO_VISTA = false;
+        initBuscador((JFrame) owner, false, true);
         buscador.setVisible(true);
     }
 }

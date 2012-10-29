@@ -49,6 +49,9 @@ public class Remito implements Serializable {
     @JoinColumn(name = "factura_venta", referencedColumnName = "id")
     @OneToOne
     private FacturaVenta facturaVenta;
+    @Column(name = "anulada")
+    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    private Date anulada;
 
     public Remito() {
     }
@@ -129,6 +132,14 @@ public class Remito implements Serializable {
         this.facturaVenta = facturaVenta;
     }
 
+    public Date getAnulada() {
+        return anulada;
+    }
+
+    public void setAnulada(Date anulada) {
+        this.anulada = anulada;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -151,6 +162,6 @@ public class Remito implements Serializable {
 
     @Override
     public String toString() {
-        return "Remito{" + "id=" + id + ", numero=" + numero + ", fechaRemito=" + fechaRemito + ", fechaCreacion=" + fechaCreacion + ", detalleRemitoList=" + detalleRemitoList.size() + '}';
+        return "Remito{" + "id=" + id + ", numero=" + numero + ", fechaRemito=" + fechaRemito + ", fechaCreacion=" + fechaCreacion + "anulada=" + anulada + ", detalleRemitoList=" + detalleRemitoList.size() + '}';
     }
 }
