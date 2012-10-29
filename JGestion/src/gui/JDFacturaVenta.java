@@ -1346,8 +1346,8 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
         btnADD.setEnabled(false);
         btnDEL.setEnabled(false);
         btnCancelar.setEnabled(false);
-        btnAceptar.setEnabled(true);
         btnBuscarRemito.setEnabled(false);
+        btnAceptar.setEnabled(true);
     }
 
     public JButton getBtnFacturar() {

@@ -138,6 +138,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenuItem3 = new javax.swing.JMenuItem();
         jMenuItem38 = new javax.swing.JMenuItem();
         jMenuItem49 = new javax.swing.JMenuItem();
+        jMenuItem71 = new javax.swing.JMenuItem();
         menuCtaCte = new javax.swing.JMenu();
         jMenuItem30 = new javax.swing.JMenuItem();
         jMenuItem31 = new javax.swing.JMenuItem();
@@ -605,6 +606,14 @@ public class JFP extends javax.swing.JFrame implements Runnable {
             }
         });
         jMenu14.add(jMenuItem49);
+
+        jMenuItem71.setText("Remito");
+        jMenuItem71.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem71ActionPerformed(evt);
+            }
+        });
+        jMenu14.add(jMenuItem71);
 
         menuTesoreria.add(jMenu14);
 
@@ -1470,6 +1479,14 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         }
 
     }//GEN-LAST:event_jMenuItem70ActionPerformed
+
+    private void jMenuItem71ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem71ActionPerformed
+        try {
+            new RemitoController().initBuscadorToAnular(this);
+        } catch (MessageException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Advertencia", 2);
+        }
+    }//GEN-LAST:event_jMenuItem71ActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JMenu jMenu1;
@@ -1565,6 +1582,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenuItem jMenuItem69;
     private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JMenuItem jMenuItem70;
+    private javax.swing.JMenuItem jMenuItem71;
     private javax.swing.JMenuItem jMenuItem8;
     private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JMenuItem jMenuItemCatalogoWeb;
