@@ -1,20 +1,16 @@
 package controller;
 
 import controller.exceptions.MessageException;
-import controller.exceptions.NonexistentEntityException;
-import controller.exceptions.PreexistingEntityException;
 import entity.*;
 import gui.JDBuscadorReRe;
 import gui.JDReRe;
 import gui.generics.JDialogTable;
-import java.awt.Component;
 import java.awt.event.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
 import javax.persistence.EntityManager;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -306,18 +302,11 @@ public class ReciboController implements ActionListener, FocusListener {
     }
 
     private void displayABMChequePropio() throws MessageException {
-        ChequePropio cheque = null;
-        JDialog jd = new ChequePropioController().initManager(jdReRe, true);
-        jd.setLocationRelativeTo(jdReRe);
-        jd.setVisible(true);
+        ChequePropio cheque = new ChequePropioController().initManagerBuscador(jdReRe);
         if (cheque != null) {
-            try {
-                ChequesController.checkUniquenessOnTable(jdReRe.getDtmPagos(), cheque);
-                DefaultTableModel dtm = jdReRe.getDtmPagos();
-                dtm.addRow(new Object[]{cheque, "CH", cheque.getNumero(), cheque.getImporte()});
-            } catch (MessageException ex) {
-                ex.displayMessage(jdReRe);
-            }
+            ChequesController.checkUniquenessOnTable(jdReRe.getDtmPagos(), cheque);
+            DefaultTableModel dtm = jdReRe.getDtmPagos();
+            dtm.addRow(new Object[]{cheque, "CH", cheque.getNumero(), cheque.getImporte()});
         }
     }
 

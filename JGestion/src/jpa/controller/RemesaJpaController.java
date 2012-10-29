@@ -4,6 +4,7 @@ import controller.DAO;
 import controller.OperacionesBancariasController;
 import controller.UsuarioController;
 import entity.*;
+import entity.enums.ChequeEstado;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -77,6 +78,9 @@ public class RemesaJpaController extends AbstractDAO<Remesa, Integer> {
                 pagosPost.add(pago);
             } else if (object instanceof ChequeTerceros) {
                 ChequeTerceros pago = (ChequeTerceros) object;
+                pago.setEstado(ChequeEstado.ENDOSADO.getId());
+                pago.setFechaEndoso(remesa.getFechaRemesa());
+                pago.setEndosatario(remesa.getDetalleRemesaList().get(0).getFacturaCompra().getProveedor().getNombre());
                 pago.setComprobanteEgreso(getEntityClass().getSimpleName() + " " + JGestionUtils.getNumeracion(remesa, true));
                 entityManager.merge(pago);
                 pagosPost.add(pago);

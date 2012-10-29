@@ -6,6 +6,7 @@ import entity.ChequePropio;
 import entity.ChequeTerceros;
 import entity.ComprobanteRetencion;
 import entity.CtacteProveedor;
+import entity.CuentabancariaMovimientos;
 import entity.DetalleCajaMovimientos;
 import entity.Remesa;
 import entity.Sucursal;
@@ -14,6 +15,7 @@ import java.awt.event.FocusEvent;
 import javax.persistence.EntityManager;
 import entity.DetalleRemesa;
 import entity.FacturaCompra;
+import entity.MovimientoConcepto;
 import entity.NotaCreditoProveedor;
 import entity.Proveedor;
 import entity.RemesaPagos;
@@ -199,6 +201,8 @@ public class RemesaController implements ActionListener, FocusListener {
                     displayABMNotaCredito();
                 } else if (formaPago == 4) {
                     displayABMRetencion();
+                } else if (formaPago == 5) {
+                    displayABMTransferencia();
                 }
             }
         });
@@ -266,11 +270,7 @@ public class RemesaController implements ActionListener, FocusListener {
     }
 
     private void displayABMChequeTerceros() throws MessageException {
-        ChequeTerceros cheque = null;
-        JDialog jd = new ChequeTercerosController().gettManagerTerceros(jdReRe, null, ChequeEstado.CARTERA);
-        jd.setLocationRelativeTo(jdReRe);
-        jd.setVisible(true);
-        System.out.println("COLGO?");
+        ChequeTerceros cheque = new ChequeTercerosController().initManagerBuscador(jdReRe);
         if (cheque != null) {
             try {
                 ChequesController.checkUniquenessOnTable(jdReRe.getDtmPagos(), cheque);
@@ -321,6 +321,11 @@ public class RemesaController implements ActionListener, FocusListener {
                 ex.displayMessage(jdReRe);
             }
         }
+    }
+
+    private void displayABMTransferencia() {
+        String p = jdReRe.getCbClienteProveedor().getSelectedItem().toString();
+        CuentabancariaMovimientos cbm = new CuentabancariaMovimientosController().displayTransferenciaProveedor(jdReRe, p);
     }
 
     @Override
@@ -647,7 +652,7 @@ public class RemesaController implements ActionListener, FocusListener {
         SwingUtil.setComponentsEnabled(jdReRe.getPanelDatos().getComponents(), false, true);
         SwingUtil.setComponentsEnabled(jdReRe.getPanelAPagar().getComponents(), false, true);
         SwingUtil.setComponentsEnabled(jdReRe.getPanelPagos().getComponents(), false, true);
-        
+
         jdReRe.getbImprimir().setEnabled(true);
     }
 

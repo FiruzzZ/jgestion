@@ -28,7 +28,7 @@ public class OperacionesBancariasController {
     private JDMiniABM abm;
     public static final int DEPOSITO = 1;
     public static final int EXTRACCION = 2;
-    public static final int TRASNFERENCIA = 3;
+    public static final int TRANSFERENCIA = 3;
 
     public OperacionesBancariasController() {
         jpaController = new OperacionesBancariasJpaController();
@@ -41,7 +41,7 @@ public class OperacionesBancariasController {
      * @return
      */
     public OperacionesBancarias getOperacion(int defaultOB) {
-        if (defaultOB != DEPOSITO && defaultOB != TRASNFERENCIA && defaultOB != EXTRACCION) {
+        if (defaultOB != DEPOSITO && defaultOB != TRANSFERENCIA && defaultOB != EXTRACCION) {
             throw new IllegalArgumentException("default " + jpaController.getEntityClass().getSimpleName() + " no válida");
         }
         return jpaController.find(defaultOB);

@@ -173,11 +173,6 @@ public class JDCuentabancariaManager extends javax.swing.JDialog {
 
         btnAgregar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/16px_add_circular.png"))); // NOI18N
         btnAgregar.setText("Agregar");
-        btnAgregar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAgregarActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -300,8 +295,6 @@ public class JDCuentabancariaManager extends javax.swing.JDialog {
         sumarCreditoDebito();
     }//GEN-LAST:event_jTable1ComponentResized
 
-    private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
-    }//GEN-LAST:event_btnAgregarActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup bgFechas;
     private javax.swing.JButton btnAgregar;

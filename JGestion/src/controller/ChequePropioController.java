@@ -15,10 +15,13 @@ import gui.PanelABMCheques;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 import javax.persistence.NoResultException;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -348,37 +351,58 @@ public class ChequePropioController implements ActionListener {
         }
     }
 
-    public JDialog initManager(Window owner) throws MessageException {
+    public JDialog getManager(Window owner) throws MessageException {
         initManager(owner, false);
-        jdChequeManager.getCbCuentaBancaria().setVisible(true);
-        jdChequeManager.getLabelCuentaBancaria().setVisible(true);
-        jdChequeManager.getLabelEmisor().setText("Emitido a");
-        UTIL.loadComboBox(jdChequeManager.getCbEmisor(), JGestionUtils.getWrappedProveedores(new ProveedorController().findEntities()), true);
-        jdChequeManager.setTitle("Administración de Cheques Propios");
         jdChequeManager.setLocationRelativeTo(owner);
         return jdChequeManager;
     }
 
-    JDialog initManager(Window parent, boolean selectionMode) throws MessageException {
+    public ChequePropio initManagerBuscador(Window owner) throws MessageException {
+        initManager(owner, true);
+        jdChequeManager.setLocationRelativeTo(owner);
+        jdChequeManager.setVisible(true);
+        return EL_OBJECT;
+    }
+
+    private void initManager(Window parent, boolean selectionMode) throws MessageException {
         if (!selectionMode) {
             UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
         }
         List<Banco> l = new BancoController().findWithCuentasBancarias();
         if (l.isEmpty()) {
             throw new MessageException("Para emitor cheques propios, primero tiene que crear una Cuenta bancaria relacionado a un Banco."
-                    + "\nDatos Generales > Bancos/Sucursales/Cuentas > Cuentas Bancarias");
+                    + "\nDatos Generales > Bancos/Cuentas > Cuentas Bancarias");
         }
         jdChequeManager = new JDChequesManager(parent, true);
+        jdChequeManager.getLabelEmisor().setText("Emitido a");
+        jdChequeManager.setTitle("Administración de Cheques Propios");
         jdChequeManager.getCbBancoSucursales().setVisible(false);
         jdChequeManager.getLabelSucursales().setVisible(false);
         UTIL.getDefaultTableModel(jdChequeManager.getjTable1(), columnNames, columnWidths, columnClassTypes);
         jdChequeManager.getjTable1().getColumnModel().getColumn(7).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         UTIL.hideColumnTable(jdChequeManager.getjTable1(), 0);
         UTIL.loadComboBox(jdChequeManager.getCbBancos(), JGestionUtils.getWrappedBancos(l), true);
-//        UTIL.loadComboBox(jdChequeManager.getCbBancoSucursales(), null, null, "<Seleccionar un Banco>");
         UTIL.loadComboBox(jdChequeManager.getCbEmisor(), JGestionUtils.getWrappedProveedores(new ProveedorController().findEntities()), true);
-//        UTIL.loadComboBox(jdChequeManager.getCbLibrado(), JGestionUtils.getWrappedLibrado(new LibradoJpaController().findEntities()), true);
         UTIL.loadComboBox(jdChequeManager.getCbEstados(), Arrays.asList(ChequeEstado.values()), true);
+        if (selectionMode) {
+            EL_OBJECT = null;
+            UTIL.setSelectedItem(jdChequeManager.getCbEstados(), ChequeEstado.CARTERA);
+            jdChequeManager.getCbEstados().setEnabled(false);
+            jdChequeManager.getjTable1().addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    if (e.getClickCount() > 1 && jdChequeManager.getjTable1().getSelectedRow() > -1) {
+                        ChequePropio cheque = jpaController.find((Integer) jdChequeManager.getjTable1().getModel().getValueAt(jdChequeManager.getjTable1().getSelectedRow(), 0));
+                        if (cheque.getChequeEstado().equals(ChequeEstado.CARTERA)) {
+                            EL_OBJECT = cheque;
+                            jdChequeManager.dispose();
+                        } else {
+                            JOptionPane.showMessageDialog(jdChequeManager, "Solo los cheques en " + ChequeEstado.CARTERA + " pueden ser recibidos como medio de pago", "Error", JOptionPane.WARNING_MESSAGE);
+                        }
+                    }
+                }
+            });
+        }
         jdChequeManager.getCbBancos().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -394,7 +418,6 @@ public class ChequePropioController implements ActionListener {
             }
         });
         jdChequeManager.addButtonListener(this);
-        return jdChequeManager;
     }
 
     @SuppressWarnings("unchecked")
