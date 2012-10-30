@@ -29,26 +29,8 @@ import utilities.gui.SwingUtil;
  */
 public class JDBuscadorReRe extends javax.swing.JDialog {
 
-    /**
-     * Este constructor es para facturas compra/venta.
-     *
-     * @param owner
-     * @param title
-     * @param modal
-     * @param labelClieProv
-     * @param labelReRe
-     */
-    public JDBuscadorReRe(Frame owner, String title, boolean modal, String labelClieProv, String labelReRe) {
-        super(owner, modal);
-        initComponents();
-        init(title, labelClieProv, labelReRe);
-        labelN_Factura.setText("Nº Movim.");
-        tfFactu4.setToolTipText("Nº de movimiento interno");
-        tfFactu8.setVisible(false);
-    }
-
     public JDBuscadorReRe(Window owner, String title, boolean modal, String labelClieProv, String labelReRe) {
-        super(owner, DEFAULT_MODALITY_TYPE);
+        super(owner, modal ? DEFAULT_MODALITY_TYPE : ModalityType.MODELESS);
         initComponents();
         init(title, labelClieProv, labelReRe);
     }
@@ -667,5 +649,11 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
         jLabel5.setVisible(visible);
         dcDesdeSistema.setVisible(visible);
         dcHastaSistema.setVisible(visible);
+    }
+
+    public void setToFacturaVenta() {
+        labelN_Factura.setText("Nº Movim.");
+        tfFactu4.setToolTipText("Nº de movimiento interno");
+        tfFactu8.setVisible(false);
     }
 }

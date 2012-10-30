@@ -17,6 +17,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -47,7 +48,7 @@ public class RemitoController implements ActionListener, KeyListener {
     private static final Logger LOG = Logger.getLogger(RemitoController.class.getName());
     //global mutable
     private boolean editing = false;
-    private boolean anulando;
+    private boolean anulando = false;
 
     public RemitoController() {
         jpaController = new RemitoJpaController();
@@ -343,12 +344,11 @@ public class RemitoController implements ActionListener, KeyListener {
         facturaVentaController.setNumeroFactura(s, getNextNumero(s));
     }
 
-    public void initBuscador(JDialog dialog, boolean modal, boolean setVisible) {
-        buscador = new JDBuscadorReRe((Window) dialog, "Buscador - " + CLASS_NAME, modal, "Cliente", "Nº " + CLASS_NAME);
-        buscador.hideFormaPago();
-        initBuscador(setVisible);
-    }
-
+//    public void initBuscador(JDialog dialog, boolean modal, boolean setVisible) {
+//        buscador = new JDBuscadorReRe(dialog, "Buscador - " + CLASS_NAME, modal, "Cliente", "Nº " + CLASS_NAME);
+//        buscador.hideFormaPago();
+//        initBuscador(setVisible);
+//    }
     /**
      * Inicia el buscador con el JFrame como padre
      *
@@ -357,31 +357,38 @@ public class RemitoController implements ActionListener, KeyListener {
      * @param setVisible
      * @throws MessageException
      */
-    public void initBuscador(JFrame frame, boolean modal, boolean setVisible) throws MessageException {
+    public void initBuscador(Window frame, boolean modal, boolean setVisible) throws MessageException {
         UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.VENTA);
         buscador = new JDBuscadorReRe(frame, "Buscador - " + CLASS_NAME, modal, "Cliente", "Nº " + CLASS_NAME);
+        buscador.getCheckAnulada().setVisible(true);
         initBuscador(setVisible);
     }
 
     private void initBuscador(boolean setVisible) {
-        buscador.getjTable1().addMouseListener(new java.awt.event.MouseAdapter() {
+        buscador.getjTable1().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 if (evt.getClickCount() >= 2) {
                     selectedRemito = (Remito) buscador.getDtm().getValueAt(buscador.getjTable1().getSelectedRow(), 0);
-                    if (toFacturar) {
-                        //cuando se va relacionar un Remito a una FacturaVenta
-                        buscador.dispose();
-                    } else {
-                        try {
+                    try {
+                        if (toFacturar) {
+                            if (selectedRemito.getFacturaVenta() != null) {
+                                throw new MessageException("Este remito ya está relacionado a la Factura " + JGestionUtils.getNumeracion(selectedRemito.getFacturaVenta()));
+                            }
+                            if (selectedRemito.getAnulada() != null) {
+                                throw new MessageException("Un Remito anulado no puede ser relacionado a una Factura");
+                            }
+                            //cuando se va relacionar un Remito a una FacturaVenta
+                            buscador.dispose();
+                        } else {
                             if ((editing || anulando) && selectedRemito.getFacturaVenta() != null) {
                                 throw new MessageException("No se puede " + (editing ? "modificar" : "anular") + " el Remito " + JGestionUtils.getNumeracion(selectedRemito, true)
                                         + "\nporque ya fue relacionado a la Factura " + JGestionUtils.getNumeracion(selectedRemito.getFacturaVenta()));
                             }
-                            setDatos(selectedRemito);
-                        } catch (MessageException ex) {
-                            buscador.showMessage(ex.getMessage(), "Error", JOptionPane.WARNING_MESSAGE);
+                            setComprobanteInfo(selectedRemito);
                         }
+                    } catch (MessageException ex) {
+                        buscador.showMessage(ex.getMessage(), "Error", JOptionPane.WARNING_MESSAGE);
                     }
                 }
             }
@@ -401,7 +408,7 @@ public class RemitoController implements ActionListener, KeyListener {
         buscador.setVisible(setVisible);
     }
 
-    private void setDatos(Remito remito) {
+    private void setComprobanteInfo(Remito remito) {
         try {
             initRemito(null, true, false, editing);
         } catch (MessageException ex) {
@@ -438,6 +445,13 @@ public class RemitoController implements ActionListener, KeyListener {
                     public void actionPerformed(ActionEvent e) {
                         selectedRemito.setAnulada(DAO.getDateFromDB());
                         jpaController.merge(selectedRemito);
+                        facturaVentaController.getContenedor().showMessage("Remito anulado", null, JOptionPane.INFORMATION_MESSAGE);
+                        facturaVentaController.getContenedor().dispose();
+                        try {
+                            armarQuery();
+                        } catch (MessageException ex) {
+                            ex.displayMessage(buscador);
+                        }
                     }
                 });
             }
@@ -509,7 +523,9 @@ public class RemitoController implements ActionListener, KeyListener {
                 query.append(" AND o.factura_venta IS NOT NULL");
             }
         }
+        query.append(" AND o.anulada IS ").append(buscador.getCheckAnulada().isSelected() ? " NOT " : "").append(" NULL");
         query.append(" ORDER BY o.id");
+        LOG.debug(query.toString());
         cargarTablaBuscador(query.toString());
     }
 
@@ -543,25 +559,6 @@ public class RemitoController implements ActionListener, KeyListener {
         return selectedRemito;
     }
 
-    /**
-     * Inicializa y hace visible la UI (modal) de busqueda y selección de Remito
-     * para relacionarlo con una {@link FacturaVenta}
-     *
-     * @param owner
-     * @param cliente entity {@link Cliente} del cual se van a buscar el Remito
-     */
-    void initBuscadorToFacturar(JDialog owner, Cliente cliente) {
-        buscador = new JDBuscadorReRe((Window) owner, "Buscador - " + CLASS_NAME, true, "Cliente", "Nº " + CLASS_NAME);
-        buscador.hideFormaPago();
-        initBuscador(false);
-        setToFacturar();
-        UTIL.setSelectedItem(buscador.getCbClieProv(), cliente);
-        buscador.getCbFormasDePago().setSelectedIndex(1); // los NO facturados
-        buscador.getCbFormasDePago().setEnabled(false);
-        buscador.getCbClieProv().setEnabled(false);
-        buscador.setVisible(true);
-    }
-
     public void unlockedABM(JFrame owner) throws MessageException {
         UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.VENTA_NUMERACION_MANUAL);
         initRemito(owner, true, false, true);
@@ -576,7 +573,7 @@ public class RemitoController implements ActionListener, KeyListener {
                 + " WHERE o.sucursal.id=" + sucursal.getId() + " AND o.numero=" + numero, Remito.class).getSingleResult();
     }
 
-    public void initRemitoEditor(JFrame owner) throws MessageException {
+    public void initRemitoEditor(Window owner) throws MessageException {
         this.editing = true;
 //        initRemito(owner, true, false, true);
         initBuscador(owner, true, false);
@@ -588,7 +585,31 @@ public class RemitoController implements ActionListener, KeyListener {
         this.editing = false;
         this.anulando = true;
         MODO_VISTA = false;
-        initBuscador((JFrame) owner, false, true);
+        initBuscador(owner, false, true);
+        buscador.getCheckAnulada().setVisible(true);
+        buscador.getCheckAnulada().setEnabled(false);
+        buscador.getCheckAnulada().setSelected(false);
+        buscador.setVisible(true);
+    }
+
+    /**
+     * Inicializa y hace visible la UI (modal) de busqueda y selección de Remito
+     * para relacionarlo con una {@link FacturaVenta}
+     *
+     * @param owner
+     * @param cliente entity {@link Cliente} del cual se van a buscar el Remito
+     */
+    void initBuscadorToFacturar(JDialog owner, Cliente cliente) {
+        buscador = new JDBuscadorReRe(owner, "Buscador - " + CLASS_NAME, true, "Cliente", "Nº " + CLASS_NAME);
+        initBuscador(false);
+        buscador.hideFormaPago();
+        buscador.getCheckAnulada().setSelected(false);
+        buscador.getCheckAnulada().setEnabled(false);
+        setToFacturar();
+        UTIL.setSelectedItem(buscador.getCbClieProv(), cliente);
+        buscador.getCbFormasDePago().setSelectedIndex(1); // los NO facturados
+        buscador.getCbFormasDePago().setEnabled(false);
+        buscador.getCbClieProv().setEnabled(false);
         buscador.setVisible(true);
     }
 }
