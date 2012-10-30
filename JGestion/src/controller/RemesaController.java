@@ -44,6 +44,7 @@ import jgestion.JGestionUtils;
 import jpa.controller.ChequePropioJpaController;
 import jpa.controller.ChequeTercerosJpaController;
 import jpa.controller.ComprobanteRetencionJpaController;
+import jpa.controller.FacturaCompraJpaController;
 import jpa.controller.NotaCreditoProveedorJpaController;
 import jpa.controller.RemesaJpaController;
 import org.apache.log4j.Logger;
@@ -377,11 +378,11 @@ public class RemesaController implements ActionListener, FocusListener {
         // 30% faster on ArrayList with initialCapacity
         re.setDetalleRemesaList(new ArrayList<DetalleRemesa>(jdReRe.getDtmAPagar().getRowCount()));
         DefaultTableModel dtm = jdReRe.getDtmAPagar();
-        FacturaCompraController fcc = new FacturaCompraController();
+        FacturaCompraJpaController fcc = new FacturaCompraJpaController();
         BigDecimal monto = BigDecimal.ZERO;
         for (int i = 0; i < dtm.getRowCount(); i++) {
             DetalleRemesa detalle = new DetalleRemesa();
-            detalle.setFacturaCompra(fcc.findFacturaCompra((Integer) (dtm.getValueAt(i, 0))));
+            detalle.setFacturaCompra(fcc.find((Integer) (dtm.getValueAt(i, 0))));
             detalle.setObservacion(null);
             detalle.setMontoEntrega((BigDecimal) dtm.getValueAt(i, 3));
 //            detalle.setAcreditado(false);
@@ -489,7 +490,7 @@ public class RemesaController implements ActionListener, FocusListener {
 
     public JDialog initBuscador(JDialog dialog, boolean modal) throws MessageException {
         UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.COMPRA);
-        buscador = new JDBuscadorReRe((Window) dialog, "Buscador - " + CLASS_NAME, modal, "Proveedor", "Nº " + CLASS_NAME);
+        buscador = new JDBuscadorReRe(dialog, "Buscador - " + CLASS_NAME, modal, "Proveedor", "Nº " + CLASS_NAME);
         buscador.hideFormaPago();
         buscador.setLocationRelativeTo(dialog);
         buscador.setListeners(this);
@@ -633,7 +634,7 @@ public class RemesaController implements ActionListener, FocusListener {
             initRemesa(null, true, false);
         }
         //por no redundar en DATOOOOOOOOOSS...!!!
-        Proveedor p = new FacturaCompraController().findFacturaCompra(remesa.getDetalleRemesaList().get(0).getFacturaCompra().getId()).getProveedor();
+        Proveedor p = new FacturaCompraJpaController().find(remesa.getDetalleRemesaList().get(0).getFacturaCompra().getId()).getProveedor();
         //que compare por String's..
         //por si el combo está vacio <VACIO> o no eligió ninguno
         //van a tirar error de ClassCastException

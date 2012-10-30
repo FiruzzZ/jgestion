@@ -184,4 +184,8 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
         typedQuery.setHint(QueryHints.REFRESH, Boolean.TRUE);
         return typedQuery.getResultList();
     }
+    
+    public void closeEntityManager() {
+        getEntityManager().close();
+    }
 }

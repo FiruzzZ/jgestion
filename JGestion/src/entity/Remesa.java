@@ -59,6 +59,9 @@ public class Remesa implements Serializable {
     private List<RemesaPagos> pagos;
     @Transient
     private transient List<Object> pagosEntities;
+    @Column(name = "anulada")
+    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    private Date anulada;
 
     public Remesa() {
     }
@@ -159,6 +162,14 @@ public class Remesa implements Serializable {
         this.pagosEntities = pagosEntities;
     }
 
+    public Date getAnulada() {
+        return anulada;
+    }
+
+    public void setAnulada(Date anulada) {
+        this.anulada = anulada;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -181,6 +192,6 @@ public class Remesa implements Serializable {
 
     @Override
     public String toString() {
-        return "Remesa{" + "id=" + id + ", numero=" + numero + ", fechaCarga=" + fechaCarga + ", montoEntrega=" + montoEntrega + ", fechaRemesa=" + fechaRemesa + ", estado=" + estado + ", detalleRemesaList=" + detalleRemesaList + ", caja=" + caja + ", sucursal=" + sucursal + ", usuario=" + usuario + ", pagos=" + pagos + ", pagosEntities=" + pagosEntities + '}';
+        return "Remesa{" + "id=" + id + ", numero=" + numero + ", fechaCarga=" + fechaCarga + ", montoEntrega=" + montoEntrega + ", fechaRemesa=" + fechaRemesa + ", estado=" + estado + ", detalleRemesaList=" + detalleRemesaList + ", caja=" + caja + ", sucursal=" + sucursal + ", usuario=" + usuario + ", pagos=" + pagos + ", anulada=" + anulada + ", pagosEntities=" + pagosEntities + '}';
     }
 }

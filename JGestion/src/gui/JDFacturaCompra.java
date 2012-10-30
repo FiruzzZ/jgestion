@@ -306,7 +306,7 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         tfGravado.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         tfGravado.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         tfGravado.setText("0");
-        tfGravado.setToolTipText("Neto - Descuento");
+        tfGravado.setToolTipText("Gravado - Descuento");
         tfGravado.setFocusable(false);
         tfGravado.setRequestFocusEnabled(false);
 
@@ -535,7 +535,7 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         tfDescuento.setColumns(8);
         tfDescuento.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         tfDescuento.setText("0");
-        tfDescuento.setToolTipText("Se aplica sobre el NETO");
+        tfDescuento.setToolTipText("Se aplica sobre el total Gravado");
         tfDescuento.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 xxx(evt);
@@ -851,6 +851,9 @@ public class JDFacturaCompra extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void cbFormaPagoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbFormaPagoActionPerformed
+        if (cbFormaPago.getItemCount() == 0) {
+            return;
+        }
         //habilitando el textfield para poner la cantidad de días de cta cte
         tfDias.setEnabled((cbFormaPago.getSelectedItem().toString().equalsIgnoreCase("Cta Cte")));
         tfDias.setRequestFocusEnabled((cbFormaPago.getSelectedItem().toString().equalsIgnoreCase("Cta Cte")));

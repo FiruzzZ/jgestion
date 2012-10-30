@@ -85,16 +85,16 @@ public class FacturaCompra implements Serializable {
     private Short diasCtaCte;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "factura", fetch = FetchType.EAGER)
     private List<DetalleCompra> detalleCompraList;
-    @JoinColumn(name = "proveedor", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "proveedor", nullable = false)
     @ManyToOne(optional = false)
     private Proveedor proveedor;
-    @JoinColumn(name = "sucursal", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "sucursal", nullable = false)
     @ManyToOne(optional = false)
     private Sucursal sucursal;
-    @JoinColumn(name = "usuario", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "usuario", nullable = false)
     @ManyToOne(optional = false)
     private Usuario usuario;
-    @JoinColumn(name = "caja", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "caja", nullable = false)
     @ManyToOne(optional = false)
     private Caja caja;
     @Basic(optional = false)
@@ -107,7 +107,7 @@ public class FacturaCompra implements Serializable {
     @Column(name = "impuestos_norecuperables", nullable = false, precision = 12, scale = 2)
     private BigDecimal impuestosNoRecuperables;
     @Basic(optional = false)
-    @Column(nullable = false, precision = 12, scale = 2)
+    @Column(name = "descuento", nullable = false, precision = 12, scale = 2)
     private BigDecimal descuento;
     @Basic(optional = false)
     @Column(name = "otros_ivas", nullable = false, precision = 12, scale = 2)
@@ -162,6 +162,10 @@ public class FacturaCompra implements Serializable {
 
     public Date getFechaalta() {
         return fechaalta;
+    }
+
+    public void setFechaalta(Date fechaalta) {
+        this.fechaalta = fechaalta;
     }
 
     public int getFormaPago() {
@@ -388,7 +392,7 @@ public class FacturaCompra implements Serializable {
                 + ", percIva=" + percIva + ", percDgr=" + percDgr + ", iva10=" + iva10 + ", iva21=" + iva21 + ", imp. Recuperable=" + impuestosRecuperables
                 + ", imp. No Recuperable=" + impuestosNoRecuperables
                 + ", movimientoInterno=" + movimientoInterno + ", diasCtaCte=" + diasCtaCte
-                + ", proveedor=" + proveedor.getId() + ", sucursal=" + (sucursal == null ? null : sucursal.getId()) 
+                + ", proveedor=" + proveedor.getId() + ", sucursal=" + (sucursal == null ? null : sucursal.getId())
                 + ", usuario=" + (usuario == null ? null : usuario.getId()) + ", caja=" + (caja == null ? null : caja.getId()) + ", anulada=" + anulada
                 + '}';
     }

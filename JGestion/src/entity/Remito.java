@@ -50,7 +50,7 @@ public class Remito implements Serializable {
     @OneToOne
     private FacturaVenta facturaVenta;
     @Column(name = "anulada")
-    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date anulada;
 
     public Remito() {

@@ -446,7 +446,7 @@
             </Property>
             <Property name="horizontalAlignment" type="int" value="4"/>
             <Property name="text" type="java.lang.String" value="0"/>
-            <Property name="toolTipText" type="java.lang.String" value="Neto - Descuento"/>
+            <Property name="toolTipText" type="java.lang.String" value="Gravado - Descuento"/>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="requestFocusEnabled" type="boolean" value="false"/>
           </Properties>
@@ -772,7 +772,7 @@
             <Property name="columns" type="int" value="8"/>
             <Property name="horizontalAlignment" type="int" value="4"/>
             <Property name="text" type="java.lang.String" value="0"/>
-            <Property name="toolTipText" type="java.lang.String" value="Se aplica sobre el NETO"/>
+            <Property name="toolTipText" type="java.lang.String" value="Se aplica sobre el total Gravado"/>
           </Properties>
           <Events>
             <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="xxx"/>

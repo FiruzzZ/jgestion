@@ -940,6 +940,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
     public void initBuscador(JFrame frame, final boolean modal, final boolean paraAnular) throws MessageException {
         UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.VENTA);
         buscador = new JDBuscadorReRe(frame, "Buscador - Facturas venta", modal, "Cliente", "Nº Factura");
+        buscador.setToFacturaVenta();
         UTIL.loadComboBox(buscador.getCbClieProv(), new ClienteController().findEntities(), true);
         UTIL.loadComboBox(buscador.getCbCaja(), new CajaController().findCajasPermitidasByUsuario(UsuarioController.getCurrentUser(), true), true);
         UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), true);
