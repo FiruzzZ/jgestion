@@ -26,6 +26,7 @@ import gui.JDBuscadorReRe;
 import gui.JFP;
 import gui.PanelBalanceComprasVentas;
 import gui.PanelBalanceGeneral;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -34,6 +35,9 @@ import java.math.BigDecimal;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -47,6 +51,7 @@ import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import jgestion.JGestionUtils;
+import jgestion.Main;
 import jpa.controller.CajaMovimientosJpaController;
 import jpa.controller.FacturaVentaJpaController;
 import net.sf.jasperreports.engine.JRException;
@@ -72,9 +77,7 @@ public class Contabilidad {
     private static final int columnWidthsBalanceGeneral[] = {40, 440, 55, 55, 60};
     private static final Class[] columnClassBalanceGeneral = {Object.class, Object.class, String.class, String.class, String.class};
     private PanelBalanceComprasVentas panelBalanceComprasVentas;
-    private static final String columnNamesBalanceCompraVenta[] = {"FECHA", "DESCRIPCIÓN", "INGRESOS/EGRESOS", "EFECTIVO", "CTA. CTE.", "TOTAL ACUM."};
-    private static final int columnWidthsBalanceCompraVenta[] = {60, 190, 60, 60, 60, 60};
-    private static final Class[] columnClassBalanceCompraVenta = {Object.class, Object.class, String.class, String.class, String.class, String.class};
+//    private static final Class[] columnClassBalanceCompraVenta = {Object.class, Object.class, String.class, String.class, String.class, String.class};
     private static final Logger LOG = Logger.getLogger(Contabilidad.class.getName());
 
     static {
@@ -96,14 +99,18 @@ public class Contabilidad {
      * @param parent
      * @throws MessageException
      */
-    public void initBalanceGeneralUI(JFrame parent) throws MessageException {
+    public void initBalanceMovimientosCajasUI(JFrame parent) throws MessageException {
         UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
         panelBalanceGeneral = new PanelBalanceGeneral();
-        UTIL.loadComboBox(panelBalanceGeneral.getCbCajas(), new UsuarioHelper().getWrappedCajas(null), false);
+        List<ComboBoxWrapper<Caja>> cajas = new UsuarioHelper().getWrappedCajas(null);
+        if (cajas.isEmpty()) {
+            throw new MessageException(jgestion.Main.resourceBundle.getString("unassigned.caja"));
+        }
+        UTIL.loadComboBox(panelBalanceGeneral.getCbCajas(), cajas, true);
         jdBalanceUI = new JDBalance(parent, false, panelBalanceGeneral);
         jdBalanceUI.setTitle("Balance");
-        jdBalanceUI.getLabelTotalAux().setVisible(false);
-        jdBalanceUI.getTfTotalAux().setVisible(false);
+        jdBalanceUI.getLabelEgresos().setVisible(false);
+        jdBalanceUI.getTfEgresos().setVisible(false);
         UTIL.getDefaultTableModel(jdBalanceUI.getjTable1(),
                 columnNamesBalanceGeneral,
                 columnWidthsBalanceGeneral,
@@ -113,7 +120,7 @@ public class Contabilidad {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    List<DetalleCajaMovimientos> l = (List<DetalleCajaMovimientos>) DAO.getNativeQueryResultList(armarQueryBalance(), DetalleCajaMovimientos.class.getSimpleName() + ".BalanceGeneral");
+                    List<DetalleCajaMovimientos> l = (List<DetalleCajaMovimientos>) DAO.getNativeQueryResultList(armarQueryBalanceGeneral(), DetalleCajaMovimientos.class.getSimpleName() + ".BalanceGeneral");
                     cargarTablaBalanceGeneral(l);
                 } catch (DatabaseErrorException ex) {
                     Logger.getLogger(Contabilidad.class.getName()).log(Level.FATAL, null, ex);
@@ -125,7 +132,7 @@ public class Contabilidad {
             public void actionPerformed(ActionEvent e) {
                 List<DetalleCajaMovimientos> l;
                 try {
-                    String query = armarQueryBalance();
+                    String query = armarQueryBalanceGeneral();
                     l = (List<DetalleCajaMovimientos>) DAO.getNativeQueryResultList(query, DetalleCajaMovimientos.class.getSimpleName() + ".BalanceGeneral");
                     cargarTablaBalanceGeneral(l);
                     doReportBalance(query,
@@ -172,14 +179,14 @@ public class Contabilidad {
      *
      * @return a String with SQL
      */
-    private String armarQueryBalance() {
+    private String armarQueryBalanceGeneral() {
         StringBuilder query = new StringBuilder("SELECT o.* FROM detalle_caja_movimientos o JOIN caja_movimientos cm ON (o.caja_movimientos = cm.id)"
                 + " WHERE o.tipo <> " + DetalleCajaMovimientosJpaController.APERTURA_CAJA);
-        if (panelBalanceGeneral.getCbCajas().getSelectedIndex() > -1) {
+        if (panelBalanceGeneral.getCbCajas().getSelectedIndex() > 0) {
             query.append(" AND cm.caja=").append(((ComboBoxWrapper<?>) panelBalanceGeneral.getCbCajas().getSelectedItem()).getId());
         } else {
             query.append(" AND (");
-            for (int i = 0; i < panelBalanceGeneral.getCbCajas().getItemCount(); i++) {
+            for (int i = 1; i < panelBalanceGeneral.getCbCajas().getItemCount(); i++) {
                 ComboBoxWrapper<?> caja = (ComboBoxWrapper<?>) panelBalanceGeneral.getCbCajas().getItemAt(i);
                 query.append(" cm.caja=").append(caja.getId());
                 if ((i + 1) < panelBalanceGeneral.getCbCajas().getItemCount()) {
@@ -231,8 +238,8 @@ public class Contabilidad {
                         UTIL.PRECIO_CON_PUNTO.format(subTotal)
                     });
         }
-        jdBalanceUI.getTfIngresos().setText(UTIL.PRECIO_CON_PUNTO.format(ingresos));
-        jdBalanceUI.getTfEgresos().setText(UTIL.PRECIO_CON_PUNTO.format(egresos));
+        jdBalanceUI.getTfEfectivo().setText(UTIL.PRECIO_CON_PUNTO.format(ingresos));
+        jdBalanceUI.getTfCtaCte().setText(UTIL.PRECIO_CON_PUNTO.format(egresos));
         jdBalanceUI.getTfTotal().setText(UTIL.PRECIO_CON_PUNTO.format(subTotal));
     }
 
@@ -246,33 +253,34 @@ public class Contabilidad {
     public void initBalanceCompraVentaUI(JFrame parent) throws MessageException {
         UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
         panelBalanceComprasVentas = new PanelBalanceComprasVentas();
+        List<ComboBoxWrapper<Sucursal>> s = new UsuarioHelper().getWrappedSucursales();
+        if (s.isEmpty()) {
+            throw new MessageException(Main.resourceBundle.getString("unassigned.sucursal"));
+        }
+        UTIL.loadComboBox(panelBalanceComprasVentas.getCbSucursal(), s, true);
         jdBalanceUI = new JDBalance(parent, false, panelBalanceComprasVentas);
-        jdBalanceUI.getLabelTotalAux().setText("INGR/EGRE");
-        jdBalanceUI.getLabelTotalIngresos().setText("EFECTIVO");
-        jdBalanceUI.getLabelTotalEgresos().setText("CTA. CTE.");
-        jdBalanceUI.getLabelTotalTotal().setText(null);
-        jdBalanceUI.getTfTotal().setText("---------");
         jdBalanceUI.setSize(700, 500);
         UTIL.getDefaultTableModel(jdBalanceUI.getjTable1(),
-                columnNamesBalanceCompraVenta,
-                columnWidthsBalanceCompraVenta,
-                columnClassBalanceCompraVenta);
-        UTIL.setHorizonalAlignment(jdBalanceUI.getjTable1(), String.class, JLabel.RIGHT);
+                new String[]{"FECHA", "DESCRIPCIÓN", "INGRESOS", "EGRESOS", "EFECTIVO", "CTA. CTE.", "TOTAL ACUM."},
+                new int[]{60, 190, 60, 60, 60, 60, 60});
+        jdBalanceUI.getjTable1().getColumnModel().getColumn(0).setCellRenderer(FormatRenderer.getDateRenderer());
+        jdBalanceUI.getjTable1().getColumnModel().getColumn(2).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        jdBalanceUI.getjTable1().getColumnModel().getColumn(3).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        jdBalanceUI.getjTable1().getColumnModel().getColumn(4).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        jdBalanceUI.getjTable1().getColumnModel().getColumn(5).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        jdBalanceUI.getjTable1().getColumnModel().getColumn(6).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+//        UTIL.setHorizonalAlignment(jdBalanceUI.getjTable1(), String.class, JLabel.RIGHT);
         jdBalanceUI.setTitle("Balance");
         jdBalanceUI.getbBuscar().addActionListener(new ActionListener() {
             @Override
+            @SuppressWarnings("unchecked")
             public void actionPerformed(ActionEvent e) {
                 try {
                     if (!panelBalanceComprasVentas.getCheckContado().isSelected()
                             && !panelBalanceComprasVentas.getCheckCtaCte().isSelected()) {
                         throw new MessageException("Debe elegir al menos una forma de facturación (CONTADO, CTA. CTE.)");
                     }
-                    String query = armarQueryBalanceComprasVentas();
-                    if (panelBalanceComprasVentas.getCbComprasVentas().getSelectedIndex() == 0) {
-                        cargarTablaBalanceCompra((List<FacturaCompra>) DAO.getNativeQueryResultList(query, FacturaCompra.class));
-                    } else {
-                        cargarTablaBalanceVenta((List<FacturaVenta>) DAO.getNativeQueryResultList(query, FacturaVenta.class));
-                    }
+                    doIt();
                 } catch (DatabaseErrorException ex) {
                     Logger.getLogger(Contabilidad.class.getName()).log(Level.FATAL, null, ex);
                     JOptionPane.showMessageDialog(jdBalanceUI, ex.getMessage(), null, 2);
@@ -283,30 +291,26 @@ public class Contabilidad {
         });
         jdBalanceUI.getbImprimir().addActionListener(new ActionListener() {
             @Override
+            @SuppressWarnings("unchecked")
             public void actionPerformed(ActionEvent e) {
                 try {
                     if (!panelBalanceComprasVentas.getCheckContado().isSelected()
                             && !panelBalanceComprasVentas.getCheckCtaCte().isSelected()) {
                         throw new MessageException("Debe elegir al menos una forma de facturación (CONTADO, CTA. CTE.)");
                     }
-                    String query = armarQueryBalanceComprasVentas();
-                    if (panelBalanceComprasVentas.getCbComprasVentas().getSelectedIndex() == 0) {
-                        cargarTablaBalanceCompra((List<FacturaCompra>) DAO.getNativeQueryResultList(query, FacturaCompra.class));
-                    } else {
-                        cargarTablaBalanceVenta((List<FacturaVenta>) DAO.getNativeQueryResultList(query, FacturaVenta.class));
-                    }
-                    doReportBalanceCompraVenta(query,
-                            panelBalanceComprasVentas.getDcDesde().getDate(),
-                            panelBalanceComprasVentas.getDcHasta().getDate(),
-                            panelBalanceComprasVentas.getCbComprasVentas().getSelectedItem().toString(), //title
-                            panelBalanceComprasVentas.getCheckContado().isSelected(),
-                            panelBalanceComprasVentas.getCheckCtaCte().isSelected(),
-                            panelBalanceComprasVentas.getCheckAnuladas().isSelected());
-                } catch (JRException ex) {
-                    Logger.getLogger(Contabilidad.class.getName()).log(Level.FATAL, null, ex);
-                    JOptionPane.showMessageDialog(jdBalanceUI, ex.getMessage(), "ERROR", 0);
-                } catch (MissingReportException ex) {
-                    JOptionPane.showMessageDialog(jdBalanceUI, ex.getMessage(), "ERROR", 0);
+                    doIt();
+                    //                    doReportBalanceCompraVenta(query,
+                    //                            panelBalanceComprasVentas.getDcDesde().getDate(),
+                    //                            panelBalanceComprasVentas.getDcHasta().getDate(),
+                    //                            panelBalanceComprasVentas.getCbComprasVentas().getSelectedItem().toString(), //title
+                    //                            panelBalanceComprasVentas.getCheckContado().isSelected(),
+                    //                            panelBalanceComprasVentas.getCheckCtaCte().isSelected(),
+                    //                            panelBalanceComprasVentas.getCheckAnuladas().isSelected());
+                    //                } catch (JRException ex) {
+                    //                    Logger.getLogger(Contabilidad.class.getName()).log(Level.FATAL, null, ex);
+                    //                    JOptionPane.showMessageDialog(jdBalanceUI, ex.getMessage(), "ERROR", 0);
+                    //                } catch (MissingReportException ex) {
+                    //                    JOptionPane.showMessageDialog(jdBalanceUI, ex.getMessage(), "ERROR", 0);
                 } catch (DatabaseErrorException ex) {
                     Logger.getLogger(Contabilidad.class.getName()).log(Level.FATAL, null, ex);
                     JOptionPane.showMessageDialog(jdBalanceUI, ex.getMessage(), "ERROR", 0);
@@ -319,9 +323,38 @@ public class Contabilidad {
         jdBalanceUI.setVisible(true);
     }
 
-    private String armarQueryBalanceComprasVentas() {
-        String tabla = panelBalanceComprasVentas.getCbComprasVentas().getSelectedIndex() == 0 ? "compra" : "venta";
-        String entidad = panelBalanceComprasVentas.getCbComprasVentas().getSelectedIndex() == 0 ? "proveedor" : "cliente";
+    private void doIt() throws DatabaseErrorException {
+        int index = panelBalanceComprasVentas.getCbComprasVentas().getSelectedIndex();
+        List<Object[]> dataCompra = new ArrayList<Object[]>(0);
+        List<Object[]> dataVenta = new ArrayList<Object[]>(0);
+        if (index == 0 || index == 1) {
+            String query = armarQueryBalanceComprasVentas("compra", "proveedor");
+            dataCompra = cargarTablaBalanceCompra((List<FacturaCompra>) DAO.getNativeQueryResultList(query, FacturaCompra.class));
+        }
+        if (index == 0 || index == 2) {
+            String query = armarQueryBalanceComprasVentas("venta", "cliente");
+            dataVenta = cargarTablaBalanceVenta((List<FacturaVenta>) DAO.getNativeQueryResultList(query, FacturaVenta.class));
+        }
+        Comparator<Object[]> comparator = new Comparator<Object[]>() {
+            @Override
+            public int compare(Object[] o1, Object[] o2) {
+                return ((Date) o1[0]).compareTo(((Date) o2[0]));
+            }
+        };
+        for (Object[] objects : dataVenta) {
+            dataCompra.add(objects);
+        }
+        dataVenta.clear();
+        Collections.sort(dataCompra, comparator);
+        DefaultTableModel dtm = (DefaultTableModel) jdBalanceUI.getjTable1().getModel();
+        dtm.setRowCount(0);
+        for (Object[] objects : dataCompra) {
+            dtm.addRow(objects);
+        }
+    }
+
+    private String armarQueryBalanceComprasVentas(String tabla, String entidad) {
+
         StringBuilder sb = new StringBuilder("SELECT o.*, o.fecha_" + tabla + " as fecha, ccc.entregado"
                 + " FROM factura_" + tabla + " o LEFT JOIN ctacte_" + entidad + " ccc ON o.id = ccc.factura"
                 + " WHERE o.id IS NOT NULL");
@@ -352,9 +385,9 @@ public class Contabilidad {
         return sb.toString();
     }
 
-    private void cargarTablaBalanceCompra(List<FacturaCompra> l) {
-        DefaultTableModel dtm = UTIL.getDtm(jdBalanceUI.getjTable1());
-        UTIL.limpiarDtm(dtm);
+    private List<Object[]> cargarTablaBalanceCompra(List<FacturaCompra> l) {
+
+        List<Object[]> data = new ArrayList<Object[]>(l.size());
         Double totalEfectivo, totalIngresos, efectivo = null, cccpc = null;
         totalEfectivo = 0.0;
         totalIngresos = 0.0;
@@ -374,30 +407,31 @@ public class Contabilidad {
                     totalCCPPC += cccpc;
                     efectivo = entregado > 0 ? entregado : null;
                 } else {
-                    Logger.getLogger(Contabilidad.class).info("y botella?");
+                    Logger.getLogger(Contabilidad.class).info("Factura=" + factura.getId() + ", FormaPago.id=" + factura.getFormaPago());
                 }
             } else {
                 efectivo = null;
                 cccpc = null;
             }
-            dtm.addRow(new Object[]{
-                        dateFormat.format(factura.getFechaCompra()),
+            data.add(new Object[]{
+                        factura.getFechaCompra(),
                         JGestionUtils.getNumeracion(factura) + (factura.getAnulada() ? "[ANULADA]" : ""),
-                        UTIL.PRECIO_CON_PUNTO.format(factura.getImporte()),
-                        efectivo != null ? efectivo : "------",
-                        cccpc != null ? cccpc : "------",
-                        UTIL.PRECIO_CON_PUNTO.format(totalIngresos)
+                        null,
+                        factura.getImporte(),
+                        efectivo,// != null ? efectivo : "------",
+                        cccpc,// != null ? cccpc : "------",
+                        totalIngresos
                     });
         }
-        jdBalanceUI.getTfTotalAux().setText(UTIL.PRECIO_CON_PUNTO.format(totalIngresos));
-        jdBalanceUI.getTfIngresos().setText(UTIL.PRECIO_CON_PUNTO.format(totalEfectivo));
-        jdBalanceUI.getTfEgresos().setText(UTIL.PRECIO_CON_PUNTO.format(totalCCPPC));
-        jdBalanceUI.getTfTotal().setText(null);
+//        jdBalanceUI.getTfTotalAux().setText(UTIL.PRECIO_CON_PUNTO.format(totalIngresos));
+//        jdBalanceUI.getTfIngresos().setText(UTIL.PRECIO_CON_PUNTO.format(totalEfectivo));
+//        jdBalanceUI.getTfEgresos().setText(UTIL.PRECIO_CON_PUNTO.format(totalCCPPC));
+//        jdBalanceUI.getTfTotal().setText(null);
+        return data;
     }
 
-    private void cargarTablaBalanceVenta(List<FacturaVenta> l) {
-        DefaultTableModel dtm = UTIL.getDtm(jdBalanceUI.getjTable1());
-        UTIL.limpiarDtm(dtm);
+    private List<Object[]> cargarTablaBalanceVenta(List<FacturaVenta> l) {
+        List<Object[]> data = new ArrayList<Object[]>(l.size());
         Double efectivo = null, cccpc = null;
         Double totalEfectivo = 0.0;
         Double totalIngresos = 0.0;
@@ -424,19 +458,21 @@ public class Contabilidad {
                 efectivo = null;
                 cccpc = null;
             }
-            dtm.addRow(new Object[]{
-                        dateFormat.format(factura.getFechaVenta()),
+            data.add(new Object[]{
+                        factura.getFechaVenta(),
                         JGestionUtils.getNumeracion(factura) + (factura.getAnulada() ? "[ANULADA]" : ""),
-                        UTIL.DECIMAL_FORMAT.format(factura.getImporte()),
-                        efectivo != null ? efectivo : "------",
-                        cccpc != null ? UTIL.DECIMAL_FORMAT.format(cccpc) : "------",
-                        UTIL.DECIMAL_FORMAT.format(totalIngresos)
+                        factura.getImporte(),
+                        null,
+                        efectivo,// != null ? efectivo : "------",
+                        cccpc,// != null ? cccpc : "------",
+                        totalIngresos
                     });
         }
-        jdBalanceUI.getTfTotalAux().setText(UTIL.PRECIO_CON_PUNTO.format(totalIngresos));
-        jdBalanceUI.getTfIngresos().setText(UTIL.PRECIO_CON_PUNTO.format(totalEfectivo));
-        jdBalanceUI.getTfEgresos().setText(UTIL.PRECIO_CON_PUNTO.format(totalCCCPC));
+        jdBalanceUI.getTfEgresos().setText(UTIL.PRECIO_CON_PUNTO.format(totalIngresos));
+        jdBalanceUI.getTfEfectivo().setText(UTIL.PRECIO_CON_PUNTO.format(totalEfectivo));
+        jdBalanceUI.getTfCtaCte().setText(UTIL.PRECIO_CON_PUNTO.format(totalCCCPC));
         jdBalanceUI.getTfTotal().setText(null);
+        return data;
     }
 
     private void doReportBalanceCompraVenta(String query, Date desde, Date hasta,
@@ -686,8 +722,7 @@ public class Contabilidad {
                             dtm.getValueAt(row, 8),
                             dtm.getValueAt(row, 10),
                             dtm.getValueAt(row, 12),
-                            dtm.getValueAt(row, 13)
-                            ));
+                            dtm.getValueAt(row, 13)));
                 }
                 Reportes r = new Reportes("JGestion_ComprobantesCompras.jasper", "Listado Comprobantes");
                 r.setDataSource(data);
@@ -799,12 +834,12 @@ public class Contabilidad {
 
         String sql =
                 "SELECT com.* FROM ("
-//                + " SELECT "
-//                + "'F' || o.tipo || to_char(o.numero, '0000-00000000') as comprobante, "
-//                + " o.fecha_compra as fecha, proveedor.nombre, proveedor.cuit, "
-//                //la mentirita del GRAVADO :O jejejej
-//                + " case when o.gravado <=0 then (o.importe-o.iva10-o.iva21-o.perc_iva-o.impuestos_recuperables) else o.gravado end,"
-//                + " o.iva10, o.iva21, o.perc_iva, o.impuestos_recuperables, o.impuestos_norecuperables, o.no_gravado, o.descuento, o.importe"
+                //                + " SELECT "
+                //                + "'F' || o.tipo || to_char(o.numero, '0000-00000000') as comprobante, "
+                //                + " o.fecha_compra as fecha, proveedor.nombre, proveedor.cuit, "
+                //                //la mentirita del GRAVADO :O jejejej
+                //                + " case when o.gravado <=0 then (o.importe-o.iva10-o.iva21-o.perc_iva-o.impuestos_recuperables) else o.gravado end,"
+                //                + " o.iva10, o.iva21, o.perc_iva, o.impuestos_recuperables, o.impuestos_norecuperables, o.no_gravado, o.descuento, o.importe"
                 + " SELECT 'F' || o.tipo || to_char(o.numero, '0000-00000000') as comprobante,	o.fecha_compra as fecha, proveedor.nombre, proveedor.cuit,"
                 + " cast(case when o.gravado <=0 then (o.importe-o.iva10-o.iva21-o.perc_iva-o.impuestos_recuperables) else o.gravado end as numeric(12,2)),	cast(o.iva10 as numeric(12,2)),	cast(o.iva21 as numeric(12,2)), o.otros_ivas, "
                 + "	cast(o.perc_iva as numeric(12,2)),	cast( o.impuestos_recuperables as numeric(12,2)),    cast( o.impuestos_norecuperables as numeric(12,2)), cast( o.no_gravado as numeric(12,2)), cast( o.descuento as numeric(12,2)), cast( o.importe as numeric(12,2))"
@@ -814,10 +849,10 @@ public class Contabilidad {
                 + " ORDER BY"
                 + " o.fecha_compra ASC) com"
                 + " UNION ("
-//                + " SELECT "
-//                + " 'NC' || to_char(sucursal.puntoventa, '0000') || to_char(o.numero,'-00000000'),"
-//                + " o.fecha_nota_credito as fecha, cliente.nombre, cliente.num_doc,"
-//                + " o.gravado, o.iva10, o.iva21, 0, o.impuestos_recuperables, 0, o.no_gravado, 0 as descuento, o.importe"
+                //                + " SELECT "
+                //                + " 'NC' || to_char(sucursal.puntoventa, '0000') || to_char(o.numero,'-00000000'),"
+                //                + " o.fecha_nota_credito as fecha, cliente.nombre, cliente.num_doc,"
+                //                + " o.gravado, o.iva10, o.iva21, 0, o.impuestos_recuperables, 0, o.no_gravado, 0 as descuento, o.importe"
                 + " SELECT 'NC' || to_char(sucursal.puntoventa, '0000') || to_char(o.numero,'-00000000'), o.fecha_nota_credito as fecha, cliente.nombre, cliente.num_doc, cast(o.gravado as numeric(12,2)), cast(o.iva10 as numeric(12,2)), cast(o.iva21 as numeric(12,2)), cast(o.impuestos_recuperables as numeric(12,2)), cast(0 as numeric(12,2)), cast(0 as numeric(12,2)), cast(0 as numeric(12,2)),	cast(o.no_gravado as numeric(12,2)), cast(0 as numeric(12,2)) as descuento, cast(o.importe as numeric(12,2))"
                 + " FROM public.nota_credito o, public.cliente, public.sucursal"
                 + " WHERE "
@@ -830,5 +865,8 @@ public class Contabilidad {
         System.out.println("QUERY: " + sql);
         List<?> l = DAO.getNativeQueryResultList(sql, (String) null);
         return l;
+    }
+
+    public void displayMovimientosGenerales(Window owner) {
     }
 }

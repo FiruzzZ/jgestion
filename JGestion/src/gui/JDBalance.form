@@ -1,4 +1,4 @@
-<?xml version="1.1" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 
 <Form version="1.5" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
@@ -25,27 +25,32 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane1" alignment="1" pref="724" max="32767" attributes="2"/>
+                  <Component id="jScrollPane1" alignment="1" max="32767" attributes="2"/>
                   <Group type="103" alignment="1" groupAlignment="1" max="-2" attributes="0">
                       <Component id="bBuscar" max="32767" attributes="1"/>
                       <Component id="bImprimir" alignment="1" min="-2" max="-2" attributes="1"/>
                   </Group>
                   <Group type="102" alignment="1" attributes="0">
                       <Component id="jLabel7" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="226" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="1" attributes="0">
-                          <Component id="labelTotalAux" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="tfTotalAux" alignment="0" min="-2" pref="100" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="120" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="labelIngresos" min="-2" max="-2" attributes="0"/>
                           <Component id="tfIngresos" min="-2" pref="100" max="-2" attributes="0"/>
-                          <Component id="labelTotalIngresos" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Component id="labelEgresos" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="tfEgresos" alignment="0" min="-2" pref="100" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="tfEgresos" min="-2" pref="100" max="-2" attributes="0"/>
-                          <Component id="labelTotalEgresos" min="-2" max="-2" attributes="0"/>
+                          <Component id="tfEfectivo" min="-2" pref="100" max="-2" attributes="0"/>
+                          <Component id="labelEfectivo" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="tfCtaCte" min="-2" pref="100" max="-2" attributes="0"/>
+                          <Component id="labelCtaCte" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
@@ -64,26 +69,28 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace min="-2" max="-2" attributes="0"/>
               <Component id="bBuscar" min="-2" pref="30" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="bImprimir" min="-2" pref="30" max="-2" attributes="0"/>
               <EmptySpace min="-2" max="-2" attributes="0"/>
-              <Component id="jScrollPane1" pref="224" max="32767" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
+              <Component id="bImprimir" min="-2" pref="30" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="72" max="-2" attributes="0"/>
+              <Component id="jScrollPane1" pref="232" max="32767" attributes="0"/>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jLabel7" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="labelTotalAux" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="labelTotalIngresos" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="labelTotalEgresos" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="labelEgresos" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="labelEfectivo" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="labelCtaCte" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="labelTotal" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="labelIngresos" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace max="-2" attributes="0"/>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="tfTotal" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="tfCtaCte" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="tfEfectivo" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="tfEgresos" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="tfIngresos" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="tfTotalAux" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace max="-2" attributes="0"/>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -137,8 +144,8 @@
     </Container>
     <Component class="javax.swing.JTextField" name="tfTotal">
       <Properties>
-        <Property name="columns" type="int" value="10"/>
         <Property name="editable" type="boolean" value="false"/>
+        <Property name="columns" type="int" value="10"/>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Tahoma" size="11" style="1"/>
         </Property>
@@ -150,30 +157,30 @@
         <Property name="text" type="java.lang.String" value="TOTAL"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JLabel" name="labelTotalEgresos">
+    <Component class="javax.swing.JLabel" name="labelCtaCte">
       <Properties>
-        <Property name="text" type="java.lang.String" value="EGRESOS"/>
+        <Property name="text" type="java.lang.String" value="Cta. Cte."/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JTextField" name="tfEgresos">
+    <Component class="javax.swing.JTextField" name="tfCtaCte">
       <Properties>
-        <Property name="columns" type="int" value="10"/>
         <Property name="editable" type="boolean" value="false"/>
+        <Property name="columns" type="int" value="10"/>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Tahoma" size="11" style="1"/>
         </Property>
         <Property name="horizontalAlignment" type="int" value="4"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JLabel" name="labelTotalIngresos">
+    <Component class="javax.swing.JLabel" name="labelEfectivo">
       <Properties>
-        <Property name="text" type="java.lang.String" value="INGRESOS"/>
+        <Property name="text" type="java.lang.String" value="Efectivo"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JTextField" name="tfIngresos">
+    <Component class="javax.swing.JTextField" name="tfEfectivo">
       <Properties>
-        <Property name="columns" type="int" value="10"/>
         <Property name="editable" type="boolean" value="false"/>
+        <Property name="columns" type="int" value="10"/>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Tahoma" size="11" style="1"/>
         </Property>
@@ -188,19 +195,34 @@
         <Property name="text" type="java.lang.String" value="N&#xba; Registros: 0"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JTextField" name="tfTotalAux">
+    <Component class="javax.swing.JTextField" name="tfEgresos">
       <Properties>
-        <Property name="columns" type="int" value="10"/>
         <Property name="editable" type="boolean" value="false"/>
+        <Property name="columns" type="int" value="10"/>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Tahoma" size="11" style="1"/>
         </Property>
         <Property name="horizontalAlignment" type="int" value="4"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JLabel" name="labelTotalAux">
+    <Component class="javax.swing.JLabel" name="labelEgresos">
       <Properties>
-        <Property name="text" type="java.lang.String" value="XXXXXXXX"/>
+        <Property name="text" type="java.lang.String" value="Egresos"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="tfIngresos">
+      <Properties>
+        <Property name="editable" type="boolean" value="false"/>
+        <Property name="columns" type="int" value="10"/>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Tahoma" size="11" style="1"/>
+        </Property>
+        <Property name="horizontalAlignment" type="int" value="4"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="labelIngresos">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Ingresos"/>
       </Properties>
     </Component>
   </SubComponents>

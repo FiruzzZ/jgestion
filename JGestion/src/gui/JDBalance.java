@@ -52,13 +52,15 @@ public class JDBalance extends javax.swing.JDialog {
         jTable1 = new javax.swing.JTable();
         tfTotal = new javax.swing.JTextField();
         labelTotal = new javax.swing.JLabel();
-        labelTotalEgresos = new javax.swing.JLabel();
-        tfEgresos = new javax.swing.JTextField();
-        labelTotalIngresos = new javax.swing.JLabel();
-        tfIngresos = new javax.swing.JTextField();
+        labelCtaCte = new javax.swing.JLabel();
+        tfCtaCte = new javax.swing.JTextField();
+        labelEfectivo = new javax.swing.JLabel();
+        tfEfectivo = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
-        tfTotalAux = new javax.swing.JTextField();
-        labelTotalAux = new javax.swing.JLabel();
+        tfEgresos = new javax.swing.JTextField();
+        labelEgresos = new javax.swing.JLabel();
+        tfIngresos = new javax.swing.JTextField();
+        labelIngresos = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -84,36 +86,43 @@ public class JDBalance extends javax.swing.JDialog {
         });
         jScrollPane1.setViewportView(jTable1);
 
-        tfTotal.setColumns(10);
         tfTotal.setEditable(false);
+        tfTotal.setColumns(10);
         tfTotal.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         tfTotal.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
 
         labelTotal.setText("TOTAL");
 
-        labelTotalEgresos.setText("EGRESOS");
+        labelCtaCte.setText("Cta. Cte.");
 
-        tfEgresos.setColumns(10);
+        tfCtaCte.setEditable(false);
+        tfCtaCte.setColumns(10);
+        tfCtaCte.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        tfCtaCte.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+
+        labelEfectivo.setText("Efectivo");
+
+        tfEfectivo.setEditable(false);
+        tfEfectivo.setColumns(10);
+        tfEfectivo.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        tfEfectivo.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+
+        jLabel7.setFont(new java.awt.Font("Tahoma", 1, 10)); // NOI18N
+        jLabel7.setText("Nº Registros: 0");
+
         tfEgresos.setEditable(false);
+        tfEgresos.setColumns(10);
         tfEgresos.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         tfEgresos.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
 
-        labelTotalIngresos.setText("INGRESOS");
+        labelEgresos.setText("Egresos");
 
-        tfIngresos.setColumns(10);
         tfIngresos.setEditable(false);
+        tfIngresos.setColumns(10);
         tfIngresos.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         tfIngresos.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
 
-        jLabel7.setFont(new java.awt.Font("Tahoma", 1, 10));
-        jLabel7.setText("Nº Registros: 0");
-
-        tfTotalAux.setColumns(10);
-        tfTotalAux.setEditable(false);
-        tfTotalAux.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        tfTotalAux.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-
-        labelTotalAux.setText("XXXXXXXX");
+        labelIngresos.setText("Ingresos");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -122,24 +131,28 @@ public class JDBalance extends javax.swing.JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 724, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addComponent(bBuscar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(bImprimir))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jLabel7)
-                        .addGap(226, 226, 226)
+                        .addGap(120, 120, 120)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(labelIngresos)
+                            .addComponent(tfIngresos, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(labelTotalAux, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(tfTotalAux, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(labelEgresos, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(tfEgresos, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(tfIngresos, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(labelTotalIngresos))
+                            .addComponent(tfEfectivo, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(labelEfectivo))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(tfEgresos, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(labelTotalEgresos))
+                            .addComponent(tfCtaCte, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(labelCtaCte))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(tfTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -154,21 +167,23 @@ public class JDBalance extends javax.swing.JDialog {
                 .addComponent(bBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(bImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 224, Short.MAX_VALUE)
+                .addGap(72, 72, 72)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 232, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
-                    .addComponent(labelTotalAux)
-                    .addComponent(labelTotalIngresos)
-                    .addComponent(labelTotalEgresos)
-                    .addComponent(labelTotal))
+                    .addComponent(labelEgresos)
+                    .addComponent(labelEfectivo)
+                    .addComponent(labelCtaCte)
+                    .addComponent(labelTotal)
+                    .addComponent(labelIngresos))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(tfTotal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(tfCtaCte, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(tfEfectivo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(tfEgresos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(tfIngresos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(tfTotalAux, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(tfIngresos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -184,14 +199,16 @@ public class JDBalance extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
+    private javax.swing.JLabel labelCtaCte;
+    private javax.swing.JLabel labelEfectivo;
+    private javax.swing.JLabel labelEgresos;
+    private javax.swing.JLabel labelIngresos;
     private javax.swing.JLabel labelTotal;
-    private javax.swing.JLabel labelTotalAux;
-    private javax.swing.JLabel labelTotalEgresos;
-    private javax.swing.JLabel labelTotalIngresos;
+    private javax.swing.JTextField tfCtaCte;
+    private javax.swing.JTextField tfEfectivo;
     private javax.swing.JTextField tfEgresos;
     private javax.swing.JTextField tfIngresos;
     private javax.swing.JTextField tfTotal;
-    private javax.swing.JTextField tfTotalAux;
     // End of variables declaration//GEN-END:variables
 
    public JButton getbBuscar() {
@@ -206,36 +223,44 @@ public class JDBalance extends javax.swing.JDialog {
       return jTable1;
    }
 
-   public JTextField getTfEgresos() {
-      return tfEgresos;
+   public JTextField getTfCtaCte() {
+      return tfCtaCte;
    }
 
-   public JTextField getTfIngresos() {
-      return tfIngresos;
+   public JTextField getTfEfectivo() {
+      return tfEfectivo;
    }
 
    public JTextField getTfTotal() {
       return tfTotal;
    }
 
-   public JLabel getLabelTotalAux() {
-      return labelTotalAux;
+   public JLabel getLabelEgresos() {
+      return labelEgresos;
    }
 
-   public JLabel getLabelTotalEgresos() {
-      return labelTotalEgresos;
+   public JLabel getLabelCtaCte() {
+      return labelCtaCte;
    }
 
-   public JLabel getLabelTotalIngresos() {
-      return labelTotalIngresos;
+   public JLabel getLabelEfectivo() {
+      return labelEfectivo;
    }
 
-   public JLabel getLabelTotalTotal() {
+   public JLabel getLabelTotal() {
       return labelTotal;
    }
 
-   public JTextField getTfTotalAux() {
-      return tfTotalAux;
+   public JTextField getTfEgresos() {
+      return tfEgresos;
    }
+
+    public JLabel getLabelIngresos() {
+        return labelIngresos;
+    }
+
+    public JTextField getTfIngresos() {
+        return tfIngresos;
+    }
 
 }
