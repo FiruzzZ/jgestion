@@ -29,6 +29,8 @@ import gui.PanelBalanceGeneral;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.math.BigDecimal;
@@ -269,7 +271,33 @@ public class Contabilidad {
         jdBalanceUI.getjTable1().getColumnModel().getColumn(4).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         jdBalanceUI.getjTable1().getColumnModel().getColumn(5).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         jdBalanceUI.getjTable1().getColumnModel().getColumn(6).setCellRenderer(NumberRenderer.getCurrencyRenderer());
-//        UTIL.setHorizonalAlignment(jdBalanceUI.getjTable1(), String.class, JLabel.RIGHT);
+        //<editor-fold defaultstate="collapsed" desc="totalesCalculator">
+        jdBalanceUI.getjTable1().addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                BigDecimal in = BigDecimal.ZERO;
+                BigDecimal eg = BigDecimal.ZERO;
+                BigDecimal ef = BigDecimal.ZERO;
+                BigDecimal cc = BigDecimal.ZERO;
+                BigDecimal ac = BigDecimal.ZERO;
+                DefaultTableModel dtm = (DefaultTableModel) jdBalanceUI.getjTable1().getModel();
+                for (int row = 0; row < dtm.getRowCount(); row++) {
+                    in = in.add(BigDecimal.valueOf((Double) dtm.getValueAt(row, 2)));
+                    eg = eg.add(BigDecimal.valueOf((Double) dtm.getValueAt(row, 3)));
+                    if (dtm.getValueAt(row, 4) != null) {
+                        ef = ef.add(BigDecimal.valueOf((Double) dtm.getValueAt(row, 4)));
+                    }
+                    if (dtm.getValueAt(row, 5) != null) {
+                        cc = cc.add(BigDecimal.valueOf((Double) dtm.getValueAt(row, 5)));
+                    }
+                }
+                jdBalanceUI.getTfIngresos().setText(UTIL.DECIMAL_FORMAT.format(in));
+                jdBalanceUI.getTfEgresos().setText(UTIL.DECIMAL_FORMAT.format(eg));
+                jdBalanceUI.getTfEfectivo().setText(UTIL.DECIMAL_FORMAT.format(ef));
+                jdBalanceUI.getTfCtaCte().setText(UTIL.DECIMAL_FORMAT.format(cc));
+            }
+        });
+        //</editor-fold>
         jdBalanceUI.setTitle("Balance");
         jdBalanceUI.getbBuscar().addActionListener(new ActionListener() {
             @Override
@@ -329,11 +357,11 @@ public class Contabilidad {
         List<Object[]> dataVenta = new ArrayList<Object[]>(0);
         if (index == 0 || index == 1) {
             String query = armarQueryBalanceComprasVentas("compra", "proveedor");
-            dataCompra = cargarTablaBalanceCompra((List<FacturaCompra>) DAO.getNativeQueryResultList(query, FacturaCompra.class));
+            dataCompra = getFacturaCompraList((List<FacturaCompra>) DAO.getNativeQueryResultList(query, FacturaCompra.class));
         }
         if (index == 0 || index == 2) {
             String query = armarQueryBalanceComprasVentas("venta", "cliente");
-            dataVenta = cargarTablaBalanceVenta((List<FacturaVenta>) DAO.getNativeQueryResultList(query, FacturaVenta.class));
+            dataVenta = getFacturaVentaList((List<FacturaVenta>) DAO.getNativeQueryResultList(query, FacturaVenta.class));
         }
         Comparator<Object[]> comparator = new Comparator<Object[]>() {
             @Override
@@ -355,56 +383,64 @@ public class Contabilidad {
 
     private String armarQueryBalanceComprasVentas(String tabla, String entidad) {
 
-        StringBuilder sb = new StringBuilder("SELECT o.*, o.fecha_" + tabla + " as fecha, ccc.entregado"
+        StringBuilder query = new StringBuilder("SELECT o.*, o.fecha_" + tabla + " as fecha, ccc.entregado"
                 + " FROM factura_" + tabla + " o LEFT JOIN ctacte_" + entidad + " ccc ON o.id = ccc.factura"
                 + " WHERE o.id IS NOT NULL");
         if (panelBalanceComprasVentas.getCheckContado().isSelected() && panelBalanceComprasVentas.getCheckCtaCte().isSelected()) {
             //no hace falta ningún filtro.. va traer ambas
         } else {
             if (panelBalanceComprasVentas.getCheckContado().isSelected()) {
-                sb.append(" AND o.forma_pago = ").append(Valores.FormaPago.CONTADO.getId());
+                query.append(" AND o.forma_pago = ").append(Valores.FormaPago.CONTADO.getId());
             }
             if (panelBalanceComprasVentas.getCheckCtaCte().isSelected()) {
-                sb.append(" AND o.forma_pago = ").append(Valores.FormaPago.CTA_CTE.getId());
+                query.append(" AND o.forma_pago = ").append(Valores.FormaPago.CTA_CTE.getId());
             }
         }
         if (!panelBalanceComprasVentas.getCheckAnuladas().isSelected()) {
-            sb.append(" AND o.anulada = false");
+            query.append(" AND o.anulada = false");
+        }
+        if (panelBalanceComprasVentas.getCbSucursal().getSelectedIndex() > 0) {
+            query.append(" AND o.sucursal=").append(((ComboBoxWrapper<?>) panelBalanceComprasVentas.getCbSucursal().getSelectedItem()).getId());
+        } else {
+            query.append(" AND (");
+            for (int i = 1; i < panelBalanceComprasVentas.getCbSucursal().getItemCount(); i++) {
+                ComboBoxWrapper<?> sucursal = (ComboBoxWrapper<?>) panelBalanceComprasVentas.getCbSucursal().getItemAt(i);
+                query.append(" o.sucursal=").append(sucursal.getId());
+                if ((i + 1) < panelBalanceComprasVentas.getCbSucursal().getItemCount()) {
+                    query.append(" OR ");
+                }
+            }
+            query.append(")");
         }
         Date fecha = panelBalanceComprasVentas.getDcDesde().getDate();
         if (fecha != null) {
-            sb.append(" AND o.fecha_").append(tabla).append(" >= '").append(fecha).append("'");
+            query.append(" AND o.fecha_").append(tabla).append(" >= '").append(fecha).append("'");
         }
         fecha = panelBalanceComprasVentas.getDcHasta().getDate();
         if (fecha != null) {
-            sb.append(" AND o.fecha_").append(tabla).append(" <= '").append(fecha).append("'");
+            query.append(" AND o.fecha_").append(tabla).append(" <= '").append(fecha).append("'");
         }
 
-        sb.append(" ORDER BY o.fecha_").append(tabla);
-        Logger.getLogger(Contabilidad.class).debug(sb.toString());
-        return sb.toString();
+        query.append(" ORDER BY o.fecha_").append(tabla);
+        Logger.getLogger(Contabilidad.class).debug(query.toString());
+        return query.toString();
     }
 
-    private List<Object[]> cargarTablaBalanceCompra(List<FacturaCompra> l) {
+    private List<Object[]> getFacturaCompraList(List<FacturaCompra> l) {
 
         List<Object[]> data = new ArrayList<Object[]>(l.size());
-        Double totalEfectivo, totalIngresos, efectivo = null, cccpc = null;
-        totalEfectivo = 0.0;
+        Double totalIngresos, efectivo = null, cccpc = null;
         totalIngresos = 0.0;
-        Double totalCCPPC = 0.0;
         Double entregado;
-        SimpleDateFormat dateFormat = UTIL.instanceOfDATE_FORMAT();
         for (FacturaCompra factura : l) {
             if (!factura.getAnulada()) {
                 totalIngresos += factura.getImporte();
                 if (Valores.FormaPago.CONTADO.getId() == factura.getFormaPago()) {
                     cccpc = null;
                     efectivo = factura.getImporte();
-                    totalEfectivo += efectivo;
                 } else if (Valores.FormaPago.CTA_CTE.getId() == factura.getFormaPago()) {
                     entregado = new CtacteProveedorJpaController().findCtacteProveedorByFactura(factura.getId()).getEntregado().doubleValue();
                     cccpc = (factura.getImporte() - entregado);
-                    totalCCPPC += cccpc;
                     efectivo = entregado > 0 ? entregado : null;
                 } else {
                     Logger.getLogger(Contabilidad.class).info("Factura=" + factura.getId() + ", FormaPago.id=" + factura.getFormaPago());
@@ -423,36 +459,27 @@ public class Contabilidad {
                         totalIngresos
                     });
         }
-//        jdBalanceUI.getTfTotalAux().setText(UTIL.PRECIO_CON_PUNTO.format(totalIngresos));
-//        jdBalanceUI.getTfIngresos().setText(UTIL.PRECIO_CON_PUNTO.format(totalEfectivo));
-//        jdBalanceUI.getTfEgresos().setText(UTIL.PRECIO_CON_PUNTO.format(totalCCPPC));
-//        jdBalanceUI.getTfTotal().setText(null);
         return data;
     }
 
-    private List<Object[]> cargarTablaBalanceVenta(List<FacturaVenta> l) {
+    private List<Object[]> getFacturaVentaList(List<FacturaVenta> l) {
         List<Object[]> data = new ArrayList<Object[]>(l.size());
         Double efectivo = null, cccpc = null;
-        Double totalEfectivo = 0.0;
         Double totalIngresos = 0.0;
-        Double totalCCCPC = 0.0;
-        Double entregado = null;
-        SimpleDateFormat dateFormat = UTIL.instanceOfDATE_FORMAT();
+        Double entregado;
         for (FacturaVenta factura : l) {
             if (!factura.getAnulada()) {
                 totalIngresos += factura.getImporte();
                 if (Valores.FormaPago.CONTADO.getId() == factura.getFormaPago()) {
                     cccpc = null;
                     efectivo = factura.getImporte();
-                    totalEfectivo += efectivo;
                 } else if (Valores.FormaPago.CTA_CTE.getId() == factura.getFormaPago()) {
                     entregado = new CtacteClienteJpaController().findCtacteClienteByFactura(factura.getId()).getEntregado();
                     double importe = factura.getImporte();
                     cccpc = (importe - entregado);
-                    totalCCCPC += cccpc;
                     efectivo = entregado > 0 ? entregado : null;
                 } else {
-                    Logger.getLogger(Contabilidad.class).warn("FormaPago DESCONOCIDA = " + factura.getFormaPago() + ", Nº" + factura.getNumero());
+                    Logger.getLogger(Contabilidad.class).warn("FormaPago DESCONOCIDA = " + factura.getFormaPago() + ", FacturaVenta.id=" + factura.getId());
                 }
             } else {
                 efectivo = null;
@@ -468,10 +495,6 @@ public class Contabilidad {
                         totalIngresos
                     });
         }
-        jdBalanceUI.getTfEgresos().setText(UTIL.PRECIO_CON_PUNTO.format(totalIngresos));
-        jdBalanceUI.getTfEfectivo().setText(UTIL.PRECIO_CON_PUNTO.format(totalEfectivo));
-        jdBalanceUI.getTfCtaCte().setText(UTIL.PRECIO_CON_PUNTO.format(totalCCCPC));
-        jdBalanceUI.getTfTotal().setText(null);
         return data;
     }
 
