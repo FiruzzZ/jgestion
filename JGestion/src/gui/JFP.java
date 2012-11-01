@@ -174,6 +174,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenuReportes = new javax.swing.JMenu();
         jMenu24 = new javax.swing.JMenu();
         jMenuItem67 = new javax.swing.JMenuItem();
+        jMenuItem72 = new javax.swing.JMenuItem();
         jMenu4 = new javax.swing.JMenu();
         jMenuItem16 = new javax.swing.JMenuItem();
         jMenuItem24 = new javax.swing.JMenuItem();
@@ -540,7 +541,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
         jMenu8.setText("Contabilidad");
 
-        jMenuItem44.setText("Balance general");
+        jMenuItem44.setText("Balance Movimientos de Cajas");
         jMenuItem44.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem44ActionPerformed(evt);
@@ -837,6 +838,14 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenu24.add(jMenuItem67);
 
         jMenuReportes.add(jMenu24);
+
+        jMenuItem72.setText("Movimientos generales");
+        jMenuItem72.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem72ActionPerformed(evt);
+            }
+        });
+        jMenuReportes.add(jMenuItem72);
 
         jMenuBar1.add(jMenuReportes);
 
@@ -1260,7 +1269,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
     private void jMenuItem44ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem44ActionPerformed
         try {
-            new Contabilidad().initBalanceGeneralUI((JFrame) this);
+            new Contabilidad().initBalanceMovimientosCajasUI((JFrame) this);
         } catch (MessageException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
         }
@@ -1268,7 +1277,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
     private void jMenuItem46ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem46ActionPerformed
         try {
-            new Contabilidad().initBalanceCompraVentaUI((JFrame) this);
+            new Contabilidad().initBalanceCompraVentaUI(this);
         } catch (MessageException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), null, 2);
         }
@@ -1487,6 +1496,11 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Advertencia", 2);
         }
     }//GEN-LAST:event_jMenuItem71ActionPerformed
+
+    private void jMenuItem72ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem72ActionPerformed
+        new Contabilidad().displayMovimientosGenerales(this);
+    }//GEN-LAST:event_jMenuItem72ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JMenu jMenu1;
@@ -1583,6 +1597,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JMenuItem jMenuItem70;
     private javax.swing.JMenuItem jMenuItem71;
+    private javax.swing.JMenuItem jMenuItem72;
     private javax.swing.JMenuItem jMenuItem8;
     private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JMenuItem jMenuItemCatalogoWeb;

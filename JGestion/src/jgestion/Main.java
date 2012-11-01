@@ -30,7 +30,7 @@ public class Main {
     private static final String propertiesFile = "cfg.ini";
     private static final Logger log = Logger.getLogger(Main.class);
     private static boolean OCURRIO_ERROR = false;
-    public static ResourceBundle resourceBundle = ResourceBundle.getBundle("resources");
+    public static final ResourceBundle resourceBundle = ResourceBundle.getBundle("resources");
 
     static {
         //<editor-fold defaultstate="collapsed" desc="set Nimbus L&F">
