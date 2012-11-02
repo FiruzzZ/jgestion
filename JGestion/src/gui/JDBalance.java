@@ -61,6 +61,7 @@ public class JDBalance extends javax.swing.JDialog {
         labelEgresos = new javax.swing.JLabel();
         tfIngresos = new javax.swing.JTextField();
         labelIngresos = new javax.swing.JLabel();
+        btnToExcel = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -124,6 +125,12 @@ public class JDBalance extends javax.swing.JDialog {
 
         labelIngresos.setText("Ingresos");
 
+        btnToExcel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px_excel.png"))); // NOI18N
+        btnToExcel.setMnemonic('p');
+        btnToExcel.setText("to Excel");
+        btnToExcel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        btnToExcel.setName("Print"); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -157,7 +164,8 @@ public class JDBalance extends javax.swing.JDialog {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(tfTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(labelTotal))
-                        .addGap(4, 4, 4)))
+                        .addGap(4, 4, 4))
+                    .addComponent(btnToExcel, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -167,7 +175,9 @@ public class JDBalance extends javax.swing.JDialog {
                 .addComponent(bBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(bImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(72, 72, 72)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnToExcel, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(36, 36, 36)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 232, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -196,6 +206,7 @@ public class JDBalance extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton bBuscar;
     private javax.swing.JButton bImprimir;
+    private javax.swing.JButton btnToExcel;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
@@ -218,6 +229,10 @@ public class JDBalance extends javax.swing.JDialog {
    public JButton getbImprimir() {
       return bImprimir;
    }
+
+    public JButton getBtnToExcel() {
+        return btnToExcel;
+    }
 
    public JTable getjTable1() {
       return jTable1;

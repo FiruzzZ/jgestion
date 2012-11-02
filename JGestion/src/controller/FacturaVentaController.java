@@ -11,6 +11,9 @@ import gui.JDBuscadorReRe;
 import gui.JDFacturaVenta;
 import gui.PanelReasignacionDeCaja;
 import java.awt.event.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -18,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 import javax.persistence.NoResultException;
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.JTextComponent;
 import jgestion.JGestionUtils;
@@ -989,16 +993,18 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                 try {
                     String query = armarQuery();
                     cargarTablaBuscador(query);
-                    doReportFacturas();
-                } catch (JRException ex) {
-                    JOptionPane.showMessageDialog(null, ex.getMessage());
+                    doReportFacturas(null);
                 } catch (MissingReportException ex) {
                     JOptionPane.showMessageDialog(null, ex.getMessage());
                 } catch (MessageException ex) {
                     ex.displayMessage(buscador);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, ex.getMessage());
+                    LOG.error(ex.getLocalizedMessage(), ex);
                 }
             }
         });
+        //editar button
         buscador.getbExtra().setVisible(true);
         buscador.getbExtra().addActionListener(new ActionListener() {
             @Override
@@ -1044,13 +1050,55 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                 }
             }
         });
+        buscador.getBtnToExcel().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    if (buscador.getjTable1().getRowCount() < 1) {
+                        throw new MessageException("No hay info para exportar.");
+                    }
+                    File currentDirectory = openFileChooser("Archivo Excel", null, "xls");
+                    if (currentDirectory != null) {
+                        doReportFacturas(currentDirectory.getCanonicalPath());
+                    }
+                } catch (MissingReportException ex) {
+                    java.util.logging.Logger.getLogger(FacturaVentaController.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                } catch (JRException ex) {
+                    java.util.logging.Logger.getLogger(FacturaVentaController.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                } catch (IOException ex) {
+                    java.util.logging.Logger.getLogger(FacturaVentaController.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                } catch (MessageException ex) {
+                    java.util.logging.Logger.getLogger(FacturaVentaController.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                }
+            }
+        });
         viewMode = true;
         buscador.setListeners(this);
         buscador.setLocationRelativeTo(frame);
         buscador.setVisible(true);
     }
 
-    private void doReportFacturas() throws MissingReportException, JRException {
+    private File openFileChooser(String description, File fileDir, String... fileExtensionsAllow) throws IOException {
+        JFileChooser fileChooser = new JFileChooser();
+        File file = null;
+        if (fileExtensionsAllow != null && fileExtensionsAllow.length > 0) {
+            FileNameExtensionFilter filter = new FileNameExtensionFilter(description, fileExtensionsAllow);
+            fileChooser.setFileFilter(filter);
+            fileChooser.addChoosableFileFilter(filter);
+        }
+        fileChooser.setCurrentDirectory(fileDir);
+        int stateFileChoosed = fileChooser.showOpenDialog(buscador);
+        if (stateFileChoosed == JFileChooser.APPROVE_OPTION) {
+            file = fileChooser.getSelectedFile();
+        } else {
+            JOptionPane.showMessageDialog(buscador,
+                    "Algo salió mal...",
+                    "State:" + stateFileChoosed, JOptionPane.ERROR_MESSAGE);
+        }
+        return file;
+    }
+
+    private void doReportFacturas(String excelFilePath) throws MissingReportException, JRException, FileNotFoundException, IOException {
         List<GenericBeanCollection> data = new ArrayList<GenericBeanCollection>(buscador.getjTable1().getRowCount());
         DefaultTableModel dtm = (DefaultTableModel) buscador.getjTable1().getModel();
         for (int row = 0; row < dtm.getRowCount(); row++) {
@@ -1072,7 +1120,11 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         r.addParameter("IS_COMPRA", false);
         r.addMembreteParameter();
         r.addConnection();
-        r.viewReport();
+        if (excelFilePath != null) {
+            r.exportToXLS(excelFilePath);
+        } else {
+            r.viewReport();
+        }
     }
 
     private void btnAceptarActionWhenEditing(boolean facturar) {

@@ -5,9 +5,13 @@ import entity.DatosEmpresa;
 import generics.WaitingDialog;
 import java.awt.Dialog;
 import java.awt.print.PrinterException;
+import java.io.ByteArrayOutputStream;
 import utilities.general.UTIL;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -15,11 +19,16 @@ import java.util.Map;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRExporter;
+import net.sf.jasperreports.engine.JRExporterParameter;
+import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperPrintManager;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.export.JRXlsExporter;
+import net.sf.jasperreports.engine.export.JRXlsExporterParameter;
 import net.sf.jasperreports.view.JasperViewer;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -51,6 +60,7 @@ public class Reportes implements Runnable {
     private JDialog jd;
     private JRBeanCollectionDataSource beanCollectionDataSource;
     private static final Logger LOG = Logger.getLogger(Reportes.class.getName());
+    private JasperPrint jPrint;
 
     /**
      *
@@ -110,9 +120,8 @@ public class Reportes implements Runnable {
     }
 
     public void exportPDF(String filePathSafer) throws JRException {
-        JasperPrint jprint;
-        jprint = JasperFillManager.fillReport(pathReport, parameters, controller.DAO.getJDBCConnection());
-        JasperExportManager.exportReportToPdfFile(jprint, filePathSafer);
+        jPrint = JasperFillManager.fillReport(pathReport, parameters, controller.DAO.getJDBCConnection());
+        JasperExportManager.exportReportToPdfFile(jPrint, filePathSafer);
     }
 
     public void addParameter(String key, Object parametro) {
@@ -174,7 +183,6 @@ public class Reportes implements Runnable {
 
     private synchronized void doReport() throws PrinterException, JRException {
         LOG.trace("Running doReport()..");
-        JasperPrint jPrint;
         try {
             if (beanCollectionDataSource == null) {
                 jPrint = JasperFillManager.fillReport(pathReport, parameters, controller.DAO.getJDBCConnection());
@@ -220,5 +228,31 @@ public class Reportes implements Runnable {
 
     void addConnection() {
         parameters.put("REPORT_CONNECTION", controller.DAO.getJDBCConnection());
+    }
+
+    public File exportToXLS(String fileName) throws JRException, FileNotFoundException, IOException {
+        jd.setTitle("Exportando..");
+        addParameter(JRParameter.IS_IGNORE_PAGINATION, Boolean.TRUE);
+        if (beanCollectionDataSource == null) {
+            jPrint = JasperFillManager.fillReport(pathReport, parameters, controller.DAO.getJDBCConnection());
+        } else {
+            jPrint = JasperFillManager.fillReport(pathReport, parameters, beanCollectionDataSource);
+        }
+//        jPrint.setProperty(JRParameter.IS_IGNORE_PAGINATION, "true");
+        File f = new File(fileName);
+        JRExporter exporter = new JRXlsExporter();
+        exporter.setParameter(JRExporterParameter.OUTPUT_FILE, f);
+        exporter.setParameter(JRXlsExporterParameter.JASPER_PRINT, jPrint);
+        exporter.setParameter(JRXlsExporterParameter.IS_REMOVE_EMPTY_SPACE_BETWEEN_ROWS, Boolean.TRUE);
+        exporter.setParameter(JRXlsExporterParameter.IS_REMOVE_EMPTY_SPACE_BETWEEN_COLUMNS, Boolean.TRUE);
+        exporter.setParameter(JRXlsExporterParameter.IS_ONE_PAGE_PER_SHEET, Boolean.FALSE);
+        exporter.setParameter(JRXlsExporterParameter.IS_WHITE_PAGE_BACKGROUND, Boolean.FALSE);
+        exporter.setParameter(JRXlsExporterParameter.IS_DETECT_CELL_TYPE, Boolean.TRUE);
+        exporter.setParameter(JRXlsExporterParameter.IGNORE_PAGE_MARGINS, Boolean.TRUE);
+        exporter.exportReport();
+        if (jd.isVisible()) {
+            jd.dispose();
+        }
+        return f;
     }
 }
