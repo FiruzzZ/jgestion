@@ -37,6 +37,7 @@
                           <Component id="bBuscar" alignment="0" max="32767" attributes="1"/>
                           <Component id="bLimpiar" alignment="0" max="32767" attributes="1"/>
                           <Component id="bExtra" max="32767" attributes="1"/>
+                          <Component id="btnToExcel" alignment="1" max="32767" attributes="1"/>
                       </Group>
                   </Group>
                   <Component id="jLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -61,8 +62,10 @@
                       <Component id="bExtra" min="-2" pref="34" max="-2" attributes="0"/>
                   </Group>
               </Group>
-              <EmptySpace min="-2" max="-2" attributes="0"/>
-              <Component id="jScrollPane1" pref="140" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="btnToExcel" min="-2" pref="34" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="jScrollPane1" pref="100" max="32767" attributes="0"/>
               <EmptySpace min="-2" max="-2" attributes="0"/>
               <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
           </Group>
@@ -430,6 +433,15 @@
           <Font name="Tahoma" size="10" style="1"/>
         </Property>
         <Property name="text" type="java.lang.String" value="N&#xba; Registros: 0"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnToExcel">
+      <Properties>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/iconos/32px_excel.png"/>
+        </Property>
+        <Property name="mnemonic" type="int" value="101"/>
+        <Property name="text" type="java.lang.String" value="A Excel"/>
       </Properties>
     </Component>
   </SubComponents>

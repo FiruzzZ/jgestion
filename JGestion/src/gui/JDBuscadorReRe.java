@@ -88,6 +88,7 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
+        btnToExcel = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(900, 300));
@@ -304,6 +305,10 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 10)); // NOI18N
         jLabel1.setText("Nº Registros: 0");
 
+        btnToExcel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px_excel.png"))); // NOI18N
+        btnToExcel.setMnemonic('e');
+        btnToExcel.setText("A Excel");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -319,7 +324,8 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
                             .addComponent(bImprimir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(bBuscar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(bLimpiar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(bExtra, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addComponent(bExtra, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnToExcel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING))
                 .addContainerGap())
         );
@@ -338,7 +344,9 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(bExtra, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
+                .addComponent(btnToExcel, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel1))
         );
@@ -386,6 +394,7 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
     private javax.swing.JButton bExtra;
     private javax.swing.JButton bImprimir;
     private javax.swing.JButton bLimpiar;
+    private javax.swing.JButton btnToExcel;
     private javax.swing.JComboBox cbCaja;
     private javax.swing.JComboBox cbClieProv;
     private javax.swing.JComboBox cbFormasDePago;
@@ -436,6 +445,7 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
         bBuscar.addActionListener((ActionListener) o);
         bLimpiar.addActionListener((ActionListener) o);
         bImprimir.addActionListener((ActionListener) o);
+        btnToExcel.addActionListener((ActionListener) o);
         bExtra.addActionListener((ActionListener) o);
         try {
             jTable1.addMouseListener((MouseListener) o);
@@ -465,6 +475,10 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
 
     public JButton getbLimpiar() {
         return bLimpiar;
+    }
+
+    public JButton getBtnToExcel() {
+        return btnToExcel;
     }
 
     public DefaultTableModel getDtm() {
