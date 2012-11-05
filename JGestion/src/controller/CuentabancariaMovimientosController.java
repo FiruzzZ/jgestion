@@ -16,6 +16,7 @@ import java.util.List;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import jgestion.JGestionUtils;
 import jpa.controller.CuentabancariaMovimientosJpaController;
 import jpa.controller.OperacionesBancariasJpaController;
 import org.apache.log4j.Logger;
@@ -165,6 +166,7 @@ public class CuentabancariaMovimientosController {
 
     private void displayTransferenciaGUI(Window owner) {
         final PanelOperacionBancariaTransferencia panelTransf = new PanelOperacionBancariaTransferencia();
+        JGestionUtils.getFocusCurrencyFormatterManager(panelTransf.getTfMonto());
         abm = new JDABM(owner, "Transferencia", true, panelTransf);
         abm.getbAceptar().addActionListener(new ActionListener() {
             @Override
@@ -172,7 +174,7 @@ public class CuentabancariaMovimientosController {
             public void actionPerformed(ActionEvent e) {
                 try {
                     CuentaBancaria origen;
-                    CuentabancariaMovimientos cbmDEPOSITO = null;
+                    CuentabancariaMovimientos cbmDestino = null;
                     CuentaBancaria destino;
                     String descripDestino;
                     BigDecimal monto;
@@ -183,37 +185,39 @@ public class CuentabancariaMovimientosController {
                     }
 
                     try {
-                        monto = new BigDecimal(panelTransf.getTfMonto().getText());
+                        monto = new BigDecimal(UTIL.parseToDouble(panelTransf.getTfMonto().getText()));
                         if (monto.compareTo(BigDecimal.ZERO) != 1) {
                             throw new MessageException("Importe no válido, debe ser mayor a cero");
                         }
                     } catch (Exception ex) {
                         throw new MessageException("Importe no válido, ingrese solo números y utilice el punto como separador decimal");
                     }
-                    String descrip = panelTransf.getTfDescripcionMov().getText().trim();
-                    if (descrip.isEmpty()) {
-                        throw new MessageException("Descripción de transferencia no válida");
+                    String descripOrigen = panelTransf.getTfDescripcionMov().getText().trim();
+                    if (descripOrigen.isEmpty() && !panelTransf.getRbPropia().isSelected()) {
+                        throw new MessageException("Si la transferencia es Externa, debe ingresar una descripción de la misma");
                     }
                     Date fechaOP = panelTransf.getDcFechaOperacion().getDate();
                     OperacionesBancarias op = ((ComboBoxWrapper<OperacionesBancarias>) manager.getCbOperacionesBancarias().getSelectedItem()).getEntity();
-                    CuentabancariaMovimientos cbmEXTRACCION = new CuentabancariaMovimientos(fechaOP, descrip, null, BigDecimal.ZERO, monto, false, UsuarioController.getCurrentUser(), op, origen, null, null);
+                    CuentabancariaMovimientos cbmOrigen = new CuentabancariaMovimientos(fechaOP, descripOrigen, null, BigDecimal.ZERO, monto, false, UsuarioController.getCurrentUser(), op, origen, null, null);
                     if (panelTransf.getRbPropia().isSelected()) {
                         try {
-                            destino = ((ComboBoxWrapper<CuentaBancaria>) panelTransf.getCbCuentabancaria().getSelectedItem()).getEntity();
+                            destino = ((ComboBoxWrapper<CuentaBancaria>) panelTransf.getCbCuentabancariaDestino().getSelectedItem()).getEntity();
                             if (origen.equals(destino)) {
                                 throw new MessageException("Las Cuentas bancarias Origen y Destino no pueden ser la misma.");
                             }
                         } catch (ClassCastException ex) {
                             throw new MessageException("Cuenta bancaria destino no válida");
                         }
-                        descripDestino = "Interna: " + destino.getBanco().getNombre() + " N° " + destino.getNumero();
-                        cbmDEPOSITO = new CuentabancariaMovimientos(fechaOP, descripDestino, null, monto, BigDecimal.ZERO, false, UsuarioController.getCurrentUser(), op, origen, null, null);
+                        descripOrigen = "Out: " + destino.getBanco().getNombre() + " N° " + destino.getNumero() + " (" + descripOrigen + ")";
+                        cbmOrigen.setDescripcion(descripOrigen);
+                        descripDestino = "In: " + origen.getBanco().getNombre() + " N° " + origen.getNumero();
+                        cbmDestino = new CuentabancariaMovimientos(fechaOP, descripDestino, null, monto, BigDecimal.ZERO, false, UsuarioController.getCurrentUser(), op, destino, null, null);
                     }
-                    new CuentabancariaMovimientosJpaController().create(cbmEXTRACCION);
-                    String x = "Operación de Transferencia n° " + cbmEXTRACCION.getId() + " realizada";
-                    if (cbmDEPOSITO != null) {
-                        new CuentabancariaMovimientosJpaController().create(cbmDEPOSITO);
-                        x = "\nOperación de Transferencia (depósito) n° " + cbmDEPOSITO.getId() + " realizada";
+                    new CuentabancariaMovimientosJpaController().create(cbmOrigen);
+                    String x = "Operación de Transferencia n° " + cbmOrigen.getId() + " realizada";
+                    if (cbmDestino != null) {
+                        new CuentabancariaMovimientosJpaController().create(cbmDestino);
+                        x = "\nOperación de Transferencia (depósito) n° " + cbmDestino.getId() + " realizada";
                     }
                     JOptionPane.showMessageDialog(abm, x);
                     abm.dispose();
