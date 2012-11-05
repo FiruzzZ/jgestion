@@ -456,7 +456,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
         jMenuBar1.add(jMenu5);
 
-        jMenu6.setMnemonic('e');
+        jMenu6.setMnemonic('l');
         jMenu6.setText("Clientes");
 
         jMenuItem8.setText("ABM Cliente");
@@ -477,7 +477,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
         jMenuBar1.add(jMenu6);
 
-        jMenu7.setMnemonic('r');
+        jMenu7.setMnemonic('e');
         jMenu7.setText("Proveedores");
 
         jMenuItem9.setText("ABM Proveedor");
@@ -790,6 +790,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
         jMenuBar1.add(jMenu9);
 
+        jMenuReportes.setMnemonic('r');
         jMenuReportes.setText("Reportes");
 
         jMenu24.setText("Informe Comprobantes..");

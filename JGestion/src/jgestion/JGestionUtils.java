@@ -2,9 +2,14 @@ package jgestion;
 
 import controller.CuentaBancaria;
 import entity.*;
+import java.awt.Color;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JTextField;
 import utilities.general.UTIL;
 import utilities.swing.components.ComboBoxWrapper;
 
@@ -37,7 +42,6 @@ public class JGestionUtils {
 //        }
 //        return l;
 //    }
-
     public static List<ComboBoxWrapper<Cliente>> getWrappedClientes(List<Cliente> list) {
         List<ComboBoxWrapper<Cliente>> l = new ArrayList<ComboBoxWrapper<Cliente>>(list.size());
         for (Cliente o : list) {
@@ -142,10 +146,10 @@ public class JGestionUtils {
         String guion = conGuion ? "-" : "";
         return UTIL.AGREGAR_CEROS(o.getSucursal().getPuntoVenta(), 4) + guion + UTIL.AGREGAR_CEROS(o.getNumero(), 8);
     }
-    
+
     public static String getNumeracion(NotaCreditoProveedor o, boolean conGuion) {
         String guion = conGuion ? "-" : "";
-        String numero  = UTIL.AGREGAR_CEROS(o.getNumero(), 12);
+        String numero = UTIL.AGREGAR_CEROS(o.getNumero(), 12);
         return numero.substring(0, 4) + guion + numero.substring(4);
     }
 
@@ -166,5 +170,31 @@ public class JGestionUtils {
             }
             return l;
         }
+    }
+
+    public static void getFocusCurrencyFormatterManager(JTextField tf) {
+        tf.addFocusListener(
+                new FocusListener() {
+                    @Override
+                    public void focusGained(FocusEvent e) {
+                        JTextField t = (JTextField) e.getSource();
+                        if (!t.getText().trim().isEmpty()) {
+                            t.setText(UTIL.parseToDouble(t.getText()).toString());
+                        }
+                    }
+
+                    @Override
+                    public void focusLost(FocusEvent e) {
+                        JTextField t = (JTextField) e.getSource();
+                        try {
+                            if (!t.getText().trim().isEmpty()) {
+                                t.setText(UTIL.DECIMAL_FORMAT.format(new BigDecimal(t.getText())));
+                            }
+                            t.setBackground(Color.WHITE);
+                        } catch (Exception ex) {
+                            t.setBackground(Color.RED);
+                        }
+                    }
+                });
     }
 }

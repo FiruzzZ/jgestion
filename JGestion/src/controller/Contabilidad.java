@@ -282,8 +282,12 @@ public class Contabilidad {
                 BigDecimal ac = BigDecimal.ZERO;
                 DefaultTableModel dtm = (DefaultTableModel) jdBalanceUI.getjTable1().getModel();
                 for (int row = 0; row < dtm.getRowCount(); row++) {
-                    in = in.add(BigDecimal.valueOf((Double) dtm.getValueAt(row, 2)));
-                    eg = eg.add(BigDecimal.valueOf((Double) dtm.getValueAt(row, 3)));
+                    if (dtm.getValueAt(row, 2) != null) {
+                        in = in.add(BigDecimal.valueOf((Double) dtm.getValueAt(row, 2)));
+                    }
+                    if (dtm.getValueAt(row, 3) != null) {
+                        eg = eg.add(BigDecimal.valueOf((Double) dtm.getValueAt(row, 3)));
+                    }
                     if (dtm.getValueAt(row, 4) != null) {
                         ef = ef.add(BigDecimal.valueOf((Double) dtm.getValueAt(row, 4)));
                     }
