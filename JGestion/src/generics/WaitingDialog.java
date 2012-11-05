@@ -14,14 +14,8 @@ public class WaitingDialog extends JDialog implements Serializable {
     private String message;
     private JLabel labelMessage;
 
-    public WaitingDialog(Dialog owner, String title, boolean modal, String message) {
-        super(owner, title, modal);
-        this.message = message;
-        initPrintingReportDialog();
-    }
-
-    public WaitingDialog(Frame owner, String title, boolean modal, String message) {
-        super(owner, title, modal);
+    public WaitingDialog(Window owner, String title, boolean modal, String message) {
+        super(owner, title, modal ? DEFAULT_MODALITY_TYPE : ModalityType.MODELESS);
         this.message = message;
         initPrintingReportDialog();
     }
@@ -46,9 +40,10 @@ public class WaitingDialog extends JDialog implements Serializable {
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGroup(layout.createSequentialGroup().addGap(19, 19, 19).addComponent(labelMessage).addContainerGap(24, Short.MAX_VALUE)));
 
         this.pack();
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        Dimension frameSize = this.getSize();
-        this.setLocation((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
+//        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+//        Dimension frameSize = this.getSize();
+//        this.setLocation((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
+        this.setLocation(GraphicsEnvironment.getLocalGraphicsEnvironment().getCenterPoint());
     }
 
     public JLabel getLabelMessage() {

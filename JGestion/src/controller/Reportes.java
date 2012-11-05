@@ -5,13 +5,10 @@ import entity.DatosEmpresa;
 import generics.WaitingDialog;
 import java.awt.Dialog;
 import java.awt.print.PrinterException;
-import java.io.ByteArrayOutputStream;
 import utilities.general.UTIL;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -30,7 +27,6 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.export.JRXlsExporter;
 import net.sf.jasperreports.engine.export.JRXlsExporterParameter;
 import net.sf.jasperreports.view.JasperViewer;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 /**
@@ -57,7 +53,7 @@ public class Reportes implements Runnable {
      * Si aparece el PrintDialog Default = true
      */
     private boolean withPrintDialog;
-    private JDialog jd;
+    private WaitingDialog jd;
     private JRBeanCollectionDataSource beanCollectionDataSource;
     private static final Logger LOG = Logger.getLogger(Reportes.class.getName());
     private JasperPrint jPrint;
@@ -84,7 +80,7 @@ public class Reportes implements Runnable {
             }
             pathReport = FOLDER_REPORTES + pathReport;
         }
-        jd = new WaitingDialog((JDialog) null, "Imprimiendo", false, "Preparando reporte....");
+        jd = new WaitingDialog(null, "Imprimiendo", false, "Preparando reporte....");
         jd.setVisible(true);
         parameters = new HashMap<String, Object>();
         this.pathReport = pathReport;
@@ -119,7 +115,7 @@ public class Reportes implements Runnable {
         new Thread(this).start();
     }
 
-    public void exportPDF(String filePathSafer) throws JRException {
+    public void exportToPDF(String filePathSafer) throws JRException {
         jPrint = JasperFillManager.fillReport(pathReport, parameters, controller.DAO.getJDBCConnection());
         JasperExportManager.exportReportToPdfFile(jPrint, filePathSafer);
     }
@@ -230,8 +226,9 @@ public class Reportes implements Runnable {
         parameters.put("REPORT_CONNECTION", controller.DAO.getJDBCConnection());
     }
 
-    public File exportToXLS(String fileName) throws JRException, FileNotFoundException, IOException {
+    public File exportToXLS(String excelFilePath) throws JRException, FileNotFoundException, IOException {
         jd.setTitle("Exportando..");
+        jd.getLabelMessage().setText("Guardando en: " + excelFilePath);
         addParameter(JRParameter.IS_IGNORE_PAGINATION, Boolean.TRUE);
         if (beanCollectionDataSource == null) {
             jPrint = JasperFillManager.fillReport(pathReport, parameters, controller.DAO.getJDBCConnection());
@@ -239,7 +236,7 @@ public class Reportes implements Runnable {
             jPrint = JasperFillManager.fillReport(pathReport, parameters, beanCollectionDataSource);
         }
 //        jPrint.setProperty(JRParameter.IS_IGNORE_PAGINATION, "true");
-        File f = new File(fileName);
+        File f = new File(excelFilePath);
         JRExporter exporter = new JRXlsExporter();
         exporter.setParameter(JRExporterParameter.OUTPUT_FILE, f);
         exporter.setParameter(JRXlsExporterParameter.JASPER_PRINT, jPrint);

@@ -10,6 +10,7 @@ import gui.JDABM;
 import gui.JDBuscadorReRe;
 import gui.JDFacturaVenta;
 import gui.PanelReasignacionDeCaja;
+import java.awt.Desktop;
 import java.awt.event.*;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -31,6 +32,7 @@ import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import utilities.general.UTIL;
+import utilities.gui.SwingUtil;
 import utilities.swing.components.ComboBoxWrapper;
 import utilities.swing.components.NumberRenderer;
 
@@ -1118,10 +1120,17 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         Reportes r = new Reportes("JGestion_ListadoFacturasCompra.jasper", "Listado Facturas Venta");
         r.setDataSource(data);
         r.addParameter("IS_COMPRA", false);
+        r.addParameter("SHOW_TITLE", Boolean.FALSE);
         r.addMembreteParameter();
         r.addConnection();
         if (excelFilePath != null) {
-            r.exportToXLS(excelFilePath);
+            File exportToXLS = r.exportToXLS(excelFilePath);
+            if(exportToXLS != null) {
+                if(Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.OPEN)
+                        && JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(null, "¿Abrir archivo?", null, JOptionPane.YES_NO_OPTION)) {
+                    Desktop.getDesktop().open(exportToXLS);
+                }
+            }
         } else {
             r.viewReport();
         }
@@ -1615,7 +1624,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
 //                editedFacturaVenta.setCheque(cheque);
 //            }
         } else {
-            mensajeDeQueMierdaPaso = "Algo salió mal";
+            mensajeDeQueMierdaPaso = "Algo salió mal modificando la factura N°" + JGestionUtils.getNumeracion(editedFacturaVenta);
         }
 
         if (EL_OBJECT.getRemito() != null && !editedFacturaVenta.getRemito().equals(EL_OBJECT.getRemito())) {
