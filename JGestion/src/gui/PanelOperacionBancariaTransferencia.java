@@ -26,8 +26,8 @@ public class PanelOperacionBancariaTransferencia extends javax.swing.JPanel {
         initComponents();
         List<ComboBoxWrapper<Banco>> l = JGestionUtils.getWrappedBancos(new BancoController().findWithCuentasBancarias());
         UTIL.loadComboBox(cbBancos, l, false);
-        UTIL.loadComboBox(cbBancos1, l, false);
-        UTIL.loadComboBox(cbBancosExternos, JGestionUtils.getWrappedBancos(new BancoController().findEntities()), false);
+        UTIL.loadComboBox(cbDestinoBancosCuentaPropia, l, false);
+        UTIL.loadComboBox(cbDestinoBancosExternos, JGestionUtils.getWrappedBancos(new BancoController().findEntities()), false);
     }
 
     /**
@@ -51,13 +51,13 @@ public class PanelOperacionBancariaTransferencia extends javax.swing.JPanel {
         cbBancos = new javax.swing.JComboBox();
         jPanel2 = new javax.swing.JPanel();
         jLabel11 = new javax.swing.JLabel();
-        cbBancos1 = new javax.swing.JComboBox();
+        cbDestinoBancosCuentaPropia = new javax.swing.JComboBox();
         jLabel2 = new javax.swing.JLabel();
         cbCuentabancariaDestino = new javax.swing.JComboBox();
         rbPropia = new javax.swing.JRadioButton();
         jLabel3 = new javax.swing.JLabel();
         tfCuentaExterna = new javax.swing.JTextField();
-        cbBancosExternos = new javax.swing.JComboBox();
+        cbDestinoBancosExternos = new javax.swing.JComboBox();
         jLabel12 = new javax.swing.JLabel();
         rbExterna = new javax.swing.JRadioButton();
         tfDescripcionMov = new javax.swing.JTextField();
@@ -133,9 +133,9 @@ public class PanelOperacionBancariaTransferencia extends javax.swing.JPanel {
 
         jLabel11.setText("Banco");
 
-        cbBancos1.addActionListener(new java.awt.event.ActionListener() {
+        cbDestinoBancosCuentaPropia.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cbBancos1ActionPerformed(evt);
+                cbDestinoBancosCuentaPropiaActionPerformed(evt);
             }
         });
 
@@ -149,6 +149,11 @@ public class PanelOperacionBancariaTransferencia extends javax.swing.JPanel {
 
         rbPropia.setSelected(true);
         rbPropia.setText("Cuenta propia");
+        rbPropia.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                rbPropiaStateChanged(evt);
+            }
+        });
 
         jLabel3.setText("N° Cuenta");
 
@@ -190,9 +195,9 @@ public class PanelOperacionBancariaTransferencia extends javax.swing.JPanel {
                     .addComponent(jLabel11, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(cbBancos1, javax.swing.GroupLayout.Alignment.TRAILING, 0, 309, Short.MAX_VALUE)
+                    .addComponent(cbDestinoBancosCuentaPropia, javax.swing.GroupLayout.Alignment.TRAILING, 0, 309, Short.MAX_VALUE)
                     .addComponent(cbCuentabancariaDestino, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(cbBancosExternos, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(cbDestinoBancosExternos, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(tfCuentaExterna)
                     .addComponent(tfDescripcionMov))
                 .addContainerGap())
@@ -213,7 +218,7 @@ public class PanelOperacionBancariaTransferencia extends javax.swing.JPanel {
                 .addGap(9, 9, 9)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel11)
-                    .addComponent(cbBancos1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cbDestinoBancosCuentaPropia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
@@ -222,7 +227,7 @@ public class PanelOperacionBancariaTransferencia extends javax.swing.JPanel {
                 .addComponent(rbExterna)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cbBancosExternos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cbDestinoBancosExternos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel12))
                 .addGap(3, 3, 3)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -274,12 +279,12 @@ public class PanelOperacionBancariaTransferencia extends javax.swing.JPanel {
         SwingUtil.checkInputDigit(evt, true);
     }//GEN-LAST:event_tfMontoKeyTyped
 
-    private void cbBancos1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbBancos1ActionPerformed
-        if (cbBancos1.getItemCount() > 0) {
-            Banco b = ((ComboBoxWrapper<Banco>) cbBancos1.getSelectedItem()).getEntity();
+    private void cbDestinoBancosCuentaPropiaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbDestinoBancosCuentaPropiaActionPerformed
+        if (cbDestinoBancosCuentaPropia.getItemCount() > 0) {
+            Banco b = ((ComboBoxWrapper<Banco>) cbDestinoBancosCuentaPropia.getSelectedItem()).getEntity();
             UTIL.loadComboBox(cbCuentabancariaDestino, JGestionUtils.getWrappedCuentasBancarias(b.getCuentasbancaria()), false);
         }
-    }//GEN-LAST:event_cbBancos1ActionPerformed
+    }//GEN-LAST:event_cbDestinoBancosCuentaPropiaActionPerformed
 
     private void rbExternaStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_rbExternaStateChanged
         habilitarDestino();
@@ -287,7 +292,7 @@ public class PanelOperacionBancariaTransferencia extends javax.swing.JPanel {
 
     private void cbCuentabancariaDestinoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbCuentabancariaDestinoActionPerformed
         if (cbCuentabancariaDestino.getItemCount() > 0) {
-            tfDescripcionMov.setText("Interna:" + cbBancos1.getSelectedItem().toString() + " N° " + cbCuentabancariaDestino.getSelectedItem().toString());
+            tfDescripcionMov.setText("Interna:" + cbDestinoBancosCuentaPropia.getSelectedItem().toString() + " N° " + cbCuentabancariaDestino.getSelectedItem().toString());
         }
     }//GEN-LAST:event_cbCuentabancariaDestinoActionPerformed
 
@@ -298,13 +303,17 @@ public class PanelOperacionBancariaTransferencia extends javax.swing.JPanel {
         SwingUtil.checkInputDigit(evt, false, 22);
     }//GEN-LAST:event_tfCuentaExternaKeyTyped
 
+    private void rbPropiaStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_rbPropiaStateChanged
+        habilitarDestino();
+    }//GEN-LAST:event_rbPropiaStateChanged
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup bgDestino;
     private javax.swing.JComboBox cbBancos;
-    private javax.swing.JComboBox cbBancos1;
-    private javax.swing.JComboBox cbBancosExternos;
     private javax.swing.JComboBox cbCuentabancaria;
     private javax.swing.JComboBox cbCuentabancariaDestino;
+    private javax.swing.JComboBox cbDestinoBancosCuentaPropia;
+    private javax.swing.JComboBox cbDestinoBancosExternos;
     private com.toedter.calendar.JDateChooser dcFechaOperacion;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
@@ -326,14 +335,18 @@ public class PanelOperacionBancariaTransferencia extends javax.swing.JPanel {
     // End of variables declaration//GEN-END:variables
 
     private void habilitarDestino() {
-        cbBancos1.setEnabled(!rbExterna.isEnabled());
+        cbDestinoBancosCuentaPropia.setEnabled(!rbExterna.isSelected());
         cbCuentabancariaDestino.setEnabled(!rbExterna.isSelected());
-        cbBancosExternos.setEnabled(rbExterna.isSelected());
+        cbDestinoBancosExternos.setEnabled(rbExterna.isSelected());
         tfCuentaExterna.setEnabled(rbExterna.isSelected());
     }
 
     public JRadioButton getRbPropia() {
         return rbPropia;
+    }
+
+    public JRadioButton getRbExterna() {
+        return rbExterna;
     }
 
     public JComboBox getCbCuentabancaria() {
@@ -358,6 +371,10 @@ public class PanelOperacionBancariaTransferencia extends javax.swing.JPanel {
 
     public JTextField getTfMonto() {
         return tfMonto;
+    }
+
+    public JComboBox getCbDestinoBancosExternos() {
+        return cbDestinoBancosExternos;
     }
 
     public void invertirOrigenDestino() {

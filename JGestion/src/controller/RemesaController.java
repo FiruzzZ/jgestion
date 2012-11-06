@@ -44,6 +44,7 @@ import jgestion.JGestionUtils;
 import jpa.controller.ChequePropioJpaController;
 import jpa.controller.ChequeTercerosJpaController;
 import jpa.controller.ComprobanteRetencionJpaController;
+import jpa.controller.CuentabancariaMovimientosJpaController;
 import jpa.controller.FacturaCompraJpaController;
 import jpa.controller.NotaCreditoProveedorJpaController;
 import jpa.controller.RemesaJpaController;
@@ -326,7 +327,11 @@ public class RemesaController implements ActionListener, FocusListener {
 
     private void displayABMTransferencia() {
         String p = jdReRe.getCbClienteProveedor().getSelectedItem().toString();
-        CuentabancariaMovimientos cbm = new CuentabancariaMovimientosController().displayTransferenciaProveedor(jdReRe, p);
+        CuentabancariaMovimientos comprobante = new CuentabancariaMovimientosController().displayTransferenciaProveedor(jdReRe, p);
+        if (comprobante != null) {
+            DefaultTableModel dtm = jdReRe.getDtmPagos();
+            dtm.addRow(new Object[]{comprobante, "TR", comprobante.getDescripcion(), comprobante.getDebito()});
+        }
     }
 
     @Override
@@ -653,7 +658,9 @@ public class RemesaController implements ActionListener, FocusListener {
         SwingUtil.setComponentsEnabled(jdReRe.getPanelDatos().getComponents(), false, true);
         SwingUtil.setComponentsEnabled(jdReRe.getPanelAPagar().getComponents(), false, true);
         SwingUtil.setComponentsEnabled(jdReRe.getPanelPagos().getComponents(), false, true);
-
+        jdReRe.getbAceptar().setEnabled(false);
+        jdReRe.getbAnular().setEnabled(false);
+        jdReRe.getbCancelar().setEnabled(false);
         jdReRe.getbImprimir().setEnabled(true);
     }
 
@@ -688,6 +695,9 @@ public class RemesaController implements ActionListener, FocusListener {
             } else if (object instanceof DetalleCajaMovimientos) {
                 DetalleCajaMovimientos pago = (DetalleCajaMovimientos) object;
                 dtm.addRow(new Object[]{pago, "EF", null, BigDecimal.valueOf(-pago.getMonto())});
+            } else if (object instanceof CuentabancariaMovimientos) {
+                CuentabancariaMovimientos pago = (CuentabancariaMovimientos) object;
+                dtm.addRow(new Object[]{pago, "TR", pago.getDescripcion(), pago.getDebito()});
             }
         }
     }
@@ -786,6 +796,11 @@ public class RemesaController implements ActionListener, FocusListener {
             } else if (pago.getFormaPago() == 4) {
                 ComprobanteRetencion o = new ComprobanteRetencionJpaController().find(pago.getComprobanteId());
                 pagos.add(o);
+            } else if (pago.getFormaPago() == 5) {
+                CuentabancariaMovimientos o = new CuentabancariaMovimientosJpaController().find(pago.getComprobanteId());
+                pagos.add(o);
+            } else {
+                throw new IllegalArgumentException("Forma Pago Remesa no válida:" + pago.getFormaPago());
             }
         }
         remesa.setPagosEntities(pagos);

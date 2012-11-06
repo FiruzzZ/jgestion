@@ -425,7 +425,7 @@ public class JDReRe extends javax.swing.JDialog {
 
         panelPagos.setBorder(javax.swing.BorderFactory.createTitledBorder("Formas de Pago"));
 
-        cbFormasDePago.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Efectivo", "Cheque Propio", "Cheque Tercero", "Nota de Crédito", "Retención" }));
+        cbFormasDePago.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Efectivo", "Cheque Propio", "Cheque Tercero", "Nota de Crédito", "Retención", "Transferencia" }));
 
         btnAddPago.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px-Crystal_Clear_action_edit_add.png"))); // NOI18N
 
