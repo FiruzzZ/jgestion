@@ -152,13 +152,17 @@ public class ReciboJpaController extends AbstractDAO<Recibo, Integer> {
                 ComprobanteRetencion pago = (ComprobanteRetencion) object;
                 entityManager.persist(pago);
                 pagosPost.add(pago);
+            } else if (object instanceof CuentabancariaMovimientos) {
+                CuentabancariaMovimientos pago = (CuentabancariaMovimientos) object;
+                entityManager.persist(pago);
+                pagosPost.add(pago);
             }
         }
         entityManager.getTransaction().commit();
         entityManager.getTransaction().begin();
 //        recibo = entityManager.find(recibo.getClass(), recibo.getId());
         for (Object object : pagosPost) {
-            Integer tipo, id;
+            Integer tipo = null, id = null;
             if (object instanceof DetalleCajaMovimientos) {
                 DetalleCajaMovimientos pago = (DetalleCajaMovimientos) object;
                 tipo = 0;
@@ -175,9 +179,13 @@ public class ReciboJpaController extends AbstractDAO<Recibo, Integer> {
                 NotaCredito pago = (NotaCredito) object;
                 tipo = 3;
                 id = pago.getId();
-            } else {
+            } else if (object instanceof ComprobanteRetencion) {
                 ComprobanteRetencion pago = (ComprobanteRetencion) object;
                 tipo = 4;
+                id = pago.getId();
+            } else if (object instanceof CuentabancariaMovimientos) {
+                CuentabancariaMovimientos pago = (CuentabancariaMovimientos) object;
+                tipo = 5;
                 id = pago.getId();
             }
             ReciboPagos rp = new ReciboPagos(null, tipo, id, recibo);

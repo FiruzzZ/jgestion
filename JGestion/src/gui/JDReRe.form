@@ -682,12 +682,13 @@
         <Component class="javax.swing.JComboBox" name="cbFormasDePago">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="5">
+              <StringArray count="6">
                 <StringItem index="0" value="Efectivo"/>
                 <StringItem index="1" value="Cheque Propio"/>
                 <StringItem index="2" value="Cheque Tercero"/>
                 <StringItem index="3" value="Nota de Cr&#xe9;dito"/>
                 <StringItem index="4" value="Retenci&#xf3;n"/>
+                <StringItem index="5" value="Transferencia"/>
               </StringArray>
             </Property>
           </Properties>

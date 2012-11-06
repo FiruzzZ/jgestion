@@ -273,6 +273,8 @@ public class ReciboController implements ActionListener, FocusListener {
             displayABMNotaCredito();
         } else if (formaPago == 4) {
             displayABMRetencion(null);
+        } else if (formaPago == 5) {
+            displayABMTransferencia();
         }
     }
 
@@ -368,6 +370,15 @@ public class ReciboController implements ActionListener, FocusListener {
             } catch (MessageException ex) {
                 ex.displayMessage(jdReRe);
             }
+        }
+    }
+
+    private void displayABMTransferencia() {
+        Cliente c = (Cliente) jdReRe.getCbClienteProveedor().getSelectedItem();
+        CuentabancariaMovimientos comprobante = new CuentabancariaMovimientosController().displayTransferenciaCliente(jdReRe, c.getNombre());
+        if (comprobante != null) {
+            DefaultTableModel dtm = jdReRe.getDtmPagos();
+            dtm.addRow(new Object[]{comprobante, "TR", comprobante.getDescripcion(), comprobante.getCredito()});
         }
     }
 
@@ -829,6 +840,9 @@ public class ReciboController implements ActionListener, FocusListener {
             } else if (reciboPagos.getFormaPago() == 4) {
                 ComprobanteRetencion o = (ComprobanteRetencion) DAO.findEntity(ComprobanteRetencion.class, reciboPagos.getComprobanteId());
                 dtm.addRow(new Object[]{o, "RE", o.getNumero(), o.getImporte()});
+            } else if (reciboPagos.getFormaPago() == 5) {
+                CuentabancariaMovimientos o = (CuentabancariaMovimientos) DAO.findEntity(CuentabancariaMovimientos.class, reciboPagos.getComprobanteId());
+                dtm.addRow(new Object[]{o, "TR", o.getDescripcion(), o.getCredito()});
             }
         }
     }
