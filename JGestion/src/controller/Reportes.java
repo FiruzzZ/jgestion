@@ -228,15 +228,14 @@ public class Reportes implements Runnable {
 
     public File exportToXLS(String excelFilePath) throws JRException, FileNotFoundException, IOException {
         jd.setTitle("Exportando..");
-        jd.getLabelMessage().setText("Guardando en: " + excelFilePath);
+        jd.getLabelMessage().setText("Guardando en: " + excelFilePath + ".xls");
         addParameter(JRParameter.IS_IGNORE_PAGINATION, Boolean.TRUE);
         if (beanCollectionDataSource == null) {
             jPrint = JasperFillManager.fillReport(pathReport, parameters, controller.DAO.getJDBCConnection());
         } else {
             jPrint = JasperFillManager.fillReport(pathReport, parameters, beanCollectionDataSource);
         }
-//        jPrint.setProperty(JRParameter.IS_IGNORE_PAGINATION, "true");
-        File f = new File(excelFilePath);
+        File f = new File(excelFilePath + ".xls");
         JRExporter exporter = new JRXlsExporter();
         exporter.setParameter(JRExporterParameter.OUTPUT_FILE, f);
         exporter.setParameter(JRXlsExporterParameter.JASPER_PRINT, jPrint);

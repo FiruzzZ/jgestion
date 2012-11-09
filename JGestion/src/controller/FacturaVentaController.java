@@ -1092,11 +1092,10 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         int stateFileChoosed = fileChooser.showOpenDialog(buscador);
         if (stateFileChoosed == JFileChooser.APPROVE_OPTION) {
             file = fileChooser.getSelectedFile();
-        } else {
-            JOptionPane.showMessageDialog(buscador,
-                    "Algo salió mal...",
-                    "State:" + stateFileChoosed, JOptionPane.ERROR_MESSAGE);
-        }
+            if(file.exists()) {
+                JOptionPane.showConfirmDialog(buscador, "");
+            }
+        } 
         return file;
     }
 

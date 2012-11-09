@@ -2,10 +2,12 @@ package controller;
 
 import controller.exceptions.MessageException;
 import entity.*;
+import generics.GenericBeanCollection;
 import gui.JDBuscadorReRe;
 import gui.JDReRe;
 import gui.generics.JDialogTable;
 import java.awt.event.*;
+import java.io.File;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,8 +20,20 @@ import javax.swing.table.TableColumnModel;
 import jgestion.JGestionUtils;
 import jgestion.Main;
 import jpa.controller.CajaMovimientosJpaController;
+import jpa.controller.ChequePropioJpaController;
+import jpa.controller.ChequeTercerosJpaController;
+import jpa.controller.ComprobanteRetencionJpaController;
+import jpa.controller.CuentabancariaMovimientosJpaController;
+import jpa.controller.NotaCreditoJpaController;
 import jpa.controller.ReciboJpaController;
+import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.type.SplitTypeEnum;
+import net.sf.jasperreports.engine.util.JRLoader;
 import org.apache.log4j.Logger;
+import utilities.general.NumberToLetterConverter;
 import utilities.general.UTIL;
 import utilities.gui.SwingUtil;
 import utilities.swing.components.ComboBoxWrapper;
@@ -134,14 +148,14 @@ public class ReciboController implements ActionListener, FocusListener {
                 try {
                     if (selectedRecibo != null) {
                         // cuando se re-imprime un recibo elegido desde el buscador (uno pre existente)
-                        imprimirRecibo(selectedRecibo);
+                        doReportRecibo(selectedRecibo);
                     } else {
                         //cuando se está creando un recibo y se va imprimir al tokesaun!
                         checkConstraints();
                         Recibo recibo = getEntity();
                         persist(recibo);
                         selectedRecibo = recibo;
-                        imprimirRecibo(selectedRecibo);
+                        doReportRecibo(selectedRecibo);
                         limpiarDetalle();
                         resetPanel();
                     }
@@ -822,29 +836,59 @@ public class ReciboController implements ActionListener, FocusListener {
                         r.getMontoEntrega()
                     });
         }
+        getPagos(recibo);
         dtm = jdReRe.getDtmPagos();
         dtm.setRowCount(0);
-        for (ReciboPagos reciboPagos : recibo.getPagos()) {
-            if (reciboPagos.getFormaPago() == 0) {
-                DetalleCajaMovimientos o = (DetalleCajaMovimientos) DAO.findEntity(DetalleCajaMovimientos.class, reciboPagos.getComprobanteId());
-                dtm.addRow(new Object[]{o, "EF", null, BigDecimal.valueOf(o.getMonto())});
-            } else if (reciboPagos.getFormaPago() == 1) {
-                ChequePropio o = (ChequePropio) DAO.findEntity(ChequePropio.class, reciboPagos.getComprobanteId());
-                dtm.addRow(new Object[]{o, "CHP", o.getBanco().getNombre() + " " + o.getNumero(), o.getImporte()});
-            } else if (reciboPagos.getFormaPago() == 2) {
-                ChequeTerceros o = (ChequeTerceros) DAO.findEntity(ChequeTerceros.class, reciboPagos.getComprobanteId());
-                dtm.addRow(new Object[]{o, "CH", o.getBanco().getNombre() + " " + o.getNumero(), o.getImporte()});
-            } else if (reciboPagos.getFormaPago() == 3) {
-                NotaCredito o = (NotaCredito) DAO.findEntity(NotaCredito.class, reciboPagos.getComprobanteId());
-                dtm.addRow(new Object[]{o, "NC", JGestionUtils.getNumeracion(o, true), o.getImporte()});
-            } else if (reciboPagos.getFormaPago() == 4) {
-                ComprobanteRetencion o = (ComprobanteRetencion) DAO.findEntity(ComprobanteRetencion.class, reciboPagos.getComprobanteId());
-                dtm.addRow(new Object[]{o, "RE", o.getNumero(), o.getImporte()});
-            } else if (reciboPagos.getFormaPago() == 5) {
-                CuentabancariaMovimientos o = (CuentabancariaMovimientos) DAO.findEntity(CuentabancariaMovimientos.class, reciboPagos.getComprobanteId());
-                dtm.addRow(new Object[]{o, "TR", o.getDescripcion(), o.getCredito()});
+        for (Object object : recibo.getPagosEntities()) {
+            if (object instanceof ChequePropio) {
+                ChequePropio pago = (ChequePropio) object;
+                dtm.addRow(new Object[]{pago, "CH", pago.getBanco().getNombre() + " N°" + pago.getNumero(), pago.getImporte()});
+            } else if (object instanceof ChequeTerceros) {
+                ChequeTerceros pago = (ChequeTerceros) object;
+                dtm.addRow(new Object[]{pago, "CH", pago.getBanco().getNombre() + " N°" + pago.getNumero(), pago.getImporte()});
+            } else if (object instanceof NotaCredito) {
+                NotaCredito pago = (NotaCredito) object;
+                dtm.addRow(new Object[]{pago, "NC", JGestionUtils.getNumeracion(pago, true), pago.getImporte()});
+            } else if (object instanceof ComprobanteRetencion) {
+                ComprobanteRetencion pago = (ComprobanteRetencion) object;
+                dtm.addRow(new Object[]{pago, "RE", pago.getNumero(), pago.getImporte()});
+            } else if (object instanceof DetalleCajaMovimientos) {
+                DetalleCajaMovimientos pago = (DetalleCajaMovimientos) object;
+                dtm.addRow(new Object[]{pago, "EF", null, BigDecimal.valueOf(pago.getMonto())});
+            } else if (object instanceof CuentabancariaMovimientos) {
+                CuentabancariaMovimientos pago = (CuentabancariaMovimientos) object;
+                dtm.addRow(new Object[]{pago, "TR", pago.getDescripcion(), pago.getCredito()});
             }
         }
+    }
+
+    private List<Object> getPagos(Recibo recibo) {
+        List<Object> pagos = new ArrayList<Object>(recibo.getPagos().size());
+        for (ReciboPagos pago : recibo.getPagos()) {
+            if (pago.getFormaPago() == 0) {
+                DetalleCajaMovimientos o = new DetalleCajaMovimientosJpaController().findDetalleCajaMovimientos(pago.getComprobanteId());
+                pagos.add(o);
+            } else if (pago.getFormaPago() == 1) {
+                ChequePropio o = new ChequePropioJpaController().find(pago.getComprobanteId());
+                pagos.add(o);
+            } else if (pago.getFormaPago() == 2) {
+                ChequeTerceros o = new ChequeTercerosJpaController().find(pago.getComprobanteId());
+                pagos.add(o);
+            } else if (pago.getFormaPago() == 3) {
+                NotaCredito o = new NotaCreditoJpaController().find(pago.getComprobanteId());
+                pagos.add(o);
+            } else if (pago.getFormaPago() == 4) {
+                ComprobanteRetencion o = new ComprobanteRetencionJpaController().find(pago.getComprobanteId());
+                pagos.add(o);
+            } else if (pago.getFormaPago() == 5) {
+                CuentabancariaMovimientos o = new CuentabancariaMovimientosJpaController().find(pago.getComprobanteId());
+                pagos.add(o);
+            } else {
+                throw new IllegalArgumentException("Forma Pago Recibo no válida:" + pago.getFormaPago());
+            }
+        }
+        recibo.setPagosEntities(pagos);
+        return pagos;
     }
 
     @Override
@@ -945,15 +989,47 @@ public class ReciboController implements ActionListener, FocusListener {
         new CajaMovimientosJpaController().anular(recibo);
     }
 
-    private void imprimirRecibo(Recibo recibo) throws Exception {
+    private void doReportRecibo(Recibo recibo) throws Exception {
         if (recibo == null && recibo.getId() == null) {
             throw new MessageException("No hay " + CLASS_NAME + " seleccionado");
         }
-
+        List<GenericBeanCollection> cc = new ArrayList<GenericBeanCollection>(recibo.getDetalleReciboList().size());
+        for (DetalleRecibo dr : recibo.getDetalleReciboList()) {
+            cc.add(new GenericBeanCollection(JGestionUtils.getNumeracion(dr.getFacturaVenta()), dr.getMontoEntrega()));
+        }
+        List<GenericBeanCollection> pp = new ArrayList<GenericBeanCollection>(recibo.getPagos().size());
+        for (Object object : recibo.getPagosEntities()) {
+            if (object instanceof ChequePropio) {
+                ChequePropio pago = (ChequePropio) object;
+                pp.add(new GenericBeanCollection("CHP " + pago.getBanco().getNombre() + " N°" + pago.getNumero(), pago.getImporte()));
+            } else if (object instanceof ChequeTerceros) {
+                ChequeTerceros pago = (ChequeTerceros) object;
+                pp.add(new GenericBeanCollection("CH " + pago.getBanco().getNombre() + " N°" + pago.getNumero(), pago.getImporte()));
+            } else if (object instanceof NotaCredito) {
+                NotaCredito pago = (NotaCredito) object;
+                pp.add(new GenericBeanCollection("NC " + JGestionUtils.getNumeracion(pago, true), pago.getImporte()));
+            } else if (object instanceof ComprobanteRetencion) {
+                ComprobanteRetencion pago = (ComprobanteRetencion) object;
+                pp.add(new GenericBeanCollection("RE " + pago.getNumero(), pago.getImporte()));
+            } else if (object instanceof DetalleCajaMovimientos) {
+                DetalleCajaMovimientos pago = (DetalleCajaMovimientos) object;
+                pp.add(new GenericBeanCollection("EF", BigDecimal.valueOf(pago.getMonto())));
+            } else if (object instanceof CuentabancariaMovimientos) {
+                CuentabancariaMovimientos pago = (CuentabancariaMovimientos) object;
+                int indexOf = pago.getDescripcion().indexOf(", ");
+                pp.add(new GenericBeanCollection("TR " + pago.getDescripcion().substring(0, indexOf), pago.getCredito()));
+            }
+        }
+        JRDataSource c = new JRBeanCollectionDataSource(cc);
+        JRDataSource p = new JRBeanCollectionDataSource(pp);
         Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_Recibo_ctacte.jasper", "Recibo");
         r.addParameter("RECIBO_N", recibo.getId());
         r.addCurrent_User();
-        r.printReport(true);
+        r.addMembreteParameter();
+        r.addParameter("comprobantes", c);
+        r.addParameter("pagos", p);
+        r.addParameter("son_pesos", NumberToLetterConverter.convertNumberToLetter(recibo.getMonto(), false));
+        r.viewReport();
     }
 
     /**

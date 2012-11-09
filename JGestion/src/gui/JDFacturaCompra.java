@@ -352,7 +352,7 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         tfTotalPercepcion.setFocusable(false);
         tfTotalPercepcion.setRequestFocusEnabled(false);
 
-        jLabel2.setText("Otros Imp. Recup.");
+        jLabel2.setText("IVA 27%");
 
         tfTotalOtrosImpuestos.setEditable(false);
         tfTotalOtrosImpuestos.setColumns(6);
