@@ -1602,7 +1602,8 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private void cerrandoAplicacion() {
         System.out.println("cerrandoAplicacion");
         activa = false;
-        Runtime.getRuntime().exit(0);
+        dispose();
+//        Runtime.getRuntime().exit(0);
     }
 
     private void showError(String message) {

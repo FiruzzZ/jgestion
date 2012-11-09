@@ -19,6 +19,11 @@ public class GenericBeanCollection {
     private Object o11;
     private Object o12;
 
+    public GenericBeanCollection(Object o1, Object o2) {
+        this.o1 = o1;
+        this.o2 = o2;
+    }
+
     public GenericBeanCollection(Object o1, Object o2, Object o3, Object o4, Object o5, Object o6, Object o7, Object o8, Object o9, Object o10, Object o11, Object o12) {
         this.o1 = o1;
         this.o2 = o2;
