@@ -32,7 +32,7 @@ public class JDCuentabancariaManager extends javax.swing.JDialog {
     }
 
     private void otroInit() {
-        UTIL.loadComboBox(cbBancos, JGestionUtils.getWrappedBancos(new BancoController().findWithCuentasBancarias()), true, "<No existen banco con cuenta bancaria asociada>");
+        UTIL.loadComboBox(cbBancos, JGestionUtils.getWrappedBancos(new BancoController().findWithCuentasBancarias(true)), true, "<No existen banco con cuenta bancaria asociada>");
         List<ComboBoxWrapper<OperacionesBancarias>> l = JGestionUtils.getWrappedOperacionesBancarias(new OperacionesBancariasJpaController().findAll());
         UTIL.loadComboBox(cbOperacionesBancariasFiltro, l, true);
         UTIL.loadComboBox(cbOperacionesBancarias, l, false);

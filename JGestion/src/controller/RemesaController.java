@@ -90,15 +90,16 @@ public class RemesaController implements ActionListener, FocusListener {
         UTIL.loadComboBox(jdReRe.getCbCaja(), new UsuarioHelper().getCajas(true), false);
         UTIL.loadComboBox(jdReRe.getCbClienteProveedor(), new ProveedorController().findEntities(), true);
         UTIL.loadComboBox(jdReRe.getCbCtaCtes(), null, false);
+        jdReRe.getbImprimir().setVisible(false);
         jdReRe.getbAnular().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
 //                    anular(rereSelected);
-//                    jdReRe.showMessage(CLASS_NAME + " anulada..", CLASS_NAME, 1);
+//                    jdReRe.showMessage(CLASS_NAME + " anulada ..", CLASS_NAME, 1);
 //                    resetPanel();
 //                } catch (MessageException ex) {
-//                    jdReRe.showMessage(ex.getMessage(), CLASS_NAME, 2);
+                    jdReRe.showMessage("No no no no..!", CLASS_NAME, 2);
                 } catch (Exception ex) {
                     jdReRe.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 }

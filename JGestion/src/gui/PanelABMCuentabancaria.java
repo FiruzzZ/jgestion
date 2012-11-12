@@ -3,6 +3,7 @@ package gui;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
+import utilities.gui.SwingUtil;
 
 /**
  *
@@ -37,6 +38,11 @@ public class PanelABMCuentabancaria extends javax.swing.JPanel {
         jLabel2.setText("N° de Cuenta");
 
         tfNumero.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        tfNumero.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                tfNumeroKeyTyped(evt);
+            }
+        });
 
         jCheckBox1.setSelected(true);
         jCheckBox1.setText("Activa");
@@ -76,6 +82,11 @@ public class PanelABMCuentabancaria extends javax.swing.JPanel {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void tfNumeroKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfNumeroKeyTyped
+        SwingUtil.checkInputDigit(evt, false, 22);
+    }//GEN-LAST:event_tfNumeroKeyTyped
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox cbBancos;
     private javax.swing.JCheckBox jCheckBox1;

@@ -21,7 +21,7 @@ public class PanelOperacionBancariaDeposito extends javax.swing.JPanel {
      */
     public PanelOperacionBancariaDeposito() {
         initComponents();
-        UTIL.loadComboBox(cbBancos, JGestionUtils.getWrappedBancos(new BancoController().findWithCuentasBancarias()), false);
+        UTIL.loadComboBox(cbBancos, JGestionUtils.getWrappedBancos(new BancoController().findWithCuentasBancarias(true)), false);
     }
 
     /**

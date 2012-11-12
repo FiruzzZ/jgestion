@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JTextField;
 import utilities.general.UTIL;
+import utilities.gui.SwingUtil;
 import utilities.swing.components.ComboBoxWrapper;
 
 /**
@@ -172,7 +173,7 @@ public class JGestionUtils {
         }
     }
 
-    public static void getFocusCurrencyFormatterManager(JTextField tf) {
+    public static void setCurrencyFormatterFocusListener(JTextField tf) {
         tf.addFocusListener(
                 new FocusListener() {
                     @Override

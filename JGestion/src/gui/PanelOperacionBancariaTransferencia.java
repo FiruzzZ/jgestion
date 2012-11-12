@@ -24,7 +24,7 @@ public class PanelOperacionBancariaTransferencia extends javax.swing.JPanel {
      */
     public PanelOperacionBancariaTransferencia() {
         initComponents();
-        List<ComboBoxWrapper<Banco>> l = JGestionUtils.getWrappedBancos(new BancoController().findWithCuentasBancarias());
+        List<ComboBoxWrapper<Banco>> l = JGestionUtils.getWrappedBancos(new BancoController().findWithCuentasBancarias(true));
         UTIL.loadComboBox(cbBancos, l, false);
         UTIL.loadComboBox(cbDestinoBancosCuentaPropia, l, false);
         UTIL.loadComboBox(cbDestinoBancosExternos, JGestionUtils.getWrappedBancos(new BancoController().findEntities()), false);
@@ -241,7 +241,8 @@ public class PanelOperacionBancariaTransferencia extends javax.swing.JPanel {
         );
 
         jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/information.png"))); // NOI18N
-        jLabel4.setText("<html>La descripción de la transferencia será precedida por el Banco + N° Cuenta + Descripción</html>");
+        jLabel4.setText("<html>La descripción de la transferencia será precedida por el <b>Banco</b> + <b>N° Cuenta</b>.<br>No es necesario que vuelva a colocar esta información en el campo <b>Descripción</b>.</html>");
+        jLabel4.setVerticalAlignment(javax.swing.SwingConstants.TOP);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -250,11 +251,10 @@ public class PanelOperacionBancariaTransferencia extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 315, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel4))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -264,7 +264,7 @@ public class PanelOperacionBancariaTransferencia extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 63, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
