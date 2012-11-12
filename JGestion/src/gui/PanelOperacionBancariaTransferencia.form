@@ -24,27 +24,25 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" attributes="0">
-              <EmptySpace max="-2" attributes="0"/>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                      <Component id="jPanel1" max="32767" attributes="0"/>
-                      <Component id="jPanel2" max="32767" attributes="0"/>
-                  </Group>
-                  <Component id="jLabel4" min="-2" pref="315" max="-2" attributes="0"/>
+                  <Component id="jPanel1" max="32767" attributes="0"/>
+                  <Component id="jPanel2" max="32767" attributes="0"/>
+                  <Component id="jLabel4" max="32767" attributes="0"/>
               </Group>
-              <EmptySpace max="32767" attributes="0"/>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
-              <EmptySpace max="-2" attributes="0"/>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
               <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
               <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="jLabel4" min="-2" pref="39" max="-2" attributes="0"/>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
+              <Component id="jLabel4" pref="63" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -332,7 +330,8 @@
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
           <Image iconType="3" name="/iconos/information.png"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="&lt;html&gt;La descripci&#xf3;n de la transferencia ser&#xe1; precedida por el Banco + N&#xb0; Cuenta + Descripci&#xf3;n&lt;/html&gt;"/>
+        <Property name="text" type="java.lang.String" value="&lt;html&gt;La descripci&#xf3;n de la transferencia ser&#xe1; precedida por el &lt;b&gt;Banco&lt;/b&gt; + &lt;b&gt;N&#xb0; Cuenta&lt;/b&gt;.&lt;br&gt;No es necesario que vuelva a colocar esta informaci&#xf3;n en el campo &lt;b&gt;Descripci&#xf3;n&lt;/b&gt;.&lt;/html&gt;"/>
+        <Property name="verticalAlignment" type="int" value="1"/>
       </Properties>
     </Component>
   </SubComponents>

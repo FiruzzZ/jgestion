@@ -22,6 +22,7 @@ import jpa.controller.CuentabancariaMovimientosJpaController;
 import jpa.controller.OperacionesBancariasJpaController;
 import org.apache.log4j.Logger;
 import utilities.general.UTIL;
+import utilities.gui.SwingUtil;
 import utilities.swing.components.ComboBoxWrapper;
 
 /**
@@ -167,7 +168,7 @@ public class CuentabancariaMovimientosController {
 
     private void displayTransferenciaGUI(Window owner) {
         final PanelOperacionBancariaTransferencia panelTransf = new PanelOperacionBancariaTransferencia();
-        JGestionUtils.getFocusCurrencyFormatterManager(panelTransf.getTfMonto());
+        panelTransf.getTfMonto().addFocusListener(SwingUtil.getCurrencyFormatterFocusListener());
         abm = new JDABM(owner, "Transferencia", true, panelTransf);
         abm.getbAceptar().addActionListener(new ActionListener() {
             @Override
@@ -209,9 +210,9 @@ public class CuentabancariaMovimientosController {
                         } catch (ClassCastException ex) {
                             throw new MessageException("Cuenta bancaria destino no válida");
                         }
-                        descripOrigen = "Out: " + destino.getBanco().getNombre() + " N° " + destino.getNumero() + " (" + descripOrigen + ")";
+                        descripOrigen = destino.getBanco().getNombre() + " N° " + destino.getNumero() + " (" + descripOrigen + ")";
                         cbmOrigen.setDescripcion(descripOrigen);
-                        descripDestino = "In: " + origen.getBanco().getNombre() + " N° " + origen.getNumero();
+                        descripDestino = origen.getBanco().getNombre() + " N° " + origen.getNumero();
                         cbmDestino = new CuentabancariaMovimientos(fechaOP, descripDestino, null, monto, BigDecimal.ZERO, false, UsuarioController.getCurrentUser(), op, destino, null, null);
                     }
                     new CuentabancariaMovimientosJpaController().create(cbmOrigen);

@@ -1,3 +1,4 @@
+alter table cuentabancaria alter column numero type character(22) using numero::character(22);
 ALTER TABLE remesa ADD COLUMN anulada timestamp with time zone;
 ALTER TABLE remito ADD COLUMN anulada timestamp with time zone;
 ALTER TABLE factura_compra ADD COLUMN otros_ivas numeric(12,2) NOT NULL DEFAULT 0;

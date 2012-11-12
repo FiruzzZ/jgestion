@@ -3,6 +3,7 @@ package controller;
 import entity.Banco;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -32,8 +33,8 @@ public class CuentaBancaria implements Serializable {
     @Column(name = "id", nullable = false)
     private Integer id;
     @Basic(optional = false)
-    @Column(name = "numero", nullable = false)
-    private Long numero;
+    @Column(name = "numero", nullable = false, length = 22)//precision = 22, scale = 0)
+    private String numero;
     @Basic(optional = false)
     @Column(name = "activa", nullable = false)
     private boolean activa;
@@ -47,14 +48,6 @@ public class CuentaBancaria implements Serializable {
     public CuentaBancaria() {
     }
 
-    public CuentaBancaria(Integer id, Long numero, boolean activa, BigDecimal saldo, Banco banco) {
-        this.id = id;
-        this.numero = numero;
-        this.activa = activa;
-        this.saldo = saldo;
-        this.banco = banco;
-    }
-
     public Integer getId() {
         return id;
     }
@@ -63,11 +56,11 @@ public class CuentaBancaria implements Serializable {
         this.id = id;
     }
 
-    public Long getNumero() {
+    public String getNumero() {
         return numero;
     }
 
-    public void setNumero(Long numero) {
+    public void setNumero(String numero) {
         this.numero = numero;
     }
 

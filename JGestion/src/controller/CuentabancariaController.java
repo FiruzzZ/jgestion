@@ -12,6 +12,7 @@ import gui.PanelDepositoCheque;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 import javax.swing.JDialog;
@@ -48,21 +49,6 @@ public class CuentabancariaController {
 
     public JDialog initContenedor(JFrame owner) throws MessageException {
         contenedor = new JDContenedor(owner, true, "Administrar Cuentas Bancarias");
-//        contenedor.getTfFiltro().setToolTipText("Filtra por nombre de la Sucursal de Banco");
-//        contenedor.getTfFiltro().addKeyListener(new KeyAdapter() {
-//            @Override
-//            public void keyReleased(KeyEvent e) {
-//                if (contenedor.getTfFiltro().getText().trim().length() > 0) {
-//                    permitirFiltroVacio = true;
-//                    armarQuery(contenedor.getTfFiltro().getText().trim());
-//                } else {
-//                    if (permitirFiltroVacio) {
-//                        permitirFiltroVacio = false;
-//                        armarQuery(contenedor.getTfFiltro().getText().trim());
-//                    }
-//                }
-//            }
-//        });
         contenedor.getbNuevo().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -114,7 +100,7 @@ public class CuentabancariaController {
 //            public void actionPerformed(ActionEvent e) {
 //            }
 //        });
-        UTIL.getDefaultTableModel(contenedor.getjTable1(), new String[]{"id", "Banco", "N° Cuenta", "Activa"}, new int[]{1, 200, 80, 30}, new Class<?>[]{null, null, null, Boolean.class});
+        UTIL.getDefaultTableModel(contenedor.getjTable1(), new String[]{"id", "Banco", "N° Cuenta", "Activa"}, new int[]{1, 200, 120, 20}, new Class<?>[]{null, null, null, Boolean.class});
         UTIL.hideColumnTable(contenedor.getjTable1(), 0);
         //no permite filtro de vacio en el inicio
         permitirFiltroVacio = false;
@@ -198,17 +184,23 @@ public class CuentabancariaController {
 
     private void setEntity(CuentaBancaria o) throws MessageException {
         o.setBanco(((ComboBoxWrapper<Banco>) panelABM.getCbBancos().getSelectedItem()).getEntity());
-        String numeroCuenta = panelABM.getTfNumero().getText();
-        if (numeroCuenta == null || numeroCuenta.trim().length() < 1) {
-            throw new MessageException("Debe ingresar el número de cuenta");
+        String numeroCuenta = panelABM.getTfNumero().getText().trim();
+        if (numeroCuenta == null || numeroCuenta.length() < 1) {
+            throw new MessageException("Número de cuenta no válido, ingrese solo números enteros (hasta 22 dígitos).");
         }
 
         try {
-            o.setNumero(Long.valueOf(numeroCuenta));
+            for (char c : numeroCuenta.toCharArray()) {
+                if (!Character.isDigit(c)) {
+                    throw new NumberFormatException();
+                }
+            }
+            o.setNumero(numeroCuenta);
         } catch (NumberFormatException ex) {
-            throw new MessageException("Número de cuenta no válido, ingrese solo números enteros");
+            throw new MessageException("Número de cuenta no válido, ingrese solo números enteros (hasta 22 dígitos).");
         } catch (Exception ex) {
-            throw new MessageException("Número de cuenta no válido, ingrese solo números enteros");
+            LOG.error("setEntity(CuentaBancaria)", ex);
+            throw new MessageException("Algo salió mal:\n" + ex.getLocalizedMessage());
         }
         o.setActiva(panelABM.getjCheckBox1().isSelected());
     }
@@ -216,7 +208,7 @@ public class CuentabancariaController {
     private void checkConstraints(CuentaBancaria o) throws MessageException {
         String idquery = o.getId() != null ? "o.id <>" + o.getId() + " AND " : "";
         if (!jpaController.findByQuery("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o "
-                + "WHERE " + idquery + " o.banco.id=" + o.getBanco().getId() + " AND o.numero=" + o.getNumero()+"L").isEmpty()) {
+                + "WHERE " + idquery + " o.banco.id=" + o.getBanco().getId() + " AND o.numero='" + o.getNumero() + "'").isEmpty()) {
             throw new MessageException("Ya existe un registro del Banco " + o.getBanco().getNombre() + " con el N° " + o.getNumero());
         }
     }
@@ -255,7 +247,7 @@ public class CuentabancariaController {
 
     private void setPanelABM(CuentaBancaria o) {
         UTIL.setSelectedItem(panelABM.getCbBancos(), o.getBanco().getNombre());
-        panelABM.getTfNumero().setText(o.getNumero().toString());
+        panelABM.getTfNumero().setText(o.getNumero());
         panelABM.getjCheckBox1().setSelected(o.getActiva());
     }
 
@@ -275,7 +267,7 @@ public class CuentabancariaController {
                 }
             }
         });
-        UTIL.loadComboBox(panelDeposito.getCbDepositoBancos(), JGestionUtils.getWrappedBancos(new BancoController().findWithCuentasBancarias()), true);
+        UTIL.loadComboBox(panelDeposito.getCbDepositoBancos(), JGestionUtils.getWrappedBancos(new BancoController().findWithCuentasBancarias(true)), true);
         panelDeposito.getCbOperacionesBancarias().addItem(new OperacionesBancariasController().getOperacion(OperacionesBancariasController.DEPOSITO).getNombre());
         abm = new JDABM(null, "Deposito de cheque", true, panelDeposito);
         abm.getbAceptar().addActionListener(new ActionListener() {

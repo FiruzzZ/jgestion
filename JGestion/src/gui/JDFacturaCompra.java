@@ -37,6 +37,9 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         initComponents();
         setLocation(this.getOwner().getX() + 100, this.getOwner().getY() + 50);
         labelCodigoNoRegistrado.setVisible(false);
+        labelDescuento.setVisible(false);
+        cbDesc.setVisible(false);
+        tfProductoDesc.setVisible(false);
     }
 
     /**
@@ -1391,12 +1394,8 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         cbCaja.setVisible(false);
         labelDescuento.setVisible(false);
         cbDesc.setVisible(false);
-        tfDescuento.setVisible(false);
-        panelOpcionesCompra.setVisible(false);
-        jLabel1.setVisible(false);
-        tfTotalImpuestosNoRecuperables.setVisible(false);
-        jLabel5.setVisible(false);
-        tfTotalPercepcion.setVisible(false);
+        tfProductoDesc.setVisible(false);
+//        panelOpcionesCompra.setVisible(false);
         pack();
     }
 

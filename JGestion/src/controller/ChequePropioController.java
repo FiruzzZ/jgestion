@@ -217,7 +217,7 @@ public class ChequePropioController implements ActionListener {
                     } catch (MessageException ex) {
                         abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
                     }
-                    UTIL.loadComboBox(panelABM.getCbBancos(), JGestionUtils.getWrappedBancos(new BancoController().findWithCuentasBancarias()), true);
+                    UTIL.loadComboBox(panelABM.getCbBancos(), JGestionUtils.getWrappedBancos(new BancoController().findWithCuentasBancarias(true)), true);
                     UTIL.loadComboBox(panelABM.getCbBancoSucursales(), null, null, "<Seleccionar Banco>");
                 } else if (boton.equals(panelABM.getbAddSucursal())) {
                     Banco bancoSelected = getSelectedBancoFromPanel();
@@ -368,7 +368,7 @@ public class ChequePropioController implements ActionListener {
         if (!selectionMode) {
             UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
         }
-        List<Banco> l = new BancoController().findWithCuentasBancarias();
+        List<Banco> l = new BancoController().findWithCuentasBancarias(true);
         if (l.isEmpty()) {
             throw new MessageException("Para emitor cheques propios, primero tiene que crear una Cuenta bancaria relacionado a un Banco."
                     + "\nDatos Generales > Bancos/Cuentas > Cuentas Bancarias");
@@ -428,7 +428,7 @@ public class ChequePropioController implements ActionListener {
     private void initPanelABM() {
         panelABM = new PanelABMCheques();
         panelABM.setUIChequePropio();
-        UTIL.loadComboBox(panelABM.getCbBancos(), JGestionUtils.getWrappedBancos(new BancoController().findWithCuentasBancarias()), false);
+        UTIL.loadComboBox(panelABM.getCbBancos(), JGestionUtils.getWrappedBancos(new BancoController().findWithCuentasBancarias(true)), false);
 //        UTIL.loadComboBox(panelABM.getCbBancoSucursales(), null, null, "<Seleccionar un Banco>");
         UTIL.loadComboBox(panelABM.getCbEmisor(), JGestionUtils.getWrappedProveedores(new ProveedorController().findEntities()), false);
 //        UTIL.loadComboBox(panelABM.getCbLibrado(), new LibradoJpaController().findEntities(), false);

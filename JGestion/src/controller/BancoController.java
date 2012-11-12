@@ -401,7 +401,16 @@ public class BancoController {
     }
 
     @SuppressWarnings("unchecked")
-    public List<Banco> findWithCuentasBancarias() {
-        return DAO.getEntityManager().createQuery("SELECT o.banco FROM " + CuentaBancaria.class.getSimpleName() + " o").getResultList();
+    public List<Banco> findWithCuentasBancarias(boolean activa) {
+        return DAO.getEntityManager().createQuery("SELECT o.banco FROM " + CuentaBancaria.class.getSimpleName() + " o WHERE o.activa=" + activa + " GROUP BY o.banco").getResultList();
+    }
+
+    /**
+     * Same result using {@link #findWithCuentasBancarias(Boolean.FALSE)} &&  {@link #findWithCuentasBancarias(Boolean.TRUE)} 
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public List<Banco> findAllWithCuentasBancarias() {
+        return DAO.getEntityManager().createQuery("SELECT o.banco FROM " + CuentaBancaria.class.getSimpleName() + " o GROUP BY o.banco").getResultList();
     }
 }
