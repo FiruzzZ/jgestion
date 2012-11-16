@@ -7,6 +7,8 @@ import controller.exceptions.NonexistentEntityException;
 import entity.*;
 import gui.*;
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.Label;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
@@ -697,10 +699,12 @@ public class ProductoController implements ActionListener, KeyListener {
     public void initMovimientoProducto(JFrame frame, boolean modal) {
         panelito = new PanelBuscadorMovimientosPro();
         UTIL.loadComboBox(panelito.getCbMarcas(), JGestionUtils.getWrappedMarcas(new MarcaJpaController().findMarcaEntities()), true);
-        UTIL.loadComboBox(panelito.getCbRubros(), new RubroJpaController().findRubros(), true);
-        UTIL.loadComboBox(panelito.getCbSubRubros(), new RubroJpaController().findRubros(), true);
+        UTIL.loadComboBox(panelito.getCbRubros(), JGestionUtils.getWrappedRubros(new RubroJpaController().findRubros()), true);
+        UTIL.loadComboBox(panelito.getCbSubRubros(), JGestionUtils.getWrappedRubros(new RubroJpaController().findRubros()), true);
         UTIL.loadComboBox(panelito.getCbSucursales(), new UsuarioHelper().getSucursales(), true);
         buscador = new JDBuscador(frame, "Movimientos de productos", modal, panelito);
+        buscador.getPanelInferior().setVisible(true);
+        buscador.addResumeItem("Total", new JTextField(8));
         buscador.agrandar(200, 0);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
@@ -827,10 +831,10 @@ public class ProductoController implements ActionListener, KeyListener {
             sb.append(" AND p.marca = ").append(((ComboBoxWrapper<Marca>) panelito.getCbMarcas().getSelectedItem()).getId());
         }
         if (panelito.getCbRubros().getSelectedIndex() > 0) {
-            sb.append(" AND p.rubro = ").append(((Rubro) panelito.getCbRubros().getSelectedItem()).getIdrubro());
+            sb.append(" AND p.rubro = ").append(((ComboBoxWrapper<Rubro>) panelito.getCbRubros().getSelectedItem()).getId());
         }
         if (panelito.getCbSubRubros().getSelectedIndex() > 0) {
-            sb.append(" AND p.subrubro = ").append(((Rubro) panelito.getCbSubRubros().getSelectedItem()).getIdrubro());
+            sb.append(" AND p.subrubro = ").append(((ComboBoxWrapper<Rubro>) panelito.getCbSubRubros().getSelectedItem()).getId());
         }
         if (panelito.getCbSucursales().getSelectedIndex() > 0) {
             sb.append(" AND sucursal.id = ").append(((Sucursal) panelito.getCbSucursales().getSelectedItem()).getId());
@@ -948,8 +952,8 @@ public class ProductoController implements ActionListener, KeyListener {
             buscador.getDtm().addRow(new Object[]{
                         producto,
                         producto.getCodigo(),
-                        producto.getMarca(),
-                        producto.getRubro(),
+                        producto.getMarca().getNombre(),
+                        producto.getRubro().getNombre(),
                         (producto.getSubrubro() != null ? producto.getSubrubro() : null)
                     });
         }

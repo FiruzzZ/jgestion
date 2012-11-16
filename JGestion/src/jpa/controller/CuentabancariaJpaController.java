@@ -1,7 +1,7 @@
 package jpa.controller;
 
 import controller.DAO;
-import controller.CuentaBancaria;
+import entity.CuentaBancaria;
 import javax.persistence.EntityManager;
 
 /**

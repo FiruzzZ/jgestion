@@ -1,3 +1,4 @@
+ALTER TABLE cheque_terceros ALTER COLUMN cliente DROP NOT NULL;
 alter table cuentabancaria alter column numero type character(22) using numero::character(22);
 ALTER TABLE remesa ADD COLUMN anulada timestamp with time zone;
 ALTER TABLE remito ADD COLUMN anulada timestamp with time zone;

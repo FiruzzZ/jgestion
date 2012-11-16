@@ -29,6 +29,7 @@ public class PanelABMCheques extends javax.swing.JPanel {
      * Si se debe crear el cheque cuando se aprieta el botón ACEPTAR
      */
     private boolean persistible = false;
+    private boolean sinComprobante = false;
 
     /**
      * Creates new form PanelABMCheques
@@ -445,5 +446,13 @@ private void checkEndosadoStateChanged(javax.swing.event.ChangeEvent evt) {//GEN
 
     public void setPersistible(boolean persistible) {
         this.persistible = persistible;
+    }
+
+    public boolean isSinComprobante() {
+        return sinComprobante;
+    }
+
+    public void setSinComprobante(boolean selectableCliente) {
+        sinComprobante = selectableCliente;
     }
 }

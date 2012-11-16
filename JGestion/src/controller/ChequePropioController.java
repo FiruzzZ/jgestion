@@ -1,5 +1,6 @@
 package controller;
 
+import entity.CuentaBancaria;
 import controller.exceptions.DatabaseErrorException;
 import controller.exceptions.MessageException;
 import entity.Banco;
@@ -41,10 +42,9 @@ import utilities.swing.components.NumberRenderer;
  */
 public class ChequePropioController implements ActionListener {
 
-    public final String CLASS_NAME = ChequePropio.class.getSimpleName();
+    private static Logger LOG = Logger.getLogger(ChequePropioController.class);
     private ChequePropio EL_OBJECT;
     private JDContenedor contenedor;
-    private static Logger LOG = Logger.getLogger(ChequePropioController.class);
     private JDABM abm;
     private PanelABMCheques panelABM;
     private ChequePropioJpaController jpaController;
@@ -74,7 +74,7 @@ public class ChequePropioController implements ActionListener {
         if (isEditing) {
             setPanel(EL_OBJECT);
         }
-        abm = new JDABM(contenedor, "ABM - " + CLASS_NAME + "s", true, panelABM);
+        abm = new JDABM(contenedor, "ABM - " + jpaController.getEntityClass().getSimpleName() + "s", true, panelABM);
         abm.setListener(this);
         return abm;
     }
@@ -119,63 +119,64 @@ public class ChequePropioController implements ActionListener {
         if (e.getSource() instanceof JButton) {
             JButton boton = (JButton) e.getSource();
             //<editor-fold defaultstate="collapsed" desc="contenedor Actions">
-            if (contenedor != null) {
-                if (boton.equals(contenedor.getbNuevo())) {
-                    try {
-                        EL_OBJECT = null;
-                        initABM(false);
-                        abm.setVisible(true);
-                    } catch (MessageException ex) {
-                        contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                    } catch (Exception ex) {
-                        contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                        LOG.error(ex);
-                    }
-                } else if (boton.equals(contenedor.getbModificar())) {
-                    try {
-                        int selectedRow = contenedor.getjTable1().getSelectedRow();
-                        if (selectedRow > -1) {
-                            EL_OBJECT = jpaController.find(Integer.valueOf((contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
-                            if (EL_OBJECT == null) {
-                                throw new MessageException("Debe elegir una fila de la tabla");
-                            }
-                            initABM(true);
-                            abm.setVisible(true);
-
-                        }
-                    } catch (MessageException ex) {
-                        contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                    } catch (Exception ex) {
-                        contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                        LOG.error(ex);
-                    }
-
-                } else if (boton.equals(contenedor.getbBorrar())) {
-                    try {
-                        int selectedRow = contenedor.getjTable1().getSelectedRow();
-                        if (selectedRow > -1) {
-                            EL_OBJECT = DAO.getEntityManager().find(ChequePropio.class,
-                                    Integer.valueOf((contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
-                        }
-                        if (EL_OBJECT == null) {
-                            throw new MessageException("No hay " + CLASS_NAME + " seleccionado");
-                        }
-                        jpaController.remove(EL_OBJECT);
-                    } catch (MessageException ex) {
-                        contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                    } catch (Exception ex) {
-                        contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                        LOG.error(ex);
-                    }
-                } else if (boton.getName().equalsIgnoreCase("Print")) {
-                    //no implementado aun...
-                } else if (boton.getName().equalsIgnoreCase("exit")) {
-                    contenedor.dispose();
-                    contenedor = null;
-                }
-            } //</editor-fold>
+//            if (contenedor != null) {
+//                if (boton.equals(contenedor.getbNuevo())) {
+//                    try {
+//                        EL_OBJECT = null;
+//                        initABM(false);
+//                        abm.setVisible(true);
+//                    } catch (MessageException ex) {
+//                        contenedor.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 2);
+//                    } catch (Exception ex) {
+//                        contenedor.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 0);
+//                        LOG.error(ex);
+//                    }
+//                } else if (boton.equals(contenedor.getbModificar())) {
+//                    try {
+//                        int selectedRow = contenedor.getjTable1().getSelectedRow();
+//                        if (selectedRow > -1) {
+//                            EL_OBJECT = jpaController.find(Integer.valueOf((contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
+//                            if (EL_OBJECT == null) {
+//                                throw new MessageException("Debe elegir una fila de la tabla");
+//                            }
+//                            initABM(true);
+//                            abm.setVisible(true);
+//
+//                        }
+//                    } catch (MessageException ex) {
+//                        contenedor.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 2);
+//                    } catch (Exception ex) {
+//                        contenedor.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 0);
+//                        LOG.error(ex);
+//                    }
+//
+//                } else if (boton.equals(contenedor.getbBorrar())) {
+//                    try {
+//                        int selectedRow = contenedor.getjTable1().getSelectedRow();
+//                        if (selectedRow > -1) {
+//                            EL_OBJECT = DAO.getEntityManager().find(ChequePropio.class,
+//                                    Integer.valueOf((contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
+//                        }
+//                        if (EL_OBJECT == null) {
+//                            throw new MessageException("No hay " + jpaController.getEntityClass().getSimpleName() + " seleccionado");
+//                        }
+//                        jpaController.remove(EL_OBJECT);
+//                    } catch (MessageException ex) {
+//                        contenedor.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 2);
+//                    } catch (Exception ex) {
+//                        contenedor.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 0);
+//                        LOG.error(ex);
+//                    }
+//                } else if (boton.getName().equalsIgnoreCase("Print")) {
+//                    //no implementado aun...
+//                } else if (boton.getName().equalsIgnoreCase("exit")) {
+//                    contenedor.dispose();
+//                    contenedor = null;
+//                }
+//            } 
+            //</editor-fold>
             //<editor-fold defaultstate="collapsed" desc="abm Actions">
-            else if (abm != null && panelABM != null) {
+            if (abm != null && panelABM != null) {
                 if (boton.equals(abm.getbAceptar())) {
                     try {
                         Integer id = null;
@@ -199,9 +200,9 @@ public class ChequePropioController implements ActionListener {
                         EL_OBJECT = cheque;
                         abm.dispose();
                     } catch (MessageException ex) {
-                        abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
+                        abm.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 2);
                     } catch (Exception ex) {
-                        abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
+                        abm.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 2);
                         LOG.error(ex);
                     }
                 } else if (boton.equals(abm.getbCancelar())) {
@@ -215,7 +216,7 @@ public class ChequePropioController implements ActionListener {
                         initABM.setLocationRelativeTo(abm);
                         initABM.setVisible(true);
                     } catch (MessageException ex) {
-                        abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
+                        abm.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 2);
                     }
                     UTIL.loadComboBox(panelABM.getCbBancos(), JGestionUtils.getWrappedBancos(new BancoController().findWithCuentasBancarias(true)), true);
                     UTIL.loadComboBox(panelABM.getCbBancoSucursales(), null, null, "<Seleccionar Banco>");
@@ -227,7 +228,7 @@ public class ChequePropioController implements ActionListener {
                         initABM.setVisible(true);
                         UTIL.setSelectedItem(panelABM.getCbBancos(), bancoSelected.toString());
                     } catch (MessageException ex) {
-                        abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
+                        abm.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 2);
                     }
                 } else if (boton.equals(panelABM.getbAddEmisor())) {
                     ProveedorController c = new ProveedorController();
@@ -243,12 +244,25 @@ public class ChequePropioController implements ActionListener {
                 if (boton.equals(jdChequeManager.getbBuscar())) {
                     try {
                         armarQuery(false);
-                    } catch (DatabaseErrorException ex) {
+                    } catch (Exception ex) {
                         JOptionPane.showMessageDialog(null, ex.getMessage(), "Error ejecutando consulta", JOptionPane.ERROR_MESSAGE);
                     }
-                } else if (boton.equals(jdChequeManager.getbLimpiar())) {
+                } else if (boton.equals(jdChequeManager.getBtnNuevo())) {
                 } else if (boton.equals(jdChequeManager.getbACaja())) {
                 } else if (boton.equals(jdChequeManager.getbAnular())) {
+                    int row = jdChequeManager.getjTable1().getSelectedRow();
+                    if (row > -1) {
+                        ChequePropio cheque = jpaController.find((Integer) jdChequeManager.getjTable1().getModel().getValueAt(row, 0));
+                        if (cheque.getChequeEstado().equals(ChequeEstado.CARTERA)) {
+                            if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(jdChequeManager, "¿Confirma la anulación del Cheque N°" + cheque.getNumero() + "?")) {
+                                cheque.setEstado(ChequeEstado.ANULADO.getId());
+                                jpaController.merge(cheque);
+                            }
+                        } else {
+                            JOptionPane.showMessageDialog(jdChequeManager, "Solo los cheques en " + ChequeEstado.CARTERA + " pueden ser depositados", "Error", JOptionPane.WARNING_MESSAGE);
+                        }
+                        armarQuery(false);
+                    }
                 } else if (boton.equals(jdChequeManager.getbDeposito())) {
 //                    int row = jdChequeManager.getjTable1().getSelectedRow();
 //                    if (row > -1) {
@@ -258,7 +272,7 @@ public class ChequePropioController implements ActionListener {
                 } else if (boton.equals(jdChequeManager.getbImprimir())) {
                     try {
                         armarQuery(true);
-                    } catch (DatabaseErrorException ex) {
+                    } catch (Exception ex) {
                         JOptionPane.showMessageDialog(null, ex.getMessage(), "Error ejecutando consulta", JOptionPane.ERROR_MESSAGE);
                     }
                 }
@@ -343,10 +357,10 @@ public class ChequePropioController implements ActionListener {
             idQuery = "o.id<>" + object.getId() + " AND ";
         }
         try {
-            DAO.getEntityManager().createQuery("SELECT o FROM " + CLASS_NAME + " o "
+            DAO.getEntityManager().createQuery("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o "
                     + "WHERE " + idQuery
                     + " o.numero=" + object.getNumero(), object.getClass()).getSingleResult();
-            throw new MessageException("Ya existe un " + CLASS_NAME + " con este número");
+            throw new MessageException("Ya existe un " + jpaController.getEntityClass().getSimpleName() + " con este número");
         } catch (NoResultException noResultException) {
         }
     }
@@ -374,6 +388,9 @@ public class ChequePropioController implements ActionListener {
                     + "\nDatos Generales > Bancos/Cuentas > Cuentas Bancarias");
         }
         jdChequeManager = new JDChequesManager(parent, true);
+        jdChequeManager.getBtnNuevo().setEnabled(false);
+        jdChequeManager.getbACaja().setEnabled(false);
+        jdChequeManager.getbDeposito().setEnabled(false);
         jdChequeManager.getLabelEmisor().setText("Emitido a");
         jdChequeManager.setTitle("Administración de Cheques Propios");
         jdChequeManager.getCbBancoSucursales().setVisible(false);
@@ -456,7 +473,7 @@ public class ChequePropioController implements ActionListener {
         panelABM.getbAddBanco().addActionListener(this);
     }
 
-    private void armarQuery(boolean imprimir) throws DatabaseErrorException {
+    private void armarQuery(boolean imprimir) {
         StringBuilder query = new StringBuilder("SELECT "
                 + " c.id, c.numero, TO_CHAR(c.fecha_cheque,'DD/MM/YYYY') as fecha_cheque, ccc.nombre as cliente, TO_CHAR(c.fecha_cobro,'DD/MM/YYYY') as fecha_cobro,"
                 + " banco.nombre as banco, banco_sucursal.nombre as sucursal, c.importe, cheque_estado.nombre as estado, c.cruzado"
@@ -521,13 +538,18 @@ public class ChequePropioController implements ActionListener {
         }
     }
 
-    private void cargarTablaChequeManager(String query) throws DatabaseErrorException {
-        DefaultTableModel dtm = UTIL.getDtm(jdChequeManager.getjTable1());
-        dtm.setRowCount(0);
-        List<?> l = DAO.getNativeQueryResultList(query);
-        for (Object object : l) {
-            //"id", "Nº Cheque", "F. Cheque", "Emisor", "F. Cobro", "Banco", "Sucursal", "Importe", "Estado", "Cruzado", "Endosatario", "F. Endoso", "C. Ingreso", "C. Egreso", "Observacion", "Usuario"};
-            dtm.addRow((Object[]) object);
+    private void cargarTablaChequeManager(String query) {
+        try {
+            DefaultTableModel dtm = UTIL.getDtm(jdChequeManager.getjTable1());
+            dtm.setRowCount(0);
+            List<?> l = DAO.getNativeQueryResultList(query);
+            for (Object object : l) {
+                //"id", "Nº Cheque", "F. Cheque", "Emisor", "F. Cobro", "Banco", "Sucursal", "Importe", "Estado", "Cruzado", "Endosatario", "F. Endoso", "C. Ingreso", "C. Egreso", "Observacion", "Usuario"};
+                dtm.addRow((Object[]) object);
+            }
+        } catch (DatabaseErrorException ex) {
+            LOG.error(ex, ex);
+            JOptionPane.showMessageDialog(jdChequeManager, ex.getLocalizedMessage(), "Error recuperando Cheques Propios", JOptionPane.ERROR_MESSAGE);
         }
     }
 

@@ -1,6 +1,6 @@
 package jgestion;
 
-import controller.CuentaBancaria;
+import entity.CuentaBancaria;
 import entity.*;
 import java.awt.Color;
 import java.awt.event.FocusEvent;
@@ -63,6 +63,14 @@ public class JGestionUtils {
         List<ComboBoxWrapper<Marca>> l = new ArrayList<ComboBoxWrapper<Marca>>(list.size());
         for (Marca o : list) {
             l.add(new ComboBoxWrapper<Marca>(o, o.getId(), o.getNombre()));
+        }
+        return l;
+    }
+
+    public static List<ComboBoxWrapper<Rubro>> getWrappedRubros(List<Rubro> list) {
+        List<ComboBoxWrapper<Rubro>> l = new ArrayList<ComboBoxWrapper<Rubro>>(list.size());
+        for (Rubro o : list) {
+            l.add(new ComboBoxWrapper<Rubro>(o, o.getIdrubro(), o.getNombre()));
         }
         return l;
     }

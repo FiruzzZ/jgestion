@@ -113,7 +113,6 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenuItem13 = new javax.swing.JMenuItem();
         jMenuItem20 = new javax.swing.JMenuItem();
         jSeparator5 = new javax.swing.JPopupMenu.Separator();
-        jMenuItem39 = new javax.swing.JMenuItem();
         jMenuItem43 = new javax.swing.JMenuItem();
         jMenu6 = new javax.swing.JMenu();
         jMenuItem8 = new javax.swing.JMenuItem();
@@ -168,6 +167,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenuReportes = new javax.swing.JMenu();
         jMenu24 = new javax.swing.JMenu();
         jMenuItem67 = new javax.swing.JMenuItem();
+        jMenuItem39 = new javax.swing.JMenuItem();
         jMenuItem72 = new javax.swing.JMenuItem();
         jMenuItem44 = new javax.swing.JMenuItem();
         jMenuItem46 = new javax.swing.JMenuItem();
@@ -435,15 +435,6 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         });
         jMenu5.add(jMenuItem20);
         jMenu5.add(jSeparator5);
-
-        jMenuItem39.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/lupa-simple.png"))); // NOI18N
-        jMenuItem39.setText("Movimientos");
-        jMenuItem39.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem39ActionPerformed(evt);
-            }
-        });
-        jMenu5.add(jMenuItem39);
 
         jMenuItem43.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/lupa-simple.png"))); // NOI18N
         jMenuItem43.setText("Listados");
@@ -791,7 +782,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenuBar1.add(jMenu9);
 
         jMenuReportes.setMnemonic('r');
-        jMenuReportes.setText("Reportes");
+        jMenuReportes.setText("Informes");
 
         jMenu24.setText("Informe Comprobantes..");
 
@@ -804,6 +795,15 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenu24.add(jMenuItem67);
 
         jMenuReportes.add(jMenu24);
+
+        jMenuItem39.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/lupa-simple.png"))); // NOI18N
+        jMenuItem39.setText("Movimientos de Productos");
+        jMenuItem39.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem39ActionPerformed(evt);
+            }
+        });
+        jMenuReportes.add(jMenuItem39);
 
         jMenuItem72.setText("Movimientos generales");
         jMenuItem72.addActionListener(new java.awt.event.ActionListener() {

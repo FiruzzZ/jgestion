@@ -1,6 +1,6 @@
 package entity.enums;
 
-import controller.CuentaBancaria;
+import entity.CuentaBancaria;
 import entity.Cheque;
 import entity.ChequePropio;
 import entity.ChequeTerceros;
