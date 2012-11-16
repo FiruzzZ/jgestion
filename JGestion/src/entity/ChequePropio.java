@@ -1,6 +1,5 @@
 package entity;
 
-import controller.CuentaBancaria;
 import entity.enums.ChequeEstado;
 import java.io.Serializable;
 import java.math.BigDecimal;

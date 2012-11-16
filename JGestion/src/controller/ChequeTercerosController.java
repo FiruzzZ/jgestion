@@ -62,7 +62,7 @@ public class ChequeTercerosController implements ActionListener {
 
     private ChequeTerceros initABMReemplazo(Window owner, ChequeTerceros toReplaced) throws MessageException {
         UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
-        initPanelABM();
+        initPanelABM(false, false);
 //        setPanel(toReplaced);
         panelABM.getTfImporte().setText(UTIL.PRECIO_CON_PUNTO.format(toReplaced.getImporte()));
         panelABM.getTaObservacion().setText("Reemplazo de: " + toReplaced.getBanco().getNombre() + ", N°" + toReplaced.getNumero());
@@ -79,7 +79,7 @@ public class ChequeTercerosController implements ActionListener {
         if (isEditing && EL_OBJECT == null) {
             throw new MessageException("Debe elegir una fila de la tabla");
         }
-        initPanelABM();
+        initPanelABM(false, false);
         UTIL.setSelectedItem(panelABM.getCbEmisor(), cliente);
         if (isEditing) {
             setPanel(EL_OBJECT);
@@ -91,12 +91,26 @@ public class ChequeTercerosController implements ActionListener {
         return EL_OBJECT;
     }
 
-    private void initPanelABM() {
+    private void initPanelABM(boolean persistir, boolean selectableCliente) {
         panelABM = new PanelABMCheques();
         panelABM.setUIChequeTerceros();
+        panelABM.setPersistible(persistir);
+        panelABM.setSinComprobante(selectableCliente);
         UTIL.loadComboBox(panelABM.getCbBancos(), new BancoController().findEntities(), true);
 //        UTIL.loadComboBox(panelABM.getCbBancoSucursales(), null, null, "<Seleccionar un Banco>");
-        UTIL.loadComboBox(panelABM.getCbEmisor(), new ClienteController().findEntities(), false);
+        UTIL.loadComboBox(panelABM.getCbEmisor(), new ClienteController().findEntities(), selectableCliente);
+    }
+
+    private ChequeTerceros initABMSinComprobante(Window owner) throws MessageException {
+        EL_OBJECT = null;
+        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
+        initPanelABM(true, true);
+        UTIL.loadComboBox(panelABM.getCbEmisor(), new ClienteController().findEntities(), true);
+        abm = new JDABM(owner, null, true, panelABM);
+        abm.setTitle("ABM - Cheque Terceros");
+        abm.setListener(this);
+        abm.setVisible(true);
+        return EL_OBJECT;
     }
 
     private void setPanel(ChequeTerceros cheque) {
@@ -115,7 +129,7 @@ public class ChequeTercerosController implements ActionListener {
 
     private ChequeTerceros getEntity() throws MessageException {
         Date fechaCheque, fechaCobro, fechaEndoso = null;
-        Cliente cliente;
+        Cliente cliente = null;
         Banco banco;
         Long numero = null;
         BigDecimal importe = null;
@@ -154,7 +168,13 @@ public class ChequeTercerosController implements ActionListener {
 //            throw new MessageException("Sucursal de Banco no válida");
 //        }
 //        librado = (Librado) panelABM.getCbLibrado().getSelectedItem();
-        cliente = (Cliente) panelABM.getCbEmisor().getSelectedItem();
+        try {
+            cliente = (Cliente) panelABM.getCbEmisor().getSelectedItem();
+        } catch (ClassCastException e) {
+            if (!panelABM.isSinComprobante()) {
+            }
+        }
+
         cruzado = panelABM.getCheckCruzado().isSelected();
         observacion = panelABM.getTaObservacion().getText();
         if (panelABM.getCheckEndosado().isSelected()) {
@@ -237,8 +257,8 @@ public class ChequeTercerosController implements ActionListener {
                         } catch (DatabaseErrorException ex) {
                             JOptionPane.showMessageDialog(null, ex.getMessage(), "Error ejecutando consulta", JOptionPane.ERROR_MESSAGE);
                         }
-                    } else if (boton.equals(jdChequeManager.getbLimpiar())) {
-                        //no action
+                    } else if (boton.equals(jdChequeManager.getBtnNuevo())) {
+                        initABMSinComprobante(jdChequeManager);
                     } else if (boton.equals(jdChequeManager.getbACaja())) {
                         //no action
                     } else if (boton.equals(jdChequeManager.getbAnular())) {
@@ -389,7 +409,7 @@ public class ChequeTercerosController implements ActionListener {
                 + ", usuario.nick as usuario "
                 + " FROM cheque_terceros c "
                 + " JOIN banco ON (c.banco = banco.id) "
-                + " JOIN cliente ON (c.cliente = cliente.id) "
+                + " LEFT JOIN cliente ON (c.cliente = cliente.id) "
                 + " JOIN usuario ON (c.usuario = usuario.id) "
                 + " JOIN cheque_estado  ON (c.estado  = cheque_estado.id)"
                 //                + " LEFT JOIN banco_sucursal ON (c.banco_sucursal = banco_sucursal.id) "

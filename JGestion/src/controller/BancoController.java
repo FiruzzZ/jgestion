@@ -1,5 +1,6 @@
 package controller;
 
+import entity.CuentaBancaria;
 import controller.exceptions.DatabaseErrorException;
 import controller.exceptions.IllegalOrphanException;
 import controller.exceptions.MessageException;

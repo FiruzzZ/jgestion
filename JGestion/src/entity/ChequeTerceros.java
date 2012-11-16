@@ -26,8 +26,8 @@ public class ChequeTerceros extends Cheque implements Serializable {
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @JoinColumn(name = "cliente", nullable = false)
-    @ManyToOne(optional = false)
+    @JoinColumn(name = "cliente")//, nullable = false)
+    @ManyToOne//(optional = false)
     private Cliente cliente;
 
     public ChequeTerceros() {

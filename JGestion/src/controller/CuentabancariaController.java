@@ -1,5 +1,6 @@
 package controller;
 
+import entity.CuentaBancaria;
 import controller.exceptions.MessageException;
 import entity.Banco;
 import entity.ChequeTerceros;

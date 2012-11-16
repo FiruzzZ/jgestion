@@ -1,4 +1,3 @@
-
 package entity;
 
 import java.io.Serializable;
@@ -31,11 +30,12 @@ import javax.persistence.UniqueConstraint;
     @NamedQuery(name = "Rubro.findByTipo", query = "SELECT r FROM Rubro r WHERE r.tipo = :tipo ORDER BY r.nombre")
 })
 public class Rubro implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
     @Column(name = "idrubro", nullable = false)
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idrubro;
     @Column(name = "codigo", length = 50)
     private String codigo;
@@ -45,10 +45,6 @@ public class Rubro implements Serializable {
     @Basic(optional = false)
     @Column(name = "tipo", nullable = false)
     private short tipo;
-//    @OneToMany(mappedBy = "rubro")
-//    private List<Cliente> clienteList;
-//    @OneToMany(mappedBy = "rubro")
-//    private List<Proveedor> proveedorList;
 
     public Rubro() {
     }
@@ -98,19 +94,15 @@ public class Rubro implements Serializable {
 //    public List<Cliente> getClienteList() {
 //        return clienteList;
 //    }
-
 //    public void setClienteList(List<Cliente> clienteList) {
 //        this.clienteList = clienteList;
 //    }
-
 //    public List<Proveedor> getProveedorList() {
 //        return proveedorList;
 //    }
-
 //    public void setProveedorList(List<Proveedor> proveedorList) {
 //        this.proveedorList = proveedorList;
 //    }
-
     @Override
     public int hashCode() {
         int hash = 0;
@@ -135,5 +127,4 @@ public class Rubro implements Serializable {
     public String toString() {
         return this.getNombre();
     }
-
 }
