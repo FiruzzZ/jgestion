@@ -616,7 +616,7 @@ public class ReciboController implements ActionListener, FocusListener {
 
     private void initBuscador() {
         buscador.setParaRecibos();
-        UTIL.loadComboBox(buscador.getCbClieProv(), new ClienteController().findAllWrapped(), true);
+        UTIL.loadComboBox(buscador.getCbClieProv(), JGestionUtils.getWrappedClientes(new ClienteController().findEntities()), true);
         UTIL.loadComboBox(buscador.getCbCaja(), new UsuarioHelper().getCajas(Boolean.TRUE), true);
         UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), true);
         UTIL.getDefaultTableModel(

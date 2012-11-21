@@ -318,13 +318,21 @@ public class CtacteClienteJpaController implements ActionListener {
 
             query += " AND ccc.fecha_carga >= '" + resumenCtaCtes.getDcDesde() + "'";
         }
-
+        if (resumenCtaCtes.getCheckExcluirPagadas().isSelected()) {
+            query += " AND (ccc.importe - ccc.entregado) > 0";
+        }
+        if (resumenCtaCtes.getCheckExcluirAnuladas().isSelected()) {
+            query += " AND fv.anulada = FALSE";
+        }
         query += " ORDER BY fv.numero";
         System.out.println(query);
         cargarTablaResumen(query);
         if (imprimirResumen) {
-            doReportResumenCCC(((Cliente) resumenCtaCtes.getCbClieProv().getSelectedItem()),
-                    resumenCtaCtes.getDcDesde() != null ? (" AND ccc.fecha_carga >= '" + UTIL.DATE_FORMAT.format(resumenCtaCtes.getDcDesde()) + "'") : "");
+            String filters = (resumenCtaCtes.getDcDesde() != null ? (" AND ccc.fecha_carga >= '" + UTIL.DATE_FORMAT.format(resumenCtaCtes.getDcDesde()) + "'") : "")
+                    + (resumenCtaCtes.getCheckExcluirPagadas().isSelected() ? " AND (ccc.importe - ccc.entregado) > 0" : "")
+                    + (resumenCtaCtes.getCheckExcluirAnuladas().isSelected() ? " AND fv.anulada=FALSE" : "");
+            String filterDate = (resumenCtaCtes.getDcDesde() != null ? (" AND ccc.fecha_carga >= '" + UTIL.DATE_FORMAT.format(resumenCtaCtes.getDcDesde()) + "'") : "");
+            doReportResumenCCC(((Cliente) resumenCtaCtes.getCbClieProv().getSelectedItem()), filterDate, filters);
         }
     }
 
@@ -358,12 +366,13 @@ public class CtacteClienteJpaController implements ActionListener {
         }
     }
 
-    private void doReportResumenCCC(Cliente cliente, String filterdate) throws Exception {
+    private void doReportResumenCCC(Cliente cliente, String filterdate, String filters) throws Exception {
         Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_ResumenCCC.jasper", "Resumen CCC");
         r.addCurrent_User();
         r.addParameter("CLIENTE_ID", cliente.getId());
         r.addParameter("SUBREPORT_DIR", Reportes.FOLDER_REPORTES);
         r.addParameter("FILTER_DATE", filterdate == null ? "" : filterdate);
+        r.addParameter("FILTERS", filterdate == null ? "" : filters);
         r.viewReport();
     }
 

@@ -308,7 +308,7 @@ public abstract class DAO implements Runnable {
      * there is no conditions.
      * @return a List of object
      */
-    static List<?> findEntities(Class object, String conditions) {
+    static List<?> findEntities(Class<?> object, String conditions) {
         if (object == null) {
             throw new IllegalArgumentException("El parámetro object can not be NULL");
         }

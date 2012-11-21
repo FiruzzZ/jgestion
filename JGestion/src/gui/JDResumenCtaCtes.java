@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import java.util.Date;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTable;
@@ -71,6 +72,8 @@ public class JDResumenCtaCtes extends javax.swing.JDialog {
         cbClieProv = new javax.swing.JComboBox();
         jLabel2 = new javax.swing.JLabel();
         dcDesde = new com.toedter.calendar.JDateChooser();
+        checkExcluirPagadas = new javax.swing.JCheckBox();
+        checkExcluirAnuladas = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Resumen de Cta. Cte.");
@@ -159,6 +162,10 @@ public class JDResumenCtaCtes extends javax.swing.JDialog {
 
         jLabel2.setText("Desde:");
 
+        checkExcluirPagadas.setText("Excluir Saldadas");
+
+        checkExcluirAnuladas.setText("Excluir Anuladas");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -174,7 +181,11 @@ public class JDResumenCtaCtes extends javax.swing.JDialog {
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(dcDesde, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(cbClieProv, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(cbClieProv, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(checkExcluirPagadas)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(checkExcluirAnuladas)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(bImprimir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -197,8 +208,12 @@ public class JDResumenCtaCtes extends javax.swing.JDialog {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                             .addComponent(dcDesde, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel2))))
-                .addGap(17, 17, 17)
+                            .addComponent(jLabel2))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(checkExcluirPagadas)
+                            .addComponent(checkExcluirAnuladas))))
+                .addGap(12, 12, 12)
                 .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 325, Short.MAX_VALUE)
                 .addContainerGap())
         );
@@ -211,6 +226,8 @@ public class JDResumenCtaCtes extends javax.swing.JDialog {
     private javax.swing.JButton bImprimir;
     private javax.swing.JComboBox cbClieProv;
     private javax.swing.JComboBox cbReRes;
+    private javax.swing.JCheckBox checkExcluirAnuladas;
+    private javax.swing.JCheckBox checkExcluirPagadas;
     private com.toedter.calendar.JDateChooser dcDesde;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel2;
@@ -307,5 +324,13 @@ public class JDResumenCtaCtes extends javax.swing.JDialog {
    public JLabel getLabelReciboAnulado() {
       return labelReciboAnulado;
    }
+
+    public JCheckBox getCheckExcluirAnuladas() {
+        return checkExcluirAnuladas;
+    }
+
+    public JCheckBox getCheckExcluirPagadas() {
+        return checkExcluirPagadas;
+    }
 
 }

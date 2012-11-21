@@ -5,6 +5,7 @@ import controller.exceptions.MessageException;
 import controller.exceptions.MissingReportException;
 import controller.exceptions.NonexistentEntityException;
 import entity.*;
+import generics.GenericBeanCollection;
 import gui.*;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -13,6 +14,7 @@ import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -21,6 +23,7 @@ import javax.persistence.NoResultException;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
 import jgestion.JGestionUtils;
 import jpa.controller.ProductoJpaController;
 import net.atlanticbb.tantlinger.shef.HTMLEditorPane;
@@ -29,6 +32,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import utilities.general.UTIL;
 import utilities.swing.components.ComboBoxWrapper;
+import utilities.swing.components.NumberRenderer;
 
 /**
  *
@@ -67,7 +71,6 @@ public class ProductoController implements ActionListener, KeyListener {
         contenedor.getTfFiltro().setToolTipText("Filtra por nombre del " + CLASS_NAME);
         contenedor.setModoBuscador(modoBuscador);
         contenedor.getbNuevo().addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -81,7 +84,6 @@ public class ProductoController implements ActionListener, KeyListener {
             }
         });
         contenedor.getbModificar().addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -95,7 +97,6 @@ public class ProductoController implements ActionListener, KeyListener {
             }
         });
         contenedor.getbBorrar().addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -114,7 +115,6 @@ public class ProductoController implements ActionListener, KeyListener {
             }
         });
         contenedor.getbImprimir().addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -157,7 +157,6 @@ public class ProductoController implements ActionListener, KeyListener {
         panel.hideSucursal();
         panel.setListeners(this);
         panel.getbQuitarFoto().addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 panel.getjLabelFoto().setText("[ Sin imagen ]");
@@ -166,7 +165,6 @@ public class ProductoController implements ActionListener, KeyListener {
             }
         });
         panel.getTaDescripcion().addMouseListener(new MouseAdapter() {
-
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() >= 2) {
@@ -178,7 +176,6 @@ public class ProductoController implements ActionListener, KeyListener {
             }
         });
         panel.getBtnAddRubros().addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -225,7 +222,6 @@ public class ProductoController implements ActionListener, KeyListener {
         JDDescripcionHTML.getContentPane().add(editor);
         JDDescripcionHTML.add(bAceptar, BorderLayout.PAGE_END);
         bAceptar.addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 String descripcion = editor.getText();
@@ -554,8 +550,8 @@ public class ProductoController implements ActionListener, KeyListener {
      * Busca un producto por su código
      *
      * @param codigoProducto
-     * @return a instance of Producto or
-     * <code>null</code> if Producto.codigo does not exist.
+     * @return a instance of Producto or <code>null</code> if Producto.codigo
+     * does not exist.
      */
     Producto findProductoByCodigo(String codigoProducto) {
         try {
@@ -701,17 +697,19 @@ public class ProductoController implements ActionListener, KeyListener {
         UTIL.loadComboBox(panelito.getCbMarcas(), JGestionUtils.getWrappedMarcas(new MarcaJpaController().findMarcaEntities()), true);
         UTIL.loadComboBox(panelito.getCbRubros(), JGestionUtils.getWrappedRubros(new RubroJpaController().findRubros()), true);
         UTIL.loadComboBox(panelito.getCbSubRubros(), JGestionUtils.getWrappedRubros(new RubroJpaController().findRubros()), true);
-        UTIL.loadComboBox(panelito.getCbSucursales(), new UsuarioHelper().getSucursales(), true);
+        UTIL.loadComboBox(panelito.getCbSucursales(), new UsuarioHelper().getWrappedSucursales(), true);
         buscador = new JDBuscador(frame, "Movimientos de productos", modal, panelito);
         buscador.getPanelInferior().setVisible(true);
         buscador.addResumeItem("Total", new JTextField(8));
         buscador.agrandar(200, 0);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
-                new String[]{"RAZÓN", "CÓDIGO", "NOMBRE", "MARCA", "CANTIDAD", "LETRA", "NÚMERO", "INTERNO", "FECHA (HORA)", "RUBRO/S.RUB", "SUCURSAL"},
-                new int[]{25, 50, 150, 30, 20, 10, 40, 20, 60, 30, 30});
+                new String[]{"RAZÓN", "CÓDIGO", "NOMBRE", "MARCA", "CANTIDAD", "PRECIO U.", "LETRA", "NÚMERO", "INTERNO", "FECHA (HORA)", "RUBRO/S.RUB", "SUCURSAL"},
+                new int[]{25, 50, 150, 30, 20, 10, 40, 40, 20, 60, 30, 30},
+                new Class<?>[]{null, null, null, null, Integer.class, null, null, null, null, null, null, null});
+        TableColumnModel tm = buscador.getjTable1().getColumnModel();
+        tm.getColumn(5).setCellRenderer(NumberRenderer.getCurrencyRenderer(4));
         buscador.getbBuscar().addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -725,7 +723,6 @@ public class ProductoController implements ActionListener, KeyListener {
         });
 
         buscador.getbImprimir().addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -733,10 +730,19 @@ public class ProductoController implements ActionListener, KeyListener {
                     String query = armarQueryMovimientosProductos();
                     cargarTablaMovimientosProductos(query);
                     Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_MovimientosProductos.jasper", "Movimientos Productos");
-                    r.addCurrent_User();
-                    r.addParameter("SUBREPORT_DIR", Reportes.FOLDER_REPORTES);
-                    r.addParameter("QUERY", query);
-                    r.printReport(true);
+                    List<GenericBeanCollection> data = new ArrayList<GenericBeanCollection>(buscador.getjTable1().getRowCount());
+                    DefaultTableModel dtm = buscador.getDtm();
+                    for (int row = 0; row < dtm.getRowCount(); row++) {
+                        data.add(new GenericBeanCollection(
+                                dtm.getValueAt(row, 0), dtm.getValueAt(row, 1), dtm.getValueAt(row, 2), dtm.getValueAt(row, 3),
+                                dtm.getValueAt(row, 4), dtm.getValueAt(row, 5), dtm.getValueAt(row, 6), dtm.getValueAt(row, 7),
+                                dtm.getValueAt(row, 8), dtm.getValueAt(row, 10), dtm.getValueAt(row, 11), null));
+                    }
+//                    r.addCurrent_User();
+                    r.setDataSource(data);
+                    r.addMembreteParameter();
+                    r.addConnection();
+                    r.viewReport();
                 } catch (JRException ex) {
                     JOptionPane.showMessageDialog(buscador, ex.getMessage());
                 } catch (MissingReportException ex) {
@@ -747,7 +753,6 @@ public class ProductoController implements ActionListener, KeyListener {
             }
         });
         buscador.getbLimpiar().addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 UTIL.limpiarDtm(buscador.getjTable1());
@@ -760,31 +765,36 @@ public class ProductoController implements ActionListener, KeyListener {
     private void cargarTablaMovimientosProductos(String query) {
         UTIL.limpiarDtm(buscador.getjTable1());
         List l = DAO.getEntityManager().createNativeQuery(query).getResultList();
+        BigDecimal total = BigDecimal.ZERO.setScale(4, RoundingMode.HALF_EVEN);
         for (Object object : l) {
             Object[] o = (Object[]) object;
-            if ((Boolean) o[9]) { // es decir.. si factura.anulada == true
+            if ((Boolean) o[10]) { // es decir.. si factura.anulada == true
                 o[0] = "ANULADA " + String.valueOf(o[0]);
                 o[4] = -Integer.valueOf(o[4].toString());
             }
+            BigDecimal precioUnitario = (BigDecimal) o[5];
+            total = total.add(precioUnitario);
             UTIL.getDtm(buscador.getjTable1()).addRow(new Object[]{
                         o[0],
                         o[1], //código
                         o[2],
                         o[3], //marca
                         o[4], //cantidad
-                        o[6],
-                        UTIL.AGREGAR_CEROS(((Object) o[7]).toString(), 12),
-                        o[8],
-                        UTIL.DATE_FORMAT.format(((Date) o[5])) + "(" + UTIL.TIME_FORMAT.format((Date) o[5]) + ")",
-                        o[10],
-                        o[11]
+                        precioUnitario,
+                        o[7],
+                        o[8].toString().replaceAll(" ", ""),
+                        o[9],
+                        UTIL.TIMESTAMP_FORMAT.format(((Date) o[6])),
+                        o[11],
+                        o[12]
                     });
         }
+        buscador.getResumeItems().get("Total").setText(UTIL.DECIMAL_FORMAT.format(total));
     }
 
     private String armarQueryMovimientosProductos() {
         String mainQuery = "SELECT * FROM ( ";
-        String ingresoQuery = "SELECT 'COMPRA'::character varying(10) AS razon, p.codigo, p.nombre, marca.nombre AS marca, d.cantidad, f.fechaalta, f.tipo, f.numero, f.movimiento_interno as movimiento, f.anulada, rubro.nombre AS rubro, sucursal.nombre as sucursal"
+        String ingresoQuery = "SELECT 'COMPRA'::character varying(6) AS razon, p.codigo, p.nombre, marca.nombre AS marca, d.cantidad, d.precio_unitario, f.fechaalta, f.tipo, to_char(f.numero, '0000-00000000') as numero, f.movimiento_interno as movimiento, f.anulada, rubro.nombre AS rubro, sucursal.nombre as sucursal"
                 + " FROM producto p"
                 + " JOIN detalle_compra d ON p.id = d.producto"
                 + " JOIN factura_compra f ON f.id = d.factura"
@@ -792,7 +802,7 @@ public class ProductoController implements ActionListener, KeyListener {
                 + " JOIN rubro ON p.rubro = rubro.idrubro"
                 + " JOIN sucursal ON f.sucursal = sucursal.id"
                 + " WHERE p.codigo IS NOT NULL";
-        String egresoQuery = "SELECT 'VENTA'::character varying(10) AS razon, p.codigo, p.nombre, marca.nombre AS marca, - d.cantidad, f.fechaalta, f.tipo, f.numero, f.movimiento_interno AS movimiento, f.anulada, rubro.nombre AS rubro, sucursal.nombre as sucursal"
+        String egresoQuery = "SELECT 'VENTA'::character varying(6) AS razon, p.codigo, p.nombre, marca.nombre AS marca, - d.cantidad, d.precio_unitario, f.fechaalta, f.tipo, to_char(sucursal.puntoventa, '0000') || '-' || to_char(f.numero, '00000000') as numero, f.movimiento_interno AS movimiento, f.anulada, rubro.nombre AS rubro, sucursal.nombre as sucursal"
                 + " FROM producto p"
                 + " JOIN detalle_venta d ON p.id = d.producto"
                 + " JOIN factura_venta f ON f.id = d.factura"
@@ -837,7 +847,7 @@ public class ProductoController implements ActionListener, KeyListener {
             sb.append(" AND p.subrubro = ").append(((ComboBoxWrapper<Rubro>) panelito.getCbSubRubros().getSelectedItem()).getId());
         }
         if (panelito.getCbSucursales().getSelectedIndex() > 0) {
-            sb.append(" AND sucursal.id = ").append(((Sucursal) panelito.getCbSucursales().getSelectedItem()).getId());
+            sb.append(" AND sucursal.id = ").append(((ComboBoxWrapper<Sucursal>) panelito.getCbSucursales().getSelectedItem()).getId());
         }
         if (panelito.getDcDesde().getDate() != null) {
             sb.append(" AND f.fechaalta >= '").append(panelito.getDcDesde().getDate()).append("'");
@@ -851,7 +861,7 @@ public class ProductoController implements ActionListener, KeyListener {
     /**
      * Retrieve a lightweigth List of Product (id, codigo, nombre, remunerativo)
      *
-     * @return a List of  {@link Producto} or <tt>null</tt> if something goes
+     * @return a List of {@link Producto} or <tt>null</tt> if something goes
      * wrong.
      */
     public List<Producto> findProductoToCombo() {
@@ -879,7 +889,7 @@ public class ProductoController implements ActionListener, KeyListener {
     public void initListadoProducto(JFrame owner) {
         panelProductoListados = new PanelProductoListados();
         buscador = new JDBuscador(owner, "Productos - Listados", false, panelProductoListados);
-        UTIL.loadComboBox(panelProductoListados.getCbMarcas(),JGestionUtils.getWrappedMarcas(new MarcaJpaController().findMarcaEntities()), "<Todas>");
+        UTIL.loadComboBox(panelProductoListados.getCbMarcas(), JGestionUtils.getWrappedMarcas(new MarcaJpaController().findMarcaEntities()), "<Todas>");
         UTIL.loadComboBox(panelProductoListados.getCbRubros(), new RubroJpaController().findRubros(), "<Todos>");
         UTIL.loadComboBox(panelProductoListados.getCbSubRubros(), new RubroJpaController().findRubros(), "<Todos>");
         UTIL.getDefaultTableModel(
@@ -887,7 +897,6 @@ public class ProductoController implements ActionListener, KeyListener {
                 new String[]{"NOMBRE", "CÓDIGO", "MARCA", "RUBRO", "SUB RUBRO"},
                 new int[]{250, 60, 60, 50, 50});
         buscador.getbBuscar().addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -898,7 +907,6 @@ public class ProductoController implements ActionListener, KeyListener {
             }
         });
         buscador.getbImprimir().addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {

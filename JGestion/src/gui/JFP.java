@@ -167,6 +167,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenuReportes = new javax.swing.JMenu();
         jMenu24 = new javax.swing.JMenu();
         jMenuItem67 = new javax.swing.JMenuItem();
+        jMenuItem29 = new javax.swing.JMenuItem();
         jMenuItem39 = new javax.swing.JMenuItem();
         jMenuItem72 = new javax.swing.JMenuItem();
         jMenuItem44 = new javax.swing.JMenuItem();
@@ -793,6 +794,14 @@ public class JFP extends javax.swing.JFrame implements Runnable {
             }
         });
         jMenu24.add(jMenuItem67);
+
+        jMenuItem29.setText("de Ventas");
+        jMenuItem29.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem29ActionPerformed(evt);
+            }
+        });
+        jMenu24.add(jMenuItem29);
 
         jMenuReportes.add(jMenu24);
 
@@ -1483,6 +1492,13 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         new Contabilidad().displayMovimientosGenerales(this);
     }//GEN-LAST:event_jMenuItem72ActionPerformed
 
+    private void jMenuItem29ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem29ActionPerformed
+        try {
+            new Contabilidad().displayInformeComprobantesVenta(this);
+        } catch (MessageException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+        }
+    }//GEN-LAST:event_jMenuItem29ActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JMenu jMenu1;
@@ -1529,6 +1545,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenuItem jMenuItem26;
     private javax.swing.JMenuItem jMenuItem27;
     private javax.swing.JMenuItem jMenuItem28;
+    private javax.swing.JMenuItem jMenuItem29;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem30;
     private javax.swing.JMenuItem jMenuItem31;
