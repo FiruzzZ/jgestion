@@ -688,8 +688,101 @@ public class Contabilidad {
         return big;
     }
 
-    public void displayInformeComprobantesCompra(JFrame owner) throws MessageException {
+    public void displayInformeComprobantesVenta(Window owner) throws MessageException {
         UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.VENTA);
+        buscador = new JDBuscadorReRe(owner, "Informe - Comprobantes Ventas", true, "Cliente", "Nº Factura");
+        buscador.getjTable1().setAutoCreateRowSorter(true);
+        buscador.hideFactura();
+        buscador.setFechaSistemaFieldsVisible(false);
+        buscador.getbImprimir().setVisible(true);
+        UTIL.loadComboBox(buscador.getCbClieProv(), JGestionUtils.getWrappedClientes(new ClienteController().findEntities()), true);
+        UTIL.loadComboBox(buscador.getCbCaja(), new CajaController().findCajasPermitidasByUsuario(UsuarioController.getCurrentUser(), true), true);
+        UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), true);
+        UTIL.loadComboBox(buscador.getCbFormasDePago(), Valores.FormaPago.getFormasDePago(), true);
+        UTIL.getDefaultTableModel(
+                buscador.getjTable1(),
+                new String[]{"Nº y Tipo", "Fecha", "Cliente", "CUIT", "Gravado", "IVA105", "IVA21", "IVA27", "Otros IVA's", "No Gravado", "Descuento", "Importe"},
+                new int[]{90, 50, 50, 60, 50, 50, 50, 50, 50, 70, 60, 60},
+                new Class<?>[]{null, null, null, Long.class, null, null, null, null, null, null, null, null});
+        TableColumnModel tc = buscador.getjTable1().getColumnModel();
+        tc.getColumn(1).setCellRenderer(FormatRenderer.getDateRenderer());
+        tc.getColumn(4).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        tc.getColumn(5).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        tc.getColumn(6).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        tc.getColumn(7).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        tc.getColumn(8).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        tc.getColumn(9).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        tc.getColumn(10).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        tc.getColumn(11).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        buscador.getbImprimir().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (buscador.getjTable1().getRowCount() > 0) {
+                    try {
+                        doComprobantesVentaReport();
+                    } catch (MissingReportException ex) {
+                        buscador.showMessage(ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    } catch (JRException ex) {
+                        buscador.showMessage(ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                } else {
+                    buscador.showMessage("No hay comprobantes filtrados, utilice diferentes filtros para obtener resultados", "Nada que imprimir", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+
+            private void doComprobantesVentaReport() throws MissingReportException, JRException {
+                List<GenericBeanCollection> data = new ArrayList<GenericBeanCollection>(buscador.getjTable1().getRowCount());
+                DefaultTableModel dtm = buscador.getDtm();
+                for (int row = 0; row < dtm.getRowCount(); row++) {
+                    data.add(new GenericBeanCollection(
+                            dtm.getValueAt(row, 0), dtm.getValueAt(row, 1), dtm.getValueAt(row, 2), dtm.getValueAt(row, 3),
+                            dtm.getValueAt(row, 4), dtm.getValueAt(row, 5), dtm.getValueAt(row, 6), dtm.getValueAt(row, 7),
+                            dtm.getValueAt(row, 8), dtm.getValueAt(row, 10), null, null));
+                }
+                Reportes r = new Reportes("JGestion_ComprobantesVentas.jasper", "Listado Comprobantes");
+                r.setDataSource(data);
+                r.addMembreteParameter();
+                r.addConnection();
+                r.viewReport();
+            }
+        });
+        buscador.getbBuscar().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    List<FacturaVenta> data = getComprobantesVenta();
+                    DefaultTableModel dtm = (DefaultTableModel) buscador.getjTable1().getModel();
+                    dtm.setRowCount(0);
+                    for (FacturaVenta facturaVenta : data) {
+                        dtm.addRow(new Object[]{
+                                    JGestionUtils.getNumeracion(facturaVenta),
+                                    UTIL.DATE_FORMAT.format(facturaVenta.getFechaVenta()),
+                                    facturaVenta.getCliente().getNombre(),
+                                    facturaVenta.getCliente().getNumDoc(),
+                                    new BigDecimal(facturaVenta.getGravado()),
+                                    new BigDecimal(facturaVenta.getIva10()),
+                                    new BigDecimal(facturaVenta.getIva21()),
+                                    BigDecimal.ZERO,
+                                    BigDecimal.ZERO,
+                                    facturaVenta.getNoGravado(),
+                                    new BigDecimal(facturaVenta.getDescuento()),
+                                    new BigDecimal(facturaVenta.getImporte())
+                                });
+                    }
+                } catch (MessageException ex) {
+                    ex.displayMessage(buscador);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(buscador, ex.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    LOG.error(ex, ex);
+                }
+            }
+        });
+        buscador.setLocationRelativeTo(owner);
+        buscador.setVisible(true);
+    }
+
+    public void displayInformeComprobantesCompra(Window owner) throws MessageException {
+        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.COMPRA);
         buscador = new JDBuscadorReRe(owner, "Buscador - Comprobantes Compra", true, "Proveedor", "Nº Factura");
         buscador.hideCaja();
         buscador.hideFormaPago();
@@ -891,6 +984,98 @@ public class Contabilidad {
                 + " ORDER BY fecha";
         System.out.println("QUERY: " + sql);
         List<?> l = DAO.getNativeQueryResultList(sql, (String) null);
+        return l;
+    }
+
+    private List<FacturaVenta> getComprobantesVenta() throws MessageException, DatabaseErrorException {
+        StringBuilder queryFactuVenta = new StringBuilder(300).append(" o.id IS NOT NULL");
+        StringBuilder queryNotaCredito = new StringBuilder(300);
+
+        long numero;
+        //filtro por nº de ReRe
+        if (buscador.getTfOcteto().length() > 0) {
+            try {
+                numero = Long.parseLong(buscador.getTfOcteto());
+                queryFactuVenta.append(" AND o.numero = ").append(numero);
+                queryNotaCredito.append(" AND o.numero = ").append(numero);
+            } catch (NumberFormatException ex) {
+                throw new MessageException("Número de comprobante no válido");
+            }
+        }
+
+        //filtro por nº de factura
+        if (buscador.getTfCuarto().length() > 0 && buscador.getTfOcteto().length() > 0) {
+            try {
+                numero = Long.parseLong(buscador.getTfFactu4() + buscador.getTfFactu8());
+                queryFactuVenta.append(" AND o.numero = ").append(numero);
+                queryNotaCredito.append(" AND o.sucursal.puntoventa = ").append(buscador.getTfFactu4());
+                queryNotaCredito.append(" AND o.numero = ").append(buscador.getTfFactu8());
+            } catch (NumberFormatException ex) {
+                throw new MessageException("Número de comprobante no válido");
+            }
+        }
+        if (buscador.getDcDesde() != null) {
+            queryFactuVenta.append(" AND o.fechaVenta >= '").append(buscador.getDcDesde()).append("'");
+            queryNotaCredito.append(" AND o.fecha_nota_credito >= '").append(buscador.getDcDesde()).append("'");
+        }
+        if (buscador.getDcHasta() != null) {
+            queryFactuVenta.append(" AND o.fechaVenta <= '").append(buscador.getDcHasta()).append("'");
+            queryNotaCredito.append(" AND o.fecha_nota_credito <= '").append(buscador.getDcDesde()).append("'");
+        }
+        UsuarioHelper usuarioHelper = new UsuarioHelper();
+        if (buscador.getCbCaja().getSelectedIndex() > 0) {
+            queryFactuVenta.append(" AND o.caja.id = ").append(((Caja) buscador.getCbCaja().getSelectedItem()).getId());
+        } else {
+            queryFactuVenta.append(" AND (");
+            Iterator<Caja> iterator = usuarioHelper.getCajas(Boolean.TRUE).iterator();
+            while (iterator.hasNext()) {
+                Caja caja = iterator.next();
+                queryFactuVenta.append("o.caja.id=").append(caja.getId());
+                if (iterator.hasNext()) {
+                    queryFactuVenta.append(" OR ");
+                }
+            }
+            queryFactuVenta.append(")");
+        }
+        if (buscador.getCbSucursal().getSelectedIndex() > 0) {
+            queryFactuVenta.append(" AND o.sucursal.id = ").append(((ComboBoxWrapper<?>) buscador.getCbSucursal().getSelectedItem()).getId());
+        } else {
+            queryFactuVenta.append(" AND (");
+            for (int i = 1; i < buscador.getCbSucursal().getItemCount(); i++) {
+                ComboBoxWrapper<Sucursal> cbw = (ComboBoxWrapper<Sucursal>) buscador.getCbSucursal().getItemAt(i);
+                queryFactuVenta.append(" o.sucursal.id=").append(cbw.getId());
+                if ((i + 1) < buscador.getCbSucursal().getItemCount()) {
+                    queryFactuVenta.append(" OR ");
+                }
+            }
+            queryFactuVenta.append(")");
+        }
+
+        if (buscador.getCbClieProv().getSelectedIndex() > 0) {
+            queryFactuVenta.append(" AND o.cliente.id = ").append(((Cliente) buscador.getCbClieProv().getSelectedItem()).getId());
+        }
+
+//                "SELECT com.* FROM ("
+//                + " SELECT 'F' || o.tipo || to_char(o.numero, '0000-00000000') as comprobante,	o.fecha_venta as fecha, cliente.nombre, cliente.cuit,"
+//                + " o.gravado ,	o.iva10, o.iva21, o.no_gravado, o.descuento , o.importe"
+//                + " FROM factura_venta o, proveedor"
+//                + " WHERE o.proveedor = proveedor.id "
+//                + queryFactuVenta.toString()
+//                + " ORDER BY"
+//                + " o.fecha_compra ASC) com"
+//                + " UNION ("
+//                + " SELECT 'NC' || to_char(sucursal.puntoventa, '0000') || to_char(o.numero,'-00000000'), o.fecha_nota_credito as fecha, cliente.nombre, cliente.num_doc, cast(o.gravado as numeric(12,2)), cast(o.iva10 as numeric(12,2)), cast(o.iva21 as numeric(12,2)), cast(o.impuestos_recuperables as numeric(12,2)), cast(0 as numeric(12,2)), cast(0 as numeric(12,2)), cast(0 as numeric(12,2)),	cast(o.no_gravado as numeric(12,2)), cast(0 as numeric(12,2)) as descuento, cast(o.importe as numeric(12,2))"
+//                + " FROM public.nota_credito o, public.cliente, public.sucursal"
+//                + " WHERE "
+//                + " o.cliente = cliente.id AND"
+//                + " o.sucursal = sucursal.id"
+//                + queryNotaCredito.toString()
+//                + " ORDER BY"
+//                + " o.fecha_nota_credito ASC)"
+//                + " ORDER BY fecha";
+        System.out.println("QUERY: " + queryFactuVenta.toString());
+        @SuppressWarnings("unchecked")
+        List<FacturaVenta> l = (List<FacturaVenta>) DAO.findEntities(FacturaVenta.class, queryFactuVenta.toString());
         return l;
     }
 

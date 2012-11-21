@@ -55,7 +55,7 @@
 	<pageHeader>
 		<band height="35" splitType="Stretch">
 			<staticText>
-				<reportElement x="131" y="0" width="555" height="35"/>
+				<reportElement x="0" y="0" width="801" height="35"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="18" isBold="true"/>
 				</textElement>
@@ -219,7 +219,7 @@
 				<textElement>
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[""+$F{o1}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{o1}]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd/MM/yyyy">
 				<reportElement x="88" y="0" width="64" height="15"/>
@@ -229,18 +229,18 @@
 				<textFieldExpression><![CDATA[$F{o2}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="152" y="0" width="240" height="15"/>
+				<reportElement x="152" y="0" width="198" height="15"/>
 				<textElement>
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[""+$F{o3}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{o3}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="350" y="0" width="62" height="15"/>
-				<textElement>
+				<textElement textAlignment="Right">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[""+$F{o4}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{o4}]]></textFieldExpression>
 			</textField>
 			<textField pattern="¤ #,##0.00">
 				<reportElement x="412" y="0" width="65" height="15"/>

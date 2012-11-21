@@ -679,13 +679,4 @@ public class ClienteController implements ActionListener {
         checkConstraints(p);
         return p;
     }
-
-    List<ComboBoxWrapper<Cliente>> findAllWrapped() {
-        List<Cliente> list = findEntities();
-        List<ComboBoxWrapper<Cliente>> l = new ArrayList<ComboBoxWrapper<Cliente>>(list.size());
-        for (Cliente cliente : list) {
-            l.add(new ComboBoxWrapper<Cliente>(cliente, cliente.getId(), cliente.getNombre()));
-        }
-        return l;
-    }
 }
