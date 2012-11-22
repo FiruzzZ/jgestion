@@ -18,6 +18,8 @@ public class GenericBeanCollection {
     private Object o10;
     private Object o11;
     private Object o12;
+    private Object o13;
+    private Object o14;
 
     public GenericBeanCollection(Object o1, Object o2) {
         this.o1 = o1;
@@ -37,6 +39,23 @@ public class GenericBeanCollection {
         this.o10 = o10;
         this.o11 = o11;
         this.o12 = o12;
+    }
+
+    public GenericBeanCollection(Object o1, Object o2, Object o3, Object o4, Object o5, Object o6, Object o7, Object o8, Object o9, Object o10, Object o11, Object o12, Object o13, Object o14) {
+        this.o1 = o1;
+        this.o2 = o2;
+        this.o3 = o3;
+        this.o4 = o4;
+        this.o5 = o5;
+        this.o6 = o6;
+        this.o7 = o7;
+        this.o8 = o8;
+        this.o9 = o9;
+        this.o10 = o10;
+        this.o11 = o11;
+        this.o12 = o12;
+        this.o13 = o13;
+        this.o14 = o14;
     }
 
     public Object getO1() {

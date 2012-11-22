@@ -294,7 +294,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
             gravado21 = gravado21.subtract(desc);
         } else if (gravado105.compareTo(desc) == 1) {
             gravado105 = gravado105.subtract(desc);
-        } else  {
+        } else {
             // y ahora??...
         }
         jdFactura.setTfGravado(UTIL.PRECIO_CON_PUNTO.format(gravado21.add(gravado105).add(gravado27)));
@@ -357,19 +357,32 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         newFacturaCompra.setUsuario(UsuarioController.getCurrentUser());
         newFacturaCompra.setCaja((Caja) jdFactura.getCbCaja().getSelectedItem());
 
+        newFacturaCompra.setTipo(jdFactura.getCbFacturaTipo().getSelectedItem().toString().charAt(0));
         newFacturaCompra.setImporte(Double.valueOf(jdFactura.getTfTotalText()));
-        newFacturaCompra.setGravado(new BigDecimal(jdFactura.getTfGravado()));
-        newFacturaCompra.setNoGravado(new BigDecimal(jdFactura.getTfTotalNoGravado()));
-        newFacturaCompra.setIva10(Double.valueOf(jdFactura.getTfTotalIVA105()));
-        newFacturaCompra.setIva21(Double.valueOf(jdFactura.getTfTotalIVA21()));
-        newFacturaCompra.setPercDgr(0.0); // <--- no corresponde en la COMPRA ..BURRO!!
-        newFacturaCompra.setPercIva(Double.valueOf(jdFactura.getTfPercIIBB()));
-        newFacturaCompra.setOtrosIvas(new BigDecimal(jdFactura.getTfTotalOtrosImpuestos().getText().trim()));
-        newFacturaCompra.setImpuestosRecuperables(new BigDecimal(jdFactura.getTfOtrosImpuestosRecuperables().getText().trim()));
-        newFacturaCompra.setImpuestosNoRecuperables(new BigDecimal(jdFactura.getTfOtrosImpuestosNoRecuperables().getText().trim()));
+        if (newFacturaCompra.getTipo() == 'A') {
+            newFacturaCompra.setGravado(new BigDecimal(jdFactura.getTfGravado()));
+            newFacturaCompra.setNoGravado(new BigDecimal(jdFactura.getTfTotalNoGravado()));
+            newFacturaCompra.setIva10(Double.valueOf(jdFactura.getTfTotalIVA105()));
+            newFacturaCompra.setIva21(Double.valueOf(jdFactura.getTfTotalIVA21()));
+            newFacturaCompra.setPercDgr(0.0); // <--- no corresponde en la COMPRA ..BURRO!!
+            newFacturaCompra.setPercIva(Double.valueOf(jdFactura.getTfPercIIBB()));
+            newFacturaCompra.setOtrosIvas(new BigDecimal(jdFactura.getTfTotalOtrosImpuestos().getText().trim()));
+            newFacturaCompra.setImpuestosRecuperables(new BigDecimal(jdFactura.getTfOtrosImpuestosRecuperables().getText().trim()));
+            newFacturaCompra.setImpuestosNoRecuperables(new BigDecimal(jdFactura.getTfOtrosImpuestosNoRecuperables().getText().trim()));
+        } else {
+            newFacturaCompra.setGravado(BigDecimal.ZERO);
+            newFacturaCompra.setNoGravado(BigDecimal.ZERO);
+            newFacturaCompra.setIva10(BigDecimal.ZERO.doubleValue());
+            newFacturaCompra.setIva21(BigDecimal.ZERO.doubleValue());
+            newFacturaCompra.setPercDgr(BigDecimal.ZERO.doubleValue()); // <--- no corresponde en la COMPRA ..BURRO!!
+            newFacturaCompra.setPercIva(BigDecimal.ZERO.doubleValue());
+            newFacturaCompra.setOtrosIvas(BigDecimal.ZERO);
+            newFacturaCompra.setImpuestosRecuperables(BigDecimal.ZERO);
+            newFacturaCompra.setImpuestosNoRecuperables(BigDecimal.ZERO);
+            
+        }
         newFacturaCompra.setDescuento(new BigDecimal(jdFactura.getTfDescuento().getText().trim()));
         newFacturaCompra.setRemito(0L);
-        newFacturaCompra.setTipo(jdFactura.getCbFacturaTipo().getSelectedItem().toString().charAt(0));
         newFacturaCompra.setNumero(Long.valueOf(jdFactura.getTfFacturaCuarto() + jdFactura.getTfFacturaOcteto()));
         newFacturaCompra.setActualizaStock(jdFactura.getCheckActualizaStock().isSelected());
         newFacturaCompra.setFormaPago((short) ((Valores.FormaPago) jdFactura.getCbFormaPago().getSelectedItem()).getId());

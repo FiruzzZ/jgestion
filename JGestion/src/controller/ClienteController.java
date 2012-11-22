@@ -24,12 +24,15 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.NoResultException;
+import javax.persistence.RollbackException;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.postgresql.util.PSQLException;
 import utilities.swing.components.ComboBoxWrapper;
 
 /**
@@ -82,7 +85,7 @@ public class ClienteController implements ActionListener {
         }
     }
 
-    public void destroy(Integer id) throws NonexistentEntityException {
+    public void destroy(Integer id) throws NonexistentEntityException, MessageException {
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -98,6 +101,13 @@ public class ClienteController implements ActionListener {
 
             em.remove(cliente);
             em.getTransaction().commit();
+        } catch (RollbackException ex) {
+            if (ex.getCause() instanceof DatabaseException) {
+                PSQLException ps = (PSQLException) ex.getCause().getCause();
+                if (ps.getMessage().contains("viola la llave foránea")) {
+                    throw new MessageException("No se puede eliminar porque existen otros registros que están relacionados a este");
+                }
+            }
         } finally {
             if (em != null) {
                 em.close();
@@ -129,6 +139,8 @@ public class ClienteController implements ActionListener {
 
     public Cliente findCliente(Integer id) {
         EntityManager em = getEntityManager();
+
+
         try {
             return em.find(Cliente.class, id);
         } finally {
@@ -148,9 +160,7 @@ public class ClienteController implements ActionListener {
 
     public JDialog initContenedor(JFrame frame, boolean modal) {
         contenedor = new JDContenedor(frame, modal, "ABM - " + CLASS_NAME + "s");
-        contenedor.hideBtmEliminar();
         contenedor.getTfFiltro().addKeyListener(new KeyAdapter() {
-
             @Override
             public void keyReleased(KeyEvent e) {
                 armarQuery(contenedor.getTfFiltro().getText().trim());
@@ -168,6 +178,8 @@ public class ClienteController implements ActionListener {
         List<Cliente> l;
         if (query == null || query.length() < 1) {
             l = DAO.getEntityManager().createNamedQuery(CLASS_NAME + ".findAll").getResultList();
+
+
         } else {
             // para cuando se usa el Buscador del ABM
             l = DAO.getEntityManager().createNativeQuery(query, Cliente.class).getResultList();
@@ -436,23 +448,28 @@ public class ClienteController implements ActionListener {
 
         if (object.getId() != null) {
             idQuery = "o.id!=" + object.getId() + " AND ";
+
+
         }
         try {
             DAO.getEntityManager().createNativeQuery("SELECT * FROM " + CLASS_NAME + " o "
                     + " WHERE " + idQuery + " o.codigo='" + object.getCodigo() + "'", Cliente.class).getSingleResult();
-            throw new MessageException("Ya existe otro " + CLASS_NAME + " con este Código.");
+            throw new MessageException(
+                    "Ya existe otro " + CLASS_NAME + " con este Código.");
         } catch (NoResultException ex) {
         }
         try {
             DAO.getEntityManager().createNativeQuery("SELECT * FROM " + CLASS_NAME + " o "
                     + " WHERE " + idQuery + " o.nombre='" + object.getNombre() + "' ", Cliente.class).getSingleResult();
-            throw new MessageException("Ya existe otro " + CLASS_NAME + " con este nombre.");
+            throw new MessageException(
+                    "Ya existe otro " + CLASS_NAME + " con este nombre.");
         } catch (NoResultException ex) {
         }
         try {
             DAO.getEntityManager().createNativeQuery("SELECT * FROM " + CLASS_NAME + " o "
                     + " WHERE " + idQuery + " o.num_doc=" + object.getNumDoc(), Cliente.class).getSingleResult();
-            throw new MessageException("Ya existe otro " + CLASS_NAME + " con este DNI/CUIT.");
+            throw new MessageException(
+                    "Ya existe otro " + CLASS_NAME + " con este DNI/CUIT.");
         } catch (NoResultException ex) {
         }
     }
@@ -462,7 +479,9 @@ public class ClienteController implements ActionListener {
         // <editor-fold defaultstate="collapsed" desc="JButton">
         if (e.getSource().getClass().equals(JButton.class)) {
             JButton boton = (JButton) e.getSource();
-            if (boton.getName().equalsIgnoreCase("new")) {
+
+            if (boton.getName()
+                    .equalsIgnoreCase("new")) {
                 try {
                     EL_OBJECT = null;
                     initABM(false, e);
@@ -472,7 +491,8 @@ public class ClienteController implements ActionListener {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
                     Logger.getLogger(ClienteController.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            } else if (boton.getName().equalsIgnoreCase("edit")) {
+            } else if (boton.getName()
+                    .equalsIgnoreCase("edit")) {
                 try {
                     int selectedRow = contenedor.getjTable1().getSelectedRow();
                     if (selectedRow > -1) {
@@ -489,7 +509,7 @@ public class ClienteController implements ActionListener {
                     Logger.getLogger(ClienteController.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
-            } else if (boton.getName().equalsIgnoreCase("del")) {
+            } else if (boton.equals(contenedor.getbBorrar())) {
                 try {
                     int selectedRow = contenedor.getjTable1().getSelectedRow();
                     if (selectedRow > -1) {
@@ -500,6 +520,7 @@ public class ClienteController implements ActionListener {
                         throw new MessageException("No hay " + CLASS_NAME + " seleccionado");
                     }
                     destroy(EL_OBJECT.getId());
+                    JOptionPane.showMessageDialog(contenedor, "Registro eliminado");
                 } catch (MessageException ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (NonexistentEntityException ex) {
@@ -509,12 +530,15 @@ public class ClienteController implements ActionListener {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
                     Logger.getLogger(ClienteController.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            } else if (boton.getName().equalsIgnoreCase("Print")) {
+            } else if (boton.getName()
+                    .equalsIgnoreCase("Print")) {
                 //no implementado aun...
-            } else if (boton.getName().equalsIgnoreCase("exit")) {
+            } else if (boton.getName()
+                    .equalsIgnoreCase("exit")) {
                 contenedor.dispose();
                 contenedor = null;
-            } else if (boton.getName().equalsIgnoreCase("aceptar")) {
+            } else if (boton.getName()
+                    .equalsIgnoreCase("aceptar")) {
                 try {
                     if (EL_OBJECT == null) {
                         EL_OBJECT = new Cliente();
@@ -537,7 +561,8 @@ public class ClienteController implements ActionListener {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
                     Logger.getLogger(ClienteController.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            } else if (boton.getName().equalsIgnoreCase("cancelar")) {
+            } else if (boton.getName()
+                    .equalsIgnoreCase("cancelar")) {
                 abm.dispose();
                 panelABM = null;
                 abm = null;
@@ -563,18 +588,22 @@ public class ClienteController implements ActionListener {
                     UTIL.loadComboBox(panelABM.getCbMunicipios(), null, true);
                 }
             }
+
             return;
         }// </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="ComboBox">
         else if (e.getSource().getClass().equals(javax.swing.JComboBox.class)) {
             javax.swing.JComboBox combo = (javax.swing.JComboBox) e.getSource();
-            if (combo.getName().equalsIgnoreCase("cbProvincias")) {
+
+            if (combo.getName()
+                    .equalsIgnoreCase("cbProvincias")) {
                 if (combo.getSelectedIndex() > 0) {
                     UTIL.loadComboBox(panelABM.getCbDepartamentos(), ((Provincia) combo.getSelectedItem()).getDeptoList(), true);
                 } else {
                     UTIL.loadComboBox(panelABM.getCbDepartamentos(), null, true);
                 }
-            } else if (combo.getName().equalsIgnoreCase("cbDepartamentos")) {
+            } else if (combo.getName()
+                    .equalsIgnoreCase("cbDepartamentos")) {
                 if (combo.getSelectedIndex() > 0) {
                     UTIL.loadComboBox(panelABM.getCbMunicipios(), ((Departamento) combo.getSelectedItem()).getMunicipioList(), true);
                 } else {
@@ -582,7 +611,7 @@ public class ClienteController implements ActionListener {
                 }
             }
         }
-        // </editor-fold>
+// </editor-fold>
     }
 
     /**
@@ -625,7 +654,6 @@ public class ClienteController implements ActionListener {
         contenedor.getbNuevo().setText("Convertir");
         contenedor.getbNuevo().removeActionListener(this);
         contenedor.getbNuevo().addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 Integer clienteID = (Integer) UTIL.getSelectedValue(contenedor.getjTable1(), 0);
@@ -644,7 +672,9 @@ public class ClienteController implements ActionListener {
                     JOptionPane.showMessageDialog(contenedor, ex.getMessage());
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(contenedor, ex.getMessage());
-                    Logger.getLogger(ClienteController.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger
+                            .getLogger(ClienteController.class
+                            .getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });

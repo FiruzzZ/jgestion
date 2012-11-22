@@ -1,6 +1,5 @@
 package entity;
 
-import entity.Banco;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import javax.persistence.Basic;
@@ -32,7 +31,7 @@ public class CuentaBancaria implements Serializable {
     @Column(name = "id", nullable = false)
     private Integer id;
     @Basic(optional = false)
-    @Column(name = "numero", nullable = false, length = 22)//precision = 22, scale = 0)
+    @Column(name = "numero", nullable = false, length = 22)
     private String numero;
     @Basic(optional = false)
     @Column(name = "activa", nullable = false)
