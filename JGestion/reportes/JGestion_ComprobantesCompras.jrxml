@@ -17,6 +17,7 @@
 	<field name="o9" class="java.math.BigDecimal"/>
 	<field name="o10" class="java.math.BigDecimal"/>
 	<field name="o11" class="java.math.BigDecimal"/>
+	<field name="o12" class="java.math.BigDecimal"/>
 	<variable name="o10_1" class="java.math.BigDecimal" calculation="Sum">
 		<variableExpression><![CDATA[$F{o10}]]></variableExpression>
 	</variable>
@@ -37,6 +38,12 @@
 	</variable>
 	<variable name="o11_1" class="java.math.BigDecimal" calculation="Sum">
 		<variableExpression><![CDATA[$F{o11}]]></variableExpression>
+	</variable>
+	<variable name="o12_1" class="java.lang.Integer" calculation="Count">
+		<variableExpression><![CDATA[$F{o12}]]></variableExpression>
+	</variable>
+	<variable name="o12_2" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{o12}]]></variableExpression>
 	</variable>
 	<title>
 		<band height="80" splitType="Stretch">
@@ -66,7 +73,7 @@
 	<columnHeader>
 		<band height="20" splitType="Stretch">
 			<staticText>
-				<reportElement mode="Opaque" x="152" y="0" width="198" height="20" backcolor="#CCCCCC"/>
+				<reportElement mode="Opaque" x="133" y="0" width="167" height="20" backcolor="#CCCCCC"/>
 				<box leftPadding="0">
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -79,7 +86,7 @@
 				<text><![CDATA[Proveedor]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="88" y="0" width="64" height="20" backcolor="#CCCCCC"/>
+				<reportElement mode="Opaque" x="78" y="0" width="55" height="20" backcolor="#CCCCCC"/>
 				<box leftPadding="0">
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -92,7 +99,7 @@
 				<text><![CDATA[Fecha]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="412" y="0" width="65" height="20" backcolor="#CCCCCC"/>
+				<reportElement mode="Opaque" x="362" y="0" width="65" height="20" backcolor="#CCCCCC"/>
 				<box leftPadding="0">
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -105,7 +112,7 @@
 				<text><![CDATA[Gravado]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="0" y="0" width="88" height="20" backcolor="#CCCCCC"/>
+				<reportElement mode="Opaque" x="0" y="0" width="78" height="20" backcolor="#CCCCCC"/>
 				<box leftPadding="0">
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -113,12 +120,12 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font isBold="true"/>
+					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[N° Comprobante]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="350" y="0" width="62" height="20" backcolor="#CCCCCC"/>
+				<reportElement mode="Opaque" x="300" y="0" width="62" height="20" backcolor="#CCCCCC"/>
 				<box leftPadding="0">
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -131,7 +138,7 @@
 				<text><![CDATA[CUIT]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="477" y="0" width="55" height="20" backcolor="#CCCCCC"/>
+				<reportElement mode="Opaque" x="427" y="0" width="55" height="20" backcolor="#CCCCCC"/>
 				<box leftPadding="0">
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -144,7 +151,7 @@
 				<text><![CDATA[IVA 10.5]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="532" y="0" width="55" height="20" backcolor="#CCCCCC"/>
+				<reportElement mode="Opaque" x="482" y="0" width="55" height="20" backcolor="#CCCCCC"/>
 				<box leftPadding="0">
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -157,7 +164,7 @@
 				<text><![CDATA[IVA 21]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="587" y="0" width="55" height="20" backcolor="#CCCCCC"/>
+				<reportElement mode="Opaque" x="537" y="0" width="55" height="20" backcolor="#CCCCCC"/>
 				<box leftPadding="0">
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -170,7 +177,7 @@
 				<text><![CDATA[Perc. IIBB]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="642" y="0" width="55" height="20" backcolor="#CCCCCC"/>
+				<reportElement mode="Opaque" x="592" y="0" width="55" height="20" backcolor="#CCCCCC"/>
 				<box leftPadding="0">
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -210,86 +217,107 @@
 				</textElement>
 				<text><![CDATA[No Grav]]></text>
 			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="647" y="0" width="50" height="20" backcolor="#CCCCCC"/>
+				<box leftPadding="0">
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+					<paragraph lineSpacing="Fixed"/>
+				</textElement>
+				<text><![CDATA[No Recup]]></text>
+			</staticText>
 		</band>
 	</columnHeader>
 	<detail>
 		<band height="15" splitType="Stretch">
 			<textField>
-				<reportElement x="0" y="0" width="88" height="15"/>
+				<reportElement x="0" y="0" width="78" height="15"/>
 				<textElement>
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{o1}]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd/MM/yyyy">
-				<reportElement x="88" y="0" width="64" height="15"/>
+				<reportElement x="78" y="0" width="55" height="15"/>
 				<textElement textAlignment="Center">
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{o2}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="152" y="0" width="198" height="15"/>
+				<reportElement x="133" y="0" width="167" height="15"/>
 				<textElement>
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{o3}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="350" y="0" width="62" height="15"/>
+				<reportElement x="300" y="0" width="62" height="15"/>
 				<textElement textAlignment="Right">
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{o4}]]></textFieldExpression>
 			</textField>
 			<textField pattern="¤ #,##0.00">
-				<reportElement x="412" y="0" width="65" height="15"/>
+				<reportElement x="362" y="0" width="65" height="15"/>
 				<textElement textAlignment="Right">
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{o5}]]></textFieldExpression>
 			</textField>
 			<textField pattern="¤ #,##0.00">
-				<reportElement x="477" y="0" width="55" height="15"/>
+				<reportElement x="427" y="0" width="55" height="15"/>
 				<textElement textAlignment="Right">
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{o6}]]></textFieldExpression>
 			</textField>
 			<textField pattern="¤ #,##0.00">
-				<reportElement x="532" y="0" width="55" height="15"/>
+				<reportElement x="482" y="0" width="55" height="15"/>
 				<textElement textAlignment="Right">
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{o7}]]></textFieldExpression>
 			</textField>
 			<textField pattern="¤ #,##0.00">
-				<reportElement x="587" y="0" width="55" height="15"/>
+				<reportElement x="537" y="0" width="55" height="15"/>
 				<textElement textAlignment="Right">
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{o8}]]></textFieldExpression>
 			</textField>
 			<textField pattern="¤ #,##0.00">
-				<reportElement x="642" y="0" width="55" height="15"/>
+				<reportElement x="592" y="0" width="55" height="15"/>
 				<textElement textAlignment="Right">
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{o9}]]></textFieldExpression>
 			</textField>
 			<textField pattern="¤ #,##0.00">
-				<reportElement x="697" y="0" width="50" height="15"/>
+				<reportElement x="647" y="0" width="50" height="15"/>
 				<textElement textAlignment="Right">
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{o10}]]></textFieldExpression>
 			</textField>
 			<textField pattern="¤ #,##0.00">
-				<reportElement x="747" y="0" width="55" height="15"/>
+				<reportElement x="697" y="0" width="50" height="15"/>
 				<textElement textAlignment="Right">
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{o11}]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤ #,##0.00">
+				<reportElement x="747" y="0" width="55" height="15"/>
+				<textElement textAlignment="Right">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{o12}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
@@ -310,42 +338,42 @@
 	<summary>
 		<band height="20" splitType="Stretch">
 			<textField isStretchWithOverflow="true" pattern="¤ #,##0.00">
-				<reportElement x="412" y="0" width="65" height="20"/>
+				<reportElement x="362" y="0" width="65" height="20"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{o5_1}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="¤ #,##0.00">
-				<reportElement x="477" y="0" width="55" height="20"/>
+				<reportElement x="427" y="0" width="55" height="20"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{o6_1}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="¤ #,##0.00">
-				<reportElement x="532" y="0" width="55" height="20"/>
+				<reportElement x="482" y="0" width="55" height="20"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{o7_1}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="¤ #,##0.00">
-				<reportElement x="587" y="0" width="55" height="20"/>
+				<reportElement x="537" y="0" width="55" height="20"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{o8_1}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="¤ #,##0.00">
-				<reportElement x="642" y="0" width="55" height="20"/>
+				<reportElement x="592" y="0" width="55" height="20"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{o9_1}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="¤ #,##0.00">
-				<reportElement x="697" y="0" width="50" height="20"/>
+				<reportElement x="647" y="0" width="50" height="20"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9" isBold="false"/>
 				</textElement>
@@ -355,11 +383,18 @@
 				<reportElement x="0" y="0" width="801" height="1"/>
 			</line>
 			<textField isStretchWithOverflow="true" pattern="¤ #,##0.00">
-				<reportElement x="747" y="0" width="55" height="20"/>
+				<reportElement x="697" y="0" width="50" height="20"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{o11_1}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="¤ #,##0.00">
+				<reportElement x="747" y="0" width="55" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{o12_2}]]></textFieldExpression>
 			</textField>
 		</band>
 	</summary>

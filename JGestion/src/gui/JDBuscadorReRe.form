@@ -162,35 +162,26 @@
               <Group type="102" attributes="0">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" attributes="0">
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Group type="102" attributes="0">
-                                  <Component id="dcDesde" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Group type="103" groupAlignment="2" attributes="0">
-                                      <Component id="jLabel3" alignment="2" min="-2" max="-2" attributes="0"/>
-                                      <Component id="dcHasta" alignment="2" min="-2" max="-2" attributes="0"/>
-                                  </Group>
-                              </Group>
-                              <Group type="102" alignment="0" attributes="0">
-                                  <EmptySpace min="3" pref="3" max="3" attributes="0"/>
-                                  <Component id="labelClieProv" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <Group type="102" alignment="0" attributes="0">
-                                  <Group type="103" groupAlignment="3" attributes="0">
-                                      <Component id="cbClieProv" alignment="3" min="-2" max="-2" attributes="0"/>
-                                      <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  </Group>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Group type="103" groupAlignment="3" attributes="0">
-                                      <Component id="labelSucursal" alignment="3" min="-2" max="-2" attributes="0"/>
-                                      <Component id="cbSucursal" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  </Group>
-                              </Group>
-                          </Group>
+                          <Component id="dcDesde" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="2" attributes="0">
-                              <Component id="jLabel4" alignment="2" min="-2" max="-2" attributes="0"/>
-                              <Component id="dcDesdeSistema" alignment="2" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabel3" alignment="2" min="-2" max="-2" attributes="0"/>
+                              <Component id="dcHasta" alignment="2" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace min="3" pref="3" max="3" attributes="0"/>
+                          <Component id="labelClieProv" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="102" alignment="0" attributes="0">
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="cbClieProv" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="labelSucursal" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="cbSucursal" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                       <Group type="102" alignment="0" attributes="0">
@@ -204,20 +195,17 @@
                               <Component id="cbCaja" alignment="2" min="-2" max="-2" attributes="0"/>
                               <Component id="labelCaja" alignment="2" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="2" attributes="0">
-                              <Component id="labelN_Factura" alignment="2" min="-2" max="-2" attributes="0"/>
-                              <Component id="tfFactu4" alignment="2" min="-2" max="-2" attributes="0"/>
-                              <Component id="tfFactu8" alignment="2" min="-2" max="-2" attributes="0"/>
-                          </Group>
                       </Group>
-                      <Group type="102" alignment="2" attributes="0">
-                          <EmptySpace min="-2" pref="51" max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="labelFormasDePago" alignment="2" min="-2" max="-2" attributes="0"/>
-                              <Component id="cbFormasDePago" alignment="2" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                      </Group>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="2" attributes="0">
+                      <Component id="labelN_Factura" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Component id="tfFactu4" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Component id="tfFactu8" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Component id="labelFormasDePago" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Component id="cbFormasDePago" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel4" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Component id="dcDesdeSistema" alignment="2" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="2" attributes="0">

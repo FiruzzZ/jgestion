@@ -22,12 +22,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import javax.persistence.NoResultException;
+import javax.persistence.RollbackException;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.postgresql.util.PSQLException;
 
 /**
  *
@@ -56,7 +59,7 @@ public class ProveedorController implements ActionListener {
         DAO.doMerge(proveedor);
     }
 
-    public void destroy(Integer id) throws NonexistentEntityException, IllegalOrphanException {
+    public void destroy(Integer id) throws NonexistentEntityException, IllegalOrphanException, MessageException {
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -71,6 +74,14 @@ public class ProveedorController implements ActionListener {
 
             em.remove(proveedor);
             em.getTransaction().commit();
+        } catch (RollbackException ex) {
+            if (ex.getCause() instanceof DatabaseException) {
+                PSQLException ps = (PSQLException) ex.getCause().getCause();
+                if (ps.getMessage().contains("viola la llave foránea")) {
+                    throw new MessageException("No se puede eliminar porque existen otros registros que están relacionados a este");
+                }
+            }
+
         } finally {
             if (em != null) {
                 em.close();
@@ -149,7 +160,7 @@ public class ProveedorController implements ActionListener {
                     Logger.getLogger(SucursalController.class.getName()).log(Level.ERROR, null, ex);
                 }
 
-            } else if (boton.getName().equalsIgnoreCase("del")) {
+            } else if (boton.equals(contenedor.getbBorrar())) {
                 try {
                     Integer selectedRow = contenedor.getjTable1().getSelectedRow();
                     if (selectedRow > -1) {
@@ -251,7 +262,6 @@ public class ProveedorController implements ActionListener {
                 armarQuery(contenedor.getTfFiltro().getText().trim());
             }
         });
-        contenedor.hideBtmEliminar();
         UTIL.getDefaultTableModel(contenedor.getjTable1(), colsName, colsWidth);
         //esconde el ID column
         UTIL.hideColumnTable(contenedor.getjTable1(), 0);

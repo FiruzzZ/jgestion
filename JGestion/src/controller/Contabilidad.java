@@ -101,7 +101,7 @@ public class Contabilidad {
      * @param parent
      * @throws MessageException
      */
-    public void initBalanceMovimientosCajasUI(JFrame parent) throws MessageException {
+    public void initMovimientosCajasUI(JFrame parent) throws MessageException {
         UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
         panelBalanceGeneral = new PanelBalanceGeneral();
         List<ComboBoxWrapper<Caja>> cajas = new UsuarioHelper().getWrappedCajas(null);
@@ -110,9 +110,10 @@ public class Contabilidad {
         }
         UTIL.loadComboBox(panelBalanceGeneral.getCbCajas(), cajas, true);
         jdBalanceUI = new JDBalance(parent, false, panelBalanceGeneral);
-        jdBalanceUI.setTitle("Balance");
+        jdBalanceUI.setTitle("Flujo de fondos - Movimientos de Cajas");
         jdBalanceUI.getLabelEgresos().setVisible(false);
         jdBalanceUI.getTfEgresos().setVisible(false);
+        jdBalanceUI.getjTable1().setAutoCreateRowSorter(true);
         UTIL.getDefaultTableModel(jdBalanceUI.getjTable1(),
                 columnNamesBalanceGeneral,
                 columnWidthsBalanceGeneral,
@@ -690,7 +691,7 @@ public class Contabilidad {
 
     public void displayInformeComprobantesVenta(Window owner) throws MessageException {
         UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.VENTA);
-        buscador = new JDBuscadorReRe(owner, "Informe - Comprobantes Ventas", true, "Cliente", "Nº Factura");
+        buscador = new JDBuscadorReRe(owner, "Informe - Comprobantes Ventas", false, "Cliente", "Nº Factura");
         buscador.getjTable1().setAutoCreateRowSorter(true);
         buscador.hideFactura();
         buscador.setFechaSistemaFieldsVisible(false);
@@ -783,16 +784,17 @@ public class Contabilidad {
 
     public void displayInformeComprobantesCompra(Window owner) throws MessageException {
         UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.COMPRA);
-        buscador = new JDBuscadorReRe(owner, "Buscador - Comprobantes Compra", true, "Proveedor", "Nº Factura");
+        buscador = new JDBuscadorReRe(owner, "Buscador - Comprobantes Compra", false, "Proveedor", "Nº Factura");
+        buscador.getjTable1().setAutoCreateRowSorter(true);
         buscador.hideCaja();
-        buscador.hideFormaPago();
         buscador.hideFactura();
         buscador.setFechaSistemaFieldsVisible(false);
         buscador.getbImprimir().setVisible(true);
         UTIL.loadComboBox(buscador.getCbClieProv(), new ProveedorController().findEntities(), true);
         UTIL.loadComboBox(buscador.getCbCaja(), new CajaController().findCajasPermitidasByUsuario(UsuarioController.getCurrentUser(), true), true);
         UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), true);
-        UTIL.loadComboBox(buscador.getCbFormasDePago(), Valores.FormaPago.getFormasDePago(), true);
+        buscador.getLabelFormasDePago().setText("Tipo");
+        UTIL.loadComboBox(buscador.getCbFormasDePago(), FacturaCompraController.TIPOS_FACTURA, true);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
                 new String[]{"Nº y Tipo", "Fecha", "Proveedor", "CUIT", "Gravado", "IVA105", "IVA21", "Otros IVA's", "Perc. IIBB", "Otros Imp.", "No Recup", "No Gravado", "Descuento", "Importe"},
@@ -838,10 +840,10 @@ public class Contabilidad {
                             dtm.getValueAt(row, 4),
                             dtm.getValueAt(row, 5),
                             dtm.getValueAt(row, 6),
-                            dtm.getValueAt(row, 7),
                             dtm.getValueAt(row, 8),
+                            dtm.getValueAt(row, 9),
                             dtm.getValueAt(row, 10),
-                            dtm.getValueAt(row, 12),
+                            dtm.getValueAt(row, 11),
                             dtm.getValueAt(row, 13)));
                 }
                 Reportes r = new Reportes("JGestion_ComprobantesCompras.jasper", "Listado Comprobantes");
@@ -913,12 +915,9 @@ public class Contabilidad {
             queryFactuCompra.append(" AND o.fecha_compra <= '").append(buscador.getDcHasta()).append("'");
             queryNotaCredito.append(" AND o.fecha_nota_credito <= '").append(buscador.getDcDesde()).append("'");
         }
-//        if (buscador.getDcDesdeSistema() != null) {
-//            query.append(" AND o.fechaalta >= '").append(buscador.getDcDesdeSistema()).append("'");
-//        }
-//        if (buscador.getDcHastaSistema() != null) {
-//            query.append(" AND o.fechaalta <= '").append(buscador.getDcHastaSistema()).append("'");
-//        }
+        if(buscador.getCbFormasDePago().getSelectedIndex() > 0) {
+            queryFactuCompra.append(" AND o.tipo = '").append(buscador.getCbFormasDePago().getSelectedItem()).append("'");
+        }
         UsuarioHelper usuarioHelper = new UsuarioHelper();
         if (buscador.getCbCaja().getSelectedIndex() > 0) {
             queryFactuCompra.append(" AND o.caja = ").append(((Caja) buscador.getCbCaja().getSelectedItem()).getId());

@@ -170,8 +170,9 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenuItem29 = new javax.swing.JMenuItem();
         jMenuItem39 = new javax.swing.JMenuItem();
         jMenuItem72 = new javax.swing.JMenuItem();
-        jMenuItem44 = new javax.swing.JMenuItem();
         jMenuItem46 = new javax.swing.JMenuItem();
+        jMenu8 = new javax.swing.JMenu();
+        jMenuItem44 = new javax.swing.JMenuItem();
         jMenu4 = new javax.swing.JMenu();
         jMenuItem16 = new javax.swing.JMenuItem();
         jMenuItem24 = new javax.swing.JMenuItem();
@@ -815,20 +816,13 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenuReportes.add(jMenuItem39);
 
         jMenuItem72.setText("Movimientos generales");
+        jMenuItem72.setEnabled(false);
         jMenuItem72.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem72ActionPerformed(evt);
             }
         });
         jMenuReportes.add(jMenuItem72);
-
-        jMenuItem44.setText("Balance Movimientos de Cajas");
-        jMenuItem44.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem44ActionPerformed(evt);
-            }
-        });
-        jMenuReportes.add(jMenuItem44);
 
         jMenuItem46.setText("Facturas Compra/Venta");
         jMenuItem46.addActionListener(new java.awt.event.ActionListener() {
@@ -837,6 +831,18 @@ public class JFP extends javax.swing.JFrame implements Runnable {
             }
         });
         jMenuReportes.add(jMenuItem46);
+
+        jMenu8.setText("Flujo de fondos");
+
+        jMenuItem44.setText("Movimientos de Cajas");
+        jMenuItem44.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem44ActionPerformed(evt);
+            }
+        });
+        jMenu8.add(jMenuItem44);
+
+        jMenuReportes.add(jMenu8);
 
         jMenuBar1.add(jMenuReportes);
 
@@ -1260,7 +1266,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
     private void jMenuItem44ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem44ActionPerformed
         try {
-            new Contabilidad().initBalanceMovimientosCajasUI((JFrame) this);
+            new Contabilidad().initMovimientosCajasUI(this);
         } catch (MessageException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
         }
@@ -1522,6 +1528,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenu jMenu5;
     private javax.swing.JMenu jMenu6;
     private javax.swing.JMenu jMenu7;
+    private javax.swing.JMenu jMenu8;
     private javax.swing.JMenu jMenu9;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
