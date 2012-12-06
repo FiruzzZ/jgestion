@@ -23,6 +23,7 @@ import java.text.DecimalFormat;
 import utilities.general.UTIL;
 import gui.JDBalance;
 import gui.JDBuscadorReRe;
+import gui.JDResumenGeneralCtaCte;
 import gui.JFP;
 import gui.PanelBalanceComprasVentas;
 import gui.PanelBalanceGeneral;
@@ -915,7 +916,7 @@ public class Contabilidad {
             queryFactuCompra.append(" AND o.fecha_compra <= '").append(buscador.getDcHasta()).append("'");
             queryNotaCredito.append(" AND o.fecha_nota_credito <= '").append(buscador.getDcDesde()).append("'");
         }
-        if(buscador.getCbFormasDePago().getSelectedIndex() > 0) {
+        if (buscador.getCbFormasDePago().getSelectedIndex() > 0) {
             queryFactuCompra.append(" AND o.tipo = '").append(buscador.getCbFormasDePago().getSelectedItem()).append("'");
         }
         UsuarioHelper usuarioHelper = new UsuarioHelper();
@@ -1079,5 +1080,41 @@ public class Contabilidad {
     }
 
     public void displayMovimientosGenerales(Window owner) {
+    }
+
+    public void displayCtaCteGeneralResumen(Window window) {
+        final JDResumenGeneralCtaCte resumenGeneralCtaCte = new JDResumenGeneralCtaCte(window, false);
+        resumenGeneralCtaCte.getbBuscar().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Date desde = resumenGeneralCtaCte.getDcDesde().getDate();
+                Date hasta = resumenGeneralCtaCte.getDcHasta().getDate();
+                List<Object[]> data;
+                if (resumenGeneralCtaCte.getCbClieProv().getSelectedIndex() == 0) {
+                    data = new CtacteClienteJpaController().findSaldosCtacte(desde, hasta);
+                    cargarTablaResumenGeneralCtaCte(data);
+                } else {
+                    data = new CtacteProveedorJpaController().findSaldosCtacte(desde, hasta);
+                    cargarTablaResumenGeneralCtaCte(data);
+                }
+            }
+
+            private void cargarTablaResumenGeneralCtaCte(List<Object[]> data) {
+                DefaultTableModel dtm = (DefaultTableModel) resumenGeneralCtaCte.getjXTable1().getModel();
+                dtm.setRowCount(0);
+                BigDecimal t = BigDecimal.ZERO;
+                for (Object[] o : data) {
+                    dtm.addRow(o);
+                    t = t.add((BigDecimal) o[1]);
+                }
+                resumenGeneralCtaCte.getTfTotal().setText(UTIL.DECIMAL_FORMAT.format(t));
+            }
+        });
+        resumenGeneralCtaCte.getbImprimir().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            }
+        });
+        resumenGeneralCtaCte.setVisible(true);
     }
 }

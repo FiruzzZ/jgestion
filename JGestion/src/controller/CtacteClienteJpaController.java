@@ -22,6 +22,7 @@ import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Root;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -212,6 +213,48 @@ public class CtacteClienteJpaController implements ActionListener {
                 + " ORDER BY o.factura.sucursal.puntoVenta, o.factura.numero",
                 CtacteCliente.class).getResultList();
         return l;
+    }
+
+    List<Object[]> findSaldosCtacte(Date desde, Date hasta) {
+        EntityManager em = getEntityManager();
+        em.getTransaction().begin();
+        List<CtacteCliente> l;
+//        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+//        CriteriaQuery<CtacteCliente> cq = cb.createQuery(CtacteCliente.class);
+//        Root<CtacteCliente> from = cq.from(CtacteCliente.class);
+//        cq.where(cb.and(cb.equal(from.get(CtacteCliente_.estado), estado.getId()),
+//                cb.equal(from.get(CtacteCliente_.factura).get(FacturaVenta_.anulada), false)));
+//        if (desde != null) {
+//            cq.where(cb.and(cb.greaterThanOrEqualTo(from.get(CtacteCliente_.factura).get(FacturaVenta_.fechaVenta), desde)));
+//        }
+//        if (hasta != null) {
+//            cq.where(cb.and(cb.lessThanOrEqualTo(from.get(CtacteCliente_.factura).get(FacturaVenta_.fechaVenta), hasta)));
+//        }
+//        cq.orderBy(cb.desc(from.get(CtacteCliente_.factura).get(FacturaVenta_.cliente).get(Cliente_.nombre)));
+//        l = getEntityManager().createQuery(cq).getResultList();
+        l = em.createQuery(
+                "SELECT o FROM " + CtacteCliente.class.getSimpleName() + " o"
+                + " WHERE o.factura.anulada = FALSE AND o.estado = 1"
+                + (desde != null ? " AND o.factura.fechaVenta >='" + UTIL.DATE_FORMAT.format(desde) + "'" : "")
+                + (hasta != null ? " AND o.factura.fechaVenta <='" + UTIL.DATE_FORMAT.format(hasta) + "'" : "")
+                + " ORDER BY o.factura.cliente.nombre",
+                CtacteCliente.class).getResultList();
+        if (l.isEmpty()) {
+            return new ArrayList<Object[]>(0);
+        }
+        List<Object[]> data = new ArrayList<Object[]>();
+        BigDecimal importeCCC = BigDecimal.ZERO;
+        Cliente c = l.get(0).getFactura().getCliente();
+        for (CtacteCliente ccc : l) {
+            if (!c.equals(ccc.getFactura().getCliente())) {
+                data.add(new Object[]{c.getNombre(), importeCCC});
+                importeCCC = BigDecimal.ZERO;
+                c = ccc.getFactura().getCliente();
+            }
+            importeCCC = importeCCC.add(BigDecimal.valueOf(ccc.getImporte() - ccc.getEntregado()));
+        }
+        data.add(new Object[]{c.getNombre(), importeCCC});
+        return data;
     }
 
     public void initResumenCtaCte(JFrame frame, boolean modal) throws MessageException {

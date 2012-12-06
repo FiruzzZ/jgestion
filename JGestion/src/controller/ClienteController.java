@@ -16,11 +16,9 @@ import utilities.general.UTIL;
 import gui.JDABM;
 import gui.JDContenedor;
 import gui.PanelABMProveedores;
-import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.NoResultException;
@@ -29,11 +27,9 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.postgresql.util.PSQLException;
-import utilities.swing.components.ComboBoxWrapper;
 
 /**
  *
@@ -108,6 +104,7 @@ public class ClienteController implements ActionListener {
                     throw new MessageException("No se puede eliminar porque existen otros registros que están relacionados a este");
                 }
             }
+            throw ex;
         } finally {
             if (em != null) {
                 em.close();
@@ -480,8 +477,7 @@ public class ClienteController implements ActionListener {
         if (e.getSource().getClass().equals(JButton.class)) {
             JButton boton = (JButton) e.getSource();
 
-            if (boton.getName()
-                    .equalsIgnoreCase("new")) {
+            if (boton.equals(contenedor.getbNuevo())) {
                 try {
                     EL_OBJECT = null;
                     initABM(false, e);
@@ -491,8 +487,7 @@ public class ClienteController implements ActionListener {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
                     Logger.getLogger(ClienteController.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            } else if (boton.getName()
-                    .equalsIgnoreCase("edit")) {
+            } else if (boton.equals(contenedor.getbModificar())) {
                 try {
                     int selectedRow = contenedor.getjTable1().getSelectedRow();
                     if (selectedRow > -1) {
@@ -513,13 +508,11 @@ public class ClienteController implements ActionListener {
                 try {
                     int selectedRow = contenedor.getjTable1().getSelectedRow();
                     if (selectedRow > -1) {
-                        EL_OBJECT = DAO.getEntityManager().find(Cliente.class,
-                                Integer.valueOf((contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
-                    }
-                    if (EL_OBJECT == null) {
+                        destroy(Integer.valueOf((contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
+                        cargarContenedorTabla(contenedor.getDTM(), null);
+                    } else {
                         throw new MessageException("No hay " + CLASS_NAME + " seleccionado");
                     }
-                    destroy(EL_OBJECT.getId());
                     JOptionPane.showMessageDialog(contenedor, "Registro eliminado");
                 } catch (MessageException ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
@@ -530,15 +523,12 @@ public class ClienteController implements ActionListener {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
                     Logger.getLogger(ClienteController.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            } else if (boton.getName()
-                    .equalsIgnoreCase("Print")) {
+            } else if (boton.getName().equalsIgnoreCase("Print")) {
                 //no implementado aun...
-            } else if (boton.getName()
-                    .equalsIgnoreCase("exit")) {
+            } else if (boton.getName().equalsIgnoreCase("exit")) {
                 contenedor.dispose();
                 contenedor = null;
-            } else if (boton.getName()
-                    .equalsIgnoreCase("aceptar")) {
+            } else if (boton.getName().equalsIgnoreCase("aceptar")) {
                 try {
                     if (EL_OBJECT == null) {
                         EL_OBJECT = new Cliente();
@@ -561,8 +551,7 @@ public class ClienteController implements ActionListener {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
                     Logger.getLogger(ClienteController.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            } else if (boton.getName()
-                    .equalsIgnoreCase("cancelar")) {
+            } else if (boton.getName().equalsIgnoreCase("cancelar")) {
                 abm.dispose();
                 panelABM = null;
                 abm = null;

@@ -14,6 +14,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -373,5 +375,34 @@ public class CtacteProveedorJpaController implements ActionListener {
                         UTIL.PRECIO_CON_PUNTO.format(detalleRe.getMontoEntrega())
                     });
         }
+    }
+
+    List<Object[]> findSaldosCtacte(Date desde, Date hasta) {
+        EntityManager em = getEntityManager();
+        em.getTransaction().begin();
+        List<CtacteProveedor> l;
+        l = em.createQuery(
+                "SELECT o FROM " + CtacteProveedor.class.getSimpleName() + " o"
+                + " WHERE o.factura.anulada = FALSE AND o.estado = 1"
+                + (desde != null ? " AND o.factura.fechaCompra >='" + UTIL.DATE_FORMAT.format(desde) + "'" : "")
+                + (hasta != null ? " AND o.factura.fechaCompra <='" + UTIL.DATE_FORMAT.format(hasta) + "'" : "")
+                + " ORDER BY o.factura.proveedor.nombre",
+                CtacteProveedor.class).getResultList();
+        if (l.isEmpty()) {
+            return new ArrayList<Object[]>(0);
+        }
+        List<Object[]> data = new ArrayList<Object[]>();
+        BigDecimal importeCCC = BigDecimal.ZERO;
+        Proveedor c = l.get(0).getFactura().getProveedor();
+        for (CtacteProveedor ccc : l) {
+            if (!c.equals(ccc.getFactura().getProveedor())) {
+                data.add(new Object[]{c.getNombre(), importeCCC});
+                importeCCC = BigDecimal.ZERO;
+                c = ccc.getFactura().getProveedor();
+            }
+            importeCCC = importeCCC.add(ccc.getImporte().subtract(ccc.getEntregado()));
+        }
+        data.add(new Object[]{c.getNombre(), importeCCC});
+        return data;
     }
 }

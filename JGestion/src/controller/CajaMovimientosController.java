@@ -535,7 +535,7 @@ public class CajaMovimientosController implements ActionListener {
             });
         }
         UTIL.loadComboBox(panelMovVarios.getCbCaja(), getCajaMovimientosActivasFromCurrentUser(), false);
-        UTIL.loadComboBox(panelMovVarios.getCbConcepto(), new MovimientoConceptoController(null).findMovimientoConceptoEntities(), false);
+        UTIL.loadComboBox(panelMovVarios.getCbCuenta(), new MovimientoConceptoController(null).findMovimientoConceptoEntities(), false);
         abm = new JDABM(owner, "Movimientos Varios", modal, panelMovVarios);
         abm.getbAceptar().addActionListener(new ActionListener() {
             @Override
@@ -602,7 +602,7 @@ public class CajaMovimientosController implements ActionListener {
         dcm.setIngreso(panelMovVarios.isIngreso());
         dcm.setDescripcion("MV" + (dcm.getIngreso() ? "I" : "E") + "-" + panelMovVarios.getTfDescripcion());
         dcm.setMonto(dcm.getIngreso() ? monto : -monto);
-        dcm.setMovimientoConcepto((MovimientoConcepto) panelMovVarios.getCbConcepto().getSelectedItem());
+        dcm.setMovimientoConcepto((MovimientoConcepto) panelMovVarios.getCbCuenta().getSelectedItem());
         dcm.setTipo(DetalleCajaMovimientosJpaController.MOVIMIENTO_VARIOS);
         dcm.setUsuario(UsuarioController.getCurrentUser());
         dcm.setFechaMovimiento(panelMovVarios.getDcMovimientoFecha());

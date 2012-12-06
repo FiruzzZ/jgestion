@@ -137,6 +137,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenuItem71 = new javax.swing.JMenuItem();
         menuCtaCte = new javax.swing.JMenu();
         jMenuItem30 = new javax.swing.JMenuItem();
+        jMenuItem37 = new javax.swing.JMenuItem();
         jMenuItem31 = new javax.swing.JMenuItem();
         jMenuItem42 = new javax.swing.JMenuItem();
         jMenuItem21 = new javax.swing.JMenuItem();
@@ -164,6 +165,8 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenuItem58 = new javax.swing.JMenuItem();
         jMenuItem59 = new javax.swing.JMenuItem();
         jMenuItemCuentasBancarias = new javax.swing.JMenuItem();
+        jMenu12 = new javax.swing.JMenu();
+        jMenuItem73 = new javax.swing.JMenuItem();
         jMenuReportes = new javax.swing.JMenu();
         jMenu24 = new javax.swing.JMenu();
         jMenuItem67 = new javax.swing.JMenuItem();
@@ -591,13 +594,22 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         menuCtaCte.setText("Cta. Cte.");
 
         jMenuItem30.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/appfinder.png"))); // NOI18N
-        jMenuItem30.setText("Clientes");
+        jMenuItem30.setText("Por Cliente");
         jMenuItem30.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem30ActionPerformed(evt);
             }
         });
         menuCtaCte.add(jMenuItem30);
+
+        jMenuItem37.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/appfinder.png"))); // NOI18N
+        jMenuItem37.setText("Resumen General");
+        jMenuItem37.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem37ActionPerformed(evt);
+            }
+        });
+        menuCtaCte.add(jMenuItem37);
 
         jMenuItem31.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/appfinder.png"))); // NOI18N
         jMenuItem31.setText("Proveedores");
@@ -780,6 +792,18 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenu18.add(jMenuItemCuentasBancarias);
 
         jMenu9.add(jMenu18);
+
+        jMenu12.setText("Unidades de Negocio");
+
+        jMenuItem73.setText("ABM Unidades de Negocio");
+        jMenuItem73.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem73ActionPerformed(evt);
+            }
+        });
+        jMenu12.add(jMenuItem73);
+
+        jMenu9.add(jMenu12);
 
         jMenuBar1.add(jMenu9);
 
@@ -1505,11 +1529,20 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
             JOptionPane.showMessageDialog(this, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
         }
     }//GEN-LAST:event_jMenuItem29ActionPerformed
+
+    private void jMenuItem37ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem37ActionPerformed
+        new Contabilidad().displayCtaCteGeneralResumen((Window) this);
+    }//GEN-LAST:event_jMenuItem37ActionPerformed
+
+    private void jMenuItem73ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem73ActionPerformed
+        new UnidadDeNegocioController().initContenedor(this, true, false);
+    }//GEN-LAST:event_jMenuItem73ActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu10;
     private javax.swing.JMenu jMenu11;
+    private javax.swing.JMenu jMenu12;
     private javax.swing.JMenu jMenu13;
     private javax.swing.JMenu jMenu14;
     private javax.swing.JMenu jMenu15;
@@ -1561,6 +1594,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenuItem jMenuItem34;
     private javax.swing.JMenuItem jMenuItem35;
     private javax.swing.JMenuItem jMenuItem36;
+    private javax.swing.JMenuItem jMenuItem37;
     private javax.swing.JMenuItem jMenuItem38;
     private javax.swing.JMenuItem jMenuItem39;
     private javax.swing.JMenuItem jMenuItem4;
@@ -1600,6 +1634,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenuItem jMenuItem70;
     private javax.swing.JMenuItem jMenuItem71;
     private javax.swing.JMenuItem jMenuItem72;
+    private javax.swing.JMenuItem jMenuItem73;
     private javax.swing.JMenuItem jMenuItem8;
     private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JMenuItem jMenuItemCatalogoWeb;

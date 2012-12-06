@@ -5,6 +5,7 @@
  */
 package gui;
 
+import java.awt.Window;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseListener;
@@ -25,18 +26,11 @@ public class JDContenedor extends javax.swing.JDialog {
 
     private boolean modoBuscador;
 
-    @Deprecated
-    public JDContenedor(java.awt.Frame owner, boolean modal) {
-        super(owner, modal);
-        initComponents();
-        this.setLocationRelativeTo(owner);
-    }
-
-    public JDContenedor(java.awt.Frame owner, boolean modal, String title) {
-        super(owner, modal);
-        initComponents();
-        this.setLocationRelativeTo(owner);
+    public JDContenedor(Window owner, boolean modal, String title) {
+        super(owner, modal ? DEFAULT_MODALITY_TYPE : ModalityType.MODELESS);
         this.setTitle(title);
+        initComponents();
+        this.setLocationRelativeTo(owner);
     }
 
     /**
@@ -179,9 +173,12 @@ public class JDContenedor extends javax.swing.JDialog {
     /**
      * Agrega un escuchador a el textField, la botonera de la derecha y la tabla
      *
-     * @param o A object whom implements: <br>{@link ActionListener} for {@code bNuevo, bModificar, bBorrar, bImprimir, bSalir}. <br>{@link KeyListener}
-     * for {@code tfFiltro}. <br>{@link MouseListener} for {@code jTable1}.
-     * @throws ClassCastException if the object does not implement {@link ActionListener}
+     * @param o A object whom implements: <br>{@link ActionListener} for
+     * {@code bNuevo, bModificar, bBorrar, bImprimir, bSalir}.
+     * <br>{@link KeyListener} for {@code tfFiltro}. <br>{@link MouseListener}
+     * for {@code jTable1}.
+     * @throws ClassCastException if the object does not implement
+     * {@link ActionListener}
      */
     public void setListener(Object o) {
         bNuevo.addActionListener((ActionListener) o);

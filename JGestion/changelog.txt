@@ -1,3 +1,26 @@
+CREATE TABLE subcuenta (
+   id serial NOT NULL, 
+   nombre character(100) NOT NULL, 
+   cuenta_id integer NOT NULL, 
+    PRIMARY KEY (id), 
+    FOREIGN KEY (cuenta_id) REFERENCES movimiento_concepto (id) ON UPDATE NO ACTION ON DELETE NO ACTION, 
+    UNIQUE (nombre)
+) 
+WITH (  OIDS = FALSE);
+CREATE TABLE unidad_de_negocio (
+    id serial NOT NULL,
+    nombre character(100),
+    PRIMARY KEY (id),
+    UNIQUE (nombre)
+) with ( OIDS = FALSE );
+CREATE TABLE unidad_de_negocio_sucursal (
+   unidad_de_negocio_id integer NOT NULL, 
+   sucursal_id integer NOT NULL, 
+    PRIMARY KEY (unidad_de_negocio_id, sucursal_id), 
+    FOREIGN KEY (unidad_de_negocio_id) REFERENCES unidad_de_negocio (id) ON UPDATE NO ACTION ON DELETE NO ACTION, 
+    FOREIGN KEY (sucursal_id) REFERENCES sucursal (id) ON UPDATE NO ACTION ON DELETE NO ACTION
+) 
+WITH (  OIDS = FALSE);
 ALTER TABLE cheque_terceros ALTER COLUMN cliente DROP NOT NULL;
 alter table cuentabancaria alter column numero type character(22) using numero::character(22);
 ALTER TABLE remesa ADD COLUMN anulada timestamp with time zone;

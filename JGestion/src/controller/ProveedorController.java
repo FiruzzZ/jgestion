@@ -1,5 +1,6 @@
 package controller;
 
+import com.sun.codemodel.JOp;
 import controller.exceptions.*;
 import entity.Cliente;
 import entity.Proveedor;
@@ -24,6 +25,7 @@ import java.awt.event.KeyAdapter;
 import javax.persistence.NoResultException;
 import javax.persistence.RollbackException;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -38,6 +40,7 @@ import org.postgresql.util.PSQLException;
  */
 public class ProveedorController implements ActionListener {
 
+    private static final Logger LOG = Logger.getLogger(ProveedorController.class.getName());
     public final String CLASS_NAME = Proveedor.class.getSimpleName();
     private final String[] colsName = {"ID", "Código", "Razón social", "CUIT", "Teléfonos"};
     private final int[] colsWidth = {10, 20, 120, 40, 90};
@@ -59,7 +62,7 @@ public class ProveedorController implements ActionListener {
         DAO.doMerge(proveedor);
     }
 
-    public void destroy(Integer id) throws NonexistentEntityException, IllegalOrphanException, MessageException {
+    public void destroy(Integer id) throws NonexistentEntityException, MessageException {
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -81,6 +84,7 @@ public class ProveedorController implements ActionListener {
                     throw new MessageException("No se puede eliminar porque existen otros registros que están relacionados a este");
                 }
             }
+            throw ex;
 
         } finally {
             if (em != null) {
@@ -132,126 +136,113 @@ public class ProveedorController implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // <editor-fold defaultstate="collapsed" desc="JButton">
-        if (e.getSource().getClass().equals(JButton.class)) {
-            JButton boton = (JButton) e.getSource();
-            if (boton.getName().equalsIgnoreCase("new")) {
-                try {
-                    EL_OBJECT = null;
-                    initABM(false, e);
-                } catch (MessageException ex) {
-                    contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                } catch (Exception ex) {
-                    contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    Logger.getLogger(SucursalController.class.getName()).log(Level.ERROR, null, ex);
-                }
-            } else if (boton.getName().equalsIgnoreCase("edit")) {
-                try {
-                    Integer selectedRow = contenedor.getjTable1().getSelectedRow();
-                    if (selectedRow > -1) {
-                        EL_OBJECT = DAO.getEntityManager().find(Proveedor.class,
-                                Integer.valueOf((contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
-                        initABM(true, e);
+        try { //global error catcher
+            // <editor-fold defaultstate="collapsed" desc="JButton">
+            if (e.getSource().getClass().equals(JButton.class)) {
+                JButton boton = (JButton) e.getSource();
+                if (boton.getName().equalsIgnoreCase("new")) {
+                    try {
+                        EL_OBJECT = null;
+                        initABM(false, e);
+                    } catch (MessageException ex) {
+                        contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                     }
-                } catch (MessageException ex) {
-                    contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                } catch (Exception ex) {
-                    contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    Logger.getLogger(SucursalController.class.getName()).log(Level.ERROR, null, ex);
-                }
-
-            } else if (boton.equals(contenedor.getbBorrar())) {
-                try {
-                    Integer selectedRow = contenedor.getjTable1().getSelectedRow();
-                    if (selectedRow > -1) {
-                        EL_OBJECT = DAO.getEntityManager().find(Proveedor.class,
-                                Integer.valueOf((contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
-                        destroy(EL_OBJECT.getId());
-                    } else {
-                        throw new MessageException("No hay " + CLASS_NAME + " seleccionada");
+                } else if (boton.getName().equalsIgnoreCase("edit")) {
+                    try {
+                        Integer selectedRow = contenedor.getjTable1().getSelectedRow();
+                        if (selectedRow > -1) {
+                            EL_OBJECT = DAO.getEntityManager().find(Proveedor.class,
+                                    Integer.valueOf((contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
+                            initABM(true, e);
+                        }
+                    } catch (MessageException ex) {
+                        contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                     }
-                } catch (MessageException ex) {
-                    abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                } catch (IllegalOrphanException ex) {
-                    abm.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    Logger.getLogger(SucursalController.class.getName()).log(Level.ERROR, null, ex);
-                } catch (NonexistentEntityException ex) {
-                    abm.showMessage("No existe el registro que intenta borrar", CLASS_NAME, 0);
-                    cargarContenedorTabla(contenedor.getDTM());
-                } catch (Exception ex) {
-                    abm.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    Logger.getLogger(SucursalController.class.getName()).log(Level.ERROR, null, ex);
-                }
-            } else if (boton.getName().equalsIgnoreCase("Print")) {
-            } else if (boton.getName().equalsIgnoreCase("exit")) {
-                contenedor.dispose();
-                contenedor = null;
-            } else if (boton.getName().equalsIgnoreCase("aceptar")) {
-                try {
-                    setEntity();
-                    String msg = EL_OBJECT.getId() == null ? "Registrado" : "Modificado";
-                    checkConstraints(EL_OBJECT);
-                    if (EL_OBJECT.getId() == null) {
-                        create(EL_OBJECT);
-                    } else {
-                        edit(EL_OBJECT);
+                } else if (boton.equals(contenedor.getbBorrar())) {
+                    try {
+                        Integer selectedRow = contenedor.getjTable1().getSelectedRow();
+                        if (selectedRow > -1) {
+                            destroy(Integer.valueOf((contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
+                            cargarContenedorTabla(contenedor.getDTM());
+                        } else {
+                            throw new MessageException("No hay " + CLASS_NAME + " seleccionada");
+                        }
+                    } catch (MessageException ex) {
+                        JOptionPane.showMessageDialog(null, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+                    } catch (NonexistentEntityException ex) {
+                        JOptionPane.showMessageDialog(null, "No existe el registro que intenta borrar", null, JOptionPane.ERROR_MESSAGE);
+                        cargarContenedorTabla(contenedor.getDTM());
                     }
-                    abm.showMessage(msg, CLASS_NAME, 1);
-                    cargarContenedorTabla(contenedor.getDTM());
+                } else if (boton.getName().equalsIgnoreCase("Print")) {
+                } else if (boton.getName().equalsIgnoreCase("exit")) {
+                    contenedor.dispose();
+                    contenedor = null;
+                } else if (boton.getName().equalsIgnoreCase("aceptar")) {
+                    try {
+                        setEntity();
+                        String msg = EL_OBJECT.getId() == null ? "Registrado" : "Modificado";
+                        checkConstraints(EL_OBJECT);
+                        if (EL_OBJECT.getId() == null) {
+                            create(EL_OBJECT);
+                        } else {
+                            edit(EL_OBJECT);
+                        }
+                        abm.showMessage(msg, CLASS_NAME, 1);
+                        cargarContenedorTabla(contenedor.getDTM());
+                        abm.dispose();
+                    } catch (MessageException ex) {
+                        abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
+                    }
+                } else if (boton.getName().equalsIgnoreCase("cancelar")) {
                     abm.dispose();
-                } catch (MessageException ex) {
-                    abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                } catch (Exception ex) {
-                    abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                    Logger.getLogger(SucursalController.class.getName()).log(Level.ERROR, null, ex);
-                }
-            } else if (boton.getName().equalsIgnoreCase("cancelar")) {
-                abm.dispose();
-                panelABM = null;
-                abm = null;
-                EL_OBJECT = null;
-            } else if (boton.getName().equalsIgnoreCase("bDepartamentoS")) {
-                new DepartamentoController().initContenedor(null, true);
-                //cuando cierra el abm
-                if (panelABM.getCbProvincias().getSelectedIndex() > 0) {
-                    UTIL.loadComboBox(panelABM.getCbDepartamentos(),
-                            new DepartamentoController().findDeptosFromProvincia(
-                            ((Provincia) panelABM.getCbProvincias().getSelectedItem()).getId()), true);
-                } else {
-                    UTIL.loadComboBox(panelABM.getCbDepartamentos(), null, true);
-                }
+                    panelABM = null;
+                    abm = null;
+                    EL_OBJECT = null;
+                } else if (boton.getName().equalsIgnoreCase("bDepartamentoS")) {
+                    new DepartamentoController().initContenedor(null, true);
+                    //cuando cierra el abm
+                    if (panelABM.getCbProvincias().getSelectedIndex() > 0) {
+                        UTIL.loadComboBox(panelABM.getCbDepartamentos(),
+                                new DepartamentoController().findDeptosFromProvincia(
+                                ((Provincia) panelABM.getCbProvincias().getSelectedItem()).getId()), true);
+                    } else {
+                        UTIL.loadComboBox(panelABM.getCbDepartamentos(), null, true);
+                    }
 
-            } else if (boton.getName().equalsIgnoreCase("bmunicipios")) {
-                new MunicipioJpaController().initContenedor(null, true);
-                if (panelABM.getCbDepartamentos().getSelectedIndex() > 0) {
-                    UTIL.loadComboBox(panelABM.getCbMunicipios(),
-                            new MunicipioJpaController().findMunicipiosFromDepto(
-                            ((Departamento) panelABM.getCbDepartamentos().getSelectedItem()).getId()), true);
-                } else {
-                    UTIL.loadComboBox(panelABM.getCbMunicipios(), null, true);
+                } else if (boton.getName().equalsIgnoreCase("bmunicipios")) {
+                    new MunicipioJpaController().initContenedor(null, true);
+                    if (panelABM.getCbDepartamentos().getSelectedIndex() > 0) {
+                        UTIL.loadComboBox(panelABM.getCbMunicipios(),
+                                new MunicipioJpaController().findMunicipiosFromDepto(
+                                ((Departamento) panelABM.getCbDepartamentos().getSelectedItem()).getId()), true);
+                    } else {
+                        UTIL.loadComboBox(panelABM.getCbMunicipios(), null, true);
+                    }
+                }
+            }// </editor-fold>
+            // <editor-fold defaultstate="collapsed" desc="ComboBox">
+            else if (e.getSource().getClass().equals(javax.swing.JComboBox.class)) {
+                JComboBox combo = (JComboBox) e.getSource();
+                if (combo.equals(panelABM.getCbProvincias())) {
+                    if (combo.getSelectedIndex() > 0) {
+                        UTIL.loadComboBox(panelABM.getCbDepartamentos(), new DepartamentoController().findDeptosFromProvincia(((Provincia) combo.getSelectedItem()).getId()), true);
+                    } else {
+                        UTIL.loadComboBox(panelABM.getCbDepartamentos(), null, true);
+                    }
+
+                } else if (combo.equals(panelABM.getCbDepartamentos())) {
+                    if (combo.getSelectedIndex() > 0) {
+                        UTIL.loadComboBox(panelABM.getCbMunicipios(), new MunicipioJpaController().findMunicipiosFromDepto(((Departamento) combo.getSelectedItem()).getId()), true);
+                    } else {
+                        UTIL.loadComboBox(panelABM.getCbMunicipios(), null, true);
+                    }
                 }
             }
-            return;
-        }// </editor-fold>
-        // <editor-fold defaultstate="collapsed" desc="ComboBox">
-        else if (e.getSource().getClass().equals(javax.swing.JComboBox.class)) {
-            javax.swing.JComboBox combo = (javax.swing.JComboBox) e.getSource();
-            if (combo.getName().equalsIgnoreCase("cbProvincias")) {
-                if (combo.getSelectedIndex() > 0) {
-                    UTIL.loadComboBox(panelABM.getCbDepartamentos(), new DepartamentoController().findDeptosFromProvincia(((Provincia) combo.getSelectedItem()).getId()), true);
-                } else {
-                    UTIL.loadComboBox(panelABM.getCbDepartamentos(), null, true);
-                }
-
-            } else if (combo.getName().equalsIgnoreCase("cbDepartamentos")) {
-                if (combo.getSelectedIndex() > 0) {
-                    UTIL.loadComboBox(panelABM.getCbMunicipios(), new MunicipioJpaController().findMunicipiosFromDepto(((Departamento) combo.getSelectedItem()).getId()), true);
-                } else {
-                    UTIL.loadComboBox(panelABM.getCbMunicipios(), null, true);
-                }
-            }
+            // </editor-fold>
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, ex.getLocalizedMessage(), "Error inesperado", JOptionPane.ERROR_MESSAGE);
+            Logger.getLogger(SucursalController.class.getName()).log(Level.ERROR, null, ex);
         }
-        // </editor-fold>
     }
 
     public JDialog initContenedor(JFrame frame, boolean modal) {
