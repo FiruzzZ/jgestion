@@ -48,9 +48,13 @@ public class PanelMovimientosVarios extends javax.swing.JPanel {
         cbResponsable = new javax.swing.JComboBox();
         jLabel10 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
-        cbConcepto = new javax.swing.JComboBox();
+        cbCuenta = new javax.swing.JComboBox();
         jLabel1 = new javax.swing.JLabel();
         dcMovimientoFecha = new com.toedter.calendar.JDateChooser();
+        cbSubCuenta = new javax.swing.JComboBox();
+        jLabel12 = new javax.swing.JLabel();
+        cbUnidadDeNegocio = new javax.swing.JComboBox();
+        jLabel13 = new javax.swing.JLabel();
 
         buttonGroupIngresoEgreso.add(radioIngreso);
         buttonGroupIngresoEgreso.add(radioEgreso);
@@ -108,13 +112,17 @@ public class PanelMovimientosVarios extends javax.swing.JPanel {
 
         cbResponsable.setToolTipText("Responsable del movimiento (habilitados tesorería)");
 
-        jLabel10.setText("Concepto");
+        jLabel10.setText("Cuenta");
 
         jLabel11.setText("Tipo");
 
-        cbConcepto.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Efectivo", "Combustible" }));
+        cbCuenta.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Efectivo", "Combustible" }));
 
         jLabel1.setText("Fecha");
+
+        jLabel12.setText("Sub Cuenta");
+
+        jLabel13.setText("Unid. de Negocio");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -122,39 +130,44 @@ public class PanelMovimientosVarios extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(bBuscar))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel11, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(labelResponsables, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel15, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.TRAILING))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(cbResponsable, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(tfDescripcion)
-                            .addComponent(cbCaja, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel11)
+                                    .addComponent(jLabel10)
+                                    .addComponent(labelResponsables)
+                                    .addComponent(jLabel8)
+                                    .addComponent(jLabel15)
+                                    .addComponent(jLabel9)
+                                    .addComponent(jLabel12)
+                                    .addComponent(jLabel13))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(cbConcepto, javax.swing.GroupLayout.PREFERRED_SIZE, 271, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(tfDescripcion)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addComponent(radioIngreso)
-                                        .addGap(4, 4, 4)
-                                        .addComponent(radioEgreso))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(tfMontoMovimiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jLabel1)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(dcMovimientoFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addGap(0, 0, Short.MAX_VALUE))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(10, 10, 10)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(bBuscar)
-                            .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 330, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(cbCaja, javax.swing.GroupLayout.PREFERRED_SIZE, 271, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(cbResponsable, javax.swing.GroupLayout.PREFERRED_SIZE, 271, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(cbCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, 271, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(radioIngreso)
+                                                .addGap(4, 4, 4)
+                                                .addComponent(radioEgreso))
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(tfMontoMovimiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(jLabel1)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(dcMovimientoFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addComponent(cbSubCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, 271, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(cbUnidadDeNegocio, javax.swing.GroupLayout.PREFERRED_SIZE, 271, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGap(0, 0, Short.MAX_VALUE)))))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -173,10 +186,18 @@ public class PanelMovimientosVarios extends javax.swing.JPanel {
                     .addComponent(radioIngreso)
                     .addComponent(jLabel11)
                     .addComponent(radioEgreso))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cbUnidadDeNegocio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel13))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel10)
-                    .addComponent(cbConcepto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cbCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cbSubCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel12))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -222,12 +243,16 @@ public class PanelMovimientosVarios extends javax.swing.JPanel {
     private javax.swing.JButton bBuscar;
     private javax.swing.ButtonGroup buttonGroupIngresoEgreso;
     private javax.swing.JComboBox cbCaja;
-    private javax.swing.JComboBox cbConcepto;
+    private javax.swing.JComboBox cbCuenta;
     private javax.swing.JComboBox cbResponsable;
+    private javax.swing.JComboBox cbSubCuenta;
+    private javax.swing.JComboBox cbUnidadDeNegocio;
     private com.toedter.calendar.JDateChooser dcMovimientoFecha;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
@@ -271,8 +296,16 @@ public class PanelMovimientosVarios extends javax.swing.JPanel {
         return cbResponsable;
     }
 
-    public JComboBox getCbConcepto() {
-        return cbConcepto;
+    public JComboBox getCbCuenta() {
+        return cbCuenta;
+    }
+
+    public JComboBox getCbSubCuenta() {
+        return cbSubCuenta;
+    }
+
+    public JComboBox getCbUnidadDeNegocio() {
+        return cbUnidadDeNegocio;
     }
 
     public Date getDcMovimientoFecha() {
@@ -297,7 +330,7 @@ public class PanelMovimientosVarios extends javax.swing.JPanel {
         radioIngreso.setSelected(ingreso);
         radioEgreso.setSelected(!ingreso);
         tfMontoMovimiento.setText(monto);
-        cbConcepto.setSelectedIndex(cbConceptoIndex);
+        cbCuenta.setSelectedIndex(cbConceptoIndex);
         tfDescripcion.setText(descripcion);
         cbResponsable.setSelectedIndex(cbResponsableIndex);
     }
