@@ -28,8 +28,8 @@ public class JDContenedor extends javax.swing.JDialog {
 
     public JDContenedor(Window owner, boolean modal, String title) {
         super(owner, modal ? DEFAULT_MODALITY_TYPE : ModalityType.MODELESS);
-        this.setTitle(title);
         initComponents();
+        this.setTitle(title);
         this.setLocationRelativeTo(owner);
     }
 

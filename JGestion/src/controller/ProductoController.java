@@ -8,8 +8,6 @@ import entity.*;
 import generics.GenericBeanCollection;
 import gui.*;
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.Label;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +26,6 @@ import jgestion.JGestionUtils;
 import jpa.controller.ProductoJpaController;
 import net.atlanticbb.tantlinger.shef.HTMLEditorPane;
 import net.sf.jasperreports.engine.JRException;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import utilities.general.UTIL;
 import utilities.swing.components.ComboBoxWrapper;
@@ -39,7 +36,9 @@ import utilities.swing.components.NumberRenderer;
  * @author FiruzzZ
  */
 public class ProductoController implements ActionListener, KeyListener {
+    private static final Logger LOG = Logger.getLogger(ProductoController.class.getName());
 
+    
     public static final String CLASS_NAME = Producto.class.getSimpleName();
     private JDContenedor contenedor;
     private JDABM abm;
@@ -77,7 +76,7 @@ public class ProductoController implements ActionListener, KeyListener {
                     EL_OBJECT = null;
                     initABM(false);
                 } catch (IOException ex) {
-                    Logger.getLogger(ProductoController.class.getName()).log(Level.ERROR, null, ex);
+                    LOG.error(ex.getLocalizedMessage(), ex);
                 } catch (MessageException ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 }
@@ -92,7 +91,7 @@ public class ProductoController implements ActionListener, KeyListener {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    Logger.getLogger(DepartamentoController.class.getName()).log(Level.ERROR, null, ex);
+                    LOG.error(ex.getLocalizedMessage(), ex);
                 }
             }
         });
@@ -104,10 +103,10 @@ public class ProductoController implements ActionListener, KeyListener {
                     eliminarProducto();
                     contenedor.showMessage("Producto eliminado..", CLASS_NAME, 1);
                 } catch (NonexistentEntityException ex) {
-                    Logger.getLogger(DepartamentoController.class.getName()).log(Level.ERROR, null, ex);
+                    LOG.error(ex.getLocalizedMessage(), ex);
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
                 } catch (DatabaseErrorException ex) {
-                    Logger.getLogger(DepartamentoController.class.getName()).log(Level.ERROR, null, ex);
+                    LOG.error(ex.getLocalizedMessage(), ex);
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
                 } catch (MessageException ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
@@ -512,7 +511,7 @@ public class ProductoController implements ActionListener, KeyListener {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                    Logger.getLogger(this.getClass()).log(Level.ERROR, null, ex);
+                    LOG.error(ex.getLocalizedMessage(), ex);
                 }
             } else if (boton.getName().equalsIgnoreCase("cancelar")) {
                 abm.dispose();
@@ -524,10 +523,10 @@ public class ProductoController implements ActionListener, KeyListener {
                     cargarImagen();
                 } catch (IOException ex) {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    Logger.getLogger(this.getClass()).log(Level.ERROR, null, ex);
+                    LOG.error(ex.getLocalizedMessage(), ex);
                 } catch (Exception ex) {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    Logger.getLogger(this.getClass()).log(Level.ERROR, null, ex);
+                    LOG.error(ex.getLocalizedMessage(), ex);
                 }
             } else if (boton.getName().equalsIgnoreCase("marcas")) {
                 try {
@@ -540,7 +539,7 @@ public class ProductoController implements ActionListener, KeyListener {
                 try {
                     initStockGral(EL_OBJECT);
                 } catch (MessageException ex) {
-                    Logger.getLogger(this.getClass()).log(Level.ERROR, null, ex);
+                    LOG.error(ex.getLocalizedMessage(), ex);
                 }
             }
         } // </editor-fold>
@@ -624,7 +623,7 @@ public class ProductoController implements ActionListener, KeyListener {
         try {
             jpaController.merge(producto);
         } catch (Exception ex) {
-            Logger.getLogger(ProductoController.class.getName()).log(Level.ERROR, null, ex);
+            LOG.error(ex.getLocalizedMessage(), ex);
         }
     }
 
@@ -643,7 +642,7 @@ public class ProductoController implements ActionListener, KeyListener {
 
 
         } catch (Exception ex) {
-            Logger.getLogger(ProductoController.class.getName()).log(Level.ERROR, null, ex);
+            LOG.error(ex.getLocalizedMessage(), ex);
         }
         List<Stock> stockList = new StockJpaController().findStocksByProducto(p.getId());
         DefaultTableModel dtm = jdStockGral.getDtm();
@@ -872,7 +871,7 @@ public class ProductoController implements ActionListener, KeyListener {
                     + "ORDER BY p.nombre");
             return resultList;
         } catch (Exception ex) {
-            Logger.getLogger(ProductoController.class.getName()).log(Level.ERROR, null, ex);
+            LOG.error(ex.getLocalizedMessage(), ex);
         }
         return null;
     }
