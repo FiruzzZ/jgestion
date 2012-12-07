@@ -254,7 +254,6 @@ public class ProveedorController implements ActionListener {
             }
         });
         UTIL.getDefaultTableModel(contenedor.getjTable1(), colsName, colsWidth);
-        //esconde el ID column
         UTIL.hideColumnTable(contenedor.getjTable1(), 0);
         cargarContenedorTabla(contenedor.getDTM());
         //listener

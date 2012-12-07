@@ -535,7 +535,7 @@ public class CajaMovimientosController implements ActionListener {
             });
         }
         UTIL.loadComboBox(panelMovVarios.getCbCaja(), getCajaMovimientosActivasFromCurrentUser(), false);
-        UTIL.loadComboBox(panelMovVarios.getCbCuenta(), new MovimientoConceptoController(null).findMovimientoConceptoEntities(), false);
+        UTIL.loadComboBox(panelMovVarios.getCbCuenta(), new MovimientoConceptoController(null).findAll(), false);
         abm = new JDABM(owner, "Movimientos Varios", modal, panelMovVarios);
         abm.getbAceptar().addActionListener(new ActionListener() {
             @Override
@@ -616,7 +616,7 @@ public class CajaMovimientosController implements ActionListener {
             cajaList.add(cajaMovimientos.getCaja());
         }
         UTIL.loadComboBox(panelBuscadorMovimientosVarios.getCbCaja(), cajaList, true);
-        UTIL.loadComboBox(panelBuscadorMovimientosVarios.getCbMovimientoConceptos(), new MovimientoConceptoController(null).findMovimientoConceptoEntities(), true);
+        UTIL.loadComboBox(panelBuscadorMovimientosVarios.getCbMovimientoConceptos(), new MovimientoConceptoController(null).findAll(), true);
         buscador = new JDBuscador(owner, "Buscardor - Movimientos varios", false, panelBuscadorMovimientosVarios);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),

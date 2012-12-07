@@ -17,9 +17,14 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.logging.Level;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -27,11 +32,13 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.DateFormatter;
 import jgestion.JGestionUtils;
 import jpa.controller.ChequeTercerosJpaController;
 import org.apache.log4j.Logger;
 import utilities.general.UTIL;
 import utilities.swing.components.ComboBoxWrapper;
+import utilities.swing.components.FormatRenderer;
 import utilities.swing.components.NumberRenderer;
 
 /**
@@ -383,9 +390,13 @@ public class ChequeTercerosController implements ActionListener {
         UTIL.loadComboBox(jdChequeManager.getCbBancos(), JGestionUtils.getWrappedBancos(new BancoController().findEntities()), true);
         UTIL.loadComboBox(jdChequeManager.getCbEstados(), Arrays.asList(ChequeEstado.values()), true);
         UTIL.loadComboBox(jdChequeManager.getCbOrderBy(), Arrays.asList(orderByToComboBoxList), false);
+        jdChequeManager.getCbOrderBy().setSelectedIndex(2);
         UTIL.loadComboBox(jdChequeManager.getCbEmisor(), JGestionUtils.getWrappedClientes(new ClienteController().findEntities()), true);
         UTIL.getDefaultTableModel(jdChequeManager.getjTable1(), columnNames, columnWidths, columnClassTypes);
+        jdChequeManager.getjTable1().getColumnModel().getColumn(2).setCellRenderer(FormatRenderer.getDateRenderer());
+        jdChequeManager.getjTable1().getColumnModel().getColumn(4).setCellRenderer(FormatRenderer.getDateRenderer());
         jdChequeManager.getjTable1().getColumnModel().getColumn(6).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        jdChequeManager.getjTable1().getColumnModel().getColumn(10).setCellRenderer(FormatRenderer.getDateRenderer());
         UTIL.hideColumnTable(jdChequeManager.getjTable1(), 0);
         jdChequeManager.addButtonListener(this);
     }
@@ -398,15 +409,13 @@ public class ChequeTercerosController implements ActionListener {
             //"id", "Nº Cheque", "F. Cheque", "Emisor", "F. Cobro", "Banco", "Importe", "Estado", "Cruzado", "Endosatario", "F. Endoso", "C. Ingreso", "C. Egreso", "Observacion", "Usuario"};
             dtm.addRow((Object[]) object);
         }
+        totalizarSegunFechaCobro();
     }
 
     private void armarQuery(boolean imprimir) throws DatabaseErrorException {
         StringBuilder query = new StringBuilder("SELECT "
-                + " c.id, c.numero, TO_CHAR(c.fecha_cheque,'DD/MM/YYYY') as fecha_cheque, cliente.nombre as cliente, TO_CHAR(c.fecha_cobro,'DD/MM/YYYY') as fecha_cobro,"
-                + " banco.nombre as banco, c.importe, cheque_estado.nombre as estado, c.cruzado"
-                + ", c.endosatario, c.fecha_endoso"
-                + ", c.comprobante_ingreso, c.comprobante_egreso, c.observacion"
-                + ", usuario.nick as usuario "
+                + " c.id, c.numero, c.fecha_cheque, cliente.nombre as cliente, c.fecha_cobro, banco.nombre as banco, c.importe, cheque_estado.nombre as estado, c.cruzado"
+                + ", c.endosatario, c.fecha_endoso, c.comprobante_ingreso, c.comprobante_egreso, c.observacion, usuario.nick as usuario "
                 + " FROM cheque_terceros c "
                 + " JOIN banco ON (c.banco = banco.id) "
                 + " LEFT JOIN cliente ON (c.cliente = cliente.id) "
@@ -423,16 +432,16 @@ public class ChequeTercerosController implements ActionListener {
             }
         }
         if (jdChequeManager.getDcEmisionDesde() != null) {
-            query.append(" AND c.fecha_cheque >='").append(jdChequeManager.getDcEmisionDesde()).append("'");
+            query.append(" AND c.fecha_cheque >='").append(UTIL.DATE_FORMAT.format(jdChequeManager.getDcEmisionDesde())).append("'");
         }
         if (jdChequeManager.getDcEmisionHasta() != null) {
-            query.append(" AND c.fecha_cheque <='").append(jdChequeManager.getDcEmisionHasta()).append("'");
+            query.append(" AND c.fecha_cheque <='").append(UTIL.DATE_FORMAT.format(jdChequeManager.getDcEmisionHasta())).append("'");
         }
         if (jdChequeManager.getDcCobroDesde() != null) {
-            query.append(" AND c.fecha_cobro >='").append(jdChequeManager.getDcCobroDesde()).append("'");
+            query.append(" AND c.fecha_cobro >='").append(UTIL.DATE_FORMAT.format(jdChequeManager.getDcCobroDesde())).append("'");
         }
         if (jdChequeManager.getDcCobroHasta() != null) {
-            query.append(" AND c.fecha_cobro <='").append(jdChequeManager.getDcCobroHasta()).append("'");
+            query.append(" AND c.fecha_cobro <='").append(UTIL.DATE_FORMAT.format(jdChequeManager.getDcCobroHasta())).append("'");
         }
         if (jdChequeManager.getTfImporte().getText().trim().length() > 0) {
             try {
@@ -496,5 +505,39 @@ public class ChequeTercerosController implements ActionListener {
             caja = (Caja) cbCajas.getSelectedItem();
         }
         return caja;
+    }
+
+    private void totalizarSegunFechaCobro() {
+        BigDecimal $cobrables = BigDecimal.ZERO;
+        BigDecimal $30 = BigDecimal.ZERO;
+        BigDecimal $60 = BigDecimal.ZERO;
+        BigDecimal $90 = BigDecimal.ZERO;
+        BigDecimal $90mas = BigDecimal.ZERO;
+        Date now = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        DefaultTableModel dtm = (DefaultTableModel) jdChequeManager.getjTable1().getModel();
+        final long dayOnMilli = 24 * 60 * 60 * 1000;
+        for (int row = 0; row < dtm.getRowCount(); row++) {
+            Date fechaCobro = (Date) dtm.getValueAt(row, 4);
+            BigDecimal importe = (BigDecimal) dtm.getValueAt(row, 6);
+            long diff = now.getTime() - fechaCobro.getTime();
+            long diffDays = diff / (dayOnMilli);
+            if (diffDays <= 0) {
+                $cobrables = $cobrables.add(importe);
+            } else if (diffDays <= 30) {
+                $30 = $30.add(importe);
+            } else if (diffDays <= 60) {
+                $60 = $60.add(importe);
+            } else if (diffDays <= 90) {
+                $90 = $90.add(importe);
+            } else if (diffDays > 90) {
+                $90mas = $90mas.add(importe);
+            }
+        }
+        jdChequeManager.getTfCobrables().setText(UTIL.DECIMAL_FORMAT.format($cobrables));
+        jdChequeManager.getTf30().setText(UTIL.DECIMAL_FORMAT.format($30));
+        jdChequeManager.getTf60().setText(UTIL.DECIMAL_FORMAT.format($60));
+        jdChequeManager.getTf90().setText(UTIL.DECIMAL_FORMAT.format($90));
+        jdChequeManager.getTf90mas().setText(UTIL.DECIMAL_FORMAT.format($90mas));
     }
 }
