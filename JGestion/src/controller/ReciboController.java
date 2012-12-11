@@ -296,7 +296,7 @@ public class ReciboController implements ActionListener, FocusListener {
                 d.setIngreso(true);
                 d.setTipo(DetalleCajaMovimientosJpaController.RECIBO);
                 d.setUsuario(UsuarioController.getCurrentUser());
-                d.setMovimientoConcepto(MovimientoConceptoController.EFECTIVO);
+                d.setCuenta(CuentaController.EFECTIVO);
                 d.setDescripcion(null); // <--- setear con el N° del comprobante
                 d.setCajaMovimientos(null); // no te olvides este tampoco!! 
                 d.setNumero(0l); // Comprobante.id!!!!

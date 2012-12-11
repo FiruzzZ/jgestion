@@ -94,7 +94,7 @@ public class JDChequesManager extends javax.swing.JDialog {
         tfCobrables = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setMinimumSize(new java.awt.Dimension(850, 400));
+        setMinimumSize(new java.awt.Dimension(900, 500));
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 10)); // NOI18N
         jLabel1.setText("Nº Registros: 0");

@@ -23,9 +23,13 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.text.NumberFormatter;
 import jpa.controller.RemesaJpaController;
 import net.sf.jasperreports.engine.JRException;
+import utilities.swing.components.FormatRenderer;
+import utilities.swing.components.NumberRenderer;
 
 /**
  *
@@ -203,11 +207,19 @@ public class CtacteProveedorJpaController implements ActionListener {
                 resumenCtaCtes.getjTableResumen(),
                 new String[]{"ctacteProveedorID", "Detalle", "Fecha", "Vencimiento", "Debe", "Haber", "Saldo", "Acumulativo"},
                 new int[]{1, 60, 50, 50, 30, 30, 30, 50});
+        resumenCtaCtes.getjTableResumen().getColumnModel().getColumn(2).setCellRenderer(FormatRenderer.getDateRenderer());
+        resumenCtaCtes.getjTableResumen().getColumnModel().getColumn(3).setCellRenderer(FormatRenderer.getDateRenderer());
+        resumenCtaCtes.getjTableResumen().getColumnModel().getColumn(4).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        resumenCtaCtes.getjTableResumen().getColumnModel().getColumn(5).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        resumenCtaCtes.getjTableResumen().getColumnModel().getColumn(6).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        resumenCtaCtes.getjTableResumen().getColumnModel().getColumn(7).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         UTIL.hideColumnTable(resumenCtaCtes.getjTableResumen(), 0);
         UTIL.getDefaultTableModel(
                 resumenCtaCtes.getjTableDetalle(),
                 new String[]{"Nº Factura", "Observación", "Monton"},
                 new int[]{60, 100, 50});
+        resumenCtaCtes.getjTableDetalle().getColumnModel().getColumn(2).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        
         resumenCtaCtes.setListener(this);
         resumenCtaCtes.setLocationRelativeTo(owner);
         resumenCtaCtes.setVisible(true);
@@ -226,10 +238,10 @@ public class CtacteProveedorJpaController implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         // <editor-fold defaultstate="collapsed" desc="JButton">
         if (e.getSource().getClass().equals(javax.swing.JButton.class)) {
-            javax.swing.JButton btn = (javax.swing.JButton) e.getSource();
+            JButton btn = (JButton) e.getSource();
 
             // <editor-fold defaultstate="collapsed" desc="verResumenCCC">
-            if (btn.getName().equalsIgnoreCase("verCtactes")) {
+            if (btn.equals(resumenCtaCtes.getbBuscar())) {
                 try {
                     armarQuery(false);
                 } catch (MessageException ex) {
@@ -239,8 +251,7 @@ public class CtacteProveedorJpaController implements ActionListener {
                     Logger.getLogger(CtacteClienteJpaController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }// </editor-fold>
-            // <editor-fold defaultstate="collapsed" desc="imprimirResumenCCC">
-            else if (btn.getName().equalsIgnoreCase("print")) {
+            else if (btn.equals(resumenCtaCtes.getbImprimir())) {
                 try {
                     armarQuery(true);
                 } catch (MessageException ex) {
@@ -249,7 +260,7 @@ public class CtacteProveedorJpaController implements ActionListener {
                     resumenCtaCtes.showMessage(ex.getMessage(), null, 2);
                     Logger.getLogger(CtacteClienteJpaController.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            }// </editor-fold>
+            }
         }// </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="JComboBox">
         else if (e.getSource().getClass().equals(javax.swing.JComboBox.class)) {
@@ -308,7 +319,7 @@ public class CtacteProveedorJpaController implements ActionListener {
 
         //agregar la 1er fila a la tabla
         BigDecimal saldoAcumulativo = BigDecimal.valueOf(totalDebe - totalHaber);
-        dtm.addRow(new Object[]{null, "RESUMEN PREVIOS", null, null, UTIL.PRECIO_CON_PUNTO.format(totalDebe), UTIL.PRECIO_CON_PUNTO.format(totalHaber), null, UTIL.PRECIO_CON_PUNTO.format(saldoAcumulativo)});
+        dtm.addRow(new Object[]{null, "RESUMEN PREVIOS", null, null, totalDebe, totalHaber, null, saldoAcumulativo});
         for (CtacteProveedor ctaCte : lista) {
             FacturaCompra factura = ctaCte.getFactura();
             //checkea que no esté anulada la ccc
@@ -320,12 +331,12 @@ public class CtacteProveedorJpaController implements ActionListener {
             dtm.addRow(new Object[]{
                         ctaCte.getId(), // <--------- No es visible desde la GUI
                         factura.getTipo() + UTIL.AGREGAR_CEROS(factura.getNumero(), 12),
-                        UTIL.DATE_FORMAT.format(factura.getFechaCompra()),
-                        UTIL.DATE_FORMAT.format(UTIL.customDateByDays(factura.getFechaCompra(), ctaCte.getDias())),
-                        UTIL.PRECIO_CON_PUNTO.format(ctaCte.getImporte()),
-                        isAnulada ? "ANULADA" : UTIL.PRECIO_CON_PUNTO.format(ctaCte.getEntregado()),
-                        isAnulada ? "ANULADA" : UTIL.PRECIO_CON_PUNTO.format(ctaCte.getImporte().subtract(ctaCte.getEntregado())),
-                        isAnulada ? "ANULADA" : UTIL.PRECIO_CON_PUNTO.format(saldoAcumulativo),
+                        factura.getFechaCompra(),
+                        UTIL.customDateByDays(factura.getFechaCompra(), ctaCte.getDias()),
+                        ctaCte.getImporte(),
+                        isAnulada ? "ANULADA" : ctaCte.getEntregado(),
+                        isAnulada ? "ANULADA" : ctaCte.getImporte().subtract(ctaCte.getEntregado()),
+                        isAnulada ? "ANULADA" : saldoAcumulativo,
                         ctaCte.getEstado()
                     });
         }

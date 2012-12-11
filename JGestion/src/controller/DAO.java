@@ -403,9 +403,9 @@ public abstract class DAO implements Runnable {
             }// </editor-fold>
 
             // <editor-fold defaultstate="collapsed" desc="MovimientoConcepto.EFECTIVO">
-            if (em.createQuery("SELECT COUNT(o) FROM " + MovimientoConceptoController.CLASS_NAME + " o").getSingleResult().toString().equalsIgnoreCase("0")) {
-                System.out.println("Creando MovimientoConcepto..");
-                MovimientoConcepto o = new MovimientoConcepto();
+            if (em.createQuery("SELECT COUNT(o) FROM " + Cuenta.class.getSimpleName() + " o").getSingleResult().toString().equalsIgnoreCase("0")) {
+                System.out.println("Creando " + Cuenta.class.getSimpleName());
+                Cuenta o = new Cuenta();
                 o.setId(1);
                 o.setNombre("EFECTIVO");
                 em.persist(o);

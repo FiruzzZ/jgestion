@@ -69,7 +69,13 @@ public class DetalleCajaMovimientos implements Serializable {
     private Usuario usuario;
     @JoinColumn(name = "movimiento_concepto", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
-    private MovimientoConcepto movimientoConcepto;
+    private Cuenta cuenta;
+    @JoinColumn(name = "subcuenta_id")
+    @ManyToOne
+    private SubCuenta subCuenta;
+    @JoinColumn(name = "unidad_de_negocio_id")
+    @ManyToOne
+    private UnidadDeNegocio unidadDeNegocio;
 
     public DetalleCajaMovimientos() {
     }
@@ -152,12 +158,28 @@ public class DetalleCajaMovimientos implements Serializable {
         this.usuario = usuario;
     }
 
-    public MovimientoConcepto getMovimientoConcepto() {
-        return movimientoConcepto;
+    public Cuenta getCuenta() {
+        return cuenta;
     }
 
-    public void setMovimientoConcepto(MovimientoConcepto movimientoConcepto) {
-        this.movimientoConcepto = movimientoConcepto;
+    public void setCuenta(Cuenta cuenta) {
+        this.cuenta = cuenta;
+    }
+
+    public SubCuenta getSubCuenta() {
+        return subCuenta;
+    }
+
+    public void setSubCuenta(SubCuenta subCuenta) {
+        this.subCuenta = subCuenta;
+    }
+
+    public UnidadDeNegocio getUnidadDeNegocio() {
+        return unidadDeNegocio;
+    }
+
+    public void setUnidadDeNegocio(UnidadDeNegocio unidadDeNegocio) {
+        this.unidadDeNegocio = unidadDeNegocio;
     }
 
     public Date getFechaMovimiento() {

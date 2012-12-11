@@ -15,7 +15,7 @@ import java.awt.event.FocusEvent;
 import javax.persistence.EntityManager;
 import entity.DetalleRemesa;
 import entity.FacturaCompra;
-import entity.MovimientoConcepto;
+import entity.Cuenta;
 import entity.NotaCreditoProveedor;
 import entity.Proveedor;
 import entity.RemesaPagos;
@@ -250,7 +250,7 @@ public class RemesaController implements ActionListener, FocusListener {
             d.setMonto(-monto.doubleValue());
             d.setTipo(DetalleCajaMovimientosJpaController.REMESA);
             d.setUsuario(UsuarioController.getCurrentUser());
-            d.setMovimientoConcepto(MovimientoConceptoController.EFECTIVO);
+            d.setCuenta(CuentaController.EFECTIVO);
             d.setDescripcion(null); // <--- setear con el N° del comprobante
             d.setCajaMovimientos(null); // no te olvides este tampoco!! 
             d.setNumero(0l); // Comprobante.id!!!!

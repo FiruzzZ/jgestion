@@ -418,7 +418,6 @@ public class NotaCreditoController {
         jdFacturaVenta.setTfTotal(UTIL.DECIMAL_FORMAT.format(notaCredito.getImporte()));
         jdFacturaVenta.setVisibleListaPrecio(false);// EXCLU NotaCredito
         if (paraAnular) {
-            jdFacturaVenta.hidePanelCambio();
             jdFacturaVenta.getBtnCancelar().setVisible(false);
             jdFacturaVenta.getBtnAceptar().setVisible(false);
             jdFacturaVenta.getBtnFacturar().setVisible(false);

@@ -25,10 +25,10 @@ import javax.xml.bind.annotation.XmlRootElement;
     @UniqueConstraint(columnNames = {"nombre"})})
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "MovimientoConcepto.findAll", query = "SELECT m FROM MovimientoConcepto m"),
-    @NamedQuery(name = "MovimientoConcepto.findById", query = "SELECT m FROM MovimientoConcepto m WHERE m.id = :id"),
-    @NamedQuery(name = "MovimientoConcepto.findByNombre", query = "SELECT m FROM MovimientoConcepto m WHERE m.nombre = :nombre")})
-public class MovimientoConcepto implements Serializable {
+    @NamedQuery(name = "Cuenta.findAll", query = "SELECT m FROM Cuenta m"),
+    @NamedQuery(name = "Cuenta.findById", query = "SELECT m FROM Cuenta m WHERE m.id = :id")
+})
+public class Cuenta implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -44,7 +44,7 @@ public class MovimientoConcepto implements Serializable {
     @OrderBy(value = "cuenta.nombre")
     private List<SubCuenta> subCuentas;
 
-    public MovimientoConcepto() {
+    public Cuenta() {
     }
 
     public Integer getId() {
@@ -81,10 +81,10 @@ public class MovimientoConcepto implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof MovimientoConcepto)) {
+        if (!(object instanceof Cuenta)) {
             return false;
         }
-        MovimientoConcepto other = (MovimientoConcepto) object;
+        Cuenta other = (Cuenta) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -93,6 +93,7 @@ public class MovimientoConcepto implements Serializable {
 
     @Override
     public String toString() {
-        return nombre;
+        return "Cuenta{" + "id=" + id + ", nombre=" + nombre + ", subCuentas=" + subCuentas + '}';
     }
+
 }

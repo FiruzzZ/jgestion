@@ -100,6 +100,13 @@ public class FacturaVenta implements Serializable {
     @Basic(optional = false)
     @Column(name = "diferencia_redondeo", nullable = false, precision = 10, scale = 2)
     private BigDecimal diferenciaRedondeo;
+    @JoinColumn(name="unidad_de_negocio_id")
+    @ManyToOne
+    private UnidadDeNegocio unidadDeNegocio;
+    @ManyToOne
+    private Cuenta cuenta;
+    @ManyToOne
+    private SubCuenta subCuenta;
 
     public FacturaVenta() {
     }
@@ -323,6 +330,30 @@ public class FacturaVenta implements Serializable {
 
     public void setDiferenciaRedondeo(BigDecimal diferenciaRedondeo) {
         this.diferenciaRedondeo = diferenciaRedondeo;
+    }
+
+    public UnidadDeNegocio getUnidadDeNegocio() {
+        return unidadDeNegocio;
+    }
+
+    public void setUnidadDeNegocio(UnidadDeNegocio unidadDeNegocio) {
+        this.unidadDeNegocio = unidadDeNegocio;
+    }
+
+    public Cuenta getCuenta() {
+        return cuenta;
+    }
+
+    public void setCuenta(Cuenta cuenta) {
+        this.cuenta = cuenta;
+    }
+
+    public SubCuenta getSubCuenta() {
+        return subCuenta;
+    }
+
+    public void setSubCuenta(SubCuenta subCuenta) {
+        this.subCuenta = subCuenta;
     }
 
     @Override

@@ -136,14 +136,10 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenuItem49 = new javax.swing.JMenuItem();
         jMenuItem71 = new javax.swing.JMenuItem();
         menuCtaCte = new javax.swing.JMenu();
-        jMenuItem30 = new javax.swing.JMenuItem();
         jMenuItem37 = new javax.swing.JMenuItem();
+        jMenuItem30 = new javax.swing.JMenuItem();
         jMenuItem31 = new javax.swing.JMenuItem();
         jMenuItem42 = new javax.swing.JMenuItem();
-        jMenuItem21 = new javax.swing.JMenuItem();
-        menuIitemCuentas = new javax.swing.JMenuItem();
-        menuItemSubCuentas = new javax.swing.JMenuItem();
-        jMenuItem68 = new javax.swing.JMenuItem();
         jMenu17 = new javax.swing.JMenu();
         jMenu19 = new javax.swing.JMenu();
         jMenuItem60 = new javax.swing.JMenuItem();
@@ -154,10 +150,16 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenuItem61 = new javax.swing.JMenuItem();
         jMenuItem62 = new javax.swing.JMenuItem();
         jMenuItem63 = new javax.swing.JMenuItem();
+        jSeparator6 = new javax.swing.JPopupMenu.Separator();
+        jMenuItem21 = new javax.swing.JMenuItem();
+        menuIitemCuentas = new javax.swing.JMenuItem();
+        menuItemSubCuentas = new javax.swing.JMenuItem();
+        jMenuItem68 = new javax.swing.JMenuItem();
         jMenuItem65 = new javax.swing.JMenuItem();
+        jMenu25 = new javax.swing.JMenu();
+        jMenuItem50 = new javax.swing.JMenuItem();
         jMenu9 = new javax.swing.JMenu();
         jMenuItem22 = new javax.swing.JMenuItem();
-        jMenu12 = new javax.swing.JMenu();
         jMenuItem73 = new javax.swing.JMenuItem();
         jMenuItem19 = new javax.swing.JMenuItem();
         jMenuItem11 = new javax.swing.JMenuItem();
@@ -594,15 +596,6 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         menuCtaCte.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/lupa-simple.png"))); // NOI18N
         menuCtaCte.setText("Cta. Cte.");
 
-        jMenuItem30.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/appfinder.png"))); // NOI18N
-        jMenuItem30.setText("Por Cliente");
-        jMenuItem30.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem30ActionPerformed(evt);
-            }
-        });
-        menuCtaCte.add(jMenuItem30);
-
         jMenuItem37.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/appfinder.png"))); // NOI18N
         jMenuItem37.setText("Resumen General");
         jMenuItem37.addActionListener(new java.awt.event.ActionListener() {
@@ -612,8 +605,17 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         });
         menuCtaCte.add(jMenuItem37);
 
+        jMenuItem30.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/appfinder.png"))); // NOI18N
+        jMenuItem30.setText("Por Cliente");
+        jMenuItem30.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem30ActionPerformed(evt);
+            }
+        });
+        menuCtaCte.add(jMenuItem30);
+
         jMenuItem31.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/appfinder.png"))); // NOI18N
-        jMenuItem31.setText("Proveedores");
+        jMenuItem31.setText("Por Proveedores");
         jMenuItem31.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem31ActionPerformed(evt);
@@ -631,38 +633,6 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         menuCtaCte.add(jMenuItem42);
 
         menuTesoreria.add(menuCtaCte);
-
-        jMenuItem21.setText("ABM Cajas");
-        jMenuItem21.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem21ActionPerformed(evt);
-            }
-        });
-        menuTesoreria.add(jMenuItem21);
-
-        menuIitemCuentas.setText("ABM Cuentas");
-        menuIitemCuentas.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menuIitemCuentasActionPerformed(evt);
-            }
-        });
-        menuTesoreria.add(menuIitemCuentas);
-
-        menuItemSubCuentas.setText("ABM Sub Cuentas");
-        menuItemSubCuentas.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menuItemSubCuentasActionPerformed(evt);
-            }
-        });
-        menuTesoreria.add(menuItemSubCuentas);
-
-        jMenuItem68.setText("ABM Operaciones Bancarias");
-        jMenuItem68.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem68ActionPerformed(evt);
-            }
-        });
-        menuTesoreria.add(jMenuItem68);
 
         jMenu17.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/16px_check.png"))); // NOI18N
         jMenu17.setText("Cheques");
@@ -723,9 +693,54 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenu22.add(jMenuItem63);
 
         menuTesoreria.add(jMenu22);
+        menuTesoreria.add(jSeparator6);
+
+        jMenuItem21.setText("ABM Cajas");
+        jMenuItem21.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem21ActionPerformed(evt);
+            }
+        });
+        menuTesoreria.add(jMenuItem21);
+
+        menuIitemCuentas.setText("ABM Cuentas");
+        menuIitemCuentas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuIitemCuentasActionPerformed(evt);
+            }
+        });
+        menuTesoreria.add(menuIitemCuentas);
+
+        menuItemSubCuentas.setText("ABM Sub Cuentas");
+        menuItemSubCuentas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemSubCuentasActionPerformed(evt);
+            }
+        });
+        menuTesoreria.add(menuItemSubCuentas);
+
+        jMenuItem68.setText("ABM Operaciones Bancarias");
+        jMenuItem68.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem68ActionPerformed(evt);
+            }
+        });
+        menuTesoreria.add(jMenuItem68);
 
         jMenuItem65.setText("Logger");
         menuTesoreria.add(jMenuItem65);
+
+        jMenu25.setText("Cosas para Ignacio");
+
+        jMenuItem50.setText("Asignación de Unidad, Cuenta y Sub Cuenta a Facturas Venta");
+        jMenuItem50.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem50ActionPerformed(evt);
+            }
+        });
+        jMenu25.add(jMenuItem50);
+
+        menuTesoreria.add(jMenu25);
 
         jMenuBar1.add(menuTesoreria);
 
@@ -740,19 +755,15 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         });
         jMenu9.add(jMenuItem22);
 
-        jMenu12.setText("Unidades de Negocio");
-
         jMenuItem73.setText("ABM Unidades de Negocio");
         jMenuItem73.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem73ActionPerformed(evt);
             }
         });
-        jMenu12.add(jMenuItem73);
+        jMenu9.add(jMenuItem73);
 
-        jMenu9.add(jMenu12);
-
-        jMenuItem19.setText("Sucursales (Puntos de Venta)");
+        jMenuItem19.setText("ABM Sucursales (Puntos de Venta)");
         jMenuItem19.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem19ActionPerformed(evt);
@@ -1355,7 +1366,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
     private void menuIitemCuentasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuIitemCuentasActionPerformed
         try {
-            new MovimientoConceptoController(null).initABM((JFrame) this);
+            new CuentaController().initABM((JFrame) this);
         } catch (MessageException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
         }
@@ -1551,12 +1562,15 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         new SubCuentaController().initContenedor(this);
     }//GEN-LAST:event_menuItemSubCuentasActionPerformed
 
+    private void jMenuItem50ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem50ActionPerformed
+        new FacturaVentaController().asignador();
+    }//GEN-LAST:event_jMenuItem50ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu10;
     private javax.swing.JMenu jMenu11;
-    private javax.swing.JMenu jMenu12;
     private javax.swing.JMenu jMenu13;
     private javax.swing.JMenu jMenu14;
     private javax.swing.JMenu jMenu15;
@@ -1570,6 +1584,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenu jMenu22;
     private javax.swing.JMenu jMenu23;
     private javax.swing.JMenu jMenu24;
+    private javax.swing.JMenu jMenu25;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenu jMenu4;
     private javax.swing.JMenu jMenu5;
@@ -1623,6 +1638,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenuItem jMenuItem48;
     private javax.swing.JMenuItem jMenuItem49;
     private javax.swing.JMenuItem jMenuItem5;
+    private javax.swing.JMenuItem jMenuItem50;
     private javax.swing.JMenuItem jMenuItem51;
     private javax.swing.JMenuItem jMenuItem52;
     private javax.swing.JMenuItem jMenuItem53;
@@ -1659,6 +1675,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JPopupMenu.Separator jSeparator3;
     private javax.swing.JPopupMenu.Separator jSeparator4;
     private javax.swing.JPopupMenu.Separator jSeparator5;
+    private javax.swing.JPopupMenu.Separator jSeparator6;
     private javax.swing.JLabel labelConnetionState;
     private javax.swing.JMenu menuCtaCte;
     private javax.swing.JMenuItem menuIitemCuentas;

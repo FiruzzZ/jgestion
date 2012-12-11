@@ -3,6 +3,7 @@ package controller;
 import controller.exceptions.MessageException;
 import controller.exceptions.MissingReportException;
 import entity.*;
+import generics.GenericBeanCollection;
 import gui.*;
 import java.awt.Component;
 import java.awt.Window;
@@ -12,6 +13,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.NoResultException;
@@ -20,11 +22,17 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import jgestion.ActionListenerManager;
+import jgestion.JGestionUtils;
+import jgestion.Wrapper;
 import jpa.controller.CajaMovimientosJpaController;
+import jpa.controller.UnidadDeNegocioJpaController;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import utilities.general.UTIL;
+import utilities.swing.components.ComboBoxWrapper;
+import utilities.swing.components.FormatRenderer;
 import utilities.swing.components.NumberRenderer;
 
 /**
@@ -92,7 +100,7 @@ public class CajaMovimientosController implements ActionListener {
         dcm.setNumero(-1); //meaningless yet...
         dcm.setTipo(DetalleCajaMovimientosJpaController.APERTURA_CAJA);
         dcm.setUsuario(UsuarioController.getCurrentUser());
-        dcm.setMovimientoConcepto(MovimientoConceptoController.EFECTIVO);
+        dcm.setCuenta(CuentaController.EFECTIVO);
         dcm.setCajaMovimientos(cm);
         cm.getDetalleCajaMovimientosList().add(dcm);
         jpaController.create(cm);
@@ -123,9 +131,9 @@ public class CajaMovimientosController implements ActionListener {
         dcm.setNumero(-1); //meaningless yet...
         dcm.setTipo(DetalleCajaMovimientosJpaController.APERTURA_CAJA);
         dcm.setUsuario(UsuarioController.getCurrentUser());
-        if (dcm.getMovimientoConcepto() == null) {
+        if (dcm.getCuenta() == null) {
             //default value
-            dcm.setMovimientoConcepto(MovimientoConceptoController.EFECTIVO);
+            dcm.setCuenta(CuentaController.EFECTIVO);
         }
         nextCaja.getDetalleCajaMovimientosList().add(dcm);
         jpaController.create(nextCaja);
@@ -534,8 +542,10 @@ public class CajaMovimientosController implements ActionListener {
                 }
             });
         }
-        UTIL.loadComboBox(panelMovVarios.getCbCaja(), getCajaMovimientosActivasFromCurrentUser(), false);
-        UTIL.loadComboBox(panelMovVarios.getCbCuenta(), new MovimientoConceptoController(null).findAll(), false);
+        UTIL.loadComboBox(panelMovVarios.getCbCaja(), new UsuarioHelper().getWrappedCajas(true), false);
+        List<ComboBoxWrapper<UnidadDeNegocio>> l = new Wrapper<UnidadDeNegocio>().getWrapped(new UnidadDeNegocioJpaController().findAll());
+        UTIL.loadComboBox(panelMovVarios.getCbUnidadDeNegocio(), l, false);
+        ActionListenerManager.setCuentaSubcuentaActionListener(panelMovVarios.getCbCuenta(), false, panelMovVarios.getCbSubCuenta(), true, true);
         abm = new JDABM(owner, "Movimientos Varios", modal, panelMovVarios);
         abm.getbAceptar().addActionListener(new ActionListener() {
             @Override
@@ -574,13 +584,26 @@ public class CajaMovimientosController implements ActionListener {
      *
      * @throws MessageException
      */
+    @SuppressWarnings("unchecked")
     private DetalleCajaMovimientos setMovimientoVarios() throws MessageException {
         //ctrl's................
         CajaMovimientos cajaMovimiento;
+        UnidadDeNegocio unidadDeNegocio;
+        SubCuenta subCuenta;
         try {
             cajaMovimiento = (CajaMovimientos) panelMovVarios.getCbCaja().getSelectedItem();
         } catch (ClassCastException ex) {
             throw new MessageException("No tiene acceso a ninguna Caja");
+        }
+        try {
+            subCuenta = ((ComboBoxWrapper<SubCuenta>) panelMovVarios.getCbSubCuenta().getSelectedItem()).getEntity();
+        } catch (ClassCastException ex) {
+            subCuenta = null;
+        }
+        try {
+            unidadDeNegocio = ((ComboBoxWrapper<UnidadDeNegocio>) panelMovVarios.getCbUnidadDeNegocio().getSelectedItem()).getEntity();
+        } catch (ClassCastException ex) {
+            unidadDeNegocio = null;
         }
         double monto;
         try {
@@ -602,27 +625,28 @@ public class CajaMovimientosController implements ActionListener {
         dcm.setIngreso(panelMovVarios.isIngreso());
         dcm.setDescripcion("MV" + (dcm.getIngreso() ? "I" : "E") + "-" + panelMovVarios.getTfDescripcion());
         dcm.setMonto(dcm.getIngreso() ? monto : -monto);
-        dcm.setMovimientoConcepto((MovimientoConcepto) panelMovVarios.getCbCuenta().getSelectedItem());
+        dcm.setCuenta(((ComboBoxWrapper<Cuenta>) panelMovVarios.getCbCuenta().getSelectedItem()).getEntity());
         dcm.setTipo(DetalleCajaMovimientosJpaController.MOVIMIENTO_VARIOS);
         dcm.setUsuario(UsuarioController.getCurrentUser());
         dcm.setFechaMovimiento(panelMovVarios.getDcMovimientoFecha());
+        dcm.setUnidadDeNegocio(unidadDeNegocio);
+        dcm.setSubCuenta(subCuenta);
         return dcm;
     }
 
     private void initBuscadorMovimientosVarios(Window owner) {
         panelBuscadorMovimientosVarios = new PanelBuscadorMovimientosVarios();
-        List<Caja> cajaList = new ArrayList<Caja>();
-        for (CajaMovimientos cajaMovimientos : getCajaMovimientosActivasFromCurrentUser()) {
-            cajaList.add(cajaMovimientos.getCaja());
-        }
-        UTIL.loadComboBox(panelBuscadorMovimientosVarios.getCbCaja(), cajaList, true);
-        UTIL.loadComboBox(panelBuscadorMovimientosVarios.getCbMovimientoConceptos(), new MovimientoConceptoController(null).findAll(), true);
+        UTIL.loadComboBox(panelBuscadorMovimientosVarios.getCbCaja(), new UsuarioHelper().getWrappedCajas(true), true);
+        UTIL.loadComboBox(panelBuscadorMovimientosVarios.getCbUnidadDeNegocio(), JGestionUtils.getWrappedUnidadDeNegocios(new UnidadDeNegocioJpaController().findAll()), false);
+        ActionListenerManager.setCuentaSubcuentaActionListener(panelBuscadorMovimientosVarios.getCbCuenta(), true, panelBuscadorMovimientosVarios.getCbSubCuenta(), true, true);
         buscador = new JDBuscador(owner, "Buscardor - Movimientos varios", false, panelBuscadorMovimientosVarios);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
-                new String[]{"Caja", "Descripción", "Mov. Concepto", "Mov. Fecha", "Monto", "Fecha (Sistema)", "Usuario"},
-                new int[]{70, 160, 60, 40, 20, 60, 50});
-        buscador.getjTable1().getColumnModel().getColumn(4).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+                new String[]{"Caja", "Descripción", "U. de Negocio", "Cuenta", "Sub Cuenta", "Mov. Fecha", "Monto", "Fecha (Sistema)", "Usuario"},
+                new int[]{70, 160, 60, 60, 60, 40, 20, 60, 50});
+        buscador.getjTable1().getColumnModel().getColumn(5).setCellRenderer(FormatRenderer.getDateRenderer());
+        buscador.getjTable1().getColumnModel().getColumn(6).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        buscador.getjTable1().getColumnModel().getColumn(7).setCellRenderer(FormatRenderer.getDateTimeRenderer());
         buscador.getbBuscar().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -683,16 +707,13 @@ public class CajaMovimientosController implements ActionListener {
         buscador.setVisible(true);
     }
 
+    @SuppressWarnings("unchecked")
     private void armarQueryMovimientosVarios(boolean doReport) throws Exception {
-        String query = "SELECT o.*, caja.nombre as cajanombre, movcon.nombre as movcon_nombre"
-                + " FROM detalle_caja_movimientos o"
-                + " JOIN caja_movimientos cm ON o.caja_movimientos = cm.id"
-                + " JOIN caja ON cm.caja = caja.id"
-                + " JOIN movimiento_concepto movcon ON o.movimiento_concepto = movcon.id"
-                + " WHERE o.tipo = " + DetalleCajaMovimientosJpaController.MOVIMIENTO_VARIOS;
-
+        String query = "SELECT CONCAT(o.cajaMovimientos.caja.nombre, CONCAT(\" (\", CONCAT(o.cajaMovimientos.id, \")\"))),"
+                + " o.descripcion, o.unidadDeNegocio, o.cuenta, o.subCuenta, o.fechaMovimiento, o.monto, o.fecha, o.usuario.nick FROM " + DetalleCajaMovimientos.class.getSimpleName() + " o "
+                + " WHERE o.tipo=" + DetalleCajaMovimientosJpaController.MOVIMIENTO_VARIOS;
         if (panelBuscadorMovimientosVarios.getCbCaja().getSelectedIndex() > 0) {
-            query += " AND caja.id=" + ((Caja) panelBuscadorMovimientosVarios.getCbCaja().getSelectedItem()).getId();
+            query += " AND o.cajaMovimientos.caja.id=" + ((ComboBoxWrapper<Caja>) panelBuscadorMovimientosVarios.getCbCaja().getSelectedItem()).getId();
         } else {
             // carga todas las Cajas que tiene permitidas..
             query += " AND (";
@@ -700,15 +721,15 @@ public class CajaMovimientosController implements ActionListener {
                 if (i > 1) {
                     query += " OR ";
                 }
-                query += " caja.id =" + ((Caja) panelBuscadorMovimientosVarios.getCbCaja().getItemAt(i)).getId();
+                query += " o.cajaMovimientos.caja.id =" + ((ComboBoxWrapper<Caja>) panelBuscadorMovimientosVarios.getCbCaja().getItemAt(i)).getId();
             }
             query += ")";
         }
 
         if (panelBuscadorMovimientosVarios.getCbEstadoCaja().getSelectedIndex() == 0) {
-            query += " AND cm.fecha_cierre IS NULL ";
+            query += " AND o.cajaMovimientos.fechaCierre IS NULL ";
         } else if (panelBuscadorMovimientosVarios.getCbEstadoCaja().getSelectedIndex() == 1) {
-            query += " AND cm.fecha_cierre IS NOT NULL ";
+            query += " AND o.cajaMovimientos.fechaCierre IS NOT NULL ";
         }
 
         if (panelBuscadorMovimientosVarios.getCbIngresoEgreso().getSelectedIndex() == 1) {
@@ -718,62 +739,75 @@ public class CajaMovimientosController implements ActionListener {
         }
 
         if (panelBuscadorMovimientosVarios.getDcDesde() != null) {
-            query += " AND o.fechamovimiento >='" + panelBuscadorMovimientosVarios.getDcDesde() + "'";
+            query += " AND o.fechaMovimiento >='" + UTIL.DATE_FORMAT.format(panelBuscadorMovimientosVarios.getDcDesde()) + "'";
         }
 
         if (panelBuscadorMovimientosVarios.getDcHasta() != null) {
-            query += " AND o.fechamovimiento <='" + panelBuscadorMovimientosVarios.getDcHasta() + "'";
+            query += " AND o.fechaMovimiento <='" + panelBuscadorMovimientosVarios.getDcHasta() + "'";
         }
-        if (panelBuscadorMovimientosVarios.getCbMovimientoConceptos().getSelectedIndex() > 0) {
-            query += " AND o.movimiento_concepto = " + ((MovimientoConcepto) panelBuscadorMovimientosVarios.getCbMovimientoConceptos().getSelectedItem()).getId();
+        if (panelBuscadorMovimientosVarios.getCbUnidadDeNegocio().getSelectedIndex() > 0) {
+            query += " AND o.unidadDeNegocio.id = " + ((ComboBoxWrapper<UnidadDeNegocio>) panelBuscadorMovimientosVarios.getCbUnidadDeNegocio().getSelectedItem()).getId();
+        }
+        if (panelBuscadorMovimientosVarios.getCbCuenta().getSelectedIndex() > 0) {
+            query += " AND o.cuenta.id = " + ((ComboBoxWrapper<Cuenta>) panelBuscadorMovimientosVarios.getCbCuenta().getSelectedItem()).getId();
+        }
+        if (panelBuscadorMovimientosVarios.getCbSubCuenta().getSelectedIndex() > 0) {
+            query += " AND o.subCuenta.id = " + ((ComboBoxWrapper<SubCuenta>) panelBuscadorMovimientosVarios.getCbSubCuenta().getSelectedItem()).getId();
         }
         Logger.getLogger(this.getClass()).debug(query);
-        cargarTablaBuscador(query);
+        cargarTablaBuscadorMovimientosVarios(query);
         if (doReport) {
-            doReport(query);
+            doReportMovimientosVarios();
         }
     }
 
-    private void doReport(String query) throws Exception {
-        Reportes r = null;
-        if (panelBuscadorMovimientosVarios != null) {
-            r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_MovimientosVarios.jasper", "Resumen: Movimientos varios");
-            r.addParameter("QUERY", query);
-            r.addParameter("FECHA_DESDE", panelBuscadorMovimientosVarios.getDcDesde());
-            r.addParameter("FECHA_HASTA", panelBuscadorMovimientosVarios.getDcHasta());
-        } else if (panelBuscadorCajaToCaja != null) {
-            r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_CajaToCaja.jasper", "Resumen: Movimientos entre Cajas");
-            r.addParameter("QUERY", query);
+    private void cargarTablaBuscadorMovimientosVarios(String query) {
+        DefaultTableModel dtm = (DefaultTableModel) buscador.getjTable1().getModel();
+        dtm.setRowCount(0);
+        @SuppressWarnings("unchecked")
+        List<Object[]> movVariosList = DAO.createQuery(query, true).getResultList();
+        for (Object[] objects : movVariosList) {
+            dtm.addRow(objects);
         }
+    }
+
+    private void doReportMovimientosVarios() throws MissingReportException, JRException {
+        Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_MovimientosVarios.jasper", "Resumen: Movimientos varios");
+        List<GenericBeanCollection> data = new ArrayList<GenericBeanCollection>(buscador.getjTable1().getRowCount());
+        DefaultTableModel dtm = (DefaultTableModel) buscador.getjTable1().getModel();
+        for (int row = 0; row < dtm.getRowCount(); row++) {
+            data.add(new GenericBeanCollection(dtm.getValueAt(row, 0), dtm.getValueAt(row, 1), dtm.getValueAt(row, 2), dtm.getValueAt(row, 3), dtm.getValueAt(row, 4), dtm.getValueAt(row, 5),
+                    BigDecimal.valueOf((Double) dtm.getValueAt(row, 6)), null, null, null, null, null));
+        }
+        r.setDataSource(data);
+        r.addConnection();
+        r.addParameter("FECHA_DESDE", panelBuscadorMovimientosVarios.getDcDesde());
+        r.addParameter("FECHA_HASTA", panelBuscadorMovimientosVarios.getDcHasta());
         r.addParameter("SUBREPORT_DIR", Reportes.FOLDER_REPORTES);
         r.addCurrent_User();
         r.viewReport();
     }
 
-    private void cargarTablaBuscador(String query) {
+    private void doReport(String query) throws Exception {
+        Reportes r = null;
+        r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_CajaToCaja.jasper", "Resumen: Movimientos entre Cajas");
+        r.addParameter("QUERY", query);
+        r.addParameter("SUBREPORT_DIR", Reportes.FOLDER_REPORTES);
+        r.addCurrent_User();
+        r.viewReport();
+    }
+
+    private void cargarTablaBuscadorCajaToCaja(String query) {
         DefaultTableModel dtm = (DefaultTableModel) buscador.getjTable1().getModel();
         dtm.setRowCount(0);
         List<DetalleCajaMovimientos> lista = DAO.createNativeQuery(query, DetalleCajaMovimientos.class, true).getResultList();
         for (DetalleCajaMovimientos dcm : lista) {
-            //dependiendo del buscador que esté activo..
-            if (panelBuscadorCajaToCaja != null) {
-                dtm.addRow(new Object[]{
-                            dcm.getDescripcion(),
-                            UTIL.PRECIO_CON_PUNTO.format(dcm.getMonto()),
-                            UTIL.DATE_FORMAT.format(dcm.getFecha()) + "(" + UTIL.TIME_FORMAT.format(dcm.getFecha()) + ")",
-                            dcm.getUsuario()
-                        });
-            } else if (panelBuscadorMovimientosVarios != null) {
-                dtm.addRow(new Object[]{
-                            dcm.getCajaMovimientos(),
-                            dcm.getDescripcion(),
-                            dcm.getMovimientoConcepto(),
-                            dcm.getFechaMovimiento() != null ? UTIL.DATE_FORMAT.format(dcm.getFechaMovimiento()) : null,
-                            BigDecimal.valueOf(dcm.getMonto()),
-                            UTIL.DATE_FORMAT.format(dcm.getFecha()) + "(" + UTIL.TIME_FORMAT.format(dcm.getFecha()) + ")",
-                            dcm.getUsuario()
-                        });
-            }
+            dtm.addRow(new Object[]{
+                        dcm.getDescripcion(),
+                        UTIL.PRECIO_CON_PUNTO.format(dcm.getMonto()),
+                        UTIL.DATE_FORMAT.format(dcm.getFecha()) + "(" + UTIL.TIME_FORMAT.format(dcm.getFecha()) + ")",
+                        dcm.getUsuario()
+                    });
         }
     }
 
@@ -961,7 +995,7 @@ public class CajaMovimientosController implements ActionListener {
         query += " ORDER BY b.id";
 
         System.out.println(query);
-        cargarTablaBuscador(query);
+        cargarTablaBuscadorCajaToCaja(query);
         if (doReport) {
             doReport(query);
         }

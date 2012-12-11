@@ -3,20 +3,16 @@ package jpa.controller;
 import controller.*;
 import controller.exceptions.MessageException;
 import entity.*;
-import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
-import javax.persistence.LockModeType;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import jgestion.JGestionUtils;
-import net.sf.jasperreports.components.barbecue.BarcodeProviders;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.eclipse.persistence.config.QueryHints;
@@ -479,9 +475,9 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
         dcm.setNumero(-1); //meaningless yet...
         dcm.setTipo(DetalleCajaMovimientosJpaController.APERTURA_CAJA);
         dcm.setUsuario(UsuarioController.getCurrentUser());
-        if (dcm.getMovimientoConcepto() == null) {
+        if (dcm.getCuenta() == null) {
             //default value
-            dcm.setMovimientoConcepto(MovimientoConceptoController.EFECTIVO);
+            dcm.setCuenta(CuentaController.EFECTIVO);
         }
         cm.getDetalleCajaMovimientosList().add(dcm);
         create(cm);
