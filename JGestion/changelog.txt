@@ -1,3 +1,21 @@
+ALTER TABLE factura_compra ADD COLUMN unidad_de_negocio_id integer;
+ALTER TABLE factura_compra ADD COLUMN cuenta_id integer;
+ALTER TABLE factura_compra ADD COLUMN subcuenta_id integer;
+ALTER TABLE factura_compra ADD FOREIGN KEY (unidad_de_negocio_id) REFERENCES unidad_de_negocio (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE factura_compra ADD FOREIGN KEY (subcuenta_id) REFERENCES subcuenta (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE factura_compra ADD FOREIGN KEY (cuenta_id) REFERENCES movimiento_concepto (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE factura_venta ADD COLUMN unidad_de_negocio_id integer;
+ALTER TABLE factura_venta ADD COLUMN cuenta_id integer;
+ALTER TABLE factura_venta ADD COLUMN subcuenta_id integer;
+ALTER TABLE factura_venta ADD FOREIGN KEY (unidad_de_negocio_id) REFERENCES unidad_de_negocio (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE factura_venta ADD FOREIGN KEY (subcuenta_id) REFERENCES subcuenta (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE factura_venta ADD FOREIGN KEY (cuenta_id) REFERENCES movimiento_concepto (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE detalle_caja_movimientos DROP CONSTRAINT detalle_caja_movimientos_movimiento_concepto_fkey;
+ALTER TABLE detalle_caja_movimientos ADD COLUMN unidad_de_negocio_id integer;
+ALTER TABLE detalle_caja_movimientos ADD COLUMN subcuenta_id integer;
+ALTER TABLE detalle_caja_movimientos ADD CONSTRAINT fk_detalle_caja_movimientos_unidad_de_negocio FOREIGN KEY (unidad_de_negocio_id) REFERENCES unidad_de_negocio (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE detalle_caja_movimientos ADD CONSTRAINT fk_detalle_caja_movimientos_subcuenta FOREIGN KEY (subcuenta_id) REFERENCES subcuenta (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
 CREATE TABLE subcuenta (
    id serial NOT NULL, 
    nombre character(100) NOT NULL, 
@@ -5,8 +23,7 @@ CREATE TABLE subcuenta (
     PRIMARY KEY (id), 
     FOREIGN KEY (cuenta_id) REFERENCES movimiento_concepto (id) ON UPDATE NO ACTION ON DELETE NO ACTION, 
     UNIQUE (nombre)
-) 
-WITH (  OIDS = FALSE);
+) WITH (  OIDS = FALSE);
 CREATE TABLE unidad_de_negocio (
     id serial NOT NULL,
     nombre character(100),
@@ -19,8 +36,7 @@ CREATE TABLE unidad_de_negocio_sucursal (
     PRIMARY KEY (unidad_de_negocio_id, sucursal_id), 
     FOREIGN KEY (unidad_de_negocio_id) REFERENCES unidad_de_negocio (id) ON UPDATE NO ACTION ON DELETE NO ACTION, 
     FOREIGN KEY (sucursal_id) REFERENCES sucursal (id) ON UPDATE NO ACTION ON DELETE NO ACTION
-) 
-WITH (  OIDS = FALSE);
+) WITH (  OIDS = FALSE);
 ALTER TABLE cheque_terceros ALTER COLUMN cliente DROP NOT NULL;
 alter table cuentabancaria alter column numero type character(22) using numero::character(22);
 ALTER TABLE remesa ADD COLUMN anulada timestamp with time zone;

@@ -78,8 +78,8 @@ public class DetalleCajaMovimientosJpaController {
             em.getTransaction().begin();
 
             //default MovimientoConcepto.EFECTIVO
-            if (detalleCajaMovimientos.getMovimientoConcepto() == null) {
-                detalleCajaMovimientos.setMovimientoConcepto(MovimientoConceptoController.EFECTIVO);
+            if (detalleCajaMovimientos.getCuenta() == null) {
+                detalleCajaMovimientos.setCuenta(CuentaController.EFECTIVO);
             }
             CajaMovimientos cajaMovimientos = detalleCajaMovimientos.getCajaMovimientos();
             if (cajaMovimientos != null) {
@@ -172,7 +172,7 @@ public class DetalleCajaMovimientosJpaController {
                 + " ORDER BY o.id", true).getResultList();
     }
 
-    List<MovimientoConcepto> findDetalleCajaMovimientosBy(MovimientoConcepto movimientoConcepto) {
+    List<Cuenta> findDetalleCajaMovimientosBy(Cuenta movimientoConcepto) {
         return getEntityManager().createQuery("SELECT o FROM " + CLASS_NAME + " o WHERE o.movimientoConcepto.id=" + movimientoConcepto.getId()).getResultList();
     }
 

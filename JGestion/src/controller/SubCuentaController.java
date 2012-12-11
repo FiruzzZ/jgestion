@@ -2,7 +2,7 @@ package controller;
 
 import controller.exceptions.MessageException;
 import controller.exceptions.NonexistentEntityException;
-import entity.MovimientoConcepto;
+import entity.Cuenta;
 import entity.SubCuenta;
 import gui.JDABM;
 import gui.JDContenedor;
@@ -38,7 +38,7 @@ public class SubCuentaController {
 
     private void initABM(Window owner, boolean editing) throws MessageException {
         UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.DATOS_GENERAL);
-        List<MovimientoConcepto> l = new MovimientoConceptoController(null).findAll();
+        List<Cuenta> l = new CuentaController().findAll();
         if (l.isEmpty()) {
             throw new MessageException("Para poder crear Sub Cuentas, primero debe crear al menos una Cuenta");
         }
@@ -62,7 +62,7 @@ public class SubCuentaController {
                     EL_OBJECT = new SubCuenta();
                 }
                 EL_OBJECT.setNombre(panelABMSubCuenta.getTfNombre().getText().trim());
-                EL_OBJECT.setCuenta((MovimientoConcepto) panelABMSubCuenta.getCbCuenta().getSelectedItem());
+                EL_OBJECT.setCuenta((Cuenta) panelABMSubCuenta.getCbCuenta().getSelectedItem());
                 try {
                     abm.getbAceptar().setEnabled(false);
                     checkConstraints(EL_OBJECT);
@@ -82,7 +82,7 @@ public class SubCuentaController {
                     JOptionPane.showMessageDialog(abm, ex.getMessage(), ex.getClass().toString(), JOptionPane.WARNING_MESSAGE);
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(abm, ex.getMessage(), ex.getClass().toString(), JOptionPane.WARNING_MESSAGE);
-                    Logger.getLogger(MovimientoConceptoController.class.getName()).log(Level.ERROR, null, ex);
+                    Logger.getLogger(CuentaController.class.getName()).log(Level.ERROR, null, ex);
                 } finally {
                     abm.getbAceptar().setEnabled(true);
                 }

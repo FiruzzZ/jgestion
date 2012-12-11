@@ -29,7 +29,6 @@
     <class>entity.ListaPrecios</class>
     <class>entity.Marca</class>
     <class>entity.MsjInformativos</class>
-    <class>entity.MovimientoConcepto</class>
     <class>entity.Municipio</class>
     <class>entity.NotaCredito</class>
     <class>entity.Orden</class>
@@ -66,6 +65,7 @@
     <class>entity.UnidadDeNegocio</class>
     <class>entity.UnidadDeNegocioSucursal</class>
     <class>entity.SubCuenta</class>
+    <class>entity.Cuenta</class>
     <properties>
       <!--      <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://jgestion.no-ip.org:5433/jgestionahinco"/>-->
       <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>

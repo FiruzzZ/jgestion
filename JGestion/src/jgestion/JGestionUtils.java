@@ -75,7 +75,36 @@ public class JGestionUtils {
         return l;
     }
 
-    private JGestionUtils() {
+    public static List<ComboBoxWrapper<SubCuenta>> getWrappedSubCuentas(List<SubCuenta> list) {
+        List<ComboBoxWrapper<SubCuenta>> l = new ArrayList<ComboBoxWrapper<SubCuenta>>(list.size());
+        for (SubCuenta o : list) {
+            l.add(new ComboBoxWrapper<SubCuenta>(o, o.getId(), o.getNombre()));
+        }
+        return l;
+    }
+
+    public static List<ComboBoxWrapper<UnidadDeNegocio>> getWrappedUnidadDeNegocios(List<UnidadDeNegocio> list) {
+        List<ComboBoxWrapper<UnidadDeNegocio>> l = new ArrayList<ComboBoxWrapper<UnidadDeNegocio>>(list.size());
+        for (UnidadDeNegocio o : list) {
+            l.add(new ComboBoxWrapper<UnidadDeNegocio>(o, o.getId(), o.getNombre()));
+        }
+        return l;
+    }
+
+    public static List<ComboBoxWrapper<Sucursal>> getWrappedSucursales(List<Sucursal> list) {
+        List<ComboBoxWrapper<Sucursal>> l = new ArrayList<ComboBoxWrapper<Sucursal>>(list.size());
+        for (Sucursal o : list) {
+            l.add(new ComboBoxWrapper<Sucursal>(o, o.getId(), o.getNombre()));
+        }
+        return l;
+    }
+
+    public static List<ComboBoxWrapper<Cuenta>> getWrappedCuentas(List<Cuenta> list) {
+        List<ComboBoxWrapper<Cuenta>> l = new ArrayList<ComboBoxWrapper<Cuenta>>(list.size());
+        for (Cuenta o : list) {
+            l.add(new ComboBoxWrapper<Cuenta>(o, o.getId(), o.getNombre()));
+        }
+        return l;
     }
 
     public static List<ComboBoxWrapper<CuentaBancaria>> getWrappedCuentasBancarias(List<CuentaBancaria> list) {
@@ -167,20 +196,6 @@ public class JGestionUtils {
         return UTIL.AGREGAR_CEROS(o.getSucursal().getPuntoVenta(), 4) + guion + UTIL.AGREGAR_CEROS(o.getNumero(), 8);
     }
 
-    public final class Wrapper<T> {
-
-        public List<ComboBoxWrapper<T>> getWrapped(List<T> list) throws NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-            List<ComboBoxWrapper<T>> l = new ArrayList<ComboBoxWrapper<T>>(list.size());
-            for (T t : list) {
-                Object c = t;
-                Integer id = (Integer) c.getClass().getMethod("getId").invoke(c, new Object[]{null});
-                String nombre = (String) c.getClass().getMethod("getNombre").invoke(c, new Object[]{null});
-                l.add(new ComboBoxWrapper<T>(t, id, nombre));
-            }
-            return l;
-        }
-    }
-
     public static void setCurrencyFormatterFocusListener(JTextField tf) {
         tf.addFocusListener(
                 new FocusListener() {
@@ -205,5 +220,8 @@ public class JGestionUtils {
                         }
                     }
                 });
+    }
+
+    private JGestionUtils() {
     }
 }

@@ -30,7 +30,7 @@ public class SubCuenta implements Serializable {
     @Column(nullable = false, length = 100)
     private String nombre;
     @ManyToOne(optional = false)
-    private MovimientoConcepto cuenta;
+    private Cuenta cuenta;
 
     public Integer getId() {
         return id;
@@ -48,11 +48,11 @@ public class SubCuenta implements Serializable {
         this.nombre = nombre;
     }
 
-    public MovimientoConcepto getCuenta() {
+    public Cuenta getCuenta() {
         return cuenta;
     }
 
-    public void setCuenta(MovimientoConcepto cuenta) {
+    public void setCuenta(Cuenta cuenta) {
         this.cuenta = cuenta;
     }
 
@@ -78,7 +78,7 @@ public class SubCuenta implements Serializable {
 
     @Override
     public String toString() {
-        return nombre;
+        return "SubCuenta{" + "id=" + id + ", nombre=" + nombre + ", cuenta=" + cuenta + '}';
     }
 
 }

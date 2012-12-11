@@ -12,16 +12,16 @@ import utilities.swing.components.ComboBoxWrapper;
  *
  * @author Administrador
  */
-class UsuarioHelper {
+public class UsuarioHelper {
 
     private Usuario usuario;
 
-    UsuarioHelper() {
+    public UsuarioHelper() {
         usuario = UsuarioController.getCurrentUser();
         refresh();
     }
 
-    UsuarioHelper(Usuario usuario) {
+    public UsuarioHelper(Usuario usuario) {
         this.usuario = usuario;
         refresh();
     }
@@ -34,7 +34,7 @@ class UsuarioHelper {
         }
     }
 
-    List<Sucursal> getSucursales() {
+    public List<Sucursal> getSucursales() {
         List<Sucursal> l = new ArrayList<Sucursal>(usuario.getSucursales().size());
         for (PermisosSucursal permisosSucursal : usuario.getSucursales()) {
             l.add(permisosSucursal.getSucursal());
@@ -48,7 +48,7 @@ class UsuarioHelper {
      * @param estado
      * @return
      */
-    List<Caja> getCajas(Boolean estado) {
+    public List<Caja> getCajas(Boolean estado) {
         return new CajaController().findCajasPermitidasByUsuario(usuario, estado);
     }
 
@@ -58,7 +58,7 @@ class UsuarioHelper {
      * @param estado
      * @return
      */
-    List<ComboBoxWrapper<Caja>> getWrappedCajas(Boolean estado) {
+    public List<ComboBoxWrapper<Caja>> getWrappedCajas(Boolean estado) {
         List<Caja> list = getCajas(estado);
         List<ComboBoxWrapper<Caja>> l = new ArrayList<ComboBoxWrapper<Caja>>(list.size());
         for (Caja o : list) {
@@ -72,7 +72,7 @@ class UsuarioHelper {
      *
      * @return
      */
-    List<ComboBoxWrapper<Sucursal>> getWrappedSucursales() {
+    public List<ComboBoxWrapper<Sucursal>> getWrappedSucursales() {
         List<Sucursal> list = getSucursales();
         List<ComboBoxWrapper<Sucursal>> l = new ArrayList<ComboBoxWrapper<Sucursal>>(list.size());
         for (Sucursal o : list) {
