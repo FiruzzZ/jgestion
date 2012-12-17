@@ -28,6 +28,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import jgestion.ActionListenerManager;
 import jgestion.JGestionUtils;
+import jgestion.Main;
 import jgestion.Wrapper;
 import jpa.controller.CajaMovimientosJpaController;
 import jpa.controller.SubCuentaJpaController;
@@ -528,14 +529,13 @@ public class CajaMovimientosController implements ActionListener {
         // <editor-fold defaultstate="collapsed" desc="checking Permiso">
         try {
             UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
+            initMovimientosVarios(owner, modal, true, null);
         } catch (MessageException ex) {
             JOptionPane.showMessageDialog(owner, ex.getMessage());
-            return;
         }// </editor-fold>
-        initMovimientosVarios(owner, modal, true, null);
     }
 
-    private void initMovimientosVarios(Window owner, boolean modal, final boolean visible, final DetalleCajaMovimientos toEdit) {
+    private void initMovimientosVarios(Window owner, boolean modal, final boolean visible, final DetalleCajaMovimientos toEdit) throws MessageException {
         if (panelMovVarios == null) {
             panelMovVarios = new PanelMovimientosVarios();
             panelMovVarios.setVisibleResponsables(false);
@@ -547,7 +547,11 @@ public class CajaMovimientosController implements ActionListener {
                 }
             });
         }
-        UTIL.loadComboBox(panelMovVarios.getCbCaja(), new UsuarioHelper().getWrappedCajas(true), false);
+        List<ComboBoxWrapper<Caja>> ll = new UsuarioHelper().getWrappedCajas(true);
+        if(ll.isEmpty()) {
+            throw new MessageException(Main.resourceBundle.getString("unassigned.caja"));
+        }
+        UTIL.loadComboBox(panelMovVarios.getCbCaja(), ll, false);
         List<ComboBoxWrapper<UnidadDeNegocio>> l = new Wrapper<UnidadDeNegocio>().getWrapped(new UnidadDeNegocioJpaController().findAll());
         UTIL.loadComboBox(panelMovVarios.getCbUnidadDeNegocio(), l, false);
         ActionListenerManager.setCuentaSubcuentaActionListener(panelMovVarios.getCbCuenta(), false, panelMovVarios.getCbSubCuenta(), true, true);
@@ -592,11 +596,11 @@ public class CajaMovimientosController implements ActionListener {
     @SuppressWarnings("unchecked")
     private DetalleCajaMovimientos setMovimientoVarios() throws MessageException {
         //ctrl's................
-        CajaMovimientos cajaMovimiento;
+        Caja caja;
         UnidadDeNegocio unidadDeNegocio;
         SubCuenta subCuenta;
         try {
-            cajaMovimiento = (CajaMovimientos) panelMovVarios.getCbCaja().getSelectedItem();
+            caja = ((ComboBoxWrapper<Caja>) panelMovVarios.getCbCaja().getSelectedItem()).getEntity();
         } catch (ClassCastException ex) {
             throw new MessageException("No tiene acceso a ninguna Caja");
         }
@@ -608,7 +612,7 @@ public class CajaMovimientosController implements ActionListener {
         try {
             unidadDeNegocio = ((ComboBoxWrapper<UnidadDeNegocio>) panelMovVarios.getCbUnidadDeNegocio().getSelectedItem()).getEntity();
         } catch (ClassCastException ex) {
-            unidadDeNegocio = null;
+            throw new MessageException("Unidad de Negocios no válida");
         }
         double monto;
         try {
@@ -626,15 +630,15 @@ public class CajaMovimientosController implements ActionListener {
 
         //setting entity.....
         DetalleCajaMovimientos dcm = new DetalleCajaMovimientos();
-        dcm.setCajaMovimientos(cajaMovimiento);
+        dcm.setCajaMovimientos(new CajaMovimientosJpaController().findCajaMovimientoAbierta(caja));
         dcm.setIngreso(panelMovVarios.isIngreso());
         dcm.setDescripcion("MV" + (dcm.getIngreso() ? "I" : "E") + "-" + panelMovVarios.getTfDescripcion());
         dcm.setMonto(dcm.getIngreso() ? monto : -monto);
-        dcm.setCuenta(((ComboBoxWrapper<Cuenta>) panelMovVarios.getCbCuenta().getSelectedItem()).getEntity());
         dcm.setTipo(DetalleCajaMovimientosJpaController.MOVIMIENTO_VARIOS);
         dcm.setUsuario(UsuarioController.getCurrentUser());
         dcm.setFechaMovimiento(panelMovVarios.getDcMovimientoFecha());
         dcm.setUnidadDeNegocio(unidadDeNegocio);
+        dcm.setCuenta(((ComboBoxWrapper<Cuenta>) panelMovVarios.getCbCuenta().getSelectedItem()).getEntity());
         dcm.setSubCuenta(subCuenta);
         return dcm;
     }

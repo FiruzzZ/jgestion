@@ -75,12 +75,6 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
             newDetalleCajaMovimiento.setIngreso(true);
             if (facturaVenta.getFormaPagoEnum().equals(Valores.FormaPago.CONTADO)) {
                 newDetalleCajaMovimiento.setMonto(facturaVenta.getImporte());
-//            } else if (facturaVenta.getFormaPagoEnum().equals(Valores.FormaPago.CONTADO_CHEQUE)) {
-//                BigDecimal importe = new BigDecimal(facturaVenta.getImporte());
-//                ChequeTerceros chequeTerceros = new ChequeTercerosController().findChequeTerceros(facturaVenta);
-//                BigDecimal noEfectivo = chequeTerceros.getImporte();
-//                //obtain the income cash from the sale 
-//                newDetalleCajaMovimiento.setMonto(noEfectivo.subtract(importe).doubleValue());
             } else {
                 throw new IllegalArgumentException(facturaVenta.getClass() + ".id=" + facturaVenta.getId()
                         + " contiene FormaPago=" + facturaVenta.getFormaPagoEnum() + " NO ASENTABLE COMO MOVIMIENTO CONTABLE.");

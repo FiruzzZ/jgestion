@@ -1,6 +1,5 @@
 package controller;
 
-import com.sun.codemodel.JOp;
 import controller.exceptions.*;
 import entity.Cliente;
 import entity.Proveedor;
@@ -18,7 +17,6 @@ import utilities.general.UTIL;
 import gui.JDABM;
 import gui.JDContenedor;
 import gui.PanelABMProveedores;
-import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
