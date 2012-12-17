@@ -49,6 +49,8 @@ public class Usuario implements Serializable {
     private List<PermisosCaja> permisosCajaList;
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PermisosSucursal> sucursales;
+    @OneToMany(mappedBy = "usuario")
+    private List<UsuarioAcciones> usuarioAccionesList;
 
     public Usuario() {
     }
@@ -143,6 +145,14 @@ public class Usuario implements Serializable {
 
     public void setSucursales(List<PermisosSucursal> sucursales) {
         this.sucursales = sucursales;
+    }
+
+    public List<UsuarioAcciones> getUsuarioAccionesList() {
+        return usuarioAccionesList;
+    }
+
+    public void setUsuarioAccionesList(List<UsuarioAcciones> usuarioAccionesList) {
+        this.usuarioAccionesList = usuarioAccionesList;
     }
 
     @Override

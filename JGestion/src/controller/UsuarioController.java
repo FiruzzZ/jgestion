@@ -13,6 +13,7 @@ import utilities.general.UTIL;
 import gui.JDABM;
 import gui.JDContenedor;
 import gui.JDLogin;
+import gui.JDTrackerUsuario;
 import gui.JDcambiarPass;
 import gui.PanelABMUsuarios;
 import java.awt.Dimension;
@@ -741,5 +742,11 @@ public class UsuarioController implements ActionListener, MouseListener, KeyList
                 }
             }
         }
+    }
+
+    public void showTracker() {
+        JDTrackerUsuario jd = new JDTrackerUsuario(null, false);
+        jd.setLocationRelativeTo(null);
+        jd.setVisible(true);
     }
 }

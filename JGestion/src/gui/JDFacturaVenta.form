@@ -126,7 +126,7 @@
                                   <Component id="tfNumMovimiento" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
-                                  <Component id="cbListaPrecio" min="-2" pref="209" max="-2" attributes="1"/>
+                                  <Component id="cbListaPrecio" min="-2" pref="200" max="-2" attributes="1"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="labelListaPrecioParaCatalogo" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
@@ -154,11 +154,15 @@
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="tfObservacion" min="-2" pref="503" max="-2" attributes="1"/>
+                              <Group type="102" attributes="0">
+                                  <Component id="tfObservacion" min="-2" pref="503" max="-2" attributes="1"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="labelObservacionCharactersCount" min="-2" max="-2" attributes="0"/>
+                              </Group>
                               <Group type="102" attributes="0">
                                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                      <Component id="cbCaja" pref="227" max="32767" attributes="1"/>
-                                      <Component id="cbCuenta" max="32767" attributes="1"/>
+                                      <Component id="cbCaja" pref="200" max="32767" attributes="1"/>
+                                      <Component id="cbCuenta" pref="200" max="32767" attributes="1"/>
                                   </Group>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
@@ -174,7 +178,7 @@
                                       <Group type="102" attributes="0">
                                           <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="cbSubCuenta" min="-2" pref="167" max="-2" attributes="1"/>
+                                          <Component id="cbSubCuenta" min="-2" pref="200" max="-2" attributes="1"/>
                                       </Group>
                                   </Group>
                               </Group>
@@ -234,18 +238,19 @@
                       <Component id="labelDias" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="cbSubCuenta" alignment="3" min="-2" max="-2" attributes="1"/>
-                      <Group type="103" alignment="3" groupAlignment="3" attributes="0">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="103" alignment="0" groupAlignment="3" attributes="0">
                           <Component id="jLabel5" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="cbCuenta" alignment="3" min="-2" max="-2" attributes="1"/>
                           <Component id="jLabel6" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
+                      <Component id="cbSubCuenta" min="-2" max="-2" attributes="1"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="tfObservacion" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="labelObservacion" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="labelObservacionCharactersCount" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="32767" attributes="0"/>
               </Group>
@@ -513,6 +518,13 @@
               <StringArray count="0"/>
             </Property>
             <Property name="name" type="java.lang.String" value="" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="labelObservacionCharactersCount">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="0/100"/>
+            <Property name="focusable" type="boolean" value="false"/>
+            <Property name="requestFocusEnabled" type="boolean" value="false"/>
           </Properties>
         </Component>
       </SubComponents>

@@ -1,5 +1,6 @@
 package entity;
 
+import controller.ReciboController;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -38,8 +39,7 @@ public class Recibo implements Serializable {
     @Basic(optional = false)
     @Column(name = "monto", nullable = false, precision = 12, scale = 2)
     private double monto;
-    @Basic(optional = false)
-    @Column(name = "retencion", nullable = false, precision = 10, scale = 2)
+    @Column(name = "retencion", precision = 10, scale = 2)
     @Deprecated
     private BigDecimal retencion;
     @Basic(optional = false)
@@ -162,6 +162,12 @@ public class Recibo implements Serializable {
         this.pagos = pagos;
     }
 
+    /**
+     * Usar {@link ReciboController#loadPagos(entity.Recibo) } para recuperar
+     * las entidades pertinentes, antes de obtener esta collection.
+     *
+     * @return
+     */
     public List<Object> getPagosEntities() {
         return pagosEntities;
     }

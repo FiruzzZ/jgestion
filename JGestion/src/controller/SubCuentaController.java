@@ -15,12 +15,14 @@ import javax.persistence.NoResultException;
 import javax.persistence.RollbackException;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import jgestion.Wrapper;
 import jpa.controller.SubCuentaJpaController;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.postgresql.util.PSQLException;
 import utilities.general.UTIL;
+import utilities.swing.components.ComboBoxWrapper;
 
 /**
  *
@@ -49,20 +51,21 @@ public class SubCuentaController {
             EL_OBJECT = jpaController.find(EL_OBJECT.getId());
         }
         final PanelABMSubCuenta panelABMSubCuenta = new PanelABMSubCuenta();
-        UTIL.loadComboBox(panelABMSubCuenta.getCbCuenta(), l, false);
+        UTIL.loadComboBox(panelABMSubCuenta.getCbCuenta(), new Wrapper<Cuenta>().getWrapped(l), false);
         if (editing) {
-            UTIL.setSelectedItem(panelABMSubCuenta.getCbCuenta(), EL_OBJECT);
+            UTIL.setSelectedItem(panelABMSubCuenta.getCbCuenta(), EL_OBJECT.getCuenta().getNombre());
             panelABMSubCuenta.getTfNombre().setText(EL_OBJECT.getNombre());
         }
         final JDABM abm = new JDABM(owner, "ABM Sub Cuentas", true, panelABMSubCuenta);
         abm.getbAceptar().addActionListener(new ActionListener() {
             @Override
+            @SuppressWarnings("unchecked")
             public void actionPerformed(ActionEvent e) {
                 if (EL_OBJECT == null) {
                     EL_OBJECT = new SubCuenta();
                 }
                 EL_OBJECT.setNombre(panelABMSubCuenta.getTfNombre().getText().trim());
-                EL_OBJECT.setCuenta((Cuenta) panelABMSubCuenta.getCbCuenta().getSelectedItem());
+                EL_OBJECT.setCuenta(((ComboBoxWrapper<Cuenta>) panelABMSubCuenta.getCbCuenta().getSelectedItem()).getEntity());
                 try {
                     abm.getbAceptar().setEnabled(false);
                     checkConstraints(EL_OBJECT);

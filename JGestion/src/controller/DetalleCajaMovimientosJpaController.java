@@ -100,8 +100,14 @@ public class DetalleCajaMovimientosJpaController {
         }
     }
 
-    void edit(DetalleCajaMovimientos detalleCajaMovimientos) {
-        DAO.doMerge(detalleCajaMovimientos);
+    void merge(DetalleCajaMovimientos o) {
+        EntityManager em = getEntityManager();
+        em.getTransaction().begin();
+        DetalleCajaMovimientos old = em.find(o.getClass(), o.getId());
+        old = o;
+        em.merge(old);
+        em.getTransaction().commit();
+        em.close();
     }
 
     void remove(DetalleCajaMovimientos o) {
@@ -176,13 +182,18 @@ public class DetalleCajaMovimientosJpaController {
         return getEntityManager().createQuery("SELECT o FROM " + CLASS_NAME + " o WHERE o.movimientoConcepto.id=" + movimientoConcepto.getId()).getResultList();
     }
 
+    public DetalleCajaMovimientos find(Integer id) {
+        return getEntityManager().find(DetalleCajaMovimientos.class, id);
+    }
+
     /**
      * Busca en los {@link DetalleCajaMovimientos}, el comprobante por número y
      * tipo; y retorna.
      *
      * @param numero
      * @param tipo
-     * @return instance of {@code DetalleCajaMovimientos} if exist, else {@code null}
+     * @return instance of {@code DetalleCajaMovimientos} if exist, else
+     * {@code null}
      */
     public DetalleCajaMovimientos findBy(long numero, short tipo) {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();

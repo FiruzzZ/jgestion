@@ -3,6 +3,7 @@ package jpa.controller;
 import controller.*;
 import controller.exceptions.MessageException;
 import entity.*;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -132,7 +133,6 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
     public void asentarMovimiento(Remesa remesa) throws Exception {
         Logger.getLogger(this.getClass()).trace("asentarMovimiento (Remesa)");
         for (Object object : remesa.getPagosEntities()) {
-            
         }
         //caja en la q se va asentar
         CajaMovimientos cm = findCajaMovimientoAbierta(remesa.getCaja());
@@ -209,20 +209,35 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
         }
     }
 
-    public void anular(Recibo recibo) throws MessageException, Exception {
-        if (recibo.getEstado()) {
-            throw new MessageException("No se puede anular el recibo Nº" + JGestionUtils.getNumeracion(recibo, true) + " porque ESTADO =" + recibo.getEstado());
+    public void anular(Recibo recibo) throws Exception {
+        boolean hayPagosEnEfectivo = false;
+        for (ReciboPagos reciboPagos : recibo.getPagos()) {
+            if (reciboPagos.getFormaPago() == 0) { // hay un pago en efectivo
+                hayPagosEnEfectivo = true;
+                break;
+            }
+        }
+        if (!hayPagosEnEfectivo) {
+            return;
         }
         //caja en la q se va asentar
         CajaMovimientos cm = findCajaMovimientoAbierta(recibo.getCaja());
         EntityManager em = getEntityManager();
+        DetalleCajaMovimientos dcm = null;
         try {
             em.getTransaction().begin();
+            new ReciboController().loadPagos(recibo);
+            for (Object object : recibo.getPagosEntities()) {
+                if (object instanceof DetalleCajaMovimientos) {
+                    dcm = (DetalleCajaMovimientos) object;
+                    break;
+                }
+            }
             CajaMovimientos cajaMovimientoActual = em.find(CajaMovimientos.class, cm.getId());
             DetalleCajaMovimientos newDetalleCajaMovimiento = new DetalleCajaMovimientos();
             newDetalleCajaMovimiento.setCajaMovimientos(cajaMovimientoActual);
             newDetalleCajaMovimiento.setIngreso(false);
-            newDetalleCajaMovimiento.setMonto(-recibo.getMonto());
+            newDetalleCajaMovimiento.setMonto(-dcm.getMonto());
             newDetalleCajaMovimiento.setNumero(Long.valueOf(recibo.getId()));
             newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.RECIBO);
             newDetalleCajaMovimiento.setDescripcion("R" + JGestionUtils.getNumeracion(recibo, true) + " [ANULADO]");
@@ -428,8 +443,8 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
      * decir con fecha_cierre == NULL
      *
      * @param cajaCandidata
-     * @return una entidad CajaMomiviento, o
-     * <code>null</code> si no existe una para la cajaCandidata
+     * @return una entidad CajaMomiviento, o <code>null</code> si no existe una
+     * para la cajaCandidata
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
@@ -504,8 +519,8 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
      * Busca en los {@link DetalleCajaMovimientos}, el comprobante por número y
      * tipo; y retorna la {@link CajaMovimientos}.
      *
-     * @param numero 
-     * @param tipo 
+     * @param numero
+     * @param tipo
      * @return instance of {@code CajaMovimientos} if exist, else {@code null}
      */
     public CajaMovimientos findBy(long numero, short tipo) {

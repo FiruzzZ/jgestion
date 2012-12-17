@@ -763,7 +763,9 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                 throw new MessageException("Cantidad de días de Cta. Cte. no válida");
             }
         }
-
+        if (jdFactura.getTfObservacion().getText().trim().length() > 100) {
+            throw new MessageException("Observación no válida, no debe superar los 100 caracteres (no es una novela)");
+        }
         DefaultTableModel dtm = jdFactura.getDtm();
         if (dtm.getRowCount() < 1) {
             throw new MessageException("La factura debe tener al menos un item.");
@@ -836,14 +838,15 @@ public class FacturaVentaController implements ActionListener, KeyListener {
             try {
                 newFacturaVenta.setSubCuenta(((ComboBoxWrapper<SubCuenta>) jdFactura.getCbSubCuenta().getSelectedItem()).getEntity());
             } catch (Exception e) {
-                JOptionPane.showMessageDialog(jdFactura, "Sub Cuenta no válida");
+                newFacturaVenta.setSubCuenta(null);
             }
         }
         newFacturaVenta.setUsuario(UsuarioController.getCurrentUser());
         newFacturaVenta.setCaja((Caja) jdFactura.getCbCaja().getSelectedItem());
         newFacturaVenta.setListaPrecios(selectedListaPrecios);
         newFacturaVenta.setRemito(remitoToFacturar);
-
+        String ob = jdFactura.getTfObservacion().getText().trim();
+        newFacturaVenta.setObservacion(ob.isEmpty() ? null : ob);
         if (facturar) {
             newFacturaVenta.setMovimientoInterno(0);
             newFacturaVenta.setTipo(jdFactura.getCbFacturaTipo().getSelectedItem().toString().charAt(0));
@@ -1213,6 +1216,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                 jdFactura.setTfDias(EL_OBJECT.getDiasCtaCte().toString());
             }
         }
+        jdFactura.getTfObservacion().setText(EL_OBJECT.getObservacion());
         setDetalleData(EL_OBJECT);
         refreshResumen(jdFactura);
         //totales
@@ -1371,8 +1375,8 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         });
 
         jdFactura.getCbCliente().addItem(selectedFacturaVenta.getCliente());
-        Sucursal s = selectedFacturaVenta.getSucursal();
         UnidadDeNegocio udn = selectedFacturaVenta.getUnidadDeNegocio();
+        Sucursal s = selectedFacturaVenta.getSucursal();
         Cuenta cuenta = selectedFacturaVenta.getCuenta();
         SubCuenta subCuenta = selectedFacturaVenta.getSubCuenta();
         try {
@@ -1389,7 +1393,6 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         try {
             jdFactura.getCbSubCuenta().addItem(new ComboBoxWrapper<SubCuenta>(subCuenta, subCuenta.getId(), subCuenta.getNombre()));
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Sub Cuenta no especificada");
         }
         jdFactura.getCbListaPrecio().addItem(selectedFacturaVenta.getListaPrecios());
         jdFactura.setDcFechaFactura(selectedFacturaVenta.getFechaVenta());
@@ -1406,6 +1409,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         jdFactura.getCbCaja().addItem(selectedFacturaVenta.getCaja());
         UTIL.loadComboBox(jdFactura.getCbFormaPago(), Valores.FormaPago.getFormasDePago(), false);
         UTIL.setSelectedItem(jdFactura.getCbFormaPago(), selectedFacturaVenta.getFormaPagoEnum().toString());
+        jdFactura.getTfObservacion().setText(selectedFacturaVenta.getObservacion());
         if (selectedFacturaVenta.getFormaPagoEnum() == Valores.FormaPago.CTA_CTE) {
             if (selectedFacturaVenta.getDiasCtaCte() != null) {
                 jdFactura.setTfDias(selectedFacturaVenta.getDiasCtaCte().toString());
@@ -1624,7 +1628,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
             } else {
                 //cambió Sucursal, Cliente, Fecha
                 dcm.setDescripcion(JGestionUtils.getNumeracion(editedFacturaVenta) + " " + editedFacturaVenta.getCliente().getNombre());
-                new DetalleCajaMovimientosJpaController().edit(dcm);
+                new DetalleCajaMovimientosJpaController().merge(dcm);
             }
         } else if (EL_OBJECT.getFormaPagoEnum().equals(Valores.FormaPago.CTA_CTE)) {
             CtacteClienteJpaController cccController = new CtacteClienteJpaController();
@@ -1922,11 +1926,8 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         buscador.getjTable1().getColumnModel().getColumn(4).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         buscador.getjTable1().getColumnModel().getColumn(5).setCellRenderer(FormatRenderer.getDateRenderer());
         buscador.getjTable1().getColumnModel().getColumn(8).setCellEditor(new DefaultCellEditor(unidades));
-//        buscador.getjTable1().getColumnModel().getColumn(8).setCellRenderer(new ComboBoxRenderer(unidades.getModel()));
         buscador.getjTable1().getColumnModel().getColumn(9).setCellEditor(new DefaultCellEditor(cuentas));
-//        buscador.getjTable1().getColumnModel().getColumn(9).setCellRenderer(new ComboBoxRenderer());
         buscador.getjTable1().getColumnModel().getColumn(10).setCellEditor(new DefaultCellEditor(subCuentas));
-//        buscador.getjTable1().getColumnModel().getColumn(10).setCellRenderer(new ComboBoxRenderer());
         UTIL.hideColumnTable(buscador.getjTable1(), 0);
         buscador.getbBuscar().addActionListener(new ActionListener() {
             @Override

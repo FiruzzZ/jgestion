@@ -4,10 +4,16 @@ import controller.DAO;
 import controller.DetalleCompraJpaController;
 import entity.DetalleCompra;
 import entity.FacturaCompra;
+import entity.FacturaCompra_;
+import entity.Sucursal;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import org.apache.log4j.Logger;
+import utilities.general.UTIL;
 
 /**
  *
@@ -46,12 +52,34 @@ public class FacturaCompraJpaController extends AbstractDAO<FacturaCompra, Integ
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
+            throw new IllegalArgumentException(ex.getMessage());
         } finally {
             if (em != null) {
                 if (em.isOpen()) {
                     em.close();
                 }
             }
+        }
+    }
+
+    public long getMaxNumeroComprobante(Sucursal sucursal, Character x) {
+        getEntityManager();
+        try {
+            CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+            CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+            Root<FacturaCompra> from = cq.from(getEntityClass());
+            cq.where(cb.equal(from.get(FacturaCompra_.tipo), x),
+                    cb.equal(from.get(FacturaCompra_.sucursal), sucursal));
+            cq.select(cb.max(from.get(FacturaCompra_.numero)));
+            Long max = getEntityManager().createQuery(cq).getSingleResult();
+            if(max == null) {
+                return 0;
+            } else {
+                String s = UTIL.AGREGAR_CEROS(max, 12);
+                return Long.valueOf(s.substring(4));
+            }
+        } finally {
+            getEntityManager().close();
         }
     }
 }

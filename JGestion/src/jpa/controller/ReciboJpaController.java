@@ -63,7 +63,7 @@ public class ReciboJpaController extends AbstractDAO<Recibo, Integer> {
             throw new MessageException(getEntityClass().getSimpleName() + " no válido");
         }
         if (!recibo.getEstado()) {
-            throw new MessageException("Este " + getEntityClass().getSimpleName() + " ya está anulado");
+            throw new MessageException("El " + getEntityClass().getSimpleName() + " ya está anulado");
         }
 
         List<DetalleRecibo> detalleReciboList = recibo.getDetalleReciboList();
@@ -80,7 +80,50 @@ public class ReciboJpaController extends AbstractDAO<Recibo, Integer> {
                 }
                 em.merge(ctaCteCliente);
             }
+            for (Object object : recibo.getPagosEntities()) {
+                if (object instanceof ChequePropio) {
+                    ChequePropio pago = (ChequePropio) object;
+                    pago = em.find(pago.getClass(), pago.getId());
+                    pago.setComprobanteIngreso(null);
+//                    pago.setEstado(ChequeEstado.CARTERA.getId());
+                    em.remove(pago);
+                } else if (object instanceof ChequeTerceros) {
+                    ChequeTerceros pago = (ChequeTerceros) object;
+                    pago = em.find(pago.getClass(), pago.getId());
+                    if (pago.getEstado() != ChequeEstado.CARTERA.getId()) {
+                        throw new MessageException("CANCELACIÓN DE ANULACIÓN:"
+                                + "\nEl Cheque Tercero " + pago.getBanco().getNombre() + " " + pago.getNumero() + ", Importe $" + pago.getImporte()
+                                + "\nfue utilizado, no se encuentra mas en \"Cartera\".");
+                    }
+                    em.remove(pago);
+                } else if (object instanceof NotaCredito) {
+                    NotaCredito pago = (NotaCredito) object;
+                    pago = em.find(pago.getClass(), pago.getId());
+                    pago.setRecibo(null);
+                    em.merge(pago);
+                } else if (object instanceof ComprobanteRetencion) {
+                    ComprobanteRetencion pago = (ComprobanteRetencion) object;
+                    pago = em.find(pago.getClass(), pago.getId());
+                    em.remove(pago);
+                } else if (object instanceof DetalleCajaMovimientos) {
+                    new CajaMovimientosJpaController().anular(recibo);
+                } else if (object instanceof CuentabancariaMovimientos) {
+                    CuentabancariaMovimientos pago = (CuentabancariaMovimientos) object;
+                    pago = em.find(pago.getClass(), pago.getId());
+                    em.remove(pago);
+                }
+            }
+            for (int i = 0; i < recibo.getPagos().size(); i++) {
+                recibo.getPagos().remove(i);
+            }
+            recibo.setEstado(false);
             em.getTransaction().commit();
+            merge(recibo);
+        } catch (MessageException ex) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw ex;
         } catch (Exception ex) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -91,9 +134,6 @@ public class ReciboJpaController extends AbstractDAO<Recibo, Integer> {
                 em.close();
             }
         }
-        recibo.setEstado(false);
-        merge(recibo);
-        new CajaMovimientosJpaController().anular(recibo);
     }
 
     public Recibo find(Sucursal sucursal, Integer numero) {
