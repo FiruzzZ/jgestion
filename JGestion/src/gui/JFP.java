@@ -512,7 +512,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         menuTesoreria.add(jMenuItem25);
         menuTesoreria.add(jSeparator3);
 
-        jMenuItem26.setText("Movimento entre Cajas");
+        jMenuItem26.setText("Movimientos entre Cajas");
         jMenuItem26.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem26ActionPerformed(evt);

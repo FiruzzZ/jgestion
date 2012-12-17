@@ -288,6 +288,7 @@ public class CajaController implements ActionListener {
      * @param estado estado de la Caja (si está activa o no). Si es null, bring both
      * @return <code>List<Caja>, o null si no tiene permisos de Caja
      */
+    @SuppressWarnings("unchecked")
     public List<Caja> findCajasPermitidasByUsuario(Usuario usuario, Boolean estado) {
         Query q;
         if (estado != null) {
