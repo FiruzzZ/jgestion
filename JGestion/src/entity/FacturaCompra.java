@@ -51,12 +51,10 @@ public class FacturaCompra implements Serializable {
     @Basic(optional = false)
     @Column(name = "actualiza_stock", nullable = false)
     private boolean actualizaStock;
-    @Basic(optional = false)
-    @Column(name = "factura_cuarto", nullable = false)
-    private short facturaCuarto;
-    @Basic(optional = false)
-    @Column(name = "factura_octeto", nullable = false)
-    private int facturaOcteto;
+//    @Column(name = "factura_cuarto")
+//    private short facturaCuarto;
+//    @Column(name = "factura_octeto")
+//    private int facturaOcteto;
     /**
      * Se usa para Percepción II BB (Ingresos Brutos)
      */
@@ -112,6 +110,15 @@ public class FacturaCompra implements Serializable {
     @Basic(optional = false)
     @Column(name = "otros_ivas", nullable = false, precision = 12, scale = 2)
     private BigDecimal otrosIvas;
+    @JoinColumn(name = "unidad_de_negocio_id")
+    @ManyToOne
+    private UnidadDeNegocio unidadDeNegocio;
+    @ManyToOne
+    private Cuenta cuenta;
+    @ManyToOne
+    private SubCuenta subCuenta;
+    @Column(length = 100)
+    private String observacion;
 
     public FacturaCompra() {
     }
@@ -192,21 +199,21 @@ public class FacturaCompra implements Serializable {
         this.actualizaStock = actualizaStock;
     }
 
-    public short getFacturaCuarto() {
-        return facturaCuarto;
-    }
+//    public short getFacturaCuarto() {
+//        return facturaCuarto;
+//    }
 
-    public void setFacturaCuarto(short facturaCuarto) {
-        this.facturaCuarto = facturaCuarto;
-    }
+//    public void setFacturaCuarto(short facturaCuarto) {
+//        this.facturaCuarto = facturaCuarto;
+//    }
 
-    public int getFacturaOcteto() {
-        return facturaOcteto;
-    }
+//    public int getFacturaOcteto() {
+//        return facturaOcteto;
+//    }
 
-    public void setFacturaOcteto(int facturaOcteto) {
-        this.facturaOcteto = facturaOcteto;
-    }
+//    public void setFacturaOcteto(int facturaOcteto) {
+//        this.facturaOcteto = facturaOcteto;
+//    }
 
     public double getPercIva() {
         return percIva;
@@ -362,6 +369,38 @@ public class FacturaCompra implements Serializable {
         this.noGravado = noGravado;
     }
 
+    public UnidadDeNegocio getUnidadDeNegocio() {
+        return unidadDeNegocio;
+    }
+
+    public void setUnidadDeNegocio(UnidadDeNegocio unidadDeNegocio) {
+        this.unidadDeNegocio = unidadDeNegocio;
+    }
+
+    public Cuenta getCuenta() {
+        return cuenta;
+    }
+
+    public void setCuenta(Cuenta cuenta) {
+        this.cuenta = cuenta;
+    }
+
+    public SubCuenta getSubCuenta() {
+        return subCuenta;
+    }
+
+    public void setSubCuenta(SubCuenta subCuenta) {
+        this.subCuenta = subCuenta;
+    }
+
+    public String getObservacion() {
+        return observacion;
+    }
+
+    public void setObservacion(String observacion) {
+        this.observacion = observacion;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -386,8 +425,7 @@ public class FacturaCompra implements Serializable {
     public String toString() {
         return "FacturaCompra{" + "id=" + id + ", numero=" + numero + ", tipo=" + tipo + ", importe=" + importe
                 + ", fechaCompra=" + fechaCompra + ", fechaalta=" + fechaalta + ", formaPago=" + formaPago + ", remito=" + remito
-                + ", actualizaStock=" + actualizaStock + ", facturaCuarto=" + facturaCuarto + ", facturaOcteto=" + facturaOcteto
-                + ", gravado=" + gravado + ", noGravado=" + noGravado
+                + ", actualizaStock=" + actualizaStock + ", gravado=" + gravado + ", noGravado=" + noGravado
                 + ", descuento=" + descuento
                 + ", percIva=" + percIva + ", percDgr=" + percDgr + ", iva10=" + iva10 + ", iva21=" + iva21 + ", imp. Recuperable=" + impuestosRecuperables
                 + ", imp. No Recuperable=" + impuestosNoRecuperables

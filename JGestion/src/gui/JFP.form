@@ -610,22 +610,33 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem68ActionPerformed"/>
               </Events>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem65">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Logger"/>
-              </Properties>
-            </MenuItem>
             <Menu class="javax.swing.JMenu" name="jMenu25">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Cosas para Ignacio"/>
+                <Property name="text" type="java.lang.String" value="Asignaci&#xf3;n de Unidad, Cuenta y Sub Cuenta"/>
               </Properties>
               <SubComponents>
                 <MenuItem class="javax.swing.JMenuItem" name="jMenuItem50">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="Asignaci&#xf3;n de Unidad, Cuenta y Sub Cuenta a Facturas Venta"/>
+                    <Property name="text" type="java.lang.String" value="Facturas Venta"/>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem50ActionPerformed"/>
+                  </Events>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuItem74">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Facturas Compra"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem74ActionPerformed"/>
+                  </Events>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuItem75">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Movimientos Varios"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem75ActionPerformed"/>
                   </Events>
                 </MenuItem>
               </SubComponents>
@@ -819,6 +830,14 @@
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem24ActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem65">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Tracker de usuarios"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem65ActionPerformed"/>
               </Events>
             </MenuItem>
           </SubComponents>

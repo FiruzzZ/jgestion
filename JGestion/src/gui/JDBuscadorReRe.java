@@ -287,7 +287,14 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
         bExtra.setMnemonic('e');
         bExtra.setText("Editar");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel());
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+
+            }
+        ));
         jTable1.addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentResized(java.awt.event.ComponentEvent evt) {
                 jTable1ComponentResized(evt);

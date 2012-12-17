@@ -6,6 +6,7 @@ import generics.GenericBeanCollection;
 import gui.JDBuscadorReRe;
 import gui.JDReRe;
 import gui.generics.JDialogTable;
+import java.awt.Window;
 import java.awt.event.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -58,13 +59,13 @@ public class ReciboController implements ActionListener, FocusListener {
     /**
      * Crea la ventana para realizar Recibo's
      *
-     * @param frame owner/parent
+     * @param owner owner/parent
      * @param modal debería ser <code>true</code> siempre, no está implementado
      * para false
      * @param setVisible
      * @throws MessageException
      */
-    public void initRecibos(JFrame frame, boolean modal, boolean setVisible) throws MessageException {
+    public void initRecibos(Window owner, boolean modal, boolean setVisible) throws MessageException {
         UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.VENTA);
         UsuarioHelper uh = new UsuarioHelper();
         if (uh.getSucursales().isEmpty()) {
@@ -73,7 +74,7 @@ public class ReciboController implements ActionListener, FocusListener {
         if (uh.getCajas(true).isEmpty()) {
             throw new MessageException(Main.resourceBundle.getString("unassigned.caja"));
         }
-        jdReRe = new JDReRe(frame, modal);
+        jdReRe = new JDReRe(owner, modal);
         jdReRe.setUIForRecibos();
         UTIL.getDefaultTableModel(jdReRe.getTableAPagar(),
                 new String[]{"facturaID", "Factura", "Observación", "Entrega"},
@@ -89,9 +90,17 @@ public class ReciboController implements ActionListener, FocusListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    jpaController.anular(selectedRecibo);
-                    jdReRe.showMessage(CLASS_NAME + " anulada..", CLASS_NAME, 1);
-                    resetPanel();
+                    if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(jdReRe, "La anulación de un implica:"
+                            + "\n- Deshacer el pago realizado a cada Factura."
+                            + "\n- La eliminación completa de las Formas de Pago de Tipo: Cheques Terceros, Retenciones, Transferencias."
+                            + "\n- La desvinculación de las Notas de Crédito con el Recibo."
+                            + "\n- El cambio de estado de Cheques Propios a \"Entregados\" y dejando en blanco el concepto \"Comprobante de Ingreso\"."
+                            + "\n- Un movimiento de Egreso de la entrega en Efectivo, en la misma Caja en la cual se originó el Recibo."
+                            + "\n¿Confirmar anulación?")) {
+                        jpaController.anular(selectedRecibo);
+                        jdReRe.showMessage(CLASS_NAME + " anulada..", CLASS_NAME, 1);
+                        resetPanel();
+                    }
                 } catch (MessageException ex) {
                     jdReRe.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
@@ -142,6 +151,9 @@ public class ReciboController implements ActionListener, FocusListener {
             public void actionPerformed(ActionEvent e) {
                 try {
                     if (selectedRecibo != null) {
+                        if(!selectedRecibo.getEstado()) {
+                            throw new MessageException("No se puede imprimir un Recibo ANULADO");
+                        }
                         // cuando se re-imprime un recibo elegido desde el buscador (uno pre existente)
                         doReportRecibo(selectedRecibo);
                     } else {
@@ -263,7 +275,7 @@ public class ReciboController implements ActionListener, FocusListener {
                 }
             }
         });
-        jdReRe.setLocationRelativeTo(frame);
+        jdReRe.setLocationRelativeTo(owner);
         jdReRe.setVisible(setVisible);
     }
 
@@ -481,7 +493,6 @@ public class ReciboController implements ActionListener, FocusListener {
             DetalleRecibo detalle = new DetalleRecibo();
             detalle.setFacturaVenta(fcc.findFacturaVenta((Integer) dtm.getValueAt(i, 0)));
             detalle.setMontoEntrega((BigDecimal) dtm.getValueAt(i, 3));
-//            detalle.setAcreditado((Boolean) dtm.getValueAt(i, 4));
             detalle.setRecibo(recibo);
             recibo.getDetalleReciboList().add(detalle);
             monto = monto.add(detalle.getMontoEntrega());
@@ -810,13 +821,14 @@ public class ReciboController implements ActionListener, FocusListener {
         jdReRe.setDcFechaCarga(recibo.getFechaCarga());
         cargarDetalleReRe(recibo);
         updateTotales();
-        jdReRe.setTfImporte("");
-        jdReRe.setTfPagado("");
-        jdReRe.setTfSaldo("");
         SwingUtil.setComponentsEnabled(jdReRe.getPanelDatos().getComponents(), false, true);
         SwingUtil.setComponentsEnabled(jdReRe.getPanelAPagar().getComponents(), false, true);
         SwingUtil.setComponentsEnabled(jdReRe.getPanelPagos().getComponents(), false, true);
+        jdReRe.setTfImporte(null);
+        jdReRe.setTfPagado(null);
+        jdReRe.setTfSaldo(null);
         jdReRe.getbImprimir().setEnabled(true);
+        jdReRe.getLabelAnulado().setVisible(!recibo.getEstado());
     }
 
     private void cargarDetalleReRe(Recibo recibo) {
@@ -831,7 +843,7 @@ public class ReciboController implements ActionListener, FocusListener {
                         r.getMontoEntrega()
                     });
         }
-        getPagos(recibo);
+        loadPagos(recibo);
         dtm = jdReRe.getDtmPagos();
         dtm.setRowCount(0);
         for (Object object : recibo.getPagosEntities()) {
@@ -857,7 +869,7 @@ public class ReciboController implements ActionListener, FocusListener {
         }
     }
 
-    private List<Object> getPagos(Recibo recibo) {
+    public void loadPagos(Recibo recibo) {
         List<Object> pagos = new ArrayList<Object>(recibo.getPagos().size());
         for (ReciboPagos pago : recibo.getPagos()) {
             if (pago.getFormaPago() == 0) {
@@ -883,7 +895,6 @@ public class ReciboController implements ActionListener, FocusListener {
             }
         }
         recibo.setPagosEntities(pagos);
-        return pagos;
     }
 
     @Override
@@ -933,55 +944,6 @@ public class ReciboController implements ActionListener, FocusListener {
         Integer nextRe = jpaController.getNextNumero(sucursal);
         jdReRe.setTfCuarto(UTIL.AGREGAR_CEROS(sucursal.getPuntoVenta(), 4));
         jdReRe.setTfOcteto(UTIL.AGREGAR_CEROS(nextRe, 8));
-    }
-
-    /**
-     * La anulación de una Recibo, resta a
-     * <code>CtaCteCliente.entregado</code> los pagos/entregas
-     * (parciales/totales) realizados de cada DetalleRecibo y cambia
-     * <code>Recibo.estado = false<code>
-     *
-     * @param recibo
-     * @throws MessageException
-     * @throws Exception si Recibo es null, o si ya está anulado
-     */
-    public void anular(Recibo recibo) throws MessageException, Exception {
-        if (recibo == null) {
-            throw new MessageException(CLASS_NAME + " no válido");
-        }
-        if (!recibo.getEstado()) {
-            throw new MessageException("Este " + CLASS_NAME + " ya está anulado");
-        }
-
-        EntityManager em = DAO.getEntityManager();
-        List<DetalleRecibo> detalleReciboList = recibo.getDetalleReciboList();
-        CtacteCliente ctaCteCliente;
-        try {
-            em.getTransaction().begin();
-            for (DetalleRecibo dr : detalleReciboList) {
-                //se resta la entrega ($) que implicaba este detalle con respecto a CADA factura
-                ctaCteCliente = new CtacteClienteJpaController().findCtacteClienteByFactura(dr.getFacturaVenta().getId());
-                ctaCteCliente.setEntregado(ctaCteCliente.getEntregado() - dr.getMontoEntrega().doubleValue());
-                // y si había sido pagada en su totalidad..
-                if (ctaCteCliente.getEstado() == Valores.CtaCteEstado.PAGADA.getId()) {
-                    ctaCteCliente.setEstado(Valores.CtaCteEstado.PENDIENTE.getId());
-                }
-                em.merge(ctaCteCliente);
-            }
-            em.getTransaction().commit();
-        } catch (Exception ex) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            throw ex;
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
-        recibo.setEstado(false);
-        DAO.doMerge(recibo);
-        new CajaMovimientosJpaController().anular(recibo);
     }
 
     private void doReportRecibo(Recibo recibo) throws Exception {
@@ -1045,7 +1007,7 @@ public class ReciboController implements ActionListener, FocusListener {
         return recibosList;
     }
 
-    public void unlockedABM(JFrame owner) throws MessageException {
+    public void initRecibosNumeracionManual(Window owner) throws MessageException {
         UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.VENTA_NUMERACION_MANUAL);
         unlockedNumeracion = true;
         initRecibos(owner, true, false);

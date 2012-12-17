@@ -17,7 +17,7 @@ public abstract class Valores {
      */
     public enum FormaPago {
 
-        CONTADO(1, "CONTADO"), CTA_CTE(2, "CTA CTE"), CHEQUE(3, "CHEQUE"), CONTADO_CHEQUE(4, "CONTADO/CHEQUE");
+        CONTADO(1, "CONTADO"), CTA_CTE(2, "CTA CTE");//, CHEQUE(3, "CHEQUE"), CONTADO_CHEQUE(4, "CONTADO/CHEQUE");
         private final int id;
         private final String nombre;
 

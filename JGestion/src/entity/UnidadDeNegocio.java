@@ -3,6 +3,7 @@ package entity;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
+import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,25 +16,30 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 /**
  *
  * @author FiruzzZ
  */
 @Entity
-@Table(name = "unidad_de_negocio")
+@Table(name = "unidad_de_negocio", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"nombre"})})
 public class UnidadDeNegocio implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    @Basic(optional = false)
     @Column(nullable = false, unique = true)
     private String nombre;
     @OneToMany
     @JoinTable(
-        joinColumns = @JoinColumn(name = "unidad_de_negocio_id"),
-    inverseJoinColumns = @JoinColumn(name = "sucursal_id"))
+        joinColumns =
+    @JoinColumn(name = "unidad_de_negocio_id"),
+    inverseJoinColumns =
+    @JoinColumn(name = "sucursal_id"))
     @OrderBy(value = "nombre ASC")
     private Set<Sucursal> sucursales;
 

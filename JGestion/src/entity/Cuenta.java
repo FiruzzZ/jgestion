@@ -23,11 +23,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @Table(name = "movimiento_concepto", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"nombre"})})
-@XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "Cuenta.findAll", query = "SELECT m FROM Cuenta m"),
-    @NamedQuery(name = "Cuenta.findById", query = "SELECT m FROM Cuenta m WHERE m.id = :id")
-})
 public class Cuenta implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -93,7 +88,6 @@ public class Cuenta implements Serializable {
 
     @Override
     public String toString() {
-        return "Cuenta{" + "id=" + id + ", nombre=" + nombre + ", subCuentas=" + subCuentas + '}';
+        return "Cuenta{" + "id=" + id + ", nombre=" + nombre + '}';
     }
-
 }

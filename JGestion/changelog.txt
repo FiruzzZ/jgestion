@@ -1,3 +1,23 @@
+ALTER TABLE factura_compra ALTER COLUMN factura_octeto DROP NOT NULL;
+ALTER TABLE factura_compra ALTER COLUMN factura_cuarto DROP NOT NULL;
+ALTER TABLE factura_venta ADD COLUMN observacion character(100);
+ALTER TABLE factura_compra ADD COLUMN observacion character(100);
+CREATE TABLE usuario_acciones (
+  id serial NOT NULL,
+  usuario_id integer NOT NULL,
+  descripcion character(200) NOT NULL,
+  detalle character(2000),
+  fechasistema timestamp with time zone NOT NULL DEFAULT now(),
+  ip character(24),
+  hostname character(50),
+  entidad character(100) NOT NULL,
+  entidad_id integer NOT NULL,
+  CONSTRAINT usuario_acciones_pkey PRIMARY KEY (id),
+  CONSTRAINT usuario_acciones_usuarios_id_fkey FOREIGN KEY (usuario_id)
+      REFERENCES usuario (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+) WITH (  OIDS=FALSE);
+
 ALTER TABLE factura_compra ADD COLUMN unidad_de_negocio_id integer;
 ALTER TABLE factura_compra ADD COLUMN cuenta_id integer;
 ALTER TABLE factura_compra ADD COLUMN subcuenta_id integer;

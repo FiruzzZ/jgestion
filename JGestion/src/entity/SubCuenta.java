@@ -78,7 +78,7 @@ public class SubCuenta implements Serializable {
 
     @Override
     public String toString() {
-        return "SubCuenta{" + "id=" + id + ", nombre=" + nombre + ", cuenta=" + cuenta + '}';
+        return "SubCuenta{" + "id=" + id + ", nombre=" + nombre + ", cuenta.id=" + cuenta.getId() + '}';
     }
 
 }

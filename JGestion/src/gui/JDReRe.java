@@ -6,6 +6,7 @@
 package gui;
 
 import java.awt.Color;
+import java.awt.Window;
 import java.awt.event.ActionListener;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -28,11 +29,8 @@ import utilities.swing.components.NumberRenderer;
  */
 public class JDReRe extends javax.swing.JDialog {
 
-    /**
-     * Creates new form JDRecibosRemesas
-     */
-    public JDReRe(java.awt.Frame parent, boolean modal) {
-        super(parent, modal);
+    public JDReRe(Window owner, boolean modal) {
+        super(owner, modal ? DEFAULT_MODALITY_TYPE : ModalityType.MODELESS);
         initComponents();
         tablePagos.getColumnModel().getColumn(3).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         UTIL.hideColumnTable(tablePagos, 0);
@@ -69,6 +67,7 @@ public class JDReRe extends javax.swing.JDialog {
         labelCreditoDebito = new javax.swing.JLabel();
         tfCreditoDebitoDisponible = new javax.swing.JTextField();
         btnDetalleCreditoDebito = new javax.swing.JButton();
+        labelAnulado = new javax.swing.JLabel();
         bAnular = new javax.swing.JButton();
         panelAPagar = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
@@ -191,6 +190,12 @@ public class JDReRe extends javax.swing.JDialog {
 
         btnDetalleCreditoDebito.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/view_detail_16x.png"))); // NOI18N
 
+        labelAnulado.setVisible(false);
+        labelAnulado.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        labelAnulado.setForeground(new java.awt.Color(255, 0, 0));
+        labelAnulado.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        labelAnulado.setText("ANULADO");
+
         javax.swing.GroupLayout panelDatosLayout = new javax.swing.GroupLayout(panelDatos);
         panelDatos.setLayout(panelDatosLayout);
         panelDatosLayout.setHorizontalGroup(
@@ -216,7 +221,9 @@ public class JDReRe extends javax.swing.JDialog {
                             .addGroup(panelDatosLayout.createSequentialGroup()
                                 .addComponent(tfCuarto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(tfOcteto, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(tfOcteto, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(labelAnulado))
                             .addGroup(panelDatosLayout.createSequentialGroup()
                                 .addComponent(dcFechaReRe, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -239,7 +246,8 @@ public class JDReRe extends javax.swing.JDialog {
                 .addGroup(panelDatosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(tfOcteto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(labelReRe)
-                    .addComponent(tfCuarto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(tfCuarto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(labelAnulado))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelDatosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(dcFechaCarga, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -259,7 +267,7 @@ public class JDReRe extends javax.swing.JDialog {
                     .addComponent(btnDetalleCreditoDebito)
                     .addComponent(cbClienteProveedor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(labelClienteProveedor))
-                .addContainerGap(12, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         bAnular.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px-Crystal_Clear_action_editdelete.png"))); // NOI18N
@@ -636,6 +644,7 @@ private void tfEntregaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:even
     private javax.swing.JLabel jLabel8;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JLabel labelAnulado;
     private javax.swing.JLabel labelClienteProveedor;
     private javax.swing.JLabel labelCreditoDebito;
     private javax.swing.JLabel labelReRe;
@@ -751,6 +760,10 @@ private void tfEntregaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:even
 
     public Date getDcFechaCarga() {
         return dcFechaCarga.getDate();
+    }
+
+    public JLabel getLabelAnulado() {
+        return labelAnulado;
     }
 
     public JLabel getLabelClienteProveedor() {

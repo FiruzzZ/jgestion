@@ -44,7 +44,9 @@ public class JDBuscador extends javax.swing.JDialog {
     private void ajustarAlPanel(int width, int height) {
         this.setSize(width + this.getWidth(), height + this.getHeight());
         this.setMinimumSize(new Dimension(this.getWidth(), this.getHeight()));
-        this.setLocation(this.getOwner().getX() + 100, this.getOwner().getY() + 50);
+        if (this.getOwner() != null) {
+            this.setLocation(this.getOwner().getX() + 100, this.getOwner().getY() + 50);
+        }
     }
 
     /**
@@ -247,5 +249,4 @@ public class JDBuscador extends javax.swing.JDialog {
     public Map<String, JTextField> getResumeItems() {
         return Collections.unmodifiableMap(resumeItems);
     }
-
 }

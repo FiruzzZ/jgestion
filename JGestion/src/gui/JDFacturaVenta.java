@@ -125,6 +125,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
         cbCuenta = new javax.swing.JComboBox();
         jLabel6 = new javax.swing.JLabel();
         cbSubCuenta = new javax.swing.JComboBox();
+        labelObservacionCharactersCount = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         btnCancelar = new javax.swing.JButton();
@@ -318,6 +319,10 @@ public class JDFacturaVenta extends javax.swing.JDialog {
 
         cbSubCuenta.setName(""); // NOI18N
 
+        labelObservacionCharactersCount.setText("0/100");
+        labelObservacionCharactersCount.setFocusable(false);
+        labelObservacionCharactersCount.setRequestFocusEnabled(false);
+
         javax.swing.GroupLayout panelDatosFacturacionLayout = new javax.swing.GroupLayout(panelDatosFacturacion);
         panelDatosFacturacion.setLayout(panelDatosFacturacionLayout);
         panelDatosFacturacionLayout.setHorizontalGroup(
@@ -352,7 +357,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(tfNumMovimiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(panelDatosFacturacionLayout.createSequentialGroup()
-                                .addComponent(cbListaPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(cbListaPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(labelListaPrecioParaCatalogo)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -376,11 +381,14 @@ public class JDFacturaVenta extends javax.swing.JDialog {
                     .addGroup(panelDatosFacturacionLayout.createSequentialGroup()
                         .addGap(4, 4, 4)
                         .addGroup(panelDatosFacturacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(tfObservacion, javax.swing.GroupLayout.PREFERRED_SIZE, 503, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(panelDatosFacturacionLayout.createSequentialGroup()
+                                .addComponent(tfObservacion, javax.swing.GroupLayout.PREFERRED_SIZE, 503, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(labelObservacionCharactersCount))
                             .addGroup(panelDatosFacturacionLayout.createSequentialGroup()
                                 .addGroup(panelDatosFacturacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(cbCaja, 0, 227, Short.MAX_VALUE)
-                                    .addComponent(cbCuenta, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                    .addComponent(cbCaja, 0, 200, Short.MAX_VALUE)
+                                    .addComponent(cbCuenta, 0, 200, Short.MAX_VALUE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(panelDatosFacturacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(panelDatosFacturacionLayout.createSequentialGroup()
@@ -394,7 +402,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
                                     .addGroup(panelDatosFacturacionLayout.createSequentialGroup()
                                         .addComponent(jLabel6)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(cbSubCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)))))))
+                                        .addComponent(cbSubCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)))))))
                 .addContainerGap(54, Short.MAX_VALUE))
         );
         panelDatosFacturacionLayout.setVerticalGroup(
@@ -439,16 +447,17 @@ public class JDFacturaVenta extends javax.swing.JDialog {
                     .addComponent(tfDias, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(labelDias))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelDatosFacturacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cbSubCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(panelDatosFacturacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelDatosFacturacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel5)
                         .addComponent(cbCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel6)))
+                        .addComponent(jLabel6))
+                    .addComponent(cbSubCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelDatosFacturacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(tfObservacion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(labelObservacion))
+                    .addComponent(labelObservacion)
+                    .addComponent(labelObservacionCharactersCount))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -961,7 +970,6 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
     private void tfFacturaOctetoFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfFacturaOctetoFocusGained
         ((JTextComponent) tfFacturaOcteto).selectAll();
     }//GEN-LAST:event_tfFacturaOctetoFocusGained
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton bBuscarProducto;
     private javax.swing.JButton btnADD;
@@ -1021,6 +1029,7 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
     private javax.swing.JLabel labelN_factura;
     private javax.swing.JLabel labelNumMovimiento;
     private javax.swing.JLabel labelObservacion;
+    private javax.swing.JLabel labelObservacionCharactersCount;
     private javax.swing.JLabel labelRemito;
     private javax.swing.JPanel panelDatosFacturacion;
     private javax.swing.JPanel panelProducto;
@@ -1185,9 +1194,8 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
     public JComboBox getCbUnidadDeNegocio() {
         return cbUnidadDeNegocio;
     }
-    
-    // </editor-fold>
 
+    // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="SETTERS">
     public void setTfRemito(String remito) {
         tfRemito.setText(remito);
@@ -1250,7 +1258,6 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
     }
 
     // </editor-fold>
-
     /**
      * Setea un mensaje de información.
      *
@@ -1445,7 +1452,8 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
 
     private void controlDeCaracteres(JTextField textField) {
         int length = textField.getText().length();
-        if (length > 200) {
+        labelObservacionCharactersCount.setText(length + "/100");
+        if (length > 100) {
             tfObservacion.setBackground(Color.RED);
         } else {
             tfObservacion.setBackground(null);

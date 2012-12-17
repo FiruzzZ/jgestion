@@ -504,7 +504,7 @@ public class CtacteClienteJpaController implements ActionListener {
                 }
             }
         });
-        buscador = new JDBuscador(owner, "Ctas. Ctes. vencimientos", true, panelCCCheck);
+        buscador = new JDBuscador(owner, "Ctas. Ctes. vencimientos", false, panelCCCheck);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
                 new String[]{"C/P", "Cliente", "Tipo", "Nº factura", "Importe", "Saldo", "Fecha", "Vto."},
