@@ -35,10 +35,10 @@ public class UsuarioHelper {
     }
 
     public List<Sucursal> getSucursales() {
-        List<Sucursal> l = new ArrayList<Sucursal>(usuario.getSucursales().size());
-        for (PermisosSucursal permisosSucursal : usuario.getSucursales()) {
-            l.add(permisosSucursal.getSucursal());
-        }
+        List<Sucursal> l = new UsuarioController().getSucursalesOrderedByNombre(usuario);
+//        for (PermisosSucursal permisosSucursal : usuario.getSucursales()) {
+//            l.add(permisosSucursal.getSucursal());
+//        }
         return l;
     }
 

@@ -749,4 +749,9 @@ public class UsuarioController implements ActionListener, MouseListener, KeyList
         jd.setLocationRelativeTo(null);
         jd.setVisible(true);
     }
+
+    @SuppressWarnings("unchecked")
+    List<Sucursal> getSucursalesOrderedByNombre(Usuario usuario) {
+        return getEntityManager().createQuery("SELECT o.sucursal FROM " + PermisosSucursal.class.getSimpleName() + " o WHERE o.usuario.id=" + usuario.getId() + " ORDER BY o.sucursal.nombre").getResultList();
+    }
 }
