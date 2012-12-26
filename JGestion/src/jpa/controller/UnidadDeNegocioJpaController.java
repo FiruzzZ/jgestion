@@ -1,6 +1,7 @@
 package jpa.controller;
 
 import controller.DAO;
+import entity.PermisosSucursal;
 import entity.Sucursal;
 import entity.UnidadDeNegocio;
 import entity.UnidadDeNegocio_;
@@ -69,6 +70,14 @@ public class UnidadDeNegocioJpaController extends AbstractDAO<UnidadDeNegocio, I
         cq.orderBy(cb.asc(cq.from(getEntityClass()).get(UnidadDeNegocio_.nombre)));
         return getEntityManager().createQuery(cq).setHint(QueryHints.REFRESH, true).getResultList();
         
+    }
+
+    public List<UnidadDeNegocio> findBySucursalesPermitidas() {
+        return getEntityManager().createQuery("SELECT o FROM " + getEntityClass().getSimpleName() + " o"
+                + " JOIN o.sucursales.sucursal s "
+//                + ","+PermisosSucursal.class.getSimpleName() + " ps"
+                + " WHERE o.sucursales.id = ps.sucursal.id"
+                + " GROUP BY o").setHint(QueryHints.REFRESH, true).getResultList();
     }
     
     

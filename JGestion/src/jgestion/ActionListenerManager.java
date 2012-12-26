@@ -54,7 +54,7 @@ public class ActionListenerManager {
     }
 
     public static void setUnidadDeNegocioSucursalActionListener(final JComboBox cbUnidadDeNegocio, boolean unidadElegible, final JComboBox cbSucursales, final boolean sucursalElegible, boolean loadSucursal) {
-        UTIL.loadComboBox(cbUnidadDeNegocio, JGestionUtils.getWrappedUnidadDeNegocios(new UnidadDeNegocioJpaController().findAll()), unidadElegible);
+        UTIL.loadComboBox(cbUnidadDeNegocio, JGestionUtils.getWrappedUnidadDeNegocios(new UnidadDeNegocioJpaController().findBySucursalesPermitidas()), unidadElegible);
         cbUnidadDeNegocio.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
