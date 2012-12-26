@@ -1,3 +1,7 @@
+--20121219
+ALTER TABLE subcuenta DROP CONSTRAINT subcuenta_nombre_key;
+ALTER TABLE subcuenta ADD UNIQUE (cuenta_id, nombre);
+--20121217
 ALTER TABLE factura_compra ALTER COLUMN factura_octeto DROP NOT NULL;
 ALTER TABLE factura_compra ALTER COLUMN factura_cuarto DROP NOT NULL;
 ALTER TABLE factura_venta ADD COLUMN observacion character(100);

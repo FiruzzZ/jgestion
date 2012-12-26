@@ -33,10 +33,10 @@ public class CuentaController {
     private static final Logger LOG = Logger.getLogger(CuentaController.class.getName());
     private final CuentaJpaController jpaController;
     private Cuenta EL_OBJECT;
-    public static final Cuenta EFECTIVO;
+    public static final Cuenta SIN_CLASIFICAR; //antes llamado EFECTIVO
 
     static {
-        EFECTIVO = DAO.getEntityManager().find(Cuenta.class, 1);
+        SIN_CLASIFICAR = DAO.getEntityManager().find(Cuenta.class, 1);
     }
 
     public CuentaController() {

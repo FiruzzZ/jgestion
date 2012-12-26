@@ -11,7 +11,6 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
-import javax.persistence.NoResultException;
 import javax.persistence.RollbackException;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -201,11 +200,9 @@ public class SubCuentaController {
         if (o.getId() != null) {
             idQuery = "o.id <> " + o.getId() + " AND ";
         }
-        try {
-            DAO.getEntityManager().createQuery("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o "
-                    + " WHERE " + idQuery + " UPPER(o.nombre)='" + o.getNombre().toUpperCase() + "' AND o.cuenta.id=" + o.getCuenta().getId()).getSingleResult().equals(o.getClass());
+        if (!jpaController.findByQuery("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o "
+                + " WHERE " + idQuery + " UPPER(o.nombre)='" + o.getNombre().toUpperCase() + "' AND o.cuenta.id=" + o.getCuenta().getId()).isEmpty()) {
             throw new MessageException("Ya existe una " + jpaController.getEntityClass().getSimpleName() + " con el nombre \"" + o.getNombre() + "\" en la Cuenta: " + o.getCuenta().getNombre());
-        } catch (NoResultException ex) {
         }
     }
 }

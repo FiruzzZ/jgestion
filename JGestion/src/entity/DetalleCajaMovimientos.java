@@ -61,13 +61,13 @@ public class DetalleCajaMovimientos implements Serializable {
     @Basic(optional = false)
     @Column(name = "descripcion", nullable = false, length = 250)
     private String descripcion;
-    @JoinColumn(name = "caja_movimientos", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "caja_movimientos", nullable = false)
     @ManyToOne(optional = false)
     private CajaMovimientos cajaMovimientos;
-    @JoinColumn(name = "usuario", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "usuario", nullable = false)
     @ManyToOne(optional = false)
     private Usuario usuario;
-    @JoinColumn(name = "movimiento_concepto", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "movimiento_concepto", nullable = false)
     @ManyToOne(optional = false)
     private Cuenta cuenta;
     @JoinColumn(name = "subcuenta_id")
