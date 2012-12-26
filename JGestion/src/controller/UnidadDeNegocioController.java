@@ -132,21 +132,19 @@ public class UnidadDeNegocioController {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    if (EL_OBJECT == null) {
-                        EL_OBJECT = new UnidadDeNegocio();
-                        EL_OBJECT.setSucursales(new HashSet<Sucursal>(5));
-                    }
-                    setEntity(EL_OBJECT);
+                    UnidadDeNegocio o = setEntity();
                     checkConstraints(EL_OBJECT);
                     String msg = EL_OBJECT.getId() == null ? "Registrado" : "Modificado";
                     //persistiendo......
                     if (EL_OBJECT.getId() == null) {
                         jpaController.create(EL_OBJECT);
                     } else {
-                        jpaController.merge(EL_OBJECT);
+                        o.setId(EL_OBJECT.getId());
+                        jpaController.merge(o);
                     }
                     abm.showMessage(msg, "Unidad de Negocio", 1);
                     cargarContenedorTabla();
+                    EL_OBJECT = null;
                     abm.dispose();
                 } catch (MessageException ex) {
                     abm.showMessage(ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
@@ -164,8 +162,12 @@ public class UnidadDeNegocioController {
         abm.setVisible(true);
     }
 
-    private void setEntity(UnidadDeNegocio o) {
-        o.setNombre(panelABMUnidadDeNegocio.getTfNombre().getText().trim());
+    private UnidadDeNegocio setEntity() {
+        if (EL_OBJECT == null) {
+            EL_OBJECT = new UnidadDeNegocio();
+//            EL_OBJECT.setSucursales(new HashSet<Sucursal>());
+        }
+        EL_OBJECT.setNombre(panelABMUnidadDeNegocio.getTfNombre().getText().trim());
         DefaultTableModel dtm = (DefaultTableModel) panelABMUnidadDeNegocio.getjTable1().getModel();
         Set<Sucursal> selected = new HashSet<Sucursal>();
         for (int row = 0; row < dtm.getRowCount(); row++) {
@@ -174,13 +176,8 @@ public class UnidadDeNegocioController {
                 selected.add(s);
             }
         }
-        for (Sucursal sucursal : o.getSucursales()) {
-            System.out.println("a=" + sucursal.getNombre());
-        }
-        o.setSucursales(selected);
-        for (Sucursal sucursal : o.getSucursales()) {
-            System.out.println("b=" + sucursal.getNombre());
-        }
+        EL_OBJECT.setSucursales(selected);
+        return EL_OBJECT;
     }
 
     private void checkConstraints(UnidadDeNegocio o) throws MessageException {

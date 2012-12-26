@@ -95,7 +95,7 @@ public class ReciboController implements ActionListener, FocusListener {
                             + "\n- La eliminación completa de las Formas de Pago de Tipo: Cheques Terceros, Retenciones, Transferencias."
                             + "\n- La desvinculación de las Notas de Crédito con el Recibo."
                             + "\n- El cambio de estado de Cheques Propios a \"Entregados\" y dejando en blanco el concepto \"Comprobante de Ingreso\"."
-                            + "\n- Un movimiento de Egreso de la entrega en Efectivo, en la misma Caja en la cual se originó el Recibo."
+                            + "\n- La generación de un movimiento de Egreso de la entrega en Efectivo, en la misma Caja en la cual se originó el Recibo."
                             + "\n¿Confirmar anulación?")) {
                         jpaController.anular(selectedRecibo);
                         jdReRe.showMessage(CLASS_NAME + " anulada..", CLASS_NAME, 1);
@@ -308,7 +308,7 @@ public class ReciboController implements ActionListener, FocusListener {
                 d.setIngreso(true);
                 d.setTipo(DetalleCajaMovimientosJpaController.RECIBO);
                 d.setUsuario(UsuarioController.getCurrentUser());
-                d.setCuenta(CuentaController.EFECTIVO);
+                d.setCuenta(CuentaController.SIN_CLASIFICAR);
                 d.setDescripcion(null); // <--- setear con el N° del comprobante
                 d.setCajaMovimientos(null); // no te olvides este tampoco!! 
                 d.setNumero(0l); // Comprobante.id!!!!

@@ -486,7 +486,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
         dcm.setUsuario(UsuarioController.getCurrentUser());
         if (dcm.getCuenta() == null) {
             //default value
-            dcm.setCuenta(CuentaController.EFECTIVO);
+            dcm.setCuenta(CuentaController.SIN_CLASIFICAR);
         }
         cm.getDetalleCajaMovimientosList().add(dcm);
         create(cm);

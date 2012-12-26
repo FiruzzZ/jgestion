@@ -32,6 +32,13 @@ public class SubCuenta implements Serializable {
     @ManyToOne(optional = false)
     private Cuenta cuenta;
 
+    public SubCuenta() {
+    }
+
+    public SubCuenta(Integer id) {
+        this.id = id;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -80,5 +87,4 @@ public class SubCuenta implements Serializable {
     public String toString() {
         return "SubCuenta{" + "id=" + id + ", nombre=" + nombre + ", cuenta.id=" + cuenta.getId() + '}';
     }
-
 }

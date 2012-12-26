@@ -2,7 +2,13 @@ package jpa.controller;
 
 import controller.DAO;
 import entity.Cuenta;
+import entity.Cuenta_;
+import java.util.List;
 import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+import org.eclipse.persistence.config.QueryHints;
 
 /**
  *
@@ -19,4 +25,16 @@ public class CuentaJpaController extends AbstractDAO<Cuenta, Integer> {
         }
         return entityManager;
     }
+
+    @Override
+    public List<Cuenta> findAll() {
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Cuenta> cq = cb.createQuery(getEntityClass());
+        Root<Cuenta> root = cq.from(getEntityClass());
+        cq.select(root);
+        cq.orderBy(cb.asc(root.get(Cuenta_.nombre)));
+        return getEntityManager().createQuery(cq).setHint(QueryHints.REFRESH, true).getResultList();
+    }
+    
+    
 }

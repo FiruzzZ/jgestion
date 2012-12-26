@@ -250,7 +250,7 @@ public class RemesaController implements ActionListener, FocusListener {
             d.setMonto(-monto.doubleValue());
             d.setTipo(DetalleCajaMovimientosJpaController.REMESA);
             d.setUsuario(UsuarioController.getCurrentUser());
-            d.setCuenta(CuentaController.EFECTIVO);
+            d.setCuenta(CuentaController.SIN_CLASIFICAR);
             d.setDescripcion(null); // <--- setear con el N° del comprobante
             d.setCajaMovimientos(null); // no te olvides este tampoco!! 
             d.setNumero(0l); // Comprobante.id!!!!

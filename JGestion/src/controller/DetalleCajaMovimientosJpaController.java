@@ -79,7 +79,7 @@ public class DetalleCajaMovimientosJpaController {
 
             //default MovimientoConcepto.EFECTIVO
             if (detalleCajaMovimientos.getCuenta() == null) {
-                detalleCajaMovimientos.setCuenta(CuentaController.EFECTIVO);
+                detalleCajaMovimientos.setCuenta(CuentaController.SIN_CLASIFICAR);
             }
             CajaMovimientos cajaMovimientos = detalleCajaMovimientos.getCajaMovimientos();
             if (cajaMovimientos != null) {

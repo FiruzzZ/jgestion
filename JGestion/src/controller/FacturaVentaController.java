@@ -115,14 +115,15 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.VENTA);
         UsuarioHelper uh = new UsuarioHelper();
         if (uh.getSucursales().isEmpty()) {
-            throw new IllegalArgumentException(Main.resourceBundle.getString("unassigned.sucursal"));
+            throw new MessageException(Main.resourceBundle.getString("unassigned.sucursal"));
         }
         if (factVenta1_PresupNotaCredito2_Remito3 == 1) {
             if (uh.getCajas(true).isEmpty()) {
-                throw new IllegalArgumentException(Main.resourceBundle.getString("unassigned.caja"));
+                throw new MessageException(Main.resourceBundle.getString("unassigned.caja"));
             }
         }
         jdFactura = new JDFacturaVenta(owner, modal, factVenta1_PresupNotaCredito2_Remito3);
+        jdFactura.getTfObservacion().setVisible(true);
         UTIL.getDefaultTableModel(jdFactura.getjTable1(),
                 COLUMN_NAMES,
                 COLUMN_WIDTHS,

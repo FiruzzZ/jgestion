@@ -47,7 +47,9 @@ public class Usuario implements Serializable {
     private List<Stock> stockList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "usuario")
     private List<PermisosCaja> permisosCajaList;
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name="sucursal_id")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "usuario", orphanRemoval = true)
+    @OrderBy(value="sucursal.nombre")
     private List<PermisosSucursal> sucursales;
     @OneToMany(mappedBy = "usuario")
     private List<UsuarioAcciones> usuarioAccionesList;

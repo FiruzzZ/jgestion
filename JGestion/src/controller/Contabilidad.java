@@ -4,11 +4,9 @@ import controller.exceptions.DatabaseErrorException;
 import controller.exceptions.MessageException;
 import controller.exceptions.MissingReportException;
 import entity.Caja;
-import entity.CajaMovimientos;
 import entity.ChequePropio;
 import entity.ChequeTerceros;
 import entity.Cliente;
-import entity.CtacteCliente;
 import entity.DetalleCajaMovimientos;
 import entity.DetalleListaPrecios;
 import entity.FacturaCompra;
@@ -24,7 +22,6 @@ import utilities.general.UTIL;
 import gui.JDBalance;
 import gui.JDBuscadorReRe;
 import gui.JDResumenGeneralCtaCte;
-import gui.JFP;
 import gui.PanelBalanceComprasVentas;
 import gui.PanelBalanceGeneral;
 import java.awt.Window;
@@ -32,31 +29,22 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.math.BigDecimal;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import javax.swing.Action;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import jgestion.JGestionUtils;
 import jgestion.Main;
-import jpa.controller.CajaMovimientosJpaController;
-import jpa.controller.FacturaVentaJpaController;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -80,6 +68,7 @@ public class Contabilidad {
     private static final int columnWidthsBalanceGeneral[] = {40, 440, 55, 55, 60};
     private static final Class[] columnClassBalanceGeneral = {Object.class, Object.class, String.class, String.class, String.class};
     private PanelBalanceComprasVentas panelBalanceComprasVentas;
+    private SimpleDateFormat yyyyMMdd = new SimpleDateFormat("yyyy/MM/dd");
 //    private static final Class[] columnClassBalanceCompraVenta = {Object.class, Object.class, String.class, String.class, String.class, String.class};
     private static final Logger LOG = Logger.getLogger(Contabilidad.class.getName());
 
@@ -1015,12 +1004,12 @@ public class Contabilidad {
             }
         }
         if (buscador.getDcDesde() != null) {
-            queryFactuVenta.append(" AND o.fechaVenta >= '").append(buscador.getDcDesde()).append("'");
-            queryNotaCredito.append(" AND o.fecha_nota_credito >= '").append(buscador.getDcDesde()).append("'");
+            queryFactuVenta.append(" AND o.fechaVenta >= '").append(yyyyMMdd.format(buscador.getDcDesde())).append("'");
+            queryNotaCredito.append(" AND o.fecha_nota_credito >= '").append(yyyyMMdd.format(buscador.getDcDesde())).append("'");
         }
         if (buscador.getDcHasta() != null) {
-            queryFactuVenta.append(" AND o.fechaVenta <= '").append(buscador.getDcHasta()).append("'");
-            queryNotaCredito.append(" AND o.fecha_nota_credito <= '").append(buscador.getDcDesde()).append("'");
+            queryFactuVenta.append(" AND o.fechaVenta <= '").append(yyyyMMdd.format(buscador.getDcHasta())).append("'");
+            queryNotaCredito.append(" AND o.fecha_nota_credito <= '").append(yyyyMMdd.format(buscador.getDcDesde())).append("'");
         }
         UsuarioHelper usuarioHelper = new UsuarioHelper();
         if (buscador.getCbCaja().getSelectedIndex() > 0) {

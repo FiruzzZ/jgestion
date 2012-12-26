@@ -1109,7 +1109,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
         try {
             new FacturaVentaController().initFacturaVenta(this, true, null, 1, true, true);
-        } catch (Exception ex) {
+        } catch (MessageException ex) {
             showError(ex.getMessage());
         }
         refreshConnectionDB();
@@ -1374,7 +1374,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
     private void jMenuItem48ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem48ActionPerformed
         try {
             new NotaCreditoController().initBuscador(this, false);
-        } catch (Exception ex) {
+        } catch (MessageException ex) {
             showError(ex.getMessage());
         }
     }//GEN-LAST:event_jMenuItem48ActionPerformed
