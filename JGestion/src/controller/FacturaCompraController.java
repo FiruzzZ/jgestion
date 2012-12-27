@@ -24,6 +24,7 @@ import java.awt.Window;
 import java.awt.event.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -714,9 +715,11 @@ public class FacturaCompraController implements ActionListener, KeyListener {
 
         buscador = new JDBuscadorReRe(frame, "Buscador - Factura compra", modal, "Proveedor", "Nº Factura");
         buscador.getbImprimir().setVisible(true);
+        ActionListenerManager.setUnidadDeNegocioSucursalActionListener(buscador.getCbUnidadDeNegocio(), true, buscador.getCbSucursal(), true, true);
+        ActionListenerManager.setCuentaSubcuentaActionListener(buscador.getCbCuenta(), true, buscador.getCbSubCuenta(), true, true);
         UTIL.loadComboBox(buscador.getCbClieProv(), new ProveedorController().findEntities(), true);
         UTIL.loadComboBox(buscador.getCbCaja(), new UsuarioHelper().getCajas(true), true);
-        UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), true);
+//        UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), true);
         UTIL.loadComboBox(buscador.getCbFormasDePago(), Valores.FormaPago.getFormasDePago(), true);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
@@ -813,17 +816,18 @@ public class FacturaCompraController implements ActionListener, KeyListener {
                 throw new MessageException("Número de " + CLASS_NAME + " no válido");
             }
         }
+        SimpleDateFormat yyyyMMdd = new SimpleDateFormat("yyyy/MM/dd");
         if (buscador.getDcDesde() != null) {
-            query.append(" AND o.fecha_compra >= '").append(buscador.getDcDesde()).append("'");
+            query.append(" AND o.fecha_compra >= '").append(yyyyMMdd.format(buscador.getDcDesde())).append("'");
         }
         if (buscador.getDcHasta() != null) {
-            query.append(" AND o.fecha_compra <= '").append(buscador.getDcHasta()).append("'");
+            query.append(" AND o.fecha_compra <= '").append(yyyyMMdd.format(buscador.getDcHasta())).append("'");
         }
         if (buscador.getDcDesdeSistema() != null) {
-            query.append(" AND o.fechaalta >= '").append(UTIL.clearTimeFields(buscador.getDcDesdeSistema())).append("'");
+            query.append(" AND o.fechaalta >= '").append(yyyyMMdd.format(UTIL.clearTimeFields(buscador.getDcDesdeSistema()))).append("'");
         }
         if (buscador.getDcHastaSistema() != null) {
-            query.append(" AND o.fechaalta <= '").append(UTIL.clearTimeFields(buscador.getDcHastaSistema())).append("'");
+            query.append(" AND o.fechaalta <= '").append(yyyyMMdd.format(UTIL.clearTimeFields(buscador.getDcHastaSistema()))).append("'");
         }
         UsuarioHelper usuarioHelper = new UsuarioHelper();
         if (buscador.getCbCaja().getSelectedIndex() > 0) {
@@ -840,18 +844,39 @@ public class FacturaCompraController implements ActionListener, KeyListener {
             }
             query.append(")");
         }
+        if (buscador.getCbUnidadDeNegocio().getSelectedIndex() > 0) {
+            query.append(" AND o.unidad_de_negocio_id = ").append(((ComboBoxWrapper<UnidadDeNegocio>) buscador.getCbUnidadDeNegocio().getSelectedItem()).getId());
+        }
+        if (buscador.getCbCuenta().getSelectedIndex() > 0) {
+            query.append(" AND o.cuenta_id = ").append(((ComboBoxWrapper<Cuenta>) buscador.getCbCuenta().getSelectedItem()).getId());
+        }
+        if (buscador.getCbSubCuenta().getSelectedIndex() > 0) {
+            query.append(" AND o.subcuenta_id = ").append(((ComboBoxWrapper<SubCuenta>) buscador.getCbSubCuenta().getSelectedItem()).getId());
+        }
         if (buscador.getCbSucursal().getSelectedIndex() > 0) {
-            query.append(" AND o.sucursal = ").append(((ComboBoxWrapper<?>) buscador.getCbSucursal().getSelectedItem()).getId());
+            query.append(" AND o.sucursal = ").append(((ComboBoxWrapper<Sucursal>) buscador.getCbSucursal().getSelectedItem()).getId());
         } else {
-            query.append(" AND (");
-            for (int i = 1; i < buscador.getCbSucursal().getItemCount(); i++) {
-                ComboBoxWrapper<Sucursal> cbw = (ComboBoxWrapper<Sucursal>) buscador.getCbSucursal().getItemAt(i);
-                query.append(" o.sucursal=").append(cbw.getId());
-                if ((i + 1) < buscador.getCbSucursal().getItemCount()) {
-                    query.append(" OR ");
+            if (buscador.getCbUnidadDeNegocio().getSelectedIndex() > 0) {
+                query.append(" AND (");
+                for (int i = 1; i < buscador.getCbSucursal().getItemCount(); i++) {
+                    ComboBoxWrapper<Sucursal> cbw = (ComboBoxWrapper<Sucursal>) buscador.getCbSucursal().getItemAt(i);
+                    query.append(" o.sucursal=").append(cbw.getId());
+                    if ((i + 1) < buscador.getCbSucursal().getItemCount()) {
+                        query.append(" OR ");
+                    }
                 }
+                query.append(")");
+            } else {
+                List<Sucursal> sucursales = new UsuarioHelper().getSucursales();
+                query.append(" AND (");
+                for (int i = 0; i < sucursales.size(); i++) {
+                    query.append(" o.sucursal=").append(sucursales.get(i).getId());
+                    if ((i + 1) < sucursales.size()) {
+                        query.append(" OR ");
+                    }
+                }
+                query.append(")");
             }
-            query.append(")");
         }
 
         if (buscador.getCbClieProv().getSelectedIndex() > 0) {
@@ -861,7 +886,6 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         if (buscador.getCbFormasDePago().getSelectedIndex() > 0) {
             query.append(" AND o.forma_pago = ").append(((Valores.FormaPago) buscador.getCbFormasDePago().getSelectedItem()).getId());
         }
-
 
         if (buscador.getTfFactu4().trim().length() > 0) {
             try {

@@ -39,7 +39,7 @@ public class ActionListenerManager {
                     List<SubCuenta> l = c.getEntity().getSubCuentas();
                     UTIL.loadComboBox(subCuenta, JGestionUtils.getWrappedSubCuentas(l), subCuentaElegible);
                 } else {
-                    UTIL.loadComboBox(subCuenta, null, subCuentaElegible);
+                    UTIL.loadComboBox(subCuenta, null, "<Elegir Cuenta>");
                 }
             }
         });
@@ -50,6 +50,8 @@ public class ActionListenerManager {
                 ComboBoxWrapper<Cuenta> c = (ComboBoxWrapper<Cuenta>) o;
                 List<SubCuenta> l = c.getEntity().getSubCuentas();
                 UTIL.loadComboBox(subCuenta, JGestionUtils.getWrappedSubCuentas(l), subCuentaElegible);
+            } else {
+                UTIL.loadComboBox(subCuenta, null, "<Elegir Cuenta>");
             }
         }
     }

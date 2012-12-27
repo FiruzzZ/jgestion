@@ -1298,7 +1298,15 @@ public class FacturaVentaController implements ActionListener, KeyListener {
             }
             query.append(")");
         }
-        
+        if(buscador.getCbUnidadDeNegocio().getSelectedIndex() > 0) {
+            query.append(" AND o.unidad_de_negocio_id = ").append(((ComboBoxWrapper<UnidadDeNegocio>) buscador.getCbUnidadDeNegocio().getSelectedItem()).getId());
+        } 
+        if(buscador.getCbCuenta().getSelectedIndex() > 0) {
+            query.append(" AND o.cuenta_id = ").append(((ComboBoxWrapper<Cuenta>) buscador.getCbCuenta().getSelectedItem()).getId());
+        } 
+        if(buscador.getCbSubCuenta().getSelectedIndex() > 0) {
+            query.append(" AND o.subcuenta_id = ").append(((ComboBoxWrapper<SubCuenta>) buscador.getCbSubCuenta().getSelectedItem()).getId());
+        } 
         if (buscador.getCbSucursal().getSelectedIndex() > 0) {
             query.append(" AND o.sucursal = ").append(((ComboBoxWrapper<Sucursal>) buscador.getCbSucursal().getSelectedItem()).getId());
         } else {
