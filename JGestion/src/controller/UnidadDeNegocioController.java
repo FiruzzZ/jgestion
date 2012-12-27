@@ -1,29 +1,22 @@
 package controller;
 
-import controller.exceptions.DatabaseErrorException;
 import controller.exceptions.MessageException;
-import controller.exceptions.NonexistentEntityException;
 import entity.Sucursal;
 import entity.UnidadDeNegocio;
 import gui.JDABM;
 import gui.JDContenedor;
 import gui.PanelABMUnidadDeNegocio;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.util.AbstractSet;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import jpa.controller.SucursalJpaController;
 import jpa.controller.UnidadDeNegocioJpaController;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import utilities.general.UTIL;
 
@@ -34,7 +27,7 @@ import utilities.general.UTIL;
 public class UnidadDeNegocioController {
 
     private static final Logger LOG = Logger.getLogger(UnidadDeNegocioController.class.getName());
-    private UnidadDeNegocioJpaController jpaController;
+    private final UnidadDeNegocioJpaController jpaController;
     private UnidadDeNegocio EL_OBJECT;
     private JDABM abm;
     private JDContenedor contenedor;
@@ -92,18 +85,6 @@ public class UnidadDeNegocioController {
                 }
             }
         });
-//        contenedor.getbImprimir().addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                try {
-//                    doReportProductList();
-//                } catch (MessageException ex) {
-//                    contenedor.showMessage(ex.getMessage(), "Advertencia", 2);
-//                } catch (Exception ex) {
-//                    contenedor.showMessage(ex.getMessage(), "Error REPORT!", 0);
-//                }
-//            }
-//        });
         UTIL.getDefaultTableModel(contenedor.getjTable1(), new String[]{"ID", "Nombre", "Sucursales"}, new int[]{1, 80, 300});
         UTIL.hideColumnTable(contenedor.getjTable1(), 0);
         //no permite filtro de vacio en el inicio
@@ -133,15 +114,9 @@ public class UnidadDeNegocioController {
             public void actionPerformed(ActionEvent e) {
                 try {
                     UnidadDeNegocio o = setEntity();
-                    checkConstraints(EL_OBJECT);
+
                     String msg = EL_OBJECT.getId() == null ? "Registrado" : "Modificado";
-                    //persistiendo......
-                    if (EL_OBJECT.getId() == null) {
-                        jpaController.create(EL_OBJECT);
-                    } else {
-                        o.setId(EL_OBJECT.getId());
-                        jpaController.merge(o);
-                    }
+
                     abm.showMessage(msg, "Unidad de Negocio", 1);
                     cargarContenedorTabla();
                     EL_OBJECT = null;
@@ -162,10 +137,9 @@ public class UnidadDeNegocioController {
         abm.setVisible(true);
     }
 
-    private UnidadDeNegocio setEntity() {
+    private UnidadDeNegocio setEntity() throws MessageException {
         if (EL_OBJECT == null) {
             EL_OBJECT = new UnidadDeNegocio();
-//            EL_OBJECT.setSucursales(new HashSet<Sucursal>());
         }
         EL_OBJECT.setNombre(panelABMUnidadDeNegocio.getTfNombre().getText().trim());
         DefaultTableModel dtm = (DefaultTableModel) panelABMUnidadDeNegocio.getjTable1().getModel();
@@ -177,19 +151,29 @@ public class UnidadDeNegocioController {
             }
         }
         EL_OBJECT.setSucursales(selected);
+        checkConstraints(EL_OBJECT);
+        if (EL_OBJECT.getId() == null) {
+            jpaController.create(EL_OBJECT);
+        } else {
+            EL_OBJECT.setId(EL_OBJECT.getId());
+            jpaController.merge(EL_OBJECT);
+        }
         return EL_OBJECT;
     }
 
     private void checkConstraints(UnidadDeNegocio o) throws MessageException {
-        List<UnidadDeNegocio> list = jpaController.findByQuery("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o WHERE UPPER(o.nombre)='" + o.getNombre().toUpperCase() + "'");
-        if (!list.isEmpty()) {
-            if (list.get(0).getId() != o.getId()) {
-                throw new MessageException("Ya existe una Unidad de Negocio con este nombre");
-            }
+        String idQuery = "";
+        if (o.getId() != null) {
+            idQuery = "o.id <> " + o.getId() + " AND ";
+        }
+        if (!jpaController.findByQuery("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o"
+                + " WHERE " + idQuery + " UPPER(o.nombre)='" + o.getNombre().toUpperCase() + "'").isEmpty()) {
+            throw new MessageException("Ya existe una Unidad de Negocio con este nombre");
         }
         if (o.getSucursales().isEmpty()) {
             throw new MessageException("Debe seleccionar al menos una Sucursal para la Unidad de Negocios");
         }
+        jpaController.closeEntityManager();
     }
 
     private void cargarContenedorTabla() {

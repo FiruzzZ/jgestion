@@ -953,7 +953,7 @@ public class Contabilidad {
                 + " cast(case when o.gravado <=0 then (o.importe-o.iva10-o.iva21-o.perc_iva-o.impuestos_recuperables) else o.gravado end as numeric(12,2)),	cast(o.iva10 as numeric(12,2)),	cast(o.iva21 as numeric(12,2)), o.otros_ivas, "
                 + "	cast(o.perc_iva as numeric(12,2)),	cast( o.impuestos_recuperables as numeric(12,2)),    cast( o.impuestos_norecuperables as numeric(12,2)), cast( o.no_gravado as numeric(12,2)), cast( o.descuento as numeric(12,2)), cast( o.importe as numeric(12,2))"
                 + " FROM factura_compra o, proveedor"
-                + " WHERE o.proveedor = proveedor.id "
+                + " WHERE o.anulada = false AND o.proveedor = proveedor.id "
                 + queryFactuCompra.toString()
                 + " ORDER BY"
                 + " o.fecha_compra ASC) com"
@@ -963,10 +963,8 @@ public class Contabilidad {
                 //                + " o.fecha_nota_credito as fecha, cliente.nombre, cliente.num_doc,"
                 //                + " o.gravado, o.iva10, o.iva21, 0, o.impuestos_recuperables, 0, o.no_gravado, 0 as descuento, o.importe"
                 + " SELECT 'NC' || to_char(sucursal.puntoventa, '0000') || to_char(o.numero,'-00000000'), o.fecha_nota_credito as fecha, cliente.nombre, cliente.num_doc, cast(o.gravado as numeric(12,2)), cast(o.iva10 as numeric(12,2)), cast(o.iva21 as numeric(12,2)), cast(o.impuestos_recuperables as numeric(12,2)), cast(0 as numeric(12,2)), cast(0 as numeric(12,2)), cast(0 as numeric(12,2)),	cast(o.no_gravado as numeric(12,2)), cast(0 as numeric(12,2)) as descuento, cast(o.importe as numeric(12,2))"
-                + " FROM public.nota_credito o, public.cliente, public.sucursal"
-                + " WHERE "
-                + " o.cliente = cliente.id AND"
-                + " o.sucursal = sucursal.id"
+                + " FROM nota_credito o, cliente, sucursal"
+                + " WHERE o.anulada = false AND o.cliente = cliente.id AND o.sucursal = sucursal.id"
                 + queryNotaCredito.toString()
                 + " ORDER BY"
                 + " o.fecha_nota_credito ASC)"

@@ -5,6 +5,7 @@
 package jgestion;
 
 import controller.CuentaController;
+import controller.UsuarioController;
 import controller.UsuarioHelper;
 import entity.Cuenta;
 import entity.SubCuenta;
@@ -54,7 +55,21 @@ public class ActionListenerManager {
     }
 
     public static void setUnidadDeNegocioSucursalActionListener(final JComboBox cbUnidadDeNegocio, boolean unidadElegible, final JComboBox cbSucursales, final boolean sucursalElegible, boolean loadSucursal) {
-        UTIL.loadComboBox(cbUnidadDeNegocio, JGestionUtils.getWrappedUnidadDeNegocios(new UnidadDeNegocioJpaController().findBySucursalesPermitidas()), unidadElegible);
+        List<UnidadDeNegocio> all = new UnidadDeNegocioJpaController().findAll();
+        List<UnidadDeNegocio> unidades = new ArrayList<UnidadDeNegocio>(all.size());
+        for (UnidadDeNegocio candidata : all) {
+            Set<Sucursal> uni = candidata.getSucursales();
+            List<Sucursal> permitidas = new UsuarioHelper().getSucursales();
+            for (Sucursal sucursal : permitidas) {
+                if (uni.contains(sucursal)) {
+                    if (!unidades.contains(candidata)) {
+                        unidades.add(candidata);
+                        continue;
+                    }
+                }
+            }
+        }
+        UTIL.loadComboBox(cbUnidadDeNegocio, JGestionUtils.getWrappedUnidadDeNegocios(unidades), unidadElegible);
         cbUnidadDeNegocio.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

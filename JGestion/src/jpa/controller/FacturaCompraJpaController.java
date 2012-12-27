@@ -62,13 +62,13 @@ public class FacturaCompraJpaController extends AbstractDAO<FacturaCompra, Integ
         }
     }
 
-    public long getMaxNumeroComprobante(Sucursal sucursal, Character x) {
+    public long getMaxNumeroComprobante(Sucursal sucursal, Character tipo) {
         getEntityManager();
         try {
             CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
             CriteriaQuery<Long> cq = cb.createQuery(Long.class);
             Root<FacturaCompra> from = cq.from(getEntityClass());
-            cq.where(cb.equal(from.get(FacturaCompra_.tipo), x),
+            cq.where(cb.equal(from.get(FacturaCompra_.tipo), tipo),
                     cb.equal(from.get(FacturaCompra_.sucursal), sucursal));
             cq.select(cb.max(from.get(FacturaCompra_.numero)));
             Long max = getEntityManager().createQuery(cq).getSingleResult();
