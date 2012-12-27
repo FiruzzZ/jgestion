@@ -73,7 +73,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
     private FacturaCompraJpaController jpaController;
 
     static {
-        String[] tipos = {"A", "B", "C", "M", "X"};
+        String[] tipos = {"A", "B", "C", "M", "X", "O"};
         TIPOS_FACTURA = new ArrayList<String>();
         TIPOS_FACTURA.addAll(Arrays.asList(tipos));
         String[] formas = {"Contado", "Cta. Cte."};
@@ -108,7 +108,8 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         jdFactura.getCbFacturaTipo().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (jdFactura.getCbFacturaTipo().getSelectedItem().toString().equalsIgnoreCase("x")) {
+                if (jdFactura.getCbFacturaTipo().getSelectedItem().toString().equalsIgnoreCase("x")
+                        || jdFactura.getCbFacturaTipo().getSelectedItem().toString().equalsIgnoreCase("o")) {
                     jdFactura.setFacturaNumeroEnable(false);
 //                    setNextNumeracionX();
                 } else {
@@ -304,25 +305,32 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         BigDecimal desc = new BigDecimal(jdFactura.getTfDescuento().getText().trim());
         BigDecimal gravado27 = BigDecimal.ZERO;
         DefaultTableModel dtm = jdFactura.getDtm();
-        for (int i = (dtm.getRowCount() - 1); i > -1; i--) {
-            String iva = dtm.getValueAt(i, 0).toString();
-            BigDecimal subTotalSinIVA = (BigDecimal) dtm.getValueAt(i, 5);
-            if (new BigDecimal(iva).compareTo(BigDecimal.ZERO) == 0) {
-                noGravado = noGravado.add(subTotalSinIVA);
-            } else if (iva.equalsIgnoreCase("10.5")) {
-                gravado105 = gravado105.add(subTotalSinIVA);
-            } else if (iva.equalsIgnoreCase("21.0")) {
-                gravado21 = gravado21.add(subTotalSinIVA);
-            } else if (iva.equalsIgnoreCase("27.0")) {
-                gravado27 = gravado27.add(subTotalSinIVA);
+        if (jdFactura.getCbFacturaTipo().getSelectedItem().toString().equalsIgnoreCase("A")) {
+            for (int i = (dtm.getRowCount() - 1); i > -1; i--) {
+                String iva = dtm.getValueAt(i, 0).toString();
+                BigDecimal subTotalSinIVA = (BigDecimal) dtm.getValueAt(i, 5);
+                if (new BigDecimal(iva).compareTo(BigDecimal.ZERO) == 0) {
+                    noGravado = noGravado.add(subTotalSinIVA);
+                } else if (iva.equalsIgnoreCase("10.5")) {
+                    gravado105 = gravado105.add(subTotalSinIVA);
+                } else if (iva.equalsIgnoreCase("21.0")) {
+                    gravado21 = gravado21.add(subTotalSinIVA);
+                } else if (iva.equalsIgnoreCase("27.0")) {
+                    gravado27 = gravado27.add(subTotalSinIVA);
+                }
             }
-        }
-        if (gravado21.compareTo(desc) == 1) {
-            gravado21 = gravado21.subtract(desc);
-        } else if (gravado105.compareTo(desc) == 1) {
-            gravado105 = gravado105.subtract(desc);
+            if (gravado21.compareTo(desc) == 1) {
+                gravado21 = gravado21.subtract(desc);
+            } else if (gravado105.compareTo(desc) == 1) {
+                gravado105 = gravado105.subtract(desc);
+            } else {
+                // y ahora??...
+            }
         } else {
-            // y ahora??...
+            for (int i = (dtm.getRowCount() - 1); i > -1; i--) {
+                BigDecimal subTotalSinIVA = (BigDecimal) dtm.getValueAt(i, 5);
+                noGravado = noGravado.add(subTotalSinIVA);
+            }
         }
         jdFactura.setTfGravado(UTIL.PRECIO_CON_PUNTO.format(gravado21.add(gravado105).add(gravado27)));
         jdFactura.setTfTotalIVA105(UTIL.PRECIO_CON_PUNTO.format(UTIL.getPorcentaje(gravado105, new BigDecimal("10.5"))));
@@ -404,7 +412,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         }
         newFacturaCompra.setTipo(jdFactura.getCbFacturaTipo().getSelectedItem().toString().charAt(0));
         newFacturaCompra.setImporte(Double.valueOf(jdFactura.getTfTotalText()));
-        if (newFacturaCompra.getTipo() == 'X') {
+        if (newFacturaCompra.getTipo() == 'X' || newFacturaCompra.getTipo() == 'O') {
             long x = jpaController.getMaxNumeroComprobante(newFacturaCompra.getSucursal(), newFacturaCompra.getTipo()) + 1;
             newFacturaCompra.setNumero(Long.valueOf(newFacturaCompra.getSucursal().getPuntoVenta().toString() + UTIL.AGREGAR_CEROS(x, 8)));
         } else {

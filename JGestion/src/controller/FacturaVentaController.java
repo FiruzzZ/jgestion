@@ -17,6 +17,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -967,9 +968,11 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.VENTA);
         buscador = new JDBuscadorReRe(frame, "Buscador - Facturas venta", modal, "Cliente", "Nº Factura");
         buscador.setToFacturaVenta();
+        ActionListenerManager.setUnidadDeNegocioSucursalActionListener(buscador.getCbUnidadDeNegocio(), true, buscador.getCbSucursal(), true, true);
+        ActionListenerManager.setCuentaSubcuentaActionListener(buscador.getCbCuenta(), true, buscador.getCbSubCuenta(), true, true);
         UTIL.loadComboBox(buscador.getCbClieProv(), new ClienteController().findEntities(), true);
         UTIL.loadComboBox(buscador.getCbCaja(), new CajaController().findCajasPermitidasByUsuario(UsuarioController.getCurrentUser(), true), true);
-        UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), true);
+//        UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), true);
         UTIL.loadComboBox(buscador.getCbFormasDePago(), Valores.FormaPago.getFormasDePago(), true);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
@@ -1269,17 +1272,18 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                 throw new MessageException("Número de " + jpaController.getEntityClass().getSimpleName() + " no válido");
             }
         }
+        SimpleDateFormat yyyyMMdd = new SimpleDateFormat("yyyy/MM/dd");
         if (buscador.getDcDesde() != null) {
-            query.append(" AND o.fecha_venta >= '").append(buscador.getDcDesde()).append("'");
+            query.append(" AND o.fecha_venta >= '").append(yyyyMMdd.format(buscador.getDcDesde())).append("'");
         }
         if (buscador.getDcHasta() != null) {
-            query.append(" AND o.fecha_venta <= '").append(buscador.getDcHasta()).append("'");
+            query.append(" AND o.fecha_venta <= '").append(yyyyMMdd.format(buscador.getDcHasta())).append("'");
         }
         if (buscador.getDcDesdeSistema() != null) {
-            query.append(" AND o.fechaalta >= '").append(UTIL.clearTimeFields(buscador.getDcDesdeSistema())).append("'");
+            query.append(" AND o.fechaalta >= '").append(yyyyMMdd.format(UTIL.clearTimeFields(buscador.getDcDesdeSistema()))).append("'");
         }
         if (buscador.getDcHastaSistema() != null) {
-            query.append(" AND o.fechaalta <= '").append(UTIL.clearTimeFields(buscador.getDcHastaSistema())).append("'");
+            query.append(" AND o.fechaalta <= '").append(yyyyMMdd.format(UTIL.clearTimeFields(buscador.getDcHastaSistema()))).append("'");
         }
         if (buscador.getCbCaja().getSelectedIndex() > 0) {
             query.append(" AND o.caja = ").append(((Caja) buscador.getCbCaja().getSelectedItem()).getId());
@@ -1294,18 +1298,31 @@ public class FacturaVentaController implements ActionListener, KeyListener {
             }
             query.append(")");
         }
+        
         if (buscador.getCbSucursal().getSelectedIndex() > 0) {
             query.append(" AND o.sucursal = ").append(((ComboBoxWrapper<Sucursal>) buscador.getCbSucursal().getSelectedItem()).getId());
         } else {
-            query.append(" AND (");
-            for (int i = 1; i < buscador.getCbSucursal().getItemCount(); i++) {
-                ComboBoxWrapper<Sucursal> cbw = (ComboBoxWrapper<Sucursal>) buscador.getCbSucursal().getItemAt(i);
-                query.append(" o.sucursal=").append(cbw.getId());
-                if ((i + 1) < buscador.getCbSucursal().getItemCount()) {
-                    query.append(" OR ");
+            if (buscador.getCbUnidadDeNegocio().getSelectedIndex() > 0) {
+                query.append(" AND (");
+                for (int i = 1; i < buscador.getCbSucursal().getItemCount(); i++) {
+                    ComboBoxWrapper<Sucursal> cbw = (ComboBoxWrapper<Sucursal>) buscador.getCbSucursal().getItemAt(i);
+                    query.append(" o.sucursal=").append(cbw.getId());
+                    if ((i + 1) < buscador.getCbSucursal().getItemCount()) {
+                        query.append(" OR ");
+                    }
                 }
+                query.append(")");
+            } else {
+                List<Sucursal> sucursales = new UsuarioHelper().getSucursales();
+                query.append(" AND (");
+                for (int i = 0; i < sucursales.size(); i++) {
+                    query.append(" o.sucursal=").append(sucursales.get(i).getId());
+                    if ((i + 1) < sucursales.size()) {
+                        query.append(" OR ");
+                    }
+                }
+                query.append(")");
             }
-            query.append(")");
         }
 
         if (buscador.getCbClieProv().getSelectedIndex() > 0) {
