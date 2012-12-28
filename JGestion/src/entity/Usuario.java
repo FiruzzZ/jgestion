@@ -47,7 +47,7 @@ public class Usuario implements Serializable {
     private List<Stock> stockList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "usuario")
     private List<PermisosCaja> permisosCajaList;
-    @JoinColumn(name="sucursal_id")
+//    @JoinColumn(name="sucursal_id") pedazo de mierda!!
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PermisosSucursal> sucursales;
     @OneToMany(mappedBy = "usuario")

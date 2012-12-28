@@ -38,6 +38,7 @@ import org.eclipse.persistence.config.QueryHints;
  */
 public class UsuarioController implements ActionListener, MouseListener, KeyListener {
 
+    private static final Logger LOG  = Logger.getLogger(UsuarioController.class.getName());
     public static final String ESTADO_ACTIVO = "Activo";
     public static final String ESTADO_BAJA = "Baja";
     /**
@@ -437,7 +438,7 @@ public class UsuarioController implements ActionListener, MouseListener, KeyList
         panel.getCbEstado().addItem(ESTADO_ACTIVO);
         panel.getCbEstado().addItem(ESTADO_BAJA);
 
-        abm = new JDABM(contenedor, "ABM - " + CLASS_NAME + "s", true,panel);
+        abm = new JDABM(contenedor, "ABM - " + CLASS_NAME + "s", true, panel);
         if (isEditing) {
             setPanelABM(EL_OBJECT);
             panel.setEnabledPwdFields(false);
@@ -725,6 +726,7 @@ public class UsuarioController implements ActionListener, MouseListener, KeyList
     private void setSucursalesPermitidas(List<PermisosSucursal> sucursales) {
         DefaultTableModel dtm = (DefaultTableModel) panel.getTableSucursales().getModel();
         for (PermisosSucursal permiso : sucursales) {
+            System.out.println(permiso.toString());
             for (int rowIndex = 0; rowIndex < dtm.getRowCount(); rowIndex++) {
                 if (((Sucursal) dtm.getValueAt(rowIndex, 0)).equals(permiso.getSucursal())) {
                     dtm.setValueAt(true, rowIndex, 2);

@@ -20,8 +20,11 @@ import generics.GenericBeanCollection;
 import java.text.DecimalFormat;
 import utilities.general.UTIL;
 import gui.JDBalance;
+import gui.JDBuscador;
 import gui.JDBuscadorReRe;
+import gui.JDInformeUnidadesDeNegocios;
 import gui.JDResumenGeneralCtaCte;
+import gui.JFP;
 import gui.PanelBalanceComprasVentas;
 import gui.PanelBalanceGeneral;
 import java.awt.Window;
@@ -1103,5 +1106,9 @@ public class Contabilidad {
             }
         });
         resumenGeneralCtaCte.setVisible(true);
+    }
+
+    public void showInformePorUnidadesDeNegocios(Window owner) {
+        new JDInformeUnidadesDeNegocios(owner).setVisible(true);
     }
 }
