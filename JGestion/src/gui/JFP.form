@@ -741,7 +741,7 @@
           <SubComponents>
             <Menu class="javax.swing.JMenu" name="jMenu24">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Informe Comprobantes.."/>
+                <Property name="text" type="java.lang.String" value="Comprobantes.."/>
               </Properties>
               <SubComponents>
                 <MenuItem class="javax.swing.JMenuItem" name="jMenuItem67">
@@ -801,6 +801,21 @@
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem44ActionPerformed"/>
+                  </Events>
+                </MenuItem>
+              </SubComponents>
+            </Menu>
+            <Menu class="javax.swing.JMenu" name="jMenu12">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Cosas raras"/>
+              </Properties>
+              <SubComponents>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuItem76">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="no me acuerdo como se llama"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem76ActionPerformed"/>
                   </Events>
                 </MenuItem>
               </SubComponents>

@@ -92,6 +92,6 @@ public class UnidadDeNegocio implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.UnidadDeNegocio[ id=" + id + " ]";
+        return "UnidadDeNegocio{" + "id=" + id + ", nombre=" + nombre + '}';
     }
 }

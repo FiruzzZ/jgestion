@@ -78,6 +78,6 @@ public class PermisosSucursal implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.PermisosSucursal[ id=" + id + " ]";
+        return "PermisosSucursal{" + "id=" + id + ", usuario=" + usuario.getId() + ", sucursal=" + sucursal.getId() + '}';
     }
 }

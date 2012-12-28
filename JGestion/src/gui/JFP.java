@@ -180,6 +180,8 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenuItem46 = new javax.swing.JMenuItem();
         jMenu8 = new javax.swing.JMenu();
         jMenuItem44 = new javax.swing.JMenuItem();
+        jMenu12 = new javax.swing.JMenu();
+        jMenuItem76 = new javax.swing.JMenuItem();
         jMenu4 = new javax.swing.JMenu();
         jMenuItem16 = new javax.swing.JMenuItem();
         jMenuItem24 = new javax.swing.JMenuItem();
@@ -845,7 +847,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenuReportes.setMnemonic('r');
         jMenuReportes.setText("Informes");
 
-        jMenu24.setText("Informe Comprobantes..");
+        jMenu24.setText("Comprobantes..");
 
         jMenuItem67.setText("de Compras");
         jMenuItem67.addActionListener(new java.awt.event.ActionListener() {
@@ -902,6 +904,18 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenu8.add(jMenuItem44);
 
         jMenuReportes.add(jMenu8);
+
+        jMenu12.setText("Cosas raras");
+
+        jMenuItem76.setText("no me acuerdo como se llama");
+        jMenuItem76.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem76ActionPerformed(evt);
+            }
+        });
+        jMenu12.add(jMenuItem76);
+
+        jMenuReportes.add(jMenu12);
 
         jMenuBar1.add(jMenuReportes);
 
@@ -1598,14 +1612,19 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     }//GEN-LAST:event_jMenuItem74ActionPerformed
 
     private void jMenuItem75ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem75ActionPerformed
-    new CajaMovimientosController().asignador();
+        new CajaMovimientosController().asignador();
     }//GEN-LAST:event_jMenuItem75ActionPerformed
+
+    private void jMenuItem76ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem76ActionPerformed
+        new Contabilidad().showInformePorUnidadesDeNegocios(this);
+    }//GEN-LAST:event_jMenuItem76ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu10;
     private javax.swing.JMenu jMenu11;
+    private javax.swing.JMenu jMenu12;
     private javax.swing.JMenu jMenu13;
     private javax.swing.JMenu jMenu14;
     private javax.swing.JMenu jMenu15;
@@ -1701,6 +1720,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenuItem jMenuItem73;
     private javax.swing.JMenuItem jMenuItem74;
     private javax.swing.JMenuItem jMenuItem75;
+    private javax.swing.JMenuItem jMenuItem76;
     private javax.swing.JMenuItem jMenuItem8;
     private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JMenuItem jMenuItemCatalogoWeb;
