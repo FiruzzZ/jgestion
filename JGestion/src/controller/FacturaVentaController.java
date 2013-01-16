@@ -1934,7 +1934,8 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         buscador.setToFacturaVenta();
         UTIL.loadComboBox(buscador.getCbClieProv(), new ClienteController().findEntities(), true);
         UTIL.loadComboBox(buscador.getCbCaja(), new CajaController().findCajasPermitidasByUsuario(UsuarioController.getCurrentUser(), true), true);
-        UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), true);
+        ActionListenerManager.setUnidadDeNegocioSucursalActionListener(buscador.getCbUnidadDeNegocio(), true, buscador.getCbSucursal(), true, true);
+        ActionListenerManager.setCuentaSubcuentaActionListener(buscador.getCbCuenta(), true, buscador.getCbSubCuenta(), true, true);
         UTIL.loadComboBox(buscador.getCbFormasDePago(), Valores.FormaPago.getFormasDePago(), true);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
@@ -1948,7 +1949,6 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         UTIL.loadComboBox(cuentas, new Wrapper<Cuenta>().getWrapped(new CuentaController().findAll()), false);
         JComboBox subCuentas = new JComboBox();
         UTIL.loadComboBox(subCuentas, JGestionUtils.getWrappedSubCuentas(new SubCuentaJpaController().findAll()), false);
-//        ActionListenerManager.setCuentaSubcuentaActionListener(cuentas, false, subCuentas, false, true);
         buscador.getjTable1().getColumnModel().getColumn(4).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         buscador.getjTable1().getColumnModel().getColumn(5).setCellRenderer(FormatRenderer.getDateRenderer());
         buscador.getjTable1().getColumnModel().getColumn(8).setCellEditor(new DefaultCellEditor(unidades));
@@ -2017,6 +2017,8 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         dtm.setRowCount(0);
         List<FacturaVenta> l = jpaController.findByNativeQuery(query);
         for (FacturaVenta facturaVenta : l) {
+            
+            System.out.println(facturaVenta.getId() + "\n\t" + facturaVenta.getUnidadDeNegocio() + "\n\t" + facturaVenta.getCuenta() + "\n\t" + facturaVenta.getSubCuenta());
             dtm.addRow(new Object[]{
                         facturaVenta.getId(), // <--- no es visible
                         JGestionUtils.getNumeracion(facturaVenta),

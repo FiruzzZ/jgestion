@@ -1,8 +1,13 @@
-package gui;
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package jgestion.test;
 
 import controller.CuentaController;
 import controller.DAO;
 import controller.DetalleCajaMovimientosJpaController;
+import controller.UsuarioController;
 import controller.UsuarioHelper;
 import entity.Cuenta;
 import entity.DetalleCajaMovimientos;
@@ -11,47 +16,50 @@ import entity.FacturaVenta;
 import entity.SubCuenta;
 import entity.Sucursal;
 import entity.UnidadDeNegocio;
-import java.awt.Window;
+import generics.PropsUtils;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.math.BigDecimal;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JComboBox;
-import javax.swing.table.DefaultTableModel;
 import jgestion.ActionListenerManager;
 import jgestion.JGestionUtils;
 import jpa.controller.UnidadDeNegocioJpaController;
+import org.apache.log4j.PropertyConfigurator;
+import org.jdesktop.swingx.treetable.AbstractTreeTableModel;
 import utilities.general.UTIL;
 import utilities.swing.components.ComboBoxWrapper;
-import org.apache.log4j.Logger;
-import org.jdesktop.swingx.treetable.AbstractTreeTableModel;
 import utilities.swing.components.NumberRenderer;
 
 /**
  *
  * @author FiruzzZ
  */
-public class JDInformeUnidadesDeNegocios extends javax.swing.JDialog {
+public class JXTreeTableDemo extends javax.swing.JDialog {
 
-    private static final Logger LOG = Logger.getLogger(JDInformeUnidadesDeNegocios.class.getName());
     private final String[] columnNames = new String[13];
     private SimpleDateFormat yyyyMMdd = new SimpleDateFormat("yyyy/MM/dd");
 
-    public JDInformeUnidadesDeNegocios(Window owner) {
-        super(owner, ModalityType.MODELESS);
+    /**
+     * Creates new form JXTreeTableDemo
+     */
+    public JXTreeTableDemo(java.awt.Frame parent, boolean modal) {
+        super(parent, modal);
         String[] months = DateFormatSymbols.getInstance().getMonths();
         columnNames[0] = "Unidades";
         System.arraycopy(months, 0, columnNames, 1, 12);
         initComponents();
-        setLocationRelativeTo(owner);
         List<UnidadDeNegocio> all = new UnidadDeNegocioJpaController().findAll();
         UTIL.loadComboBox(cbUnidadDeNegocio, JGestionUtils.getWrappedUnidadDeNegocios(all), true);
         cbUnidadDeNegocio.addActionListener(new ActionListener() {
@@ -90,33 +98,47 @@ public class JDInformeUnidadesDeNegocios extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jComboBox1 = new javax.swing.JComboBox();
-        cbSubCuenta = new javax.swing.JComboBox();
-        labelSucursal3 = new javax.swing.JLabel();
-        jYearChooser1 = new com.toedter.calendar.JYearChooser();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable1 = new org.jdesktop.swingx.JXTreeTable();
         labelSucursal1 = new javax.swing.JLabel();
         cbUnidadDeNegocio = new javax.swing.JComboBox();
         labelSucursal = new javax.swing.JLabel();
         cbSucursal = new javax.swing.JComboBox();
+        labelSucursal3 = new javax.swing.JLabel();
         labelSucursal2 = new javax.swing.JLabel();
         cbCuenta = new javax.swing.JComboBox();
+        cbSubCuenta = new javax.swing.JComboBox();
+        jLabel1 = new javax.swing.JLabel();
+        jMonthChooser1 = new com.toedter.calendar.JMonthChooser();
+        jYearChooser1 = new com.toedter.calendar.JYearChooser();
+        jLabel2 = new javax.swing.JLabel();
+        jMonthChooser2 = new com.toedter.calendar.JMonthChooser();
+        jYearChooser2 = new com.toedter.calendar.JYearChooser();
         bBuscar = new javax.swing.JButton();
-        bImprimir = new javax.swing.JButton();
-        btnToExcel = new javax.swing.JButton();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jTable1 = new org.jdesktop.swingx.JXTreeTable();
-
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        labelSucursal3.setText("SubCuenta");
+        jScrollPane1.setViewportView(jTable1);
 
         labelSucursal1.setText("Unid. de Neg.");
 
         labelSucursal.setText("Sucursal");
 
+        labelSucursal3.setText("SubCuenta");
+
         labelSucursal2.setText("Cuenta");
+
+        jLabel1.setText("Desde");
+        jLabel1.setEnabled(false);
+
+        jMonthChooser1.setEnabled(false);
+
+        jLabel2.setText("Hasta");
+        jLabel2.setEnabled(false);
+
+        jMonthChooser2.setEnabled(false);
+
+        jYearChooser2.setEnabled(false);
 
         bBuscar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/lupa.png"))); // NOI18N
         bBuscar.setText("Buscar");
@@ -127,26 +149,13 @@ public class JDInformeUnidadesDeNegocios extends javax.swing.JDialog {
             }
         });
 
-        bImprimir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/impresora.png"))); // NOI18N
-        bImprimir.setText("Imprimir");
-        bImprimir.setEnabled(false);
-        bImprimir.setName("imprimirBuscador"); // NOI18N
-
-        btnToExcel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px_excel.png"))); // NOI18N
-        btnToExcel.setMnemonic('e');
-        btnToExcel.setText("A Excel");
-        btnToExcel.setEnabled(false);
-
-        jScrollPane2.setViewportView(jTable1);
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane2)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(labelSucursal)
@@ -161,44 +170,53 @@ public class JDInformeUnidadesDeNegocios extends javax.swing.JDialog {
                             .addComponent(labelSucursal2))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(cbCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(48, 48, 48)
-                                .addComponent(jYearChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(cbCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(cbSubCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 257, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(bImprimir, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(bBuscar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnToExcel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jMonthChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jYearChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jMonthChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jYearChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 98, Short.MAX_VALUE)
+                        .addComponent(bBuscar, javax.swing.GroupLayout.DEFAULT_SIZE, 215, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                            .addComponent(jMonthChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(labelSucursal1)
                             .addComponent(cbUnidadDeNegocio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jYearChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(cbCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(labelSucursal2))
+                            .addComponent(labelSucursal2)
+                            .addComponent(jLabel1))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                             .addComponent(labelSucursal)
                             .addComponent(cbSucursal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jYearChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jMonthChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(cbSubCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(labelSucursal3)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(bBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(bImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnToExcel, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 213, Short.MAX_VALUE)
+                            .addComponent(labelSucursal3)
+                            .addComponent(jLabel2)))
+                    .addComponent(bBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 293, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -336,18 +354,105 @@ public class JDInformeUnidadesDeNegocios extends javax.swing.JDialog {
             }
         }).start();
     }//GEN-LAST:event_bBuscarActionPerformed
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        try {
+            PropertyConfigurator.configure("log4j.properties");
+            Properties properties = PropsUtils.load(new File("cfg.ini"));
+            DAO.setProperties(properties);
+            new UsuarioController().checkLoginUser("admin", "asdfasdf");
+            /* Set the Nimbus look and feel */
+            //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+            /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+             * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+             */
+            try {
+                for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                    if ("Nimbus".equals(info.getName())) {
+                        javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                        break;
+                    }
+                }
+            } catch (ClassNotFoundException ex) {
+                java.util.logging.Logger.getLogger(JXTreeTableDemo.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            } catch (InstantiationException ex) {
+                java.util.logging.Logger.getLogger(JXTreeTableDemo.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            } catch (IllegalAccessException ex) {
+                java.util.logging.Logger.getLogger(JXTreeTableDemo.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+                java.util.logging.Logger.getLogger(JXTreeTableDemo.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            }
+            //</editor-fold>
+
+            /* Create and display the dialog */
+            java.awt.EventQueue.invokeLater(new Runnable() {
+                public void run() {
+                    JXTreeTableDemo dialog = new JXTreeTableDemo(new javax.swing.JFrame(), true);
+                    dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                        @Override
+                        public void windowClosing(java.awt.event.WindowEvent e) {
+                            System.exit(0);
+                        }
+                    });
+                    dialog.setVisible(true);
+                }
+            });
+        } catch (Exception ex) {
+            Logger.getLogger(JXTreeTableDemo.class.getName()).log(Level.SEVERE, null, ex);
+            System.exit(0);
+        }
+    }
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton bBuscar;
+    private javax.swing.JComboBox cbCuenta;
+    private javax.swing.JComboBox cbSubCuenta;
+    private javax.swing.JComboBox cbSucursal;
+    private javax.swing.JComboBox cbUnidadDeNegocio;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private com.toedter.calendar.JMonthChooser jMonthChooser1;
+    private com.toedter.calendar.JMonthChooser jMonthChooser2;
+    private javax.swing.JScrollPane jScrollPane1;
+    private org.jdesktop.swingx.JXTreeTable jTable1;
+    private com.toedter.calendar.JYearChooser jYearChooser1;
+    private com.toedter.calendar.JYearChooser jYearChooser2;
+    private javax.swing.JLabel labelSucursal;
+    private javax.swing.JLabel labelSucursal1;
+    private javax.swing.JLabel labelSucursal2;
+    private javax.swing.JLabel labelSucursal3;
+    // End of variables declaration//GEN-END:variables
+
+    public JComboBox getCbCuenta() {
+        return cbCuenta;
+    }
+
+    public JComboBox getCbSubCuenta() {
+        return cbSubCuenta;
+    }
+
+    public JComboBox getCbSucursal() {
+        return cbSucursal;
+    }
+
+    public JComboBox getCbUnidadDeNegocio() {
+        return cbUnidadDeNegocio;
+    }
+
     @SuppressWarnings("unchecked")
-    private List<DetalleCajaMovimientos> getMovimientosVariosIngresos(int month) {
-        StringBuilder query = new StringBuilder("SELECT o FROM " + DetalleCajaMovimientos.class.getSimpleName() + " o"
-                + " WHERE o.ingreso = TRUE AND o.tipo= " + DetalleCajaMovimientosJpaController.MOVIMIENTO_VARIOS);
+    private List<FacturaVenta> getFacturasVenta(int month) {
+        StringBuilder query = new StringBuilder("SELECT o FROM " + FacturaVenta.class.getSimpleName() + " o"
+                + " WHERE o.anulada = FALSE");
         int year = jYearChooser1.getYear();
         Calendar c = GregorianCalendar.getInstance();
         c.set(year, month, 1);
         Date desde = c.getTime();
         c.set(Calendar.DAY_OF_MONTH, c.getActualMaximum(Calendar.DAY_OF_MONTH));
         Date hasta = c.getTime();
-        query.append(" AND o.fechaMovimiento >='").append(yyyyMMdd.format(desde)).append("'");
-        query.append(" AND o.fechaMovimiento <='").append(yyyyMMdd.format(hasta)).append("'");
+        query.append(" AND o.fechaVenta >='").append(yyyyMMdd.format(desde)).append("'");
+        query.append(" AND o.fechaVenta <='").append(yyyyMMdd.format(hasta)).append("'");
         if (getCbUnidadDeNegocio().getSelectedIndex() > 0) {
             query.append(" AND o.unidadDeNegocio.id = ").append(((ComboBoxWrapper<UnidadDeNegocio>) getCbUnidadDeNegocio().getSelectedItem()).getId());
         }
@@ -357,7 +462,32 @@ public class JDInformeUnidadesDeNegocios extends javax.swing.JDialog {
         if (getCbSubCuenta().getSelectedIndex() > 0) {
             query.append(" AND o.subCuenta.id = ").append(((ComboBoxWrapper<SubCuenta>) getCbSubCuenta().getSelectedItem()).getId());
         }
-        LOG.trace(query.toString());
+        if (getCbSucursal().getSelectedIndex() > 0) {
+            query.append(" AND o.sucursal.id = ").append(((ComboBoxWrapper<Sucursal>) getCbSucursal().getSelectedItem()).getId());
+        } else {
+            if (getCbUnidadDeNegocio().getSelectedIndex() > 0) {
+                query.append(" AND (");
+                for (int i = 1; i < getCbSucursal().getItemCount(); i++) {
+                    ComboBoxWrapper<Sucursal> cbw = (ComboBoxWrapper<Sucursal>) getCbSucursal().getItemAt(i);
+                    query.append(" o.sucursal.id=").append(cbw.getId());
+                    if ((i + 1) < getCbSucursal().getItemCount()) {
+                        query.append(" OR ");
+                    }
+                }
+                query.append(")");
+            } else {
+                List<Sucursal> sucursales = new UsuarioHelper().getSucursales();
+                query.append(" AND (");
+                for (int i = 0; i < sucursales.size(); i++) {
+                    query.append(" o.sucursal.id=").append(sucursales.get(i).getId());
+                    if ((i + 1) < sucursales.size()) {
+                        query.append(" OR ");
+                    }
+                }
+                query.append(")");
+            }
+        }
+        System.out.println(query.toString());
         return DAO.getEntityManager().createQuery(query.toString()).getResultList();
     }
 
@@ -412,17 +542,17 @@ public class JDInformeUnidadesDeNegocios extends javax.swing.JDialog {
     }
 
     @SuppressWarnings("unchecked")
-    private List<FacturaVenta> getFacturasVenta(int month) {
-        StringBuilder query = new StringBuilder("SELECT o FROM " + FacturaVenta.class.getSimpleName() + " o"
-                + " WHERE o.anulada = FALSE");
+    private List<DetalleCajaMovimientos> getMovimientosVariosIngresos(int month) {
+        StringBuilder query = new StringBuilder("SELECT o FROM " + DetalleCajaMovimientos.class.getSimpleName() + " o"
+                + " WHERE o.ingreso = TRUE AND o.tipo= " + DetalleCajaMovimientosJpaController.MOVIMIENTO_VARIOS);
         int year = jYearChooser1.getYear();
         Calendar c = GregorianCalendar.getInstance();
         c.set(year, month, 1);
         Date desde = c.getTime();
         c.set(Calendar.DAY_OF_MONTH, c.getActualMaximum(Calendar.DAY_OF_MONTH));
         Date hasta = c.getTime();
-        query.append(" AND o.fechaVenta >='").append(yyyyMMdd.format(desde)).append("'");
-        query.append(" AND o.fechaVenta <='").append(yyyyMMdd.format(hasta)).append("'");
+        query.append(" AND o.fechaMovimiento >='").append(yyyyMMdd.format(desde)).append("'");
+        query.append(" AND o.fechaMovimiento <='").append(yyyyMMdd.format(hasta)).append("'");
         if (getCbUnidadDeNegocio().getSelectedIndex() > 0) {
             query.append(" AND o.unidadDeNegocio.id = ").append(((ComboBoxWrapper<UnidadDeNegocio>) getCbUnidadDeNegocio().getSelectedItem()).getId());
         }
@@ -432,32 +562,7 @@ public class JDInformeUnidadesDeNegocios extends javax.swing.JDialog {
         if (getCbSubCuenta().getSelectedIndex() > 0) {
             query.append(" AND o.subCuenta.id = ").append(((ComboBoxWrapper<SubCuenta>) getCbSubCuenta().getSelectedItem()).getId());
         }
-        if (getCbSucursal().getSelectedIndex() > 0) {
-            query.append(" AND o.sucursal.id = ").append(((ComboBoxWrapper<Sucursal>) getCbSucursal().getSelectedItem()).getId());
-        } else {
-            if (getCbUnidadDeNegocio().getSelectedIndex() > 0) {
-                query.append(" AND (");
-                for (int i = 1; i < getCbSucursal().getItemCount(); i++) {
-                    ComboBoxWrapper<Sucursal> cbw = (ComboBoxWrapper<Sucursal>) getCbSucursal().getItemAt(i);
-                    query.append(" o.sucursal.id=").append(cbw.getId());
-                    if ((i + 1) < getCbSucursal().getItemCount()) {
-                        query.append(" OR ");
-                    }
-                }
-                query.append(")");
-            } else {
-                List<Sucursal> sucursales = new UsuarioHelper().getSucursales();
-                query.append(" AND (");
-                for (int i = 0; i < sucursales.size(); i++) {
-                    query.append(" o.sucursal.id=").append(sucursales.get(i).getId());
-                    if ((i + 1) < sucursales.size()) {
-                        query.append(" OR ");
-                    }
-                }
-                query.append(")");
-            }
-        }
-        LOG.trace(query.toString());
+        System.out.println(query.toString());
         return DAO.getEntityManager().createQuery(query.toString()).getResultList();
     }
 
@@ -507,23 +612,6 @@ public class JDInformeUnidadesDeNegocios extends javax.swing.JDialog {
             root.getPeriodos()[i] = BigDecimal.ZERO;
         }
     }
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton bBuscar;
-    private javax.swing.JButton bImprimir;
-    private javax.swing.JButton btnToExcel;
-    private javax.swing.JComboBox cbCuenta;
-    private javax.swing.JComboBox cbSubCuenta;
-    private javax.swing.JComboBox cbSucursal;
-    private javax.swing.JComboBox cbUnidadDeNegocio;
-    private javax.swing.JComboBox jComboBox1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private org.jdesktop.swingx.JXTreeTable jTable1;
-    private com.toedter.calendar.JYearChooser jYearChooser1;
-    private javax.swing.JLabel labelSucursal;
-    private javax.swing.JLabel labelSucursal1;
-    private javax.swing.JLabel labelSucursal2;
-    private javax.swing.JLabel labelSucursal3;
-    // End of variables declaration//GEN-END:variables
 
     private class CuentaTreeTableModel extends AbstractTreeTableModel {
 
@@ -724,21 +812,5 @@ public class JDInformeUnidadesDeNegocios extends javax.swing.JDialog {
         public String toString() {
             return "CuentaNode{" + "name=" + name + '}';
         }
-    }
-
-    public JComboBox getCbCuenta() {
-        return cbCuenta;
-    }
-
-    public JComboBox getCbSubCuenta() {
-        return cbSubCuenta;
-    }
-
-    public JComboBox getCbSucursal() {
-        return cbSucursal;
-    }
-
-    public JComboBox getCbUnidadDeNegocio() {
-        return cbUnidadDeNegocio;
     }
 }

@@ -3,7 +3,6 @@ package controller;
 import controller.exceptions.*;
 import entity.Iva;
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import entity.Producto;
 import entity.Producto_;
@@ -23,7 +22,6 @@ import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 import jpa.controller.IvaJpaController;
-import org.apache.log4j.Logger;
 
 /**
  *

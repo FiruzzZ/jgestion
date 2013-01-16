@@ -12,6 +12,7 @@ import entity.DetalleListaPrecios;
 import entity.FacturaCompra;
 import entity.FacturaVenta;
 import entity.ListaPrecios;
+import entity.NotaCredito;
 import entity.Producto;
 import entity.Proveedor;
 import entity.Rubro;
@@ -731,7 +732,7 @@ public class Contabilidad {
                     data.add(new GenericBeanCollection(
                             dtm.getValueAt(row, 0), dtm.getValueAt(row, 1), dtm.getValueAt(row, 2), dtm.getValueAt(row, 3),
                             dtm.getValueAt(row, 4), dtm.getValueAt(row, 5), dtm.getValueAt(row, 6), dtm.getValueAt(row, 7),
-                            dtm.getValueAt(row, 8), dtm.getValueAt(row, 10), null, null));
+                            dtm.getValueAt(row, 8), dtm.getValueAt(row, 9), dtm.getValueAt(row, 10), dtm.getValueAt(row, 11)));
                 }
                 Reportes r = new Reportes("JGestion_ComprobantesVentas.jasper", "Listado Comprobantes");
                 r.setDataSource(data);
@@ -750,7 +751,7 @@ public class Contabilidad {
                     for (FacturaVenta facturaVenta : data) {
                         dtm.addRow(new Object[]{
                                     JGestionUtils.getNumeracion(facturaVenta),
-                                    UTIL.DATE_FORMAT.format(facturaVenta.getFechaVenta()),
+                                    facturaVenta.getFechaVenta(),
                                     facturaVenta.getCliente().getNombre(),
                                     facturaVenta.getCliente().getNumDoc(),
                                     new BigDecimal(facturaVenta.getGravado()),
@@ -1006,11 +1007,11 @@ public class Contabilidad {
         }
         if (buscador.getDcDesde() != null) {
             queryFactuVenta.append(" AND o.fechaVenta >= '").append(yyyyMMdd.format(buscador.getDcDesde())).append("'");
-            queryNotaCredito.append(" AND o.fecha_nota_credito >= '").append(yyyyMMdd.format(buscador.getDcDesde())).append("'");
+            queryNotaCredito.append(" AND o.fechaNotaCredito >= '").append(yyyyMMdd.format(buscador.getDcDesde())).append("'");
         }
         if (buscador.getDcHasta() != null) {
             queryFactuVenta.append(" AND o.fechaVenta <= '").append(yyyyMMdd.format(buscador.getDcHasta())).append("'");
-            queryNotaCredito.append(" AND o.fecha_nota_credito <= '").append(yyyyMMdd.format(buscador.getDcDesde())).append("'");
+            queryNotaCredito.append(" AND o.fechaNotaCredito <= '").append(yyyyMMdd.format(buscador.getDcDesde())).append("'");
         }
         UsuarioHelper usuarioHelper = new UsuarioHelper();
         if (buscador.getCbCaja().getSelectedIndex() > 0) {
@@ -1045,27 +1046,13 @@ public class Contabilidad {
             queryFactuVenta.append(" AND o.cliente.id = ").append(((Cliente) buscador.getCbClieProv().getSelectedItem()).getId());
         }
 
-//                "SELECT com.* FROM ("
-//                + " SELECT 'F' || o.tipo || to_char(o.numero, '0000-00000000') as comprobante,	o.fecha_venta as fecha, cliente.nombre, cliente.cuit,"
-//                + " o.gravado ,	o.iva10, o.iva21, o.no_gravado, o.descuento , o.importe"
-//                + " FROM factura_venta o, proveedor"
-//                + " WHERE o.proveedor = proveedor.id "
-//                + queryFactuVenta.toString()
-//                + " ORDER BY"
-//                + " o.fecha_compra ASC) com"
-//                + " UNION ("
-//                + " SELECT 'NC' || to_char(sucursal.puntoventa, '0000') || to_char(o.numero,'-00000000'), o.fecha_nota_credito as fecha, cliente.nombre, cliente.num_doc, cast(o.gravado as numeric(12,2)), cast(o.iva10 as numeric(12,2)), cast(o.iva21 as numeric(12,2)), cast(o.impuestos_recuperables as numeric(12,2)), cast(0 as numeric(12,2)), cast(0 as numeric(12,2)), cast(0 as numeric(12,2)),	cast(o.no_gravado as numeric(12,2)), cast(0 as numeric(12,2)) as descuento, cast(o.importe as numeric(12,2))"
-//                + " FROM public.nota_credito o, public.cliente, public.sucursal"
-//                + " WHERE "
-//                + " o.cliente = cliente.id AND"
-//                + " o.sucursal = sucursal.id"
-//                + queryNotaCredito.toString()
-//                + " ORDER BY"
-//                + " o.fecha_nota_credito ASC)"
-//                + " ORDER BY fecha";
+        queryFactuVenta.append(" AND o.anulada = " + buscador.getCheckAnulada().isSelected());
+        queryNotaCredito.append(" AND o.anulada = " + buscador.getCheckAnulada().isSelected());
+        
         System.out.println("QUERY: " + queryFactuVenta.toString());
         @SuppressWarnings("unchecked")
         List<FacturaVenta> l = (List<FacturaVenta>) DAO.findEntities(FacturaVenta.class, queryFactuVenta.toString());
+        List<NotaCredito> ln = (List<NotaCredito>) DAO.findEntities(NotaCredito.class, queryNotaCredito.toString());
         return l;
     }
 

@@ -67,7 +67,7 @@ public class DetalleCajaMovimientos implements Serializable {
     @JoinColumn(name = "usuario", nullable = false)
     @ManyToOne(optional = false)
     private Usuario usuario;
-    @JoinColumn(name = "movimiento_concepto", nullable = false)
+    @JoinColumn(name = "movimiento_concepto", nullable = false) //REFACTOR column name pendiente!!..
     @ManyToOne(optional = false)
     private Cuenta cuenta;
     @JoinColumn(name = "subcuenta_id")

@@ -151,9 +151,9 @@ public class ReciboController implements ActionListener, FocusListener {
             public void actionPerformed(ActionEvent e) {
                 try {
                     if (selectedRecibo != null) {
-                        if(!selectedRecibo.getEstado()) {
-                            throw new MessageException("No se puede imprimir un Recibo ANULADO");
-                        }
+//                        if(!selectedRecibo.getEstado()) {
+//                            throw new MessageException("No se puede imprimir un Recibo ANULADO");
+//                        }
                         // cuando se re-imprime un recibo elegido desde el buscador (uno pre existente)
                         doReportRecibo(selectedRecibo);
                     } else {
