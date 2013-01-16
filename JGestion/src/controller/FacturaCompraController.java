@@ -538,14 +538,15 @@ public class FacturaCompraController implements ActionListener, KeyListener {
             throw new MessageException("Fecha de factura no válida");
         }
 
-        if (!jdFactura.getCbFacturaTipo().getSelectedItem().toString().equalsIgnoreCase("x")) {
+        if (!jdFactura.getCbFacturaTipo().getSelectedItem().toString().equalsIgnoreCase("X")
+                && !jdFactura.getCbFacturaTipo().getSelectedItem().toString().equalsIgnoreCase("O")) {
             if (jdFactura.getTfFacturaCuarto().length() > 4) {
                 throw new MessageException("Número de factura no válido: " + jdFactura.getTfFacturaCuarto() + jdFactura.getTfFacturaOcteto());
             }
-
             if (jdFactura.getTfFacturaCuarto().length() > 8) {
                 throw new MessageException("Número de factura no válido");
             }
+
             try {
                 if (Long.valueOf(jdFactura.getTfFacturaCuarto() + jdFactura.getTfFacturaOcteto()) < 100000001) {
                     throw new MessageException("Número de factura no válido (no puede ser menor a 0001-00000001");

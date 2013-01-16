@@ -234,8 +234,8 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
         jMenuBar1.add(jMenu1);
 
-        jMenu2.setMnemonic('V');
-        jMenu2.setText("Ventas");
+        jMenu2.setMnemonic('i');
+        jMenu2.setText("Ingresos");
 
         jMenuItem2.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F2, 0));
         jMenuItem2.setText("Facturación");
@@ -337,8 +337,8 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
         jMenuBar1.add(jMenu2);
 
-        jMenu3.setMnemonic('c');
-        jMenu3.setText("Compras");
+        jMenu3.setMnemonic('e');
+        jMenu3.setText("Egresos");
 
         jMenuItem4.setText("Facturas");
         jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
@@ -480,7 +480,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
         jMenuBar1.add(jMenu6);
 
-        jMenu7.setMnemonic('e');
+        jMenu7.setMnemonic('v');
         jMenu7.setText("Proveedores");
 
         jMenuItem9.setText("ABM Proveedor");

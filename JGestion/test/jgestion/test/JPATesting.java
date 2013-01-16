@@ -1,7 +1,6 @@
 package jgestion.test;
 
 import controller.DAO;
-import controller.FacturaVentaController;
 import controller.IvaController;
 import entity.*;
 import generics.PropsUtils;
@@ -12,7 +11,6 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jpa.controller.FacturaVentaJpaController;
-import jpa.controller.SucursalJpaController;
 import org.apache.log4j.PropertyConfigurator;
 
 /**

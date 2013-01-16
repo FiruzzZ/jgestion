@@ -548,7 +548,7 @@ public class CajaMovimientosController implements ActionListener {
             });
         }
         List<ComboBoxWrapper<Caja>> ll = new UsuarioHelper().getWrappedCajas(true);
-        if(ll.isEmpty()) {
+        if (ll.isEmpty()) {
             throw new MessageException(Main.resourceBundle.getString("unassigned.caja"));
         }
         UTIL.loadComboBox(panelMovVarios.getCbCaja(), ll, false);
@@ -598,6 +598,7 @@ public class CajaMovimientosController implements ActionListener {
         //ctrl's................
         Caja caja;
         UnidadDeNegocio unidadDeNegocio;
+        Cuenta cuenta;
         SubCuenta subCuenta;
         try {
             caja = ((ComboBoxWrapper<Caja>) panelMovVarios.getCbCaja().getSelectedItem()).getEntity();
@@ -605,14 +606,19 @@ public class CajaMovimientosController implements ActionListener {
             throw new MessageException("No tiene acceso a ninguna Caja");
         }
         try {
-            subCuenta = ((ComboBoxWrapper<SubCuenta>) panelMovVarios.getCbSubCuenta().getSelectedItem()).getEntity();
-        } catch (ClassCastException ex) {
-            subCuenta = null;
-        }
-        try {
             unidadDeNegocio = ((ComboBoxWrapper<UnidadDeNegocio>) panelMovVarios.getCbUnidadDeNegocio().getSelectedItem()).getEntity();
         } catch (ClassCastException ex) {
             throw new MessageException("Unidad de Negocios no válida");
+        }
+        try {
+            cuenta = ((ComboBoxWrapper<Cuenta>) panelMovVarios.getCbCuenta().getSelectedItem()).getEntity();
+        } catch (ClassCastException e) {
+            throw new MessageException("Cuenta no válida");
+        }
+        try {
+            subCuenta = ((ComboBoxWrapper<SubCuenta>) panelMovVarios.getCbSubCuenta().getSelectedItem()).getEntity();
+        } catch (ClassCastException ex) {
+            subCuenta = null;
         }
         double monto;
         try {
@@ -638,7 +644,7 @@ public class CajaMovimientosController implements ActionListener {
         dcm.setUsuario(UsuarioController.getCurrentUser());
         dcm.setFechaMovimiento(panelMovVarios.getDcMovimientoFecha());
         dcm.setUnidadDeNegocio(unidadDeNegocio);
-        dcm.setCuenta(((ComboBoxWrapper<Cuenta>) panelMovVarios.getCbCuenta().getSelectedItem()).getEntity());
+        dcm.setCuenta(cuenta);
         dcm.setSubCuenta(subCuenta);
         return dcm;
     }
@@ -749,9 +755,9 @@ public class CajaMovimientosController implements ActionListener {
             ComboBoxWrapper<UnidadDeNegocio> cu = (u != null ? new ComboBoxWrapper<UnidadDeNegocio>(u, u.getId(), u.getNombre()) : null);
             ComboBoxWrapper<Cuenta> cc = (c != null ? new ComboBoxWrapper<Cuenta>(c, c.getId(), c.getNombre()) : null);
             ComboBoxWrapper<SubCuenta> cs = (s != null ? new ComboBoxWrapper<SubCuenta>(s, s.getId(), s.getNombre()) : null);
-            object[3]= cu;
-            object[4]= cc;
-            object[5]= cs;
+            object[3] = cu;
+            object[4] = cc;
+            object[5] = cs;
             dtm.addRow(object);
         }
     }
@@ -1123,9 +1129,9 @@ public class CajaMovimientosController implements ActionListener {
             ComboBoxWrapper<UnidadDeNegocio> cu = (u != null ? new ComboBoxWrapper<UnidadDeNegocio>(u, u.getId(), u.getNombre()) : null);
             ComboBoxWrapper<Cuenta> cc = (c != null ? new ComboBoxWrapper<Cuenta>(c, c.getId(), c.getNombre()) : null);
             ComboBoxWrapper<SubCuenta> cs = (s != null ? new ComboBoxWrapper<SubCuenta>(s, s.getId(), s.getNombre()) : null);
-            object[3]= cu;
-            object[4]= cc;
-            object[5]= cs;
+            object[3] = cu;
+            object[4] = cc;
+            object[5] = cs;
             dtm.addRow(object);
         }
     }

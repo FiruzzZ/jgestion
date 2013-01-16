@@ -103,8 +103,10 @@ public class FacturaVenta implements Serializable {
     @JoinColumn(name = "unidad_de_negocio_id")
     @ManyToOne
     private UnidadDeNegocio unidadDeNegocio;
+    @JoinColumn(name = "cuenta_id")
     @ManyToOne
     private Cuenta cuenta;
+    @JoinColumn(name = "subcuenta_id")
     @ManyToOne
     private SubCuenta subCuenta;
     @Column(length = 100)
