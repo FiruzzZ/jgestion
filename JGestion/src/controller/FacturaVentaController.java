@@ -413,7 +413,8 @@ public class FacturaVentaController implements ActionListener, KeyListener {
             throw new MessageException("Debe crear al menos una Lista de Precios para poder realizar VENTAS."
                     + "\nMenú -> Productos -> Lista de Precios.");
         }
-        jdFactura.setLocation(jdFactura.getOwner().getX() + 100, jdFactura.getY() + 50);
+        jdFactura.pack();
+        jdFactura.setLocationRelativeTo(owner);
         jdFactura.setVisible(setVisible);
     }
 
@@ -448,8 +449,8 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         }
         for (int row = 0; row < jdFactura.getDtm().getRowCount(); row++) {
             Integer productoID = (Integer) jdFactura.getDtm().getValueAt(row, 9);
-            if (selectedProducto.getId() == productoID) {
-                throw new MessageException("Este ha agregado este producto al detalle.");
+            if (selectedProducto.getId().equals(productoID)) {
+                throw new MessageException("Este producto ya ha sido agregado al detalle.");
             }
         }
         int cantidad;
@@ -1298,15 +1299,15 @@ public class FacturaVentaController implements ActionListener, KeyListener {
             }
             query.append(")");
         }
-        if(buscador.getCbUnidadDeNegocio().getSelectedIndex() > 0) {
+        if (buscador.getCbUnidadDeNegocio().getSelectedIndex() > 0) {
             query.append(" AND o.unidad_de_negocio_id = ").append(((ComboBoxWrapper<UnidadDeNegocio>) buscador.getCbUnidadDeNegocio().getSelectedItem()).getId());
-        } 
-        if(buscador.getCbCuenta().getSelectedIndex() > 0) {
+        }
+        if (buscador.getCbCuenta().getSelectedIndex() > 0) {
             query.append(" AND o.cuenta_id = ").append(((ComboBoxWrapper<Cuenta>) buscador.getCbCuenta().getSelectedItem()).getId());
-        } 
-        if(buscador.getCbSubCuenta().getSelectedIndex() > 0) {
+        }
+        if (buscador.getCbSubCuenta().getSelectedIndex() > 0) {
             query.append(" AND o.subcuenta_id = ").append(((ComboBoxWrapper<SubCuenta>) buscador.getCbSubCuenta().getSelectedItem()).getId());
-        } 
+        }
         if (buscador.getCbSucursal().getSelectedIndex() > 0) {
             query.append(" AND o.sucursal = ").append(((ComboBoxWrapper<Sucursal>) buscador.getCbSucursal().getSelectedItem()).getId());
         } else {
@@ -1348,7 +1349,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                 throw new MessageException("Número de movimiento no válido");
             }
         }
-        query.append(" ORDER BY o.id");
+        query.append(" ORDER BY o.fecha_venta");
         LOG.trace("queryBuscador=" + query);
         return query.toString();
     }
@@ -1713,12 +1714,8 @@ public class FacturaVentaController implements ActionListener, KeyListener {
             FacturaVenta newFacturaVenta = getEntity(conFactura);
             jpaController.create(newFacturaVenta);
             //refreshing the entity from DB
+            System.out.println("FV.id=" + newFacturaVenta.getId());
             newFacturaVenta = (FacturaVenta) DAO.findEntity(FacturaVenta.class, newFacturaVenta.getId());
-            if (newFacturaVenta.getRemito() != null) {
-                remitoToFacturar.setFacturaVenta(newFacturaVenta);
-                new RemitoController().edit(remitoToFacturar);
-            }
-
             //actualiza Stock
             new StockJpaController().updateStock(newFacturaVenta);
             //asiento en caja..
@@ -2017,7 +2014,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         dtm.setRowCount(0);
         List<FacturaVenta> l = jpaController.findByNativeQuery(query);
         for (FacturaVenta facturaVenta : l) {
-            
+
             System.out.println(facturaVenta.getId() + "\n\t" + facturaVenta.getUnidadDeNegocio() + "\n\t" + facturaVenta.getCuenta() + "\n\t" + facturaVenta.getSubCuenta());
             dtm.addRow(new Object[]{
                         facturaVenta.getId(), // <--- no es visible

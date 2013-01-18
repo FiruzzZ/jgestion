@@ -131,7 +131,7 @@ public class NotaCreditoController {
         }
     }// </editor-fold>
 
-    public void initABMNotaCredito(JFrame owner, boolean modal, boolean setVisible, boolean loadDefaultData) throws MessageException {
+    public void initComprobanteUI(JFrame owner, boolean modal, boolean setVisible, boolean loadDefaultData) throws MessageException {
         facturaVentaController = new FacturaVentaController();
         facturaVentaController.initFacturaVenta(owner, modal, null, 2, false, loadDefaultData);
         facturaVentaController.getContenedor().getBtnAceptar().addActionListener(new ActionListener() {
@@ -264,7 +264,7 @@ public class NotaCreditoController {
                         buscador.dispose();
                     } else {
                         try {
-                            setDatosEnUI(EL_OBJECT, paraAnular);
+                            setComprobanteUI(EL_OBJECT, paraAnular);
                             //refresh post anulación...
                             if (EL_OBJECT == null) {
                                 cargarDtmBuscador(armarQuery(selectingMode));
@@ -363,8 +363,8 @@ public class NotaCreditoController {
         }
     }
 
-    private void setDatosEnUI(final NotaCredito notaCredito, boolean paraAnular) throws MessageException {
-        initABMNotaCredito(null, true, false, false);
+    private void setComprobanteUI(final NotaCredito notaCredito, boolean paraAnular) throws MessageException {
+        initComprobanteUI(null, true, false, false);
         jdFacturaVenta.setViewMode(true);
         jdFacturaVenta.modoVista();
         // setting info on UI

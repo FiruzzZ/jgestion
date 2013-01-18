@@ -979,80 +979,78 @@ public class Contabilidad {
     }
 
     private List<FacturaVenta> getComprobantesVenta() throws MessageException, DatabaseErrorException {
-        StringBuilder queryFactuVenta = new StringBuilder(300).append(" o.id IS NOT NULL");
-        StringBuilder queryNotaCredito = new StringBuilder(300);
+        StringBuilder queryWhereFactuVenta = new StringBuilder(300).append(" o.tipo <> 'I'");
+        StringBuilder queryWhereNotaCredito = new StringBuilder(300).append(" o.id is not null");
 
         long numero;
-        //filtro por nº de ReRe
+        //filtro por nº de comprobante
+        if (buscador.getTfCuarto().length() > 0) {
+            try {
+                numero = Long.parseLong(buscador.getTfCuarto());
+                queryWhereFactuVenta.append(" AND o.sucursal.puntoVenta = ").append(numero);
+                queryWhereNotaCredito.append(" AND o.sucursal.puntoVenta = ").append(numero);
+            } catch (NumberFormatException ex) {
+                throw new MessageException("Número de Punto de Venta de comprobante no válido");
+            }
+        }
         if (buscador.getTfOcteto().length() > 0) {
             try {
                 numero = Long.parseLong(buscador.getTfOcteto());
-                queryFactuVenta.append(" AND o.numero = ").append(numero);
-                queryNotaCredito.append(" AND o.numero = ").append(numero);
+                queryWhereFactuVenta.append(" AND o.numero = ").append(numero);
+                queryWhereNotaCredito.append(" AND o.numero = ").append(numero);
             } catch (NumberFormatException ex) {
                 throw new MessageException("Número de comprobante no válido");
             }
         }
 
-        //filtro por nº de factura
-        if (buscador.getTfCuarto().length() > 0 && buscador.getTfOcteto().length() > 0) {
-            try {
-                numero = Long.parseLong(buscador.getTfFactu4() + buscador.getTfFactu8());
-                queryFactuVenta.append(" AND o.numero = ").append(numero);
-                queryNotaCredito.append(" AND o.sucursal.puntoventa = ").append(buscador.getTfFactu4());
-                queryNotaCredito.append(" AND o.numero = ").append(buscador.getTfFactu8());
-            } catch (NumberFormatException ex) {
-                throw new MessageException("Número de comprobante no válido");
-            }
-        }
         if (buscador.getDcDesde() != null) {
-            queryFactuVenta.append(" AND o.fechaVenta >= '").append(yyyyMMdd.format(buscador.getDcDesde())).append("'");
-            queryNotaCredito.append(" AND o.fechaNotaCredito >= '").append(yyyyMMdd.format(buscador.getDcDesde())).append("'");
+            queryWhereFactuVenta.append(" AND o.fechaVenta >= '").append(yyyyMMdd.format(buscador.getDcDesde())).append("'");
+            queryWhereNotaCredito.append(" AND o.fechaNotaCredito >= '").append(yyyyMMdd.format(buscador.getDcDesde())).append("'");
         }
         if (buscador.getDcHasta() != null) {
-            queryFactuVenta.append(" AND o.fechaVenta <= '").append(yyyyMMdd.format(buscador.getDcHasta())).append("'");
-            queryNotaCredito.append(" AND o.fechaNotaCredito <= '").append(yyyyMMdd.format(buscador.getDcDesde())).append("'");
+            queryWhereFactuVenta.append(" AND o.fechaVenta <= '").append(yyyyMMdd.format(buscador.getDcHasta())).append("'");
+            queryWhereNotaCredito.append(" AND o.fechaNotaCredito <= '").append(yyyyMMdd.format(buscador.getDcDesde())).append("'");
         }
         UsuarioHelper usuarioHelper = new UsuarioHelper();
         if (buscador.getCbCaja().getSelectedIndex() > 0) {
-            queryFactuVenta.append(" AND o.caja.id = ").append(((Caja) buscador.getCbCaja().getSelectedItem()).getId());
+            queryWhereFactuVenta.append(" AND o.caja.id = ").append(((Caja) buscador.getCbCaja().getSelectedItem()).getId());
         } else {
-            queryFactuVenta.append(" AND (");
+            queryWhereFactuVenta.append(" AND (");
             Iterator<Caja> iterator = usuarioHelper.getCajas(Boolean.TRUE).iterator();
             while (iterator.hasNext()) {
                 Caja caja = iterator.next();
-                queryFactuVenta.append("o.caja.id=").append(caja.getId());
+                queryWhereFactuVenta.append("o.caja.id=").append(caja.getId());
                 if (iterator.hasNext()) {
-                    queryFactuVenta.append(" OR ");
+                    queryWhereFactuVenta.append(" OR ");
                 }
             }
-            queryFactuVenta.append(")");
+            queryWhereFactuVenta.append(")");
         }
         if (buscador.getCbSucursal().getSelectedIndex() > 0) {
-            queryFactuVenta.append(" AND o.sucursal.id = ").append(((ComboBoxWrapper<?>) buscador.getCbSucursal().getSelectedItem()).getId());
+            queryWhereFactuVenta.append(" AND o.sucursal.id = ").append(((ComboBoxWrapper<?>) buscador.getCbSucursal().getSelectedItem()).getId());
         } else {
-            queryFactuVenta.append(" AND (");
+            queryWhereFactuVenta.append(" AND (");
             for (int i = 1; i < buscador.getCbSucursal().getItemCount(); i++) {
                 ComboBoxWrapper<Sucursal> cbw = (ComboBoxWrapper<Sucursal>) buscador.getCbSucursal().getItemAt(i);
-                queryFactuVenta.append(" o.sucursal.id=").append(cbw.getId());
+                queryWhereFactuVenta.append(" o.sucursal.id=").append(cbw.getId());
                 if ((i + 1) < buscador.getCbSucursal().getItemCount()) {
-                    queryFactuVenta.append(" OR ");
+                    queryWhereFactuVenta.append(" OR ");
                 }
             }
-            queryFactuVenta.append(")");
+            queryWhereFactuVenta.append(")");
         }
 
         if (buscador.getCbClieProv().getSelectedIndex() > 0) {
-            queryFactuVenta.append(" AND o.cliente.id = ").append(((Cliente) buscador.getCbClieProv().getSelectedItem()).getId());
+            queryWhereFactuVenta.append(" AND o.cliente.id = ").append(((Cliente) buscador.getCbClieProv().getSelectedItem()).getId());
         }
 
-        queryFactuVenta.append(" AND o.anulada = " + buscador.getCheckAnulada().isSelected());
-        queryNotaCredito.append(" AND o.anulada = " + buscador.getCheckAnulada().isSelected());
+        queryWhereFactuVenta.append(" AND o.anulada = " + buscador.getCheckAnulada().isSelected());
+        queryWhereNotaCredito.append(" AND o.anulada = " + buscador.getCheckAnulada().isSelected());
         
-        System.out.println("QUERY: " + queryFactuVenta.toString());
+        System.out.println("QUERY: " + queryWhereFactuVenta.toString());
         @SuppressWarnings("unchecked")
-        List<FacturaVenta> l = (List<FacturaVenta>) DAO.findEntities(FacturaVenta.class, queryFactuVenta.toString());
-        List<NotaCredito> ln = (List<NotaCredito>) DAO.findEntities(NotaCredito.class, queryNotaCredito.toString());
+        List<FacturaVenta> l = (List<FacturaVenta>) DAO.findEntities(FacturaVenta.class, queryWhereFactuVenta.toString());
+        List<NotaCredito> ln = (List<NotaCredito>) DAO.findEntities(NotaCredito.class, queryWhereNotaCredito.toString());
         return l;
     }
 

@@ -1379,7 +1379,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
     private void jMenuItem47ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem47ActionPerformed
         try {
-            new NotaCreditoController().initABMNotaCredito(this, Boolean.TRUE, true, true);
+            new NotaCreditoController().initComprobanteUI(this, Boolean.TRUE, true, true);
         } catch (MessageException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Advertencia", 2);
         }

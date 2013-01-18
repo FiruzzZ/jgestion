@@ -151,14 +151,14 @@ public class NotaCreditoProveedorController implements ActionListener {
                     //<editor-fold defaultstate="collapsed" desc="Buscador">
                     if (boton.equals(buscador.getbBuscar())) {
                         try {
-                            String query = armarQuery();
+                            String query = armarQuery(false);
                             cargarDtmBuscador(query);
                         } catch (MessageException ex) {
                             ex.displayMessage(buscador);
                         }
                     } else if (boton.equals(buscador.getbImprimir())) {
                         try {
-                            String query = armarQuery();
+                            String query = armarQuery(false);
                             cargarDtmBuscador(query);
                         } catch (MessageException ex) {
                             ex.displayMessage(buscador);
@@ -173,11 +173,13 @@ public class NotaCreditoProveedorController implements ActionListener {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private String armarQuery() throws MessageException {
+    @SuppressWarnings({"unchecked", "unchecked"})
+    private String armarQuery(boolean selecting) throws MessageException {
         StringBuilder query = new StringBuilder("SELECT o FROM  " + jpaController.getEntityClass().getSimpleName() + " o"
                 + " WHERE o.anulada = " + buscador.isCheckAnuladaSelected());
-
+        if (selecting) {
+            query.append(" AND o.desacreditado=0");
+        }
         long numero;
         if (buscador.getTfCuarto().length() > 0 && buscador.getTfOcteto().length() > 0) {
             try {
@@ -187,15 +189,6 @@ public class NotaCreditoProveedorController implements ActionListener {
                 throw new MessageException("Número de " + jpaController.getEntityClass().getSimpleName() + " no válido");
             }
         }
-
-//        if (buscador.getTfFactu4().length() > 0 && buscador.getTfFactu8().length() > 0) {
-//            try {
-//                Long remesa = Long.parseLong(buscador.getTfFactu4() + buscador.getTfFactu8());
-//                query.append(" AND o.remesa.numero = ").append(remesa);
-//            } catch (NumberFormatException ex) {
-//                throw new MessageException("Número de " + jpaController.getEntityClass().getSimpleName() + " no válido");
-//            }
-//        }
         if (buscador.getDcDesde() != null) {
             query.append(" AND o.fechaNotaCredito >= '").append(buscador.getDcDesde()).append("'");
         }
@@ -210,7 +203,7 @@ public class NotaCreditoProveedorController implements ActionListener {
         }
 
         if (buscador.getCbClieProv().getSelectedIndex() > 0) {
-            query.append(" AND o.proveedor.id = ").append(((Proveedor) buscador.getCbClieProv().getSelectedItem()).getId());
+            query.append(" AND o.proveedor.id = ").append(((ComboBoxWrapper<Proveedor>) buscador.getCbClieProv().getSelectedItem()).getId());
         }
 
         //acreditada?... 
@@ -349,7 +342,7 @@ public class NotaCreditoProveedorController implements ActionListener {
                     if (buscador.getjTable1().getSelectedRow() > -1) {
                         EL_OBJECT = jpaController.find((Integer) buscador.getDtm().getValueAt(buscador.getjTable1().getSelectedRow(), 0));
                         try {
-                            setDatosFactura(EL_OBJECT, paraAnular);
+                            setComprobanteUI(EL_OBJECT, paraAnular);
                         } catch (MessageException ex) {
                             ex.displayMessage(buscador);
                         } catch (Exception ex) {
@@ -369,7 +362,7 @@ public class NotaCreditoProveedorController implements ActionListener {
         buscador.setVisible(true);
     }
 
-    private void setDatosFactura(NotaCreditoProveedor notaCredito, boolean paraAnular) throws MessageException {
+    private void setComprobanteUI(NotaCreditoProveedor notaCredito, boolean paraAnular) throws MessageException {
         initComprobanteUI(buscador, true);
         jdFactura.modoVista(false);
         jdFactura.setLocationRelativeTo(buscador);
@@ -474,7 +467,65 @@ public class NotaCreditoProveedorController implements ActionListener {
         }
     }
 
-    NotaCreditoProveedor initBuscador(JDReRe jdReRe, boolean b, boolean b0, boolean b1, Proveedor proveedor) {
-        throw new UnsupportedOperationException("Not yet implemented");
+    NotaCreditoProveedor initBuscador(Window owner, final boolean paraAnular, Proveedor proveedor, final boolean selectingMode) throws MessageException {
+        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.VENTA);
+        buscador = new JDBuscadorReRe(owner, "Buscador - Notas de crédito Proveedor", true, "Proveedor", "Nº");
+        buscador.hideCaja();
+        buscador.hideFactura();
+        buscador.hideFormaPago();
+        buscador.getbBuscar().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    cargarDtmBuscador(armarQuery(selectingMode));
+                } catch (MessageException ex) {
+                    ex.displayMessage(buscador);
+                }
+            }
+        });
+        UTIL.loadComboBox(buscador.getCbClieProv(), JGestionUtils.getWrappedProveedores(new ProveedorController().findEntities()), true);
+        UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), true);
+        UTIL.getDefaultTableModel(
+                buscador.getjTable1(),
+                new String[]{"NotaCreditoID", "Nº Nota de Crédito", "Proveedor", "Importe", "Acreditado", "Fecha", "Usuario", "Fecha (Sistema)"},
+                new int[]{1, 60, 150, 50, 50, 50, 50, 70},
+                new Class<?>[]{null, null, null, Double.class, Double.class, null, null, null});
+        //escondiendo facturaID
+        buscador.getjTable1().getColumnModel().getColumn(3).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        buscador.getjTable1().getColumnModel().getColumn(4).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        UTIL.hideColumnTable(buscador.getjTable1(), 0);
+        buscador.getjTable1().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() >= 2 && buscador.getjTable1().getSelectedRow() > -1) {
+                    EL_OBJECT = jpaController.find(Integer.valueOf(buscador.getDtm().getValueAt(buscador.getjTable1().getSelectedRow(), 0).toString()));
+                    if (selectingMode) {
+                        buscador.dispose();
+                    } else {
+                        try {
+                            setComprobanteUI(EL_OBJECT, paraAnular);
+                            //refresh post anulación...
+                            if (EL_OBJECT == null) {
+                                cargarDtmBuscador(armarQuery(selectingMode));
+                            }
+                        } catch (MessageException ex) {
+                            ex.displayMessage(buscador);
+                        }
+                    }
+                }
+            }
+        });
+        if (paraAnular) {
+            buscador.getCheckAnulada().setEnabled(false);
+            buscador.getCheckAnulada().setToolTipText("Buscador para ANULAR");
+        }
+        if (proveedor != null) {
+            UTIL.setSelectedItem(buscador.getCbClieProv(), proveedor.getNombre());
+            buscador.getCbClieProv().setEnabled(false);
+            buscador.getCheckAnulada().setEnabled(false);
+        }
+        buscador.setLocationRelativeTo(owner);
+        buscador.setVisible(true);
+        return EL_OBJECT;
     }
 }

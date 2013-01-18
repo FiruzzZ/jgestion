@@ -287,7 +287,8 @@ public class RemesaController implements ActionListener, FocusListener {
 
     private void displayABMNotaCredito() {
         try {
-            NotaCreditoProveedor notaCredito = new NotaCreditoProveedorController().initBuscador(jdReRe, false, true, false, (Proveedor) jdReRe.getCbClienteProveedor().getSelectedItem());
+            NotaCreditoProveedor notaCredito = new NotaCreditoProveedorController().
+                    initBuscador(jdReRe, false, (Proveedor) jdReRe.getCbClienteProveedor().getSelectedItem(), true);
             if (notaCredito != null) {
                 DefaultTableModel dtm = jdReRe.getDtmPagos();
                 for (int row = 0; row < dtm.getRowCount(); row++) {
