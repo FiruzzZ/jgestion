@@ -127,8 +127,8 @@ public class RemesaJpaController extends AbstractDAO<Remesa, Integer> {
                 ChequeTerceros pago = (ChequeTerceros) object;
                 tipo = 2;
                 id = pago.getId();
-            } else if (object instanceof NotaCredito) {
-                NotaCredito pago = (NotaCredito) object;
+            } else if (object instanceof NotaCreditoProveedor) {
+                NotaCreditoProveedor pago = (NotaCreditoProveedor) object;
                 tipo = 3;
                 id = pago.getId();
             } else if (object instanceof ComprobanteRetencion) {

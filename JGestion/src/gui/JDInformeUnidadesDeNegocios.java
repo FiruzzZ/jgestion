@@ -331,6 +331,19 @@ public class JDInformeUnidadesDeNegocios extends javax.swing.JDialog {
                     }
                     root.getChildren().get(root.getChildren().size() - 1).getChildren().get(1).getPeriodos()[month] = egresosSinUNDniCuenta;
                 }
+//                for (CuentaNode udn : root.getChildren()) {
+//                    for (CuentaNode ingresos : udn.getChildren()) {
+//                        for (CuentaNode cuenta : ingresos.getChildren()) {
+//                            if (cuenta.isEmpty()) {
+//                                
+//                            }
+//                        }
+//                    }
+//                    for (CuentaNode egresos : udn.getChildren()) {
+//                        for (CuentaNode cuenta : egresos.getChildren()) {
+//                        }
+//                    }
+//                }
                 jTable1.setEnabled(true);
                 bBuscar.setEnabled(true);
             }
@@ -723,6 +736,15 @@ public class JDInformeUnidadesDeNegocios extends javax.swing.JDialog {
         @Override
         public String toString() {
             return "CuentaNode{" + "name=" + name + '}';
+        }
+
+        private boolean isEmpty() {
+            for (BigDecimal importe : periodos) {
+                if (!importe.equals(BigDecimal.ZERO)) {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 

@@ -20,6 +20,7 @@ public abstract class ShutDownListener {
 
     private boolean closeFuerzaBrutaThread = false;
     private boolean shutDownSystem = false;
+    private boolean activeConnection = false;
     private Connection connection;
     private static final Logger LOG = Logger.getLogger(ShutDownListener.class.getName());
     private String message;
@@ -34,11 +35,17 @@ public abstract class ShutDownListener {
                     if (shutDownSystem) {
                         shutDownAction();
                     }
+                    activeConnection = true;
+                    if (lostConnectionDialog != null && lostConnectionDialog.isVisible()) {
+                        lostConnectionDialog.dispose();
+                    }
                 } catch (InterruptedException ex) {
                     LOG.trace("shutDownThread sleeping INTERRUPTED!!");
                     break;
                 } catch (Exception ex) {
                     LOG.warn("shutDownThread Exception!!", ex);
+                    activeConnection = false;
+                    displayLostConnectionUI();
                 }
             }
             LOG.trace("finishing Thread > fuerzaBrutaShutDown");
@@ -112,10 +119,13 @@ public abstract class ShutDownListener {
             lostConnectionDialog.addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowClosed(WindowEvent e) {
-                    System.exit(1);
+                    if (!activeConnection) {
+                        System.exit(1);
+                    }
                 }
             });
-            lostConnectionDialog.getLabelMessage().setIcon(new ImageIcon(getClass().getResource("/img/db_connection_error.png")));
+            lostConnectionDialog.getLabelMessage().setIcon(new ImageIcon(getClass().getResource("/iconos/gnome-panel-force-quit.png")));
+            lostConnectionDialog.setLocationRelativeTo(null);
         }
         if (!lostConnectionDialog.isVisible()) {
             new Thread(new Runnable() {
@@ -125,7 +135,7 @@ public abstract class ShutDownListener {
                 }
             }).start();
         } else {
-            while (lostConnectionDialog.isVisible()) {
+            if (lostConnectionDialog.isVisible()) {
                 try {
                     System.out.print(".");
                     Thread.sleep(5000);

@@ -802,8 +802,8 @@ public class CajaMovimientosController implements ActionListener {
         List<GenericBeanCollection> data = new ArrayList<GenericBeanCollection>(buscador.getjTable1().getRowCount());
         DefaultTableModel dtm = (DefaultTableModel) buscador.getjTable1().getModel();
         for (int row = 0; row < dtm.getRowCount(); row++) {
-            data.add(new GenericBeanCollection(dtm.getValueAt(row, 0), dtm.getValueAt(row, 1), dtm.getValueAt(row, 2), dtm.getValueAt(row, 3), dtm.getValueAt(row, 4), dtm.getValueAt(row, 5),
-                    BigDecimal.valueOf((Double) dtm.getValueAt(row, 6)), null, null, null, null, null));
+            data.add(new GenericBeanCollection(dtm.getValueAt(row, 1), dtm.getValueAt(row, 2), dtm.getValueAt(row, 3), dtm.getValueAt(row, 4), dtm.getValueAt(row, 5),
+                    dtm.getValueAt(row, 6), BigDecimal.valueOf((Double) dtm.getValueAt(row, 7)), null, null, null, null, null));
         }
         r.setDataSource(data);
         r.addConnection();

@@ -131,9 +131,7 @@ public class ReciboController implements ActionListener, FocusListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    checkConstraints();
                     Recibo re = getEntity();
-                    persist(re);
                     selectedRecibo = re;
                     jdReRe.showMessage(jpaController.getEntityClass().getSimpleName() + "Nº" + JGestionUtils.getNumeracion(re, true) + " registrada..", null, 1);
                     limpiarDetalle();
@@ -158,9 +156,7 @@ public class ReciboController implements ActionListener, FocusListener {
                         doReportRecibo(selectedRecibo);
                     } else {
                         //cuando se está creando un recibo y se va imprimir al tokesaun!
-                        checkConstraints();
                         Recibo recibo = getEntity();
-                        persist(recibo);
                         selectedRecibo = recibo;
                         doReportRecibo(selectedRecibo);
                         limpiarDetalle();
@@ -407,10 +403,10 @@ public class ReciboController implements ActionListener, FocusListener {
         JTable tabla = UTIL.getDefaultTableModel(null,
                 new String[]{"Nº Nota crédito", "Fecha", "Importe", "Recibo", "Total Acum."},
                 new int[]{50, 50, 50, 50, 100},
-                new Class<?>[]{null, null, Double.class, Double.class, Double.class});
+                new Class<?>[]{null, null, Double.class, null, Double.class});
         TableColumnModel tcm = tabla.getColumnModel();
         tcm.getColumn(2).setCellRenderer(NumberRenderer.getCurrencyRenderer());
-        tcm.getColumn(3).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        tcm.getColumn(4).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         List<NotaCredito> lista = new NotaCreditoController().findNotaCreditoFrom(cliente, false);
         DefaultTableModel dtm = (DefaultTableModel) tabla.getModel();
         BigDecimal acumulativo = BigDecimal.ZERO;
@@ -422,7 +418,7 @@ public class ReciboController implements ActionListener, FocusListener {
                         JGestionUtils.getNumeracion(notaCredito, true),
                         UTIL.DATE_FORMAT.format(notaCredito.getFechaNotaCredito()),
                         notaCredito.getImporte(),
-                        JGestionUtils.getNumeracion(notaCredito.getRecibo(), true),
+                        notaCredito.getRecibo() == null ? "" : JGestionUtils.getNumeracion(notaCredito.getRecibo(), true),
                         acumulativo});
         }
         JDialogTable jd = new JDialogTable(jdReRe, "Detalle de crédito: " + cliente.getNombre(), true, dtm);
@@ -443,9 +439,6 @@ public class ReciboController implements ActionListener, FocusListener {
             throw new MessageException("Fecha de " + jpaController.getEntityClass().getSimpleName() + " no válida");
         }
 
-        if (0 != jdReRe.getTfTotalAPagar().getText().compareTo(jdReRe.getTfTotalPagado().getText())) {
-            throw new MessageException("El importe a pagar no coincide el detalle de pagos.");
-        }
         if (unlockedNumeracion) {
             try {
                 Integer numero = Integer.valueOf(jdReRe.getTfOcteto());
@@ -468,7 +461,8 @@ public class ReciboController implements ActionListener, FocusListener {
         return cbw.getEntity();
     }
 
-    private Recibo getEntity() throws Exception {
+    private Recibo getEntity() throws MessageException, Exception {
+        checkConstraints();
         Recibo recibo = new Recibo();
         try {
             recibo.setCaja((Caja) jdReRe.getCbCaja().getSelectedItem());
@@ -500,11 +494,37 @@ public class ReciboController implements ActionListener, FocusListener {
         recibo.setMonto(monto.doubleValue());
         dtm = jdReRe.getDtmPagos();
         List<Object> pagos = new ArrayList<Object>(dtm.getRowCount());
+        BigDecimal importePagado = BigDecimal.ZERO;
         for (int row = 0; row < dtm.getRowCount(); row++) {
             pagos.add(dtm.getValueAt(row, 0));
+            importePagado = importePagado.add((BigDecimal) dtm.getValueAt(row, 3));
+        }
+        boolean asentarDiferenciaEnCaja = false;
+        if (0 != jdReRe.getTfTotalAPagar().getText().compareTo(jdReRe.getTfTotalPagado().getText())) {
+            if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(jdReRe, "El importe a pagar no coincide el detalle de pagos."
+                    + "¿Desea que la diferencia ($" + UTIL.DECIMAL_FORMAT.format(recibo.getMonto() - importePagado.doubleValue()) + ") sea reflejada en la Caja?", "Arqueo de valores", JOptionPane.YES_NO_OPTION)) {
+                asentarDiferenciaEnCaja = true;
+            } else {
+                throw new MessageException("Operación cancelada");
+            }
         }
         recibo.setPagosEntities(pagos);
         recibo.setRetencion(BigDecimal.ZERO);
+        persist(recibo);
+        if (asentarDiferenciaEnCaja) {
+            double diferencia = importePagado.doubleValue() - recibo.getMonto();
+            DetalleCajaMovimientos d = new DetalleCajaMovimientos();
+            d.setIngreso(diferencia < 0);
+            d.setTipo(DetalleCajaMovimientosJpaController.RECIBO);
+            d.setUsuario(UsuarioController.getCurrentUser());
+            d.setCuenta(CuentaController.SIN_CLASIFICAR);
+            d.setDescripcion(jpaController.getEntityClass().getSimpleName() + " " + JGestionUtils.getNumeracion(recibo, true) + " (DIFERENCIA)");
+            CajaMovimientos cm = new CajaMovimientosJpaController().findCajaMovimientoAbierta(recibo.getCaja());
+            d.setCajaMovimientos(cm); // no te olvides este tampoco!! 
+            d.setNumero(recibo.getId());
+            d.setMonto(d.getIngreso() ? diferencia : -diferencia);
+            new DetalleCajaMovimientosJpaController().create(d);
+        }
         return recibo;
     }
 
