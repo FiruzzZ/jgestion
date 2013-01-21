@@ -248,7 +248,7 @@ public class RemesaController implements ActionListener, FocusListener {
             DetalleCajaMovimientos d = new DetalleCajaMovimientos();
             d.setIngreso(false);
             d.setMonto(-monto.doubleValue());
-            d.setTipo(DetalleCajaMovimientosJpaController.REMESA);
+            d.setTipo(DetalleCajaMovimientosController.REMESA);
             d.setUsuario(UsuarioController.getCurrentUser());
             d.setCuenta(CuentaController.SIN_CLASIFICAR);
             d.setDescripcion(null); // <--- setear con el N° del comprobante
@@ -784,7 +784,7 @@ public class RemesaController implements ActionListener, FocusListener {
         List<Object> pagos = new ArrayList<Object>(remesa.getPagos().size());
         for (RemesaPagos pago : remesa.getPagos()) {
             if (pago.getFormaPago() == 0) {
-                DetalleCajaMovimientos o = new DetalleCajaMovimientosJpaController().findDetalleCajaMovimientos(pago.getComprobanteId());
+                DetalleCajaMovimientos o = new DetalleCajaMovimientosController().findDetalleCajaMovimientos(pago.getComprobanteId());
                 pagos.add(o);
             } else if (pago.getFormaPago() == 1) {
                 ChequePropio o = new ChequePropioJpaController().find(pago.getComprobanteId());

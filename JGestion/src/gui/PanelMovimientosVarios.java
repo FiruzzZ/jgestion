@@ -10,6 +10,8 @@ import java.util.Date;
 import utilities.general.UTIL;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JRadioButton;
+import javax.swing.JTextField;
 
 /**
  *
@@ -268,24 +270,24 @@ public class PanelMovimientosVarios extends javax.swing.JPanel {
         return cbCaja;
     }
 
+    public JRadioButton getRadioEgreso() {
+        return radioEgreso;
+    }
+
+    public JRadioButton getRadioIngreso() {
+        return radioIngreso;
+    }
+
     public boolean isIngreso() {
         return radioIngreso.isSelected();
     }
 
-    public String getTfDescripcion() {
-        return tfDescripcion.getText().trim();
+    public JTextField getTfDescripcion() {
+        return tfDescripcion;
     }
 
-    public String getTfMontoMovimiento() {
-        return tfMontoMovimiento.getText().trim();
-    }
-
-    public void setTfMonto(String monto) {
-        tfMontoMovimiento.setText(monto);
-    }
-
-    public void setTfDescripcion(String descripcion) {
-        tfDescripcion.setText(descripcion);
+    public JTextField getTfMontoMovimiento() {
+        return tfMontoMovimiento;
     }
 
     public JButton getbBuscar() {

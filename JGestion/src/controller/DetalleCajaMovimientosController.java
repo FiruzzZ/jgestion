@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
  *
  * @author Administrador
  */
-public class DetalleCajaMovimientosJpaController {
+public class DetalleCajaMovimientosController {
 
     public final static String CLASS_NAME = DetalleCajaMovimientos.class.getSimpleName();
     /**
@@ -61,9 +61,9 @@ public class DetalleCajaMovimientosJpaController {
      * nº 11
      */
     public final static short CHEQUE_PROPIO = 11;
-    private static Logger LOG = Logger.getLogger(DetalleCajaMovimientosJpaController.class);
+    private static Logger LOG = Logger.getLogger(DetalleCajaMovimientosController.class);
 
-    public DetalleCajaMovimientosJpaController() {
+    public DetalleCajaMovimientosController() {
     }
 
     // <editor-fold defaultstate="collapsed" desc="CRUD...">

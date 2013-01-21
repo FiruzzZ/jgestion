@@ -705,15 +705,11 @@ public class FacturaCompraController implements ActionListener, KeyListener {
 
     }
 
-    public void initBuscador(JFrame frame, final boolean modal, final boolean paraAnular) {
-        // <editor-fold defaultstate="collapsed" desc="checking Permiso">
-        try {
-            UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.COMPRA);
-        } catch (MessageException ex) {
-            javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
-            return;
-        }// </editor-fold>
-
+    public void initBuscador(JFrame frame, final boolean modal, final boolean toAnular) throws MessageException {
+        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.COMPRA);
+        if (toAnular) {
+            UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.ANULAR_COMPROBANTES);
+        }
         buscador = new JDBuscadorReRe(frame, "Buscador - Factura compra", modal, "Proveedor", "Nº Factura");
         buscador.getbImprimir().setVisible(true);
         ActionListenerManager.setUnidadDeNegocioSucursalActionListener(buscador.getCbUnidadDeNegocio(), true, buscador.getCbSucursal(), true, true);
@@ -745,7 +741,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
                             }
                             jdFactura.modoVista(false);
                             jdFactura.setLocationRelativeTo(buscador);
-                            setDataToAnular(paraAnular);
+                            setDataToAnular(toAnular);
                         } catch (MessageException ex) {
                             ex.displayMessage(buscador);
                         }
@@ -753,7 +749,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
                 }
             }
         });
-        if (paraAnular) {
+        if (toAnular) {
             //solo buscar facturas NO anuladas
             buscador.getCheckAnulada().setEnabled(false);
         }

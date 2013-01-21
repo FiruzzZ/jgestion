@@ -192,6 +192,7 @@
                       <Component id="checkCompra" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Component id="checkOrdenesES" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Component id="checkABMCatalogoweb" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Component id="checkAnularComprobantes" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
@@ -233,7 +234,10 @@
                       </Group>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="checkCuentasBancarias" min="-2" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Component id="checkCuentasBancarias" min="-2" max="-2" attributes="0"/>
+                      <Component id="checkAnularComprobantes" alignment="0" min="-2" max="-2" attributes="0"/>
+                  </Group>
                   <EmptySpace pref="50" max="32767" attributes="0"/>
               </Group>
           </Group>
@@ -326,6 +330,11 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="ABM Cuentas Bancarias"/>
             <Property name="toolTipText" type="java.lang.String" value="Informaci&#xf3;n general usada por el sistema"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="checkAnularComprobantes">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Anular Comprobantes"/>
           </Properties>
         </Component>
       </SubComponents>

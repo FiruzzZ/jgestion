@@ -6,7 +6,7 @@ package jgestion.test;
 
 import controller.CuentaController;
 import controller.DAO;
-import controller.DetalleCajaMovimientosJpaController;
+import controller.DetalleCajaMovimientosController;
 import controller.UsuarioController;
 import controller.UsuarioHelper;
 import entity.Cuenta;
@@ -544,7 +544,7 @@ public class JXTreeTableDemo extends javax.swing.JDialog {
     @SuppressWarnings("unchecked")
     private List<DetalleCajaMovimientos> getMovimientosVariosIngresos(int month) {
         StringBuilder query = new StringBuilder("SELECT o FROM " + DetalleCajaMovimientos.class.getSimpleName() + " o"
-                + " WHERE o.ingreso = TRUE AND o.tipo= " + DetalleCajaMovimientosJpaController.MOVIMIENTO_VARIOS);
+                + " WHERE o.ingreso = TRUE AND o.tipo= " + DetalleCajaMovimientosController.MOVIMIENTO_VARIOS);
         int year = jYearChooser1.getYear();
         Calendar c = GregorianCalendar.getInstance();
         c.set(year, month, 1);
@@ -569,7 +569,7 @@ public class JXTreeTableDemo extends javax.swing.JDialog {
     @SuppressWarnings("unchecked")
     private List<DetalleCajaMovimientos> getMovimientosVariosEgresos(int month) {
         StringBuilder query = new StringBuilder("SELECT o FROM " + DetalleCajaMovimientos.class.getSimpleName() + " o"
-                + " WHERE o.ingreso = FALSE AND o.tipo= " + DetalleCajaMovimientosJpaController.MOVIMIENTO_VARIOS);
+                + " WHERE o.ingreso = FALSE AND o.tipo= " + DetalleCajaMovimientosController.MOVIMIENTO_VARIOS);
         int year = jYearChooser1.getYear();
         Calendar c = GregorianCalendar.getInstance();
         c.set(year, month, 1);

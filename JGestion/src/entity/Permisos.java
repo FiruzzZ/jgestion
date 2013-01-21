@@ -77,6 +77,8 @@ public class Permisos implements Serializable {
     private boolean abmCuentabancaria;
     @Column(name = "venta_numeracion_manual", nullable = false)
     private boolean ventaNumeracionManual;
+    @Column(name = "anular_comprobantes", nullable = false)
+    private boolean anularComprobantes;
 
     public Permisos() {
     }
@@ -215,6 +217,14 @@ public class Permisos implements Serializable {
 
     public void setVentaNumeracionManual(boolean ventaNumeracionManual) {
         this.ventaNumeracionManual = ventaNumeracionManual;
+    }
+
+    public boolean getAnularComprobantes() {
+        return anularComprobantes;
+    }
+
+    public void setAnularComprobantes(boolean anularComprobantes) {
+        this.anularComprobantes = anularComprobantes;
     }
 
     /**

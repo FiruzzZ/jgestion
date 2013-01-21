@@ -582,6 +582,7 @@ public class RemitoController implements ActionListener, KeyListener {
     }
 
     public void initBuscadorToAnular(Window owner) throws MessageException {
+        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.ANULAR_COMPROBANTES);
         this.editing = false;
         this.anulando = true;
         MODO_VISTA = false;

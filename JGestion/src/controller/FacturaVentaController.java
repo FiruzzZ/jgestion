@@ -965,8 +965,11 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         UTIL.loadComboBox(jdFactura.getCbProductos(), p.findWrappedProductoToCombo(), false);
     }
 
-    public void initBuscador(JFrame frame, final boolean modal, final boolean paraAnular) throws MessageException {
+    public void initBuscador(JFrame frame, final boolean modal, final boolean toAnular) throws MessageException {
         UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.VENTA);
+        if (toAnular) {
+            UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.ANULAR_COMPROBANTES);
+        }
         buscador = new JDBuscadorReRe(frame, "Buscador - Facturas venta", modal, "Cliente", "Nº Factura");
         buscador.setToFacturaVenta();
         ActionListenerManager.setUnidadDeNegocioSucursalActionListener(buscador.getCbUnidadDeNegocio(), true, buscador.getCbSucursal(), true, true);
@@ -990,7 +993,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                     if (buscador.getjTable1().getSelectedRow() > -1) {
                         try {
                             EL_OBJECT = jpaController.find((Integer) buscador.getDtm().getValueAt(buscador.getjTable1().getSelectedRow(), 0));
-                            setDatosToAnular(EL_OBJECT, paraAnular);
+                            setDatosToAnular(EL_OBJECT, toAnular);
                         } catch (MessageException ex) {
                             buscador.showMessage(ex.getMessage(), "Error de datos", 0);
                         }
@@ -998,7 +1001,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                 }
             }
         });
-        if (paraAnular) {
+        if (toAnular) {
             buscador.getCheckAnulada().setEnabled(false);
         }
         buscador.getbBuscar().addActionListener(new ActionListener() {
@@ -1050,7 +1053,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                             throw new MessageException("No se puede editar un comprobante ANULADO");
                         }
                         if (EL_OBJECT.getFormaPagoEnum().equals(Valores.FormaPago.CONTADO)) {
-                            CajaMovimientos cm = new CajaMovimientosJpaController().findBy(EL_OBJECT.getId(), DetalleCajaMovimientosJpaController.FACTU_VENTA);
+                            CajaMovimientos cm = new CajaMovimientosJpaController().findBy(EL_OBJECT.getId(), DetalleCajaMovimientosController.FACTU_VENTA);
                             if (cm.getFechaCierre() != null) {
                                 throw new MessageException("No se puede editar el comprobante porque la Caja ( N°" + cm.getId() + ") ya fue cerrada."
                                         + "\nFecha de cierre:" + UTIL.DATE_FORMAT.format(cm.getFechaCierre())
@@ -1638,7 +1641,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
 
     private String edit(boolean cambiaCaja, boolean cambiaFormaPago, FacturaVenta editedFacturaVenta) throws MessageException, Exception {
         String mensajeDeQueMierdaPaso = null;
-        CajaMovimientos cm = new CajaMovimientosJpaController().findBy(EL_OBJECT.getId(), DetalleCajaMovimientosJpaController.FACTU_VENTA);
+        CajaMovimientos cm = new CajaMovimientosJpaController().findBy(EL_OBJECT.getId(), DetalleCajaMovimientosController.FACTU_VENTA);
         if (cm.getFechaCierre() != null) {
             throw new MessageException("La Caja " + cm.getCaja().getNombre() + " N°" + cm.getId() + " fue cerrada mientras pensabas");
         }
@@ -1646,16 +1649,16 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         editedFacturaVenta = jpaController.merge(editedFacturaVenta);
         System.out.println("DESPU" + editedFacturaVenta);
         if (EL_OBJECT.getFormaPagoEnum().equals(Valores.FormaPago.CONTADO)) {
-            DetalleCajaMovimientos dcm = new DetalleCajaMovimientosJpaController().findBy(EL_OBJECT.getId(), DetalleCajaMovimientosJpaController.FACTU_VENTA);
+            DetalleCajaMovimientos dcm = new DetalleCajaMovimientosController().findBy(EL_OBJECT.getId(), DetalleCajaMovimientosController.FACTU_VENTA);
             if (cambiaCaja || cambiaFormaPago) {
-                new DetalleCajaMovimientosJpaController().remove(dcm);
+                new DetalleCajaMovimientosController().remove(dcm);
                 mensajeDeQueMierdaPaso = "Se eliminó de la Caja " + cm.getCaja().getNombre() + " N°" + cm.getId()
                         + "\nEl detalle: " + dcm.getDescripcion() + ", monto $" + UTIL.DECIMAL_FORMAT.format(dcm.getMonto());
                 registrarVentaSegunFormaDePago(editedFacturaVenta);
             } else {
                 //cambió Sucursal, Cliente, Fecha
                 dcm.setDescripcion(JGestionUtils.getNumeracion(editedFacturaVenta) + " " + editedFacturaVenta.getCliente().getNombre());
-                new DetalleCajaMovimientosJpaController().merge(dcm);
+                new DetalleCajaMovimientosController().merge(dcm);
             }
         } else if (EL_OBJECT.getFormaPagoEnum().equals(Valores.FormaPago.CTA_CTE)) {
             CtacteClienteJpaController cccController = new CtacteClienteJpaController();

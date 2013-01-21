@@ -178,7 +178,7 @@ public class Contabilidad {
      */
     private String armarQueryBalanceGeneral() {
         StringBuilder query = new StringBuilder("SELECT o.* FROM detalle_caja_movimientos o JOIN caja_movimientos cm ON (o.caja_movimientos = cm.id)"
-                + " WHERE o.tipo <> " + DetalleCajaMovimientosJpaController.APERTURA_CAJA);
+                + " WHERE o.tipo <> " + DetalleCajaMovimientosController.APERTURA_CAJA);
         if (panelBalanceGeneral.getCbCajas().getSelectedIndex() > 0) {
             query.append(" AND cm.caja=").append(((ComboBoxWrapper<?>) panelBalanceGeneral.getCbCajas().getSelectedItem()).getId());
         } else {
@@ -193,7 +193,7 @@ public class Contabilidad {
             query.append(")");
         }
         if (!panelBalanceGeneral.getCheckMovEntreCajas().isSelected()) {
-            query.append(" AND o.tipo <> ").append(DetalleCajaMovimientosJpaController.MOVIMIENTO_CAJA);
+            query.append(" AND o.tipo <> ").append(DetalleCajaMovimientosController.MOVIMIENTO_CAJA);
         }
         Date fecha = panelBalanceGeneral.getDcDesde().getDate();
         if (fecha != null) {
@@ -219,7 +219,7 @@ public class Contabilidad {
         SimpleDateFormat dateFormat = UTIL.instanceOfDATE_FORMAT();
         for (DetalleCajaMovimientos detalleCajaMovimientos : lista) {
             //los movimientos entre caja no representan un ingreso/egreso real
-            if (detalleCajaMovimientos.getTipo() != DetalleCajaMovimientosJpaController.MOVIMIENTO_CAJA) {
+            if (detalleCajaMovimientos.getTipo() != DetalleCajaMovimientosController.MOVIMIENTO_CAJA) {
                 if (detalleCajaMovimientos.getIngreso()) {
                     ingresos += detalleCajaMovimientos.getMonto();
                 } else {

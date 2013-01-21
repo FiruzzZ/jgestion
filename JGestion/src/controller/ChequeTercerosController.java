@@ -6,10 +6,13 @@ import entity.Banco;
 import entity.Caja;
 import entity.ChequeTerceros;
 import entity.Cliente;
+import entity.DetalleCajaMovimientos;
+import entity.UnidadDeNegocio;
 import entity.enums.ChequeEstado;
 import gui.JDABM;
 import gui.JDChequesManager;
 import gui.PanelABMCheques;
+import gui.PanelMovimientosVarios;
 import java.awt.GridLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
@@ -17,24 +20,24 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.logging.Level;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.text.DateFormatter;
+import jgestion.ActionListenerManager;
 import jgestion.JGestionUtils;
+import jgestion.Main;
+import jgestion.Wrapper;
 import jpa.controller.ChequeTercerosJpaController;
+import jpa.controller.UnidadDeNegocioJpaController;
 import org.apache.log4j.Logger;
 import utilities.general.UTIL;
 import utilities.swing.components.ComboBoxWrapper;
@@ -267,7 +270,16 @@ public class ChequeTercerosController implements ActionListener {
                     } else if (boton.equals(jdChequeManager.getBtnNuevo())) {
                         initABMSinComprobante(jdChequeManager);
                     } else if (boton.equals(jdChequeManager.getbACaja())) {
-                        //no action
+                        int row = jdChequeManager.getjTable1().getSelectedRow();
+                        if (row > -1) {
+                            ChequeTerceros cheque = jpaController.find((Integer) jdChequeManager.getjTable1().getModel().getValueAt(row, 0));
+                            if (cheque.getChequeEstado().equals(ChequeEstado.CARTERA)) {
+                                initACajaUI(cheque);
+                                armarQuery(false);
+                            } else {
+                                JOptionPane.showMessageDialog(jdChequeManager, "Solo los cheques en " + ChequeEstado.CARTERA + " pueden ser acreditados a una Caja", "Error", JOptionPane.WARNING_MESSAGE);
+                            }
+                        }
                     } else if (boton.equals(jdChequeManager.getbAnular())) {
 //                        int row = jdChequeManager.getjTable1().getSelectedRow();
 //                        if (row > -1) {
@@ -514,7 +526,6 @@ public class ChequeTercerosController implements ActionListener {
         BigDecimal $90 = BigDecimal.ZERO;
         BigDecimal $90mas = BigDecimal.ZERO;
         Date now = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         DefaultTableModel dtm = (DefaultTableModel) jdChequeManager.getjTable1().getModel();
         final long dayOnMilli = 24 * 60 * 60 * 1000;
         for (int row = 0; row < dtm.getRowCount(); row++) {
@@ -539,5 +550,49 @@ public class ChequeTercerosController implements ActionListener {
         jdChequeManager.getTf60().setText(UTIL.DECIMAL_FORMAT.format($60));
         jdChequeManager.getTf90().setText(UTIL.DECIMAL_FORMAT.format($90));
         jdChequeManager.getTf90mas().setText(UTIL.DECIMAL_FORMAT.format($90mas));
+    }
+
+    private void initACajaUI(final ChequeTerceros cheque) throws MessageException {
+        final CajaMovimientosController cmController = new CajaMovimientosController();
+        abm = (JDABM) cmController.getABMMovimientosVarios(jdChequeManager, true);
+        final PanelMovimientosVarios panelMovVarios = (PanelMovimientosVarios) abm.getPanel();
+        panelMovVarios.getTfDescripcion().setText("CH " + cheque.getNumero() + " - " + cheque.getCliente().getNombre());
+        panelMovVarios.getTfMontoMovimiento().setText(cheque.getImporte().toString());
+        panelMovVarios.getTfMontoMovimiento().setEditable(false);
+        panelMovVarios.getRadioEgreso().setEnabled(false);
+        
+        //quita el actionListener para la creación de un MovimientoVario
+        ActionListener[] actionListeners = abm.getbAceptar().getActionListeners();
+        for (ActionListener o : actionListeners) {
+            abm.getbAceptar().removeActionListener(o);
+        }
+        abm.getbAceptar().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    abm.getbAceptar().setEnabled(false);
+                    String descripcion = panelMovVarios.getTfDescripcion().getText().trim();
+                    DetalleCajaMovimientos dcm = cmController.setMovimientoVarios();
+                    dcm.setDescripcion(descripcion);
+                    dcm.setNumero(cheque.getId());
+                    dcm.setTipo(DetalleCajaMovimientosController.CHEQUE_TERCEROS);
+                    new DetalleCajaMovimientosController().create(dcm);
+                    cheque.setComprobanteEgreso("A Caja: " + dcm.getCajaMovimientos().getCaja().getNombre() + "(" + dcm.getCajaMovimientos().getId() + ")" );
+                    cheque.setEstado(ChequeEstado.ACREDITADO_EN_CAJA.getId());
+                    jpaController.merge(cheque);
+                    abm.showMessage("Movimientos Nº" + dcm.getId()+ " realizado.", "Movimientos Nº" + dcm.getId(), 1);
+                    abm.dispose();
+                } catch (MessageException ex) {
+                    abm.showMessage(ex.getMessage(), "Error", 2);
+                } catch (Exception ex) {
+                    abm.showMessage(ex.getMessage(), "Error", 0);
+                } finally {
+                    abm.getbAceptar().setEnabled(true);
+                }
+            }
+        });
+        abm.setLocationRelativeTo(jdChequeManager);
+        abm.toFront();
+        abm.setVisible(true);
     }
 }
