@@ -20,9 +20,9 @@ public class PermisosJpaController {
     /**
      * cuando se agrega un PermisoDe hay que modificar.
      * 1- {@link PanelABMUsuarios} > GUI > add JCheckBox, methods getter
-     * 2- {@link UsuarioJpaController#setPermisos(entity.Permisos) }
-     * 3- {@link UsuarioJpaController#setPanelABM(entity.Usuario) }
-     * 4- {@link UsuarioJpaController#checkPermiso(controller.PermisosJpaController.PermisoDe) }
+     * 2- {@link UsuarioController#getPermisos(entity.Permisos) }
+     * 3- {@link UsuarioController#setPanelABM(entity.Usuario) }
+     * 4- {@link UsuarioController#checkPermiso(controller.PermisosJpaController.PermisoDe) }
      */
     public static enum PermisoDe {
 
@@ -40,7 +40,8 @@ public class PermisosJpaController {
         ABM_CATALOGOWEB,
         ABM_OFERTASWEB,
         ORDENES_IO,
-        VENTA_NUMERACION_MANUAL;
+        VENTA_NUMERACION_MANUAL,
+        ANULAR_COMPROBANTES;
     }
 
     public PermisosJpaController() {

@@ -228,8 +228,11 @@ public class NotaCreditoController {
         return newNotaCredito;
     }
 
-    NotaCredito initBuscador(Window owner, final boolean paraAnular, Cliente cliente, final boolean selectingMode) throws MessageException {
+    NotaCredito initBuscador(Window owner, final boolean toAnular, Cliente cliente, final boolean selectingMode) throws MessageException {
         UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.VENTA);
+        if(toAnular) {
+            UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.ANULAR_COMPROBANTES);
+        }
         buscador = new JDBuscadorReRe(owner, "Buscador - Notas de crédito", true, "Cliente", "Nº");
         buscador.hideCaja();
         buscador.hideFactura();
@@ -264,7 +267,7 @@ public class NotaCreditoController {
                         buscador.dispose();
                     } else {
                         try {
-                            setComprobanteUI(EL_OBJECT, paraAnular);
+                            setComprobanteUI(EL_OBJECT, toAnular);
                             //refresh post anulación...
                             if (EL_OBJECT == null) {
                                 cargarDtmBuscador(armarQuery(selectingMode));
@@ -276,7 +279,7 @@ public class NotaCreditoController {
                 }
             }
         });
-        if (paraAnular) {
+        if (toAnular) {
             buscador.getCheckAnulada().setEnabled(false);
             buscador.getCheckAnulada().setToolTipText("Buscador para ANULAR");
         }

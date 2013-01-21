@@ -302,7 +302,7 @@ public class ReciboController implements ActionListener, FocusListener {
             if (toEdit == null) {
                 DetalleCajaMovimientos d = new DetalleCajaMovimientos();
                 d.setIngreso(true);
-                d.setTipo(DetalleCajaMovimientosJpaController.RECIBO);
+                d.setTipo(DetalleCajaMovimientosController.RECIBO);
                 d.setUsuario(UsuarioController.getCurrentUser());
                 d.setCuenta(CuentaController.SIN_CLASIFICAR);
                 d.setDescripcion(null); // <--- setear con el N° del comprobante
@@ -515,7 +515,7 @@ public class ReciboController implements ActionListener, FocusListener {
             double diferencia = importePagado.doubleValue() - recibo.getMonto();
             DetalleCajaMovimientos d = new DetalleCajaMovimientos();
             d.setIngreso(diferencia < 0);
-            d.setTipo(DetalleCajaMovimientosJpaController.RECIBO);
+            d.setTipo(DetalleCajaMovimientosController.RECIBO);
             d.setUsuario(UsuarioController.getCurrentUser());
             d.setCuenta(CuentaController.SIN_CLASIFICAR);
             d.setDescripcion(jpaController.getEntityClass().getSimpleName() + " " + JGestionUtils.getNumeracion(recibo, true) + " (DIFERENCIA)");
@@ -523,7 +523,7 @@ public class ReciboController implements ActionListener, FocusListener {
             d.setCajaMovimientos(cm); // no te olvides este tampoco!! 
             d.setNumero(recibo.getId());
             d.setMonto(d.getIngreso() ? diferencia : -diferencia);
-            new DetalleCajaMovimientosJpaController().create(d);
+            new DetalleCajaMovimientosController().create(d);
         }
         return recibo;
     }
@@ -633,19 +633,76 @@ public class ReciboController implements ActionListener, FocusListener {
         }
     }
 
-    public void initBuscador(JFrame frame, boolean modal) {
+    /**
+     *
+     * @param owner
+     * @param modal
+     * @param toAnular if true, se chequea
+     * {@link PermisosJpaController.PermisoDe#ANULAR_COMPROBANTES}
+     */
+    public void initBuscador(Window owner, boolean modal, boolean toAnular) {
         // <editor-fold defaultstate="collapsed" desc="checking Permiso">
         try {
             UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.VENTA);
+            if (toAnular) {
+                UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.ANULAR_COMPROBANTES);
+            }
         } catch (MessageException ex) {
-            javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
+            JOptionPane.showMessageDialog(null, ex.getMessage());
             return;
         }// </editor-fold>
-        buscador = new JDBuscadorReRe(frame, "Buscador - " + CLASS_NAME, modal, "Cliente", "Nº " + CLASS_NAME);
-        initBuscador();
+        buscador = new JDBuscadorReRe(owner, "Buscador - " + CLASS_NAME, modal, "Cliente", "Nº " + CLASS_NAME);
+        initBuscador(toAnular);
+
     }
 
-    private void initBuscador() {
+    private void setSelectedRecibo(boolean toAnular) {
+        try {
+            setComprobanteUI(selectedRecibo);
+            jdReRe.getbAnular().setVisible(toAnular);
+            jdReRe.setLocationRelativeTo(buscador);
+            jdReRe.setVisible(true);
+        } catch (MessageException ex) {
+            jdReRe.showMessage(ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+    /**
+     * Setea la ventana de JDReRe de forma q solo se puedan ver los datos y
+     * detalles de la Recibo, imprimir y ANULAR, pero NO MODIFICAR
+     *
+     * @param recibo
+     */
+    private void setComprobanteUI(Recibo recibo) throws MessageException {
+        if (jdReRe == null) {
+            initRecibos(null, true, false);
+        }
+//        bloquearVentana(true);
+        //por no redundar en DATOOOOOOOOOSS...!!!
+        Cliente cliente = new FacturaVentaController().findFacturaVenta(recibo.getDetalleReciboList().get(0).getFacturaVenta().getId()).getCliente();
+        //que compare por String's..
+        //por si el combo está vacio <VACIO> o no eligió ninguno
+        //van a tirar error de ClassCastException
+        UTIL.setSelectedItem(jdReRe.getCbSucursal(), recibo.getSucursal().getNombre());
+        UTIL.setSelectedItem(jdReRe.getCbCaja(), recibo.getCaja().toString());
+        UTIL.setSelectedItem(jdReRe.getCbClienteProveedor(), cliente.getNombre());
+        jdReRe.setTfCuarto(UTIL.AGREGAR_CEROS(recibo.getSucursal().getPuntoVenta(), 4));
+        jdReRe.setTfOcteto(UTIL.AGREGAR_CEROS(recibo.getNumero(), 8));
+        jdReRe.setDcFechaReRe(recibo.getFechaRecibo());
+        jdReRe.setDcFechaCarga(recibo.getFechaCarga());
+        cargarDetalleReRe(recibo);
+        updateTotales();
+        SwingUtil.setComponentsEnabled(jdReRe.getPanelDatos().getComponents(), false, true);
+        SwingUtil.setComponentsEnabled(jdReRe.getPanelAPagar().getComponents(), false, true);
+        SwingUtil.setComponentsEnabled(jdReRe.getPanelPagos().getComponents(), false, true);
+        jdReRe.setTfImporte(null);
+        jdReRe.setTfPagado(null);
+        jdReRe.setTfSaldo(null);
+        jdReRe.getbImprimir().setEnabled(true);
+        jdReRe.getLabelAnulado().setVisible(!recibo.getEstado());
+    }
+
+    private Recibo initBuscador(final boolean toAnular) {
         buscador.setParaRecibos();
         UTIL.loadComboBox(buscador.getCbClieProv(), JGestionUtils.getWrappedClientes(new ClienteController().findEntities()), true);
         UTIL.loadComboBox(buscador.getCbCaja(), new UsuarioHelper().getCajas(Boolean.TRUE), true);
@@ -662,7 +719,11 @@ public class ReciboController implements ActionListener, FocusListener {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() > 1) {
-                    setSelectedRecibo();
+                    int rowIndex = buscador.getjTable1().getSelectedRow();
+                    int id = Integer.valueOf(buscador.getjTable1().getModel().getValueAt(rowIndex, 0).toString());
+                    selectedRecibo = jpaController.find(id);
+                    setSelectedRecibo(toAnular);
+
                 }
             }
         });
@@ -677,6 +738,7 @@ public class ReciboController implements ActionListener, FocusListener {
             }
         });
         buscador.setVisible(true);
+        return selectedRecibo;
     }
 
     private void cargarFacturasCtaCtes(Cliente cliente) {
@@ -801,56 +863,6 @@ public class ReciboController implements ActionListener, FocusListener {
         }
     }
 
-    private void setSelectedRecibo() {
-        int rowIndex = buscador.getjTable1().getSelectedRow();
-        int id = Integer.valueOf(buscador.getjTable1().getModel().getValueAt(rowIndex, 0).toString());
-        selectedRecibo = jpaController.find(id);
-        if (selectedRecibo != null) {
-            try {
-                setComprobanteUI(selectedRecibo);
-                jdReRe.setLocationRelativeTo(buscador);
-                jdReRe.setVisible(true);
-            } catch (MessageException ex) {
-                jdReRe.showMessage(ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
-            }
-        }
-    }
-
-    /**
-     * Setea la ventana de JDReRe de forma q solo se puedan ver los datos y
-     * detalles de la Recibo, imprimir y ANULAR, pero NO MODIFICAR
-     *
-     * @param recibo
-     */
-    private void setComprobanteUI(Recibo recibo) throws MessageException {
-        if (jdReRe == null) {
-            initRecibos(null, true, false);
-        }
-//        bloquearVentana(true);
-        //por no redundar en DATOOOOOOOOOSS...!!!
-        Cliente cliente = new FacturaVentaController().findFacturaVenta(recibo.getDetalleReciboList().get(0).getFacturaVenta().getId()).getCliente();
-        //que compare por String's..
-        //por si el combo está vacio <VACIO> o no eligió ninguno
-        //van a tirar error de ClassCastException
-        UTIL.setSelectedItem(jdReRe.getCbSucursal(), recibo.getSucursal().getNombre());
-        UTIL.setSelectedItem(jdReRe.getCbCaja(), recibo.getCaja().toString());
-        UTIL.setSelectedItem(jdReRe.getCbClienteProveedor(), cliente.getNombre());
-        jdReRe.setTfCuarto(UTIL.AGREGAR_CEROS(recibo.getSucursal().getPuntoVenta(), 4));
-        jdReRe.setTfOcteto(UTIL.AGREGAR_CEROS(recibo.getNumero(), 8));
-        jdReRe.setDcFechaReRe(recibo.getFechaRecibo());
-        jdReRe.setDcFechaCarga(recibo.getFechaCarga());
-        cargarDetalleReRe(recibo);
-        updateTotales();
-        SwingUtil.setComponentsEnabled(jdReRe.getPanelDatos().getComponents(), false, true);
-        SwingUtil.setComponentsEnabled(jdReRe.getPanelAPagar().getComponents(), false, true);
-        SwingUtil.setComponentsEnabled(jdReRe.getPanelPagos().getComponents(), false, true);
-        jdReRe.setTfImporte(null);
-        jdReRe.setTfPagado(null);
-        jdReRe.setTfSaldo(null);
-        jdReRe.getbImprimir().setEnabled(true);
-        jdReRe.getLabelAnulado().setVisible(!recibo.getEstado());
-    }
-
     private void cargarDetalleReRe(Recibo recibo) {
         List<DetalleRecibo> detalleReciboList = recibo.getDetalleReciboList();
         DefaultTableModel dtm = jdReRe.getDtmAPagar();
@@ -893,7 +905,7 @@ public class ReciboController implements ActionListener, FocusListener {
         List<Object> pagos = new ArrayList<Object>(recibo.getPagos().size());
         for (ReciboPagos pago : recibo.getPagos()) {
             if (pago.getFormaPago() == 0) {
-                DetalleCajaMovimientos o = new DetalleCajaMovimientosJpaController().findDetalleCajaMovimientos(pago.getComprobanteId());
+                DetalleCajaMovimientos o = new DetalleCajaMovimientosController().findDetalleCajaMovimientos(pago.getComprobanteId());
                 pagos.add(o);
             } else if (pago.getFormaPago() == 1) {
                 ChequePropio o = new ChequePropioJpaController().find(pago.getComprobanteId());

@@ -135,6 +135,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenuItem38 = new javax.swing.JMenuItem();
         jMenuItem49 = new javax.swing.JMenuItem();
         jMenuItem71 = new javax.swing.JMenuItem();
+        jMenuItem77 = new javax.swing.JMenuItem();
         menuCtaCte = new javax.swing.JMenu();
         jMenuItem37 = new javax.swing.JMenuItem();
         jMenuItem30 = new javax.swing.JMenuItem();
@@ -561,7 +562,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         menuTesoreria.add(jSeparator2);
 
         jMenu14.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/lupa-simple.png"))); // NOI18N
-        jMenu14.setText("Anular");
+        jMenu14.setText("Anular Comprobante..");
 
         jMenuItem3.setText("Factura venta");
         jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
@@ -594,6 +595,14 @@ public class JFP extends javax.swing.JFrame implements Runnable {
             }
         });
         jMenu14.add(jMenuItem71);
+
+        jMenuItem77.setText("Recibo");
+        jMenuItem77.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem77ActionPerformed(evt);
+            }
+        });
+        jMenu14.add(jMenuItem77);
 
         menuTesoreria.add(jMenu14);
 
@@ -1204,7 +1213,11 @@ public class JFP extends javax.swing.JFrame implements Runnable {
     }//GEN-LAST:event_menuItemSalirActionPerformed
 
     private void jMenuItem28ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem28ActionPerformed
-        new FacturaCompraController().initBuscador(this, false, false);
+        try {
+            new FacturaCompraController().initBuscador(this, false, false);
+        } catch (MessageException ex) {
+            ex.displayMessage(this);
+        }
         refreshConnectionDB();
     }//GEN-LAST:event_jMenuItem28ActionPerformed
 
@@ -1223,7 +1236,11 @@ public class JFP extends javax.swing.JFrame implements Runnable {
     }//GEN-LAST:event_formWindowClosing
 
     private void jMenuItem32ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem32ActionPerformed
-        new CajaMovimientosController().initMovimientosVarios(this, true);
+        try {
+            new CajaMovimientosController().getABMMovimientosVarios(this, true).setVisible(true);
+        } catch (MessageException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage());
+        }
         refreshConnectionDB();
     }//GEN-LAST:event_jMenuItem32ActionPerformed
 
@@ -1279,7 +1296,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
     }//GEN-LAST:event_jMenuItem36ActionPerformed
 
     private void jMenuItem34ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem34ActionPerformed
-        new ReciboController().initBuscador(this, false);
+        new ReciboController().initBuscador(this, false, false);
         refreshConnectionDB();
     }//GEN-LAST:event_jMenuItem34ActionPerformed
 
@@ -1301,7 +1318,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         try {
             new FacturaVentaController().initBuscador(this, false, true);
         } catch (MessageException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage());
+            ex.displayMessage(this);
         }
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 
@@ -1310,7 +1327,11 @@ public class JFP extends javax.swing.JFrame implements Runnable {
     }//GEN-LAST:event_jMenuItem39ActionPerformed
 
     private void jMenuItem38ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem38ActionPerformed
-        new FacturaCompraController().initBuscador(this, false, true);
+        try {
+            new FacturaCompraController().initBuscador(this, false, true);
+        } catch (MessageException ex) {
+            ex.displayMessage(this);
+        }
     }//GEN-LAST:event_jMenuItem38ActionPerformed
 
     private void jMenuItem33ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem33ActionPerformed
@@ -1397,7 +1418,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         try {
             new NotaCreditoController().initBuscador(this, true);
         } catch (MessageException ex) {
-            showError(ex.getMessage());
+            ex.displayMessage(this);
         }
     }//GEN-LAST:event_jMenuItem49ActionPerformed
 
@@ -1619,6 +1640,10 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         new Contabilidad().showInformePorUnidadesDeNegocios(this);
     }//GEN-LAST:event_jMenuItem76ActionPerformed
 
+    private void jMenuItem77ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem77ActionPerformed
+        new ReciboController().initBuscador(this, false, true);
+    }//GEN-LAST:event_jMenuItem77ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JMenu jMenu1;
@@ -1721,6 +1746,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenuItem jMenuItem74;
     private javax.swing.JMenuItem jMenuItem75;
     private javax.swing.JMenuItem jMenuItem76;
+    private javax.swing.JMenuItem jMenuItem77;
     private javax.swing.JMenuItem jMenuItem8;
     private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JMenuItem jMenuItemCatalogoWeb;

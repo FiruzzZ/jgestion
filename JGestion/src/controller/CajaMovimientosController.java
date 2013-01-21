@@ -105,7 +105,7 @@ public class CajaMovimientosController implements ActionListener {
         dcm.setIngreso(true);
         dcm.setMonto(0);
         dcm.setNumero(-1); //meaningless yet...
-        dcm.setTipo(DetalleCajaMovimientosJpaController.APERTURA_CAJA);
+        dcm.setTipo(DetalleCajaMovimientosController.APERTURA_CAJA);
         dcm.setUsuario(UsuarioController.getCurrentUser());
         dcm.setCuenta(CuentaController.SIN_CLASIFICAR);
         dcm.setCajaMovimientos(cm);
@@ -136,7 +136,7 @@ public class CajaMovimientosController implements ActionListener {
         dcm.setIngreso(true);
         dcm.setMonto(nextCaja.getMontoApertura());
         dcm.setNumero(-1); //meaningless yet...
-        dcm.setTipo(DetalleCajaMovimientosJpaController.APERTURA_CAJA);
+        dcm.setTipo(DetalleCajaMovimientosController.APERTURA_CAJA);
         dcm.setUsuario(UsuarioController.getCurrentUser());
         if (dcm.getCuenta() == null) {
             //default value
@@ -263,7 +263,7 @@ public class CajaMovimientosController implements ActionListener {
         // por eso se le resta una vez ... y luego se suma..
         Double totalIngresos = 0.0 - (cajaMovimientos.getMontoApertura());
         Double totalEgresos = 0.0;
-        List<DetalleCajaMovimientos> detalleCajaMovimientoList = new DetalleCajaMovimientosJpaController().getDetalleCajaMovimientosByCajaMovimiento(cajaMovimientos.getId());
+        List<DetalleCajaMovimientos> detalleCajaMovimientoList = new DetalleCajaMovimientosController().getDetalleCajaMovimientosByCajaMovimiento(cajaMovimientos.getId());
         for (DetalleCajaMovimientos detalleCajaMovimientos : detalleCajaMovimientoList) {
             //sumando totales..
             if (detalleCajaMovimientos.getIngreso()) {
@@ -457,9 +457,9 @@ public class CajaMovimientosController implements ActionListener {
         dcm.setIngreso(false);
         dcm.setMonto(-monto); // <--- NEGATIVIZAR!
         dcm.setNumero(Integer.parseInt(jdCajaToCaja.getTfMovimiento().getText()));
-        dcm.setTipo(DetalleCajaMovimientosJpaController.MOVIMIENTO_CAJA);
+        dcm.setTipo(DetalleCajaMovimientosController.MOVIMIENTO_CAJA);
         dcm.setUsuario(UsuarioController.getCurrentUser());
-        new DetalleCajaMovimientosJpaController().create(dcm);// </editor-fold>
+        new DetalleCajaMovimientosController().create(dcm);// </editor-fold>
 
         // <editor-fold defaultstate="collapsed" desc="Destino to Origen - INGRESO">
         dcm = new DetalleCajaMovimientos();
@@ -468,9 +468,9 @@ public class CajaMovimientosController implements ActionListener {
         dcm.setIngreso(true);
         dcm.setMonto(monto);
         dcm.setNumero(Integer.parseInt(jdCajaToCaja.getTfMovimiento().getText()));
-        dcm.setTipo(DetalleCajaMovimientosJpaController.MOVIMIENTO_CAJA);
+        dcm.setTipo(DetalleCajaMovimientosController.MOVIMIENTO_CAJA);
         dcm.setUsuario(UsuarioController.getCurrentUser());
-        new DetalleCajaMovimientosJpaController().create(dcm);// </editor-fold>
+        new DetalleCajaMovimientosController().create(dcm);// </editor-fold>
 
         jdCajaToCaja.showMessage("Realizado", "Movimiento entre cajas", 1);
         jdCajaToCaja.resetPanel();
@@ -525,17 +525,16 @@ public class CajaMovimientosController implements ActionListener {
      *
      * @param owner papi Component
      * @param modal
+     * @return
+     * @throws MessageException
      */
-    public void initMovimientosVarios(Window owner, boolean modal) {
-        try {
-            UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
-            initMovimientosVarios(owner, modal, true, null);
-        } catch (MessageException ex) {
-            JOptionPane.showMessageDialog(owner, ex.getMessage());
-        }
+    public JDialog getABMMovimientosVarios(Window owner, boolean modal) throws MessageException {
+        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
+        initMovimientosVarios(owner, modal, null);
+        return abm;
     }
 
-    private void initMovimientosVarios(Window owner, boolean modal, final boolean visible, final DetalleCajaMovimientos toEdit) throws MessageException {
+    private void initMovimientosVarios(Window owner, boolean modal, final DetalleCajaMovimientos toEdit) throws MessageException {
         if (panelMovVarios == null) {
             panelMovVarios = new PanelMovimientosVarios();
             panelMovVarios.setVisibleResponsables(false);
@@ -563,13 +562,13 @@ public class CajaMovimientosController implements ActionListener {
                     if (toEdit == null) {
                         abm.getbAceptar().setEnabled(false);
                         DetalleCajaMovimientos dcm = setMovimientoVarios();
-                        new DetalleCajaMovimientosJpaController().create(dcm);
+                        new DetalleCajaMovimientosController().create(dcm);
                         abm.showMessage("Realizado..", "Movimientos Varios Nº" + dcm.getId(), 1);
                         cleanPanelMovimientosVarios();
                     } else {
                         DetalleCajaMovimientos dcm = setMovimientoVarios();
                         dcm.setId(toEdit.getId());
-                        new DetalleCajaMovimientosJpaController().merge(dcm);
+                        new DetalleCajaMovimientosController().merge(dcm);
                         abm.showMessage("Editado..", "Movimientos Varios Nº" + dcm.getId(), 1);
                         abm.dispose();
                         UTIL.limpiarDtm(buscador.getjTable1());
@@ -585,7 +584,6 @@ public class CajaMovimientosController implements ActionListener {
         });
         abm.setLocationRelativeTo(owner);
         abm.toFront();
-        abm.setVisible(visible);
     }
 
     /**
@@ -594,7 +592,7 @@ public class CajaMovimientosController implements ActionListener {
      * @throws MessageException
      */
     @SuppressWarnings("unchecked")
-    private DetalleCajaMovimientos setMovimientoVarios() throws MessageException {
+    DetalleCajaMovimientos setMovimientoVarios() throws MessageException {
         //ctrl's................
         Caja caja;
         UnidadDeNegocio unidadDeNegocio;
@@ -622,15 +620,15 @@ public class CajaMovimientosController implements ActionListener {
         }
         double monto;
         try {
-            monto = Double.valueOf(panelMovVarios.getTfMontoMovimiento());
+            monto = Double.valueOf(panelMovVarios.getTfMontoMovimiento().getText().trim());
             if (monto <= 0) {
                 throw new MessageException("El monto debe ser mayor a 0");
             }
         } catch (NumberFormatException ex) {
             throw new MessageException("Monto no válido");
         }
-
-        if (panelMovVarios.getTfDescripcion().length() < 1) {
+        String descripcion = panelMovVarios.getTfDescripcion().getText().trim();
+        if (descripcion.isEmpty()) {
             throw new MessageException("Debe ingresar una Descripción");
         }
 
@@ -638,9 +636,9 @@ public class CajaMovimientosController implements ActionListener {
         DetalleCajaMovimientos dcm = new DetalleCajaMovimientos();
         dcm.setCajaMovimientos(new CajaMovimientosJpaController().findCajaMovimientoAbierta(caja));
         dcm.setIngreso(panelMovVarios.isIngreso());
-        dcm.setDescripcion("MV" + (dcm.getIngreso() ? "I" : "E") + "-" + panelMovVarios.getTfDescripcion());
+        dcm.setDescripcion("MV" + (dcm.getIngreso() ? "I" : "E") + "-" + descripcion);
         dcm.setMonto(dcm.getIngreso() ? monto : -monto);
-        dcm.setTipo(DetalleCajaMovimientosJpaController.MOVIMIENTO_VARIOS);
+        dcm.setTipo(DetalleCajaMovimientosController.MOVIMIENTO_VARIOS);
         dcm.setUsuario(UsuarioController.getCurrentUser());
         dcm.setFechaMovimiento(panelMovVarios.getDcMovimientoFecha());
         dcm.setUnidadDeNegocio(unidadDeNegocio);
@@ -696,7 +694,7 @@ public class CajaMovimientosController implements ActionListener {
         SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd");
         String query = "SELECT o.id, CONCAT(o.cajaMovimientos.caja.nombre, CONCAT(\" (\", CONCAT(o.cajaMovimientos.id, \")\"))),"
                 + " o.descripcion, o.unidadDeNegocio, o.cuenta, o.subCuenta, o.fechaMovimiento, o.monto, o.fecha, o.usuario.nick FROM " + DetalleCajaMovimientos.class.getSimpleName() + " o "
-                + " WHERE o.tipo=" + DetalleCajaMovimientosJpaController.MOVIMIENTO_VARIOS;
+                + " WHERE o.tipo=" + DetalleCajaMovimientosController.MOVIMIENTO_VARIOS;
         if (panelBuscadorMovimientosVarios.getCbCaja().getSelectedIndex() > 0) {
             query += " AND o.cajaMovimientos.caja.id=" + ((ComboBoxWrapper<Caja>) panelBuscadorMovimientosVarios.getCbCaja().getSelectedItem()).getId();
         } else {
@@ -838,8 +836,8 @@ public class CajaMovimientosController implements ActionListener {
     }
 
     private void cleanPanelMovimientosVarios() {
-        panelMovVarios.setTfMonto("");
-        panelMovVarios.setTfDescripcion("");
+        panelMovVarios.getTfMontoMovimiento().setText("");
+        panelMovVarios.getTfDescripcion().setText("");
     }
 
     private void resetBuscadorMovimientosVarios() {
@@ -955,8 +953,8 @@ public class CajaMovimientosController implements ActionListener {
      * @param facturaVenta
      */
     void actualizarDescripcion(FacturaVenta facturaVenta) {
-        DetalleCajaMovimientosJpaController c = new DetalleCajaMovimientosJpaController();
-        DetalleCajaMovimientos dcm = c.findDetalleCajaMovimientosByNumero(facturaVenta.getId(), DetalleCajaMovimientosJpaController.FACTU_VENTA);
+        DetalleCajaMovimientosController c = new DetalleCajaMovimientosController();
+        DetalleCajaMovimientos dcm = c.findDetalleCajaMovimientosByNumero(facturaVenta.getId(), DetalleCajaMovimientosController.FACTU_VENTA);
         dcm.setDescripcion(getDescripcion(facturaVenta));
         c.merge(dcm);
     }
@@ -970,7 +968,7 @@ public class CajaMovimientosController implements ActionListener {
                 "SELECT b.*, u.nick"
                 + " FROM (SELECT oo.*"
                 + " FROM detalle_caja_movimientos oo, caja_movimientos cm, caja"
-                + " WHERE oo.ingreso = true AND oo.caja_movimientos = cm.id  AND cm.caja = caja.id AND oo.tipo = " + DetalleCajaMovimientosJpaController.MOVIMIENTO_CAJA;
+                + " WHERE oo.ingreso = true AND oo.caja_movimientos = cm.id  AND cm.caja = caja.id AND oo.tipo = " + DetalleCajaMovimientosController.MOVIMIENTO_CAJA;
 
         String cajasQuery = "";
         if (panelBuscadorCajaToCaja.getCbCajaDestino().getSelectedIndex() > 0) {
@@ -991,7 +989,7 @@ public class CajaMovimientosController implements ActionListener {
         query += ") b,"
                 + " (SELECT oo.numero"
                 + " FROM detalle_caja_movimientos oo, caja_movimientos cm, caja "
-                + " WHERE oo.ingreso = false AND oo.caja_movimientos = cm.id  AND cm.caja = caja.id AND oo.tipo = " + DetalleCajaMovimientosJpaController.MOVIMIENTO_CAJA;
+                + " WHERE oo.ingreso = false AND oo.caja_movimientos = cm.id  AND cm.caja = caja.id AND oo.tipo = " + DetalleCajaMovimientosController.MOVIMIENTO_CAJA;
 
         cajasQuery = "";
         if (panelBuscadorCajaToCaja.getCbCajaOrigen().getSelectedIndex() > 0) {
@@ -1088,7 +1086,7 @@ public class CajaMovimientosController implements ActionListener {
             @Override
             public void tableChanged(TableModelEvent e) {
                 if (e.getType() == TableModelEvent.UPDATE) {
-                    DetalleCajaMovimientosJpaController jpaDcm = new DetalleCajaMovimientosJpaController();
+                    DetalleCajaMovimientosController jpaDcm = new DetalleCajaMovimientosController();
                     int row = e.getFirstRow();
                     int column = e.getColumn();
                     TableModel model = (TableModel) e.getSource();
