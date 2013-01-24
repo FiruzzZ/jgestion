@@ -74,6 +74,7 @@ public class JDResumenCtaCtes extends javax.swing.JDialog {
         dcDesde = new com.toedter.calendar.JDateChooser();
         checkExcluirPagadas = new javax.swing.JCheckBox();
         checkExcluirAnuladas = new javax.swing.JCheckBox();
+        btnCuenta = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Resumen de Cta. Cte.");
@@ -151,7 +152,7 @@ public class JDResumenCtaCtes extends javax.swing.JDialog {
                     .addComponent(tfReciboMonto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(labelReciboAnulado))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 143, Short.MAX_VALUE))
         );
 
         jSplitPane1.setRightComponent(jPanel2);
@@ -165,6 +166,8 @@ public class JDResumenCtaCtes extends javax.swing.JDialog {
         checkExcluirPagadas.setText("Excluir Saldadas");
 
         checkExcluirAnuladas.setText("Excluir Anuladas");
+
+        btnCuenta.setText("Ver cuenta");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -181,7 +184,10 @@ public class JDResumenCtaCtes extends javax.swing.JDialog {
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(dcDesde, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(cbClieProv, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(cbClieProv, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnCuenta))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(checkExcluirPagadas)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -204,7 +210,8 @@ public class JDResumenCtaCtes extends javax.swing.JDialog {
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(cbClieProv, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(labelClieProv))
+                            .addComponent(labelClieProv)
+                            .addComponent(btnCuenta))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                             .addComponent(dcDesde, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -214,7 +221,7 @@ public class JDResumenCtaCtes extends javax.swing.JDialog {
                             .addComponent(checkExcluirPagadas)
                             .addComponent(checkExcluirAnuladas))))
                 .addGap(12, 12, 12)
-                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 325, Short.MAX_VALUE)
+                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 368, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -224,6 +231,7 @@ public class JDResumenCtaCtes extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton bBuscar;
     private javax.swing.JButton bImprimir;
+    private javax.swing.JButton btnCuenta;
     private javax.swing.JComboBox cbClieProv;
     private javax.swing.JComboBox cbReRes;
     private javax.swing.JCheckBox checkExcluirAnuladas;
@@ -331,6 +339,10 @@ public class JDResumenCtaCtes extends javax.swing.JDialog {
 
     public JCheckBox getCheckExcluirPagadas() {
         return checkExcluirPagadas;
+    }
+
+    public JButton getBtnCuenta() {
+        return btnCuenta;
     }
 
 }

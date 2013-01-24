@@ -66,7 +66,7 @@ public class ReciboController implements ActionListener, FocusListener {
      * @throws MessageException
      */
     public void initRecibos(Window owner, boolean modal, boolean setVisible) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.VENTA);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.VENTA);
         UsuarioHelper uh = new UsuarioHelper();
         if (uh.getSucursales().isEmpty()) {
             throw new MessageException(Main.resourceBundle.getString("unassigned.sucursal"));
@@ -421,7 +421,7 @@ public class ReciboController implements ActionListener, FocusListener {
                         notaCredito.getRecibo() == null ? "" : JGestionUtils.getNumeracion(notaCredito.getRecibo(), true),
                         acumulativo});
         }
-        JDialogTable jd = new JDialogTable(jdReRe, "Detalle de crédito: " + cliente.getNombre(), true, dtm);
+        JDialogTable jd = new JDialogTable(jdReRe, "Detalle de crédito: " + cliente.getNombre(), true, tabla);
         jd.setSize(600, 400);
         jd.setVisible(true);
     }
@@ -540,7 +540,7 @@ public class ReciboController implements ActionListener, FocusListener {
     }
 
     private void actualizarMontoEntrega(FacturaVenta factu, BigDecimal monto) {
-        CtacteCliente ctacte = new CtacteClienteJpaController().findCtacteClienteByFactura(factu.getId());
+        CtacteCliente ctacte = new CtacteClienteController().findCtacteClienteByFactura(factu.getId());
         LOG.debug("updatingMontoEntrega: CtaCte:" + ctacte.getId() + " -> Importe: " + ctacte.getImporte() + " Entregado:" + ctacte.getEntregado() + " + " + monto);
         ctacte.setEntregado(ctacte.getEntregado() + monto.doubleValue());
         if (ctacte.getImporte() == ctacte.getEntregado()) {
@@ -643,9 +643,9 @@ public class ReciboController implements ActionListener, FocusListener {
     public void initBuscador(Window owner, boolean modal, boolean toAnular) {
         // <editor-fold defaultstate="collapsed" desc="checking Permiso">
         try {
-            UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.VENTA);
+            UsuarioController.checkPermiso(PermisosController.PermisoDe.VENTA);
             if (toAnular) {
-                UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.ANULAR_COMPROBANTES);
+                UsuarioController.checkPermiso(PermisosController.PermisoDe.ANULAR_COMPROBANTES);
             }
         } catch (MessageException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
@@ -743,7 +743,7 @@ public class ReciboController implements ActionListener, FocusListener {
 
     private void cargarFacturasCtaCtes(Cliente cliente) {
         limpiarDetalle();
-        List<CtacteCliente> ctacteClientePendientesList = new CtacteClienteJpaController().findCtacteClienteByCliente(cliente.getId(), Valores.CtaCteEstado.PENDIENTE.getId());
+        List<CtacteCliente> ctacteClientePendientesList = new CtacteClienteController().findCtacteClienteByCliente(cliente.getId(), Valores.CtaCteEstado.PENDIENTE.getId());
         UTIL.loadComboBox(jdReRe.getCbCtaCtes(), JGestionUtils.getWrappedCtacteCliente(ctacteClientePendientesList), false);
     }
 
@@ -1040,7 +1040,7 @@ public class ReciboController implements ActionListener, FocusListener {
     }
 
     public void initRecibosNumeracionManual(Window owner) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.VENTA_NUMERACION_MANUAL);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.VENTA_NUMERACION_MANUAL);
         unlockedNumeracion = true;
         initRecibos(owner, true, false);
         jdReRe.setTfOctetoEditable(true);

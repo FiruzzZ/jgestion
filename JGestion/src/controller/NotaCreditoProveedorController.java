@@ -1,6 +1,7 @@
 package controller;
 
 import controller.exceptions.MessageException;
+import entity.CreditoProveedor;
 import entity.DetalleNotaCreditoProveedor;
 import entity.Iva;
 import entity.NotaCreditoProveedor;
@@ -32,6 +33,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import javax.swing.text.JTextComponent;
 import jgestion.JGestionUtils;
+import jpa.controller.CreditoProveedorJpaController;
 import jpa.controller.NotaCreditoProveedorJpaController;
 import org.apache.log4j.Logger;
 import utilities.general.UTIL;
@@ -58,7 +60,7 @@ public class NotaCreditoProveedorController implements ActionListener {
     }
 
     public void initABM(Window owner, boolean modal) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.COMPRA);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.COMPRA);
         initComprobanteUI(owner, modal);
 
         jdFactura.addTotalesRefreshListener(new FocusAdapter() {
@@ -316,10 +318,14 @@ public class NotaCreditoProveedorController implements ActionListener {
             o.getDetalleNotaCreditoProveedorList().add(detalle);
         }
         jpaController.create(o);
+        if (jdFactura.getCheckActualizaStock().isSelected()) {
+            CreditoProveedor cp = new CreditoProveedor(null, true, o.getImporte(), "NC N°" + JGestionUtils.getNumeracion(o, true), o.getProveedor());
+            new CreditoProveedorJpaController().create(cp);
+        }
     }
 
     public void initBuscador(Window frame, final boolean modal, final boolean paraAnular) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.COMPRA);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.COMPRA);
 
         buscador = new JDBuscadorReRe(frame, null, modal, "Proveedor", null);
         buscador.setParaNotaCreditoProveedor();
@@ -468,7 +474,7 @@ public class NotaCreditoProveedorController implements ActionListener {
     }
 
     NotaCreditoProveedor initBuscador(Window owner, final boolean paraAnular, Proveedor proveedor, final boolean selectingMode) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.VENTA);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.VENTA);
         buscador = new JDBuscadorReRe(owner, "Buscador - Notas de crédito Proveedor", true, "Proveedor", "Nº");
         buscador.hideCaja();
         buscador.hideFactura();

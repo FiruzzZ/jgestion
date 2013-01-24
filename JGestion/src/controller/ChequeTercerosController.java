@@ -71,7 +71,7 @@ public class ChequeTercerosController implements ActionListener {
     }
 
     private ChequeTerceros initABMReemplazo(Window owner, ChequeTerceros toReplaced) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.TESORERIA);
         initPanelABM(false, false);
 //        setPanel(toReplaced);
         panelABM.getTfImporte().setText(UTIL.PRECIO_CON_PUNTO.format(toReplaced.getImporte()));
@@ -85,7 +85,7 @@ public class ChequeTercerosController implements ActionListener {
     }
 
     ChequeTerceros initABM(Window owner, boolean isEditing, Cliente cliente) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.TESORERIA);
         if (isEditing && EL_OBJECT == null) {
             throw new MessageException("Debe elegir una fila de la tabla");
         }
@@ -113,7 +113,7 @@ public class ChequeTercerosController implements ActionListener {
 
     private ChequeTerceros initABMSinComprobante(Window owner) throws MessageException {
         EL_OBJECT = null;
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.TESORERIA);
         initPanelABM(true, true);
         UTIL.loadComboBox(panelABM.getCbEmisor(), new ClienteController().findEntities(), true);
         abm = new JDABM(owner, null, true, panelABM);
@@ -361,7 +361,7 @@ public class ChequeTercerosController implements ActionListener {
      * @throws MessageException
      */
     public JDialog getManager(Window owner) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.TESORERIA);
         initManager(owner);
         jdChequeManager.setLocationRelativeTo(owner);
         return jdChequeManager;

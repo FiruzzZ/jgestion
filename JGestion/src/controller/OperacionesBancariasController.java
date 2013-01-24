@@ -54,7 +54,7 @@ public class OperacionesBancariasController {
      * @throws MessageException End-User messages
      */
     public void initUIABM(Window owner) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.TESORERIA);
         abm = new JDMiniABM(owner, true);
         abm.hideBtnLock();
         abm.hideFieldCodigo();

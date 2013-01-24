@@ -31,7 +31,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author FiruzzZ
  */
-public class MunicipioJpaController implements ActionListener, MouseListener, KeyListener {
+public class MunicipioController implements ActionListener, MouseListener, KeyListener {
 
     public final String CLASS_NAME = Municipio.class.getSimpleName();
     private JDContenedor contenedor = null;
@@ -272,7 +272,7 @@ public class MunicipioJpaController implements ActionListener, MouseListener, Ke
     }
 
     private void initABM(boolean isEditting, ActionEvent e) throws Exception {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.TESORERIA);
         if (isEditting && municipio == null) {
             throw new MessageException("Debe elegir una fila");
         }

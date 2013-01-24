@@ -38,7 +38,7 @@ import utilities.swing.components.NumberRenderer;
  *
  * @author Administrador
  */
-public class CtacteClienteJpaController implements ActionListener {
+public class CtacteClienteController implements ActionListener {
 
     public static final String CLASS_NAME = CtacteCliente.class.getSimpleName();
     private JDResumenCtaCtes resumenCtaCtes;
@@ -46,7 +46,7 @@ public class CtacteClienteJpaController implements ActionListener {
     private double totalHaber; //<----
     private PanelCtaCteCheckVencimientos panelCCCheck;
     private JDBuscador buscador;
-    private static Logger LOG = Logger.getLogger(CtacteClienteJpaController.class);
+    private static Logger LOG = Logger.getLogger(CtacteClienteController.class);
 
     // <editor-fold defaultstate="collapsed" desc="CRUD...">
     public EntityManager getEntityManager() {
@@ -258,7 +258,7 @@ public class CtacteClienteJpaController implements ActionListener {
     }
 
     public void initResumenCtaCte(JFrame frame, boolean modal) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.TESORERIA);
         resumenCtaCtes = new JDResumenCtaCtes(frame, modal, true);
         resumenCtaCtes.getjTableResumen().addMouseListener(new MouseAdapter() {
             @Override
@@ -279,7 +279,7 @@ public class CtacteClienteJpaController implements ActionListener {
                     resumenCtaCtes.showMessage(ex.getMessage(), null, 2);
                 } catch (Exception ex) {
                     resumenCtaCtes.showMessage(ex.getMessage(), null, 2);
-                    Logger.getLogger(CtacteClienteJpaController.class.getName()).error(ex);
+                    Logger.getLogger(CtacteClienteController.class.getName()).error(ex);
                 }
             }
         });
@@ -292,7 +292,7 @@ public class CtacteClienteJpaController implements ActionListener {
                     resumenCtaCtes.showMessage(ex.getMessage(), null, 2);
                 } catch (Exception ex) {
                     resumenCtaCtes.showMessage(ex.getMessage(), null, 2);
-                    Logger.getLogger(CtacteClienteJpaController.class.getName()).error(ex);
+                    Logger.getLogger(CtacteClienteController.class.getName()).error(ex);
                 }
             }
         });
@@ -489,7 +489,7 @@ public class CtacteClienteJpaController implements ActionListener {
      * @param owner el papi de la ventana
      */
     public void initCheckVencimientos(JFrame owner) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.TESORERIA);
         panelCCCheck = new PanelCtaCteCheckVencimientos();
         panelCCCheck.getCbEntidadElegida().addActionListener(new ActionListener() {
             @Override
@@ -524,7 +524,7 @@ public class CtacteClienteJpaController implements ActionListener {
                     JOptionPane.showMessageDialog(buscador, ex.getMessage(), "ERROR", 0);
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(buscador, ex.getMessage(), "ERROR CRÍTICO", 0);
-                    Logger.getLogger(CtacteClienteJpaController.class.getName()).error(ex);
+                    Logger.getLogger(CtacteClienteController.class.getName()).error(ex);
                 } finally {
                     buscador.bloquearBotones(false);
                 }
@@ -540,7 +540,7 @@ public class CtacteClienteJpaController implements ActionListener {
                     JOptionPane.showMessageDialog(buscador, ex.getMessage(), "ERROR", 0);
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(buscador, ex.getMessage(), "ERROR CRÍTICO", 0);
-                    Logger.getLogger(CtacteClienteJpaController.class.getName()).error(ex, ex);
+                    Logger.getLogger(CtacteClienteController.class.getName()).error(ex, ex);
                 } finally {
                     buscador.bloquearBotones(false);
                 }

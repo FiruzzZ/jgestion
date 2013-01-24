@@ -296,7 +296,7 @@ public class BancoController {
      * @throws MessageException
      */
     private JDialog initABM(JDialog parent, boolean isEditing) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.DATOS_GENERAL);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.DATOS_GENERAL);
         if (isEditing) {
             EL_OBJECT = getSelectedFromContenedor();
             if (EL_OBJECT == null) {

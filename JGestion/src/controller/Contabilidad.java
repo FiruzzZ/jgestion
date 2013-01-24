@@ -96,7 +96,7 @@ public class Contabilidad {
      * @throws MessageException
      */
     public void initMovimientosCajasUI(JFrame parent) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.TESORERIA);
         panelBalanceGeneral = new PanelBalanceGeneral();
         List<ComboBoxWrapper<Caja>> cajas = new UsuarioHelper().getWrappedCajas(null);
         if (cajas.isEmpty()) {
@@ -248,7 +248,7 @@ public class Contabilidad {
      * @throws MessageException end user message information
      */
     public void initBalanceCompraVentaUI(JFrame parent) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.TESORERIA);
         panelBalanceComprasVentas = new PanelBalanceComprasVentas();
         List<ComboBoxWrapper<Sucursal>> s = new UsuarioHelper().getWrappedSucursales();
         if (s.isEmpty()) {
@@ -438,7 +438,7 @@ public class Contabilidad {
                     cccpc = null;
                     efectivo = factura.getImporte();
                 } else if (Valores.FormaPago.CTA_CTE.getId() == factura.getFormaPago()) {
-                    entregado = new CtacteProveedorJpaController().findCtacteProveedorByFactura(factura.getId()).getEntregado().doubleValue();
+                    entregado = new CtacteProveedorController().findCtacteProveedorByFactura(factura.getId()).getEntregado().doubleValue();
                     cccpc = (factura.getImporte() - entregado);
                     efectivo = entregado > 0 ? entregado : null;
                 } else {
@@ -473,7 +473,7 @@ public class Contabilidad {
                     cccpc = null;
                     efectivo = factura.getImporte();
                 } else if (Valores.FormaPago.CTA_CTE.getId() == factura.getFormaPago()) {
-                    entregado = new CtacteClienteJpaController().findCtacteClienteByFactura(factura.getId()).getEntregado();
+                    entregado = new CtacteClienteController().findCtacteClienteByFactura(factura.getId()).getEntregado();
                     double importe = factura.getImporte();
                     cccpc = (importe - entregado);
                     efectivo = entregado > 0 ? entregado : null;
@@ -684,7 +684,7 @@ public class Contabilidad {
     }
 
     public void displayInformeComprobantesVenta(Window owner) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.VENTA);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.VENTA);
         buscador = new JDBuscadorReRe(owner, "Informe - Comprobantes Ventas", false, "Cliente", "Nº Factura");
         buscador.getjTable1().setAutoCreateRowSorter(true);
         buscador.hideFactura();
@@ -777,7 +777,7 @@ public class Contabilidad {
     }
 
     public void displayInformeComprobantesCompra(Window owner) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.COMPRA);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.COMPRA);
         buscador = new JDBuscadorReRe(owner, "Buscador - Comprobantes Compra", false, "Proveedor", "Nº Factura");
         buscador.getjTable1().setAutoCreateRowSorter(true);
         buscador.hideCaja();
@@ -1066,10 +1066,10 @@ public class Contabilidad {
                 Date hasta = resumenGeneralCtaCte.getDcHasta().getDate();
                 List<Object[]> data;
                 if (resumenGeneralCtaCte.getCbClieProv().getSelectedIndex() == 0) {
-                    data = new CtacteClienteJpaController().findSaldosCtacte(desde, hasta);
+                    data = new CtacteClienteController().findSaldosCtacte(desde, hasta);
                     cargarTablaResumenGeneralCtaCte(data);
                 } else {
-                    data = new CtacteProveedorJpaController().findSaldosCtacte(desde, hasta);
+                    data = new CtacteProveedorController().findSaldosCtacte(desde, hasta);
                     cargarTablaResumenGeneralCtaCte(data);
                 }
             }

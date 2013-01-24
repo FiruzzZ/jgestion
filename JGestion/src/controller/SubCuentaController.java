@@ -38,7 +38,7 @@ public class SubCuentaController {
     }
 
     private void initABM(Window owner, boolean editing) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.DATOS_GENERAL);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.DATOS_GENERAL);
         List<Cuenta> l = new CuentaController().findAll();
         if (l.isEmpty()) {
             throw new MessageException("Para poder crear Sub Cuentas, primero debe crear al menos una Cuenta");

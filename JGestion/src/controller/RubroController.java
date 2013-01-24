@@ -24,7 +24,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author FiruzzZ
  */
-public class RubroJpaController implements ActionListener, MouseListener {
+public class RubroController implements ActionListener, MouseListener {
 
     public static final int DE_PRODUCTO = 1;
 //    public static final int DE_CLIENTE=2;
@@ -43,7 +43,7 @@ public class RubroJpaController implements ActionListener, MouseListener {
     /**
      * @param tipo 1=Productos, 2=clientes, 3=Proveedores
      */
-    public RubroJpaController() {
+    public RubroController() {
         TIPO = 1;
     }
 
@@ -206,14 +206,14 @@ public class RubroJpaController implements ActionListener, MouseListener {
     }
 
     public JDialog getABM(JDialog owner) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.ABM_PRODUCTOS);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.ABM_PRODUCTOS);
         abm = new JDMiniABM(owner, true);
         initABM();
         return abm;
     }
 
     public JDialog getABM(JFrame owner) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.ABM_PRODUCTOS);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.ABM_PRODUCTOS);
         abm = new JDMiniABM(owner, true);
         initABM();
         return abm;

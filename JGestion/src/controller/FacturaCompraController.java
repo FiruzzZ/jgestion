@@ -87,7 +87,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
     }
 
     public void initABMFacturaCompra(JFrame owner, boolean modal) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.COMPRA);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.COMPRA);
         UsuarioHelper uh = new UsuarioHelper();
         if (uh.getSucursales().isEmpty()) {
             throw new MessageException(Main.resourceBundle.getString("unassigned.sucursal"));
@@ -475,7 +475,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
             newFacturaCompra = (FacturaCompra) DAO.findEntity(FacturaCompra.class, newFacturaCompra.getId());
             if (newFacturaCompra.getActualizaStock()) {
                 //y también la variable Producto.stockActual
-                new StockJpaController().updateStock(newFacturaCompra);
+                new StockController().updateStock(newFacturaCompra);
             }
             asentarSegunFormaDePago(newFacturaCompra);
         } catch (Exception ex) {
@@ -499,7 +499,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
                 break;
             }
             case 2: { // CTA CTE Proveedor (NO HAY NINGÚN MOVIMIENTO DE CAJA)
-                new CtacteProveedorJpaController().nuevaCtaCte(facturaCompra);
+                new CtacteProveedorController().nuevaCtaCte(facturaCompra);
                 break;
             }
             case 3: { // CHEQUE
@@ -706,9 +706,9 @@ public class FacturaCompraController implements ActionListener, KeyListener {
     }
 
     public void initBuscador(JFrame frame, final boolean modal, final boolean toAnular) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.COMPRA);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.COMPRA);
         if (toAnular) {
-            UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.ANULAR_COMPROBANTES);
+            UsuarioController.checkPermiso(PermisosController.PermisoDe.ANULAR_COMPROBANTES);
         }
         buscador = new JDBuscadorReRe(frame, "Buscador - Factura compra", modal, "Proveedor", "Nº Factura");
         buscador.getbImprimir().setVisible(true);

@@ -8,7 +8,7 @@ package gui;
 import controller.Contabilidad;
 import controller.DAO;
 import controller.FacturaVentaController;
-import controller.ListaPreciosJpaController;
+import controller.ListaPreciosController;
 import controller.ProductoController;
 import controller.ProductosWebJpaController;
 import controller.exceptions.MessageException;
@@ -361,7 +361,7 @@ public class JDCatalogoWEB extends javax.swing.JDialog {
      * @throws SQLException
      */
     private void cargarTablaProductos(String filterQuery) throws SQLException {
-        ListaPrecios listaPrecios = new ListaPreciosJpaController().findListaPreciosParaCatalogo();
+        ListaPrecios listaPrecios = new ListaPreciosController().findListaPreciosParaCatalogo();
         ResultSet rs;
         if (filterQuery != null) {
             rs = DAO.getJDBCConnection().createStatement().executeQuery(filterQuery);

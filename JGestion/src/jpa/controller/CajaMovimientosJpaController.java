@@ -281,7 +281,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
                 newDetalleCajaMovimiento.setDescripcion(JGestionUtils.getNumeracion(facturaVenta) + " [ANULADA]");
                 new DetalleCajaMovimientosController().create(newDetalleCajaMovimiento);
             } else if (facturaVenta.getFormaPagoEnum().equals(Valores.FormaPago.CTA_CTE)) {
-                CtacteCliente ccc = new CtacteClienteJpaController().findCtacteClienteByFactura(facturaVenta.getId());
+                CtacteCliente ccc = new CtacteClienteController().findCtacteClienteByFactura(facturaVenta.getId());
                 if (ccc.getEntregado() > 0) {
                     //find all receipts (Recibo's) that contains a payment of the bill (FacturaVenta)
                     List<Recibo> recibosList = new ReciboController().findRecibosByFactura(facturaVenta);
@@ -321,7 +321,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
             //re-estableciendo stock
             List<DetalleVenta> itemList = facturaVenta.getDetallesVentaList();
             ProductoController productoCtrl = new ProductoController();
-            StockJpaController stockCtrl = new StockJpaController();
+            StockController stockCtrl = new StockController();
             for (DetalleVenta detallesVenta : itemList) {
                 stockCtrl.modificarStockBySucursal(detallesVenta.getProducto(), facturaVenta.getSucursal(), detallesVenta.getCantidad());
                 productoCtrl.updateStockActual(detallesVenta.getProducto(), detallesVenta.getCantidad());
@@ -370,7 +370,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
                 new DetalleCajaMovimientosController().create(newDetalleCajaMovimiento);
             } else if (facturaCompra.getFormaPago() == Valores.FormaPago.CTA_CTE.getId()) {
                 // o CTA CTE..
-                CtacteProveedor ccp = new CtacteProveedorJpaController().findCtacteProveedorByFactura(facturaCompra.getId());
+                CtacteProveedor ccp = new CtacteProveedorController().findCtacteProveedorByFactura(facturaCompra.getId());
                 //si se hicieron REMESA's de pago de esta deuda
                 if (ccp.getEntregado().doubleValue() > 0) {
                     List<Remesa> remesaList = new RemesaJpaController().findByFactura(facturaCompra);
@@ -413,7 +413,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
             //re-estableciendo stock
             List<DetalleCompra> itemList = facturaCompra.getDetalleCompraList();
             ProductoController productoCtrl = new ProductoController();
-            StockJpaController stockCtrl = new StockJpaController();
+            StockController stockCtrl = new StockController();
             for (DetalleCompra detallesVenta : itemList) {
                 //resta el stock
                 stockCtrl.modificarStockBySucursal(detallesVenta.getProducto(), facturaCompra.getSucursal(), -detallesVenta.getCantidad());

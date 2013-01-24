@@ -5,6 +5,7 @@ import entity.Caja;
 import entity.ChequePropio;
 import entity.ChequeTerceros;
 import entity.ComprobanteRetencion;
+import entity.CreditoProveedor;
 import entity.CtacteProveedor;
 import entity.CuentabancariaMovimientos;
 import entity.DetalleCajaMovimientos;
@@ -15,16 +16,12 @@ import java.awt.event.FocusEvent;
 import javax.persistence.EntityManager;
 import entity.DetalleRemesa;
 import entity.FacturaCompra;
-import entity.Cuenta;
 import entity.NotaCreditoProveedor;
 import entity.Proveedor;
 import entity.RemesaPagos;
-import entity.enums.ChequeEstado;
 import utilities.general.UTIL;
 import gui.JDBuscadorReRe;
 import gui.JDReRe;
-import java.awt.Component;
-import java.awt.Window;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
@@ -34,7 +31,6 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -44,6 +40,7 @@ import jgestion.JGestionUtils;
 import jpa.controller.ChequePropioJpaController;
 import jpa.controller.ChequeTercerosJpaController;
 import jpa.controller.ComprobanteRetencionJpaController;
+import jpa.controller.CreditoProveedorJpaController;
 import jpa.controller.CuentabancariaMovimientosJpaController;
 import jpa.controller.FacturaCompraJpaController;
 import jpa.controller.NotaCreditoProveedorJpaController;
@@ -80,7 +77,7 @@ public class RemesaController implements ActionListener, FocusListener {
     }
 
     public void initRemesa(JFrame owner, boolean modal, boolean visible) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.COMPRA);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.COMPRA);
         jdReRe = new JDReRe(owner, modal);
         jdReRe.setUIForRemesas();
         UTIL.getDefaultTableModel(jdReRe.getTableAPagar(), COLUMN_NAMES, COLUMN_WIDTH);
@@ -109,9 +106,7 @@ public class RemesaController implements ActionListener, FocusListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    checkConstraints();
-                    Remesa re = getEntity();
-                    persist(re);
+                    Remesa re = setAndPersist();
                     jdReRe.showMessage(jpaController.getEntityClass().getSimpleName() + "Nº" + JGestionUtils.getNumeracion(re, true) + " registrada..", null, 1);
                     limpiarDetalle();
                     resetPanel();
@@ -220,17 +215,8 @@ public class RemesaController implements ActionListener, FocusListener {
         jdReRe.setVisible(visible);
     }
 
-    private void persist(Remesa remesa) {
-        jpaController.create(remesa);
-        for (DetalleRemesa detalle : remesa.getDetalleRemesaList()) {
-            //actuliza saldo pagado de cada ctacte
-            actualizarMontoEntrega(detalle.getFacturaCompra(), detalle.getMontoEntrega());
-        }
-
-    }
-
     private void actualizarMontoEntrega(FacturaCompra factu, BigDecimal monto) {
-        CtacteProveedor ctacte = new CtacteProveedorJpaController().findCtacteProveedorByFactura(factu.getId());
+        CtacteProveedor ctacte = new CtacteProveedorController().findCtacteProveedorByFactura(factu.getId());
         Logger.getLogger(this.getClass()).trace("updatingMontoEntrega: CtaCte=" + ctacte.getId()
                 + " -> Importe= $" + ctacte.getImporte() + " Entregado= $" + ctacte.getEntregado() + " + " + monto);
 
@@ -239,7 +225,7 @@ public class RemesaController implements ActionListener, FocusListener {
             ctacte.setEstado(Valores.CtaCteEstado.PAGADA.getId());
             System.out.println("ctaCte PAGADA");
         }
-        DAO.doMerge(ctacte);
+        new CtacteProveedorController().edit(ctacte);
     }
 
     private void displayABMEfectivo() {
@@ -348,9 +334,6 @@ public class RemesaController implements ActionListener, FocusListener {
         if (jdReRe.getDcFechaReRe() == null) {
             throw new MessageException("Fecha de " + jpaController.getEntityClass().getSimpleName() + " no válida");
         }
-        if (0 != jdReRe.getTfTotalAPagar().getText().compareTo(jdReRe.getTfTotalPagado().getText())) {
-            throw new MessageException("El importe a pagar no coincide el detalle de pagos.");
-        }
         if (unlockedNumeracion) {
             try {
                 Integer numero = Integer.valueOf(jdReRe.getTfOcteto());
@@ -369,20 +352,14 @@ public class RemesaController implements ActionListener, FocusListener {
     }
 
     @SuppressWarnings("unchecked")
-    private Remesa getEntity() throws Exception {
+    private Remesa setAndPersist() throws MessageException, Exception {
+        checkConstraints();
         Remesa re = new Remesa();
         re.setCaja((Caja) jdReRe.getCbCaja().getSelectedItem());
         re.setSucursal(((ComboBoxWrapper<Sucursal>) jdReRe.getCbSucursal().getSelectedItem()).getEntity());
-        if (unlockedNumeracion) {
-            re.setNumero(Integer.valueOf(jdReRe.getTfOcteto()));
-        } else {
-            re.setNumero(jpaController.getNextNumero(re.getSucursal()));
-        }
-        re.setUsuario(UsuarioController.getCurrentUser());
         re.setEstado(true);
         re.setFechaRemesa(jdReRe.getDcFechaReRe());
         re.setPagos(new ArrayList<RemesaPagos>(jdReRe.getDtmPagos().getRowCount()));
-        // 30% faster on ArrayList with initialCapacity
         re.setDetalleRemesaList(new ArrayList<DetalleRemesa>(jdReRe.getDtmAPagar().getRowCount()));
         DefaultTableModel dtm = jdReRe.getDtmAPagar();
         FacturaCompraJpaController fcc = new FacturaCompraJpaController();
@@ -400,10 +377,43 @@ public class RemesaController implements ActionListener, FocusListener {
         re.setMontoEntrega(monto.doubleValue());
         dtm = jdReRe.getDtmPagos();
         List<Object> pagos = new ArrayList<Object>(dtm.getRowCount());
+        BigDecimal importePagado = BigDecimal.ZERO;
         for (int row = 0; row < dtm.getRowCount(); row++) {
+            importePagado = importePagado.add((BigDecimal) dtm.getValueAt(row, 3));
             pagos.add(dtm.getValueAt(row, 0));
         }
         re.setPagosEntities(pagos);
+        boolean asentarDiferenciaEnCaja = false;
+        if (0 != jdReRe.getTfTotalAPagar().getText().compareTo(jdReRe.getTfTotalPagado().getText())) {
+            if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(jdReRe, "El importe a pagar no coincide con el detalle de pagos."
+                    + "\n¿Confirma que la diferencia ($" + UTIL.DECIMAL_FORMAT.format(re.getMonto() - importePagado.doubleValue()) + ") sea acreditada?", "Confirmación de diferencia", JOptionPane.YES_NO_OPTION)) {
+                asentarDiferenciaEnCaja = true;
+            } else {
+                throw new MessageException("Operación cancelada");
+            }
+        }
+        if (unlockedNumeracion) {
+            re.setNumero(Integer.valueOf(jdReRe.getTfOcteto()));
+        } else {
+            re.setNumero(jpaController.getNextNumero(re.getSucursal()));
+        }
+        re.setUsuario(UsuarioController.getCurrentUser());
+        jpaController.create(re);
+        if (asentarDiferenciaEnCaja) {
+            BigDecimal diferencia = BigDecimal.valueOf(re.getMonto() - importePagado.doubleValue());
+            boolean debe = false;
+            if(diferencia.doubleValue() < 0) {
+                diferencia = diferencia.negate();
+                debe = true;
+            }
+            CreditoProveedor cp = new CreditoProveedor(null, debe, diferencia, "Remesa N° " + JGestionUtils.getNumeracion(re, true), re.getDetalleRemesaList().get(0).getFacturaCompra().getProveedor());
+            new CreditoProveedorJpaController().create(cp);
+        }
+        for (DetalleRemesa detalle : re.getDetalleRemesaList()) {
+            //actuliza saldo pagado de cada ctacte
+            actualizarMontoEntrega(detalle.getFacturaCompra(), detalle.getMontoEntrega());
+        }
+
         return re;
     }
 
@@ -496,7 +506,7 @@ public class RemesaController implements ActionListener, FocusListener {
     }
 
     public JDialog initBuscador(JDialog dialog, boolean modal) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.COMPRA);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.COMPRA);
         buscador = new JDBuscadorReRe(dialog, "Buscador - " + CLASS_NAME, modal, "Proveedor", "Nº " + CLASS_NAME);
         buscador.hideFormaPago();
         buscador.setLocationRelativeTo(dialog);
@@ -542,7 +552,7 @@ public class RemesaController implements ActionListener, FocusListener {
 
     private void cargarFacturasCtaCtes(Proveedor proveedor) {
         limpiarDetalle();
-        List<CtacteProveedor> ctacteProveedorPendientesList = new CtacteProveedorJpaController().findCtacteProveedorByProveedor(proveedor.getId(), Valores.CtaCteEstado.PENDIENTE.getId());
+        List<CtacteProveedor> ctacteProveedorPendientesList = new CtacteProveedorController().findCtacteProveedorByProveedor(proveedor.getId(), Valores.CtaCteEstado.PENDIENTE.getId());
         UTIL.loadComboBox(jdReRe.getCbCtaCtes(), JGestionUtils.getWrappedCtacteProveedor(ctacteProveedorPendientesList), false);
     }
 
@@ -748,7 +758,7 @@ public class RemesaController implements ActionListener, FocusListener {
             em.getTransaction().begin();
             for (DetalleRemesa dr : detalleRemesaList) {
                 //se resta la entrega ($) que implicaba este detalle con respecto a la factura
-                ctaCteProveedor = new CtacteProveedorJpaController().findCtacteProveedorByFactura(dr.getFacturaCompra().getId());
+                ctaCteProveedor = new CtacteProveedorController().findCtacteProveedorByFactura(dr.getFacturaCompra().getId());
                 ctaCteProveedor.setEntregado(ctaCteProveedor.getEntregado().subtract(dr.getMontoEntrega()));
                 // y si había sido pagada en su totalidad..
                 if (ctaCteProveedor.getEstado() == Valores.CtaCteEstado.PAGADA.getId()) {

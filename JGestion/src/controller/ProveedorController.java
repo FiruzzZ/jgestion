@@ -208,10 +208,10 @@ public class ProveedorController implements ActionListener {
                     }
 
                 } else if (boton.getName().equalsIgnoreCase("bmunicipios")) {
-                    new MunicipioJpaController().initContenedor(null, true);
+                    new MunicipioController().initContenedor(null, true);
                     if (panelABM.getCbDepartamentos().getSelectedIndex() > 0) {
                         UTIL.loadComboBox(panelABM.getCbMunicipios(),
-                                new MunicipioJpaController().findMunicipiosFromDepto(
+                                new MunicipioController().findMunicipiosFromDepto(
                                 ((Departamento) panelABM.getCbDepartamentos().getSelectedItem()).getId()), true);
                     } else {
                         UTIL.loadComboBox(panelABM.getCbMunicipios(), null, true);
@@ -230,7 +230,7 @@ public class ProveedorController implements ActionListener {
 
                 } else if (combo.equals(panelABM.getCbDepartamentos())) {
                     if (combo.getSelectedIndex() > 0) {
-                        UTIL.loadComboBox(panelABM.getCbMunicipios(), new MunicipioJpaController().findMunicipiosFromDepto(((Departamento) combo.getSelectedItem()).getId()), true);
+                        UTIL.loadComboBox(panelABM.getCbMunicipios(), new MunicipioController().findMunicipiosFromDepto(((Departamento) combo.getSelectedItem()).getId()), true);
                     } else {
                         UTIL.loadComboBox(panelABM.getCbMunicipios(), null, true);
                     }
@@ -288,7 +288,7 @@ public class ProveedorController implements ActionListener {
     private void initABM(boolean isEditing, ActionEvent e) throws MessageException {
         // <editor-fold defaultstate="collapsed" desc="checking Permiso">
         try {
-            UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.ABM_PROVEEDORES);
+            UsuarioController.checkPermiso(PermisosController.PermisoDe.ABM_PROVEEDORES);
         } catch (MessageException ex) {
             javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
             return;
@@ -297,7 +297,7 @@ public class ProveedorController implements ActionListener {
             throw new MessageException("Debe elegir una fila de la tabla");
         }
         panelABM = new PanelABMProveedores();
-        UTIL.loadComboBox(panelABM.getCbCondicIVA(), new ContribuyenteJpaController().findContribuyenteEntities(), false);
+        UTIL.loadComboBox(panelABM.getCbCondicIVA(), new ContribuyenteController().findContribuyenteEntities(), false);
         UTIL.loadComboBox(panelABM.getCbProvincias(), new ProvinciaJpaController().findProvinciaEntities(), true);
         UTIL.loadComboBox(panelABM.getCbDepartamentos(), null, true);
         UTIL.loadComboBox(panelABM.getCbMunicipios(), null, true);

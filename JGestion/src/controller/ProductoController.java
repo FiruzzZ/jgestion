@@ -99,7 +99,7 @@ public class ProductoController implements ActionListener, KeyListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.ABM_PRODUCTOS);
+                    UsuarioController.checkPermiso(PermisosController.PermisoDe.ABM_PRODUCTOS);
                     eliminarProducto();
                     contenedor.showMessage("Producto eliminado..", CLASS_NAME, 1);
                 } catch (NonexistentEntityException ex) {
@@ -135,7 +135,7 @@ public class ProductoController implements ActionListener, KeyListener {
     }
 
     private void initABM(boolean isEditing) throws MessageException, IOException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.ABM_PRODUCTOS);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.ABM_PRODUCTOS);
         if (isEditing) {
             EL_OBJECT = getSelectedFromContenedor();
             if (EL_OBJECT == null) {
@@ -178,7 +178,7 @@ public class ProductoController implements ActionListener, KeyListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    RubroJpaController rubroController = new RubroJpaController();
+                    RubroController rubroController = new RubroController();
                     JDialog jd = rubroController.getABM(abm);
                     jd.setLocationRelativeTo(abm);
                     jd.setVisible(true);
@@ -192,8 +192,8 @@ public class ProductoController implements ActionListener, KeyListener {
         UTIL.loadComboBox(panel.getCbIVA(), new IvaController().findIvaEntities(), false);
         UTIL.loadComboBox(panel.getCbMarcas(), JGestionUtils.getWrappedMarcas(new MarcaJpaController().findMarcaEntities()), false);
         UTIL.loadComboBox(panel.getCbMedicion(), new UnidadmedidaJpaController().findUnidadmedidaEntities(), false);
-        UTIL.loadComboBox(panel.getCbRubro(), new RubroJpaController().findRubros(), false);
-        UTIL.loadComboBox(panel.getCbSubRubro(), new RubroJpaController().findRubros(), true);
+        UTIL.loadComboBox(panel.getCbRubro(), new RubroController().findRubros(), false);
+        UTIL.loadComboBox(panel.getCbSubRubro(), new RubroController().findRubros(), true);
 
         abm = new JDABM(contenedor, "ABM - " + CLASS_NAME + "s", true, panel);
         if (isEditing) {
@@ -644,7 +644,7 @@ public class ProductoController implements ActionListener, KeyListener {
         } catch (Exception ex) {
             LOG.error(ex.getLocalizedMessage(), ex);
         }
-        List<Stock> stockList = new StockJpaController().findStocksByProducto(p.getId());
+        List<Stock> stockList = new StockController().findStocksByProducto(p.getId());
         DefaultTableModel dtm = jdStockGral.getDtm();
         for (Stock stock : stockList) {
             dtm.addRow(new Object[]{
@@ -694,8 +694,8 @@ public class ProductoController implements ActionListener, KeyListener {
     public void initMovimientoProducto(JFrame frame, boolean modal) {
         panelito = new PanelBuscadorMovimientosPro();
         UTIL.loadComboBox(panelito.getCbMarcas(), JGestionUtils.getWrappedMarcas(new MarcaJpaController().findMarcaEntities()), true);
-        UTIL.loadComboBox(panelito.getCbRubros(), JGestionUtils.getWrappedRubros(new RubroJpaController().findRubros()), true);
-        UTIL.loadComboBox(panelito.getCbSubRubros(), JGestionUtils.getWrappedRubros(new RubroJpaController().findRubros()), true);
+        UTIL.loadComboBox(panelito.getCbRubros(), JGestionUtils.getWrappedRubros(new RubroController().findRubros()), true);
+        UTIL.loadComboBox(panelito.getCbSubRubros(), JGestionUtils.getWrappedRubros(new RubroController().findRubros()), true);
         UTIL.loadComboBox(panelito.getCbSucursales(), new UsuarioHelper().getWrappedSucursales(), true);
         buscador = new JDBuscador(frame, "Movimientos de productos", modal, panelito);
         buscador.getPanelInferior().setVisible(true);
@@ -889,8 +889,8 @@ public class ProductoController implements ActionListener, KeyListener {
         panelProductoListados = new PanelProductoListados();
         buscador = new JDBuscador(owner, "Productos - Listados", false, panelProductoListados);
         UTIL.loadComboBox(panelProductoListados.getCbMarcas(), JGestionUtils.getWrappedMarcas(new MarcaJpaController().findMarcaEntities()), "<Todas>");
-        UTIL.loadComboBox(panelProductoListados.getCbRubros(), new RubroJpaController().findRubros(), "<Todos>");
-        UTIL.loadComboBox(panelProductoListados.getCbSubRubros(), new RubroJpaController().findRubros(), "<Todos>");
+        UTIL.loadComboBox(panelProductoListados.getCbRubros(), new RubroController().findRubros(), "<Todos>");
+        UTIL.loadComboBox(panelProductoListados.getCbSubRubros(), new RubroController().findRubros(), "<Todos>");
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
                 new String[]{"NOMBRE", "CÓDIGO", "MARCA", "RUBRO", "SUB RUBRO"},

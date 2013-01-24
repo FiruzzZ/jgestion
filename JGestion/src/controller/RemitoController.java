@@ -358,7 +358,7 @@ public class RemitoController implements ActionListener, KeyListener {
      * @throws MessageException
      */
     public void initBuscador(Window frame, boolean modal, boolean setVisible) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.VENTA);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.VENTA);
         buscador = new JDBuscadorReRe(frame, "Buscador - " + CLASS_NAME, modal, "Cliente", "Nº " + CLASS_NAME);
         buscador.getCheckAnulada().setVisible(true);
         initBuscador(setVisible);
@@ -560,7 +560,7 @@ public class RemitoController implements ActionListener, KeyListener {
     }
 
     public void unlockedABM(JFrame owner) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.VENTA_NUMERACION_MANUAL);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.VENTA_NUMERACION_MANUAL);
         initRemito(owner, true, false, true);
         unlockedNumeracion = true;
         facturaVentaController.getContenedor().setNumeroFacturaEditable(true);
@@ -582,7 +582,7 @@ public class RemitoController implements ActionListener, KeyListener {
     }
 
     public void initBuscadorToAnular(Window owner) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.ANULAR_COMPROBANTES);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.ANULAR_COMPROBANTES);
         this.editing = false;
         this.anulando = true;
         MODO_VISTA = false;

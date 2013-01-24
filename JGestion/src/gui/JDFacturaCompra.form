@@ -92,8 +92,8 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Component id="labelCaja" alignment="1" min="-2" max="-2" attributes="0"/>
-                      <Component id="jLabel6" alignment="1" min="-2" max="-2" attributes="0"/>
-                      <Component id="jLabel10" alignment="1" min="-2" max="-2" attributes="0"/>
+                      <Component id="labelUnidad" alignment="1" min="-2" max="-2" attributes="0"/>
+                      <Component id="labelCuenta" alignment="1" min="-2" max="-2" attributes="0"/>
                       <Component id="labelObservacion" alignment="1" min="-2" max="-2" attributes="0"/>
                       <Component id="labelProveedor" alignment="1" min="-2" max="-2" attributes="0"/>
                       <Component id="labelFecha" alignment="1" min="-2" max="-2" attributes="0"/>
@@ -144,7 +144,7 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="labelSucursal" alignment="1" min="-2" max="-2" attributes="0"/>
-                              <Component id="jLabel11" alignment="1" min="-2" max="-2" attributes="0"/>
+                              <Component id="labelSubCuenta" alignment="1" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
@@ -169,14 +169,14 @@
                   <Group type="103" groupAlignment="2" attributes="0">
                       <Component id="cbSucursal" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="labelSucursal" alignment="2" min="-2" max="-2" attributes="0"/>
-                      <Component id="jLabel6" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Component id="labelUnidad" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="cbUnidadDeNegocio" alignment="2" min="-2" max="-2" attributes="1"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="2" attributes="0">
-                      <Component id="jLabel10" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Component id="labelCuenta" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="cbCuenta" alignment="2" min="-2" max="-2" attributes="1"/>
-                      <Component id="jLabel11" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Component id="labelSubCuenta" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="cbSubCuenta" alignment="2" min="-2" max="-2" attributes="1"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
@@ -348,7 +348,7 @@
             <Property name="requestFocusEnabled" type="boolean" value="false"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JLabel" name="jLabel6">
+        <Component class="javax.swing.JLabel" name="labelUnidad">
           <Properties>
             <Property name="text" type="java.lang.String" value="Unid. de Negocio"/>
           </Properties>
@@ -361,7 +361,7 @@
             <Property name="name" type="java.lang.String" value="" noResource="true"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JLabel" name="jLabel10">
+        <Component class="javax.swing.JLabel" name="labelCuenta">
           <Properties>
             <Property name="text" type="java.lang.String" value="Cuenta"/>
           </Properties>
@@ -374,7 +374,7 @@
             <Property name="name" type="java.lang.String" value="" noResource="true"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JLabel" name="jLabel11">
+        <Component class="javax.swing.JLabel" name="labelSubCuenta">
           <Properties>
             <Property name="text" type="java.lang.String" value="Sub Cuenta"/>
           </Properties>
