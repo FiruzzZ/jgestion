@@ -125,14 +125,14 @@ public class MarcaJpaController implements ActionListener, MouseListener {
     }// </editor-fold>
 
     public void getABM(JFrame owner, boolean modal) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.ABM_PRODUCTOS);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.ABM_PRODUCTOS);
         abm = new JDMiniABM(owner, modal);
         abm.setLocationRelativeTo(owner);
         initABM();
     }
 
     public void getABM(JDialog owner, boolean modal) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.ABM_PRODUCTOS);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.ABM_PRODUCTOS);
         abm = new JDMiniABM(owner, modal);
         abm.setLocationRelativeTo(owner);
         initABM();

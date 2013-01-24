@@ -26,7 +26,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author FiruzzZ
  */
-public class ContribuyenteJpaController implements ActionListener, MouseListener {
+public class ContribuyenteController implements ActionListener, MouseListener {
 
    public final String CLASS_NAME = "Contribuyente";
    private final String[] colsName = {"Nº", "Nombre"};
@@ -177,13 +177,13 @@ public class ContribuyenteJpaController implements ActionListener, MouseListener
                abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
             } catch (IllegalOrphanException ex) {
                abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
-               Logger.getLogger(ContribuyenteJpaController.class.getName()).log(Level.SEVERE, null, ex);
+               Logger.getLogger(ContribuyenteController.class.getName()).log(Level.SEVERE, null, ex);
             } catch (NonexistentEntityException ex) {
                abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
-               Logger.getLogger(ContribuyenteJpaController.class.getName()).log(Level.SEVERE, null, ex);
+               Logger.getLogger(ContribuyenteController.class.getName()).log(Level.SEVERE, null, ex);
             } catch (Exception ex) {
                abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
-               Logger.getLogger(ContribuyenteJpaController.class.getName()).log(Level.SEVERE, null, ex);
+               Logger.getLogger(ContribuyenteController.class.getName()).log(Level.SEVERE, null, ex);
             }
          }
          return;
@@ -246,7 +246,7 @@ public class ContribuyenteJpaController implements ActionListener, MouseListener
    public void initABM(java.awt.Frame frame, boolean modal) {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.DATOS_GENERAL);
+         UsuarioController.checkPermiso(PermisosController.PermisoDe.DATOS_GENERAL);
       } catch (MessageException ex) {
          javax.swing.JOptionPane.showMessageDialog(null,ex.getMessage());
          return;

@@ -20,11 +20,11 @@ import org.apache.log4j.Logger;
  *
  * @author FiruzzZ
  */
-public class StockJpaController {
+public class StockController {
 
     public static final String CLASS_NAME = Stock.class.getSimpleName();
 
-    public StockJpaController() {
+    public StockController() {
     }
 
     public EntityManager getEntityManager() {
@@ -178,7 +178,7 @@ public class StockJpaController {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            Logger.getLogger(StockJpaController.class).error(ex.getMessage(), ex);
+            Logger.getLogger(StockController.class).error(ex.getMessage(), ex);
         } finally {
             if (em != null) {
                 em.close();

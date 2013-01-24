@@ -82,7 +82,7 @@ public class CuentaController {
      * @throws MessageException End-User messages
      */
     public void initABM(JFrame jFrame) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.TESORERIA);
         final JDMiniABM abm = new JDMiniABM(jFrame, true);
         abm.hideBtnLock();
         abm.hideFieldCodigo();

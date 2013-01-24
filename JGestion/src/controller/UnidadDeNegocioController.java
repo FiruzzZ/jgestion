@@ -72,7 +72,7 @@ public class UnidadDeNegocioController {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.DATOS_GENERAL);
+                    UsuarioController.checkPermiso(PermisosController.PermisoDe.DATOS_GENERAL);
                     jpaController.remove(EL_OBJECT);
                     contenedor.showMessage("Producto eliminado..", null, 1);
                 } catch (IllegalArgumentException ex) {
@@ -94,7 +94,7 @@ public class UnidadDeNegocioController {
     }
 
     private void initABM(boolean isEditing) throws MessageException, IOException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.ABM_PRODUCTOS);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.ABM_PRODUCTOS);
         panelABMUnidadDeNegocio = new PanelABMUnidadDeNegocio();
         List<Sucursal> sucursales = new SucursalJpaController().findAll();
         DefaultTableModel dtm = (DefaultTableModel) panelABMUnidadDeNegocio.getjTable1().getModel();

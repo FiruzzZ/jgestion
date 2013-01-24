@@ -1074,7 +1074,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
     //Rubro->Proveedores
     private void jMenuItem12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem12ActionPerformed
         try {
-            JDialog jd = new RubroJpaController().getABM(this);
+            JDialog jd = new RubroController().getABM(this);
             jd.setLocationRelativeTo(this);
             jd.setVisible(true);
             refreshConnectionDB();
@@ -1110,12 +1110,12 @@ public class JFP extends javax.swing.JFrame implements Runnable {
     }//GEN-LAST:event_jMenuItem19ActionPerformed
 
     private void jMenuItem11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem11ActionPerformed
-        new ContribuyenteJpaController().initABM(this, true);
+        new ContribuyenteController().initABM(this, true);
         refreshConnectionDB();
     }//GEN-LAST:event_jMenuItem11ActionPerformed
 
     private void jMenuItem15ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem15ActionPerformed
-        new MunicipioJpaController().initContenedor(this, true);
+        new MunicipioController().initContenedor(this, true);
         refreshConnectionDB();
     }//GEN-LAST:event_jMenuItem15ActionPerformed
 
@@ -1125,7 +1125,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
     }//GEN-LAST:event_jMenuItem8ActionPerformed
 
     private void jMenuItem20ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem20ActionPerformed
-        new ListaPreciosJpaController().initContenedor(this, true);
+        new ListaPreciosController().initContenedor(this, true);
         refreshConnectionDB();
     }//GEN-LAST:event_jMenuItem20ActionPerformed
 
@@ -1252,7 +1252,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
     private void jMenuItem30ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem30ActionPerformed
         try {
-            new CtacteClienteJpaController().initResumenCtaCte(this, false);
+            new CtacteClienteController().initResumenCtaCte(this, false);
         } catch (MessageException ex) {
             ex.displayMessage(this);
         }
@@ -1310,7 +1310,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
     }//GEN-LAST:event_jMenuItem35ActionPerformed
 
     private void jMenuItem31ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem31ActionPerformed
-        new CtacteProveedorJpaController().iniResumenCtaCte(this, false);
+        new CtacteProveedorController().iniResumenCtaCte(this, false);
         refreshConnectionDB();
     }//GEN-LAST:event_jMenuItem31ActionPerformed
 
@@ -1360,7 +1360,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
     private void jMenuItem42ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem42ActionPerformed
         try {
-            new CtacteClienteJpaController().initCheckVencimientos((JFrame) this);
+            new CtacteClienteController().initCheckVencimientos((JFrame) this);
         } catch (MessageException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
         }

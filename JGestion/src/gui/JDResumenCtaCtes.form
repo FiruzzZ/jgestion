@@ -38,7 +38,11 @@
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="dcDesde" min="-2" pref="120" max="-2" attributes="1"/>
-                          <Component id="cbClieProv" min="-2" pref="298" max="-2" attributes="1"/>
+                          <Group type="102" attributes="0">
+                              <Component id="cbClieProv" min="-2" pref="298" max="-2" attributes="1"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="btnCuenta" min="-2" max="-2" attributes="0"/>
+                          </Group>
                           <Group type="102" attributes="0">
                               <Component id="checkExcluirPagadas" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
@@ -70,6 +74,7 @@
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="cbClieProv" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="labelClieProv" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="btnCuenta" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="2" attributes="0">
@@ -84,7 +89,7 @@
                   </Group>
               </Group>
               <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
-              <Component id="jSplitPane1" pref="325" max="32767" attributes="0"/>
+              <Component id="jSplitPane1" pref="368" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
@@ -183,7 +188,7 @@
                           <Component id="labelReciboAnulado" alignment="2" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jScrollPane2" pref="100" max="32767" attributes="0"/>
+                      <Component id="jScrollPane2" pref="143" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -287,6 +292,11 @@
     <Component class="javax.swing.JCheckBox" name="checkExcluirAnuladas">
       <Properties>
         <Property name="text" type="java.lang.String" value="Excluir Anuladas"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnCuenta">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Ver cuenta"/>
       </Properties>
     </Component>
   </SubComponents>

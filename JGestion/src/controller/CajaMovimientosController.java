@@ -149,7 +149,7 @@ public class CajaMovimientosController implements ActionListener {
     public void initCierreCaja(JFrame frame, boolean modal) {
         // <editor-fold defaultstate="collapsed" desc="checking Permiso">
         try {
-            UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.CERRAR_CAJAS);
+            UsuarioController.checkPermiso(PermisosController.PermisoDe.CERRAR_CAJAS);
         } catch (MessageException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
             return;
@@ -371,7 +371,7 @@ public class CajaMovimientosController implements ActionListener {
     }
 
     public void initCajaToCaja(JFrame frame, boolean modal) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.TESORERIA);
 
         jdCajaToCaja = new JDCajaToCaja(frame, modal);
         jdCajaToCaja.setLocationRelativeTo(frame);
@@ -529,7 +529,7 @@ public class CajaMovimientosController implements ActionListener {
      * @throws MessageException
      */
     public JDialog getABMMovimientosVarios(Window owner, boolean modal) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.TESORERIA);
         initMovimientosVarios(owner, modal, null);
         return abm;
     }

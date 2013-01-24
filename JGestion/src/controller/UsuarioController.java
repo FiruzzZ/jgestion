@@ -1,6 +1,6 @@
 package controller;
 
-import controller.PermisosJpaController.PermisoDe;
+import controller.PermisosController.PermisoDe;
 import controller.exceptions.*;
 import entity.*;
 import java.awt.event.ActionEvent;
@@ -414,7 +414,7 @@ public class UsuarioController implements ActionListener, MouseListener, KeyList
     }
 
     private void initABM(boolean isEditing) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.ABM_USUARIOS);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.ABM_USUARIOS);
         if (isEditing) {
             mouseReleased(null);
             if (EL_OBJECT == null) {

@@ -15,7 +15,7 @@ import gui.PanelABMUsuarios;
  *
  * @author Administrador
  */
-public class PermisosJpaController {
+public class PermisosController {
 
     /**
      * cuando se agrega un PermisoDe hay que modificar.
@@ -44,7 +44,7 @@ public class PermisosJpaController {
         ANULAR_COMPROBANTES;
     }
 
-    public PermisosJpaController() {
+    public PermisosController() {
     }
 
     public EntityManager getEntityManager() {

@@ -70,11 +70,11 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         labelCaja = new javax.swing.JLabel();
         labelMovimiento = new javax.swing.JLabel();
         tfNumMovimiento = new javax.swing.JTextField();
-        jLabel6 = new javax.swing.JLabel();
+        labelUnidad = new javax.swing.JLabel();
         cbUnidadDeNegocio = new javax.swing.JComboBox();
-        jLabel10 = new javax.swing.JLabel();
+        labelCuenta = new javax.swing.JLabel();
         cbCuenta = new javax.swing.JComboBox();
-        jLabel11 = new javax.swing.JLabel();
+        labelSubCuenta = new javax.swing.JLabel();
         cbSubCuenta = new javax.swing.JComboBox();
         labelObservacion = new javax.swing.JLabel();
         tfObservacion = new javax.swing.JTextField();
@@ -226,15 +226,15 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         tfNumMovimiento.setFocusable(false);
         tfNumMovimiento.setRequestFocusEnabled(false);
 
-        jLabel6.setText("Unid. de Negocio");
+        labelUnidad.setText("Unid. de Negocio");
 
         cbUnidadDeNegocio.setName(""); // NOI18N
 
-        jLabel10.setText("Cuenta");
+        labelCuenta.setText("Cuenta");
 
         cbCuenta.setName(""); // NOI18N
 
-        jLabel11.setText("Sub Cuenta");
+        labelSubCuenta.setText("Sub Cuenta");
 
         cbSubCuenta.setName(""); // NOI18N
 
@@ -266,8 +266,8 @@ public class JDFacturaCompra extends javax.swing.JDialog {
                 .addContainerGap()
                 .addGroup(panelDatosCompraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(labelCaja, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(labelUnidad, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(labelCuenta, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(labelObservacion, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(labelProveedor, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(labelFecha, javax.swing.GroupLayout.Alignment.TRAILING))
@@ -312,7 +312,7 @@ public class JDFacturaCompra extends javax.swing.JDialog {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(panelDatosCompraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(labelSucursal, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel11, javax.swing.GroupLayout.Alignment.TRAILING))
+                            .addComponent(labelSubCuenta, javax.swing.GroupLayout.Alignment.TRAILING))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(panelDatosCompraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(cbSucursal, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -330,13 +330,13 @@ public class JDFacturaCompra extends javax.swing.JDialog {
                 .addGroup(panelDatosCompraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(cbSucursal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(labelSucursal)
-                    .addComponent(jLabel6)
+                    .addComponent(labelUnidad)
                     .addComponent(cbUnidadDeNegocio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelDatosCompraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                    .addComponent(jLabel10)
+                    .addComponent(labelCuenta)
                     .addComponent(cbCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel11)
+                    .addComponent(labelSubCuenta)
                     .addComponent(cbSubCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelDatosCompraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
@@ -1057,8 +1057,6 @@ public class JDFacturaCompra extends javax.swing.JDialog {
     private javax.swing.JCheckBox checkActualizaStock;
     private com.toedter.calendar.JDateChooser dcFechaFactura;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
@@ -1072,7 +1070,6 @@ public class JDFacturaCompra extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel30;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
@@ -1080,6 +1077,7 @@ public class JDFacturaCompra extends javax.swing.JDialog {
     private javax.swing.JTable jTable1;
     private javax.swing.JLabel labelCaja;
     private javax.swing.JLabel labelCodigoNoRegistrado;
+    private javax.swing.JLabel labelCuenta;
     private javax.swing.JLabel labelDescuento;
     private javax.swing.JLabel labelDias;
     private javax.swing.JLabel labelFacturaNumero;
@@ -1093,7 +1091,9 @@ public class JDFacturaCompra extends javax.swing.JDialog {
     private javax.swing.JLabel labelPrecioActual;
     private javax.swing.JLabel labelPrecioUnit;
     private javax.swing.JLabel labelProveedor;
+    private javax.swing.JLabel labelSubCuenta;
     private javax.swing.JLabel labelSucursal;
+    private javax.swing.JLabel labelUnidad;
     private javax.swing.JPanel panelDatosCompra;
     private javax.swing.JPanel panelOpcionesCompra;
     private javax.swing.JPanel panelProducto;
@@ -1515,6 +1515,13 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         cbDesc.setVisible(false);
         tfProductoDesc.setVisible(false);
 //        panelOpcionesCompra.setVisible(false);
+        labelUnidad.setVisible(false);
+        cbUnidadDeNegocio.setVisible(false);
+        labelCuenta.setVisible(false);
+        cbCuenta.setVisible(false);
+        labelSubCuenta.setVisible(false);
+        cbSubCuenta.setVisible(false);
+        checkActualizaStock.setText("Acreditar importe de Nota");
         pack();
     }
 

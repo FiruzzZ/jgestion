@@ -28,7 +28,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author FiruzzZ
  */
-public class ListaPreciosJpaController implements ActionListener, MouseListener, KeyListener {
+public class ListaPreciosController implements ActionListener, MouseListener, KeyListener {
 
    public static final String CLASS_NAME = "ListaPrecios";
    private final String[] colsName = {"id", "Nombre", "M. General", "Margen (%)", "Cat. Web"};
@@ -143,7 +143,7 @@ public class ListaPreciosJpaController implements ActionListener, MouseListener,
    public void initContenedor(java.awt.Frame frame, boolean modal) {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.ABM_LISTA_PRECIOS);
+         UsuarioController.checkPermiso(PermisosController.PermisoDe.ABM_LISTA_PRECIOS);
       } catch (MessageException ex) {
          javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
          return;
@@ -186,7 +186,7 @@ public class ListaPreciosJpaController implements ActionListener, MouseListener,
    private void initABM(boolean isEditing, ActionEvent e) throws MessageException {
       // <editor-fold defaultstate="collapsed" desc="checking Permiso">
       try {
-         UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.ABM_LISTA_PRECIOS);
+         UsuarioController.checkPermiso(PermisosController.PermisoDe.ABM_LISTA_PRECIOS);
       } catch (MessageException ex) {
          javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
          return;
@@ -196,7 +196,7 @@ public class ListaPreciosJpaController implements ActionListener, MouseListener,
       }
 
       //lista usada para comparación entre tablas (Rubros y RubrosAfectados)
-      listaDeRubros = new RubroJpaController().findRubros();
+      listaDeRubros = new RubroController().findRubros();
       panel = new PanelABMListaPrecio();
       panel.setListener(this);
       UTIL.getDefaultTableModel(

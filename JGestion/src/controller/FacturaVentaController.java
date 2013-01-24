@@ -113,7 +113,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
     public void initFacturaVenta(JFrame owner, boolean modal, final Object listener,
             final int factVenta1_PresupNotaCredito2_Remito3, boolean setVisible, boolean loadDefaultData)
             throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.VENTA);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.VENTA);
         UsuarioHelper uh = new UsuarioHelper();
         if (uh.getSucursales().isEmpty()) {
             throw new MessageException(Main.resourceBundle.getString("unassigned.sucursal"));
@@ -262,7 +262,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
             ActionListenerManager.setUnidadDeNegocioSucursalActionListener(jdFactura.getCbUnidadDeNegocio(), false, jdFactura.getCbSucursal(), false, true);
             ActionListenerManager.setCuentaSubcuentaActionListener(jdFactura.getCbCuenta(), false, jdFactura.getCbSubCuenta(), true, true);
 //            UTIL.loadComboBox(jdFactura.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), false);
-            UTIL.loadComboBox(jdFactura.getCbListaPrecio(), new ListaPreciosJpaController().findListaPreciosEntities(), false);
+            UTIL.loadComboBox(jdFactura.getCbListaPrecio(), new ListaPreciosController().findListaPreciosEntities(), false);
             UTIL.loadComboBox(jdFactura.getCbFormaPago(), Valores.FormaPago.getFormasDePago(), false);
             jdFactura.getCbListaPrecio().addActionListener(new ActionListener() {
                 @Override
@@ -577,7 +577,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
             //buscamos si el producto está en oferta
             productoEnOferta = new HistorialOfertasJpaController().findOfertaVigente(selectedProducto);
             LOG.debug("productoEnOferta.id=" + (productoEnOferta != null ? productoEnOferta.getId() : null));
-            ListaPrecios listaPreciosParaCatalogo = new ListaPreciosJpaController().findListaPreciosParaCatalogo();
+            ListaPrecios listaPreciosParaCatalogo = new ListaPreciosController().findListaPreciosParaCatalogo();
             //Cuando el producto NO está en oferta o cuando NO hay lista designada para CatalogoWeb
             if (productoEnOferta == null || listaPreciosParaCatalogo == null) {
                 //agrega el margen de ganancia según la ListaPrecio
@@ -907,7 +907,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                 break;
             }
             case 2: { // CTA CTE CLIENTE (NO HAY NINGÚN MOVIMIENTO DE CAJA)
-                new CtacteClienteJpaController().nuevaCtaCte(facturaVenta);
+                new CtacteClienteController().nuevaCtaCte(facturaVenta);
                 break;
             }
             case 3: { // CHEQUE Terceros (tampoco HAY NINGÚN MOVIMIENTO DE CAJA)
@@ -966,9 +966,9 @@ public class FacturaVentaController implements ActionListener, KeyListener {
     }
 
     public void initBuscador(JFrame frame, final boolean modal, final boolean toAnular) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.VENTA);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.VENTA);
         if (toAnular) {
-            UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.ANULAR_COMPROBANTES);
+            UsuarioController.checkPermiso(PermisosController.PermisoDe.ANULAR_COMPROBANTES);
         }
         buscador = new JDBuscadorReRe(frame, "Buscador - Facturas venta", modal, "Cliente", "Nº Factura");
         buscador.setToFacturaVenta();
@@ -1060,7 +1060,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                                         + "\nFecha de sistema:" + UTIL.TIMESTAMP_FORMAT.format(cm.getSistemaFechaCierre()));
                             }
                         } else if (EL_OBJECT.getFormaPagoEnum().equals(Valores.FormaPago.CTA_CTE)) {
-                            CtacteCliente ccc = new CtacteClienteJpaController().findBy(EL_OBJECT);
+                            CtacteCliente ccc = new CtacteClienteController().findBy(EL_OBJECT);
                             if (ccc.getEntregado() > 0) {
                                 throw new MessageException("No se puede modificar una Factura cuya forma de pago es a Cta. Cte. y ya tiene asignado pago(s)."
                                         + "\nEstado de la Cta. Cte. para esta Factura: " + ccc.getEstadoEnum()
@@ -1661,7 +1661,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                 new DetalleCajaMovimientosController().merge(dcm);
             }
         } else if (EL_OBJECT.getFormaPagoEnum().equals(Valores.FormaPago.CTA_CTE)) {
-            CtacteClienteJpaController cccController = new CtacteClienteJpaController();
+            CtacteClienteController cccController = new CtacteClienteController();
             CtacteCliente oldCCC = cccController.findCtacteClienteByFactura(EL_OBJECT.getId());
             if (cambiaFormaPago) {
                 cccController.destroy(oldCCC.getId());
@@ -1720,7 +1720,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
             System.out.println("FV.id=" + newFacturaVenta.getId());
             newFacturaVenta = (FacturaVenta) DAO.findEntity(FacturaVenta.class, newFacturaVenta.getId());
             //actualiza Stock
-            new StockJpaController().updateStock(newFacturaVenta);
+            new StockController().updateStock(newFacturaVenta);
             //asiento en caja..
             registrarVentaSegunFormaDePago(newFacturaVenta);
             if (conFactura) {
@@ -1848,7 +1848,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         if (listaPrecios == null) {
             jdFactura.setVisibleEstrellita(Boolean.FALSE);
         } else {
-            ListaPrecios toCatalogoWeb = new ListaPreciosJpaController().findListaPreciosParaCatalogo();
+            ListaPrecios toCatalogoWeb = new ListaPreciosController().findListaPreciosParaCatalogo();
             if (toCatalogoWeb == null) {
                 jdFactura.setVisibleEstrellita(Boolean.FALSE);
             } else {
@@ -1873,7 +1873,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
      * int, boolean, boolean)
      */
     public void unlockedABM(JFrame owner) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.VENTA_NUMERACION_MANUAL);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.VENTA_NUMERACION_MANUAL);
         unlockedNumeracion = true;
         initFacturaVenta(owner, true, this, 1, false, true);
         jdFactura.setTfFacturaOcteto(null);

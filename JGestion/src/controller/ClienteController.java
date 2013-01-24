@@ -201,7 +201,7 @@ public class ClienteController implements ActionListener {
      * @throws MessageException
      */
     private void initABM(boolean isEditing, ActionEvent e) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.ABM_CLIENTES);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.ABM_CLIENTES);
         if (isEditing && EL_OBJECT == null) {
             throw new MessageException("Debe elegir una fila");
 
@@ -213,7 +213,7 @@ public class ClienteController implements ActionListener {
         UTIL.loadComboBox(panelABM.getCbProvincias(), new ProvinciaJpaController().findProvinciaEntities(), true);
         UTIL.loadComboBox(panelABM.getCbDepartamentos(), null, true);
         UTIL.loadComboBox(panelABM.getCbMunicipios(), null, true);
-        UTIL.loadComboBox(panelABM.getCbCondicIVA(), new ContribuyenteJpaController().findContribuyenteEntities(), false);
+        UTIL.loadComboBox(panelABM.getCbCondicIVA(), new ContribuyenteController().findContribuyenteEntities(), false);
         panelABM.setListener(this);
         if (isEditing) {
             setPanel(EL_OBJECT);
@@ -568,10 +568,10 @@ public class ClienteController implements ActionListener {
                 }
 
             } else if (boton.equals(panelABM.getbMunicipios())) {
-                new MunicipioJpaController().initContenedor(null, true);
+                new MunicipioController().initContenedor(null, true);
                 if (panelABM.getCbDepartamentos().getSelectedIndex() > 0) {
                     UTIL.loadComboBox(panelABM.getCbMunicipios(),
-                            new MunicipioJpaController().findMunicipiosFromDepto(
+                            new MunicipioController().findMunicipiosFromDepto(
                             ((Departamento) panelABM.getCbDepartamentos().getSelectedItem()).getId()), true);
                 } else {
                     UTIL.loadComboBox(panelABM.getCbMunicipios(), null, true);

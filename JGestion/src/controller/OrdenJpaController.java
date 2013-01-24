@@ -171,7 +171,7 @@ public class OrdenJpaController {
     }
 
     public void initOrden(JFrame owner, boolean visible) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.ORDENES_IO);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.ORDENES_IO);
         jdFactura = new JDFacturaCompra(owner, true);
         jdFactura.getBtnAnular().setVisible(false);
         jdFactura.setUIToOrden();
@@ -230,7 +230,7 @@ public class OrdenJpaController {
                             producto_selected = new ProductoJpaController().find(wrapper.getId());
                             setProducto(producto_selected);
                             if (producto_selected != null) {
-                                jdFactura.setTfProductoPrecioActual(new StockJpaController().getStockGlobal(producto_selected.getId()).toString());
+                                jdFactura.setTfProductoPrecioActual(new StockController().getStockGlobal(producto_selected.getId()).toString());
                             }
                         } catch (ClassCastException ex) {
                             jdFactura.setTfProductoPrecioActual("");
@@ -342,7 +342,7 @@ public class OrdenJpaController {
             orden.getDetalleOrdenList().add(detalleOrden);
         }
         create(orden);
-        StockJpaController stockController = new StockJpaController();
+        StockController stockController = new StockController();
         EntityManager em = getEntityManager();
         em.getTransaction().begin();
         for (DetalleOrden detalleOrden : orden.getDetalleOrdenList()) {
@@ -369,7 +369,7 @@ public class OrdenJpaController {
     }
 
     public void initBuscador(JFrame owner) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.ORDENES_IO);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.ORDENES_IO);
         panel = new PanelBuscadorOrdenes();
         UTIL.loadComboBox(panel.getCbSucursales(), new UsuarioHelper().getWrappedSucursales(), "<Todas>");
         buscador = new JDBuscador(owner, "Buscador de " + CLASS_NAME, true, panel);

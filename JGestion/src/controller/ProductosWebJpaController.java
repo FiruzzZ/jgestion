@@ -146,8 +146,8 @@ public class ProductosWebJpaController {
    }// </editor-fold>
 
    public void initCatalogoGUI(JFrame owner) throws MessageException {
-      UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.ABM_CATALOGOWEB);
-      if (new ListaPreciosJpaController().findListaPreciosParaCatalogo() != null) {
+      UsuarioController.checkPermiso(PermisosController.PermisoDe.ABM_CATALOGOWEB);
+      if (new ListaPreciosController().findListaPreciosParaCatalogo() != null) {
          try {
             jDCatalogoWEB = new JDCatalogoWEB(owner, true);
             jDCatalogoWEB.setLocationRelativeTo(owner);
@@ -162,8 +162,8 @@ public class ProductosWebJpaController {
    }
 
    public void initOfertasUI(JFrame owner) throws MessageException {
-      UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.ABM_OFERTASWEB);
-      if (new ListaPreciosJpaController().findListaPreciosParaCatalogo() != null) {
+      UsuarioController.checkPermiso(PermisosController.PermisoDe.ABM_OFERTASWEB);
+      if (new ListaPreciosController().findListaPreciosParaCatalogo() != null) {
          jdOfertas = new JDOfertas(owner, true);
          jdOfertas.setLocationRelativeTo(owner);
          jdOfertas.setVisible(true);

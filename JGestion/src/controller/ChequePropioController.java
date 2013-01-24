@@ -69,7 +69,7 @@ public class ChequePropioController implements ActionListener {
      * @throws MessageException
      */
     private JDialog initABM(boolean isEditing) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.TESORERIA);
         initPanelABM();
         if (isEditing) {
             setPanel(EL_OBJECT);
@@ -91,7 +91,7 @@ public class ChequePropioController implements ActionListener {
      * @throws MessageException
      */
     ChequePropio initABM(Window owner, boolean isEditing, Proveedor proveedor) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.TESORERIA);
         if (isEditing && EL_OBJECT == null) {
             throw new MessageException("Debe elegir una fila de la tabla");
         }
@@ -380,7 +380,7 @@ public class ChequePropioController implements ActionListener {
 
     private void initManager(Window parent, boolean selectionMode) throws MessageException {
         if (!selectionMode) {
-            UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
+            UsuarioController.checkPermiso(PermisosController.PermisoDe.TESORERIA);
         }
         List<Banco> l = new BancoController().findWithCuentasBancarias(true);
         if (l.isEmpty()) {

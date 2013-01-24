@@ -46,7 +46,7 @@ public class SucursalController implements ActionListener {
     }
 
     private void initABM(boolean isEditting, ActionEvent e) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.DATOS_GENERAL);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.DATOS_GENERAL);
         if (isEditting && entity == null) {
             throw new MessageException("Debe elegir una fila");
         }
@@ -473,9 +473,9 @@ public class SucursalController implements ActionListener {
                 }
             } else if (combo.getName().equalsIgnoreCase("cbDepartamentos")) {
                 if (combo.getSelectedIndex() > 0) {
-                    UTIL.loadComboBox(panel.getCbMunicipios(), new MunicipioJpaController().findMunicipiosFromDepto(((Departamento) combo.getSelectedItem()).getId()), true);
+                    UTIL.loadComboBox(panel.getCbMunicipios(), new MunicipioController().findMunicipiosFromDepto(((Departamento) combo.getSelectedItem()).getId()), true);
                 } else {
-                    UTIL.loadComboBox(panel.getCbMunicipios(), new MunicipioJpaController().findMunicipiosFromDepto(0), true);
+                    UTIL.loadComboBox(panel.getCbMunicipios(), new MunicipioController().findMunicipiosFromDepto(0), true);
                 }
             }
         }

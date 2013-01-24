@@ -118,7 +118,7 @@ public class CuentabancariaController {
      * @throws MessageException
      */
     private JDialog initABM(JDialog parent, boolean isEditing) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.TESORERIA);
         if (isEditing) {
             EL_OBJECT = getSelectedFromContenedor();
             if (EL_OBJECT == null) {

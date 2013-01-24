@@ -193,7 +193,7 @@ public class CajaController implements ActionListener {
     }
 
     public JDialog initABM(JFrame frame, boolean modal) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.ABM_CAJAS);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.ABM_CAJAS);
         abm = new JDMiniABM(frame, modal);
         abm.getTaInformacion().setText("Las Cajas sirve para agrupar registros de los diferentes comprobantes de Venta y Compras que se ingresen al sistema.");
         abm.setListeners(this);

@@ -9,7 +9,7 @@ import controller.Contabilidad;
 import controller.DAO;
 import controller.FacturaVentaController;
 import controller.HistorialOfertasJpaController;
-import controller.ListaPreciosJpaController;
+import controller.ListaPreciosController;
 import controller.ProductoController;
 import controller.ProductosWebJpaController;
 import controller.exceptions.MessageException;
@@ -53,7 +53,7 @@ public class JDOfertas extends javax.swing.JDialog {
     */
    public JDOfertas(java.awt.Frame parent, boolean modal) {
       super(parent, modal);
-      listaPreciosParaCatalogo = new ListaPreciosJpaController().findListaPreciosParaCatalogo();
+      listaPreciosParaCatalogo = new ListaPreciosController().findListaPreciosParaCatalogo();
       initComponents();
       setLocationRelativeTo(parent);
       productosWebCtrller = new ProductosWebJpaController();
@@ -887,7 +887,7 @@ public class JDOfertas extends javax.swing.JDialog {
       productosWeb.setFinOferta(null);
       productosWeb.setOferta(false);
       productosWeb.setDestacado(false);
-      ListaPrecios listaPrecios = new ListaPreciosJpaController().findListaPreciosParaCatalogo();
+      ListaPrecios listaPrecios = new ListaPreciosController().findListaPreciosParaCatalogo();
       Double precioFinal = producto.getPrecioVenta() + Contabilidad.GET_MARGEN_SEGUN_LISTAPRECIOS(listaPrecios, producto, null);
       Double iva = UTIL.getPorcentaje(precioFinal, producto.getIva().getIva());
       //seteando precio de venta ACTUAL

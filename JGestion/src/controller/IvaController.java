@@ -99,7 +99,7 @@ public class IvaController implements ActionListener {
     // </editor-fold>
 
     public void initABM(JFrame owner, boolean modal) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.ABM_PRODUCTOS);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.ABM_PRODUCTOS);
         abm = new JDMiniABM(owner, modal);
         abm.setLocationRelativeTo(owner);
         abm.getTaInformacion().setText("ABM de las Alicuotas (IVA) de los Productos.");

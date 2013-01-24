@@ -2,6 +2,7 @@ package controller;
 
 import controller.exceptions.MessageException;
 import controller.exceptions.NonexistentEntityException;
+import entity.CreditoProveedor;
 import entity.CtacteProveedor;
 import entity.DetalleRemesa;
 import entity.FacturaCompra;
@@ -9,6 +10,8 @@ import entity.Proveedor;
 import entity.Remesa;
 import utilities.general.UTIL;
 import gui.JDResumenCtaCtes;
+import gui.generics.JDialogTable;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -25,7 +28,12 @@ import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
 import javax.swing.text.NumberFormatter;
+import jgestion.JGestionUtils;
+import jpa.controller.CreditoProveedorJpaController;
 import jpa.controller.RemesaJpaController;
 import net.sf.jasperreports.engine.JRException;
 import utilities.swing.components.FormatRenderer;
@@ -35,7 +43,7 @@ import utilities.swing.components.NumberRenderer;
  *
  * @author Administrador
  */
-public class CtacteProveedorJpaController implements ActionListener {
+public class CtacteProveedorController implements ActionListener {
 
     public static final String CLASS_NAME = CtacteProveedor.class.getSimpleName();
     private JDResumenCtaCtes resumenCtaCtes;
@@ -61,22 +69,13 @@ public class CtacteProveedorJpaController implements ActionListener {
         }
     }
 
-    public void edit(CtacteProveedor ctacteProveedor) throws NonexistentEntityException, Exception {
+    public void edit(CtacteProveedor ctacteProveedor) {
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
             ctacteProveedor = em.merge(ctacteProveedor);
             em.getTransaction().commit();
-        } catch (Exception ex) {
-            String msg = ex.getLocalizedMessage();
-            if (msg == null || msg.length() == 0) {
-                Integer id = ctacteProveedor.getId();
-                if (findCtacteProveedor(id) == null) {
-                    throw new NonexistentEntityException("The ctacteProveedor with id " + id + " no longer exists.");
-                }
-            }
-            throw ex;
         } finally {
             if (em != null) {
                 em.close();
@@ -188,7 +187,7 @@ public class CtacteProveedorJpaController implements ActionListener {
     public void iniResumenCtaCte(JFrame owner, boolean modal) {
         // <editor-fold defaultstate="collapsed" desc="checking Permiso">
         try {
-            UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.TESORERIA);
+            UsuarioController.checkPermiso(PermisosController.PermisoDe.TESORERIA);
         } catch (MessageException ex) {
             javax.swing.JOptionPane.showMessageDialog(owner, ex.getMessage());
             return;
@@ -219,10 +218,45 @@ public class CtacteProveedorJpaController implements ActionListener {
                 new String[]{"Nº Factura", "Observación", "Monton"},
                 new int[]{60, 100, 50});
         resumenCtaCtes.getjTableDetalle().getColumnModel().getColumn(2).setCellRenderer(NumberRenderer.getCurrencyRenderer());
-        
+        resumenCtaCtes.getBtnCuenta().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                displayDetalleCredito(resumenCtaCtes);
+            }
+        });
         resumenCtaCtes.setListener(this);
         resumenCtaCtes.setLocationRelativeTo(owner);
         resumenCtaCtes.setVisible(true);
+    }
+
+    private void displayDetalleCredito(Window owner) {
+        JTable tabla = UTIL.getDefaultTableModel(null,
+                new String[]{"Concepto", "Fecha", "Debe", "Haber"},
+                new int[]{200, 50, 50, 50});
+        tabla.getColumnModel().getColumn(2).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        tabla.getColumnModel().getColumn(3).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        Proveedor p = (Proveedor) resumenCtaCtes.getCbClieProv().getSelectedItem();
+        List<CreditoProveedor> lista = new CreditoProveedorJpaController().findBy(p);
+        DefaultTableModel dtm = (DefaultTableModel) tabla.getModel();
+        BigDecimal debe = BigDecimal.ZERO;
+        BigDecimal haber = BigDecimal.ZERO;
+        for (CreditoProveedor cp : lista) {
+            if (cp.getDebe()) {
+                debe = debe.add(cp.getImporte());
+            } else {
+                haber = haber.add(cp.getImporte());
+            }
+            dtm.addRow(new Object[]{
+                        cp.getConcepto(),
+                        UTIL.TIMESTAMP_FORMAT.format(cp.getFechaCarga()),
+                        cp.getDebe() ? cp.getImporte() : null,
+                        cp.getDebe() ? null : cp.getImporte()});
+        }
+        dtm.addRow(new Object[]{"----------------------", null, debe, haber});
+        dtm.addRow(new Object[]{"---------TOTAL--------", null, null, haber.subtract(debe)});
+        JDialogTable jd = new JDialogTable(owner, "Detalle de crédito: " + p.getNombre(), true, tabla);
+        jd.setSize(600, 400);
+        jd.setVisible(true);
     }
 
     private void jTableResumenMouseReleased(MouseEvent e) {
@@ -248,7 +282,7 @@ public class CtacteProveedorJpaController implements ActionListener {
                     resumenCtaCtes.showMessage(ex.getMessage(), null, 2);
                 } catch (Exception ex) {
                     resumenCtaCtes.showMessage(ex.getMessage(), null, 2);
-                    Logger.getLogger(CtacteClienteJpaController.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(CtacteClienteController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }// </editor-fold>
             else if (btn.equals(resumenCtaCtes.getbImprimir())) {
@@ -258,7 +292,7 @@ public class CtacteProveedorJpaController implements ActionListener {
                     resumenCtaCtes.showMessage(ex.getMessage(), null, 2);
                 } catch (Exception ex) {
                     resumenCtaCtes.showMessage(ex.getMessage(), null, 2);
-                    Logger.getLogger(CtacteClienteJpaController.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(CtacteClienteController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }// </editor-fold>

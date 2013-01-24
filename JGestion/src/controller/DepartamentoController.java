@@ -260,7 +260,7 @@ public class DepartamentoController implements ActionListener, MouseListener, Ke
 
                 } else if (boton.getName().equalsIgnoreCase("del")) {
                     try {
-                        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.DATOS_GENERAL);
+                        UsuarioController.checkPermiso(PermisosController.PermisoDe.DATOS_GENERAL);
                         if (entity == null) {
                             throw new MessageException("No hay departamento seleccionado");
                         }
@@ -336,7 +336,7 @@ public class DepartamentoController implements ActionListener, MouseListener, Ke
     }
 
     private void initABM(boolean isEditting, ActionEvent e) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.DATOS_GENERAL);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.DATOS_GENERAL);
         if (isEditting && entity == null) {
             throw new MessageException("Debe elegir una fila");
         }

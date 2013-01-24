@@ -229,9 +229,9 @@ public class NotaCreditoController {
     }
 
     NotaCredito initBuscador(Window owner, final boolean toAnular, Cliente cliente, final boolean selectingMode) throws MessageException {
-        UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.VENTA);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.VENTA);
         if(toAnular) {
-            UsuarioController.checkPermiso(PermisosJpaController.PermisoDe.ANULAR_COMPROBANTES);
+            UsuarioController.checkPermiso(PermisosController.PermisoDe.ANULAR_COMPROBANTES);
         }
         buscador = new JDBuscadorReRe(owner, "Buscador - Notas de crédito", true, "Cliente", "Nº");
         buscador.hideCaja();
