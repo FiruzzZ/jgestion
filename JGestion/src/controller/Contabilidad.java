@@ -782,6 +782,7 @@ public class Contabilidad {
         buscador.getjTable1().setAutoCreateRowSorter(true);
         buscador.hideCaja();
         buscador.hideFactura();
+        buscador.hideCheckAnulado();
         buscador.setFechaSistemaFieldsVisible(false);
         buscador.getbImprimir().setVisible(true);
         UTIL.loadComboBox(buscador.getCbClieProv(), new ProveedorController().findEntities(), true);
@@ -812,9 +813,7 @@ public class Contabilidad {
                 if (buscador.getjTable1().getRowCount() > 0) {
                     try {
                         doComprobantesCompraReport();
-                    } catch (MissingReportException ex) {
-                        buscador.showMessage(ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                    } catch (JRException ex) {
+                    } catch (MissingReportException | JRException ex) {
                         buscador.showMessage(ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 } else {
@@ -1044,9 +1043,9 @@ public class Contabilidad {
             queryWhereFactuVenta.append(" AND o.cliente.id = ").append(((Cliente) buscador.getCbClieProv().getSelectedItem()).getId());
         }
 
-        queryWhereFactuVenta.append(" AND o.anulada = " + buscador.getCheckAnulada().isSelected());
-        queryWhereNotaCredito.append(" AND o.anulada = " + buscador.getCheckAnulada().isSelected());
-        
+        queryWhereFactuVenta.append(" AND o.anulada = ").append(buscador.getCheckAnulada().isSelected());
+        queryWhereNotaCredito.append(" AND o.anulada = ").append(buscador.getCheckAnulada().isSelected());
+
         System.out.println("QUERY: " + queryWhereFactuVenta.toString());
         @SuppressWarnings("unchecked")
         List<FacturaVenta> l = (List<FacturaVenta>) DAO.findEntities(FacturaVenta.class, queryWhereFactuVenta.toString());

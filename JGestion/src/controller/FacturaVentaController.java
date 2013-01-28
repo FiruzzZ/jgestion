@@ -421,7 +421,16 @@ public class FacturaVentaController implements ActionListener, KeyListener {
     private void sucursalSelectedActionPerformanceOnComboBox(int factVenta1_PresupNotaCredito2_Remito3, Object listener) {
         Sucursal s = getSelectedSucursalFromJDFacturaVenta();
         if (factVenta1_PresupNotaCredito2_Remito3 == 1) {
-            setNumeroFactura(s, jpaController.getNextNumeroFactura(s, jdFactura.getCbFacturaTipo().getSelectedItem().toString().charAt(0)));
+            if (jdFactura.isEditMode()) {
+                if (EL_OBJECT.getSucursal().equals(s)) {
+                    System.out.println("Cargando el N° que ya tenía la factura en la Sucursal");
+                    setNumeroFactura(s, Long.valueOf(EL_OBJECT.getNumero()).intValue());
+                } else {
+                    setNumeroFactura(s, jpaController.getNextNumeroFactura(s, jdFactura.getCbFacturaTipo().getSelectedItem().toString().charAt(0)));
+                }
+            } else {
+                setNumeroFactura(s, jpaController.getNextNumeroFactura(s, jdFactura.getCbFacturaTipo().getSelectedItem().toString().charAt(0)));
+            }
         } else if (factVenta1_PresupNotaCredito2_Remito3 == 2) {
             if (listener != null) {
                 setNumeroFactura(s, ((PresupuestoJpaController) listener).getNextNumero(s));
@@ -1205,6 +1214,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         jdFactura.setDcFechaFactura(EL_OBJECT.getFechaVenta());
         UTIL.setSelectedItem(jdFactura.getCbCliente(), EL_OBJECT.getCliente());
         Sucursal s = EL_OBJECT.getSucursal();
+        UTIL.setSelectedItem(jdFactura.getCbUnidadDeNegocio(), EL_OBJECT.getUnidadDeNegocio().getNombre());
         UTIL.setSelectedItem(jdFactura.getCbSucursal(), new ComboBoxWrapper<Sucursal>(s, s.getId(), s.getNombre()));
         cargarComboTiposFacturas(EL_OBJECT.getCliente());
         if (EL_OBJECT.getRemito() != null) {
@@ -1216,7 +1226,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         UTIL.setSelectedItem(jdFactura.getCbListaPrecio(), EL_OBJECT.getListaPrecios());
         UTIL.setSelectedItem(jdFactura.getCbCaja(), EL_OBJECT.getCaja());
         UTIL.setSelectedItem(jdFactura.getCbFormaPago(), EL_OBJECT.getFormaPagoEnum().toString());
-        jdFactura.setTfFacturaCuarto(UTIL.AGREGAR_CEROS(EL_OBJECT.getSucursal().getPuntoVenta(), 4));
+//        jdFactura.setTfFacturaCuarto(UTIL.AGREGAR_CEROS(EL_OBJECT.getSucursal().getPuntoVenta(), 4));
         jdFactura.setTfFacturaOcteto(UTIL.AGREGAR_CEROS(EL_OBJECT.getNumero(), 8));
         jdFactura.setTfNumMovimiento(String.valueOf(EL_OBJECT.getMovimientoInterno()));
         if (EL_OBJECT.getFormaPagoEnum() == Valores.FormaPago.CTA_CTE) {
@@ -1641,16 +1651,16 @@ public class FacturaVentaController implements ActionListener, KeyListener {
 
     private String edit(boolean cambiaCaja, boolean cambiaFormaPago, FacturaVenta editedFacturaVenta) throws MessageException, Exception {
         String mensajeDeQueMierdaPaso = null;
-        CajaMovimientos cm = new CajaMovimientosJpaController().findBy(EL_OBJECT.getId(), DetalleCajaMovimientosController.FACTU_VENTA);
-        if (cm.getFechaCierre() != null) {
-            throw new MessageException("La Caja " + cm.getCaja().getNombre() + " N°" + cm.getId() + " fue cerrada mientras pensabas");
-        }
         System.out.println("ANTES" + editedFacturaVenta);
         editedFacturaVenta = jpaController.merge(editedFacturaVenta);
         System.out.println("DESPU" + editedFacturaVenta);
         if (EL_OBJECT.getFormaPagoEnum().equals(Valores.FormaPago.CONTADO)) {
             DetalleCajaMovimientos dcm = new DetalleCajaMovimientosController().findBy(EL_OBJECT.getId(), DetalleCajaMovimientosController.FACTU_VENTA);
             if (cambiaCaja || cambiaFormaPago) {
+                CajaMovimientos cm = new CajaMovimientosJpaController().findBy(EL_OBJECT.getId(), DetalleCajaMovimientosController.FACTU_VENTA);
+                if (cm.getFechaCierre() != null) {
+                    throw new MessageException("La Caja " + cm.getCaja().getNombre() + " N°" + cm.getId() + " fue cerrada mientras pensabas");
+                }
                 new DetalleCajaMovimientosController().remove(dcm);
                 mensajeDeQueMierdaPaso = "Se eliminó de la Caja " + cm.getCaja().getNombre() + " N°" + cm.getId()
                         + "\nEl detalle: " + dcm.getDescripcion() + ", monto $" + UTIL.DECIMAL_FORMAT.format(dcm.getMonto());
@@ -1663,9 +1673,14 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         } else if (EL_OBJECT.getFormaPagoEnum().equals(Valores.FormaPago.CTA_CTE)) {
             CtacteClienteController cccController = new CtacteClienteController();
             CtacteCliente oldCCC = cccController.findCtacteClienteByFactura(EL_OBJECT.getId());
+            /**
+             * Si solo cambio el cliente no hay modificar nada mas que la
+             * factura, ya que el cliente está ligado a la factura y esta a la
+             * Cta Cte
+             */
             if (cambiaFormaPago) {
                 cccController.destroy(oldCCC.getId());
-                mensajeDeQueMierdaPaso = "Se eliminó el DEBE correspondiente a la Factura " + JGestionUtils.getNumeracion(EL_OBJECT)
+                mensajeDeQueMierdaPaso = "Se eliminó la Factura " + JGestionUtils.getNumeracion(EL_OBJECT)
                         + "\nde la Cta. Cte. del Cliente " + EL_OBJECT.getCliente().getNombre() + ".";
                 registrarVentaSegunFormaDePago(editedFacturaVenta);
             } else {
@@ -1674,19 +1689,6 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                 oldCCC.setFactura(editedFacturaVenta);
                 cccController.edit(oldCCC);
             }
-//        } else if (EL_OBJECT.getFormaPagoEnum().equals(Valores.FormaPago.CHEQUE)) {
-//            throw new MessageException("Modificación de Forma de pago con CHEQUE no soportadas aún");
-//            ChequeTerceros cheque = null;
-//            if (editedFacturaVenta.getFormaPagoEnum().equals(Valores.FormaPago.CHEQUE)
-//                    || editedFacturaVenta.getFormaPagoEnum().equals(Valores.FormaPago.CONTADO_CHEQUE)) {
-//                //entity Cheque persisted..
-//                cheque = getChequeToBind(editedFacturaVenta);
-//            }
-//            if (cheque != null) {
-//                cheque.setBoundId(editedFacturaVenta.getId().longValue());
-//                new ChequeTercerosJpaController().edit(cheque);
-//                editedFacturaVenta.setCheque(cheque);
-//            }
         } else {
             mensajeDeQueMierdaPaso = "Algo salió mal modificando la factura N°" + JGestionUtils.getNumeracion(editedFacturaVenta);
         }
