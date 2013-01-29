@@ -813,7 +813,9 @@ public class Contabilidad {
                 if (buscador.getjTable1().getRowCount() > 0) {
                     try {
                         doComprobantesCompraReport();
-                    } catch (MissingReportException | JRException ex) {
+                    } catch (MissingReportException ex) {
+                        buscador.showMessage(ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    } catch (JRException ex) {
                         buscador.showMessage(ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 } else {
