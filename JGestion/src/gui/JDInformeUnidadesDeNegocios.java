@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import javax.swing.JComboBox;
@@ -331,19 +332,26 @@ public class JDInformeUnidadesDeNegocios extends javax.swing.JDialog {
                     }
                     root.getChildren().get(root.getChildren().size() - 1).getChildren().get(1).getPeriodos()[month] = egresosSinUNDniCuenta;
                 }
-//                for (CuentaNode udn : root.getChildren()) {
-//                    for (CuentaNode ingresos : udn.getChildren()) {
-//                        for (CuentaNode cuenta : ingresos.getChildren()) {
-//                            if (cuenta.isEmpty()) {
-//                                
-//                            }
-//                        }
-//                    }
-//                    for (CuentaNode egresos : udn.getChildren()) {
-//                        for (CuentaNode cuenta : egresos.getChildren()) {
-//                        }
-//                    }
-//                }
+                //<editor-fold defaultstate="collapsed" desc="Limpiando las que están en ZERO">
+                for (CuentaNode udn : root.getChildren()) {
+                    for (CuentaNode ingresos : udn.getChildren()) {
+                        for (Iterator<CuentaNode> it = ingresos.getChildren().iterator(); it.hasNext();) {
+                            CuentaNode cuenta = it.next();
+                            if (cuenta.isEmpty()) {
+                                it.remove();
+                            }
+                        }
+                    }
+                    for (CuentaNode egresos : udn.getChildren()) {
+                        for (Iterator<CuentaNode> it = egresos.getChildren().iterator(); it.hasNext();) {
+                            CuentaNode cuenta = it.next();
+                            if (cuenta.isEmpty()) {
+                                it.remove();
+                            }
+                        }
+                    }
+                }
+                //</editor-fold>
                 jTable1.setEnabled(true);
                 bBuscar.setEnabled(true);
             }
@@ -738,7 +746,7 @@ public class JDInformeUnidadesDeNegocios extends javax.swing.JDialog {
             return "CuentaNode{" + "name=" + name + '}';
         }
 
-        private boolean isEmpty() {
+        public boolean isEmpty() {
             for (BigDecimal importe : periodos) {
                 if (!importe.equals(BigDecimal.ZERO)) {
                     return false;

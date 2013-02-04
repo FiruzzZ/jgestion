@@ -343,12 +343,12 @@ public class CtacteClienteController implements ActionListener {
         totalDebe = 0.0;
         totalHaber = 0.0;
 
-        String query = "SELECT ccc.*, sucursal.puntoventa "
+        String query = "SELECT ccc.*, sucursal.puntoventa, fv.fecha_venta"
                 + " FROM ctacte_cliente ccc, cliente c, factura_venta fv JOIN sucursal ON (fv.sucursal = sucursal.id) "
-                + " WHERE ccc.factura = fv.id "
-                + " AND fv.cliente = c.id ";
+                + " WHERE ccc.factura = fv.id AND fv.cliente = c.id ";
+        String filters = "";
         try {
-            query += "AND c.id ="
+            filters += " AND c.id ="
                     + ((Cliente) resumenCtaCtes.getCbClieProv().getSelectedItem()).getId();
         } catch (ClassCastException ex) {
             throw new MessageException("Cliente no válido");
@@ -357,25 +357,21 @@ public class CtacteClienteController implements ActionListener {
         if (resumenCtaCtes.getDcDesde() != null) {
             //calcula los totales del DEBE / HABER / SALDO ACUMULATIVO de la CtaCte
             // anterior a la fecha desde la cual se eligió en el buscador
-            setResumenHistorial(query + "AND ccc.fecha_carga < '" + resumenCtaCtes.getDcDesde() + "'");
+            setResumenHistorial(query + "AND fv.fecha_venta < '" + resumenCtaCtes.getDcDesde() + "'");
 
-            query += " AND ccc.fecha_carga >= '" + resumenCtaCtes.getDcDesde() + "'";
+            filters += " AND fv.fecha_venta >= '" + resumenCtaCtes.getDcDesde() + "'";
         }
         if (resumenCtaCtes.getCheckExcluirPagadas().isSelected()) {
-            query += " AND (ccc.importe - ccc.entregado) > 0";
+            filters += " AND (ccc.importe - ccc.entregado) > 0";
         }
         if (resumenCtaCtes.getCheckExcluirAnuladas().isSelected()) {
-            query += " AND fv.anulada = FALSE";
+            filters += " AND fv.anulada = FALSE";
         }
-        query += " ORDER BY fv.numero";
+        query += filters + " ORDER BY fv.fecha_venta";
         System.out.println(query);
         cargarTablaResumen(query);
         if (imprimirResumen) {
-            String filters = (resumenCtaCtes.getDcDesde() != null ? (" AND ccc.fecha_carga >= '" + UTIL.DATE_FORMAT.format(resumenCtaCtes.getDcDesde()) + "'") : "")
-                    + (resumenCtaCtes.getCheckExcluirPagadas().isSelected() ? " AND (ccc.importe - ccc.entregado) > 0" : "")
-                    + (resumenCtaCtes.getCheckExcluirAnuladas().isSelected() ? " AND fv.anulada=FALSE" : "");
-            String filterDate = (resumenCtaCtes.getDcDesde() != null ? (" AND ccc.fecha_carga >= '" + UTIL.DATE_FORMAT.format(resumenCtaCtes.getDcDesde()) + "'") : "");
-            doReportResumenCCC(((Cliente) resumenCtaCtes.getCbClieProv().getSelectedItem()), filterDate, filters);
+            doReportResumenCCC(((Cliente) resumenCtaCtes.getCbClieProv().getSelectedItem()), resumenCtaCtes.getDcDesde(), filters);
         }
     }
 
@@ -409,13 +405,13 @@ public class CtacteClienteController implements ActionListener {
         }
     }
 
-    private void doReportResumenCCC(Cliente cliente, String filterdate, String filters) throws Exception {
+    private void doReportResumenCCC(Cliente cliente, Date filterDate, String filters) throws Exception {
         Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_ResumenCCC.jasper", "Resumen CCC");
         r.addCurrent_User();
         r.addParameter("CLIENTE_ID", cliente.getId());
         r.addParameter("SUBREPORT_DIR", Reportes.FOLDER_REPORTES);
-        r.addParameter("FILTER_DATE", filterdate == null ? "" : filterdate);
-        r.addParameter("FILTERS", filterdate == null ? "" : filters);
+        r.addParameter("FILTER_DATE", filterDate);
+        r.addParameter("FILTERS", filters == null ? "" : filters);
         r.viewReport();
     }
 

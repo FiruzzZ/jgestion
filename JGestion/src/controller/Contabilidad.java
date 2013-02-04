@@ -33,6 +33,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.math.BigDecimal;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
@@ -1084,6 +1086,14 @@ public class Contabilidad {
                     t = t.add((BigDecimal) o[1]);
                 }
                 resumenGeneralCtaCte.getTfTotal().setText(UTIL.DECIMAL_FORMAT.format(t));
+            }
+        });
+        resumenGeneralCtaCte.getjXTable1().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    
+                }
             }
         });
         resumenGeneralCtaCte.getbImprimir().addActionListener(new ActionListener() {

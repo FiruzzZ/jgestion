@@ -312,11 +312,12 @@ public class CtacteProveedorController implements ActionListener {
         totalHaber = 0.0;
 
         String query = "SELECT ccc.* "
-                + " FROM ctacte_proveedor ccc, proveedor c, factura_compra fv "
+                + " FROM ctacte_proveedor ccc, factura_compra fv, proveedor "
                 + " WHERE ccc.factura = fv.id "
-                + " AND fv.proveedor = c.id ";
+                + " AND fv.proveedor = proveedor.id ";
+        String filters = "";
         try {
-            query += "AND c.id =" + ((Proveedor) resumenCtaCtes.getCbClieProv().getSelectedItem()).getId();
+            filters += " AND proveedor.id =" + ((Proveedor) resumenCtaCtes.getCbClieProv().getSelectedItem()).getId();
         } catch (ClassCastException ex) {
             throw new MessageException("Proveedor no válido");
         }
@@ -324,15 +325,20 @@ public class CtacteProveedorController implements ActionListener {
         if (resumenCtaCtes.getDcDesde() != null) {
             //calcula los totales del DEBE / HABER / SALDO ACUMULATIVO de la CtaCte
             // anterior a la fecha desde la cual se eligió en el buscador
-            setResumenHistorial(query + "AND ccc.fecha_carga < '" + resumenCtaCtes.getDcDesde() + "'");
+            setResumenHistorial(query + "AND fv.fecha_compra < '" + resumenCtaCtes.getDcDesde() + "'");
 
-            query += "AND ccc.fecha_carga >= '" + resumenCtaCtes.getDcDesde() + "'";
+            filters += "AND fv.fecha_compra >= '" + resumenCtaCtes.getDcDesde() + "'";
         }
-
-        query += " ORDER BY ccc.id";
+        if (resumenCtaCtes.getCheckExcluirPagadas().isSelected()) {
+            filters += " AND (ccc.importe - ccc.entregado) > 0";
+        }
+        if (resumenCtaCtes.getCheckExcluirAnuladas().isSelected()) {
+            filters += " AND fv.anulada = FALSE";
+        }
+        query += filters + " ORDER BY fv.fecha_compra";
         cargarDtmResumen(query);
         if (imprimirResumen) {
-            imprimirResumenCCC(((Proveedor) resumenCtaCtes.getCbClieProv().getSelectedItem()), resumenCtaCtes.getDcDesde() != null ? " AND ccc.fecha_carga >= '" + UTIL.DATE_FORMAT.format(resumenCtaCtes.getDcDesde()) + "'" : "");
+            imprimirResumenCCC(((Proveedor) resumenCtaCtes.getCbClieProv().getSelectedItem()), resumenCtaCtes.getDcDesde(), filters);
         }
     }
 
@@ -376,15 +382,12 @@ public class CtacteProveedorController implements ActionListener {
         }
     }
 
-    private void imprimirResumenCCC(Proveedor proveedor, String filter_date) throws JRException, Exception {
+    private void imprimirResumenCCC(Proveedor proveedor, Date filterDate, String filters) throws JRException, Exception {
         Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_ResumenCCP.jasper", "Resumen Cta. Cte. Proveedor");
         r.addCurrent_User();
-        r.addParameter("PROVEEDOR_ID", proveedor.getId());
         r.addParameter("SUBREPORT_DIR", Reportes.FOLDER_REPORTES);
-        if (filter_date == null) {
-            filter_date = "";
-        }
-        r.addParameter("FILTER_DATE", filter_date);
+        r.addParameter("FILTER_DATE", filterDate);
+        r.addParameter("FILTERS", filters);
         r.viewReport();
     }
 
