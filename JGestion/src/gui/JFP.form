@@ -820,7 +820,7 @@
               <SubComponents>
                 <MenuItem class="javax.swing.JMenuItem" name="jMenuItem76">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="no me acuerdo como se llama"/>
+                    <Property name="text" type="java.lang.String" value="Informe de Resultados"/>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem76ActionPerformed"/>

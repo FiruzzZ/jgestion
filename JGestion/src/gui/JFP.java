@@ -916,7 +916,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
         jMenu12.setText("Cosas raras");
 
-        jMenuItem76.setText("no me acuerdo como se llama");
+        jMenuItem76.setText("Informe de Resultados");
         jMenuItem76.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem76ActionPerformed(evt);
