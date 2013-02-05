@@ -20,7 +20,9 @@ ALTER TABLE depto DROP CONSTRAINT UNQ_depto_0
 ALTER TABLE detalle_acreditacion DROP CONSTRAINT FK_detalle_acreditacion_nota_credito
 ALTER TABLE detalle_acreditacion DROP CONSTRAINT FK_detalle_acreditacion_detalle_recibo
 ALTER TABLE detalle_acreditacion DROP CONSTRAINT UNQ_detalle_acreditacion_0
+ALTER TABLE detalle_caja_movimientos DROP CONSTRAINT FK_detalle_caja_movimientos_subcuenta_id
 ALTER TABLE detalle_caja_movimientos DROP CONSTRAINT FK_detalle_caja_movimientos_movimiento_concepto
+ALTER TABLE detalle_caja_movimientos DROP CONSTRAINT FK_detalle_caja_movimientos_unidad_de_negocio_id
 ALTER TABLE detalle_caja_movimientos DROP CONSTRAINT FK_detalle_caja_movimientos_caja_movimientos
 ALTER TABLE detalle_caja_movimientos DROP CONSTRAINT FK_detalle_caja_movimientos_usuario
 ALTER TABLE detalle_compra DROP CONSTRAINT FK_detalle_compra_producto
@@ -35,8 +37,10 @@ ALTER TABLE detalle_presupuesto DROP CONSTRAINT FK_detalle_presupuesto_producto
 ALTER TABLE detalle_presupuesto DROP CONSTRAINT FK_detalle_presupuesto_presupuesto
 ALTER TABLE detalle_recibo DROP CONSTRAINT FK_detalle_recibo_factura_venta
 ALTER TABLE detalle_recibo DROP CONSTRAINT FK_detalle_recibo_recibo
+ALTER TABLE detalle_recibo DROP CONSTRAINT UNQ_detalle_recibo_0
 ALTER TABLE detalle_remesa DROP CONSTRAINT FK_detalle_remesa_remesa
 ALTER TABLE detalle_remesa DROP CONSTRAINT FK_detalle_remesa_factura_compra
+ALTER TABLE detalle_remesa DROP CONSTRAINT UNQ_detalle_remesa_0
 ALTER TABLE detalle_remito DROP CONSTRAINT FK_detalle_remito_remito
 ALTER TABLE detalle_remito DROP CONSTRAINT FK_detalle_remito_producto
 ALTER TABLE detalle_venta DROP CONSTRAINT FK_detalle_venta_oferta
@@ -44,23 +48,29 @@ ALTER TABLE detalle_venta DROP CONSTRAINT FK_detalle_venta_factura
 ALTER TABLE detalle_venta DROP CONSTRAINT FK_detalle_venta_producto
 ALTER TABLE factura_compra DROP CONSTRAINT FK_factura_compra_usuario
 ALTER TABLE factura_compra DROP CONSTRAINT FK_factura_compra_sucursal
+ALTER TABLE factura_compra DROP CONSTRAINT FK_factura_compra_subcuenta_id
 ALTER TABLE factura_compra DROP CONSTRAINT FK_factura_compra_proveedor
+ALTER TABLE factura_compra DROP CONSTRAINT FK_factura_compra_cuenta_id
 ALTER TABLE factura_compra DROP CONSTRAINT FK_factura_compra_caja
+ALTER TABLE factura_compra DROP CONSTRAINT FK_factura_compra_unidad_de_negocio_id
 ALTER TABLE factura_venta DROP CONSTRAINT FK_factura_venta_lista_precios
 ALTER TABLE factura_venta DROP CONSTRAINT FK_factura_venta_cliente
+ALTER TABLE factura_venta DROP CONSTRAINT FK_factura_venta_subcuenta_id
+ALTER TABLE factura_venta DROP CONSTRAINT FK_factura_venta_cuenta_id
 ALTER TABLE factura_venta DROP CONSTRAINT FK_factura_venta_usuario
 ALTER TABLE factura_venta DROP CONSTRAINT FK_factura_venta_caja
 ALTER TABLE factura_venta DROP CONSTRAINT FK_factura_venta_sucursal
 ALTER TABLE factura_venta DROP CONSTRAINT FK_factura_venta_remito
+ALTER TABLE factura_venta DROP CONSTRAINT FK_factura_venta_unidad_de_negocio_id
 ALTER TABLE historial_ofertas DROP CONSTRAINT FK_historial_ofertas_producto
 ALTER TABLE lista_precios DROP CONSTRAINT UNQ_lista_precios_0
 ALTER TABLE marca DROP CONSTRAINT UNQ_marca_0
 ALTER TABLE msj_informativos DROP CONSTRAINT UNQ_msj_informativos_0
-ALTER TABLE movimiento_concepto DROP CONSTRAINT UNQ_movimiento_concepto_0
 ALTER TABLE municipio DROP CONSTRAINT FK_municipio_iddepto
 ALTER TABLE municipio DROP CONSTRAINT UNQ_municipio_0
 ALTER TABLE nota_credito DROP CONSTRAINT FK_nota_credito_cliente
 ALTER TABLE nota_credito DROP CONSTRAINT FK_nota_credito_usuario
+ALTER TABLE nota_credito DROP CONSTRAINT FK_nota_credito_recibo
 ALTER TABLE nota_credito DROP CONSTRAINT FK_nota_credito_sucursal
 ALTER TABLE nota_credito DROP CONSTRAINT UNQ_nota_credito_0
 ALTER TABLE orden DROP CONSTRAINT FK_orden_sucursal
@@ -120,12 +130,11 @@ ALTER TABLE banco DROP CONSTRAINT UNQ_banco_0
 ALTER TABLE banco_sucursal DROP CONSTRAINT FK_banco_sucursal_banco
 ALTER TABLE banco_sucursal DROP CONSTRAINT UNQ_banco_sucursal_0
 ALTER TABLE cheque_propio DROP CONSTRAINT FK_cheque_propio_banco_sucursal
-ALTER TABLE cheque_propio DROP CONSTRAINT FK_cheque_propio_librado
+ALTER TABLE cheque_propio DROP CONSTRAINT FK_cheque_propio_cuentabancaria_id
 ALTER TABLE cheque_propio DROP CONSTRAINT FK_cheque_propio_proveedor
 ALTER TABLE cheque_propio DROP CONSTRAINT FK_cheque_propio_banco
 ALTER TABLE cheque_propio DROP CONSTRAINT FK_cheque_propio_usuario
 ALTER TABLE cheque_terceros DROP CONSTRAINT FK_cheque_terceros_usuario
-ALTER TABLE cheque_terceros DROP CONSTRAINT FK_cheque_terceros_librado
 ALTER TABLE cheque_terceros DROP CONSTRAINT FK_cheque_terceros_banco_sucursal
 ALTER TABLE cheque_terceros DROP CONSTRAINT FK_cheque_terceros_banco
 ALTER TABLE cheque_terceros DROP CONSTRAINT FK_cheque_terceros_cliente
@@ -134,12 +143,33 @@ ALTER TABLE factura_electronica DROP CONSTRAINT UNQ_factura_electronica_0
 ALTER TABLE PERMISOSSUCURSAL DROP CONSTRAINT FK_PERMISOSSUCURSAL_SUCURSAL_id
 ALTER TABLE PERMISOSSUCURSAL DROP CONSTRAINT FK_PERMISOSSUCURSAL_USUARIO_id
 ALTER TABLE PERMISOSSUCURSAL DROP CONSTRAINT UNQ_PERMISOSSUCURSAL_0
-ALTER TABLE cuentabancaria DROP CONSTRAINT FK_cuentabancaria_BANCO_id
-ALTER TABLE cuentabancaria DROP CONSTRAINT UNQ_cuentabancaria_0
 ALTER TABLE comprobante_retencion DROP CONSTRAINT UNQ_comprobante_retencion_0
 ALTER TABLE recibo_pagos DROP CONSTRAINT FK_recibo_pagos_RECIBO_id
+ALTER TABLE cuentabancaria_movimientos DROP CONSTRAINT FK_cuentabancaria_movimientos_cheque_terceros_id
+ALTER TABLE cuentabancaria_movimientos DROP CONSTRAINT FK_cuentabancaria_movimientos_CUENTABANCARIA_id
+ALTER TABLE cuentabancaria_movimientos DROP CONSTRAINT FK_cuentabancaria_movimientos_operaciones_bancarias_id
+ALTER TABLE cuentabancaria_movimientos DROP CONSTRAINT FK_cuentabancaria_movimientos_cheque_propio_id
+ALTER TABLE cuentabancaria_movimientos DROP CONSTRAINT FK_cuentabancaria_movimientos_USUARIO_id
+ALTER TABLE operaciones_bancarias DROP CONSTRAINT UNQ_operaciones_bancarias_0
+ALTER TABLE remesa_pagos DROP CONSTRAINT FK_remesa_pagos_REMESA_id
+ALTER TABLE nota_credito_proveedor DROP CONSTRAINT FK_nota_credito_proveedor_usuario
+ALTER TABLE nota_credito_proveedor DROP CONSTRAINT FK_nota_credito_proveedor_proveedor
+ALTER TABLE nota_credito_proveedor DROP CONSTRAINT FK_nota_credito_proveedor_remesa
+ALTER TABLE nota_credito_proveedor DROP CONSTRAINT UNQ_nota_credito_proveedor_0
+ALTER TABLE detalle_nota_credito_proveedor DROP CONSTRAINT FK_detalle_nota_credito_proveedor_nota_credito_proveedor
+ALTER TABLE detalle_nota_credito_proveedor DROP CONSTRAINT FK_detalle_nota_credito_proveedor_producto
+ALTER TABLE cuentabancaria DROP CONSTRAINT FK_cuentabancaria_BANCO_id
+ALTER TABLE cuentabancaria DROP CONSTRAINT UNQ_cuentabancaria_0
+ALTER TABLE unidad_de_negocio DROP CONSTRAINT UNQ_unidad_de_negocio_0
+ALTER TABLE subcuenta DROP CONSTRAINT FK_subcuenta_CUENTA_id
+ALTER TABLE subcuenta DROP CONSTRAINT UNQ_subcuenta_0
+ALTER TABLE movimiento_concepto DROP CONSTRAINT UNQ_movimiento_concepto_0
+ALTER TABLE usuario_acciones DROP CONSTRAINT FK_usuario_acciones_USUARIO_id
+ALTER TABLE credito_proveedor DROP CONSTRAINT FK_credito_proveedor_proveedor_id
 ALTER TABLE usuario_PERMISOSSUCURSAL DROP CONSTRAINT FK_usuario_PERMISOSSUCURSAL_sucursales_ID
 ALTER TABLE usuario_PERMISOSSUCURSAL DROP CONSTRAINT FK_usuario_PERMISOSSUCURSAL_Usuario_id
+ALTER TABLE unidad_de_negocio_SUCURSAL DROP CONSTRAINT FK_unidad_de_negocio_SUCURSAL_unidad_de_negocio_id
+ALTER TABLE unidad_de_negocio_SUCURSAL DROP CONSTRAINT FK_unidad_de_negocio_SUCURSAL_sucursal_id
 DROP TABLE caja
 DROP TABLE caja_movimientos
 DROP TABLE cliente
@@ -167,7 +197,6 @@ DROP TABLE iva
 DROP TABLE lista_precios
 DROP TABLE marca
 DROP TABLE msj_informativos
-DROP TABLE movimiento_concepto
 DROP TABLE municipio
 DROP TABLE nota_credito
 DROP TABLE orden
@@ -193,7 +222,18 @@ DROP TABLE cheque_terceros
 DROP TABLE librado
 DROP TABLE factura_electronica
 DROP TABLE PERMISOSSUCURSAL
-DROP TABLE cuentabancaria
 DROP TABLE comprobante_retencion
 DROP TABLE recibo_pagos
+DROP TABLE cuentabancaria_movimientos
+DROP TABLE operaciones_bancarias
+DROP TABLE remesa_pagos
+DROP TABLE nota_credito_proveedor
+DROP TABLE detalle_nota_credito_proveedor
+DROP TABLE cuentabancaria
+DROP TABLE unidad_de_negocio
+DROP TABLE subcuenta
+DROP TABLE movimiento_concepto
+DROP TABLE usuario_acciones
+DROP TABLE credito_proveedor
 DROP TABLE usuario_PERMISOSSUCURSAL
+DROP TABLE unidad_de_negocio_SUCURSAL

@@ -1,6 +1,7 @@
 package entity;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import javax.persistence.*;
 
 /**
@@ -26,7 +27,7 @@ public class DetalleVenta implements Serializable {
     private int cantidad;
     @Basic(optional = false)
     @Column(name = "precio_unitario", nullable = false, precision = 12, scale = 4)
-    private Double precioUnitario;
+    private BigDecimal precioUnitario;
     @Basic(optional = false)
     @Column(name = "tipo_desc", nullable = false)
     private int tipoDesc;
@@ -61,7 +62,7 @@ public class DetalleVenta implements Serializable {
         this.id = id;
     }
 
-        public int getCantidad() {
+    public int getCantidad() {
         return cantidad;
     }
 
@@ -69,15 +70,15 @@ public class DetalleVenta implements Serializable {
         this.cantidad = cantidad;
     }
 
-        public Double getPrecioUnitario() {
+    public BigDecimal getPrecioUnitario() {
         return precioUnitario;
     }
 
-    public void setPrecioUnitario(Double precioUnitario) {
+    public void setPrecioUnitario(BigDecimal precioUnitario) {
         this.precioUnitario = precioUnitario;
     }
 
-        public int getTipoDesc() {
+    public int getTipoDesc() {
         return tipoDesc;
     }
 
@@ -85,7 +86,7 @@ public class DetalleVenta implements Serializable {
         this.tipoDesc = tipoDesc;
     }
 
-        public Double getDescuento() {
+    public Double getDescuento() {
         return descuento;
     }
 
@@ -93,7 +94,7 @@ public class DetalleVenta implements Serializable {
         this.descuento = descuento;
     }
 
-        public FacturaVenta getFactura() {
+    public FacturaVenta getFactura() {
         return factura;
     }
 
@@ -101,7 +102,7 @@ public class DetalleVenta implements Serializable {
         this.factura = factura;
     }
 
-        public Producto getProducto() {
+    public Producto getProducto() {
         return producto;
     }
 
@@ -109,7 +110,7 @@ public class DetalleVenta implements Serializable {
         this.producto = producto;
     }
 
-        public HistorialOfertas getOferta() {
+    public HistorialOfertas getOferta() {
         return oferta;
     }
 
@@ -141,5 +142,4 @@ public class DetalleVenta implements Serializable {
     public String toString() {
         return "DetalleVenta{" + "id=" + id + ", cantidad=" + cantidad + ", precioUnitario=" + precioUnitario + ", tipoDesc=" + tipoDesc + ", descuento=" + descuento + ", factura=" + (factura.getId() != null ? factura.getId() : null) + ", producto=" + producto.getId() + ", oferta=" + oferta + '}';
     }
-
 }

@@ -2,6 +2,7 @@ package controller;
 
 import controller.exceptions.DatabaseErrorException;
 import entity.*;
+import entity.enums.ChequeEstado;
 import gui.JDSystemMessages;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -334,7 +335,29 @@ public abstract class DAO implements Runnable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-//         new Thread(ventanaSystemMessage).start();
+            //<editor-fold defaultstate="collapsed" desc="Creación tablas (que no son entities!): sistema, cheque_estado">
+            try {
+                em.createNativeQuery("CREATE TABLE sistema ( "
+                        + "id integer NOT NULL DEFAULT 1,"
+                        + "shutdown boolean NOT NULL DEFAULT false,"
+                        + "shutdown_message text NOT NULL DEFAULT 'Sistema en mantenimiento'::text,"
+                        + "shutdown_time timestamp with time zone,"
+                        + "PRIMARY KEY (id)"
+                        + ") WITH (OIDS=FALSE);"
+                        + "INSERT INTO sistema VALUES (DEFAULT, DEFAULT, DEFAULT, NULL);"
+                        + "CREATE TABLE cheque_estado ("
+                        + "id integer NOT NULL,"
+                        + "nombre character varying(20) NOT NULL,"
+                        + "CONSTRAINT cheque_estado_pkey PRIMARY KEY (id),"
+                        + "CONSTRAINT unq_cheque_estado_nombre UNIQUE (nombre)"
+                        + ") WITH ( OIDS=FALSE);").executeUpdate();
+            } catch (Exception ex) {
+                Logger.getLogger(DAO.class).trace("Error creando tabla sistema:" + ex.getLocalizedMessage());
+                em.getTransaction().rollback();
+                em.getTransaction().begin();
+            }
+            //</editor-fold>
+
             // <editor-fold defaultstate="collapsed" desc="Creación de Usuario: admin Pws: adminadmin">
             if (em.createQuery("SELECT count(o) FROM Usuario o").getSingleResult().toString().equalsIgnoreCase("0")) {
                 ventanaSystemMessage.agregar("Creando base de datos.. (Iniciando datos necesarios)");
@@ -346,20 +369,7 @@ public abstract class DAO implements Runnable {
                 u.setPass("adminadmin");
                 u.setPermisosCajaList(new ArrayList<PermisosCaja>());
                 Permisos permisos = new Permisos();
-                permisos.setAbmCajas(true);
-                permisos.setAbmClientes(true);
-                permisos.setAbmListaPrecios(true);
-                permisos.setAbmProductos(true);
-                permisos.setAbmProveedores(true);
                 permisos.setAbmUsuarios(true);
-                permisos.setCompra(true);
-                permisos.setVenta(true);
-                permisos.setDatosGeneral(true);
-                permisos.setTesoreria(true);
-                permisos.setCerrarCajas(true);
-                permisos.setAbmOfertasweb(true);
-                permisos.setAbmCatalogoweb(true);
-                permisos.setOrdenesES(true);
                 em.persist(permisos);
                 permisos.setUsuario(u);
                 u.setPermisos(permisos);
@@ -401,6 +411,26 @@ public abstract class DAO implements Runnable {
                 System.out.println("Creando Unidadmedida..");
                 em.persist(new Unidadmedida(1, "UNITARIO"));
             }// </editor-fold>
+
+            //<editor-fold defaultstate="collapsed" desc="Creación de Bancos">
+            if (em.createQuery("SELECT COUNT(o) FROM " + Banco.class.getSimpleName() + " o ").getSingleResult().toString().equalsIgnoreCase("0")) {
+                System.out.println("Creando Bancos..");
+                em.createNativeQuery("insert into banco (nombre, webpage) values "
+                        + "('ABN AMRO','www.abnamro.com.ar'),('American Express Bank','www.americanexpress.com.ar'),('BACS','www.bacs.com.ar'),('Banco B.I. Creditanstalt','www.bicreditanstalt.com.ar'),('Banco Bradesco','www.bradesco.com.br'),"
+                        + "('Banco Cetelem','www.cetelem.com.ar'),('Banco Ciudad','www.bancociudad.com.ar'),('Banco CMF','www.cmfb.com.ar'),('Banco Cofidis','www.cofidis.com'),('Banco Columbia','www.bancocolumbia.com.ar'),"
+                        + "('Banco Comafi','www.bancocomafi.com.ar'),('Banco Credicoop','www.bancocredicoop.coop'),('Banco de Córdoba','www.bancor.com.ar'),('Banco de Corrientes','www.bancodecorrientes.com.ar'),('Banco de Formosa','www.bancodeformosa.com'),"
+                        + "('Banco de La Pampa','www.blp.com.ar'),('Banco de San Juan','www.bancosanjuan.com'),('Banco de Santiago del Estero','www.bse.com.ar'),('Banco de Servicios Financieros', null),('Banco de Servicios y Transacciones','www.bancost.com.ar'),"
+                        + "('Banco de Tierra del Fuego','www.bancotdf.com.ar'),('Banco de Valores','www.bancodevalores.com'),('Banco del Chubut','www.bancochubut.com.ar'),('Banco del Sol','www.bancodelsol.com'),('Banco del Tucumán','www.bancodeltucuman.com.ar'),"
+                        + "('Banco del Uruguay','www.brounet.com.uy'),('Banco do Brasil','www.bancodobrasil.com.br'),('Banco Finansur','www.bancofinansur.com.ar'),('Banco Galicia','www.bancogalicia.com'),('Banco Hipotecario','www.hipotecario.com.ar'),"
+                        + "('Banco Industrial','www.bancoindustrial.com.ar'),('Banco Itaú','www.itau.com.ar'),('Banco Julio','www.bancojulio.com.ar'),('Banco Macro','www.macro.com.ar'),('Banco Mariva','www.mariva.com.ar'),('Banco Masventas','www.bancomasventas.com.ar'),"
+                        + "('Banco Meridian','www.bancomeridian.com'),('Banco Municipal de Rosario','www.bmros.com.ar'),('Banco Nación','www.bna.com.ar'),('Banco Patagonia','www.bancopatagonia.com.ar'),('Banco Piano','www.bancopiano.com.ar'),"
+                        + "('Banco Provincia','www.bapro.com.ar'),('Banco Provincia del Neuquén','www.bpn.com.ar'),('Banco Regional de Cuyo','www.bancoregional.com.ar'),('Banco Roela','www.bancoroela.com.ar'),('Banco Saenz','www.bancosaenz.com.ar'),"
+                        + "('Banco Santa Cruz','www.bancosantacruz.com.ar'),('Banco Santander Río','www.santanderrio.com.ar'),('Banco Supervielle','www.supervielle.com.ar'),('Bank of America','www.bankofamerica.com'),('Bank of Tokyo-Mitsubishi UFJ','www.bk.mufg.jp/english/'),"
+                        + "('BBVA Banco Francés','www.bancofrances.com.ar'),('BICE','www.bice.com.ar'),('BNP Paribas','www.bnpparibas.com.ar'),('Citibank','www.citibank.com/argentina'),('Deutsche Bank','www.db.com'),('HSBC Bank','www.hsbc.com.ar'),"
+                        + "('JPMorgan','www.jpmorgan.com'),('MBA Lazard Banco De Inversiones','www.mba-lazard.com'),('Nuevo Banco de Entre Ríos','www.nuevobersa.com.ar'),('Nuevo Banco de La Rioja','www.nblr.com.ar'),('Nuevo Banco de Santa Fe','www.bancobsf.com.ar'),"
+                        + "('Nuevo Banco del Chaco','www.nbch.com.ar'),('RCI Banque','www.rcibanque.com'),('Standard Bank','www.standardbank.com.ar');").executeUpdate();
+            }
+            //</editor-fold>
 
             // <editor-fold defaultstate="collapsed" desc="MovimientoConcepto.EFECTIVO">
             if (em.createQuery("SELECT COUNT(o) FROM " + Cuenta.class.getSimpleName() + " o").getSingleResult().toString().equalsIgnoreCase("0")) {
@@ -449,6 +479,19 @@ public abstract class DAO implements Runnable {
                 getJDBCConnection().close();
 //            DAO.getEntityManager().getTransaction().commit();
             }// </editor-fold>
+
+            //<editor-fold defaultstate="collapsed" desc="Creación de Estados de Cheques">
+            if (em.createNativeQuery("SELECT * FROM cheque_estado").getResultList().isEmpty()) {
+                System.out.println("Creando cheque_estado's..");
+                StringBuilder sb = null;
+                //fill with Enum's
+                for (ChequeEstado chequeEstado : ChequeEstado.values()) {
+                    sb = new StringBuilder("INSERT INTO cheque_estado VALUES(");
+                    sb.append(chequeEstado.getId()).append(",'").append(chequeEstado.toString()).append("');");
+                }
+                em.createNativeQuery(sb.toString()).executeUpdate();
+            }
+            //</editor-fold>
             em.getTransaction().commit();
         } catch (Exception ex) {
             if (em.getTransaction().isActive()) {

@@ -304,7 +304,7 @@ public class AFIPWSController {
         for (DetalleVenta detalleVenta : detallesVentaList) {
             boolean unknownIVA = true;
             int cantidad = detalleVenta.getCantidad();
-            Double precioUnitario = detalleVenta.getPrecioUnitario() - detalleVenta.getDescuento();
+            Double precioUnitario = detalleVenta.getPrecioUnitario().doubleValue() - detalleVenta.getDescuento().doubleValue();
             Double productoIVA = Double.valueOf(detalleVenta.getProducto().getIva().getIva());
             //identificando el IVA de cada item del detalle
             for (IvaTipo o : iVATipoList) {
