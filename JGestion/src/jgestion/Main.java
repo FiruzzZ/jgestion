@@ -69,8 +69,8 @@ public class Main {
             Properties properties = PropsUtils.load(new File(propertiesFile));
             DAO.setProperties(properties);
             if (DAO.getEntityManager().isOpen()) {
-                sdl.getFuerzaBrutaShutDown().start();
                 DAO.setDefaultData();
+                sdl.getFuerzaBrutaShutDown().start();
                 EventQueue.invokeLater(new Runnable() {
                     @Override
                     public void run() {

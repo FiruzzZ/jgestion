@@ -531,7 +531,7 @@ public class ProductoController implements ActionListener, KeyListener {
             } else if (boton.getName().equalsIgnoreCase("marcas")) {
                 try {
                     new MarcaJpaController().getABM(abm, true);
-                    UTIL.loadComboBox(panel.getCbMarcas(), new MarcaJpaController().findMarcaEntities(), false);
+                    UTIL.loadComboBox(panel.getCbMarcas(), JGestionUtils.getWrappedMarcas(new MarcaJpaController().findMarcaEntities()), false);
                 } catch (Exception ex) {
                     abm.showMessage(ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
                 }
@@ -563,8 +563,7 @@ public class ProductoController implements ActionListener, KeyListener {
     Producto getProductoSelected() {
         int selectedRow = contenedor.getjTable1().getSelectedRow();
         if (selectedRow > -1) {
-            return (Producto) DAO.getEntityManager().find(Producto.class,
-                    Integer.valueOf((contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
+            return DAO.getEntityManager().find(Producto.class, Integer.valueOf((contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
         } else {
             return null;
         }
@@ -705,7 +704,7 @@ public class ProductoController implements ActionListener, KeyListener {
                 buscador.getjTable1(),
                 new String[]{"RAZÓN", "CÓDIGO", "NOMBRE", "MARCA", "CANTIDAD", "PRECIO U.", "LETRA", "NÚMERO", "INTERNO", "FECHA (HORA)", "RUBRO/S.RUB", "SUCURSAL"},
                 new int[]{25, 50, 150, 30, 20, 10, 40, 40, 20, 60, 30, 30},
-                new Class<?>[]{null, null, null, null, Integer.class, null, null, null, null, null, null, null});
+                new Class<?>[]{null, null, null, null, null, null, null, null, null, null, null, null});
         TableColumnModel tm = buscador.getjTable1().getColumnModel();
         tm.getColumn(5).setCellRenderer(NumberRenderer.getCurrencyRenderer(4));
         buscador.getbBuscar().addActionListener(new ActionListener() {
@@ -716,6 +715,7 @@ public class ProductoController implements ActionListener, KeyListener {
                     cargarTablaMovimientosProductos(query);
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(buscador, ex.getMessage());
+                    LOG.error("Error en cargarTablaMovimientosProductos()", ex);
                 }
 
             }
@@ -763,7 +763,7 @@ public class ProductoController implements ActionListener, KeyListener {
 
     private void cargarTablaMovimientosProductos(String query) {
         UTIL.limpiarDtm(buscador.getjTable1());
-        List l = DAO.getEntityManager().createNativeQuery(query).getResultList();
+        List<?> l = DAO.getEntityManager().createNativeQuery(query).getResultList();
         BigDecimal total = BigDecimal.ZERO.setScale(4, RoundingMode.HALF_EVEN);
         for (Object object : l) {
             Object[] o = (Object[]) object;

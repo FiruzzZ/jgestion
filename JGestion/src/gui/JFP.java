@@ -162,8 +162,8 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenuItem75 = new javax.swing.JMenuItem();
         jMenu9 = new javax.swing.JMenu();
         jMenuItem22 = new javax.swing.JMenuItem();
-        jMenuItem73 = new javax.swing.JMenuItem();
         jMenuItem19 = new javax.swing.JMenuItem();
+        jMenuItem73 = new javax.swing.JMenuItem();
         jMenuItem11 = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JSeparator();
         jMenuItem10 = new javax.swing.JMenuItem();
@@ -781,14 +781,6 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         });
         jMenu9.add(jMenuItem22);
 
-        jMenuItem73.setText("ABM Unidades de Negocio");
-        jMenuItem73.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem73ActionPerformed(evt);
-            }
-        });
-        jMenu9.add(jMenuItem73);
-
         jMenuItem19.setText("ABM Sucursales (Puntos de Venta)");
         jMenuItem19.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -796,6 +788,14 @@ public class JFP extends javax.swing.JFrame implements Runnable {
             }
         });
         jMenu9.add(jMenuItem19);
+
+        jMenuItem73.setText("ABM Unidades de Negocio");
+        jMenuItem73.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem73ActionPerformed(evt);
+            }
+        });
+        jMenu9.add(jMenuItem73);
 
         jMenuItem11.setText("Contribuyentes");
         jMenuItem11.addActionListener(new java.awt.event.ActionListener() {

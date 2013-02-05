@@ -115,10 +115,12 @@ public abstract class ShutDownListener {
         System.out.println("display lost connection");
         if (lostConnectionDialog == null) {
             lostConnectionDialog = new WaitingDialog((JDialog) null, "Error de conexión", true, "<html>Error de conexión con la base de datos."
-                    + "\nEsta ventana desaparecerá cuando la conexión sea re-establecida</html>");
+                    + "\nEsta ventana desaparecerá cuando la conexión sea re-establecida o"
+                    + "\npuede cerrar la ventana para finalizar el programa.</html>");
             lostConnectionDialog.addWindowListener(new WindowAdapter() {
                 @Override
-                public void windowClosed(WindowEvent e) {
+                public void windowClosing(WindowEvent e) {
+                    System.out.println("closing");
                     if (!activeConnection) {
                         System.exit(1);
                     }

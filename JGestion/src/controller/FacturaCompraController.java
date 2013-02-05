@@ -88,6 +88,9 @@ public class FacturaCompraController implements ActionListener, KeyListener {
 
     public void initABMFacturaCompra(JFrame owner, boolean modal) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.COMPRA);
+        if (new UnidadDeNegocioJpaController().findAll().isEmpty()) {
+            throw new MessageException(Main.resourceBundle.getString("info.unidaddenegociosempty"));
+        }
         UsuarioHelper uh = new UsuarioHelper();
         if (uh.getSucursales().isEmpty()) {
             throw new MessageException(Main.resourceBundle.getString("unassigned.sucursal"));

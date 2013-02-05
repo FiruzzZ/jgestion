@@ -119,6 +119,9 @@ public class FacturaVentaController implements ActionListener, KeyListener {
             throw new MessageException(Main.resourceBundle.getString("unassigned.sucursal"));
         }
         if (factVenta1_PresupNotaCredito2_Remito3 == 1) {
+            if (new UnidadDeNegocioJpaController().findAll().isEmpty()) {
+                throw new MessageException(Main.resourceBundle.getString("info.unidaddenegociosempty"));
+            }
             if (uh.getCajas(true).isEmpty()) {
                 throw new MessageException(Main.resourceBundle.getString("unassigned.caja"));
             }
@@ -895,7 +898,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
             for (int i = 0; i < dtm.getRowCount(); i++) {
                 detalleVenta = new DetalleVenta();
                 detalleVenta.setCantidad(Integer.valueOf(dtm.getValueAt(i, 3).toString()));
-                detalleVenta.setPrecioUnitario(((BigDecimal) dtm.getValueAt(i, 4)).doubleValue());
+                detalleVenta.setPrecioUnitario((BigDecimal) dtm.getValueAt(i, 4));
                 detalleVenta.setDescuento(Double.valueOf(dtm.getValueAt(i, 6).toString()));
                 detalleVenta.setTipoDesc(Integer.valueOf(dtm.getValueAt(i, 8).toString()));
                 detalleVenta.setProducto(productoController.find((Integer) dtm.getValueAt(i, 9)));
@@ -1905,8 +1908,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                 }
             }
             try {
-                BigDecimal productoConIVA = BigDecimal.valueOf(detalle.getPrecioUnitario()
-                        + UTIL.getPorcentaje(detalle.getPrecioUnitario(), iva.getIva())).setScale(4, RoundingMode.HALF_EVEN);
+                BigDecimal productoConIVA = detalle.getPrecioUnitario().add(UTIL.getPorcentaje(detalle.getPrecioUnitario(), BigDecimal.valueOf(iva.getIva()))).setScale(4, RoundingMode.HALF_EVEN);
                 //"IVA","Cód. Producto","Producto","Cantidad","P. Unitario","P. final","Desc","Sub total"
                 dtm.addRow(new Object[]{
                             iva.getIva(),
@@ -1943,7 +1945,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                 buscador.getjTable1(),
                 new String[]{"facturaID", "Nº factura", "Mov.", "Cliente", "Importe", "Fecha", "Caja", "Sucursal", "Unid. Neg.", "Cuenta", "Sub Cuenta"},
                 new int[]{1, 90, 10, 50, 40, 50, 50, 80, 50, 70, 70},
-                new Class<?>[]{Integer.class, null, Integer.class, null, null, String.class, null, null, null, null, null},//JComboBox.class, JComboBox.class, JComboBox.class},
+                new Class<?>[]{Integer.class, null, Integer.class, null, null, String.class, null, null, null, null, null},
                 new int[]{8, 9, 10});
         JComboBox unidades = new JComboBox();
         UTIL.loadComboBox(unidades, new Wrapper<UnidadDeNegocio>().getWrapped(new UnidadDeNegocioJpaController().findAll()), false);
@@ -2000,6 +2002,9 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                         } else if (column == 9) {
                             Cuenta unidad = ((ComboBoxWrapper<Cuenta>) data).getEntity();
                             selected.setCuenta(unidad);
+                            JComboBox subCuentas = new JComboBox();
+                            UTIL.loadComboBox(subCuentas, JGestionUtils.getWrappedSubCuentas(unidad.getSubCuentas()), false);
+                            buscador.getjTable1().getModel().setValueAt(subCuentas, row, column);
                         } else if (column == 10) {
                             SubCuenta unidad = ((ComboBoxWrapper<SubCuenta>) data).getEntity();
                             selected.setSubCuenta(unidad);
