@@ -51,6 +51,7 @@ import jpa.controller.SubCuentaJpaController;
 import jpa.controller.UnidadDeNegocioJpaController;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Logger;
+import utilities.gui.SwingUtil;
 import utilities.swing.components.ComboBoxWrapper;
 import utilities.swing.components.FormatRenderer;
 import utilities.swing.components.NumberRenderer;
@@ -714,6 +715,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
             UsuarioController.checkPermiso(PermisosController.PermisoDe.ANULAR_COMPROBANTES);
         }
         buscador = new JDBuscadorReRe(frame, "Buscador - Factura compra", modal, "Proveedor", "Nº Factura");
+        buscador.hideFactura();
         buscador.getbImprimir().setVisible(true);
         ActionListenerManager.setUnidadDeNegocioSucursalActionListener(buscador.getCbUnidadDeNegocio(), true, buscador.getCbSucursal(), true, true);
         ActionListenerManager.setCuentaSubcuentaActionListener(buscador.getCbCuenta(), true, buscador.getCbSubCuenta(), true, true);
@@ -742,9 +744,10 @@ public class FacturaCompraController implements ActionListener, KeyListener {
                             if (jdFactura == null) {
                                 initComprobanteUI(buscador, true);
                             }
-                            jdFactura.modoVista(false);
                             jdFactura.setLocationRelativeTo(buscador);
                             setDataToAnular(toAnular);
+                            jdFactura.modoVista(false);
+                            jdFactura.setVisible(true);
                         } catch (MessageException ex) {
                             ex.displayMessage(buscador);
                         }
@@ -797,20 +800,10 @@ public class FacturaCompraController implements ActionListener, KeyListener {
                 + " WHERE o.anulada = " + buscador.isCheckAnuladaSelected());
 
         long numero;
-        //filtro por nº de ReRe
-        if (buscador.getTfOcteto().length() > 0) {
-            try {
-                numero = Long.parseLong(buscador.getTfOcteto());
-                query.append(" AND o.numero = ").append(numero);
-            } catch (NumberFormatException ex) {
-                throw new MessageException("Número de " + CLASS_NAME + " no válido");
-            }
-        }
-
         //filtro por nº de factura
-        if (buscador.getTfFactu4().length() > 0 && buscador.getTfFactu8().length() > 0) {
+        if (buscador.getTfCuarto().length() > 0 && buscador.getTfOcteto().length() > 0) {
             try {
-                numero = Long.parseLong(buscador.getTfFactu4() + buscador.getTfFactu8());
+                numero = Long.parseLong(buscador.getTfCuarto() + buscador.getTfOcteto());
                 query.append(" AND o.numero = ").append(numero);
             } catch (NumberFormatException ex) {
                 throw new MessageException("Número de " + CLASS_NAME + " no válido");
@@ -919,6 +912,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
                 }
             });
         }
+        LOG.trace(EL_OBJECT.toString());
         // seteando datos de FacturaCompra
         jdFactura.getCbProveedor().addItem(EL_OBJECT.getProveedor());
         UnidadDeNegocio udn = EL_OBJECT.getUnidadDeNegocio();
@@ -953,13 +947,12 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         jdFactura.getTfOtrosImpuestosNoRecuperables().setText(UTIL.PRECIO_CON_PUNTO.format(EL_OBJECT.getImpuestosNoRecuperables()));
         jdFactura.getTfDescuento().setText(UTIL.PRECIO_CON_PUNTO.format(EL_OBJECT.getDescuento()));
         jdFactura.getCbFormaPago().setSelectedIndex(EL_OBJECT.getFormaPago() - 1);
+        jdFactura.setTfDias(EL_OBJECT.getDiasCtaCte() != null ? EL_OBJECT.getDiasCtaCte().toString() : null);
         jdFactura.getTfObservacion().setText(EL_OBJECT.getObservacion());
         setDetalleData(EL_OBJECT);
         refreshResumen();
         jpaController.closeEntityManager();
         jdFactura.addListener(this);
-        jdFactura.setVisible(true);
-
     }
 
     public void anular(FacturaCompra factura) throws MessageException {
@@ -1099,9 +1092,10 @@ public class FacturaCompraController implements ActionListener, KeyListener {
                             if (jdFactura == null) {
                                 initComprobanteUI(buscador, true);
                             }
-                            jdFactura.modoVista(false);
                             jdFactura.setLocationRelativeTo(buscador);
                             setDataToAnular(false);
+                            jdFactura.modoVista(false);
+                            jdFactura.setVisible(true);
                         } catch (MessageException ex) {
                             ex.displayMessage(buscador);
                         }
@@ -1200,6 +1194,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
                             BigDecimal.valueOf(detalle.getCantidad()).multiply(detalle.getPrecioUnitario()),
                             null});
             } catch (NullPointerException e) {
+                jpaController.closeEntityManager();
                 throw new MessageException("Ocurrió un error recuperando el detalle y los datos del Producto:"
                         + "\nCódigo:" + detalle.getProducto().getNombre()
                         + "\nMarca:" + detalle.getProducto().getMarca()

@@ -44,6 +44,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import javax.persistence.NoResultException;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -310,10 +311,10 @@ public class Contabilidad {
                         throw new MessageException("Debe elegir al menos una forma de facturación (CONTADO, CTA. CTE.)");
                     }
                     doIt();
-                } catch (DatabaseErrorException ex) {
-                    Logger.getLogger(Contabilidad.class.getName()).log(Level.FATAL, null, ex);
-                    JOptionPane.showMessageDialog(jdBalanceUI, ex.getMessage(), null, 2);
                 } catch (MessageException ex) {
+                    JOptionPane.showMessageDialog(jdBalanceUI, ex.getMessage(), null, 2);
+                } catch (Exception ex) {
+                    LOG.error(null, ex);
                     JOptionPane.showMessageDialog(jdBalanceUI, ex.getMessage(), null, 2);
                 }
             }
@@ -340,11 +341,11 @@ public class Contabilidad {
                     //                    JOptionPane.showMessageDialog(jdBalanceUI, ex.getMessage(), "ERROR", 0);
                     //                } catch (MissingReportException ex) {
                     //                    JOptionPane.showMessageDialog(jdBalanceUI, ex.getMessage(), "ERROR", 0);
-                } catch (DatabaseErrorException ex) {
-                    Logger.getLogger(Contabilidad.class.getName()).log(Level.FATAL, null, ex);
-                    JOptionPane.showMessageDialog(jdBalanceUI, ex.getMessage(), "ERROR", 0);
                 } catch (MessageException ex) {
                     JOptionPane.showMessageDialog(jdBalanceUI, ex.getMessage(), null, 2);
+                } catch (Exception ex) {
+                    LOG.error(null, ex);
+                    JOptionPane.showMessageDialog(jdBalanceUI, ex.getMessage(), "ERROR", 0);
                 }
             }
         });
@@ -352,7 +353,7 @@ public class Contabilidad {
         jdBalanceUI.setVisible(true);
     }
 
-    private void doIt() throws DatabaseErrorException {
+    private void doIt() throws DatabaseErrorException, MessageException {
         int index = panelBalanceComprasVentas.getCbComprasVentas().getSelectedIndex();
         List<Object[]> dataCompra = new ArrayList<Object[]>(0);
         List<Object[]> dataVenta = new ArrayList<Object[]>(0);
@@ -427,8 +428,8 @@ public class Contabilidad {
         return query.toString();
     }
 
-    private List<Object[]> getFacturaCompraList(List<FacturaCompra> l) {
-
+    private List<Object[]> getFacturaCompraList(List<FacturaCompra> l) throws MessageException {
+        String errores = "";
         List<Object[]> data = new ArrayList<Object[]>(l.size());
         Double totalIngresos, efectivo = null, cccpc = null;
         totalIngresos = 0.0;
@@ -440,11 +441,15 @@ public class Contabilidad {
                     cccpc = null;
                     efectivo = factura.getImporte();
                 } else if (Valores.FormaPago.CTA_CTE.getId() == factura.getFormaPago()) {
-                    entregado = new CtacteProveedorController().findCtacteProveedorByFactura(factura.getId()).getEntregado().doubleValue();
-                    cccpc = (factura.getImporte() - entregado);
-                    efectivo = entregado > 0 ? entregado : null;
+                    try {
+                        entregado = new CtacteProveedorController().findCtacteProveedorByFactura(factura.getId()).getEntregado().doubleValue();
+                        cccpc = (factura.getImporte() - entregado);
+                        efectivo = entregado > 0 ? entregado : null;
+                    } catch (NoResultException ex) {
+                        errores += "\nFactura (id " + factura.getId() + ") N° " + JGestionUtils.getNumeracion(factura) + ", no se encontró la Cta Cte.";
+                    }
                 } else {
-                    Logger.getLogger(Contabilidad.class).info("Factura=" + factura.getId() + ", FormaPago.id=" + factura.getFormaPago());
+                    LOG.info("Factura=" + factura.getId() + ", FormaPago.id=" + factura.getFormaPago());
                 }
             } else {
                 efectivo = null;
@@ -459,6 +464,9 @@ public class Contabilidad {
                         cccpc,// != null ? cccpc : "------",
                         totalIngresos
                     });
+        }
+        if(!errores.isEmpty()) {
+            JOptionPane.showMessageDialog(null, errores, "Errores de información", JOptionPane.ERROR_MESSAGE);
         }
         return data;
     }
@@ -1092,7 +1100,6 @@ public class Contabilidad {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
-                    
                 }
             }
         });
