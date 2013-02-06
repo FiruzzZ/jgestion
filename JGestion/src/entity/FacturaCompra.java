@@ -201,22 +201,6 @@ public class FacturaCompra implements Serializable {
         this.actualizaStock = actualizaStock;
     }
 
-//    public short getFacturaCuarto() {
-//        return facturaCuarto;
-//    }
-
-//    public void setFacturaCuarto(short facturaCuarto) {
-//        this.facturaCuarto = facturaCuarto;
-//    }
-
-//    public int getFacturaOcteto() {
-//        return facturaOcteto;
-//    }
-
-//    public void setFacturaOcteto(int facturaOcteto) {
-//        this.facturaOcteto = facturaOcteto;
-//    }
-
     public double getPercIva() {
         return percIva;
     }
@@ -430,6 +414,7 @@ public class FacturaCompra implements Serializable {
                 + ", actualizaStock=" + actualizaStock + ", gravado=" + gravado + ", noGravado=" + noGravado
                 + ", descuento=" + descuento
                 + ", percIva=" + percIva + ", percDgr=" + percDgr + ", iva10=" + iva10 + ", iva21=" + iva21 + ", imp. Recuperable=" + impuestosRecuperables
+                + ", detalle.size=" + (detalleCompraList != null ? detalleCompraList.size() : null)
                 + ", imp. No Recuperable=" + impuestosNoRecuperables
                 + ", movimientoInterno=" + movimientoInterno + ", diasCtaCte=" + diasCtaCte
                 + ", proveedor=" + proveedor.getId() + ", sucursal=" + (sucursal == null ? null : sucursal.getId())
