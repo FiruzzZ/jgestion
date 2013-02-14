@@ -14,7 +14,6 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 
 /**
  * Pantalla de ABM para Rubros y Marcas, UnidadMedidas

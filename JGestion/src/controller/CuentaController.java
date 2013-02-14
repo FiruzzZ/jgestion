@@ -5,19 +5,17 @@ import controller.exceptions.MessageException;
 import controller.exceptions.NonexistentEntityException;
 import entity.Cuenta;
 import entity.DetalleCajaMovimientos;
-import gui.JDMiniABM;
+import gui.JDABM;
+import gui.JDContenedor;
+import gui.PanelABMCuenta;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
-import javax.persistence.Query;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import jpa.controller.CuentaJpaController;
@@ -75,32 +73,114 @@ public class CuentaController {
         }
     }
 
+    public void initContenedor(Window owner) {
+        final JDContenedor contenedor = new JDContenedor(owner, true, "ABM Sub Cuentas");
+        contenedor.getbImprimir().setVisible(false);
+        contenedor.getbNuevo().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    EL_OBJECT = null;
+                    initABM(contenedor, false);
+                    EL_OBJECT = null;
+                    cargarContenedor(contenedor.getDTM(), null);
+                } catch (MessageException ex) {
+                    contenedor.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 2);
+                } catch (Exception ex) {
+                    contenedor.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 0);
+                    LOG.error(ex, ex);
+                }
+            }
+        });
+        contenedor.getbModificar().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    Integer selectedRow = contenedor.getjTable1().getSelectedRow();
+                    if (selectedRow > -1) {
+                        EL_OBJECT = jpaController.find(Integer.valueOf((contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
+                    } else {
+                        EL_OBJECT = null;
+                    }
+                    initABM(contenedor, true);
+                    EL_OBJECT = null;
+                    cargarContenedor(contenedor.getDTM(), null);
+                } catch (MessageException ex) {
+                    contenedor.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 2);
+                } catch (Exception ex) {
+                    contenedor.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 0);
+                    LOG.error(ex, ex);
+                }
+            }
+        });
+        contenedor.getbBorrar().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    int selectedRow = contenedor.getjTable1().getSelectedRow();
+                    if (selectedRow > -1) {
+                        destroy(Integer.valueOf((contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
+                        cargarContenedor(contenedor.getDTM(), null);
+                    } else {
+                        throw new MessageException("No hay " + jpaController.getEntityClass().getSimpleName() + " seleccionada");
+                    }
+                    JOptionPane.showMessageDialog(contenedor, "Registro eliminado");
+                } catch (MessageException ex) {
+                    contenedor.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 2);
+                } catch (NonexistentEntityException ex) {
+                    contenedor.showMessage("El registro que intenta borrar ya no existe mas capo..", jpaController.getEntityClass().getSimpleName(), 0);
+                } catch (Exception ex) {
+                    contenedor.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 0);
+                    LOG.error(ex.getLocalizedMessage(), ex);
+                }
+            }
+        });
+        UTIL.getDefaultTableModel(contenedor.getjTable1(), new String[]{"id", "Cuenta", "Ingreso"}, new int[]{1, 100, 100}, new Class<?>[]{null, null, Boolean.class});
+        UTIL.hideColumnTable(contenedor.getjTable1(), 0);
+        cargarContenedor(contenedor.getDTM(), null);
+        contenedor.setLocationRelativeTo(owner);
+        contenedor.setVisible(true);
+    }
+
+    private void cargarContenedor(DefaultTableModel dtm, String query) {
+        dtm.setRowCount(0);
+        if (query == null || query.isEmpty()) {
+            query = "";
+        }
+        List<Cuenta> l = jpaController.findByQuery("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o WHERE o.id > 1 AND o.nombre LIKE '%" + query + "%' ORDER BY o.nombre");
+        for (Cuenta o : l) {
+            dtm.addRow(new Object[]{o.getId(), o.getNombre(), o.isIngreso()});
+        }
+    }
+
     /**
      * Init UI ABM de MovimientoConcepto
      *
-     * @param jFrame owner, patern bla bla
+     * @param owner owner, patern bla bla
      * @throws MessageException End-User messages
      */
-    public void initABM(JFrame jFrame) throws MessageException {
+    private void initABM(Window owner, boolean editing) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.TESORERIA);
-        final JDMiniABM abm = new JDMiniABM(jFrame, true);
-        abm.hideBtnLock();
-        abm.hideFieldCodigo();
-        abm.hideFieldExtra();
-        abm.setVisibleTaInformacion(false);
-        abm.pack();
-        abm.setTitle("ABM - " + jpaController.getEntityClass().getSimpleName() + "'s");
-        UTIL.getDefaultTableModel(abm.getjTable1(),
-                new String[]{"Nº", "Nombre"},
-                new int[]{10, 150});
-        cargarDTM(abm.getDTM(), null);
+        if (editing) {
+            if (EL_OBJECT == null) {
+                throw new MessageException("Debe elegir una fila");
+            }
+            EL_OBJECT = jpaController.find(EL_OBJECT.getId());
+        }
+        final PanelABMCuenta panelABM = new PanelABMCuenta();
+        if (editing) {
+            panelABM.getTfNombre().setText(EL_OBJECT.getNombre());
+            panelABM.getCheckIngresos().setSelected(EL_OBJECT.isIngreso());
+        }
+        final JDABM abm = new JDABM(owner, "ABM Cuentas", true, panelABM);
         abm.getbAceptar().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (EL_OBJECT == null) {
                     EL_OBJECT = new Cuenta();
                 }
-                EL_OBJECT.setNombre(abm.getTfNombre());
+                EL_OBJECT.setNombre(panelABM.getTfNombre().getText().trim().toUpperCase());
+                EL_OBJECT.setIngreso(panelABM.getCheckIngresos().isSelected());
                 try {
                     abm.getbAceptar().setEnabled(false);
                     checkConstraints(EL_OBJECT);
@@ -114,9 +194,8 @@ public class CuentaController {
                         msg = " editado";
                     }
                     JOptionPane.showMessageDialog(abm, jpaController.getEntityClass().getSimpleName() + msg);
-                    abm.clearPanelFields();
-                    cargarDTM(abm.getDTM(), null);
                     EL_OBJECT = null;
+                    abm.dispose();
                 } catch (MessageException ex) {
                     JOptionPane.showMessageDialog(abm, ex.getMessage(), ex.getClass().toString(), JOptionPane.WARNING_MESSAGE);
                     LOG.error(ex, ex);
@@ -128,64 +207,20 @@ public class CuentaController {
                 }
             }
         });
-        abm.getbEliminar().addActionListener(new ActionListener() {
+        abm.getbCancelar().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(abm, "¿Confirma eliminación de \"" + EL_OBJECT + "\"?", null, JOptionPane.YES_NO_OPTION)) {
-                    try {
-                        abm.getbEliminar().setEnabled(false);
-                        destroy(EL_OBJECT.getId());
-                        EL_OBJECT = null;
-                        abm.clearPanelFields();
-                        cargarDTM(abm.getDTM(), null);
-                        JOptionPane.showMessageDialog(abm, "Eliminado..");
-                    } catch (IllegalOrphanException ex) {
-                        JOptionPane.showMessageDialog(abm, ex.getMessage());
-                    } catch (NonexistentEntityException ex) {
-                        JOptionPane.showMessageDialog(abm, ex.getMessage());
-                    } catch (Exception ex) {
-                        JOptionPane.showMessageDialog(abm, ex.getMessage(), ex.getClass().toString(), JOptionPane.ERROR_MESSAGE);
-                        LOG.error(ex, ex);
-                    } finally {
-                        abm.getbEliminar().setEnabled(true);
-                    }
-                }
-            }
-        });
-        abm.getjTable1().addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                int selectedRow = abm.getjTable1().getSelectedRow();
-                if (selectedRow > -1) {
-                    EL_OBJECT = (Cuenta) DAO.getEntityManager().find(Cuenta.class,
-                            Integer.valueOf((abm.getjTable1().getModel().getValueAt(selectedRow, 0)).toString()));
-                    if (EL_OBJECT != null) {
-                        abm.setFields(EL_OBJECT.getNombre(), null, null);
-                    }
-                }
+                EL_OBJECT = null;
+                abm.dispose();
             }
         });
         abm.setVisible(true);
     }
 
-    private void cargarDTM(DefaultTableModel dtm, String query) {
-        UTIL.limpiarDtm(dtm);
-        List<Cuenta> list;
-        if (query == null || query.length() < 10) {
-            list = DAO.getEntityManager().createQuery("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o WHERE o.id > 1 ORDER BY o.nombre").getResultList();
-        } else {
-            // para cuando se usa el Buscador del ABM
-            list = DAO.getEntityManager().createNativeQuery(query, Cuenta.class).getResultList();
-        }
-
-        for (Cuenta o : list) {
-            dtm.addRow(new Object[]{
-                        o.getId(),
-                        o.getNombre(),});
-        }
-    }
-
     private void checkConstraints(Cuenta o) throws MessageException, Exception {
+        if (o.getNombre().isEmpty()) {
+            throw new MessageException("Nombre no válido.");
+        }
         String idQuery = "";
         if (o.getId() != null) {
             idQuery = "o.id <> " + o.getId() + " AND ";
@@ -197,5 +232,9 @@ public class CuentaController {
             throw new MessageException("Ya existe un registro con el nombre \"" + o.getNombre() + "\"");
         } catch (NoResultException ex) {
         }
+    }
+
+    public List<Cuenta> findByTipo(boolean ingreso) {
+        return jpaController.findByTipo(ingreso);
     }
 }

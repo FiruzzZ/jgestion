@@ -23,6 +23,7 @@ import org.apache.log4j.Logger;
 public class StockController {
 
     public static final String CLASS_NAME = Stock.class.getSimpleName();
+    public static final Logger LOG = Logger.getLogger(StockController.class.getName());
 
     public StockController() {
     }
@@ -145,19 +146,18 @@ public class StockController {
         EntityManager em = getEntityManager();
         try {
             em.getTransaction().begin();
-//         facturaCompra = DAO.getEntityManager().find(FacturaCompra.class, facturaCompra.getId());
             List<DetalleCompra> listaDetalleCompra = new DetalleCompraJpaController().findByFactura(facturaCompra);
             System.out.println("Cantidad de Items: " + listaDetalleCompra.size());
-            ProductoController productoCtrl = new ProductoController();
             Stock stock;
             for (DetalleCompra detalleCompra : listaDetalleCompra) {
+                Producto producto = detalleCompra.getProducto();
                 try {
                     // checks la pre-existencia del Producto EN ESTA Sucursal
-                    stock = findStock(detalleCompra.getProducto(), facturaCompra.getSucursal());
+                    stock = findStock(producto, facturaCompra.getSucursal());
                 } catch (NoResultException ex) {
                     // por lo visto no existe
                     stock = new Stock();
-                    stock.setProducto(detalleCompra.getProducto());
+                    stock.setProducto(producto);
                     stock.setSucursal(facturaCompra.getSucursal());
                     stock.setUsuario(facturaCompra.getUsuario());
                 }
@@ -171,7 +171,9 @@ public class StockController {
                 } else {
                     em.merge(stock);
                 }
-                productoCtrl.updateStockActual(stock.getProducto(), detalleCompra.getCantidad());
+                LOG.debug(producto);
+                producto.setStockactual(producto.getStockactual() + detalleCompra.getCantidad());
+                em.merge(producto);
             }
             em.getTransaction().commit();
         } catch (Exception ex) {

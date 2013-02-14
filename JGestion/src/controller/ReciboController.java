@@ -83,7 +83,7 @@ public class ReciboController implements ActionListener, FocusListener {
         UTIL.hideColumnTable(jdReRe.getTableAPagar(), 0);
         UTIL.loadComboBox(jdReRe.getCbSucursal(), uh.getWrappedSucursales(), false);
         UTIL.loadComboBox(jdReRe.getCbCaja(), uh.getCajas(true), false);
-        UTIL.loadComboBox(jdReRe.getCbClienteProveedor(), new ClienteController().findEntities(), true);
+        UTIL.loadComboBox(jdReRe.getCbClienteProveedor(), new ClienteController().findAll(), true);
         UTIL.loadComboBox(jdReRe.getCbCtaCtes(), null, false);
         setNextNumeroReRe();
         jdReRe.getbAnular().addActionListener(new ActionListener() {
@@ -540,7 +540,7 @@ public class ReciboController implements ActionListener, FocusListener {
     }
 
     private void actualizarMontoEntrega(FacturaVenta factu, BigDecimal monto) {
-        CtacteCliente ctacte = new CtacteClienteController().findCtacteClienteByFactura(factu.getId());
+        CtacteCliente ctacte = new CtacteClienteController().findByFactura(factu.getId());
         LOG.debug("updatingMontoEntrega: CtaCte:" + ctacte.getId() + " -> Importe: " + ctacte.getImporte() + " Entregado:" + ctacte.getEntregado() + " + " + monto);
         ctacte.setEntregado(ctacte.getEntregado() + monto.doubleValue());
         if (ctacte.getImporte() == ctacte.getEntregado()) {
@@ -704,7 +704,7 @@ public class ReciboController implements ActionListener, FocusListener {
 
     private Recibo initBuscador(final boolean toAnular) {
         buscador.setParaRecibos();
-        UTIL.loadComboBox(buscador.getCbClieProv(), JGestionUtils.getWrappedClientes(new ClienteController().findEntities()), true);
+        UTIL.loadComboBox(buscador.getCbClieProv(), JGestionUtils.getWrappedClientes(new ClienteController().findAll()), true);
         UTIL.loadComboBox(buscador.getCbCaja(), new UsuarioHelper().getCajas(Boolean.TRUE), true);
         UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), true);
         UTIL.getDefaultTableModel(
@@ -743,7 +743,7 @@ public class ReciboController implements ActionListener, FocusListener {
 
     private void cargarFacturasCtaCtes(Cliente cliente) {
         limpiarDetalle();
-        List<CtacteCliente> ctacteClientePendientesList = new CtacteClienteController().findCtacteClienteByCliente(cliente.getId(), Valores.CtaCteEstado.PENDIENTE.getId());
+        List<CtacteCliente> ctacteClientePendientesList = new CtacteClienteController().findByCliente(cliente, Valores.CtaCteEstado.PENDIENTE.getId());
         UTIL.loadComboBox(jdReRe.getCbCtaCtes(), JGestionUtils.getWrappedCtacteCliente(ctacteClientePendientesList), false);
     }
 

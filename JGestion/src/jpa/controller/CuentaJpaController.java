@@ -35,6 +35,14 @@ public class CuentaJpaController extends AbstractDAO<Cuenta, Integer> {
         cq.orderBy(cb.asc(root.get(Cuenta_.nombre)));
         return getEntityManager().createQuery(cq).setHint(QueryHints.REFRESH, true).getResultList();
     }
-    
-    
+
+    public List<Cuenta> findByTipo(boolean ingreso) {
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Cuenta> cq = cb.createQuery(getEntityClass());
+        Root<Cuenta> root = cq.from(getEntityClass());
+        cq.select(root);
+        cq.where(cb.equal(root.get(Cuenta_.ingreso), ingreso));
+        cq.orderBy(cb.asc(root.get(Cuenta_.nombre)));
+        return getEntityManager().createQuery(cq).setHint(QueryHints.REFRESH, true).getResultList();
+    }
 }

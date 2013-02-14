@@ -27,7 +27,7 @@ public class ProductoJpaController extends AbstractDAO<Producto, Integer> {
 
     @Override
     public Producto find(Integer id) {
-        Producto find = entityManager.find(getEntityClass(), id);
+        Producto find = getEntityManager().find(getEntityClass(), id);
         entityManager.setProperty(QueryHints.REFRESH, Boolean.TRUE);
         entityManager.refresh(find);
         return find;
@@ -43,6 +43,6 @@ public class ProductoJpaController extends AbstractDAO<Producto, Integer> {
                 createQuery("SELECT o FROM Producto o WHERE o.codigo='" + codigo + "'", getEntityClass()).
                 setHint(QueryHints.REFRESH, Boolean.TRUE).
                 getSingleResult();
-
     }
+    
 }

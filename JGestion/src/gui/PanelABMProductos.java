@@ -136,8 +136,8 @@ public class PanelABMProductos extends javax.swing.JPanel {
             }
         });
 
-        tfStockActual.setColumns(4);
         tfStockActual.setEditable(false);
+        tfStockActual.setColumns(4);
         tfStockActual.setFocusable(false);
 
         tfStockMax.setColumns(4);
@@ -174,11 +174,6 @@ public class PanelABMProductos extends javax.swing.JPanel {
 
         bMarcas.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/16px_add.png"))); // NOI18N
         bMarcas.setName("Marcas"); // NOI18N
-        bMarcas.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                bMarcasActionPerformed(evt);
-            }
-        });
 
         jLabel16.setText("Precio venta");
 
@@ -193,8 +188,8 @@ public class PanelABMProductos extends javax.swing.JPanel {
 
         jLabel17.setText("Costo compra");
 
-        tfCostoCompra.setColumns(4);
         tfCostoCompra.setEditable(false);
+        tfCostoCompra.setColumns(4);
         tfCostoCompra.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         tfCostoCompra.setText("0.0");
         tfCostoCompra.setFocusable(false);
@@ -210,25 +205,16 @@ public class PanelABMProductos extends javax.swing.JPanel {
         bStockGral.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/view_detail_16x.png"))); // NOI18N
         bStockGral.setToolTipText("Ver stock gral. (Sucursales)");
         bStockGral.setName("bstockGral"); // NOI18N
-        bStockGral.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                bStockGralActionPerformed(evt);
-            }
-        });
 
-        jEditorPane1.setContentType("text/html");
+        jEditorPane1.setContentType("text/html"); // NOI18N
         jEditorPane1.setEditable(false);
         jEditorPane1.setText("<html>\r\n  <head>\r\n\r\n  </head>\r\n  <body>\r\n    <p style=\"margin-top: 0\">\r\n      \r<p align=\"center\">\n  <b>[Doble click para editar]</b>\n</p>\n    </p>\r\n  </body>\r\n</html>\r\n");
         jScrollPane2.setViewportView(jEditorPane1);
 
         btnAddRubros.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/16px_add.png"))); // NOI18N
         btnAddRubros.setName("Marcas"); // NOI18N
-        btnAddRubros.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAddRubrosActionPerformed(evt);
-            }
-        });
 
+        checkUpdatePrecioVenta.setSelected(true);
         checkUpdatePrecioVenta.setText("Actualizar Precio Venta según compras");
         checkUpdatePrecioVenta.setToolTipText("<html>\nChequeando está opción, permite al sistema actualizar automáticamente el <b>Precio de Venta</b>\n<br>según el <b>Costo de Compra</b>.\n<br>Cada vez que se registre una compra del producto, el <b>Costo de Compra</b> se modifica y\n<br>así también lo hará el <b>Precio de Venta</b>.\n</html>");
 
@@ -393,24 +379,13 @@ public class PanelABMProductos extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_cbSucursalActionPerformed
 
-    private void bMarcasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bMarcasActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_bMarcasActionPerformed
-
     private void tfPrecioKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfPrecioKeyTyped
     }//GEN-LAST:event_tfPrecioKeyTyped
 
     private void tfStockMinimoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfStockMinimoKeyTyped
-        soloNumeros(evt);        // TODO add your handling code here:
+        soloNumeros(evt);
     }//GEN-LAST:event_tfStockMinimoKeyTyped
 
-    private void bStockGralActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bStockGralActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_bStockGralActionPerformed
-
-    private void btnAddRubrosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddRubrosActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnAddRubrosActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton bBuscarFoto;
     private javax.swing.JButton bMarcas;

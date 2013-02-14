@@ -96,11 +96,15 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
 
     @Override
     public int count() {
-        CriteriaQuery<Long> cq = getEntityManager().getCriteriaBuilder().createQuery(Long.class);
-        Root<T> rt = cq.from(entityClass);
-        cq.select(getEntityManager().getCriteriaBuilder().count(rt));
-        Query q = getEntityManager().createQuery(cq);
-        return ((Long) q.getSingleResult()).intValue();
+        try {
+            CriteriaQuery<Long> cq = getEntityManager().getCriteriaBuilder().createQuery(Long.class);
+            Root<T> rt = cq.from(entityClass);
+            cq.select(getEntityManager().getCriteriaBuilder().count(rt));
+            Query q = getEntityManager().createQuery(cq);
+            return ((Long) q.getSingleResult()).intValue();
+        } finally {
+            closeEntityManager();
+        }
     }
 
     @Override
@@ -126,11 +130,12 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
 
     /**
      * Executing a native SQL query to return instance(s). (algún día será mas
-     * clara la esta Javadoc...)
+     * clara esta Javadoc...)
      *
      * @param sqlString a SELECT native SQL statement.
      * @param stringSetMapping
-     * @param hints optional hints elements
+     * @param hints optional hints elements (REFRESH hint will be added if not
+     * present)
      * @return a list...
      */
     @SuppressWarnings("unchecked")
@@ -167,6 +172,7 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
      * This method add the hint ({@link QueryHints#REFRESH}, Boolean.TRUE)
      *
      * @param sqlString a SELECT native SQL statement.
+     * @param stringSetMapping
      * @return
      * @see #findByNativeQuery(java.lang.String, java.util.Map)
      */

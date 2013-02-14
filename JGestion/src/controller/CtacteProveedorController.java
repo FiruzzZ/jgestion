@@ -1,6 +1,7 @@
 package controller;
 
 import controller.exceptions.MessageException;
+import controller.exceptions.MissingReportException;
 import controller.exceptions.NonexistentEntityException;
 import entity.CreditoProveedor;
 import entity.CtacteProveedor;
@@ -27,6 +28,7 @@ import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
@@ -169,8 +171,7 @@ public class CtacteProveedorController implements ActionListener {
     List<CtacteProveedor> findCtacteProveedorByProveedor(Integer idProveedor) {
         EntityManager em = getEntityManager();
         em.getTransaction().begin();
-        List<CtacteProveedor> listaCtaCteProveedor = null;
-        listaCtaCteProveedor = em.createNativeQuery(
+        List<CtacteProveedor> listaCtaCteProveedor = em.createNativeQuery(
                 "SELECT o.* FROM ctacte_proveedor o, factura_compra f, proveedor p"
                 + " WHERE p.id = f.proveedor AND f.id = o.factura "
                 + " AND p.id =" + idProveedor,
@@ -184,15 +185,30 @@ public class CtacteProveedorController implements ActionListener {
 
     }
 
-    public void iniResumenCtaCte(JFrame owner, boolean modal) {
-        // <editor-fold defaultstate="collapsed" desc="checking Permiso">
-        try {
-            UsuarioController.checkPermiso(PermisosController.PermisoDe.TESORERIA);
-        } catch (MessageException ex) {
-            javax.swing.JOptionPane.showMessageDialog(owner, ex.getMessage());
-            return;
-        }// </editor-fold>
+    /**
+     *
+     * @param owner
+     * @param modal
+     * @param proveedor if != null, set this Proveedor as selected and do the
+     * search for it Cta. Cte
+     * @return
+     * @throws MessageException
+     * @throws JRException
+     * @throws MissingReportException
+     * @see #getResumenCtaCte(java.awt.Window, boolean)
+     */
+    public JDialog getResumenCtaCte(Window owner, boolean modal, Proveedor proveedor) throws MessageException, JRException, MissingReportException {
+        getResumenCtaCte(owner, modal);
+        if (proveedor != null) {
+            UTIL.setSelectedItem(resumenCtaCtes.getCbClieProv(), proveedor);
+            armarQuery(false);
+        }
+        return resumenCtaCtes;
 
+    }
+
+    public JDialog getResumenCtaCte(Window owner, boolean modal) throws MessageException {
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.TESORERIA);
         resumenCtaCtes = new JDResumenCtaCtes(owner, modal, false);
         resumenCtaCtes.getjTableResumen().addMouseListener(new MouseAdapter() {
             @Override
@@ -225,8 +241,7 @@ public class CtacteProveedorController implements ActionListener {
             }
         });
         resumenCtaCtes.setListener(this);
-        resumenCtaCtes.setLocationRelativeTo(owner);
-        resumenCtaCtes.setVisible(true);
+        return resumenCtaCtes;
     }
 
     private void displayDetalleCredito(Window owner) {
@@ -307,7 +322,7 @@ public class CtacteProveedorController implements ActionListener {
         }// </editor-fold>
     }
 
-    private void armarQuery(boolean imprimirResumen) throws MessageException, Exception {
+    private void armarQuery(boolean imprimirResumen) throws MessageException, JRException, MissingReportException {
         totalDebe = 0.0;
         totalHaber = 0.0;
 
@@ -382,7 +397,7 @@ public class CtacteProveedorController implements ActionListener {
         }
     }
 
-    private void imprimirResumenCCC(Proveedor proveedor, Date filterDate, String filters) throws JRException, Exception {
+    private void imprimirResumenCCC(Proveedor proveedor, Date filterDate, String filters) throws JRException, MissingReportException {
         Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_ResumenCCP.jasper", "Resumen Cta. Cte. Proveedor");
         r.addCurrent_User();
         r.addParameter("SUBREPORT_DIR", Reportes.FOLDER_REPORTES);
@@ -425,7 +440,7 @@ public class CtacteProveedorController implements ActionListener {
         }
     }
 
-    List<Object[]> findSaldosCtacte(Date desde, Date hasta) {
+    List<Object[]> findSaldos(Date desde, Date hasta) {
         EntityManager em = getEntityManager();
         em.getTransaction().begin();
         List<CtacteProveedor> l;
@@ -444,13 +459,13 @@ public class CtacteProveedorController implements ActionListener {
         Proveedor c = l.get(0).getFactura().getProveedor();
         for (CtacteProveedor ccc : l) {
             if (!c.equals(ccc.getFactura().getProveedor())) {
-                data.add(new Object[]{c.getNombre(), importeCCC});
+                data.add(new Object[]{c.getId(), c.getNombre(), importeCCC});
                 importeCCC = BigDecimal.ZERO;
                 c = ccc.getFactura().getProveedor();
             }
             importeCCC = importeCCC.add(ccc.getImporte().subtract(ccc.getEntregado()));
         }
-        data.add(new Object[]{c.getNombre(), importeCCC});
+        data.add(new Object[]{c.getId(), c.getNombre(), importeCCC});
         return data;
     }
 }

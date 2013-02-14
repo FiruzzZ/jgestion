@@ -99,7 +99,7 @@ public class ListaPreciosController implements ActionListener, MouseListener, Ke
       }
    }
 
-   public List<ListaPrecios> findListaPreciosEntities() {
+   public List<ListaPrecios> findAll() {
       return findListaPreciosEntities(true, -1, -1);
    }
 

@@ -81,7 +81,7 @@ public class JXTreeTableDemo extends javax.swing.JDialog {
                 }
             }
         });
-        ActionListenerManager.setCuentaSubcuentaActionListener(getCbCuenta(), true, getCbSubCuenta(), true, true);
+        ActionListenerManager.setCuentasIngresosSubcuentaActionListener(getCbCuenta(), true, getCbSubCuenta(), true, true);
         jTable1.setTreeTableModel(new CuentaTreeTableModel());
         jTable1.setRootVisible(true);
         for (int indexColumn = 1; indexColumn < jTable1.getColumnModel().getColumnCount(); indexColumn++) {

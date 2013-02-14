@@ -9,6 +9,8 @@ import java.awt.Component;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.math.BigDecimal;
@@ -545,6 +547,17 @@ public class CajaMovimientosController implements ActionListener {
                     buscador.setVisible(true);
                 }
             });
+            panelMovVarios.getRadioIngreso().addItemListener(new ItemListener() {
+                @Override
+                public void itemStateChanged(ItemEvent e) {
+                    System.out.println("getRadioIngreso()");
+                    if (panelMovVarios.getRadioIngreso().isSelected()) {
+                        ActionListenerManager.setCuentasIngresosSubcuentaActionListener(panelMovVarios.getCbCuenta(), false, panelMovVarios.getCbSubCuenta(), true, true);
+                    } else {
+                        ActionListenerManager.setCuentasEgresosSubcuentaActionListener(panelMovVarios.getCbCuenta(), false, panelMovVarios.getCbSubCuenta(), true, true);
+                    }
+                }
+            });
         }
         if (new UnidadDeNegocioJpaController().findAll().isEmpty()) {
             throw new MessageException(Main.resourceBundle.getString("info.unidaddenegociosempty"));
@@ -556,7 +569,7 @@ public class CajaMovimientosController implements ActionListener {
         UTIL.loadComboBox(panelMovVarios.getCbCaja(), ll, false);
         List<ComboBoxWrapper<UnidadDeNegocio>> l = new Wrapper<UnidadDeNegocio>().getWrapped(new UnidadDeNegocioJpaController().findAll());
         UTIL.loadComboBox(panelMovVarios.getCbUnidadDeNegocio(), l, false);
-        ActionListenerManager.setCuentaSubcuentaActionListener(panelMovVarios.getCbCuenta(), false, panelMovVarios.getCbSubCuenta(), true, true);
+        ActionListenerManager.setCuentasIESubcuentaActionListener(panelMovVarios.getCbCuenta(), false, panelMovVarios.getCbSubCuenta(), true, true);
         abm = new JDABM(owner, "Movimientos Varios", modal, panelMovVarios);
         abm.getbAceptar().addActionListener(new ActionListener() {
             @Override
@@ -654,7 +667,7 @@ public class CajaMovimientosController implements ActionListener {
         panelBuscadorMovimientosVarios = new PanelBuscadorMovimientosVarios();
         UTIL.loadComboBox(panelBuscadorMovimientosVarios.getCbCaja(), new UsuarioHelper().getWrappedCajas(true), true);
         UTIL.loadComboBox(panelBuscadorMovimientosVarios.getCbUnidadDeNegocio(), JGestionUtils.getWrappedUnidadDeNegocios(new UnidadDeNegocioJpaController().findAll()), true);
-        ActionListenerManager.setCuentaSubcuentaActionListener(panelBuscadorMovimientosVarios.getCbCuenta(), true, panelBuscadorMovimientosVarios.getCbSubCuenta(), true, true);
+        ActionListenerManager.setCuentasIngresosSubcuentaActionListener(panelBuscadorMovimientosVarios.getCbCuenta(), true, panelBuscadorMovimientosVarios.getCbSubCuenta(), true, true);
         buscador = new JDBuscador(owner, "Buscardor - Movimientos varios", false, panelBuscadorMovimientosVarios);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
@@ -1053,7 +1066,7 @@ public class CajaMovimientosController implements ActionListener {
         panelBuscadorMovimientosVarios = new PanelBuscadorMovimientosVarios();
         UTIL.loadComboBox(panelBuscadorMovimientosVarios.getCbCaja(), new UsuarioHelper().getWrappedCajas(true), true);
         UTIL.loadComboBox(panelBuscadorMovimientosVarios.getCbUnidadDeNegocio(), JGestionUtils.getWrappedUnidadDeNegocios(new UnidadDeNegocioJpaController().findAll()), false);
-        ActionListenerManager.setCuentaSubcuentaActionListener(panelBuscadorMovimientosVarios.getCbCuenta(), true, panelBuscadorMovimientosVarios.getCbSubCuenta(), true, true);
+        ActionListenerManager.setCuentasIngresosSubcuentaActionListener(panelBuscadorMovimientosVarios.getCbCuenta(), true, panelBuscadorMovimientosVarios.getCbSubCuenta(), true, true);
         buscador = new JDBuscador(null, "Buscardor - Movimientos varios", false, panelBuscadorMovimientosVarios);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),

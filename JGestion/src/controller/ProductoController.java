@@ -36,14 +36,13 @@ import utilities.swing.components.NumberRenderer;
  * @author FiruzzZ
  */
 public class ProductoController implements ActionListener, KeyListener {
-    private static final Logger LOG = Logger.getLogger(ProductoController.class.getName());
 
-    
+    private static final Logger LOG = Logger.getLogger(ProductoController.class.getName());
     public static final String CLASS_NAME = Producto.class.getSimpleName();
     private JDContenedor contenedor;
     private JDABM abm;
-    private final String[] colsName = {"Nº", "Código", "Nombre", "Marca", "Stock Gral."};
-    private final int[] colsWidth = {15, 50, 100, 50, 20};
+    private final String[] colsName = {"id", "Código", "Nombre", "Marca", "Stock Gral.", "Costo C.", "Precio V."};
+    private final int[] colsWidth = {1, 50, 200, 50, 20, 50, 50};
     private PanelABMProductos panel;
     private Producto EL_OBJECT;
     /**
@@ -67,6 +66,7 @@ public class ProductoController implements ActionListener, KeyListener {
 
     public void initContenedor(JFrame owner, boolean modal, boolean modoBuscador) throws DatabaseErrorException {
         contenedor = new JDContenedor(owner, modal, "ABM - " + CLASS_NAME);
+        contenedor.setSize(contenedor.getWidth() + 200, contenedor.getHeight());
         contenedor.getTfFiltro().setToolTipText("Filtra por nombre del " + CLASS_NAME);
         contenedor.setModoBuscador(modoBuscador);
         contenedor.getbNuevo().addActionListener(new ActionListener() {
@@ -125,7 +125,31 @@ public class ProductoController implements ActionListener, KeyListener {
                 }
             }
         });
+        contenedor.getTfFiltro().addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                String tf = contenedor.getTfFiltro().getText().trim();
+                try {
+                    if (tf.length() > 0) {
+                        permitirFiltroVacio = true;
+                        armarQueryContenedor(tf);
+                    } else {
+                        if (permitirFiltroVacio) {
+                            permitirFiltroVacio = false;
+                            armarQueryContenedor(tf);
+
+                        }
+                    }
+                } catch (Exception ex) {
+                    Logger.getLogger(ProductoController.class).fatal("Error recuperando Productos en Contenedor", ex);
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+        });
         UTIL.getDefaultTableModel(contenedor.getjTable1(), colsName, colsWidth);
+        contenedor.getjTable1().getColumnModel().getColumn(4).setCellRenderer(NumberRenderer.getIntegerRenderer());
+        contenedor.getjTable1().getColumnModel().getColumn(5).setCellRenderer(NumberRenderer.getCurrencyRenderer(4));
+        contenedor.getjTable1().getColumnModel().getColumn(6).setCellRenderer(NumberRenderer.getCurrencyRenderer(4));
         UTIL.hideColumnTable(contenedor.getjTable1(), 0);
         //no permite filtro de vacio en el inicio
         permitirFiltroVacio = false;
@@ -238,24 +262,26 @@ public class ProductoController implements ActionListener, KeyListener {
         return JDDescripcionHTML;
     }
 
-    private void cargarContenedorTabla(String query) {
+    private void cargarContenedorTabla(String nativeQuery) {
         if (contenedor != null) {
             DefaultTableModel dtm = contenedor.getDTM();
-            UTIL.limpiarDtm(dtm);
-            List<Producto> l = jpaController.findByNativeQuery(query);
-            EntityManager entityManager = DAO.getEntityManager();
-            for (Producto o : l) {
-                if (o.getMarca() == null) {
-                    o.setMarca((Marca) entityManager.createQuery("SELECT o from Marca o, Producto p where o.id = p.marca.id AND p.id=" + o.getId()).getSingleResult());
-                    Logger.getLogger(this.getClass()).trace("Recuperado la Marca del producto: Producto.id=" + o.getId() + " Marca.id" + o.getMarca().getId());
-                }
-                dtm.addRow(new Object[]{
-                            o.getId(),
-                            o.getCodigo(),
-                            o.getNombre(),
-                            o.getMarca().getNombre(),
-                            o.getStockactual()
-                        });
+            dtm.setRowCount(0);
+//            List<Producto> l = jpaController.findByNativeQuery(nativeQuery);
+            @SuppressWarnings("unchecked")
+            List<Object[]> l = DAO.getEntityManager().createNativeQuery(nativeQuery).getResultList();
+            for (Object[] o : l) {
+//                if (o.getMarca() == null) {
+//                    o.setMarca((Marca) entityManager.createQuery("SELECT o from Marca o, Producto p where o.id = p.marca.id AND p.id=" + o.getId()).getSingleResult());
+//                    Logger.getLogger(this.getClass()).trace("Recuperado la Marca del producto: Producto.id=" + o.getId() + " Marca.id" + o.getMarca().getId());
+//                }
+                dtm.addRow(o);
+//                dtm.addRow(new Object[]{
+//                            o.getId(),
+//                            o.getCodigo(),
+//                            o.getNombre(),
+//                            o.getMarca().getNombre(),
+//                            o.getStockactual()
+//                        });
             }
         }
     }
@@ -275,7 +301,7 @@ public class ProductoController implements ActionListener, KeyListener {
         panel.setTfStockActual(String.valueOf(producto.getStockactual()));
         panel.getCheckUpdatePrecioVenta().setSelected(producto.getUpdatePrecioVenta());
         if (producto.getPrecioVenta() != null) {
-            panel.setTfPrecio(UTIL.PRECIO_CON_PUNTO.format(producto.getPrecioVenta()));
+            panel.setTfPrecio(producto.getPrecioVenta().toString());
         }
         if (producto.getDescripcion() != null) {
             panel.setConDescripcion(true);
@@ -284,7 +310,7 @@ public class ProductoController implements ActionListener, KeyListener {
             panel.setConDescripcion(false);
             panel.getTaDescripcion().setText("<p style=\"margin-top: 0\"><p align=\"center\"><b>[Doble click para insertar una descripci&oacute;n]</b></p></p>");
         }
-        panel.setTfCostoCompra(UTIL.PRECIO_CON_PUNTO.format(producto.getCostoCompra()));
+        panel.setTfCostoCompra(producto.getCostoCompra().toString());
         panel.setDateUltimaCompra(producto.getUltimaCompra());
         if (producto.getFoto() != null) {
             if (producto.getFoto().length > 0) {
@@ -375,14 +401,14 @@ public class ProductoController implements ActionListener, KeyListener {
         } else {
             EL_OBJECT.setSubrubro(null);
         }
-        EL_OBJECT.setPrecioVenta(panel.getTfPrecio().length() > 0 ? Double.valueOf(panel.getTfPrecio()) : 0.0);
+        EL_OBJECT.setPrecioVenta(panel.getTfPrecio().length() > 0 ? new BigDecimal(panel.getTfPrecio()) : BigDecimal.ZERO);
         EL_OBJECT.setUpdatePrecioVenta(panel.getCheckUpdatePrecioVenta().isSelected());
         // no setteable desde la GUI
         // default's....
         EL_OBJECT.setRemunerativo(true);
         if (EL_OBJECT.getCostoCompra() == null) {
             // este se actualiza cuando se cargan FacturaCompra's
-            EL_OBJECT.setCostoCompra(0.0);
+            EL_OBJECT.setCostoCompra(BigDecimal.ZERO);
         }
 
         // NULLABLE'sssssssss
@@ -411,26 +437,6 @@ public class ProductoController implements ActionListener, KeyListener {
     }
 
     public void keyReleased(KeyEvent e) {
-        if (e.getComponent() instanceof JTextField) {
-            JTextField tf = (JTextField) e.getComponent();
-            if (tf.getName().equalsIgnoreCase("tfFiltro")) {
-                try {
-                    if (tf.getText().trim().length() > 0) {
-                        permitirFiltroVacio = true;
-                        armarQueryContenedor(tf.getText().trim());
-                    } else {
-                        if (permitirFiltroVacio) {
-                            permitirFiltroVacio = false;
-                            armarQueryContenedor(tf.getText().trim());
-
-                        }
-                    }
-                } catch (Exception ex) {
-                    Logger.getLogger(ProductoController.class).fatal("Error recuperando Productos en Contenedor", ex);
-                    JOptionPane.showMessageDialog(null, ex);
-                }
-            }
-        }
     }
 
     /**
@@ -439,11 +445,11 @@ public class ProductoController implements ActionListener, KeyListener {
      * @param filtro
      */
     private void armarQueryContenedor(String filtro) {
-        String query = "SELECT id, codigo, nombre, marca, stockactual FROM producto ";
+        String query = "SELECT p.id, p.codigo, p.nombre, marca.nombre, stockactual, costo_compra, precio_venta FROM producto p JOIN marca ON p.marca = marca.id";
         if (filtro != null && filtro.length() > 0) {
-            query += " WHERE nombre ILIKE '%" + filtro + "%'";
+            query += " WHERE p.nombre ILIKE '%" + filtro + "%'";
         }
-        query += " ORDER BY nombre";
+        query += " ORDER BY p.nombre";
         cargarContenedorTabla(query);
     }
 
@@ -579,22 +585,16 @@ public class ProductoController implements ActionListener, KeyListener {
      * @param valoracionStock 1 = ULTIMA_COMPRA, 2 = ANTIGUO (o sea no cambia
      * nada), 3 = PPP
      */
-    void valorizarStock(Producto producto, BigDecimal newPrecioUnitario, int cantidad, int valoracionStock) throws Exception {
+    void valorizarStock(Producto producto, BigDecimal newPrecioUnitario, int cantidad, int valoracionStock) {
         if (valoracionStock == ULTIMA_COMPRA) {
-            producto.setCostoCompra(newPrecioUnitario.doubleValue());
+            producto.setCostoCompra(newPrecioUnitario);
 
         } else if (valoracionStock == PPP) {
-            if (producto.getStockactual() < 0) {
-                throw new MessageException("No se puede hacer un cálculo de PPP"
-                        + " siendo el stock actual del producto menor a 0"
-                        + "\nProducto: " + producto.getNombre()
-                        + "\nStock actual: " + producto.getStockactual());
-            }
-            double ppp = ((producto.getCostoCompra() * producto.getStockactual())
-                    + (newPrecioUnitario.doubleValue() * cantidad));
+            BigDecimal ppp = (producto.getCostoCompra().multiply(BigDecimal.valueOf(producto.getStockactual())))
+                    .add(newPrecioUnitario.multiply(BigDecimal.valueOf(cantidad)));
             int totalStock = producto.getStockactual() + cantidad;
-            ppp = (ppp / totalStock);
-            producto.setCostoCompra(Double.parseDouble(UTIL.PRECIO_CON_PUNTO.format(ppp)));
+            ppp = ppp.divide(BigDecimal.valueOf(totalStock));
+            producto.setCostoCompra(ppp);
 
         } else if (valoracionStock == ANTIGUO) {
             //respeta el costoCompra anterior, o sea.. no hace nada     
@@ -606,7 +606,8 @@ public class ProductoController implements ActionListener, KeyListener {
         if (producto.getUpdatePrecioVenta()) {
             producto.setPrecioVenta(producto.getCostoCompra());
         }
-        DAO.doMerge(producto);
+        LOG.debug("valorizacionStock(): costoCompra=" + producto.getCostoCompra() + ", precioVenta=" + producto.getPrecioVenta());
+        jpaController.merge(producto);
     }
 
     /**
@@ -617,13 +618,9 @@ public class ProductoController implements ActionListener, KeyListener {
      * restar);
      */
     public void updateStockActual(Producto producto, int cantidad) {
-        System.out.println("updateStockActual (General): " + producto.getNombre() + " = " + producto.getStockactual() + " + " + cantidad);
+        LOG.debug("updateStockActual (General): " + producto.getNombre() + " = " + producto.getStockactual() + " + " + cantidad);
         producto.setStockactual(producto.getStockactual() + cantidad);
-        try {
-            jpaController.merge(producto);
-        } catch (Exception ex) {
-            LOG.error(ex.getLocalizedMessage(), ex);
-        }
+        jpaController.merge(producto);
     }
 
     private void initStockGral(Producto p) throws MessageException {

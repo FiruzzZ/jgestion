@@ -1,6 +1,7 @@
 package entity;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -88,6 +89,9 @@ public class Cliente implements Serializable {
     @JoinColumn(name = "sucursal", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Sucursal sucursal;
+    @Basic(optional = false)
+    @Column(name = "limite_ctacte", precision = 12, nullable = false)
+    private BigDecimal limiteCtaCte;
 
     public Cliente() {
     }
@@ -270,6 +274,14 @@ public class Cliente implements Serializable {
 
     public void setInterno2(Integer interno2) {
         this.interno2 = interno2;
+    }
+
+    public BigDecimal getLimiteCtaCte() {
+        return limiteCtaCte;
+    }
+
+    public void setLimiteCtaCte(BigDecimal limiteCtaCte) {
+        this.limiteCtaCte = limiteCtaCte;
     }
 
     @Override

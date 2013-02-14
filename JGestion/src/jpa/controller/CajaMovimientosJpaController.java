@@ -281,7 +281,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
                 newDetalleCajaMovimiento.setDescripcion(JGestionUtils.getNumeracion(facturaVenta) + " [ANULADA]");
                 new DetalleCajaMovimientosController().create(newDetalleCajaMovimiento);
             } else if (facturaVenta.getFormaPagoEnum().equals(Valores.FormaPago.CTA_CTE)) {
-                CtacteCliente ccc = new CtacteClienteController().findCtacteClienteByFactura(facturaVenta.getId());
+                CtacteCliente ccc = new CtacteClienteController().findByFactura(facturaVenta.getId());
                 if (ccc.getEntregado() > 0) {
                     //find all receipts (Recibo's) that contains a payment of the bill (FacturaVenta)
                     List<Recibo> recibosList = new ReciboController().findRecibosByFactura(facturaVenta);

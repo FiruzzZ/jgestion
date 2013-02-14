@@ -58,9 +58,6 @@ public class ChequeTercerosController implements ActionListener {
     private ChequeTercerosJpaController jpaController;
     //exclusively related to the GUI
     private JDChequesManager jdChequeManager;
-    private final String[] columnNames = {"id", "Nº Cheque", "F. Cheque", "Emisor", "F. Cobro", "Banco", "Importe", "Estado", "Cruzado", "Endosatario", "F. Endoso", "C. Ingreso", "C. Egreso", "Observacion", "Usuario"};
-    private final int[] columnWidths = {1, 80, 80, 100, 80, 100, 100, 100, 50, 100, 100, 150, 150, 100, 80};
-    private final Class[] columnClassTypes = {Integer.class, Number.class, null, null, null, null, Number.class, null, Boolean.class, null};
     //Este se pone en el comboBox
     private final String[] orderByToComboBoxList = {"N° Cheque", "Fecha de Emisión", "Fecha de Cobro", "Importe", "Banco", "Cliente", "Estado"};
     //Y este es el equivalente (de lo seleccionado en el combo) para el SQL.
@@ -108,14 +105,14 @@ public class ChequeTercerosController implements ActionListener {
         panelABM.setSinComprobante(selectableCliente);
         UTIL.loadComboBox(panelABM.getCbBancos(), new BancoController().findEntities(), true);
 //        UTIL.loadComboBox(panelABM.getCbBancoSucursales(), null, null, "<Seleccionar un Banco>");
-        UTIL.loadComboBox(panelABM.getCbEmisor(), new ClienteController().findEntities(), selectableCliente);
+        UTIL.loadComboBox(panelABM.getCbEmisor(), new ClienteController().findAll(), selectableCliente);
     }
 
     private ChequeTerceros initABMSinComprobante(Window owner) throws MessageException {
         EL_OBJECT = null;
         UsuarioController.checkPermiso(PermisosController.PermisoDe.TESORERIA);
         initPanelABM(true, true);
-        UTIL.loadComboBox(panelABM.getCbEmisor(), new ClienteController().findEntities(), true);
+        UTIL.loadComboBox(panelABM.getCbEmisor(), new ClienteController().findAll(), true);
         abm = new JDABM(owner, null, true, panelABM);
         abm.setTitle("ABM - Cheque Terceros");
         abm.setListener(this);
@@ -403,8 +400,11 @@ public class ChequeTercerosController implements ActionListener {
         UTIL.loadComboBox(jdChequeManager.getCbEstados(), Arrays.asList(ChequeEstado.values()), true);
         UTIL.loadComboBox(jdChequeManager.getCbOrderBy(), Arrays.asList(orderByToComboBoxList), false);
         jdChequeManager.getCbOrderBy().setSelectedIndex(2);
-        UTIL.loadComboBox(jdChequeManager.getCbEmisor(), JGestionUtils.getWrappedClientes(new ClienteController().findEntities()), true);
-        UTIL.getDefaultTableModel(jdChequeManager.getjTable1(), columnNames, columnWidths, columnClassTypes);
+        UTIL.loadComboBox(jdChequeManager.getCbEmisor(), JGestionUtils.getWrappedClientes(new ClienteController().findAll()), true);
+        UTIL.getDefaultTableModel(jdChequeManager.getjTable1(),
+                new String[]{"id", "Nº Cheque", "F. Cheque", "Emisor", "F. Cobro", "Banco", "Importe", "Estado", "Cruzado", "Endosatario", "F. Endoso", "C. Ingreso", "C. Egreso", "Observacion", "Usuario"},
+                new int[]{1, 80, 80, 100, 80, 100, 100, 100, 50, 100, 100, 150, 150, 100, 80},
+                new Class<?>[]{Integer.class, Number.class, null, null, null, null, Number.class, null, Boolean.class, null});
         jdChequeManager.getjTable1().getColumnModel().getColumn(2).setCellRenderer(FormatRenderer.getDateRenderer());
         jdChequeManager.getjTable1().getColumnModel().getColumn(4).setCellRenderer(FormatRenderer.getDateRenderer());
         jdChequeManager.getjTable1().getColumnModel().getColumn(6).setCellRenderer(NumberRenderer.getCurrencyRenderer());
@@ -531,7 +531,7 @@ public class ChequeTercerosController implements ActionListener {
         for (int row = 0; row < dtm.getRowCount(); row++) {
             Date fechaCobro = (Date) dtm.getValueAt(row, 4);
             BigDecimal importe = (BigDecimal) dtm.getValueAt(row, 6);
-            long diff = now.getTime() - fechaCobro.getTime();
+            long diff = fechaCobro.getTime() - now.getTime();
             long diffDays = diff / (dayOnMilli);
             if (diffDays <= 0) {
                 $cobrables = $cobrables.add(importe);
@@ -560,7 +560,7 @@ public class ChequeTercerosController implements ActionListener {
         panelMovVarios.getTfMontoMovimiento().setText(cheque.getImporte().toString());
         panelMovVarios.getTfMontoMovimiento().setEditable(false);
         panelMovVarios.getRadioEgreso().setEnabled(false);
-        
+
         //quita el actionListener para la creación de un MovimientoVario
         ActionListener[] actionListeners = abm.getbAceptar().getActionListeners();
         for (ActionListener o : actionListeners) {
@@ -577,10 +577,10 @@ public class ChequeTercerosController implements ActionListener {
                     dcm.setNumero(cheque.getId());
                     dcm.setTipo(DetalleCajaMovimientosController.CHEQUE_TERCEROS);
                     new DetalleCajaMovimientosController().create(dcm);
-                    cheque.setComprobanteEgreso("A Caja: " + dcm.getCajaMovimientos().getCaja().getNombre() + "(" + dcm.getCajaMovimientos().getId() + ")" );
+                    cheque.setComprobanteEgreso("A Caja: " + dcm.getCajaMovimientos().getCaja().getNombre() + "(" + dcm.getCajaMovimientos().getId() + ")");
                     cheque.setEstado(ChequeEstado.ACREDITADO_EN_CAJA.getId());
                     jpaController.merge(cheque);
-                    abm.showMessage("Movimientos Nº" + dcm.getId()+ " realizado.", "Movimientos Nº" + dcm.getId(), 1);
+                    abm.showMessage("Movimientos Nº" + dcm.getId() + " realizado.", "Movimientos Nº" + dcm.getId(), 1);
                     abm.dispose();
                 } catch (MessageException ex) {
                     abm.showMessage(ex.getMessage(), "Error", 2);

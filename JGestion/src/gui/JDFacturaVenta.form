@@ -130,7 +130,7 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="labelListaPrecioParaCatalogo" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                  <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="labelUnidadNegocio" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="cbUnidadDeNegocio" min="-2" pref="107" max="-2" attributes="1"/>
                                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
@@ -207,7 +207,7 @@
                       <Component id="cbSucursal" alignment="2" min="-2" max="-2" attributes="1"/>
                       <Component id="labelListaPrecioParaCatalogo" alignment="2" min="-2" max="-2" attributes="1"/>
                       <Component id="cbListaPrecio" alignment="2" min="-2" max="-2" attributes="1"/>
-                      <Component id="jLabel3" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Component id="labelUnidadNegocio" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="cbUnidadDeNegocio" alignment="2" min="-2" max="-2" attributes="1"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
@@ -481,7 +481,7 @@
             <Property name="text" type="java.lang.String" value="Observaci&#xf3;n"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JLabel" name="jLabel3">
+        <Component class="javax.swing.JLabel" name="labelUnidadNegocio">
           <Properties>
             <Property name="text" type="java.lang.String" value="Unidad de Negocio"/>
           </Properties>

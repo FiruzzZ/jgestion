@@ -8,6 +8,8 @@ package gui;
 import controller.Contabilidad;
 import controller.Valores;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Window;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
 import java.util.Date;
@@ -27,11 +29,8 @@ public class JDFacturaVenta extends javax.swing.JDialog {
     private boolean viewMode;
     private boolean editMode;
 
-    /**
-     * Creates new form JDVenta
-     */
-    public JDFacturaVenta(JFrame parent, boolean modal, int factVenta1_Presup2_Remito3) {
-        super(parent, modal);
+    public JDFacturaVenta(Window parent, boolean modal, int factVenta1_Presup2_Remito3) {
+        super(parent, modal ? DEFAULT_MODALITY_TYPE : ModalityType.MODELESS);
         modoUso = factVenta1_Presup2_Remito3;
         initComponents();
         labelObservacion.setVisible(false);
@@ -49,10 +48,13 @@ public class JDFacturaVenta extends javax.swing.JDialog {
             labelRemito.setVisible(false);
             tfRemito.setVisible(false);
             btnBuscarRemito.setVisible(false);
+            labelUnidadNegocio.setVisible(false);
+            cbUnidadDeNegocio.setVisible(false);
             labelCuenta.setVisible(false);
             cbCuenta.setVisible(false);
             labelSubCuenta.setVisible(false);
             cbSubCuenta.setVisible(false);
+            checkFacturacionElectronica.setVisible(false);
             //Rem no tienen FORMA DE PAGO
             if (factVenta1_Presup2_Remito3 == 2) {
                 this.setTitle("Presupuesto de Venta");
@@ -65,8 +67,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
                 dcFechaFactura.setVisible(false);
                 btnAceptar.setText("Presupuestar");
                 btnAceptar.setMnemonic('a');
-            }
-            if (factVenta1_Presup2_Remito3 == 3) {
+            } else if (factVenta1_Presup2_Remito3 == 3) {
                 this.setTitle("Remito");
                 labelN_factura.setText("Nº Remito");
                 labelFormaPago.setVisible(false);
@@ -119,7 +120,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
         labelListaPrecioParaCatalogo = new javax.swing.JLabel();
         tfObservacion = new javax.swing.JTextField();
         labelObservacion = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
+        labelUnidadNegocio = new javax.swing.JLabel();
         cbUnidadDeNegocio = new javax.swing.JComboBox();
         labelCuenta = new javax.swing.JLabel();
         cbCuenta = new javax.swing.JComboBox();
@@ -307,7 +308,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
 
         labelObservacion.setText("Observación");
 
-        jLabel3.setText("Unidad de Negocio");
+        labelUnidadNegocio.setText("Unidad de Negocio");
 
         cbUnidadDeNegocio.setName(""); // NOI18N
 
@@ -361,7 +362,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(labelListaPrecioParaCatalogo)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jLabel3)
+                                .addComponent(labelUnidadNegocio)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(cbUnidadDeNegocio, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -422,7 +423,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
                     .addComponent(cbSucursal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(labelListaPrecioParaCatalogo)
                     .addComponent(cbListaPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3)
+                    .addComponent(labelUnidadNegocio)
                     .addComponent(cbUnidadDeNegocio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelDatosFacturacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
@@ -1006,7 +1007,6 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
     private javax.swing.JLabel jLabel27;
     private javax.swing.JLabel jLabel28;
     private javax.swing.JLabel jLabel29;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel30;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel8;
@@ -1031,6 +1031,7 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
     private javax.swing.JLabel labelObservacionCharactersCount;
     private javax.swing.JLabel labelRemito;
     private javax.swing.JLabel labelSubCuenta;
+    private javax.swing.JLabel labelUnidadNegocio;
     private javax.swing.JPanel panelDatosFacturacion;
     private javax.swing.JPanel panelProducto;
     private javax.swing.JTextField tfCantidad;
@@ -1294,30 +1295,9 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
     }
 
     public void modoVista() {
-        cbCliente.setEnabled(false);
-        btnCliente.setEnabled(false);
-        btnBuscarRemito.setEnabled(false);
-        cbSucursal.setEnabled(false);
-        cbListaPrecio.setEnabled(false);
-        dcFechaFactura.setEnabled(false);
-        cbFacturaTipo.setEnabled(false);
-        cbCaja.setEnabled(false);
-        cbFormaPago.setEnabled(false);
-        tfDias.setEditable(false);
-        tfObservacion.setEnabled(false);
-        //////////////////
-        tfProductoCodigo.setEnabled(false);
-        bBuscarProducto.setEnabled(false);
-        cbProductos.setEnabled(false);
-        tfCantidad.setEnabled(false);
-        tfPrecioUnitario.setEnabled(false);
-        tfProductoIVA.setEnabled(false);
-        cbDesc.setEnabled(false);
-        tfProductoDesc.setEnabled(false);
-        btnADD.setEnabled(false);
-        btnDEL.setEnabled(false);
-        btnCancelar.setEnabled(false);
-        btnBuscarRemito.setEnabled(false);
+        viewMode = true;
+        SwingUtil.setComponentsEnabled(panelDatosFacturacion.getComponents(), false, true, (Class<? extends Component>[]) null);
+        SwingUtil.setComponentsEnabled(panelProducto.getComponents(), false, true, (Class<? extends Component>[]) null);
         btnAceptar.setEnabled(true);
     }
 
@@ -1375,8 +1355,12 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
         labelCodigoNoRegistrado.setVisible(visible);
     }
 
-    public JPanel getjPanel2() {
+    public JPanel getPanelDatosFacturacion() {
         return panelDatosFacturacion;
+    }
+
+    public JPanel getPanelProducto() {
+        return panelProducto;
     }
 
     public void setLabelOfertaVisible(boolean isOferta) {
@@ -1450,6 +1434,12 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
         pack();
     }
 
+    public void setUIToFacturaVenta() {
+        labelObservacion.setVisible(true);
+        tfObservacion.setVisible(true);
+        pack();
+    }
+
     private void controlDeCaracteres(JTextField textField) {
         int length = textField.getText().length();
         labelObservacionCharactersCount.setText(length + "/100");
@@ -1484,6 +1474,10 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
      */
     public boolean isEditMode() {
         return editMode;
+    }
+
+    public void setEditMode(boolean editMode) {
+        this.editMode = editMode;
     }
 
     public void setVisibleListaPrecio(boolean b) {

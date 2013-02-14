@@ -191,12 +191,6 @@ public class JDContenedor extends javax.swing.JDialog {
         } catch (ClassCastException ex) {
             Logger.getLogger(this.getClass().getSimpleName()).log(Level.FINEST, "{0} No implementa MouseListener en {1}", new Object[]{ex.getClass(), o.getClass()});
         }
-
-        try {
-            tfFiltro.addKeyListener((KeyListener) o);
-        } catch (ClassCastException ex) {
-            Logger.getLogger(this.getClass().getSimpleName()).log(Level.FINEST, "{0} No implementa KeyListener en {1}", new Object[]{ex.getClass(), o.getClass()});
-        }
     }
 
     public JTable getjTable1() {
