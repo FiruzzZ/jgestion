@@ -192,6 +192,7 @@ public class PanelABMProductos extends javax.swing.JPanel {
         tfCostoCompra.setColumns(4);
         tfCostoCompra.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         tfCostoCompra.setText("0.0");
+        tfCostoCompra.setToolTipText("Se actualiza automáticamente con la carga de Facturas");
         tfCostoCompra.setFocusable(false);
 
         jLabel18.setText("Última compra");

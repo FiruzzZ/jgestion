@@ -10,7 +10,9 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import jpa.controller.FacturaCompraJpaController;
 import jpa.controller.FacturaVentaJpaController;
+import jpa.controller.ProductoJpaController;
 import org.apache.log4j.PropertyConfigurator;
 
 /**
@@ -31,25 +33,21 @@ public class JPATesting {
     }
 
     public JPATesting() {
-        List<Iva> ivas = new IvaController().findIvaEntities();
-        for (Iva iva : ivas) {
-            System.out.println(iva.getId() + ", " + iva.getIva());
-        }
-//        List<Sucursal> sucursales = new SucursalJpaController().findAll();
-//        for (Sucursal sucursal : sucursales) {
-//            System.out.println(sucursal.toString());
-//        }
-        FacturaVentaJpaController fvjpa = new FacturaVentaJpaController();
-        List<FacturaVenta> findByQuery = fvjpa.findByQuery("SELECT o FROM " + fvjpa.getEntityClass().getSimpleName() + " o WHERE o.id >608 and o.id < 611");
-        for (FacturaVenta fv : findByQuery) {
-            System.out.println(fv.toString());
-            for (DetalleVenta detalleVenta : fv.getDetallesVentaList()) {
-                System.out.println(detalleVenta.toString());
-                Producto producto = detalleVenta.getProducto();
-                System.out.println(producto.toString());
-                System.out.println(producto.getIva());
+
+    }
+
+    private void updateCostoCompraYPrecioVentaSegunDetalleCompra() {
+        List<FacturaCompra> fc = new FacturaCompraJpaController().findAll();
+        ProductoJpaController pc = new ProductoJpaController();
+        for (FacturaCompra facturaCompra : fc) {
+            for (DetalleCompra d : facturaCompra.getDetalleCompraList()) {
+                Producto p = d.getProducto();
+                p.setCostoCompra(d.getPrecioUnitario());
+                if (p.getUpdatePrecioVenta()) {
+                    p.setPrecioVenta(d.getPrecioUnitario());
+                }
+                pc.merge(p);
             }
         }
-
     }
 }

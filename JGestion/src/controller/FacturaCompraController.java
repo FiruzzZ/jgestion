@@ -386,6 +386,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
     public void keyPressed(KeyEvent e) {
     }
 
+    @SuppressWarnings("unchecked")
     private FacturaCompra setAndPersist() throws Exception {
         FacturaCompra newFacturaCompra = new FacturaCompra();
         newFacturaCompra.setFechaCompra(jdFactura.getDcFechaFactura());
@@ -520,6 +521,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void checkConstraints() throws MessageException {
         try {
             ((Proveedor) jdFactura.getCbProveedor().getSelectedItem()).getId();
@@ -709,7 +711,6 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         } catch (NoResultException ex) {
             return null;
         }
-
     }
 
     public void initBuscador(JFrame frame, final boolean modal, final boolean toAnular) throws MessageException {

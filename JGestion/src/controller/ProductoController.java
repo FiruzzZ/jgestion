@@ -213,6 +213,16 @@ public class ProductoController implements ActionListener, KeyListener {
                 }
             }
         });
+        panel.getbStockGral().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    initStockGral(EL_OBJECT);
+                } catch (MessageException ex) {
+                    LOG.error(ex.getLocalizedMessage(), ex);
+                }
+            }
+        });
         UTIL.loadComboBox(panel.getCbIVA(), new IvaController().findIvaEntities(), false);
         UTIL.loadComboBox(panel.getCbMarcas(), JGestionUtils.getWrappedMarcas(new MarcaJpaController().findMarcaEntities()), false);
         UTIL.loadComboBox(panel.getCbMedicion(), new UnidadmedidaJpaController().findUnidadmedidaEntities(), false);
@@ -541,12 +551,6 @@ public class ProductoController implements ActionListener, KeyListener {
                 } catch (Exception ex) {
                     abm.showMessage(ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
                 }
-            } else if (boton.getName().equalsIgnoreCase("bStockGral")) {
-                try {
-                    initStockGral(EL_OBJECT);
-                } catch (MessageException ex) {
-                    LOG.error(ex.getLocalizedMessage(), ex);
-                }
             }
         } // </editor-fold>
     }
@@ -644,10 +648,10 @@ public class ProductoController implements ActionListener, KeyListener {
         DefaultTableModel dtm = jdStockGral.getDtm();
         for (Stock stock : stockList) {
             dtm.addRow(new Object[]{
-                        stock.getSucursal(),
+                        stock.getSucursal().getNombre(),
                         stock.getStockSucu(),
-                        UTIL.DATE_FORMAT.format(stock.getFechaCarga()) + " / " + UTIL.TIME_FORMAT.format(stock.getFechaCarga()),
-                        stock.getUsuario()
+                        UTIL.TIMESTAMP_FORMAT.format(stock.getFechaCarga()),
+                        stock.getUsuario().getNick()
                     });
         }
         jdStockGral.setVisible(true);
