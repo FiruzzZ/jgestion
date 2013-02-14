@@ -312,8 +312,8 @@
         </Component>
         <Component class="javax.swing.JTextField" name="tfStockActual">
           <Properties>
-            <Property name="columns" type="int" value="4"/>
             <Property name="editable" type="boolean" value="false"/>
+            <Property name="columns" type="int" value="4"/>
             <Property name="focusable" type="boolean" value="false"/>
           </Properties>
         </Component>
@@ -424,9 +424,6 @@
             </Property>
             <Property name="name" type="java.lang.String" value="Marcas" noResource="true"/>
           </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="bMarcasActionPerformed"/>
-          </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel16">
           <Properties>
@@ -450,8 +447,8 @@
         </Component>
         <Component class="javax.swing.JTextField" name="tfCostoCompra">
           <Properties>
-            <Property name="columns" type="int" value="4"/>
             <Property name="editable" type="boolean" value="false"/>
+            <Property name="columns" type="int" value="4"/>
             <Property name="horizontalAlignment" type="int" value="4"/>
             <Property name="text" type="java.lang.String" value="0.0"/>
             <Property name="focusable" type="boolean" value="false"/>
@@ -482,9 +479,6 @@
             <Property name="toolTipText" type="java.lang.String" value="Ver stock gral. (Sucursales)"/>
             <Property name="name" type="java.lang.String" value="bstockGral" noResource="true"/>
           </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="bStockGralActionPerformed"/>
-          </Events>
         </Component>
         <Container class="javax.swing.JScrollPane" name="jScrollPane2">
           <AuxValues>
@@ -495,7 +489,7 @@
           <SubComponents>
             <Component class="javax.swing.JEditorPane" name="jEditorPane1">
               <Properties>
-                <Property name="contentType" type="java.lang.String" value="text/html"/>
+                <Property name="contentType" type="java.lang.String" value="text/html" noResource="true"/>
                 <Property name="editable" type="boolean" value="false"/>
                 <Property name="text" type="java.lang.String" value="&lt;html&gt;&#xd;&#xa;  &lt;head&gt;&#xd;&#xa;&#xd;&#xa;  &lt;/head&gt;&#xd;&#xa;  &lt;body&gt;&#xd;&#xa;    &lt;p style=&quot;margin-top: 0&quot;&gt;&#xd;&#xa;      &#xd;&lt;p align=&quot;center&quot;&gt;&#xa;  &lt;b&gt;[Doble click para editar]&lt;/b&gt;&#xa;&lt;/p&gt;&#xa;    &lt;/p&gt;&#xd;&#xa;  &lt;/body&gt;&#xd;&#xa;&lt;/html&gt;&#xd;&#xa;"/>
               </Properties>
@@ -509,12 +503,10 @@
             </Property>
             <Property name="name" type="java.lang.String" value="Marcas" noResource="true"/>
           </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnAddRubrosActionPerformed"/>
-          </Events>
         </Component>
         <Component class="javax.swing.JCheckBox" name="checkUpdatePrecioVenta">
           <Properties>
+            <Property name="selected" type="boolean" value="true"/>
             <Property name="text" type="java.lang.String" value="Actualizar Precio Venta seg&#xfa;n compras"/>
             <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;&#xa;Chequeando est&#xe1; opci&#xf3;n, permite al sistema actualizar autom&#xe1;ticamente el &lt;b&gt;Precio de Venta&lt;/b&gt;&#xa;&lt;br&gt;seg&#xfa;n el &lt;b&gt;Costo de Compra&lt;/b&gt;.&#xa;&lt;br&gt;Cada vez que se registre una compra del producto, el &lt;b&gt;Costo de Compra&lt;/b&gt; se modifica y&#xa;&lt;br&gt;as&#xed; tambi&#xe9;n lo har&#xe1; el &lt;b&gt;Precio de Venta&lt;/b&gt;.&#xa;&lt;/html&gt;"/>
           </Properties>

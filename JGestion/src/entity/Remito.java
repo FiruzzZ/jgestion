@@ -35,7 +35,7 @@ public class Remito implements Serializable {
     @Column(name = "fecha_creacion", nullable = false, insertable = false, updatable = false, columnDefinition = "timestamp with time zone NOT NULL DEFAULT now()")
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaCreacion;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "remito")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "remito", orphanRemoval = true)
     private List<DetalleRemito> detalleRemitoList;
     @JoinColumn(name = "cliente", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)

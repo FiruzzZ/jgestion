@@ -473,7 +473,7 @@ public class JDCatalogoWEB extends javax.swing.JDialog {
         Double precioFinal = null;
         Double iva = null;
         try {
-            precioFinal = (producto.getPrecioVenta()
+            precioFinal = (producto.getPrecioVenta().doubleValue()
                     + Contabilidad.GET_MARGEN_SEGUN_LISTAPRECIOS(listaPrecios, producto, null));
             iva = UTIL.getPorcentaje(precioFinal, producto.getIva().getIva());
         } catch (NullPointerException e) {

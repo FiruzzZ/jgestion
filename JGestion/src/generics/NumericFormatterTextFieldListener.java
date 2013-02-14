@@ -16,6 +16,9 @@ import utilities.gui.SwingUtil;
  */
 public class NumericFormatterTextFieldListener implements KeyListener, FocusListener {
 
+    public NumericFormatterTextFieldListener() {
+    }
+
     @Override
     public void keyTyped(KeyEvent e) {
         SwingUtil.checkInputDigit(e);

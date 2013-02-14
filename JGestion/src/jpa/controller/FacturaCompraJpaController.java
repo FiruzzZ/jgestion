@@ -46,6 +46,7 @@ public class FacturaCompraJpaController extends AbstractDAO<FacturaCompra, Integ
             for (DetalleCompra detallesCompra : detallesCompraListToPersist) {
                 detallesCompra.setFactura(o);
                 dcController.create(detallesCompra);
+                o.getDetalleCompraList().add(detallesCompra);
             }
         } catch (Exception ex) {
             LOG.fatal(ex, ex);

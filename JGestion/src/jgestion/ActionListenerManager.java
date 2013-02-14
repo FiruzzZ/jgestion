@@ -27,7 +27,7 @@ import utilities.swing.components.ComboBoxWrapper;
  */
 public class ActionListenerManager {
 
-    public static void setCuentaSubcuentaActionListener(final JComboBox cuenta, boolean cuentaElegible, final JComboBox subCuenta, final boolean subCuentaElegible, boolean loadSubCuenta) {
+    public static void setCuentasIESubcuentaActionListener(final JComboBox cuenta, boolean cuentaElegible, final JComboBox subCuenta, final boolean subCuentaElegible, boolean loadSubCuenta) {
         UTIL.loadComboBox(cuenta, JGestionUtils.getWrappedCuentas(new CuentaController().findAll()), cuentaElegible);
         cuenta.addActionListener(new ActionListener() {
             @Override
@@ -45,6 +45,64 @@ public class ActionListenerManager {
         });
         if (loadSubCuenta) {
             Object o = cuenta.getSelectedItem();
+            if (o instanceof ComboBoxWrapper) {
+                @SuppressWarnings("unchecked")
+                ComboBoxWrapper<Cuenta> c = (ComboBoxWrapper<Cuenta>) o;
+                List<SubCuenta> l = c.getEntity().getSubCuentas();
+                UTIL.loadComboBox(subCuenta, JGestionUtils.getWrappedSubCuentas(l), subCuentaElegible);
+            } else {
+                UTIL.loadComboBox(subCuenta, null, "<Elegir Cuenta>");
+            }
+        }
+    }
+
+    public static void setCuentasIngresosSubcuentaActionListener(final JComboBox cuentasIngreso, boolean cuentaElegible, final JComboBox subCuenta, final boolean subCuentaElegible, boolean loadSubCuenta) {
+        UTIL.loadComboBox(cuentasIngreso, JGestionUtils.getWrappedCuentas(new CuentaController().findByTipo(true)), cuentaElegible);
+        cuentasIngreso.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Object o = cuentasIngreso.getSelectedItem();
+                if (o instanceof ComboBoxWrapper) {
+                    @SuppressWarnings("unchecked")
+                    ComboBoxWrapper<Cuenta> c = (ComboBoxWrapper<Cuenta>) o;
+                    List<SubCuenta> l = c.getEntity().getSubCuentas();
+                    UTIL.loadComboBox(subCuenta, JGestionUtils.getWrappedSubCuentas(l), subCuentaElegible);
+                } else {
+                    UTIL.loadComboBox(subCuenta, null, "<Elegir Cuenta>");
+                }
+            }
+        });
+        if (loadSubCuenta) {
+            Object o = cuentasIngreso.getSelectedItem();
+            if (o instanceof ComboBoxWrapper) {
+                @SuppressWarnings("unchecked")
+                ComboBoxWrapper<Cuenta> c = (ComboBoxWrapper<Cuenta>) o;
+                List<SubCuenta> l = c.getEntity().getSubCuentas();
+                UTIL.loadComboBox(subCuenta, JGestionUtils.getWrappedSubCuentas(l), subCuentaElegible);
+            } else {
+                UTIL.loadComboBox(subCuenta, null, "<Elegir Cuenta>");
+            }
+        }
+    }
+
+    public static void setCuentasEgresosSubcuentaActionListener(final JComboBox cuentasEgresos, boolean cuentaElegible, final JComboBox subCuenta, final boolean subCuentaElegible, boolean loadSubCuenta) {
+        UTIL.loadComboBox(cuentasEgresos, JGestionUtils.getWrappedCuentas(new CuentaController().findByTipo(false)), cuentaElegible);
+        cuentasEgresos.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Object o = cuentasEgresos.getSelectedItem();
+                if (o instanceof ComboBoxWrapper) {
+                    @SuppressWarnings("unchecked")
+                    ComboBoxWrapper<Cuenta> c = (ComboBoxWrapper<Cuenta>) o;
+                    List<SubCuenta> l = c.getEntity().getSubCuentas();
+                    UTIL.loadComboBox(subCuenta, JGestionUtils.getWrappedSubCuentas(l), subCuentaElegible);
+                } else {
+                    UTIL.loadComboBox(subCuenta, null, "<Elegir Cuenta>");
+                }
+            }
+        });
+        if (loadSubCuenta) {
+            Object o = cuentasEgresos.getSelectedItem();
             if (o instanceof ComboBoxWrapper) {
                 @SuppressWarnings("unchecked")
                 ComboBoxWrapper<Cuenta> c = (ComboBoxWrapper<Cuenta>) o;

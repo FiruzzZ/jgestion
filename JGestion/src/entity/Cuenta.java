@@ -38,6 +38,8 @@ public class Cuenta implements Serializable {
     @OneToMany(mappedBy = "cuenta")
     @OrderBy(value = "cuenta.nombre")
     private List<SubCuenta> subCuentas;
+    @Column(nullable = false)
+    private boolean ingreso;
 
     public Cuenta() {
     }
@@ -64,6 +66,14 @@ public class Cuenta implements Serializable {
 
     public void setSubCuentas(List<SubCuenta> subCuentas) {
         this.subCuentas = subCuentas;
+    }
+
+    public boolean isIngreso() {
+        return ingreso;
+    }
+
+    public void setIngreso(boolean ingreso) {
+        this.ingreso = ingreso;
     }
 
     @Override

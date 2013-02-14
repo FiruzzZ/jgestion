@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package gui;
 
 import com.toedter.calendar.JDateChooser;
@@ -70,12 +66,19 @@ public class JDResumenGeneralCtaCte extends javax.swing.JDialog {
 
             },
             new String [] {
-                "Nombre", "Importe"
+                "Object.id", "Nombre", "Importe"
             }
         ) {
-            boolean[] canEdit = new boolean [] {
-                false, false
+            Class[] types = new Class [] {
+                java.lang.Object.class, java.lang.Object.class, java.lang.Double.class
             };
+            boolean[] canEdit = new boolean [] {
+                false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
@@ -85,10 +88,12 @@ public class JDResumenGeneralCtaCte extends javax.swing.JDialog {
         jXTable1.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(jXTable1);
         jXTable1.getColumnModel().getColumn(0).setResizable(false);
-        jXTable1.getColumnModel().getColumn(0).setPreferredWidth(400);
+        jXTable1.getColumnModel().getColumn(0).setPreferredWidth(0);
         jXTable1.getColumnModel().getColumn(1).setResizable(false);
-        jXTable1.getColumnModel().getColumn(1).setPreferredWidth(80);
-        jXTable1.getColumnModel().getColumn(1).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        jXTable1.getColumnModel().getColumn(1).setPreferredWidth(400);
+        jXTable1.getColumnModel().getColumn(2).setResizable(false);
+        jXTable1.getColumnModel().getColumn(2).setPreferredWidth(80);
+        jXTable1.getColumnModel().getColumn(2).setCellRenderer(NumberRenderer.getCurrencyRenderer());
 
         tfTotal.setEditable(false);
         tfTotal.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
@@ -159,7 +164,6 @@ public class JDResumenGeneralCtaCte extends javax.swing.JDialog {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton bBuscar;
     private javax.swing.JButton bImprimir;
@@ -202,5 +206,4 @@ public class JDResumenGeneralCtaCte extends javax.swing.JDialog {
     public JTextField getTfTotal() {
         return tfTotal;
     }
-    
 }

@@ -81,11 +81,11 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
         jLabel4 = new javax.swing.JLabel();
         dcHastaSistema = new com.toedter.calendar.JDateChooser();
         jLabel5 = new javax.swing.JLabel();
-        labelSucursal1 = new javax.swing.JLabel();
-        labelSucursal2 = new javax.swing.JLabel();
+        labelUnidadDeNegocio = new javax.swing.JLabel();
+        labelCuenta = new javax.swing.JLabel();
         cbUnidadDeNegocio = new javax.swing.JComboBox();
         cbCuenta = new javax.swing.JComboBox();
-        labelSucursal3 = new javax.swing.JLabel();
+        labelSubCuenta = new javax.swing.JLabel();
         cbSubCuenta = new javax.swing.JComboBox();
         bLimpiar = new javax.swing.JButton();
         bBuscar = new javax.swing.JButton();
@@ -162,11 +162,11 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
 
         jLabel5.setText("Sistema Hasta");
 
-        labelSucursal1.setText("Unid. de Neg.");
+        labelUnidadDeNegocio.setText("Unid. de Neg.");
 
-        labelSucursal2.setText("Cuenta");
+        labelCuenta.setText("Cuenta");
 
-        labelSucursal3.setText("SubCuenta");
+        labelSubCuenta.setText("SubCuenta");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -196,12 +196,12 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(labelSucursal)
                             .addComponent(labelClieProv)
-                            .addComponent(labelSucursal1)
-                            .addComponent(labelSucursal2)))
+                            .addComponent(labelUnidadDeNegocio)
+                            .addComponent(labelCuenta)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(checkAnulada)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(labelSucursal3)))
+                        .addComponent(labelSubCuenta)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(cbSubCuenta, 0, 220, Short.MAX_VALUE)
@@ -250,7 +250,7 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                             .addComponent(cbCaja, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(labelCaja)
-                            .addComponent(labelSucursal1)
+                            .addComponent(labelUnidadDeNegocio)
                             .addComponent(cbUnidadDeNegocio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
@@ -267,13 +267,13 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
                     .addComponent(dcHastaSistema, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(labelFormasDePago)
                     .addComponent(cbFormasDePago, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(labelSucursal2)
+                    .addComponent(labelCuenta)
                     .addComponent(cbCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(checkAnulada)
                     .addComponent(cbSubCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(labelSucursal3))
+                    .addComponent(labelSubCuenta))
                 .addContainerGap(11, Short.MAX_VALUE))
         );
 
@@ -321,7 +321,7 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
         jLabel1.setText("Nº Registros: 0");
 
         btnToExcel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px_excel.png"))); // NOI18N
-        btnToExcel.setMnemonic('e');
+        btnToExcel.setMnemonic('x');
         btnToExcel.setText("A Excel");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -434,13 +434,13 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
     private javax.swing.JTable jTable1;
     private javax.swing.JLabel labelCaja;
     private javax.swing.JLabel labelClieProv;
+    private javax.swing.JLabel labelCuenta;
     private javax.swing.JLabel labelFormasDePago;
     private javax.swing.JLabel labelN_Factura;
     private javax.swing.JLabel labelReRe;
+    private javax.swing.JLabel labelSubCuenta;
     private javax.swing.JLabel labelSucursal;
-    private javax.swing.JLabel labelSucursal1;
-    private javax.swing.JLabel labelSucursal2;
-    private javax.swing.JLabel labelSucursal3;
+    private javax.swing.JLabel labelUnidadDeNegocio;
     private javax.swing.JTextField tfCuarto;
     private javax.swing.JTextField tfFactu4;
     private javax.swing.JTextField tfFactu8;
@@ -647,21 +647,6 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
         cbCaja.setVisible(false);
     }
 
-    public void setPanelInfoParaRemitos() {
-        labelReRe.setText("Nº Remito");
-        hideCaja();
-        hideFactura();
-        hideCheckAnulado();
-        //reutilización del combo FormaDePago para saber si el Remito fue facturado
-        labelFormasDePago.setText("Facturado");
-        labelFormasDePago.setVisible(true);
-        cbFormasDePago.setVisible(true);
-        cbFormasDePago.removeAllItems();
-        cbFormasDePago.addItem("<Elegir>");
-        cbFormasDePago.addItem("No");
-        cbFormasDePago.addItem("Si");
-    }
-
     public void setParaNotaCreditoProveedor() {
         this.setTitle("Buscador de Notas de Crédito de Proveedores");
         labelReRe.setText("Nº Nota Crédito");
@@ -707,5 +692,26 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
         labelN_Factura.setText("Nº Movim.");
         tfFactu4.setToolTipText("Nº de movimiento interno");
         tfFactu8.setVisible(false);
+    }
+
+    public void setParaRemito() {
+        labelReRe.setText("Nº Remito");
+        hideCaja();
+        hideFactura();
+        //reutilización del combo FormaDePago para saber si el Remito fue facturado
+        labelFormasDePago.setText("Facturado");
+        labelFormasDePago.setVisible(true);
+        cbFormasDePago.setVisible(true);
+        cbFormasDePago.removeAllItems();
+        cbFormasDePago.addItem("<Elegir>");
+        cbFormasDePago.addItem("No");
+        cbFormasDePago.addItem("Si");
+        checkAnulada.setVisible(true);
+        labelUnidadDeNegocio.setVisible(false);
+        cbUnidadDeNegocio.setVisible(false);
+        labelCuenta.setVisible(false);
+        cbCuenta.setVisible(false);
+        labelSubCuenta.setVisible(false);
+        cbSubCuenta.setVisible(false);
     }
 }

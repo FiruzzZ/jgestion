@@ -1,6 +1,7 @@
 package entity;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.*;
@@ -77,14 +78,14 @@ public class Producto implements Serializable {
      * Cuando se crea el producto es setteado a 0. Después es modificado por las
      * Facturas de compra.
      */
-    private Double costoCompra;
+    private BigDecimal costoCompra;
     @Column(name = "descripcion", length = 2000)
     private String descripcion;
     @Column(nullable = false)
     private boolean updatePrecioVenta;
     @Basic(optional = false)
-    @Column(name = "precio_venta", precision = 2, scale = 2, nullable = false)
-    private Double precioVenta;
+    @Column(name = "precio_venta", precision = 12, scale = 4, nullable = false)
+    private BigDecimal precioVenta;
     @Column(name = "foto")
     private byte[] foto;
     @Column(name = "remunerativo", nullable = false)
@@ -186,11 +187,11 @@ public class Producto implements Serializable {
         this.ubicacion = ubicacion;
     }
 
-    public Double getCostoCompra() {
+    public BigDecimal getCostoCompra() {
         return costoCompra;
     }
 
-    public void setCostoCompra(Double costoCompra) {
+    public void setCostoCompra(BigDecimal costoCompra) {
         this.costoCompra = costoCompra;
     }
 
@@ -202,11 +203,11 @@ public class Producto implements Serializable {
         this.descripcion = descripcion;
     }
 
-    public Double getPrecioVenta() {
+    public BigDecimal getPrecioVenta() {
         return precioVenta;
     }
 
-    public void setPrecioVenta(Double precioVenta) {
+    public void setPrecioVenta(BigDecimal precioVenta) {
         this.precioVenta = precioVenta;
     }
 
@@ -331,7 +332,7 @@ public class Producto implements Serializable {
      *
      * @return precio mínimo.
      */
-    public Double getMinimoPrecioDeVenta() {
+    public BigDecimal getMinimoPrecioDeVenta() {
         return this.precioVenta != null ? this.precioVenta : this.costoCompra;
     }
 }

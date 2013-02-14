@@ -247,7 +247,7 @@ public class NotaCreditoController {
                 }
             }
         });
-        UTIL.loadComboBox(buscador.getCbClieProv(), new ClienteController().findEntities(), true);
+        UTIL.loadComboBox(buscador.getCbClieProv(), new ClienteController().findAll(), true);
         UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), true);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),

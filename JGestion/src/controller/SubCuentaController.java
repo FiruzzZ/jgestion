@@ -38,7 +38,7 @@ public class SubCuentaController {
     }
 
     private void initABM(Window owner, boolean editing) throws MessageException {
-        UsuarioController.checkPermiso(PermisosController.PermisoDe.DATOS_GENERAL);
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.TESORERIA);
         List<Cuenta> l = new CuentaController().findAll();
         if (l.isEmpty()) {
             throw new MessageException("Para poder crear Sub Cuentas, primero debe crear al menos una Cuenta");
@@ -189,7 +189,7 @@ public class SubCuentaController {
         if (query == null || query.isEmpty()) {
             query = "";
         }
-        List<SubCuenta> l = jpaController.findByQuery("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o WHERE o.nombre LIKE '%" + query + "%'");
+        List<SubCuenta> l = jpaController.findByQuery("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o WHERE o.nombre LIKE '%" + query + "%' ORDER BY o.nombre, o.cuenta.nombre");
         for (SubCuenta o : l) {
             dtm.addRow(new Object[]{o.getId(), o.getCuenta().getNombre(), o.getNombre()});
         }

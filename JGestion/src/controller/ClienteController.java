@@ -19,6 +19,7 @@ import gui.PanelABMProveedores;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
+import java.math.BigDecimal;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.NoResultException;
@@ -28,6 +29,7 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import jpa.controller.ClienteJpaController;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.postgresql.util.PSQLException;
 
@@ -44,59 +46,24 @@ public class ClienteController implements ActionListener {
     private JDContenedor contenedor = null;
     private JDABM abm;
     private PanelABMProveedores panelABM;
+    private final ClienteJpaController jpaController;
 
-    // <editor-fold defaultstate="collapsed" desc="CRUD y List's">
+    public ClienteController() {
+        jpaController = new ClienteJpaController();
+    }
+
     public EntityManager getEntityManager() {
         return DAO.getEntityManager();
     }
 
-    public void create(Cliente cliente) throws Exception {
-        DAO.create(cliente);
-    }
-
-    public void edit(Cliente cliente) throws NonexistentEntityException, MessageException, Exception {
-        EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            if (em.find(Cliente.class, cliente.getId()) == null) {
-                throw new MessageException("No existe mas ningún registro de este Cliente");
-
-            }
-            cliente = em.merge(cliente);
-            em.getTransaction().commit();
-        } catch (Exception ex) {
-            String msg = ex.getLocalizedMessage();
-            if (msg == null || msg.length() == 0) {
-                Integer id = cliente.getId();
-                if (findCliente(id) == null) {
-                    throw new NonexistentEntityException("The cliente with id " + id + " no longer exists.");
-                }
-            }
-            throw ex;
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
-    }
-
     public void destroy(Integer id) throws NonexistentEntityException, MessageException {
-        EntityManager em = null;
         try {
-            em = getEntityManager();
-            em.getTransaction().begin();
             Cliente cliente;
-            try {
-                cliente = em.getReference(Cliente.class, id);
-                cliente.getId();
-            } catch (EntityNotFoundException enfe) {
-                throw new NonexistentEntityException("The cliente with id " + id + " no longer exists.", enfe);
+            cliente = jpaController.find(id);
+            if (cliente == null) {
+                throw new NonexistentEntityException("The cliente with id " + id + " no longer exists.");
             }
-            //CTRL DE VENTAS al clie...........
-
-            em.remove(cliente);
-            em.getTransaction().commit();
+            jpaController.remove(cliente);
         } catch (RollbackException ex) {
             if (ex.getCause() instanceof DatabaseException) {
                 PSQLException ps = (PSQLException) ex.getCause().getCause();
@@ -106,54 +73,13 @@ public class ClienteController implements ActionListener {
             }
             throw ex;
         } finally {
-            if (em != null) {
-                em.close();
-            }
+            jpaController.closeEntityManager();
         }
     }
 
-    public List<Cliente> findEntities() {
-        return findClienteEntities(true, -1, -1);
+    public List<Cliente> findAll() {
+        return jpaController.findAll();
     }
-
-    public List<Cliente> findClienteEntities(int maxResults, int firstResult) {
-        return findClienteEntities(false, maxResults, firstResult);
-    }
-
-    private List<Cliente> findClienteEntities(boolean all, int maxResults, int firstResult) {
-        EntityManager em = getEntityManager();
-        try {
-            Query q = em.createQuery("select object(o) from Cliente as o ORDER BY o.nombre");
-            if (!all) {
-                q.setMaxResults(maxResults);
-                q.setFirstResult(firstResult);
-            }
-            return q.getResultList();
-        } finally {
-            em.close();
-        }
-    }
-
-    public Cliente findCliente(Integer id) {
-        EntityManager em = getEntityManager();
-
-
-        try {
-            return em.find(Cliente.class, id);
-        } finally {
-            em.close();
-        }
-    }
-
-    public int getClienteCount() {
-        EntityManager em = getEntityManager();
-        try {
-            return ((Long) em.createQuery("select count(o) from Cliente as o").getSingleResult()).intValue();
-        } finally {
-            em.close();
-        }
-    }
-    // </editor-fold>
 
     public JDialog initContenedor(JFrame frame, boolean modal) {
         contenedor = new JDContenedor(frame, modal, "ABM - " + CLASS_NAME + "s");
@@ -219,7 +145,7 @@ public class ClienteController implements ActionListener {
             setPanel(EL_OBJECT);
         } else {
             // si es nuevo, agrega un código sugerido
-            panelABM.setTfCodigo(String.valueOf(getClienteCount() + 1));
+            panelABM.setTfCodigo(String.valueOf(jpaController.count() + 1));
         }
 
         abm = new JDABM(contenedor, "ABM " + CLASS_NAME + "s", true, panelABM);
@@ -231,67 +157,67 @@ public class ClienteController implements ActionListener {
         abm.setVisible(true);
     }
 
-    private void setPanel(Cliente object) {
-        panelABM.setTfCodigo(object.getCodigo());
-        panelABM.setTfNombre(object.getNombre());
-        panelABM.setTfDireccion(object.getDireccion());
-        panelABM.getCbTipoDocumento().setSelectedIndex(object.getTipodoc() - 1);
-        panelABM.setTfNumDocumento(String.valueOf(object.getNumDoc()));
-
-        if (object.getCodigopostal() != null) {
-            panelABM.setTfCP(object.getCodigopostal().toString());
+    private void setPanel(Cliente o) {
+        panelABM.setTfCodigo(o.getCodigo());
+        panelABM.setTfNombre(o.getNombre());
+        panelABM.setTfDireccion(o.getDireccion());
+        panelABM.getCbTipoDocumento().setSelectedIndex(o.getTipodoc() - 1);
+        panelABM.setTfNumDocumento(String.valueOf(o.getNumDoc()));
+        panelABM.getTfLimiteCtaCte().setText(o.getLimiteCtaCte().intValue() + "");
+        if (o.getCodigopostal() != null) {
+            panelABM.setTfCP(o.getCodigopostal().toString());
         }
-        if (object.getTele1() != null) {
-            panelABM.setTfTele1(object.getTele1().toString());
-            if (object.getInterno1() != null) {
-                panelABM.setTfInterno1(object.getInterno1().toString());
+        if (o.getTele1() != null) {
+            panelABM.setTfTele1(o.getTele1().toString());
+            if (o.getInterno1() != null) {
+                panelABM.setTfInterno1(o.getInterno1().toString());
             }
         }
-        if (object.getTele2() != null) {
-            panelABM.setTfTele2(object.getTele2().toString());
-            if (object.getInterno2() != null) {
-                panelABM.setTfInterno2(object.getInterno2().toString());
+        if (o.getTele2() != null) {
+            panelABM.setTfTele2(o.getTele2().toString());
+            if (o.getInterno2() != null) {
+                panelABM.setTfInterno2(o.getInterno2().toString());
             }
         }
 
-        if (object.getEmail() != null) {
-            panelABM.setTfEmail(object.getEmail());
+        if (o.getEmail() != null) {
+            panelABM.setTfEmail(o.getEmail());
         }
 
-        if (object.getWebpage() != null) {
-            panelABM.setTfWEB(object.getWebpage());
+        if (o.getWebpage() != null) {
+            panelABM.setTfWEB(o.getWebpage());
         }
 
-        if (object.getContacto() != null) {
-            panelABM.setTfContacto(object.getContacto());
+        if (o.getContacto() != null) {
+            panelABM.setTfContacto(o.getContacto());
         }
 
         for (int i = 0; i < panelABM.getCbCondicIVA().getItemCount(); i++) {
-            if (panelABM.getCbCondicIVA().getItemAt(i).toString().equals(object.getContribuyente().getNombre())) {
+            if (panelABM.getCbCondicIVA().getItemAt(i).toString().equals(o.getContribuyente().getNombre())) {
                 panelABM.getCbCondicIVA().setSelectedIndex(i);
                 break;
             }
         }
 
         for (int i = 0; i < panelABM.getCbProvincias().getItemCount(); i++) {
-            if (panelABM.getCbProvincias().getItemAt(i).toString().equals(object.getProvincia().getNombre())) {
+            if (panelABM.getCbProvincias().getItemAt(i).toString().equals(o.getProvincia().getNombre())) {
                 panelABM.getCbProvincias().setSelectedIndex(i);
                 break;
             }
         }
 
-        if (object.getDepartamento() != null) {
+        if (o.getDepartamento() != null) {
             for (int i = 0; i < panelABM.getCbDepartamentos().getItemCount(); i++) {
-                if (panelABM.getCbDepartamentos().getItemAt(i).toString().equals(object.getDepartamento().getNombre())) {
+                if (panelABM.getCbDepartamentos().getItemAt(i).toString().equals(o.getDepartamento().getNombre())) {
                     panelABM.getCbDepartamentos().setSelectedIndex(i);
                     break;
                 }
             }
         }
 
-        if (object.getMunicipio() != null) {
+        if (o.getMunicipio() != null) {
             for (int i = 0; i < panelABM.getCbMunicipios().getItemCount(); i++) {
-                if (panelABM.getCbMunicipios().getItemAt(i).toString().equals(object.getMunicipio().getNombre())) {
+                if (panelABM.getCbMunicipios().getItemAt(i).toString().equals(o.getMunicipio().getNombre())) {
                     panelABM.getCbMunicipios().setSelectedIndex(i);
                     break;
                 }
@@ -299,7 +225,10 @@ public class ClienteController implements ActionListener {
         }
     }
 
-    private void setEntity(Cliente o) throws MessageException {
+    private void setEntity() throws MessageException {
+        if (EL_OBJECT == null) {
+            EL_OBJECT = new Cliente();
+        }
         // <editor-fold defaultstate="collapsed" desc="CTRL">
         if (panelABM.getTfCodigo() == null || panelABM.getTfCodigo().length() < 1) {
             throw new MessageException("Debe ingresar un código");
@@ -377,59 +306,62 @@ public class ClienteController implements ActionListener {
             } catch (IllegalArgumentException ex) {
                 panelABM.setIconoValidadorCUIT(false, ex.getMessage());
             }
-        }// </editor-fold>
-
+        }
+        try {
+            if (panelABM.getTfLimiteCtaCte().getText().length() > 0) {
+                Long.valueOf(panelABM.getTfLimiteCtaCte().getText());
+            }
+        } catch (NumberFormatException e) {
+            throw new MessageException("Límite Cta. Cte. no válido (ingrese solo números enteros, hasta 12 dígitos)");
+        }
+        // </editor-fold>
         Provincia provincia = (Provincia) panelABM.getSelectedProvincia();
         Departamento departamento = (Departamento) panelABM.getSelectedDepartamento();
         Municipio municipio = (Municipio) panelABM.getSelectedMunicipio();
-        // NOT NULLABLE's
-        o.setCodigo(panelABM.getTfCodigo());
-        o.setNombre(panelABM.getTfNombre().toUpperCase());
-        o.setDireccion(panelABM.getTfDireccion());
-        o.setProvincia(provincia);
-        o.setDepartamento(departamento);
-        o.setMunicipio(municipio);
-        o.setContribuyente((Contribuyente) panelABM.getSelectedCondicIVA());
-        o.setTipodoc(panelABM.getCbTipoDocumento().getSelectedIndex() + 1);// DNI = 1 , CUIT = 2
-        o.setNumDoc(new Long(panelABM.getTfNumDocumento()));
 
+        // NOT NULLABLE's
+        EL_OBJECT.setCodigo(panelABM.getTfCodigo());
+        EL_OBJECT.setNombre(panelABM.getTfNombre().toUpperCase());
+        EL_OBJECT.setDireccion(panelABM.getTfDireccion());
+        EL_OBJECT.setProvincia(provincia);
+        EL_OBJECT.setDepartamento(departamento);
+        EL_OBJECT.setMunicipio(municipio);
+        EL_OBJECT.setContribuyente((Contribuyente) panelABM.getSelectedCondicIVA());
+        EL_OBJECT.setTipodoc(panelABM.getCbTipoDocumento().getSelectedIndex() + 1);// DNI = 1 , CUIT = 2
+        EL_OBJECT.setNumDoc(new Long(panelABM.getTfNumDocumento()));
+        EL_OBJECT.setLimiteCtaCte(new BigDecimal(panelABM.getTfLimiteCtaCte().getText()));
         // estado activo
-        o.setEstado(1);
+        EL_OBJECT.setEstado(1);
 
         //NULLABLE's
         if (panelABM.getTfContacto().length() > 0) {
-            o.setContacto(panelABM.getTfContacto());
+            EL_OBJECT.setContacto(panelABM.getTfContacto());
         }
 
         if (panelABM.getTfCP().length() > 0) {
-            o.setCodigopostal(new Integer(panelABM.getTfCP()));
+            EL_OBJECT.setCodigopostal(new Integer(panelABM.getTfCP()));
         }
 
         if (panelABM.getTfEmail().length() > 0) {
-            o.setEmail(panelABM.getTfEmail());
+            EL_OBJECT.setEmail(panelABM.getTfEmail());
         }
 
         if (panelABM.getTfWEB().length() > 0) {
-            o.setWebpage(panelABM.getTfWEB());
+            EL_OBJECT.setWebpage(panelABM.getTfWEB());
         }
 
-        // <editor-fold defaultstate="collapsed" desc="setter Tele1">
         if (panelABM.getTfTele1().length() > 0) {
-            o.setTele1(new Long(panelABM.getTfTele1()));
+            EL_OBJECT.setTele1(new Long(panelABM.getTfTele1()));
             if (panelABM.getTfInterno1().length() > 0) {
-                o.setInterno1(new Integer(panelABM.getTfInterno1()));
+                EL_OBJECT.setInterno1(new Integer(panelABM.getTfInterno1()));
             }
         }
-        // </editor-fold>
-
-        // <editor-fold defaultstate="collapsed" desc="setter Tele2">
         if (panelABM.getTfTele2().length() > 0) {
-            o.setTele2(new Long(panelABM.getTfTele2()));
+            EL_OBJECT.setTele2(new Long(panelABM.getTfTele2()));
             if (panelABM.getTfInterno2().length() > 0) {
-                o.setInterno2(new Integer(panelABM.getTfInterno2()));
+                EL_OBJECT.setInterno2(new Integer(panelABM.getTfInterno2()));
             }
         }
-        // </editor-fold>
     }
 
     /**
@@ -530,17 +462,14 @@ public class ClienteController implements ActionListener {
                 contenedor = null;
             } else if (boton.getName().equalsIgnoreCase("aceptar")) {
                 try {
-                    if (EL_OBJECT == null) {
-                        EL_OBJECT = new Cliente();
-                    }
-                    setEntity(EL_OBJECT);
+                    setEntity();
                     checkConstraints(EL_OBJECT);
                     String msg = EL_OBJECT.getId() == null ? "Registrado" : "Modificado";
                     //persistiendo......
                     if (EL_OBJECT.getId() == null) {
-                        create(EL_OBJECT);
+                        jpaController.create(EL_OBJECT);
                     } else {
-                        edit(EL_OBJECT);
+                        jpaController.merge(EL_OBJECT);
                     }
                     abm.showMessage(msg, CLASS_NAME, 1);
                     cargarContenedorTabla(contenedor.getDTM(), "");
@@ -650,7 +579,7 @@ public class ClienteController implements ActionListener {
                     if (clienteID == null) {
                         throw new MessageException("Seleccione el " + CLASS_NAME + " que desea convertir");
                     }
-                    Cliente cliente = findCliente(clienteID);
+                    Cliente cliente = jpaController.find(clienteID);
                     if (cliente == null) {
                         cargarContenedorTabla(contenedor.getDTM(), null);
                         throw new MessageException("El Cliente que intenta convertir no existe mas.");
@@ -674,7 +603,7 @@ public class ClienteController implements ActionListener {
         new ProveedorController().createProveedorFromCliente(cliente);
     }
 
-    Cliente createFromProveedor(Proveedor proveedor) throws MessageException, Exception {
+    Cliente createFromProveedor(Proveedor proveedor) throws MessageException {
         Cliente p = new Cliente();
         p.setNombre(proveedor.getNombre());
         p.setCodigo(proveedor.getCodigo());
@@ -696,6 +625,7 @@ public class ClienteController implements ActionListener {
         p.setWebpage(proveedor.getWebpage());
         p.setEstado(1);
         checkConstraints(p);
+        jpaController.create(p);
         return p;
     }
 }

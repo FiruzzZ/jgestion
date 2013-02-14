@@ -20,6 +20,7 @@ import gui.PanelABMProveedores;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
+import java.math.BigDecimal;
 import javax.persistence.NoResultException;
 import javax.persistence.RollbackException;
 import javax.swing.JButton;
@@ -27,6 +28,7 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import jpa.controller.ProveedorJpaController;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -46,8 +48,9 @@ public class ProveedorController implements ActionListener {
     private JDABM abm;
     private Proveedor EL_OBJECT;
     private PanelABMProveedores panelABM;
-
+    private final ProveedorJpaController jpaController;
     // <editor-fold defaultstate="collapsed" desc="CRUD y List's">
+
     public EntityManager getEntityManager() {
         return DAO.getEntityManager();
     }
@@ -131,6 +134,10 @@ public class ProveedorController implements ActionListener {
         }
     }
     // </editor-fold>
+
+    public ProveedorController() {
+        jpaController = new ProveedorJpaController();
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -267,10 +274,9 @@ public class ProveedorController implements ActionListener {
         UTIL.limpiarDtm(dtm);
         List<Proveedor> l;
         if (query == null) {
-            l = DAO.getEntityManager().createNamedQuery(CLASS_NAME + ".findAll").getResultList();
+            l = jpaController.findAll();
         } else {
-            // para cuando se usa el Buscador del ABM
-            l = DAO.getEntityManager().createNativeQuery(query, Proveedor.class).getResultList();
+            l = jpaController.findByNativeQuery(query);
         }
 
         for (Proveedor o : l) {
@@ -311,44 +317,45 @@ public class ProveedorController implements ActionListener {
         abm.setVisible(true);
     }
 
-    private void setPanel(Proveedor p) {
-        panelABM.setTfCodigo(p.getCodigo());
-        panelABM.setTfNombre(p.getNombre());
-        panelABM.setTfDireccion(p.getDireccion());
-        panelABM.setTfNumDocumento(String.valueOf(p.getCuit()));
-        UTIL.setSelectedItem(panelABM.getCbCondicIVA(), p.getContribuyente().getNombre());
-        UTIL.setSelectedItem(panelABM.getCbProvincias(), p.getProvincia().getNombre());
-        UTIL.setSelectedItem(panelABM.getCbDepartamentos(), p.getDepartamento().getNombre());
-        UTIL.setSelectedItem(panelABM.getCbMunicipios(), p.getMunicipio().getNombre());
+    private void setPanel(Proveedor o) {
+        panelABM.setTfCodigo(o.getCodigo());
+        panelABM.setTfNombre(o.getNombre());
+        panelABM.setTfDireccion(o.getDireccion());
+        panelABM.setTfNumDocumento(String.valueOf(o.getCuit()));
+        panelABM.getTfLimiteCtaCte().setText(o.getLimiteCtaCte().intValue() + "");
+        UTIL.setSelectedItem(panelABM.getCbCondicIVA(), o.getContribuyente().getNombre());
+        UTIL.setSelectedItem(panelABM.getCbProvincias(), o.getProvincia().getNombre());
+        UTIL.setSelectedItem(panelABM.getCbDepartamentos(), o.getDepartamento().getNombre());
+        UTIL.setSelectedItem(panelABM.getCbMunicipios(), o.getMunicipio().getNombre());
 
-        if (p.getCodigopostal() != null) {
-            panelABM.setTfCP(p.getCodigopostal().toString());
+        if (o.getCodigopostal() != null) {
+            panelABM.setTfCP(o.getCodigopostal().toString());
         }
 
-        if (p.getTele1() != null) {
-            panelABM.setTfTele1(p.getTele1().toString());
-            if (p.getInterno1() != null) {
-                panelABM.setTfInterno1(p.getInterno1().toString());
+        if (o.getTele1() != null) {
+            panelABM.setTfTele1(o.getTele1().toString());
+            if (o.getInterno1() != null) {
+                panelABM.setTfInterno1(o.getInterno1().toString());
             }
         }
 
-        if (p.getTele2() != null) {
-            panelABM.setTfTele2(p.getTele2().toString());
-            if (p.getInterno2() != null) {
-                panelABM.setTfInterno2(p.getInterno2().toString());
+        if (o.getTele2() != null) {
+            panelABM.setTfTele2(o.getTele2().toString());
+            if (o.getInterno2() != null) {
+                panelABM.setTfInterno2(o.getInterno2().toString());
             }
         }
 
-        if (p.getContacto() != null) {
-            panelABM.setTfContacto(p.getContacto());
+        if (o.getContacto() != null) {
+            panelABM.setTfContacto(o.getContacto());
         }
 
-        if (p.getEmail() != null) {
-            panelABM.setTfEmail(p.getEmail());
+        if (o.getEmail() != null) {
+            panelABM.setTfEmail(o.getEmail());
         }
 
-        if (p.getWebpage() != null) {
-            panelABM.setTfWEB(p.getWebpage());
+        if (o.getWebpage() != null) {
+            panelABM.setTfWEB(o.getWebpage());
         }
 
     }
@@ -357,7 +364,7 @@ public class ProveedorController implements ActionListener {
         if (EL_OBJECT == null) {
             EL_OBJECT = new Proveedor();
         }
-
+        //<editor-fold defaultstate="collapsed" desc="CTRL">
         if (panelABM.getTfCodigo().length() < 1) {
             throw new MessageException("Ingresar un código");
         }
@@ -393,6 +400,14 @@ public class ProveedorController implements ActionListener {
         if (panelABM.getTfInterno2() != null && panelABM.getTfTele2() == null) {
             throw new MessageException("Especifique un número de teléfono 2 para el interno 2");
         }
+        try {
+            if (panelABM.getTfLimiteCtaCte().getText().length() > 0) {
+                Long.valueOf(panelABM.getTfLimiteCtaCte().getText());
+            }
+        } catch (NumberFormatException e) {
+            throw new MessageException("Límite Cta. Cte. no válido (ingrese solo números enteros, hasta 12 dígitos)");
+        }
+        //</editor-fold>
         Provincia provincia = (Provincia) panelABM.getSelectedProvincia();
         Departamento departamento = (Departamento) panelABM.getSelectedDepartamento();
         Municipio municipio = (Municipio) panelABM.getSelectedMunicipio();
@@ -406,7 +421,7 @@ public class ProveedorController implements ActionListener {
         EL_OBJECT.setMunicipio(municipio);
         EL_OBJECT.setContribuyente((Contribuyente) panelABM.getSelectedCondicIVA());
         EL_OBJECT.setCuit(new Long(panelABM.getTfNumDocumento()));
-
+        EL_OBJECT.setLimiteCtaCte(new BigDecimal(panelABM.getTfLimiteCtaCte().getText()));
         //NULLABLE's
         if (panelABM.getTfCP().length() > 0) {
             EL_OBJECT.setCodigopostal(new Integer(panelABM.getTfCP()));
@@ -476,7 +491,7 @@ public class ProveedorController implements ActionListener {
     private void armarQuery(String filtro) {
         String query = null;
         if (filtro != null && filtro.length() > 0) {
-            query = "SELECT * FROM " + CLASS_NAME + " o WHERE o.nombre ILIKE '" + filtro + "%'";
+            query = "SELECT * FROM " + CLASS_NAME + " o WHERE o.nombre ILIKE '" + filtro + "%' ORDER BY o.nombre";
         }
         cargarContenedorTabla(contenedor.getDTM(), query);
     }
@@ -522,7 +537,7 @@ public class ProveedorController implements ActionListener {
                         throw new MessageException("Seleccione el " + CLASS_NAME + " que desea convertir");
                     }
                     createClienteFromProveedor(proveedor);
-                    JOptionPane.showMessageDialog(contenedor, "Proveedor creado");
+                    JOptionPane.showMessageDialog(contenedor, "Cliente creado");
                 } catch (MessageException ex) {
                     JOptionPane.showMessageDialog(contenedor, ex.getMessage());
                 } catch (Exception ex) {
@@ -534,7 +549,7 @@ public class ProveedorController implements ActionListener {
         return contenedor;
     }
 
-    private Cliente createClienteFromProveedor(Proveedor proveedor) throws MessageException, Exception {
+    private Cliente createClienteFromProveedor(Proveedor proveedor) throws MessageException {
         Cliente cliente;
         cliente = new ClienteController().createFromProveedor(proveedor);
         return cliente;

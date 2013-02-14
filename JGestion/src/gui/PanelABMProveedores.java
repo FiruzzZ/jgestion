@@ -13,6 +13,8 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JTextField;
+import utilities.gui.SwingUtil;
 
 /**
  *
@@ -80,6 +82,9 @@ public class PanelABMProveedores extends javax.swing.JPanel {
         labelCUITValidador = new javax.swing.JLabel();
         jLabel18 = new javax.swing.JLabel();
         cbTipoDocumento = new javax.swing.JComboBox();
+        tfLimiteCtaCte = new javax.swing.JTextField();
+        jLabel19 = new javax.swing.JLabel();
+        jLabel20 = new javax.swing.JLabel();
 
         jLabel5.setText("Teléfono 2");
 
@@ -102,11 +107,6 @@ public class PanelABMProveedores extends javax.swing.JPanel {
         bMunicipios.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/16px_add.png"))); // NOI18N
         bMunicipios.setName("bMunicipios"); // NOI18N
         bMunicipios.setPreferredSize(new java.awt.Dimension(40, 40));
-        bMunicipios.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                bMunicipiosActionPerformed(evt);
-            }
-        });
 
         jLabel17.setText("Municipio");
 
@@ -121,11 +121,6 @@ public class PanelABMProveedores extends javax.swing.JPanel {
         jLabel1.setText("Código");
 
         cbMunicipios.setName("cbProvincia"); // NOI18N
-        cbMunicipios.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cbMunicipiosActionPerformed(evt);
-            }
-        });
 
         cbDepartamentos.setName("cbDepartamentos"); // NOI18N
 
@@ -189,11 +184,6 @@ public class PanelABMProveedores extends javax.swing.JPanel {
         bDepartamentos.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/16px_add.png"))); // NOI18N
         bDepartamentos.setName("bDepartamentos"); // NOI18N
         bDepartamentos.setPreferredSize(new java.awt.Dimension(40, 40));
-        bDepartamentos.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                bDepartamentosActionPerformed(evt);
-            }
-        });
 
         tfNombre.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
@@ -208,80 +198,100 @@ public class PanelABMProveedores extends javax.swing.JPanel {
         cbTipoDocumento.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "DNI", "CUIT" }));
         cbTipoDocumento.setSelectedIndex(1);
 
+        tfLimiteCtaCte.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        tfLimiteCtaCte.setText("0");
+        tfLimiteCtaCte.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                tfLimiteCtaCteKeyTyped(evt);
+            }
+        });
+
+        jLabel19.setText("Límite Cta. Cte.");
+
+        jLabel20.setText("0 = sin límite");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel12, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel14, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel17, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel11, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel18, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel4)
+                    .addComponent(jLabel12)
+                    .addComponent(jLabel14)
+                    .addComponent(jLabel5)
+                    .addComponent(jLabel6)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel17)
+                    .addComponent(jLabel11)
+                    .addComponent(jLabel7)
+                    .addComponent(jLabel8)
+                    .addComponent(jLabel9)
+                    .addComponent(jLabel10)
+                    .addComponent(jLabel18)
+                    .addComponent(jLabel19))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(cbCondicIVA, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                            .addComponent(tfDireccion, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(jLabel13)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(tfCP))
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                            .addComponent(tfCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(jLabel2)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(tfNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jScrollPane1)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(checkRetencionDGR)
-                        .addGap(32, 32, 32)
-                        .addComponent(checkRetencionIVA))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(tfTele2, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(tfTele1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel16, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel15))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(tfInterno1)
-                            .addComponent(tfInterno2, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(tfWEB, javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(tfEmail, javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(tfContacto, javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(cbCondicIVA, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(cbMunicipios, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(cbDepartamentos, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(cbProvincias, javax.swing.GroupLayout.PREFERRED_SIZE, 272, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(bMunicipios, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(bDepartamentos, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 359, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(cbTipoDocumento, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(tfNumDocumento, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(labelCUITValidador, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                    .addComponent(tfDireccion, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(jLabel13)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(tfCP))
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                    .addComponent(tfCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(jLabel2)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(tfNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(tfTele2, javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(tfTele1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jLabel16, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabel15))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(tfInterno1)
+                                    .addComponent(tfInterno2, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(tfWEB, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(tfEmail, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(tfContacto, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                        .addComponent(cbMunicipios, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(cbDepartamentos, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(cbProvincias, javax.swing.GroupLayout.PREFERRED_SIZE, 272, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(bMunicipios, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(bDepartamentos, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(cbTipoDocumento, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(tfNumDocumento, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(labelCUITValidador, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(checkRetencionDGR)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(checkRetencionIVA))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(tfLimiteCtaCte, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel20)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -363,6 +373,11 @@ public class PanelABMProveedores extends javax.swing.JPanel {
                     .addComponent(checkRetencionDGR)
                     .addComponent(checkRetencionIVA))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(tfLimiteCtaCte, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel19)
+                    .addComponent(jLabel20))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel12)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -371,48 +386,41 @@ public class PanelABMProveedores extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void tfNumDocumentoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfNumDocumentoKeyTyped
-        soloNumeros(evt);
+        SwingUtil.checkInputDigit(evt);
     }//GEN-LAST:event_tfNumDocumentoKeyTyped
 
     private void tfTele1KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfTele1KeyTyped
-        soloNumeros(evt);        // TODO add your handling code here:
+        SwingUtil.checkInputDigit(evt);
     }//GEN-LAST:event_tfTele1KeyTyped
 
     private void tfCPKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfCPKeyTyped
-        soloNumeros(evt);        // TODO add your handling code here:
+        SwingUtil.checkInputDigit(evt);
     }//GEN-LAST:event_tfCPKeyTyped
 
     private void tfTele2KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfTele2KeyTyped
-        soloNumeros(evt);        // TODO add your handling code here:
+        SwingUtil.checkInputDigit(evt);
     }//GEN-LAST:event_tfTele2KeyTyped
 
     private void tfInterno1KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfInterno1KeyTyped
-        soloNumeros(evt);        // TODO add your handling code here:
+        SwingUtil.checkInputDigit(evt);
 }//GEN-LAST:event_tfInterno1KeyTyped
 
     private void tfInterno2KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfInterno2KeyTyped
-        soloNumeros(evt);        // TODO add your handling code here:
+        SwingUtil.checkInputDigit(evt);
 }//GEN-LAST:event_tfInterno2KeyTyped
-
-    private void bMunicipiosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bMunicipiosActionPerformed
-        // TODO add your handling code here:
-}//GEN-LAST:event_bMunicipiosActionPerformed
 
     private void tfNombreKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfNombreKeyTyped
         toUpperCase(evt);
     }//GEN-LAST:event_tfNombreKeyTyped
 
     private void tfWEBKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfWEBKeyTyped
-        toUpperCase(evt);        // TODO add your handling code here:
+        toUpperCase(evt);
     }//GEN-LAST:event_tfWEBKeyTyped
 
-    private void bDepartamentosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bDepartamentosActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_bDepartamentosActionPerformed
+    private void tfLimiteCtaCteKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfLimiteCtaCteKeyTyped
+        SwingUtil.checkInputDigit(evt);
+    }//GEN-LAST:event_tfLimiteCtaCteKeyTyped
 
-    private void cbMunicipiosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbMunicipiosActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cbMunicipiosActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton bDepartamentos;
     private javax.swing.JButton bMunicipios;
@@ -433,7 +441,9 @@ public class PanelABMProveedores extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -451,6 +461,7 @@ public class PanelABMProveedores extends javax.swing.JPanel {
     private javax.swing.JTextField tfEmail;
     private javax.swing.JTextField tfInterno1;
     private javax.swing.JTextField tfInterno2;
+    private javax.swing.JTextField tfLimiteCtaCte;
     private javax.swing.JTextField tfNombre;
     private javax.swing.JTextField tfNumDocumento;
     private javax.swing.JTextField tfTele1;
@@ -582,6 +593,18 @@ public class PanelABMProveedores extends javax.swing.JPanel {
     public JComboBox getCbTipoDocumento() {
         return cbTipoDocumento;
     }
+
+    public JTextField getTfLimiteCtaCte() {
+        return tfLimiteCtaCte;
+    }
+
+    public JButton getbDepartamentos() {
+        return bDepartamentos;
+    }
+
+    public JButton getbMunicipios() {
+        return bMunicipios;
+    }
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="SETTERS">
@@ -649,12 +672,4 @@ public class PanelABMProveedores extends javax.swing.JPanel {
         bMunicipios.addActionListener((ActionListener) o);
     }
     // </editor-fold>
-
-    public JButton getbDepartamentos() {
-        return bDepartamentos;
-    }
-
-    public JButton getbMunicipios() {
-        return bMunicipios;
-    }
 }

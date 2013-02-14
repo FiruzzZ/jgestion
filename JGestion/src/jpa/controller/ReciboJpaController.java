@@ -72,7 +72,7 @@ public class ReciboJpaController extends AbstractDAO<Recibo, Integer> {
             em.getTransaction().begin();
             for (DetalleRecibo dr : detalleReciboList) {
                 //se resta la entrega ($) que implicaba este detalle con respecto a CADA factura
-                ctaCteCliente = new CtacteClienteController().findCtacteClienteByFactura(dr.getFacturaVenta().getId());
+                ctaCteCliente = new CtacteClienteController().findByFactura(dr.getFacturaVenta().getId());
                 ctaCteCliente.setEntregado(ctaCteCliente.getEntregado() - dr.getMontoEntrega().doubleValue());
                 // y si había sido pagada en su totalidad..
                 if (ctaCteCliente.getEstado() == Valores.CtaCteEstado.PAGADA.getId()) {

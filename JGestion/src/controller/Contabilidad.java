@@ -21,11 +21,9 @@ import generics.GenericBeanCollection;
 import java.text.DecimalFormat;
 import utilities.general.UTIL;
 import gui.JDBalance;
-import gui.JDBuscador;
 import gui.JDBuscadorReRe;
 import gui.JDInformeUnidadesDeNegocios;
 import gui.JDResumenGeneralCtaCte;
-import gui.JFP;
 import gui.PanelBalanceComprasVentas;
 import gui.PanelBalanceGeneral;
 import java.awt.Window;
@@ -36,6 +34,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -52,9 +51,11 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import jgestion.JGestionUtils;
 import jgestion.Main;
+import jpa.controller.ClienteJpaController;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import utilities.swing.ExcelAdapter;
 import utilities.swing.components.ComboBoxWrapper;
 import utilities.swing.components.FormatRenderer;
 import utilities.swing.components.NumberRenderer;
@@ -465,7 +466,7 @@ public class Contabilidad {
                         totalIngresos
                     });
         }
-        if(!errores.isEmpty()) {
+        if (!errores.isEmpty()) {
             JOptionPane.showMessageDialog(null, errores, "Errores de información", JOptionPane.ERROR_MESSAGE);
         }
         return data;
@@ -483,7 +484,7 @@ public class Contabilidad {
                     cccpc = null;
                     efectivo = factura.getImporte();
                 } else if (Valores.FormaPago.CTA_CTE.getId() == factura.getFormaPago()) {
-                    entregado = new CtacteClienteController().findCtacteClienteByFactura(factura.getId()).getEntregado();
+                    entregado = new CtacteClienteController().findByFactura(factura.getId()).getEntregado();
                     double importe = factura.getImporte();
                     cccpc = (importe - entregado);
                     efectivo = entregado > 0 ? entregado : null;
@@ -535,7 +536,7 @@ public class Contabilidad {
      */
     public static Double getPrecioFinal(Producto producto, ListaPrecios listaPrecios, boolean incluirIVA) {
         //      Logger.getLogger(this.getClass()).debug("Producto:" + producto.getNombre() + ", $venta:"+producto.getPrecioVenta() + ", ListaPrecio:" + listaPrecios.getNombre());
-        Double precioFinal = (producto.getPrecioVenta()
+        Double precioFinal = (producto.getPrecioVenta().doubleValue()
                 + GET_MARGEN_SEGUN_LISTAPRECIOS(listaPrecios, producto, null));
         Double iva = 0.0;
         if (incluirIVA) {
@@ -642,7 +643,7 @@ public class Contabilidad {
                 }
             }
         }
-        Double montoDefinitivo = (monto == null ? producto.getPrecioVenta() : monto);
+        Double montoDefinitivo = (monto == null ? producto.getPrecioVenta().doubleValue() : monto);
         return ((montoDefinitivo * margenFinal) / 100);
     }
 
@@ -700,7 +701,7 @@ public class Contabilidad {
         buscador.hideFactura();
         buscador.setFechaSistemaFieldsVisible(false);
         buscador.getbImprimir().setVisible(true);
-        UTIL.loadComboBox(buscador.getCbClieProv(), JGestionUtils.getWrappedClientes(new ClienteController().findEntities()), true);
+        UTIL.loadComboBox(buscador.getCbClieProv(), JGestionUtils.getWrappedClientes(new ClienteController().findAll()), true);
         UTIL.loadComboBox(buscador.getCbCaja(), new CajaController().findCajasPermitidasByUsuario(UsuarioController.getCurrentUser(), true), true);
         UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), true);
         UTIL.loadComboBox(buscador.getCbFormasDePago(), Valores.FormaPago.getFormasDePago(), true);
@@ -1070,6 +1071,7 @@ public class Contabilidad {
 
     public void displayCtaCteGeneralResumen(Window window) {
         final JDResumenGeneralCtaCte resumenGeneralCtaCte = new JDResumenGeneralCtaCte(window, false);
+        UTIL.hideColumnTable(resumenGeneralCtaCte.getjXTable1(), 0);
         resumenGeneralCtaCte.getbBuscar().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -1077,10 +1079,10 @@ public class Contabilidad {
                 Date hasta = resumenGeneralCtaCte.getDcHasta().getDate();
                 List<Object[]> data;
                 if (resumenGeneralCtaCte.getCbClieProv().getSelectedIndex() == 0) {
-                    data = new CtacteClienteController().findSaldosCtacte(desde, hasta);
+                    data = new CtacteClienteController().findSaldos(desde, hasta);
                     cargarTablaResumenGeneralCtaCte(data);
                 } else {
-                    data = new CtacteProveedorController().findSaldosCtacte(desde, hasta);
+                    data = new CtacteProveedorController().findSaldos(desde, hasta);
                     cargarTablaResumenGeneralCtaCte(data);
                 }
             }
@@ -1091,7 +1093,7 @@ public class Contabilidad {
                 BigDecimal t = BigDecimal.ZERO;
                 for (Object[] o : data) {
                     dtm.addRow(o);
-                    t = t.add((BigDecimal) o[1]);
+                    t = t.add((BigDecimal) o[2]);
                 }
                 resumenGeneralCtaCte.getTfTotal().setText(UTIL.DECIMAL_FORMAT.format(t));
             }
@@ -1100,6 +1102,25 @@ public class Contabilidad {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
+                    try {
+                        int selectedRow = resumenGeneralCtaCte.getjXTable1().getSelectedRow();
+                        if (resumenGeneralCtaCte.getCbClieProv().getSelectedIndex() == 0) {
+                            Cliente o = new ClienteJpaController().find((Integer) resumenGeneralCtaCte.getjXTable1().getModel().getValueAt(selectedRow, 0));
+                            new CtacteClienteController().getResumenCtaCte(resumenGeneralCtaCte, true, o).setVisible(true);
+                        } else {
+                            Proveedor o = new ProveedorController().findProveedor((Integer) resumenGeneralCtaCte.getjXTable1().getModel().getValueAt(selectedRow, 0));
+                            new CtacteProveedorController().getResumenCtaCte(resumenGeneralCtaCte, true, o).setVisible(true);
+                        }
+                    } catch (MessageException ex) {
+                        JOptionPane.showMessageDialog(null, ex.getMessage(), "", JOptionPane.WARNING_MESSAGE);
+                    } catch (MissingReportException ex) {
+                        JOptionPane.showMessageDialog(null, ex.getMessage(), "", JOptionPane.WARNING_MESSAGE);
+                    } catch (JRException ex) {
+                        JOptionPane.showMessageDialog(null, ex.getMessage(), "", JOptionPane.WARNING_MESSAGE);
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(null, ex.getMessage(), "", JOptionPane.ERROR_MESSAGE);
+                        LOG.error("double click en resumenGeneralCtaCte", ex);
+                    }
                 }
             }
         });

@@ -6,7 +6,6 @@ import entity.CajaMovimientos;
 import entity.Cuenta;
 import entity.DetalleCompra;
 import entity.FacturaCompra;
-import entity.FacturaVenta;
 import entity.Iva;
 import entity.Proveedor;
 import entity.Sucursal;
@@ -19,7 +18,6 @@ import generics.GenericBeanCollection;
 import utilities.general.UTIL;
 import gui.JDBuscadorReRe;
 import gui.JDFacturaCompra;
-import java.awt.Component;
 import java.awt.Window;
 import java.awt.event.*;
 import java.math.BigDecimal;
@@ -51,7 +49,6 @@ import jpa.controller.SubCuentaJpaController;
 import jpa.controller.UnidadDeNegocioJpaController;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Logger;
-import utilities.gui.SwingUtil;
 import utilities.swing.components.ComboBoxWrapper;
 import utilities.swing.components.FormatRenderer;
 import utilities.swing.components.NumberRenderer;
@@ -104,7 +101,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         jdFactura.setTfNumMovimiento("");
         UTIL.loadComboBox(jdFactura.getCbProveedor(), new ProveedorController().findEntities(), false);
         ActionListenerManager.setUnidadDeNegocioSucursalActionListener(jdFactura.getCbUnidadDeNegocio(), false, jdFactura.getCbSucursal(), false, true);
-        ActionListenerManager.setCuentaSubcuentaActionListener(jdFactura.getCbCuenta(), false, jdFactura.getCbSubCuenta(), true, true);
+        ActionListenerManager.setCuentasEgresosSubcuentaActionListener(jdFactura.getCbCuenta(), false, jdFactura.getCbSubCuenta(), true, true);
         UTIL.loadComboBox(jdFactura.getCbCaja(), uh.getCajas(true), false);
         UTIL.loadComboBox(jdFactura.getCbFacturaTipo(), TIPOS_FACTURA, false);
         UTIL.loadComboBox(jdFactura.getCbFormaPago(), Valores.FormaPago.getFormasDePago(), false);
@@ -116,7 +113,6 @@ public class FacturaCompraController implements ActionListener, KeyListener {
                 if (jdFactura.getCbFacturaTipo().getSelectedItem().toString().equalsIgnoreCase("x")
                         || jdFactura.getCbFacturaTipo().getSelectedItem().toString().equalsIgnoreCase("o")) {
                     jdFactura.setFacturaNumeroEnable(false);
-//                    setNextNumeracionX();
                 } else {
                     jdFactura.setFacturaNumeroEnable(true);
                     jdFactura.setTfFacturaCuarto(null);
@@ -194,7 +190,13 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         int cantidad;
         BigDecimal precioUnitario;
         BigDecimal descuento = BigDecimal.ZERO;
-        // <editor-fold defaultstate="collapsed" desc="ctrl tfCantidad">
+        //se le suma uno para q coincidan con los valores en la DB de cambio precio
+        int tipoValorizacionStock = jdFactura.getCbCambioPrecio().getSelectedIndex() + 1;
+        if (tipoValorizacionStock == ProductoController.PPP && selectedProducto.getStockactual() < 0) {
+            throw new MessageException("No se puede hacer un cálculo de PPP"
+                    + " siendo el stock actual del producto menor a 0"
+                    + "\nStock actual: " + selectedProducto.getStockactual());
+        }
         try {
             cantidad = Integer.valueOf(jdFactura.getTfCantidad().getText());
             if (cantidad < 1) {
@@ -202,7 +204,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
             }
         } catch (NumberFormatException ex) {
             throw new MessageException("Cantidad no válida (solo números enteros)");
-        }// </editor-fold>
+        }
         try {
             precioUnitario = new BigDecimal(jdFactura.getTfPrecioUnitario()).setScale(4, RoundingMode.HALF_EVEN);
             if (precioUnitario.signum() == -1) {
@@ -249,8 +251,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
                     cantidad,
                     precioUnitario,
                     precioUnitario.multiply(BigDecimal.valueOf(cantidad)).setScale(2, RoundingMode.HALF_EVEN),
-                    //se le suma uno para q coincidan con los valores en la DB de cambio precio
-                    jdFactura.getCbCambioPrecio().getSelectedIndex() + 1
+                    tipoValorizacionStock
                 });
 
         refreshResumen();
@@ -387,15 +388,12 @@ public class FacturaCompraController implements ActionListener, KeyListener {
 
     private FacturaCompra setAndPersist() throws Exception {
         FacturaCompra newFacturaCompra = new FacturaCompra();
-//        newFacturaCompra.setFacturaCuarto(Short.valueOf(jdFactura.getTfFacturaCuarto()));
-//        newFacturaCompra.setFacturaOcteto(Integer.valueOf(jdFactura.getTfFacturaOcteto()));
         newFacturaCompra.setFechaCompra(jdFactura.getDcFechaFactura());
         newFacturaCompra.setAnulada(false);
         String ob = jdFactura.getTfObservacion().getText().trim();
         newFacturaCompra.setObservacion(ob.isEmpty() ? null : ob);
         //set entities
         newFacturaCompra.setProveedor((Proveedor) jdFactura.getCbProveedor().getSelectedItem());
-        newFacturaCompra.setSucursal(getSelectedSucursalFromJD());
         newFacturaCompra.setUsuario(UsuarioController.getCurrentUser());
         newFacturaCompra.setCaja((Caja) jdFactura.getCbCaja().getSelectedItem());
         try {
@@ -403,6 +401,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         } catch (Exception e) {
             JOptionPane.showMessageDialog(jdFactura, "Unidad de Negocio no válida");
         }
+        newFacturaCompra.setSucursal(getSelectedSucursalFromJD());
         try {
             newFacturaCompra.setCuenta(((ComboBoxWrapper<Cuenta>) jdFactura.getCbCuenta().getSelectedItem()).getEntity());
         } catch (Exception e) {
@@ -471,8 +470,9 @@ public class FacturaCompraController implements ActionListener, KeyListener {
             ProductoController productoCtrl = new ProductoController();
             for (DetalleCompra detalleCompra : newFacturaCompra.getDetalleCompraList()) {
                 for (int row = 0; row < dtm.getRowCount(); row++) {
-                    if (detalleCompra.getProducto().getCodigo().equals(dtm.getValueAt(row, 1).toString())) {
-                        productoCtrl.valorizarStock(detalleCompra.getProducto(), detalleCompra.getPrecioUnitario(), detalleCompra.getCantidad(), Integer.parseInt(dtm.getValueAt(row, 6).toString()));
+                    Producto p = detalleCompra.getProducto();
+                    if (p.getCodigo().equals((String) dtm.getValueAt(row, 1))) {
+                        productoCtrl.valorizarStock(p, detalleCompra.getPrecioUnitario(), detalleCompra.getCantidad(), Integer.parseInt(dtm.getValueAt(row, 6).toString()));
                     }
                 }
             }
@@ -483,6 +483,9 @@ public class FacturaCompraController implements ActionListener, KeyListener {
             }
             asentarSegunFormaDePago(newFacturaCompra);
         } catch (Exception ex) {
+            if (newFacturaCompra.getId() != null) {
+                jpaController.remove(newFacturaCompra);
+            }
             throw ex;
         }
         return newFacturaCompra;
@@ -718,7 +721,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         buscador.hideFactura();
         buscador.getbImprimir().setVisible(true);
         ActionListenerManager.setUnidadDeNegocioSucursalActionListener(buscador.getCbUnidadDeNegocio(), true, buscador.getCbSucursal(), true, true);
-        ActionListenerManager.setCuentaSubcuentaActionListener(buscador.getCbCuenta(), true, buscador.getCbSubCuenta(), true, true);
+        ActionListenerManager.setCuentasEgresosSubcuentaActionListener(buscador.getCbCuenta(), true, buscador.getCbSubCuenta(), true, true);
         UTIL.loadComboBox(buscador.getCbClieProv(), new ProveedorController().findEntities(), true);
         UTIL.loadComboBox(buscador.getCbCaja(), new UsuarioHelper().getCajas(true), true);
 //        UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), true);
@@ -1160,12 +1163,6 @@ public class FacturaCompraController implements ActionListener, KeyListener {
 //            }
         }
 
-    }
-
-    private void setNextNumeracionX() {
-        Long max = jpaController.getMaxNumeroComprobante(getSelectedSucursalFromJD(), 'X') + 1;
-        jdFactura.setTfFacturaCuarto(getSelectedSucursalFromJD().getPuntoVenta().toString());
-        jdFactura.setTfFacturaOcteto(max.toString());
     }
 
     private void setDetalleData(FacturaCompra factura) throws MessageException {
