@@ -183,7 +183,9 @@ public class ChequeTercerosController implements ActionListener {
         }
 
         cruzado = panelABM.getCheckCruzado().isSelected();
-        observacion = panelABM.getTaObservacion().getText();
+        if (!panelABM.getTaObservacion().getText().trim().isEmpty()) {
+            observacion = panelABM.getTaObservacion().getText().trim();
+        }
         if (panelABM.getCheckEndosado().isSelected()) {
             fechaEndoso = panelABM.getDcEndoso().getDate();
             if (fechaEndoso == null) {
@@ -351,9 +353,6 @@ public class ChequeTercerosController implements ActionListener {
      * Inicializa la vista encargada de administrar cheques (Propios o Terceros)
      *
      * @param owner JFrame padre.
-     * @param listener Para los botones laterales. Si
-     * <code>listener == null</code> se asignará <code>this</code> por defecto.
-     * @param estado
      * @return una instancia de {@link JDChequesManager}.
      * @throws MessageException
      */
@@ -424,6 +423,7 @@ public class ChequeTercerosController implements ActionListener {
         totalizarSegunFechaCobro();
     }
 
+    @SuppressWarnings("unchecked")
     private void armarQuery(boolean imprimir) throws DatabaseErrorException {
         StringBuilder query = new StringBuilder("SELECT "
                 + " c.id, c.numero, c.fecha_cheque, cliente.nombre as cliente, c.fecha_cobro, banco.nombre as banco, c.importe, cheque_estado.nombre as estado, c.cruzado"

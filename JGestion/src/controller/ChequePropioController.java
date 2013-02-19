@@ -401,6 +401,7 @@ public class ChequePropioController implements ActionListener {
         UTIL.loadComboBox(jdChequeManager.getCbBancos(), JGestionUtils.getWrappedBancos(l), true);
         UTIL.loadComboBox(jdChequeManager.getCbEmisor(), JGestionUtils.getWrappedProveedores(new ProveedorController().findEntities()), true);
         UTIL.loadComboBox(jdChequeManager.getCbEstados(), Arrays.asList(ChequeEstado.values()), true);
+        UTIL.loadComboBox(jdChequeManager.getCbOrderBy(), Arrays.asList(orderByToComboBoxList), false);
         if (selectionMode) {
             EL_OBJECT = null;
             UTIL.setSelectedItem(jdChequeManager.getCbEstados(), ChequeEstado.CARTERA);
@@ -496,16 +497,16 @@ public class ChequePropioController implements ActionListener {
             }
         }
         if (jdChequeManager.getDcEmisionDesde() != null) {
-            query.append(" AND c.fecha_cheque >='").append(jdChequeManager.getDcEmisionDesde()).append("'");
+            query.append(" AND c.fecha_cheque >='").append(UTIL.DATE_FORMAT.format(jdChequeManager.getDcEmisionDesde())).append("'");
         }
         if (jdChequeManager.getDcEmisionHasta() != null) {
-            query.append(" AND c.fecha_cheque <='").append(jdChequeManager.getDcEmisionHasta()).append("'");
+            query.append(" AND c.fecha_cheque <='").append(UTIL.DATE_FORMAT.format(jdChequeManager.getDcEmisionHasta())).append("'");
         }
         if (jdChequeManager.getDcCobroDesde() != null) {
-            query.append(" AND c.fecha_cobro >='").append(jdChequeManager.getDcCobroDesde()).append("'");
+            query.append(" AND c.fecha_cobro >='").append(UTIL.DATE_FORMAT.format(jdChequeManager.getDcCobroDesde())).append("'");
         }
         if (jdChequeManager.getDcCobroHasta() != null) {
-            query.append(" AND c.fecha_cobro <='").append(jdChequeManager.getDcCobroHasta()).append("'");
+            query.append(" AND c.fecha_cobro <='").append(UTIL.DATE_FORMAT.format(jdChequeManager.getDcCobroHasta())).append("'");
         }
         if (jdChequeManager.getTfImporte().getText().trim().length() > 0) {
             try {
