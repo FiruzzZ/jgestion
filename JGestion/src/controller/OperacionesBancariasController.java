@@ -23,7 +23,7 @@ import utilities.general.UTIL;
 public class OperacionesBancariasController {
 
     private static final Logger LOG = Logger.getLogger(OperacionesBancariasController.class.getName());
-    private OperacionesBancariasJpaController jpaController;
+    private final OperacionesBancariasJpaController jpaController;
     private OperacionesBancarias selectedEntity;
     private JDMiniABM abm;
     public static final int DEPOSITO = 1;

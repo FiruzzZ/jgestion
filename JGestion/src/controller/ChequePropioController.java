@@ -258,16 +258,21 @@ public class ChequePropioController implements ActionListener {
                                 jpaController.merge(cheque);
                             }
                         } else {
-                            JOptionPane.showMessageDialog(jdChequeManager, "Solo los cheques en " + ChequeEstado.CARTERA + " pueden ser depositados", "Error", JOptionPane.WARNING_MESSAGE);
+                            JOptionPane.showMessageDialog(jdChequeManager, "Solo los cheques en " + ChequeEstado.CARTERA + " pueden ser anulados", "Error", JOptionPane.WARNING_MESSAGE);
                         }
                         armarQuery(false);
                     }
                 } else if (boton.equals(jdChequeManager.getbDeposito())) {
-//                    int row = jdChequeManager.getjTable1().getSelectedRow();
-//                    if (row > -1) {
-//                        ChequePropio find = jpaController.find((Integer) jdChequeManager.getjTable1().getModel().getValueAt(row, 0));
-//                        new CuentabancariaController().displayDepositoUI(find);
-//                    }
+                    int row = jdChequeManager.getjTable1().getSelectedRow();
+                    if (row > -1) {
+                        ChequePropio cheque = jpaController.find((Integer) jdChequeManager.getjTable1().getModel().getValueAt(row, 0));
+                        if (cheque.getChequeEstado().equals(ChequeEstado.CARTERA)) {
+                            new CuentabancariaController().initDebitoUI(cheque);
+                        } else {
+                            JOptionPane.showMessageDialog(jdChequeManager, "Solo los cheques en " + ChequeEstado.CARTERA + " pueden ser " + ChequeEstado.DEBITADO, "Error", JOptionPane.WARNING_MESSAGE);
+                        }
+                        armarQuery(false);
+                    }
                 } else if (boton.equals(jdChequeManager.getbImprimir())) {
                     try {
                         armarQuery(true);
@@ -389,7 +394,7 @@ public class ChequePropioController implements ActionListener {
         jdChequeManager = new JDChequesManager(parent, true);
         jdChequeManager.getBtnNuevo().setEnabled(false);
         jdChequeManager.getbACaja().setEnabled(false);
-        jdChequeManager.getbDeposito().setEnabled(false);
+        jdChequeManager.getbDeposito().setText("Debidar");
         jdChequeManager.getLabelEmisor().setText("Emitido a");
         jdChequeManager.setTitle("Administración de Cheques Propios");
         jdChequeManager.getCbBancoSucursales().setVisible(false);
