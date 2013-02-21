@@ -330,11 +330,12 @@ public class CtacteClienteController implements ActionListener {
         totalHaber = 0.0;
 
         String query = "SELECT ccc.*, sucursal.puntoventa, fv.fecha_venta"
-                + " FROM ctacte_cliente ccc, cliente c, factura_venta fv JOIN sucursal ON (fv.sucursal = sucursal.id) "
-                + " WHERE ccc.factura = fv.id AND fv.cliente = c.id ";
+                + " FROM ctacte_cliente ccc, cliente , factura_venta fv JOIN sucursal ON (fv.sucursal = sucursal.id) "
+                + " WHERE ccc.factura = fv.id AND fv.cliente = cliente.id ";
+        //solo el filtro se envía al reporte! por eso están separados
         String filters = "";
         try {
-            filters += " AND c.id =" + ((ComboBoxWrapper<Cliente>) resumenCtaCtes.getCbClieProv().getSelectedItem()).getId();
+            filters += " AND cliente.id =" + ((ComboBoxWrapper<Cliente>) resumenCtaCtes.getCbClieProv().getSelectedItem()).getId();
         } catch (ClassCastException ex) {
             throw new MessageException("Cliente no válido");
         }
