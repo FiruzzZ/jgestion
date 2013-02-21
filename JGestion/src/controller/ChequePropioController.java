@@ -34,6 +34,7 @@ import jpa.controller.ChequePropioJpaController;
 import org.apache.log4j.Logger;
 import utilities.general.UTIL;
 import utilities.swing.components.ComboBoxWrapper;
+import utilities.swing.components.FormatRenderer;
 import utilities.swing.components.NumberRenderer;
 
 /**
@@ -50,9 +51,7 @@ public class ChequePropioController implements ActionListener {
     private ChequePropioJpaController jpaController;
     private JDChequesManager jdChequeManager;
     //exclusively related to the GUI
-    private final String[] columnNames = {"id", "Nº Cheque", "F. Cheque", "Emitido a", "F. Cobro", "Banco", "Sucursal", "Importe", "Estado", "Cruzado", "Endosatario", "F. Endoso", "C. Ingreso", "C. Egreso", "Observacion", "Usuario"};
     private final int[] columnWidths = {1, 80, 80, 100, 80, 100, 100, 100, 80, 50, 100, 100, 150, 150, 100, 80};
-    private final Class[] columnClassTypes = {Integer.class, Number.class, null, null, null, null, null, Number.class, null, Boolean.class, null};
     //Este se pone en el comboBox
     private final String[] orderByToComboBoxList = {"N° Cheque", "Fecha de Emisión", "Fecha de Cobro", "Importe", "Banco/Sucursal", "Proveedor", "Estado"};
     //Y este es el equivalente (de lo seleccionado en el combo) para el SQL.
@@ -395,7 +394,13 @@ public class ChequePropioController implements ActionListener {
         jdChequeManager.setTitle("Administración de Cheques Propios");
         jdChequeManager.getCbBancoSucursales().setVisible(false);
         jdChequeManager.getLabelSucursales().setVisible(false);
-        UTIL.getDefaultTableModel(jdChequeManager.getjTable1(), columnNames, columnWidths, columnClassTypes);
+        UTIL.getDefaultTableModel(jdChequeManager.getjTable1(),
+                new String[]{"id", "Nº Cheque", "F. Cheque", "Emitido a", "F. Cobro", "Banco", "Sucursal", "Importe", "Estado", "Cruzado", "Endosatario", "F. Endoso", "C. Ingreso", "C. Egreso", "Observacion", "Usuario"},
+                columnWidths,
+                new Class<?>[]{Integer.class, Number.class, null, null, null, null, null, Number.class, null, Boolean.class, null});
+
+        jdChequeManager.getjTable1().getColumnModel().getColumn(2).setCellRenderer(FormatRenderer.getDateRenderer());
+        jdChequeManager.getjTable1().getColumnModel().getColumn(4).setCellRenderer(FormatRenderer.getDateRenderer());
         jdChequeManager.getjTable1().getColumnModel().getColumn(7).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         UTIL.hideColumnTable(jdChequeManager.getjTable1(), 0);
         UTIL.loadComboBox(jdChequeManager.getCbBancos(), JGestionUtils.getWrappedBancos(l), true);
@@ -476,7 +481,7 @@ public class ChequePropioController implements ActionListener {
 
     private void armarQuery(boolean imprimir) {
         StringBuilder query = new StringBuilder("SELECT "
-                + " c.id, c.numero, TO_CHAR(c.fecha_cheque,'DD/MM/YYYY') as fecha_cheque, ccc.nombre as cliente, TO_CHAR(c.fecha_cobro,'DD/MM/YYYY') as fecha_cobro,"
+                + " c.id, c.numero, c.fecha_cheque, ccc.nombre as cliente, c.fecha_cobro,"
                 + " banco.nombre as banco, banco_sucursal.nombre as sucursal, c.importe, cheque_estado.nombre as estado, c.cruzado"
                 + ", c.endosatario, c.fecha_endoso"
                 + ", c.comprobante_ingreso, c.comprobante_egreso, c.observacion"
@@ -518,15 +523,9 @@ public class ChequePropioController implements ActionListener {
         if (jdChequeManager.getCbBancos().getSelectedIndex() > 0) {
             query.append(" AND c.banco=").append(((ComboBoxWrapper<Banco>) jdChequeManager.getCbBancos().getSelectedItem()).getId());
         }
-//        if (jdChequeManager.getCbBancoSucursales().getSelectedIndex() > 0) {
-//            query.append(" AND c.banco_sucursal=").append(((BancoSucursal) jdChequeManager.getCbBancoSucursales().getSelectedItem()).getId());
-//        }
         if (jdChequeManager.getCbEmisor().getSelectedIndex() > 0) {
             query.append(" AND c.cliente=").append(((Cliente) jdChequeManager.getCbEmisor().getSelectedItem()).getId());
         }
-//        if (jdChequeManager.getCbLibrado().getSelectedIndex() > 0) {
-//            query.append(" AND c.librado=").append(((Librado) jdChequeManager.getCbLibrado().getSelectedItem()).getId());
-//        }
         if (jdChequeManager.getCbEstados().getSelectedIndex() > 0) {
             query.append(" AND c.estado=").append(((ChequeEstado) jdChequeManager.getCbEstados().getSelectedItem()).getId());
         }
