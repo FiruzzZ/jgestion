@@ -18,6 +18,7 @@ import generics.GenericBeanCollection;
 import utilities.general.UTIL;
 import gui.JDBuscadorReRe;
 import gui.JDFacturaCompra;
+import java.awt.Component;
 import java.awt.Window;
 import java.awt.event.*;
 import java.math.BigDecimal;
@@ -49,6 +50,7 @@ import jpa.controller.SubCuentaJpaController;
 import jpa.controller.UnidadDeNegocioJpaController;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Logger;
+import utilities.gui.SwingUtil;
 import utilities.swing.components.ComboBoxWrapper;
 import utilities.swing.components.FormatRenderer;
 import utilities.swing.components.NumberRenderer;
@@ -750,7 +752,9 @@ public class FacturaCompraController implements ActionListener, KeyListener {
                             }
                             jdFactura.setLocationRelativeTo(buscador);
                             setDataToAnular(toAnular);
-                            jdFactura.modoVista(false);
+                            SwingUtil.setComponentsEnabled(jdFactura.getPanelDatosCompra().getComponents(), false, true, (Class<? extends Component>[]) null);
+                            SwingUtil.setComponentsEnabled(jdFactura.getPanelOpcionesCompra().getComponents(), false, true, (Class<? extends Component>[]) null);
+                            SwingUtil.setComponentsEnabled(jdFactura.getPanelProducto().getComponents(), false, true, (Class<? extends Component>[]) null);
                             jdFactura.setVisible(true);
                         } catch (MessageException ex) {
                             ex.displayMessage(buscador);

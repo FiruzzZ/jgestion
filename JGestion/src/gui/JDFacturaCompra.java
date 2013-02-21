@@ -12,6 +12,7 @@ import utilities.general.UTIL;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
@@ -1583,4 +1584,17 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         tfFacturaCuarto.setEnabled(b);
         tfFacturaOcteto.setEnabled(b);
     }
+
+    public JPanel getPanelDatosCompra() {
+        return panelDatosCompra;
+    }
+
+    public JPanel getPanelProducto() {
+        return panelProducto;
+    }
+
+    public JPanel getPanelOpcionesCompra() {
+        return panelOpcionesCompra;
+    }
+    
 }

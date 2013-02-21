@@ -119,7 +119,7 @@ public class FacturaCompra implements Serializable {
     @JoinColumn(name = "subcuenta_id")
     @ManyToOne
     private SubCuenta subCuenta;
-    @Column(length = 100)
+    @Column(length = 100, name = "observacion")
     private String observacion;
 
     public FacturaCompra() {
@@ -419,6 +419,7 @@ public class FacturaCompra implements Serializable {
                 + ", movimientoInterno=" + movimientoInterno + ", diasCtaCte=" + diasCtaCte
                 + ", proveedor=" + proveedor.getId() + ", sucursal=" + (sucursal == null ? null : sucursal.getId())
                 + ", usuario=" + (usuario == null ? null : usuario.getId()) + ", caja=" + (caja == null ? null : caja.getId()) + ", anulada=" + anulada
+                + ", observacion=" + observacion
                 + '}';
     }
 }
