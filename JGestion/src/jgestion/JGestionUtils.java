@@ -222,6 +222,19 @@ public class JGestionUtils {
                 });
     }
 
+    public static ComboBoxWrapper<Banco> wrap(Banco o) {
+        return new ComboBoxWrapper<Banco>(o, o.getId(), o.getNombre());
+    }
+
+    public static ComboBoxWrapper<CuentaBancaria> wrap(CuentaBancaria o) {
+        return new ComboBoxWrapper<CuentaBancaria>(o, o.getId(), o.getNumero());
+    }
+
     private JGestionUtils() {
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        throw new CloneNotSupportedException();
     }
 }

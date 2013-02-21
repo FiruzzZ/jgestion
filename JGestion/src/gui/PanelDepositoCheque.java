@@ -1,17 +1,12 @@
 package gui;
 
 import com.toedter.calendar.JDateChooser;
-import entity.Banco;
-import java.util.Date;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import jgestion.JGestionUtils;
-import utilities.general.UTIL;
-import utilities.swing.components.ComboBoxWrapper;
 
 /**
  *
@@ -23,7 +18,6 @@ public class PanelDepositoCheque extends javax.swing.JPanel {
      * Creates new form PanelDepositoCheque
      */
     public PanelDepositoCheque() {
-
         initComponents();
     }
 
@@ -415,6 +409,10 @@ public class PanelDepositoCheque extends javax.swing.JPanel {
 
     public JLabel getLabelNcuenta() {
         return labelNcuenta;
+    }
+
+    public JLabel getLabelEmisor() {
+        return labelEmisor;
     }
 
     public JTextArea getTaObservacion() {

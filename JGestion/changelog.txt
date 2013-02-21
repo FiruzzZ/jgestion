@@ -1,3 +1,7 @@
+--20130221 arreglando la descripción
+update operaciones_bancarias set nombre ='x' where id = 2;
+update operaciones_bancarias set nombre ='TRANSFERENCIA' where id = 3;
+update operaciones_bancarias set nombre ='EXTRACCIÓN' where id = 2;
 --20130208
 ALTER TABLE producto ALTER COLUMN costo_compra TYPE numeric(12,4);
 ALTER TABLE producto ALTER COLUMN precio_venta TYPE numeric(12,4);
