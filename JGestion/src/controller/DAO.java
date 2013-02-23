@@ -495,12 +495,12 @@ public abstract class DAO implements Runnable {
             
             if (em.createNativeQuery("SELECT * FROM operaciones_bancarias").getResultList().isEmpty()) {
                 System.out.println("Creando cheque_estado's..");
-                StringBuilder sb = null;
-                //fill with Enum's
+                StringBuilder sb;
                     sb = new StringBuilder("INSERT INTO operaciones_bancarias VALUES ");
                     sb.append("(").append(OperacionesBancariasController.DEPOSITO).append(",'DEPÓSITO'),");
                     sb.append("(").append(OperacionesBancariasController.EXTRACCION).append(",'EXTRACCIÓN'),");
                     sb.append("(").append(OperacionesBancariasController.TRANSFERENCIA).append(",'TRANSFERENCIA');");
+                    sb.append("SELECT SETVAL('operaciones_bancarias_id_seq'::regclass, 3);");
                 em.createNativeQuery(sb.toString()).executeUpdate();
             }
             em.getTransaction().commit();

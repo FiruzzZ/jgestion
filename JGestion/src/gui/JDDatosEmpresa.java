@@ -10,7 +10,6 @@ package gui;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import javax.swing.JLabel;
-import javax.swing.JTextField;
 
 /**
  *

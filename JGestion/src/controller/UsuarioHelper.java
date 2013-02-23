@@ -1,7 +1,6 @@
 package controller;
 
 import entity.Caja;
-import entity.PermisosSucursal;
 import entity.Sucursal;
 import entity.Usuario;
 import java.util.ArrayList;

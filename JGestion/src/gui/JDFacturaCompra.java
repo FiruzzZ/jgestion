@@ -174,6 +174,8 @@ public class JDFacturaCompra extends javax.swing.JDialog {
             }
         });
 
+        dcFechaFactura.setMinSelectableDate(new java.util.Date(-2208974330000L));
+
         labelFacturaNumero.setText("Nº");
 
         tfFacturaCuarto.setColumns(4);

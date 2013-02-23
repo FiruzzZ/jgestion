@@ -3,7 +3,6 @@ package jpa.controller;
 import controller.DAO;
 import entity.Presupuesto;
 import entity.Sucursal;
-import java.io.Serializable;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 

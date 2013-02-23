@@ -6,7 +6,6 @@
  */
 package gui;
 
-import com.toedter.calendar.JDateChooser;
 import java.util.Date;
 import javax.swing.JButton;
 import javax.swing.JComboBox;

@@ -5,13 +5,11 @@ import entity.*;
 import java.awt.Color;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JTextField;
 import utilities.general.UTIL;
-import utilities.gui.SwingUtil;
 import utilities.swing.components.ComboBoxWrapper;
 
 /**
