@@ -8,7 +8,6 @@
 package gui;
 
 import java.awt.Dialog;
-import javax.swing.JDialog;
 
 /**
  *

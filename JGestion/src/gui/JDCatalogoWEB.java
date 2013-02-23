@@ -7,9 +7,7 @@ package gui;
 
 import controller.Contabilidad;
 import controller.DAO;
-import controller.FacturaVentaController;
 import controller.ListaPreciosController;
-import controller.ProductoController;
 import controller.ProductosWebJpaController;
 import controller.exceptions.MessageException;
 import controller.exceptions.NonexistentEntityException;

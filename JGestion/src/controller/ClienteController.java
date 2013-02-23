@@ -5,8 +5,6 @@ import entity.Cliente;
 import java.awt.event.KeyEvent;
 import java.util.List;
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.persistence.EntityNotFoundException;
 import entity.Contribuyente;
 import entity.Departamento;
 import entity.Municipio;

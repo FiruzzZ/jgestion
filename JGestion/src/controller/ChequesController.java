@@ -2,12 +2,7 @@ package controller;
 
 import controller.exceptions.MessageException;
 import entity.Cheque;
-import entity.enums.ChequeEstado;
-import java.sql.Connection;
-import java.sql.SQLException;
-import javax.persistence.EntityManager;
 import javax.swing.table.DefaultTableModel;
-import org.apache.log4j.Logger;
 
 /**
  *

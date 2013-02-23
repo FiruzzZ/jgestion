@@ -4,8 +4,6 @@ import controller.exceptions.NonexistentEntityException;
 import entity.Permisos;
 import java.util.List;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import entity.Usuario;

@@ -13,7 +13,6 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import jpa.controller.OperacionesBancariasJpaController;
 import org.apache.log4j.Logger;
-import org.omg.CORBA.TRANSACTION_MODE;
 import utilities.general.UTIL;
 
 /**

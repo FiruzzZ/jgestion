@@ -1,14 +1,12 @@
 package jgestion.test;
 
 import controller.DAO;
-import controller.Reportes;
 import controller.exceptions.MissingReportException;
 import entity.DetalleVenta;
 import entity.FacturaVenta;
 import generics.PropsUtils;
 import java.awt.Dialog;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

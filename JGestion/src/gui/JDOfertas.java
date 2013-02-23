@@ -7,7 +7,6 @@ package gui;
 
 import controller.Contabilidad;
 import controller.DAO;
-import controller.FacturaVentaController;
 import controller.HistorialOfertasJpaController;
 import controller.ListaPreciosController;
 import controller.ProductoController;
@@ -21,11 +20,7 @@ import entity.Producto;
 import entity.ProductosWeb;
 import utilities.general.UTIL;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.NumberFormat;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
 import java.util.Date;
@@ -34,7 +29,6 @@ import javax.swing.JOptionPane;
 import jpa.controller.ProductoJpaController;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.Priority;
 
 /**
  *

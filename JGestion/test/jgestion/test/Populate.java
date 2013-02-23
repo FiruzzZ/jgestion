@@ -16,7 +16,6 @@ import entity.Rubro;
 import entity.Sucursal;
 import generics.PropsUtils;
 import java.io.File;
-import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Properties;
 import java.util.logging.Level;

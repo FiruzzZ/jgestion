@@ -16,7 +16,6 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;

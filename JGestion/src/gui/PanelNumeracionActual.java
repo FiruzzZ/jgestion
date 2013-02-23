@@ -5,8 +5,6 @@
  */
 package gui;
 
-import javax.swing.JTextField;
-
 /**
  *
  * @author FiruzzZ

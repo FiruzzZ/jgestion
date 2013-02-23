@@ -3,9 +3,6 @@ package jpa.controller;
 import controller.DAO;
 import entity.Remito;
 import entity.Sucursal;
-import java.io.Serializable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 
 /**
