@@ -122,6 +122,9 @@ public class PanelMovimientosVarios extends javax.swing.JPanel {
 
         jLabel1.setText("Fecha");
 
+        dcMovimientoFecha.setMaxSelectableDate(new java.util.Date(4070923261000L));
+        dcMovimientoFecha.setMinSelectableDate(new java.util.Date(-2208969731000L));
+
         jLabel12.setText("Sub Cuenta");
 
         jLabel13.setText("Unid. de Negocio");

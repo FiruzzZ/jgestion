@@ -154,6 +154,22 @@ public class GenericBeanCollection {
         this.o12 = o12;
     }
 
+    public Object getO13() {
+        return o13;
+    }
+
+    public void setO13(Object o13) {
+        this.o13 = o13;
+    }
+
+    public Object getO14() {
+        return o14;
+    }
+
+    public void setO14(Object o14) {
+        this.o14 = o14;
+    }
+
     @Override
     public int hashCode() {
         int hash = 7;

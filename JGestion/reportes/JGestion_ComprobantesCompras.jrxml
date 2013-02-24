@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="JGestion_ComprobantesCompras" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
-	<property name="ireport.zoom" value="1.331000000000001"/>
+	<property name="ireport.zoom" value="1.4641000000000013"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
@@ -18,29 +18,36 @@
 	<field name="o10" class="java.math.BigDecimal"/>
 	<field name="o11" class="java.math.BigDecimal"/>
 	<field name="o12" class="java.math.BigDecimal"/>
-	<variable name="o5_1" class="java.math.BigDecimal" calculation="Sum">
-		<variableExpression><![CDATA[$F{o5}]]></variableExpression>
-	</variable>
-	<variable name="o6_1" class="java.math.BigDecimal" calculation="Sum">
-		<variableExpression><![CDATA[$F{o6}]]></variableExpression>
-	</variable>
-	<variable name="o7_1" class="java.math.BigDecimal" calculation="Sum">
-		<variableExpression><![CDATA[$F{o7}]]></variableExpression>
-	</variable>
-	<variable name="o8_1" class="java.math.BigDecimal" calculation="Sum">
-		<variableExpression><![CDATA[$F{o8}]]></variableExpression>
+	<field name="o13" class="java.math.BigDecimal"/>
+	<variable name="o10_1" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{o10}]]></variableExpression>
 	</variable>
 	<variable name="o9_1" class="java.math.BigDecimal" calculation="Sum">
 		<variableExpression><![CDATA[$F{o9}]]></variableExpression>
 	</variable>
-	<variable name="o10_1" class="java.math.BigDecimal" calculation="Sum">
-		<variableExpression><![CDATA[$F{o10}]]></variableExpression>
+	<variable name="o8_1" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{o8}]]></variableExpression>
+	</variable>
+	<variable name="o7_1" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{o7}]]></variableExpression>
+	</variable>
+	<variable name="o6_1" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{o6}]]></variableExpression>
+	</variable>
+	<variable name="o5_1" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{o5}]]></variableExpression>
 	</variable>
 	<variable name="o11_1" class="java.math.BigDecimal" calculation="Sum">
 		<variableExpression><![CDATA[$F{o11}]]></variableExpression>
 	</variable>
+	<variable name="o12_1" class="java.lang.Integer" calculation="Count">
+		<variableExpression><![CDATA[$F{o12}]]></variableExpression>
+	</variable>
 	<variable name="o12_2" class="java.math.BigDecimal" calculation="Sum">
 		<variableExpression><![CDATA[$F{o12}]]></variableExpression>
+	</variable>
+	<variable name="o13_1" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{o13}]]></variableExpression>
 	</variable>
 	<title>
 		<band height="80" splitType="Stretch">
@@ -59,7 +66,7 @@
 	<pageHeader>
 		<band height="35" splitType="Stretch">
 			<staticText>
-				<reportElement x="0" y="0" width="801" height="35"/>
+				<reportElement x="0" y="0" width="802" height="35"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="18" isBold="true"/>
 				</textElement>
@@ -70,7 +77,7 @@
 	<columnHeader>
 		<band height="20" splitType="Stretch">
 			<staticText>
-				<reportElement mode="Opaque" x="0" y="0" width="85" height="20" backcolor="#CCCCCC"/>
+				<reportElement mode="Opaque" x="140" y="0" width="130" height="20" backcolor="#CCCCCC"/>
 				<box leftPadding="0">
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -78,9 +85,9 @@
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="9" isBold="true"/>
+					<font isBold="true"/>
 				</textElement>
-				<text><![CDATA[N° Comprobante]]></text>
+				<text><![CDATA[Proveedor]]></text>
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="85" y="0" width="55" height="20" backcolor="#CCCCCC"/>
@@ -96,33 +103,7 @@
 				<text><![CDATA[Fecha]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="140" y="0" width="160" height="20" backcolor="#CCCCCC"/>
-				<box leftPadding="0">
-					<topPen lineWidth="0.75"/>
-					<leftPen lineWidth="0.75"/>
-					<bottomPen lineWidth="0.75"/>
-					<rightPen lineWidth="0.75"/>
-				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font isBold="true"/>
-				</textElement>
-				<text><![CDATA[Proveedor]]></text>
-			</staticText>
-			<staticText>
-				<reportElement mode="Opaque" x="300" y="0" width="62" height="20" backcolor="#CCCCCC"/>
-				<box leftPadding="0">
-					<topPen lineWidth="0.75"/>
-					<leftPen lineWidth="0.75"/>
-					<bottomPen lineWidth="0.75"/>
-					<rightPen lineWidth="0.75"/>
-				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font isBold="true"/>
-				</textElement>
-				<text><![CDATA[CUIT]]></text>
-			</staticText>
-			<staticText>
-				<reportElement mode="Opaque" x="362" y="0" width="65" height="20" backcolor="#CCCCCC"/>
+				<reportElement mode="Opaque" x="332" y="0" width="65" height="20" backcolor="#CCCCCC"/>
 				<box leftPadding="0">
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -135,7 +116,33 @@
 				<text><![CDATA[Gravado]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="427" y="0" width="55" height="20" backcolor="#CCCCCC"/>
+				<reportElement mode="Opaque" x="0" y="0" width="85" height="20" backcolor="#CCCCCC"/>
+				<box leftPadding="0">
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[N° Comprobante]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="270" y="0" width="62" height="20" backcolor="#CCCCCC"/>
+				<box leftPadding="0">
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[CUIT]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="397" y="0" width="55" height="20" backcolor="#CCCCCC"/>
 				<box leftPadding="0">
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -148,7 +155,7 @@
 				<text><![CDATA[IVA 10.5]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="482" y="0" width="55" height="20" backcolor="#CCCCCC"/>
+				<reportElement mode="Opaque" x="452" y="0" width="55" height="20" backcolor="#CCCCCC"/>
 				<box leftPadding="0">
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -161,7 +168,34 @@
 				<text><![CDATA[IVA 21]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="537" y="0" width="55" height="20" backcolor="#CCCCCC"/>
+				<reportElement mode="Opaque" x="507" y="0" width="40" height="20" backcolor="#CCCCCC"/>
+				<box leftPadding="0">
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Perc. IIBB]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="547" y="0" width="40" height="20" backcolor="#CCCCCC"/>
+				<box leftPadding="0">
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+					<paragraph lineSpacing="Fixed"/>
+				</textElement>
+				<text><![CDATA[Perc. IVA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="687" y="0" width="55" height="20" backcolor="#CCCCCC"/>
 				<box leftPadding="0">
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -171,10 +205,24 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
-				<text><![CDATA[Perc. IIBB]]></text>
+				<text><![CDATA[No Grav]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="592" y="0" width="55" height="20" backcolor="#CCCCCC"/>
+				<reportElement mode="Opaque" x="637" y="0" width="50" height="20" backcolor="#CCCCCC"/>
+				<box leftPadding="0">
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+					<paragraph lineSpacing="Fixed"/>
+				</textElement>
+				<text><![CDATA[No Recup.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="587" y="0" width="50" height="20" backcolor="#CCCCCC"/>
 				<box leftPadding="0">
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -188,7 +236,7 @@
 				<text><![CDATA[Otros Imp.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="747" y="0" width="55" height="20" backcolor="#CCCCCC"/>
+				<reportElement mode="Opaque" x="742" y="0" width="60" height="20" backcolor="#CCCCCC"/>
 				<box leftPadding="0">
 					<topPen lineWidth="0.75"/>
 					<leftPen lineWidth="0.75"/>
@@ -199,34 +247,6 @@
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[Importe]]></text>
-			</staticText>
-			<staticText>
-				<reportElement mode="Opaque" x="697" y="0" width="50" height="20" backcolor="#CCCCCC"/>
-				<box leftPadding="0">
-					<topPen lineWidth="0.75"/>
-					<leftPen lineWidth="0.75"/>
-					<bottomPen lineWidth="0.75"/>
-					<rightPen lineWidth="0.75"/>
-				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="9" isBold="true"/>
-					<paragraph lineSpacing="Fixed"/>
-				</textElement>
-				<text><![CDATA[No Grav]]></text>
-			</staticText>
-			<staticText>
-				<reportElement mode="Opaque" x="647" y="0" width="50" height="20" backcolor="#CCCCCC"/>
-				<box leftPadding="0">
-					<topPen lineWidth="0.75"/>
-					<leftPen lineWidth="0.75"/>
-					<bottomPen lineWidth="0.75"/>
-					<rightPen lineWidth="0.75"/>
-				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="9" isBold="true"/>
-					<paragraph lineSpacing="Fixed"/>
-				</textElement>
-				<text><![CDATA[No Recup]]></text>
 			</staticText>
 		</band>
 	</columnHeader>
@@ -247,74 +267,81 @@
 				<textFieldExpression><![CDATA[$F{o2}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="140" y="0" width="160" height="15"/>
+				<reportElement x="140" y="0" width="130" height="15"/>
 				<textElement>
-					<font size="9"/>
+					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{o3}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="300" y="0" width="62" height="15"/>
+				<reportElement x="270" y="0" width="62" height="15"/>
 				<textElement textAlignment="Right">
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{o4}]]></textFieldExpression>
 			</textField>
 			<textField pattern="¤ #,##0.00">
-				<reportElement x="362" y="0" width="65" height="15"/>
+				<reportElement x="332" y="0" width="65" height="15"/>
 				<textElement textAlignment="Right">
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{o5}]]></textFieldExpression>
 			</textField>
 			<textField pattern="¤ #,##0.00">
-				<reportElement x="427" y="0" width="55" height="15"/>
+				<reportElement x="397" y="0" width="55" height="15"/>
 				<textElement textAlignment="Right">
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{o6}]]></textFieldExpression>
 			</textField>
 			<textField pattern="¤ #,##0.00">
-				<reportElement x="482" y="0" width="55" height="15"/>
+				<reportElement x="452" y="0" width="55" height="15"/>
 				<textElement textAlignment="Right">
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{o7}]]></textFieldExpression>
 			</textField>
 			<textField pattern="¤ #,##0.00">
-				<reportElement x="537" y="0" width="55" height="15"/>
+				<reportElement x="507" y="0" width="40" height="15"/>
 				<textElement textAlignment="Right">
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{o8}]]></textFieldExpression>
 			</textField>
 			<textField pattern="¤ #,##0.00">
-				<reportElement x="592" y="0" width="55" height="15"/>
+				<reportElement x="547" y="0" width="40" height="15"/>
 				<textElement textAlignment="Right">
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{o9}]]></textFieldExpression>
 			</textField>
 			<textField pattern="¤ #,##0.00">
-				<reportElement x="647" y="0" width="50" height="15"/>
+				<reportElement x="587" y="0" width="50" height="15"/>
 				<textElement textAlignment="Right">
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{o10}]]></textFieldExpression>
 			</textField>
 			<textField pattern="¤ #,##0.00">
-				<reportElement x="697" y="0" width="50" height="15"/>
+				<reportElement x="637" y="0" width="50" height="15"/>
 				<textElement textAlignment="Right">
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{o11}]]></textFieldExpression>
 			</textField>
 			<textField pattern="¤ #,##0.00">
-				<reportElement x="747" y="0" width="55" height="15"/>
+				<reportElement x="687" y="0" width="55" height="15"/>
 				<textElement textAlignment="Right">
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{o12}]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤ #,##0.00">
+				<reportElement x="742" y="0" width="60" height="15"/>
+				<textElement textAlignment="Right">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{o13}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
@@ -335,42 +362,42 @@
 	<summary>
 		<band height="20" splitType="Stretch">
 			<textField isStretchWithOverflow="true" pattern="¤ #,##0.00">
-				<reportElement x="362" y="0" width="65" height="20"/>
+				<reportElement x="332" y="0" width="65" height="20"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{o5_1}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="¤ #,##0.00">
-				<reportElement x="427" y="0" width="55" height="20"/>
+				<reportElement x="397" y="0" width="55" height="20"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{o6_1}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="¤ #,##0.00">
-				<reportElement x="482" y="0" width="55" height="20"/>
+				<reportElement x="452" y="0" width="55" height="20"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{o7_1}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="¤ #,##0.00">
-				<reportElement x="537" y="0" width="55" height="20"/>
+				<reportElement x="507" y="0" width="40" height="20"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{o8_1}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="¤ #,##0.00">
-				<reportElement x="592" y="0" width="55" height="20"/>
+				<reportElement x="547" y="0" width="40" height="20"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{o9_1}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="¤ #,##0.00">
-				<reportElement x="647" y="0" width="50" height="20"/>
+				<reportElement x="587" y="0" width="50" height="20"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9" isBold="false"/>
 				</textElement>
@@ -380,18 +407,25 @@
 				<reportElement x="0" y="0" width="801" height="1"/>
 			</line>
 			<textField isStretchWithOverflow="true" pattern="¤ #,##0.00">
-				<reportElement x="697" y="0" width="50" height="20"/>
+				<reportElement x="637" y="0" width="50" height="20"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{o11_1}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="¤ #,##0.00">
-				<reportElement x="747" y="0" width="55" height="20"/>
+				<reportElement x="687" y="0" width="55" height="20"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{o12_2}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="¤ #,##0.00">
+				<reportElement x="742" y="0" width="60" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{o13_1}]]></textFieldExpression>
 			</textField>
 		</band>
 	</summary>

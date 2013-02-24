@@ -79,10 +79,12 @@ public class PanelABMCheques extends javax.swing.JPanel {
         labelNcuenta = new javax.swing.JLabel();
         bAddCuentaBancaria = new javax.swing.JButton();
 
+        dcCobro.setMaxSelectableDate(new java.util.Date(4070923306000L));
         dcCobro.setMinSelectableDate(new java.util.Date(-2177433676000L));
 
         jLabel5.setText("Fecha de Cobro");
 
+        dcCheque.setMaxSelectableDate(new java.util.Date(4070923307000L));
         dcCheque.setMinSelectableDate(new java.util.Date(-2177433676000L));
 
         jLabel4.setText("Fecha de emisión");
@@ -149,6 +151,8 @@ public class PanelABMCheques extends javax.swing.JPanel {
         jLabel12.setText("Fecha de endoso");
 
         dcEndoso.setEnabled(false);
+        dcEndoso.setMaxSelectableDate(new java.util.Date(4070923307000L));
+        dcEndoso.setMinSelectableDate(new java.util.Date(-2208969685000L));
 
         labelNcuenta.setText("N° Cuenta");
 

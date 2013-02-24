@@ -12,6 +12,7 @@ import gui.JDABM;
 import gui.JDChequesManager;
 import gui.PanelABMCheques;
 import gui.PanelMovimientosVarios;
+import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
@@ -33,6 +34,7 @@ import jgestion.JGestionUtils;
 import jpa.controller.ChequeTercerosJpaController;
 import org.apache.log4j.Logger;
 import utilities.general.UTIL;
+import utilities.swing.RowColorRender;
 import utilities.swing.components.ComboBoxWrapper;
 import utilities.swing.components.FormatRenderer;
 import utilities.swing.components.NumberRenderer;
@@ -394,13 +396,29 @@ public class ChequeTercerosController implements ActionListener {
         jdChequeManager.getCbOrderBy().setSelectedIndex(2);
         UTIL.loadComboBox(jdChequeManager.getCbEmisor(), JGestionUtils.getWrappedClientes(new ClienteController().findAll()), true);
         UTIL.getDefaultTableModel(jdChequeManager.getjTable1(),
+                // los valores de las columnas 4 (F. Cobro) y 7 (Estado) son usados en otros lados!!! ojo piojo!
                 new String[]{"id", "Nº Cheque", "F. Cheque", "Emisor", "F. Cobro", "Banco", "Importe", "Estado", "Cruzado", "Endosatario", "F. Endoso", "C. Ingreso", "C. Egreso", "Observacion", "Usuario"},
                 new int[]{1, 80, 80, 100, 80, 100, 100, 100, 50, 100, 100, 150, 150, 100, 80},
                 new Class<?>[]{Integer.class, Number.class, null, null, null, null, Number.class, null, Boolean.class, null});
+        jdChequeManager.getjTable1().setAutoCreateRowSorter(true);
         jdChequeManager.getjTable1().getColumnModel().getColumn(2).setCellRenderer(FormatRenderer.getDateRenderer());
         jdChequeManager.getjTable1().getColumnModel().getColumn(4).setCellRenderer(FormatRenderer.getDateRenderer());
         jdChequeManager.getjTable1().getColumnModel().getColumn(6).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         jdChequeManager.getjTable1().getColumnModel().getColumn(10).setCellRenderer(FormatRenderer.getDateRenderer());
+        jdChequeManager.getjTable1().setDefaultRenderer(Object.class, new RowColorRender() {
+            private static final long serialVersionUID = 1L;
+            final Date hoy = new Date();
+            @Override
+            public Color condicion(Object value, int row, int column) {
+                Color c = null;
+                Date fechaCobro = (Date) jdChequeManager.getjTable1().getModel().getValueAt(row, 4);
+                String estado = jdChequeManager.getjTable1().getModel().getValueAt(row, 7).toString();
+                if (fechaCobro.before(hoy) && ChequeEstado.CARTERA.toString().equalsIgnoreCase(estado)) {
+                    c = Color.RED;
+                }
+                return c;
+            }
+        });
         UTIL.hideColumnTable(jdChequeManager.getjTable1(), 0);
         jdChequeManager.addButtonListener(this);
     }
@@ -522,20 +540,22 @@ public class ChequeTercerosController implements ActionListener {
         DefaultTableModel dtm = (DefaultTableModel) jdChequeManager.getjTable1().getModel();
         final long dayOnMilli = 24 * 60 * 60 * 1000;
         for (int row = 0; row < dtm.getRowCount(); row++) {
-            Date fechaCobro = (Date) dtm.getValueAt(row, 4);
-            BigDecimal importe = (BigDecimal) dtm.getValueAt(row, 6);
-            long diff = fechaCobro.getTime() - now.getTime();
-            long diffDays = diff / (dayOnMilli);
-            if (diffDays <= 0) {
-                $cobrables = $cobrables.add(importe);
-            } else if (diffDays <= 30) {
-                $30 = $30.add(importe);
-            } else if (diffDays <= 60) {
-                $60 = $60.add(importe);
-            } else if (diffDays <= 90) {
-                $90 = $90.add(importe);
-            } else if (diffDays > 90) {
-                $90mas = $90mas.add(importe);
+            if (dtm.getValueAt(row, 7).toString().equalsIgnoreCase(ChequeEstado.CARTERA.name())) {
+                Date fechaCobro = (Date) dtm.getValueAt(row, 4);
+                BigDecimal importe = (BigDecimal) dtm.getValueAt(row, 6);
+                long diff = fechaCobro.getTime() - now.getTime();
+                long diffDays = diff / (dayOnMilli);
+                if (diffDays <= 0) {
+                    $cobrables = $cobrables.add(importe);
+                } else if (diffDays <= 30) {
+                    $30 = $30.add(importe);
+                } else if (diffDays <= 60) {
+                    $60 = $60.add(importe);
+                } else if (diffDays <= 90) {
+                    $90 = $90.add(importe);
+                } else if (diffDays > 90) {
+                    $90mas = $90mas.add(importe);
+                }
             }
         }
         jdChequeManager.getTfCobrables().setText(UTIL.DECIMAL_FORMAT.format($cobrables));
