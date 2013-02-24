@@ -246,7 +246,8 @@ public class JDFacturaVenta extends javax.swing.JDialog {
 
         cbListaPrecio.setName("listaPrecios"); // NOI18N
 
-        dcFechaFactura.setMinSelectableDate(new java.util.Date(-2208974312000L));
+        dcFechaFactura.setMaxSelectableDate(new java.util.Date(4070923260000L));
+        dcFechaFactura.setMinSelectableDate(new java.util.Date(-2208969732000L));
         dcFechaFactura.setNextFocusableComponent(cbFacturaTipo);
 
         jLabel2.setText("Sucursal");

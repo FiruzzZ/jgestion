@@ -36,6 +36,7 @@ public class PanelABMComprobanteRetencion extends javax.swing.JPanel {
 
         jLabel1.setText("Fecha");
 
+        dcFecha.setMaxSelectableDate(new java.util.Date(4070923313000L));
         dcFecha.setMinSelectableDate(new java.util.Date(-2208969720000L));
 
         jLabel2.setText("Número");

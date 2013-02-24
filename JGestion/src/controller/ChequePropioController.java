@@ -1,18 +1,19 @@
 package controller;
 
-import entity.CuentaBancaria;
 import controller.exceptions.DatabaseErrorException;
 import controller.exceptions.MessageException;
 import entity.Banco;
 import entity.BancoSucursal;
 import entity.ChequePropio;
 import entity.Cliente;
+import entity.CuentaBancaria;
 import entity.Proveedor;
 import entity.enums.ChequeEstado;
 import gui.JDABM;
 import gui.JDChequesManager;
 import gui.JDContenedor;
 import gui.PanelABMCheques;
+import java.awt.Color;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -32,6 +33,7 @@ import jgestion.JGestionUtils;
 import jpa.controller.ChequePropioJpaController;
 import org.apache.log4j.Logger;
 import utilities.general.UTIL;
+import utilities.swing.RowColorRender;
 import utilities.swing.components.ComboBoxWrapper;
 import utilities.swing.components.FormatRenderer;
 import utilities.swing.components.NumberRenderer;
@@ -50,7 +52,6 @@ public class ChequePropioController implements ActionListener {
     private ChequePropioJpaController jpaController;
     private JDChequesManager jdChequeManager;
     //exclusively related to the GUI
-    private final int[] columnWidths = {1, 80, 80, 100, 80, 100, 100, 100, 80, 50, 100, 100, 150, 150, 100, 80};
     //Este se pone en el comboBox
     private final String[] orderByToComboBoxList = {"N° Cheque", "Fecha de Emisión", "Fecha de Cobro", "Importe", "Banco/Sucursal", "Proveedor", "Estado"};
     //Y este es el equivalente (de lo seleccionado en el combo) para el SQL.
@@ -116,63 +117,6 @@ public class ChequePropioController implements ActionListener {
         // <editor-fold defaultstate="collapsed" desc="JButton">
         if (e.getSource() instanceof JButton) {
             JButton boton = (JButton) e.getSource();
-            //<editor-fold defaultstate="collapsed" desc="contenedor Actions">
-//            if (contenedor != null) {
-//                if (boton.equals(contenedor.getbNuevo())) {
-//                    try {
-//                        EL_OBJECT = null;
-//                        initABM(false);
-//                        abm.setVisible(true);
-//                    } catch (MessageException ex) {
-//                        contenedor.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 2);
-//                    } catch (Exception ex) {
-//                        contenedor.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 0);
-//                        LOG.error(ex);
-//                    }
-//                } else if (boton.equals(contenedor.getbModificar())) {
-//                    try {
-//                        int selectedRow = contenedor.getjTable1().getSelectedRow();
-//                        if (selectedRow > -1) {
-//                            EL_OBJECT = jpaController.find(Integer.valueOf((contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
-//                            if (EL_OBJECT == null) {
-//                                throw new MessageException("Debe elegir una fila de la tabla");
-//                            }
-//                            initABM(true);
-//                            abm.setVisible(true);
-//
-//                        }
-//                    } catch (MessageException ex) {
-//                        contenedor.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 2);
-//                    } catch (Exception ex) {
-//                        contenedor.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 0);
-//                        LOG.error(ex);
-//                    }
-//
-//                } else if (boton.equals(contenedor.getbBorrar())) {
-//                    try {
-//                        int selectedRow = contenedor.getjTable1().getSelectedRow();
-//                        if (selectedRow > -1) {
-//                            EL_OBJECT = DAO.getEntityManager().find(ChequePropio.class,
-//                                    Integer.valueOf((contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
-//                        }
-//                        if (EL_OBJECT == null) {
-//                            throw new MessageException("No hay " + jpaController.getEntityClass().getSimpleName() + " seleccionado");
-//                        }
-//                        jpaController.remove(EL_OBJECT);
-//                    } catch (MessageException ex) {
-//                        contenedor.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 2);
-//                    } catch (Exception ex) {
-//                        contenedor.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 0);
-//                        LOG.error(ex);
-//                    }
-//                } else if (boton.getName().equalsIgnoreCase("Print")) {
-//                    //no implementado aun...
-//                } else if (boton.getName().equalsIgnoreCase("exit")) {
-//                    contenedor.dispose();
-//                    contenedor = null;
-//                }
-//            } 
-            //</editor-fold>
             //<editor-fold defaultstate="collapsed" desc="abm Actions">
             if (abm != null && panelABM != null) {
                 if (boton.equals(abm.getbAceptar())) {
@@ -277,6 +221,7 @@ public class ChequePropioController implements ActionListener {
                         armarQuery(true);
                     } catch (Exception ex) {
                         JOptionPane.showMessageDialog(null, ex.getMessage(), "Error ejecutando consulta", JOptionPane.ERROR_MESSAGE);
+                        LOG.error("Cargando tabla cheques propios", ex);
                     }
                 }
             } //</editor-fold>
@@ -399,18 +344,34 @@ public class ChequePropioController implements ActionListener {
         jdChequeManager.getCbBancoSucursales().setVisible(false);
         jdChequeManager.getLabelSucursales().setVisible(false);
         UTIL.getDefaultTableModel(jdChequeManager.getjTable1(),
-                new String[]{"id", "Nº Cheque", "F. Cheque", "Emitido a", "F. Cobro", "Banco", "Sucursal", "Importe", "Estado", "Cruzado", "Endosatario", "F. Endoso", "C. Ingreso", "C. Egreso", "Observacion", "Usuario"},
-                columnWidths,
-                new Class<?>[]{Integer.class, Number.class, null, null, null, null, null, Number.class, null, Boolean.class, null});
-
+                // los valores de las columnas 4 (F. Cobro) y 7 (Estado) son usados en otros lados!!! ojo piojo!
+                new String[]{"id", "Nº Cheque", "F. Cheque", "Emitido a", "F. Cobro", "Banco", "Importe", "Estado", "Cruzado", "Endosatario", "F. Endoso", "C. Ingreso", "C. Egreso", "Observacion", "Usuario"},
+                new int[]{1, 80, 80, 100, 80, 100, 100, 80, 50, 100, 100, 150, 150, 100, 80},
+                new Class<?>[]{Integer.class, Number.class, null, null, null, null, Number.class, null, Boolean.class, null});
         jdChequeManager.getjTable1().getColumnModel().getColumn(2).setCellRenderer(FormatRenderer.getDateRenderer());
         jdChequeManager.getjTable1().getColumnModel().getColumn(4).setCellRenderer(FormatRenderer.getDateRenderer());
-        jdChequeManager.getjTable1().getColumnModel().getColumn(7).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        jdChequeManager.getjTable1().getColumnModel().getColumn(6).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        jdChequeManager.getjTable1().setDefaultRenderer(Object.class, new RowColorRender() {
+            private static final long serialVersionUID = 1L;
+            final Date hoy = new Date();
+
+            @Override
+            public Color condicion(Object value, int row, int column) {
+                Color c = null;
+                Date fechaCobro = (Date) jdChequeManager.getjTable1().getModel().getValueAt(row, 4);
+                String estado = jdChequeManager.getjTable1().getModel().getValueAt(row, 7).toString();
+                if (fechaCobro.before(hoy) && ChequeEstado.CARTERA.toString().equalsIgnoreCase(estado)) {
+                    c = Color.RED;
+                }
+                return c;
+            }
+        });
         UTIL.hideColumnTable(jdChequeManager.getjTable1(), 0);
         UTIL.loadComboBox(jdChequeManager.getCbBancos(), JGestionUtils.getWrappedBancos(l), true);
         UTIL.loadComboBox(jdChequeManager.getCbEmisor(), JGestionUtils.getWrappedProveedores(new ProveedorController().findEntities()), true);
         UTIL.loadComboBox(jdChequeManager.getCbEstados(), Arrays.asList(ChequeEstado.values()), true);
         UTIL.loadComboBox(jdChequeManager.getCbOrderBy(), Arrays.asList(orderByToComboBoxList), false);
+        jdChequeManager.getCbOrderBy().setSelectedIndex(2);
         if (selectionMode) {
             EL_OBJECT = null;
             UTIL.setSelectedItem(jdChequeManager.getCbEstados(), ChequeEstado.CARTERA);
@@ -486,7 +447,7 @@ public class ChequePropioController implements ActionListener {
     private void armarQuery(boolean imprimir) {
         StringBuilder query = new StringBuilder("SELECT "
                 + " c.id, c.numero, c.fecha_cheque, ccc.nombre as cliente, c.fecha_cobro,"
-                + " banco.nombre as banco, banco_sucursal.nombre as sucursal, c.importe, cheque_estado.nombre as estado, c.cruzado"
+                + " banco.nombre as banco, c.importe, cheque_estado.nombre as estado, c.cruzado"
                 + ", c.endosatario, c.fecha_endoso"
                 + ", c.comprobante_ingreso, c.comprobante_egreso, c.observacion"
                 + ", usuario.nick as usuario "
@@ -548,13 +509,49 @@ public class ChequePropioController implements ActionListener {
             dtm.setRowCount(0);
             List<?> l = DAO.getNativeQueryResultList(query);
             for (Object object : l) {
-                //"id", "Nº Cheque", "F. Cheque", "Emisor", "F. Cobro", "Banco", "Sucursal", "Importe", "Estado", "Cruzado", "Endosatario", "F. Endoso", "C. Ingreso", "C. Egreso", "Observacion", "Usuario"};
+                //"id", "Nº Cheque", "F. Cheque", "Emisor", "F. Cobro", "Banco", "Importe", "Estado", "Cruzado", "Endosatario", "F. Endoso", "C. Ingreso", "C. Egreso", "Observacion", "Usuario"};
                 dtm.addRow((Object[]) object);
             }
         } catch (DatabaseErrorException ex) {
             LOG.error(ex, ex);
             JOptionPane.showMessageDialog(jdChequeManager, ex.getLocalizedMessage(), "Error recuperando Cheques Propios", JOptionPane.ERROR_MESSAGE);
         }
+        totalizarSegunFechaCobro();
+    }
+
+    private void totalizarSegunFechaCobro() {
+        BigDecimal $cobrables = BigDecimal.ZERO;
+        BigDecimal $30 = BigDecimal.ZERO;
+        BigDecimal $60 = BigDecimal.ZERO;
+        BigDecimal $90 = BigDecimal.ZERO;
+        BigDecimal $90mas = BigDecimal.ZERO;
+        Date now = new Date();
+        DefaultTableModel dtm = (DefaultTableModel) jdChequeManager.getjTable1().getModel();
+        final long dayOnMilli = 24 * 60 * 60 * 1000;
+        for (int row = 0; row < dtm.getRowCount(); row++) {
+            if (dtm.getValueAt(row, 7).toString().equalsIgnoreCase(ChequeEstado.CARTERA.name())) {
+                Date fechaCobro = (Date) dtm.getValueAt(row, 4);
+                BigDecimal importe = (BigDecimal) dtm.getValueAt(row, 6);
+                long diff = fechaCobro.getTime() - now.getTime();
+                long diffDays = diff / (dayOnMilli);
+                if (diffDays <= 0) {
+                    $cobrables = $cobrables.add(importe);
+                } else if (diffDays <= 30) {
+                    $30 = $30.add(importe);
+                } else if (diffDays <= 60) {
+                    $60 = $60.add(importe);
+                } else if (diffDays <= 90) {
+                    $90 = $90.add(importe);
+                } else if (diffDays > 90) {
+                    $90mas = $90mas.add(importe);
+                }
+            }
+        }
+        jdChequeManager.getTfCobrables().setText(UTIL.DECIMAL_FORMAT.format($cobrables));
+        jdChequeManager.getTf30().setText(UTIL.DECIMAL_FORMAT.format($30));
+        jdChequeManager.getTf60().setText(UTIL.DECIMAL_FORMAT.format($60));
+        jdChequeManager.getTf90().setText(UTIL.DECIMAL_FORMAT.format($90));
+        jdChequeManager.getTf90mas().setText(UTIL.DECIMAL_FORMAT.format($90mas));
     }
 
     private void doChequePropioReport(String query) {

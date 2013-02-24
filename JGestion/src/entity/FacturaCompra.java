@@ -51,16 +51,12 @@ public class FacturaCompra implements Serializable {
     @Basic(optional = false)
     @Column(name = "actualiza_stock", nullable = false)
     private boolean actualizaStock;
-//    @Column(name = "factura_cuarto")
-//    private short facturaCuarto;
-//    @Column(name = "factura_octeto")
-//    private int facturaOcteto;
+    @Basic(optional = false)
+    @Column(name = "perc_iva", nullable = false, precision = 12, scale = 2)
+    private BigDecimal percIva;
     /**
      * Se usa para Percepción II BB (Ingresos Brutos)
      */
-    @Basic(optional = false)
-    @Column(name = "perc_iva", nullable = false)
-    private double percIva;
     @Basic(optional = false)
     @Column(name = "perc_dgr", nullable = false, precision = 12, scale = 2)
     private double percDgr;
@@ -201,16 +197,11 @@ public class FacturaCompra implements Serializable {
         this.actualizaStock = actualizaStock;
     }
 
-    public double getPercIva() {
+    public BigDecimal getPercIva() {
         return percIva;
     }
 
-    /**
-     * Setea los II BB (Ingresos Brutos)
-     *
-     * @param percIva
-     */
-    public void setPercIva(double percIva) {
+    public void setPercIva(BigDecimal percIva) {
         this.percIva = percIva;
     }
 
@@ -219,12 +210,12 @@ public class FacturaCompra implements Serializable {
     }
 
     /**
-     * no corresponde en la COMPRA ..BURRO!!
+     * Setea los II BB (Ingresos Brutos)
      *
-     * @param percDgr
+     * @param percIIBB
      */
-    public void setPercDgr(double percDgr) {
-        this.percDgr = percDgr;
+    public void setPercDgr(double percIIBB) {
+        this.percDgr = percIIBB;
     }
 
     public double getIva10() {

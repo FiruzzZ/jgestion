@@ -1,3 +1,6 @@
+--20130224
+update factura_compra set perc_dgr = perc_iva;
+update factura_compra set perc_iva = 0;
 --20130221 arreglando la descripción
 update operaciones_bancarias set nombre ='x' where id = 2;
 update operaciones_bancarias set nombre ='TRANSFERENCIA' where id = 3;

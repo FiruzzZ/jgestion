@@ -71,6 +71,7 @@
                   <Component id="btnCancelar" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
                   <Component id="btnAnular" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
               </Group>
+              <EmptySpace min="-2" pref="16" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -272,8 +273,11 @@
         </Component>
         <Component class="com.toedter.calendar.JDateChooser" name="dcFechaFactura">
           <Properties>
+            <Property name="maxSelectableDate" type="java.util.Date" editor="org.netbeans.beaninfo.editors.DateEditor">
+              <SerializedValue value="-84,-19,0,5,115,114,0,14,106,97,118,97,46,117,116,105,108,46,68,97,116,101,104,106,-127,1,75,89,116,25,3,0,0,120,112,119,8,0,0,3,-77,-43,-17,-63,-88,120"/>
+            </Property>
             <Property name="minSelectableDate" type="java.util.Date" editor="org.netbeans.beaninfo.editors.DateEditor">
-              <SerializedValue value="-84,-19,0,5,115,114,0,14,106,97,118,97,46,117,116,105,108,46,68,97,116,101,104,106,-127,1,75,89,116,25,3,0,0,120,112,119,8,-1,-1,-3,-3,-82,-34,-89,112,120"/>
+              <SerializedValue value="-84,-19,0,5,115,114,0,14,106,97,118,97,46,117,116,105,108,46,68,97,116,101,104,106,-127,1,75,89,116,25,3,0,0,120,112,119,8,-1,-1,-3,-3,-81,37,65,-88,120"/>
             </Property>
           </Properties>
         </Component>
@@ -468,12 +472,7 @@
                           <Component id="jLabel14" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
-                  <EmptySpace max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="tfTotalPercepcion" alignment="0" min="-2" max="-2" attributes="0"/>
-                      <Component id="jLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <EmptySpace max="-2" attributes="0"/>
+                  <EmptySpace min="-2" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Component id="jLabel2" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Component id="tfTotalOtrosImpuestos" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -485,10 +484,23 @@
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jLabel30" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Component id="tfTotalNoGravado" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel30" alignment="0" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace type="separate" max="32767" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" attributes="0">
+                          <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                          <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="102" attributes="0">
+                          <Component id="tfTotalPercIIBB" min="-2" pref="58" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="tfTotalPercIVA" min="-2" pref="58" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+                  <EmptySpace max="32767" attributes="0"/>
                   <Group type="103" groupAlignment="1" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
                           <Component id="tfTotal" min="-2" max="-2" attributes="0"/>
@@ -509,11 +521,12 @@
                       <Component id="jLabel5" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel14" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel16" alignment="2" min="-2" max="-2" attributes="0"/>
-                      <Component id="jLabel1" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel2" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel12" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel13" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel30" alignment="2" min="-2" pref="14" max="-2" attributes="0"/>
+                      <Component id="jLabel1" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel6" alignment="2" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="2" attributes="0">
@@ -521,10 +534,11 @@
                       <Component id="tfTotalOtrosImpuestos" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="tfTotalImpuestosNoRecuperables" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="tfTotalIVA105" alignment="2" min="-2" max="-2" attributes="0"/>
-                      <Component id="tfTotalPercepcion" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="tfGravado" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="tfTotal" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="tfTotalNoGravado" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Component id="tfTotalPercIIBB" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Component id="tfTotalPercIVA" alignment="2" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
           </Group>
@@ -610,24 +624,6 @@
             <Property name="requestFocusEnabled" type="boolean" value="false"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JLabel" name="jLabel1">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="Perc. IIBB"/>
-          </Properties>
-        </Component>
-        <Component class="javax.swing.JTextField" name="tfTotalPercepcion">
-          <Properties>
-            <Property name="editable" type="boolean" value="false"/>
-            <Property name="columns" type="int" value="6"/>
-            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-              <Font name="Tahoma" size="11" style="1"/>
-            </Property>
-            <Property name="horizontalAlignment" type="int" value="4"/>
-            <Property name="text" type="java.lang.String" value="0"/>
-            <Property name="focusable" type="boolean" value="false"/>
-            <Property name="requestFocusEnabled" type="boolean" value="false"/>
-          </Properties>
-        </Component>
         <Component class="javax.swing.JLabel" name="jLabel2">
           <Properties>
             <Property name="text" type="java.lang.String" value="IVA 27%"/>
@@ -678,6 +674,40 @@
           <Properties>
             <Property name="editable" type="boolean" value="false"/>
             <Property name="columns" type="int" value="6"/>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Tahoma" size="11" style="1"/>
+            </Property>
+            <Property name="horizontalAlignment" type="int" value="4"/>
+            <Property name="text" type="java.lang.String" value="0"/>
+            <Property name="focusable" type="boolean" value="false"/>
+            <Property name="requestFocusEnabled" type="boolean" value="false"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="tfTotalPercIIBB">
+          <Properties>
+            <Property name="editable" type="boolean" value="false"/>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Tahoma" size="11" style="1"/>
+            </Property>
+            <Property name="horizontalAlignment" type="int" value="4"/>
+            <Property name="text" type="java.lang.String" value="0"/>
+            <Property name="focusable" type="boolean" value="false"/>
+            <Property name="requestFocusEnabled" type="boolean" value="false"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel1">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Perc. IIBB"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel6">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Perc. IVA"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="tfTotalPercIVA">
+          <Properties>
+            <Property name="editable" type="boolean" value="false"/>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Tahoma" size="11" style="1"/>
             </Property>
@@ -741,6 +771,8 @@
                       </Group>
                       <Component id="jLabel21" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Component id="tfDescuento" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel20" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Component id="tfPercIVA" alignment="0" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
               </Group>
@@ -754,6 +786,10 @@
                   <Component id="jLabel17" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="tfPercIIBB" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="jLabel20" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="tfPercIVA" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="jLabel18" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
@@ -772,7 +808,7 @@
                   <Component id="jLabel21" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="tfDescuento" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace max="32767" attributes="0"/>
+                  <EmptySpace pref="32" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -876,6 +912,24 @@
           <Events>
             <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="xxx"/>
             <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="tfDescuentoKeyTyped"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel20">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Perc. IVA"/>
+            <Property name="toolTipText" type="java.lang.String" value="Percepci&#xf3;n Ingresos Brutos"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="tfPercIVA">
+          <Properties>
+            <Property name="columns" type="int" value="8"/>
+            <Property name="horizontalAlignment" type="int" value="4"/>
+            <Property name="text" type="java.lang.String" value="0"/>
+            <Property name="toolTipText" type="java.lang.String" value="Monto de Percepci&#xf3;n Ingresos Brutos"/>
+          </Properties>
+          <Events>
+            <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="tfPercIVAxxx"/>
+            <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="tfPercIVAKeyTyped"/>
           </Events>
         </Component>
       </SubComponents>
