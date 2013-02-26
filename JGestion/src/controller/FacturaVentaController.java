@@ -509,7 +509,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
             // (precioUnitario - precioMinimoVenta)
             // un descuento del 100% == precioMinimoVenta (cero ganacia y pérdida)
             descuentoUnitario = Contabilidad.GET_MARGEN(
-                    (precioUnitarioSinIVA.subtract(selectedProducto.getMinimoPrecioDeVenta())),
+                    precioUnitarioSinIVA,
                     jdFactura.getCbDesc().getSelectedIndex() + 1,
                     descuentoUnitario);
 
