@@ -57,6 +57,14 @@ public class JGestionUtils {
         return l;
     }
 
+    public static List<ComboBoxWrapper<ListaPrecios>> getWrappedListaPrecios(List<ListaPrecios> list) {
+        List<ComboBoxWrapper<ListaPrecios>> l = new ArrayList<ComboBoxWrapper<ListaPrecios>>(list.size());
+        for (ListaPrecios o : list) {
+            l.add(new ComboBoxWrapper<ListaPrecios>(o, o.getId(), o.getNombre()));
+        }
+        return l;
+    }
+
     public static List<ComboBoxWrapper<Marca>> getWrappedMarcas(List<Marca> list) {
         List<ComboBoxWrapper<Marca>> l = new ArrayList<ComboBoxWrapper<Marca>>(list.size());
         for (Marca o : list) {
