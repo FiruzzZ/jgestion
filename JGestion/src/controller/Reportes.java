@@ -93,6 +93,8 @@ public class Reportes implements Runnable {
     }
 
     public void viewReport() throws JRException {
+        jd = new WaitingDialog(null, "Imprimiendo", false, "Preparando reporte....");
+        jd.setVisible(true);
         isViewerReport = true;
         new Thread(this).start();
     }
