@@ -1,11 +1,9 @@
 package controller;
 
 import controller.exceptions.MissingReportException;
-import entity.DatosEmpresa;
 import generics.WaitingDialog;
 import java.awt.Dialog;
 import java.awt.print.PrinterException;
-import utilities.general.UTIL;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -41,7 +39,6 @@ public class Reportes implements Runnable {
      * sería algo así "./reportes/"
      */
     public static String FOLDER_REPORTES = "." + System.getProperty("file.separator") + "reportes" + System.getProperty("file.separator");
-    private final DatosEmpresa datosEmpresaController;
     private Boolean isViewerReport = null;
     /**
      * Para saber si la ventana de impresión ya sucedió. (No si aceptó o
@@ -86,7 +83,13 @@ public class Reportes implements Runnable {
         tituloReporte = title;
         reporteFinalizado = false;
         withPrintDialog = true;
-        datosEmpresaController = new DatosEmpresaJpaController().findDatosEmpresa(1);
+    }
+
+    public Reportes(JasperPrint jp) {
+        pathReport = null;
+        tituloReporte = null;
+        jPrint = jp;
+
     }
 
     public void viewReport() throws JRException {
@@ -128,29 +131,6 @@ public class Reportes implements Runnable {
     }
 
     /**
-     * Add a parameter ENTIDAD al reporte. Es decir el Nombre de la empresa, si
-     * existe
-     *
-     * @throws IOException
-     */
-    public void addEntidad() throws IOException {
-        addParameter("ENTIDAD", datosEmpresaController.getNombre());
-    }
-
-    /**
-     * Add a parameter LOGO at the report! if a Logo has been setted
-     *
-     * @throws IOException
-     */
-    public void addLogo() throws IOException {
-        if (datosEmpresaController.getLogo() != null) {
-            addParameter("LOGO", UTIL.imageToFile(datosEmpresaController.getLogo(), "png"));
-        } else {
-            addParameter("LOGO", null);
-        }
-    }
-
-    /**
      * Add a parameter CURRENT_USER to the report
      */
     public void addCurrent_User() {
@@ -179,10 +159,12 @@ public class Reportes implements Runnable {
     private synchronized void doReport() throws PrinterException, JRException {
         LOG.trace("Running doReport()..");
         try {
-            if (beanCollectionDataSource == null) {
-                jPrint = JasperFillManager.fillReport(pathReport, parameters, controller.DAO.getJDBCConnection());
-            } else {
-                jPrint = JasperFillManager.fillReport(pathReport, parameters, beanCollectionDataSource);
+            if (jPrint == null) {
+                if (beanCollectionDataSource == null) {
+                    jPrint = JasperFillManager.fillReport(pathReport, parameters, controller.DAO.getJDBCConnection());
+                } else {
+                    jPrint = JasperFillManager.fillReport(pathReport, parameters, beanCollectionDataSource);
+                }
             }
             if (isViewerReport) {
                 JasperViewer jViewer = new JasperViewer(jPrint, false);
