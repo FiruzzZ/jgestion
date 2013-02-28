@@ -1,5 +1,13 @@
 package controller;
 
+import ar.com.fdvs.dj.core.DynamicJasperHelper;
+import ar.com.fdvs.dj.core.layout.ClassicLayoutManager;
+import ar.com.fdvs.dj.domain.DynamicReport;
+import ar.com.fdvs.dj.domain.Style;
+import ar.com.fdvs.dj.domain.builders.ColumnBuilder;
+import ar.com.fdvs.dj.domain.builders.DynamicReportBuilder;
+import ar.com.fdvs.dj.domain.constants.Font;
+import ar.com.fdvs.dj.domain.constants.HorizontalAlign;
 import controller.exceptions.DatabaseErrorException;
 import controller.exceptions.MessageException;
 import controller.exceptions.MissingReportException;
@@ -29,6 +37,8 @@ import org.apache.log4j.Logger;
 import utilities.general.UTIL;
 import utilities.swing.components.ComboBoxWrapper;
 import utilities.swing.components.NumberRenderer;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.data.*;
 
 /**
  *
@@ -684,10 +694,77 @@ public class ProductoController implements ActionListener, KeyListener {
         if (jpaController.count() == 0) {
             throw new MessageException("No existen " + CLASS_NAME + "s para imprimir un listado.");
         }
-        Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_ProductosList.jasper", "Listado Productos");
-        r.addCurrent_User();
-        r.addParameter("SUBREPORT_DIR", Reportes.FOLDER_REPORTES);
-        r.printReport(true);
+        final PanelProductoReporteOptions p = new PanelProductoReporteOptions();
+        UTIL.loadComboBox(p.getCbListaPrecio(), JGestionUtils.getWrappedListaPrecios(new ListaPreciosController().findAll()), permitirFiltroVacio);
+        final JDABM jd = new JDABM(contenedor, "Reporte de Productos", true, p);
+        jd.getbAceptar().addActionListener(new ActionListener() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    List<Producto> list = jpaController.findAll();
+                    DynamicReportBuilder drb = new DynamicReportBuilder();
+                    Style currencyStyle = new Style();
+                    currencyStyle.setFont(Font.ARIAL_MEDIUM);
+                    currencyStyle.setHorizontalAlign(HorizontalAlign.RIGHT);
+                    Style textStyle = new Style();
+                    textStyle.setFont(Font.ARIAL_MEDIUM);
+                    drb
+                            .addColumn(ColumnBuilder.getNew().setColumnProperty("codigo", String.class).setTitle("Código").setWidth(60).setStyle(textStyle).setFixedWidth(true).build())
+                            .addColumn(ColumnBuilder.getNew().setColumnProperty("nombre", String.class).setTitle("Producto").setWidth(300).setStyle(textStyle).setFixedWidth(true).build())
+                            .addColumn(ColumnBuilder.getNew().setColumnProperty("marca.nombre", String.class).setTitle("Marca").setWidth(50).setStyle(textStyle).setFixedWidth(true).build());
+                    if (p.getCheckStock().isSelected()) {
+                        drb.addColumn(ColumnBuilder.getNew().setColumnProperty("stockactual", Integer.class.getName()).setTitle("Stock").setWidth(40).setFixedWidth(true).build());
+                    }
+                    if (p.getCheckCostoCompra().isSelected()) {
+                        drb.addColumn(ColumnBuilder.getNew().setColumnProperty("costoCompra", BigDecimal.class.getName()).setTitle("Costo U.").setWidth(80)
+                                .setStyle(currencyStyle)
+                                .setPattern("¤ #,##0.0000")
+                                .setFixedWidth(true).build());
+                    }
+                    ListaPrecios lp = null;
+                    if (p.getCheckPrecioVenta().isSelected()) {
+                        drb.addColumn(ColumnBuilder.getNew()
+                                .setColumnProperty("precioVenta", BigDecimal.class.getName()).setTitle("Precio U.").setWidth(80)
+                                .setStyle(currencyStyle)
+                                .setPattern("¤ #,##0.0000")
+                                .setFixedWidth(true).build());
+                        lp = ((ComboBoxWrapper<ListaPrecios>) p.getCbListaPrecio().getSelectedItem()).getEntity();
+                        Double margen = (lp.getMargen() / 100) + 1;
+                        for (Producto producto : list) {
+                            BigDecimal precioVenta = producto.getPrecioVenta();
+                            producto.setPrecioVenta(precioVenta.multiply(BigDecimal.valueOf(margen)));
+                            producto.setPrecioVenta(precioVenta);
+                        }
+                    }
+
+                    drb.setTitle("Listado de Productos")
+                            .setSubtitle(lp == null ? "" : "Según Lista Precios: " + lp.getNombre() + ", " + new Date())
+                            .setPrintBackgroundOnOddRows(true)
+                            .setUseFullPageWidth(true);
+                    DynamicReport dr = drb.build();
+                    JRDataSource ds = new JRBeanCollectionDataSource(list);
+                    JasperPrint jp = DynamicJasperHelper.generateJasperPrint(dr, new ClassicLayoutManager(), ds);
+                    new Reportes(jp).viewReport();
+//                    JasperViewer.viewReport(jp);    //finally display the report report
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(jd, "algo salió mal");
+                    LOG.error("Creando reporte producto", ex);
+                }
+            }
+        });
+        jd.getbAceptar().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                jd.dispose();
+            }
+        });
+        jd.setVisible(true);
+
+//        Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_ProductosList.jasper", "Listado Productos");
+//        r.addCurrent_User();
+//        r.addParameter("SUBREPORT_DIR", Reportes.FOLDER_REPORTES);
+//        r.printReport(true);
     }
 
     public void initMovimientoProducto(JFrame frame, boolean modal) {
