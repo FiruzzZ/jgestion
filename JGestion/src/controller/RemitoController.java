@@ -7,6 +7,7 @@ import entity.DetalleRemito;
 import entity.FacturaVenta;
 import entity.Producto;
 import entity.Sucursal;
+import entity.Vendedor;
 import gui.JDFacturaVenta;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -29,6 +30,7 @@ import javax.swing.table.DefaultTableModel;
 import jgestion.JGestionUtils;
 import jpa.controller.ProductoJpaController;
 import jpa.controller.RemitoJpaController;
+import jpa.controller.VendedorJpaController;
 import org.apache.log4j.Logger;
 import utilities.gui.SwingUtil;
 import utilities.swing.components.ComboBoxWrapper;
@@ -168,9 +170,9 @@ public class RemitoController implements ActionListener, KeyListener {
                 try {
                     facturaVentaController.getContenedor().getBtnAceptar().setEnabled(false);
                     if (!editing) {
-                        createRemito();
+                        setRemito();
                     } else {
-                        editRemito(selectedRemito);
+                        merge(selectedRemito);
                         selectedRemito = null;
                     }
                 } catch (MessageException ex) {
@@ -185,7 +187,7 @@ public class RemitoController implements ActionListener, KeyListener {
         });
     }
 
-    private void editRemito(Remito remitoToEdit) throws MessageException, NonexistentEntityException, Exception {
+    private void merge(Remito remitoToEdit) throws MessageException, NonexistentEntityException, Exception {
         JDFacturaVenta facturaVentaUI = facturaVentaController.getContenedor();
         Cliente cliente;
         Sucursal sucursal;
@@ -217,11 +219,13 @@ public class RemitoController implements ActionListener, KeyListener {
         r.setCliente(em.find(Cliente.class, cliente.getId()));
         r.setSucursal(em.find(Sucursal.class, sucursal.getId()));
         r.setFechaRemito(facturaVentaUI.getDcFechaFactura());
+        if (facturaVentaUI.getCbVendedor().getSelectedIndex() > 0) {
+            Vendedor v = (Vendedor) ((ComboBoxWrapper<?>) facturaVentaUI.getCbVendedor().getSelectedItem()).getEntity();
+            r.setVendedor(em.find(v.getClass(), v.getId()));
+        } else {
+            r.setVendedor(null);
+        }
         r.getDetalleRemitoList().clear();
-//        for (Iterator<DetalleRemito> it = r.getDetalleRemitoList().iterator(); it.hasNext();) {
-//            it.next();
-//            it.remove();
-//        }
         DetalleRemito detalleRemito;
         for (int i = 0; i < dtm.getRowCount(); i++) {
             detalleRemito = new DetalleRemito();
@@ -267,7 +271,8 @@ public class RemitoController implements ActionListener, KeyListener {
     public void keyPressed(KeyEvent e) {
     }
 
-    private void createRemito() throws MessageException, Exception {
+    @SuppressWarnings("unchecked")
+    private void setRemito() throws MessageException, Exception {
         if (MODO_VISTA) {
             doImprimir(selectedRemito);
         } else {
@@ -321,6 +326,9 @@ public class RemitoController implements ActionListener, KeyListener {
             newRemito.setSucursal(selectedSucursal);
             newRemito.setFechaRemito(facturaVentaUI.getDcFechaFactura());
             newRemito.setUsuario(UsuarioController.getCurrentUser());
+            if (facturaVentaUI.getCbVendedor().getSelectedIndex() > 0) {
+                newRemito.setVendedor(((ComboBoxWrapper<Vendedor>) facturaVentaUI.getCbVendedor().getSelectedItem()).getEntity());
+            }
             newRemito.setDetalleRemitoList(new ArrayList<DetalleRemito>(dtm.getRowCount()));
             // carga de detalleVenta
             DetalleRemito detalleRemito;
@@ -440,6 +448,7 @@ public class RemitoController implements ActionListener, KeyListener {
         });
         UTIL.loadComboBox(buscador.getCbClieProv(), new ClienteController().findAll(), true);
         UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), true);
+        UTIL.loadComboBox(buscador.getCbVendedor(), JGestionUtils.getWrappedVendedor(new VendedorJpaController().findAll()), true);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
                 new String[]{"Instance", "Nº " + CLASS_NAME, "Nº Factura", "Cliente", "Fecha", "Sucursal", "Usuario"},
@@ -465,6 +474,9 @@ public class RemitoController implements ActionListener, KeyListener {
             jdFacturaVenta.setTitle("EDITANDO - " + jdFacturaVenta.getTitle());
             UTIL.setSelectedItem(jdFacturaVenta.getCbCliente(), remito.getCliente());
             UTIL.setSelectedItem(jdFacturaVenta.getCbSucursal(), new ComboBoxWrapper<Sucursal>(remito.getSucursal(), remito.getSucursal().getId(), remito.getSucursal().getNombre()));
+            if (remito.getVendedor() != null) {
+                UTIL.setSelectedItem(jdFacturaVenta.getCbVendedor(), new ComboBoxWrapper<Vendedor>(remito.getVendedor(), remito.getVendedor().getId(), null));
+            }
             jdFacturaVenta.getCbCliente().setEnabled(true);
             jdFacturaVenta.getCbSucursal().setEnabled(true);
             jdFacturaVenta.setEnableDcFechaFactura(true);
@@ -506,18 +518,18 @@ public class RemitoController implements ActionListener, KeyListener {
             Producto p = productoJpaController.find(detalle.getProducto().getId());
             try {
                 dtm.addRow(new Object[]{
-                            p.getIva().getIva(),
-                            p.getCodigo(),
-                            p.getNombre() + " " + p.getMarca().getNombre(),
-                            detalle.getCantidad(),
-                            0,
-                            0,
-                            0,
-                            0,
-                            0,
-                            p.getId(),
-                            null
-                        });
+                    p.getIva().getIva(),
+                    p.getCodigo(),
+                    p.getNombre() + " " + p.getMarca().getNombre(),
+                    detalle.getCantidad(),
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    p.getId(),
+                    null
+                });
             } catch (NullPointerException e) {
                 throw new MessageException("Ocurrió un error recuperando el detalle y los datos del Producto:"
                         + "\nCódigo:" + p.getNombre()
@@ -569,7 +581,9 @@ public class RemitoController implements ActionListener, KeyListener {
         if (buscador.getCbClieProv().getSelectedIndex() > 0) {
             query.append(" AND o.cliente =").append(((Cliente) buscador.getCbClieProv().getSelectedItem()).getId());
         }
-
+        if (buscador.getCbVendedor().getSelectedIndex() > 0) {
+            query.append(" AND o.vendedor_id = ").append(((ComboBoxWrapper<Vendedor>) buscador.getCbVendedor().getSelectedItem()).getId());
+        }
         if (buscador.getCbFormasDePago().getSelectedIndex() > 0) {
             if (buscador.getCbFormasDePago().getSelectedIndex() == 1) {
                 query.append(" AND o.factura_venta IS NULL");
@@ -589,14 +603,14 @@ public class RemitoController implements ActionListener, KeyListener {
         List<Remito> list = jpaController.findByNativeQuery(nativeSQL);
         for (Remito remito : list) {
             dtm.addRow(new Object[]{
-                        remito,
-                        JGestionUtils.getNumeracion(remito, true),
-                        remito.getFacturaVenta() != null ? JGestionUtils.getNumeracion(remito.getFacturaVenta()) : "",
-                        remito.getCliente().getNombre(),
-                        UTIL.DATE_FORMAT.format(remito.getFechaRemito()),
-                        remito.getSucursal().getNombre(),
-                        remito.getUsuario().getNick()
-                    });
+                remito,
+                JGestionUtils.getNumeracion(remito, true),
+                remito.getFacturaVenta() != null ? JGestionUtils.getNumeracion(remito.getFacturaVenta()) : "",
+                remito.getCliente().getNombre(),
+                UTIL.DATE_FORMAT.format(remito.getFechaRemito()),
+                remito.getSucursal().getNombre(),
+                remito.getUsuario().getNick()
+            });
         }
     }
 

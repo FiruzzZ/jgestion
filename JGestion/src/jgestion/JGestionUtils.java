@@ -205,27 +205,27 @@ public class JGestionUtils {
     public static void setCurrencyFormatterFocusListener(JTextField tf) {
         tf.addFocusListener(
                 new FocusListener() {
-                    @Override
-                    public void focusGained(FocusEvent e) {
-                        JTextField t = (JTextField) e.getSource();
-                        if (!t.getText().trim().isEmpty()) {
-                            t.setText(UTIL.parseToDouble(t.getText()).toString());
-                        }
-                    }
+            @Override
+            public void focusGained(FocusEvent e) {
+                JTextField t = (JTextField) e.getSource();
+                if (!t.getText().trim().isEmpty()) {
+                    t.setText(UTIL.parseToDouble(t.getText()).toString());
+                }
+            }
 
-                    @Override
-                    public void focusLost(FocusEvent e) {
-                        JTextField t = (JTextField) e.getSource();
-                        try {
-                            if (!t.getText().trim().isEmpty()) {
-                                t.setText(UTIL.DECIMAL_FORMAT.format(new BigDecimal(t.getText())));
-                            }
-                            t.setBackground(Color.WHITE);
-                        } catch (Exception ex) {
-                            t.setBackground(Color.RED);
-                        }
+            @Override
+            public void focusLost(FocusEvent e) {
+                JTextField t = (JTextField) e.getSource();
+                try {
+                    if (!t.getText().trim().isEmpty()) {
+                        t.setText(UTIL.DECIMAL_FORMAT.format(new BigDecimal(t.getText())));
                     }
-                });
+                    t.setBackground(Color.WHITE);
+                } catch (Exception ex) {
+                    t.setBackground(Color.RED);
+                }
+            }
+        });
     }
 
     public static ComboBoxWrapper<Banco> wrap(Banco o) {
@@ -234,6 +234,14 @@ public class JGestionUtils {
 
     public static ComboBoxWrapper<CuentaBancaria> wrap(CuentaBancaria o) {
         return new ComboBoxWrapper<CuentaBancaria>(o, o.getId(), o.getNumero());
+    }
+
+    public static List<ComboBoxWrapper<Vendedor>> getWrappedVendedor(List<Vendedor> list) {
+        List<ComboBoxWrapper<Vendedor>> l = new ArrayList<ComboBoxWrapper<Vendedor>>(list.size());
+        for (Vendedor o : list) {
+            l.add(new ComboBoxWrapper<Vendedor>(o, o.getId(), o.getApellido() + " " + o.getNombre()));
+        }
+        return l;
     }
 
     private JGestionUtils() {

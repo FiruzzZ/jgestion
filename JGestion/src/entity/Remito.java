@@ -11,7 +11,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "remito", uniqueConstraints =
-@UniqueConstraint(columnNames = {"numero", "sucursal"}))
+        @UniqueConstraint(columnNames = {"numero", "sucursal"}))
 @NamedQueries({
     @NamedQuery(name = "Remito.findAll", query = "SELECT r FROM Remito r"),
     @NamedQuery(name = "Remito.findById", query = "SELECT r FROM Remito r WHERE r.id = :id"),
@@ -52,6 +52,9 @@ public class Remito implements Serializable {
     @Column(name = "anulada")
     @Temporal(TemporalType.TIMESTAMP)
     private Date anulada;
+    @JoinColumn(name = "vendedor_id")
+    @ManyToOne
+    private Vendedor vendedor;
 
     public Remito() {
     }
@@ -138,6 +141,14 @@ public class Remito implements Serializable {
 
     public void setAnulada(Date anulada) {
         this.anulada = anulada;
+    }
+
+    public Vendedor getVendedor() {
+        return vendedor;
+    }
+
+    public void setVendedor(Vendedor vendedor) {
+        this.vendedor = vendedor;
     }
 
     @Override

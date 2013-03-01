@@ -77,7 +77,6 @@ public class Reportes implements Runnable {
             pathReport = FOLDER_REPORTES + pathReport;
         }
         jd = new WaitingDialog(null, "Imprimiendo", false, "Preparando reporte....");
-        jd.setVisible(true);
         parameters = new HashMap<String, Object>();
         this.pathReport = pathReport;
         tituloReporte = title;
@@ -93,8 +92,6 @@ public class Reportes implements Runnable {
     }
 
     public void viewReport() throws JRException {
-        jd = new WaitingDialog(null, "Imprimiendo", false, "Preparando reporte....");
-        jd.setVisible(true);
         isViewerReport = true;
         new Thread(this).start();
     }
@@ -141,6 +138,7 @@ public class Reportes implements Runnable {
 
     @Override
     public void run() {
+        jd.setVisible(true);
         LOG.trace("Initializing Thread Reportes:" + pathReport);
         try {
             doReport();

@@ -1,3 +1,21 @@
+--20130228
+CREATE TABLE vendedor (
+  id serial NOT NULL, 
+  apellido character varying(30) NOT NULL, 
+  nombre character varying(50) NOT NULL, 
+  direccion character varying(100), 
+  tele1 bigint, 
+  tele2 bigint, 
+  email character varying(50), 
+  observacion character varying(200),
+activo boolean NOT NULL,
+  PRIMARY KEY (id)
+) 
+WITH (  OIDS = FALSE);
+ALTER TABLE factura_venta ADD COLUMN vendedor_id integer;
+ALTER TABLE factura_venta ADD FOREIGN KEY (vendedor_id) REFERENCES vendedor (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+alter table remito add column vendedor_id integer;
+alter table remito add foreign key (vendedor_id) references vendedor (id);
 --20130224
 update factura_compra set perc_dgr = perc_iva;
 update factura_compra set perc_iva = 0;

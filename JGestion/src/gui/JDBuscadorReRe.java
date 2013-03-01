@@ -86,6 +86,8 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
         cbCuenta = new javax.swing.JComboBox();
         labelSubCuenta = new javax.swing.JLabel();
         cbSubCuenta = new javax.swing.JComboBox();
+        labelVendedor = new javax.swing.JLabel();
+        cbVendedor = new javax.swing.JComboBox();
         bLimpiar = new javax.swing.JButton();
         bBuscar = new javax.swing.JButton();
         bImprimir = new javax.swing.JButton();
@@ -167,6 +169,8 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
 
         labelSubCuenta.setText("SubCuenta");
 
+        labelVendedor.setText("Vendedor");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -201,7 +205,7 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
                         .addComponent(checkAnulada)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(labelSubCuenta)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(cbSubCuenta, 0, 220, Short.MAX_VALUE)
                     .addComponent(cbUnidadDeNegocio, 0, 220, Short.MAX_VALUE)
@@ -215,12 +219,14 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
                             .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING))
+                            .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(labelVendedor, javax.swing.GroupLayout.Alignment.TRAILING))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(dcDesdeSistema, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
-                            .addComponent(dcDesde, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
-                            .addComponent(dcHasta, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(dcDesdeSistema, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(dcDesde, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(dcHasta, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(cbVendedor, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addGap(78, 78, 78)
                         .addComponent(dcHastaSistema, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -272,7 +278,9 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(checkAnulada)
                     .addComponent(cbSubCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(labelSubCuenta))
+                    .addComponent(labelSubCuenta)
+                    .addComponent(labelVendedor)
+                    .addComponent(cbVendedor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(11, Short.MAX_VALUE))
         );
 
@@ -418,6 +426,7 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
     private javax.swing.JComboBox cbSubCuenta;
     private javax.swing.JComboBox cbSucursal;
     private javax.swing.JComboBox cbUnidadDeNegocio;
+    private javax.swing.JComboBox cbVendedor;
     private javax.swing.JCheckBox checkAnulada;
     private com.toedter.calendar.JDateChooser dcDesde;
     private com.toedter.calendar.JDateChooser dcDesdeSistema;
@@ -440,6 +449,7 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
     private javax.swing.JLabel labelSubCuenta;
     private javax.swing.JLabel labelSucursal;
     private javax.swing.JLabel labelUnidadDeNegocio;
+    private javax.swing.JLabel labelVendedor;
     private javax.swing.JTextField tfCuarto;
     private javax.swing.JTextField tfFactu4;
     private javax.swing.JTextField tfFactu8;
@@ -542,6 +552,10 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
 
     public JComboBox getCbUnidadDeNegocio() {
         return cbUnidadDeNegocio;
+    }
+
+    public JComboBox getCbVendedor() {
+        return cbVendedor;
     }
 
     public Date getDcDesde() {
@@ -653,6 +667,8 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
         labelSucursal.setVisible(false);
         cbSucursal.setVisible(false);
         labelN_Factura.setText("N° Remesa");
+        labelVendedor.setVisible(false);
+        cbVendedor.setVisible(false);
         hideCheckAnulado();
         //reutilización del combo FormaDePago para saber si la NotaCredito fue acreditada (utilizada)
         labelFormasDePago.setText("Acreditada");
@@ -672,6 +688,8 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
         cbFormasDePago.setVisible(false);
         labelN_Factura.setVisible(false);
         tfFactu4.setVisible(false);
+        labelVendedor.setVisible(false);
+        cbVendedor.setVisible(false);
     }
 
     public Map<String, Object> getData() {
