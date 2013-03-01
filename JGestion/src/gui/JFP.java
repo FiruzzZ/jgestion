@@ -165,6 +165,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenuItem22 = new javax.swing.JMenuItem();
         jMenuItem19 = new javax.swing.JMenuItem();
         jMenuItem73 = new javax.swing.JMenuItem();
+        jMenuItem64 = new javax.swing.JMenuItem();
         jMenuItem11 = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JSeparator();
         jMenuItem10 = new javax.swing.JMenuItem();
@@ -786,7 +787,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         });
         jMenu9.add(jMenuItem22);
 
-        jMenuItem19.setText("ABM Sucursales (Puntos de Venta)");
+        jMenuItem19.setText("Sucursales (Puntos de Venta)");
         jMenuItem19.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem19ActionPerformed(evt);
@@ -794,13 +795,21 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         });
         jMenu9.add(jMenuItem19);
 
-        jMenuItem73.setText("ABM Unidades de Negocio");
+        jMenuItem73.setText("Unidades de Negocio");
         jMenuItem73.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem73ActionPerformed(evt);
             }
         });
         jMenu9.add(jMenuItem73);
+
+        jMenuItem64.setText("Vendedores");
+        jMenuItem64.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem64ActionPerformed(evt);
+            }
+        });
+        jMenu9.add(jMenuItem64);
 
         jMenuItem11.setText("Contribuyentes");
         jMenuItem11.addActionListener(new java.awt.event.ActionListener() {
@@ -1645,6 +1654,10 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         // TODO add your handling code here:
     }//GEN-LAST:event_jMenuItem78ActionPerformed
 
+    private void jMenuItem64ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem64ActionPerformed
+        new VendedorController().initContenedor(this, true).setVisible(true);
+    }//GEN-LAST:event_jMenuItem64ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JMenu jMenu1;
@@ -1733,6 +1746,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenuItem jMenuItem61;
     private javax.swing.JMenuItem jMenuItem62;
     private javax.swing.JMenuItem jMenuItem63;
+    private javax.swing.JMenuItem jMenuItem64;
     private javax.swing.JMenuItem jMenuItem65;
     private javax.swing.JMenuItem jMenuItem66;
     private javax.swing.JMenuItem jMenuItem67;

@@ -77,7 +77,7 @@ public class ChequeTercerosController implements ActionListener {
     }
 
     ChequeTerceros initABM(Window owner, boolean isEditing, Cliente cliente) throws MessageException {
-        UsuarioController.checkPermiso(PermisosController.PermisoDe.TESORERIA);
+//        UsuarioController.checkPermiso(PermisosController.PermisoDe.TESORERIA);
         if (isEditing && EL_OBJECT == null) {
             throw new MessageException("Debe elegir una fila de la tabla");
         }

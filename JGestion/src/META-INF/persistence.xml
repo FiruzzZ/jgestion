@@ -68,6 +68,7 @@
     <class>entity.Cuenta</class>
     <class>entity.UsuarioAcciones</class>
     <class>entity.CreditoProveedor</class>
+    <class>entity.Vendedor</class>
     <properties>
       <!--      <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://jgestion.no-ip.org:5433/jgestionahinco"/>-->
       <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>

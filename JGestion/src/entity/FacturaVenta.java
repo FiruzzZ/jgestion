@@ -109,6 +109,9 @@ public class FacturaVenta implements Serializable {
     private SubCuenta subCuenta;
     @Column(length = 100)
     private String observacion;
+    @JoinColumn(name = "vendedor_id")
+    @ManyToOne
+    private Vendedor vendedor;
 
     public FacturaVenta() {
     }
@@ -364,6 +367,14 @@ public class FacturaVenta implements Serializable {
 
     public void setObservacion(String observacion) {
         this.observacion = observacion;
+    }
+
+    public Vendedor getVendedor() {
+        return vendedor;
+    }
+
+    public void setVendedor(Vendedor vendedor) {
+        this.vendedor = vendedor;
     }
 
     @Override

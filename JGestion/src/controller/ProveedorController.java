@@ -148,7 +148,7 @@ public class ProveedorController implements ActionListener {
                 if (boton.getName().equalsIgnoreCase("new")) {
                     try {
                         EL_OBJECT = null;
-                        initABM(false, e);
+                        initABM(false);
                     } catch (MessageException ex) {
                         contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                     }
@@ -158,7 +158,7 @@ public class ProveedorController implements ActionListener {
                         if (selectedRow > -1) {
                             EL_OBJECT = DAO.getEntityManager().find(Proveedor.class,
                                     Integer.valueOf((contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
-                            initABM(true, e);
+                            initABM(true);
                         }
                     } catch (MessageException ex) {
                         contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
@@ -246,7 +246,7 @@ public class ProveedorController implements ActionListener {
             // </editor-fold>
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, ex.getLocalizedMessage(), "Error inesperado", JOptionPane.ERROR_MESSAGE);
-            Logger.getLogger(SucursalController.class.getName()).log(Level.ERROR, null, ex);
+            LOG.error("actionPerformed", ex);
         }
     }
 
@@ -281,24 +281,18 @@ public class ProveedorController implements ActionListener {
 
         for (Proveedor o : l) {
             dtm.addRow(new Object[]{
-                        o.getId(),
-                        o.getCodigo(),
-                        o.getNombre(),
-                        o.getCuit(),
-                        ((o.getTele1() != null) ? o.getTele1().toString() : "-")
-                        + ((o.getTele2() != null) ? o.getTele2().toString() : "-")
-                    });
+                o.getId(),
+                o.getCodigo(),
+                o.getNombre(),
+                o.getCuit(),
+                ((o.getTele1() != null) ? o.getTele1().toString() : "-")
+                + ((o.getTele2() != null) ? o.getTele2().toString() : "-")
+            });
         }
     }
 
-    private void initABM(boolean isEditing, ActionEvent e) throws MessageException {
-        // <editor-fold defaultstate="collapsed" desc="checking Permiso">
-        try {
-            UsuarioController.checkPermiso(PermisosController.PermisoDe.ABM_PROVEEDORES);
-        } catch (MessageException ex) {
-            javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
-            return;
-        }// </editor-fold>
+    private void initABM(boolean isEditing) throws MessageException {
+        UsuarioController.checkPermiso(PermisosController.PermisoDe.ABM_PROVEEDORES);
         if (isEditing && EL_OBJECT == null) {
             throw new MessageException("Debe elegir una fila de la tabla");
         }
