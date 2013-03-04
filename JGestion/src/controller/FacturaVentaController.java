@@ -1155,9 +1155,9 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         try {
             jdFactura.getBtnFacturar().setEnabled(false);
             jdFactura.getBtnAceptar().setEnabled(false);
-            if (jdFactura.isViewMode()) {
-                throw new MessageException("La ventana fue está seteada en modo Vista, no se puede completar la acción");
-            }
+//            if (jdFactura.isViewMode()) {
+//                throw new MessageException("La ventana fue está seteada en modo Vista, no se puede completar la acción");
+//            }
             if (jdFactura.isEditMode()) {
                 setAndEdit(facturar);
             } else {

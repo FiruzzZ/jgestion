@@ -26,6 +26,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import javax.persistence.NoResultException;
 import javax.swing.*;
@@ -49,7 +50,7 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
  * @author FiruzzZ
  */
 public class ProductoController implements ActionListener, KeyListener {
-    
+
     private static final Logger LOG = Logger.getLogger(ProductoController.class.getName());
     public static final String CLASS_NAME = Producto.class.getSimpleName();
     private JDContenedor contenedor;
@@ -72,11 +73,11 @@ public class ProductoController implements ActionListener, KeyListener {
     private HTMLEditorPane editor;
     private boolean permitirFiltroVacio;
     private ProductoJpaController jpaController;
-    
+
     public ProductoController() {
         jpaController = new ProductoJpaController();
     }
-    
+
     public void initContenedor(JFrame owner, boolean modal, boolean modoBuscador) throws DatabaseErrorException {
         contenedor = new JDContenedor(owner, modal, "ABM - " + CLASS_NAME);
         contenedor.setSize(contenedor.getWidth() + 200, contenedor.getHeight());
@@ -150,7 +151,7 @@ public class ProductoController implements ActionListener, KeyListener {
                         if (permitirFiltroVacio) {
                             permitirFiltroVacio = false;
                             armarQueryContenedor(tf);
-                            
+
                         }
                     }
                 } catch (Exception ex) {
@@ -170,7 +171,7 @@ public class ProductoController implements ActionListener, KeyListener {
         contenedor.setListener(this);
         contenedor.setVisible(true);
     }
-    
+
     private void initABM(boolean isEditing) throws MessageException, IOException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.ABM_PRODUCTOS);
         if (isEditing) {
@@ -182,12 +183,12 @@ public class ProductoController implements ActionListener, KeyListener {
         }
         initABMProductosGUI(isEditing);
     }
-    
+
     public void initABM(Producto producto) throws IOException, Exception {
         EL_OBJECT = producto;
         initABMProductosGUI(true);
     }
-    
+
     private void initABMProductosGUI(boolean isEditing) throws IOException {
         panel = new PanelABMProductos();
         panel.hideSucursal();
@@ -241,7 +242,7 @@ public class ProductoController implements ActionListener, KeyListener {
         UTIL.loadComboBox(panel.getCbMedicion(), new UnidadmedidaJpaController().findUnidadmedidaEntities(), false);
         UTIL.loadComboBox(panel.getCbRubro(), new RubroController().findRubros(), false);
         UTIL.loadComboBox(panel.getCbSubRubro(), new RubroController().findRubros(), true);
-        
+
         abm = new JDABM(contenedor, "ABM - " + CLASS_NAME + "s", true, panel);
         if (isEditing) {
             setPanelABM(EL_OBJECT);
@@ -252,7 +253,7 @@ public class ProductoController implements ActionListener, KeyListener {
         abm.setListener(this);
         abm.setVisible(true);
     }
-    
+
     private JDialog initHTMLEditorPane(String str) {
         if (editor == null) {
             editor = new HTMLEditorPane();
@@ -284,7 +285,7 @@ public class ProductoController implements ActionListener, KeyListener {
         JDDescripcionHTML.setSize(650, 400);
         return JDDescripcionHTML;
     }
-    
+
     private void cargarContenedorTabla(String nativeQuery) {
         if (contenedor != null) {
             DefaultTableModel dtm = contenedor.getDTM();
@@ -308,7 +309,7 @@ public class ProductoController implements ActionListener, KeyListener {
             }
         }
     }
-    
+
     private void setPanelABM(Producto producto) throws IOException {
         UTIL.setSelectedItem(panel.getCbMarcas(), producto.getMarca().getNombre());
         UTIL.setSelectedItem(panel.getCbIVA(), producto.getIva());
@@ -341,7 +342,7 @@ public class ProductoController implements ActionListener, KeyListener {
             }
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     private void setEntity() throws MessageException, IOException, Exception {
         if (EL_OBJECT == null) {
@@ -360,7 +361,7 @@ public class ProductoController implements ActionListener, KeyListener {
         if (nombre.length() > 250) {
             throw new MessageException("Nombre del producto ridículamente largo (máximo 250 caracteres)");
         }
-        
+
         try {
             if (Integer.valueOf(panel.getTfStockMinimo()) < 0) {
                 throw new MessageException("Stock mínimo no válido. Debe ser mayor o igual a 0");
@@ -371,7 +372,7 @@ public class ProductoController implements ActionListener, KeyListener {
         try {
             if (Integer.valueOf(panel.getTfStockMax()) < 0) {
                 throw new MessageException("Stock máximo no válido. Debe ser mayor o igual a 0");
-                
+
             }
         } catch (NumberFormatException ex) {
             throw new MessageException("número de stock máximo no válido");
@@ -446,10 +447,10 @@ public class ProductoController implements ActionListener, KeyListener {
             }
         }
     }
-    
+
     public void keyPressed(KeyEvent e) {
     }
-    
+
     public void keyTyped(KeyEvent e) {
         if (e.getComponent() instanceof JTextField) {
             JTextField tf = (JTextField) e.getComponent();
@@ -458,7 +459,7 @@ public class ProductoController implements ActionListener, KeyListener {
             }
         }
     }
-    
+
     public void keyReleased(KeyEvent e) {
     }
 
@@ -475,7 +476,7 @@ public class ProductoController implements ActionListener, KeyListener {
         query += " ORDER BY p.nombre";
         cargarContenedorTabla(query);
     }
-    
+
     private void checkConstraints(Producto object) throws MessageException, Exception {
         String idQuery = "";
         if (object.getId() != null) {
@@ -495,7 +496,7 @@ public class ProductoController implements ActionListener, KeyListener {
             jpaController.merge(object);
         }
     }
-    
+
     private void cargarImagen() throws IOException, Exception {
         JFileChooser filec = new javax.swing.JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Imagenes", "jpg", "bmp", "jpeg", "png");
@@ -512,7 +513,7 @@ public class ProductoController implements ActionListener, KeyListener {
             }
         }
     }
-    
+
     @Override
     public void actionPerformed(ActionEvent e) {
         // <editor-fold defaultstate="collapsed" desc="Button">
@@ -533,7 +534,7 @@ public class ProductoController implements ActionListener, KeyListener {
                     if (EL_OBJECT.getId() != null) {
                         abm.dispose();
                     }
-                    
+
                     armarQueryContenedor(null);
                     EL_OBJECT = null;
                 } catch (MessageException ex) {
@@ -582,7 +583,7 @@ public class ProductoController implements ActionListener, KeyListener {
             return null;
         }
     }
-    
+
     Producto getProductoSelected() {
         int selectedRow = contenedor.getjTable1().getSelectedRow();
         if (selectedRow > -1) {
@@ -605,20 +606,20 @@ public class ProductoController implements ActionListener, KeyListener {
     void valorizarStock(Producto producto, BigDecimal newPrecioUnitario, int cantidad, int valoracionStock) {
         if (valoracionStock == ULTIMA_COMPRA) {
             producto.setCostoCompra(newPrecioUnitario);
-            
+
         } else if (valoracionStock == PPP) {
             BigDecimal ppp = (producto.getCostoCompra().multiply(BigDecimal.valueOf(producto.getStockactual())))
                     .add(newPrecioUnitario.multiply(BigDecimal.valueOf(cantidad)));
             int totalStock = producto.getStockactual() + cantidad;
             ppp = ppp.divide(BigDecimal.valueOf(totalStock));
             producto.setCostoCompra(ppp);
-            
+
         } else if (valoracionStock == ANTIGUO) {
             //respeta el costoCompra anterior, o sea.. no hace nada     
         } else {
             throw new IllegalArgumentException("parameter valoracionStock no válido");
         }
-        
+
         producto.setUltimaCompra(new Date());
         if (producto.getUpdatePrecioVenta()) {
             producto.setPrecioVenta(producto.getCostoCompra());
@@ -639,12 +640,12 @@ public class ProductoController implements ActionListener, KeyListener {
         producto.setStockactual(producto.getStockactual() + cantidad);
         jpaController.merge(producto);
     }
-    
+
     private void initStockGral(Producto p) throws MessageException {
         if (p == null) {
             return;
         }
-        
+
         JDStockGral jdStockGral = new JDStockGral(abm);
         jdStockGral.setLocationRelativeTo(abm);
         try {
@@ -652,8 +653,8 @@ public class ProductoController implements ActionListener, KeyListener {
                     jdStockGral.getjTable1(),
                     new String[]{"Sucursal", "Stock", "Último movi.", "Usuario"},
                     new int[]{50, 20, 70, 40});
-            
-            
+
+
         } catch (Exception ex) {
             LOG.error(ex.getLocalizedMessage(), ex);
         }
@@ -661,16 +662,16 @@ public class ProductoController implements ActionListener, KeyListener {
         DefaultTableModel dtm = jdStockGral.getDtm();
         for (Stock stock : stockList) {
             dtm.addRow(new Object[]{
-                stock.getSucursal().getNombre(),
-                stock.getStockSucu(),
-                UTIL.TIMESTAMP_FORMAT.format(stock.getFechaCarga()),
-                stock.getUsuario().getNick()
-            });
+                        stock.getSucursal().getNombre(),
+                        stock.getStockSucu(),
+                        UTIL.TIMESTAMP_FORMAT.format(stock.getFechaCarga()),
+                        stock.getUsuario().getNick()
+                    });
         }
         jdStockGral.setVisible(true);
-        
+
     }
-    
+
     private void eliminarProducto() throws MessageException, NonexistentEntityException, DatabaseErrorException {
         if (EL_OBJECT == null) {
             if (contenedor != null && contenedor.getjTable1().getSelectedRow() != -1) {
@@ -684,7 +685,7 @@ public class ProductoController implements ActionListener, KeyListener {
         EL_OBJECT = null;
         armarQueryContenedor(null);
     }
-    
+
     private Producto getSelectedFromContenedor() {
         Integer selectedRow = contenedor.getjTable1().getSelectedRow();
         if (selectedRow > -1) {
@@ -693,7 +694,7 @@ public class ProductoController implements ActionListener, KeyListener {
             return null;
         }
     }
-    
+
     private void doReportProductList() throws Exception {
         if (jpaController.count() == 0) {
             throw new MessageException("No existen " + CLASS_NAME + "s para imprimir un listado.");
@@ -715,13 +716,13 @@ public class ProductoController implements ActionListener, KeyListener {
                     textStyle.setFont(Font.ARIAL_MEDIUM);
                     drb
                             .addColumn(ColumnBuilder.getNew().setColumnProperty("codigo", String.class).setTitle("Código").setWidth(60).setStyle(textStyle).setFixedWidth(true).build())
-                            .addColumn(ColumnBuilder.getNew().setColumnProperty("nombre", String.class).setTitle("Producto").setWidth(300).setStyle(textStyle).setFixedWidth(true).build())
-                            .addColumn(ColumnBuilder.getNew().setColumnProperty("marca.nombre", String.class).setTitle("Marca").setWidth(50).setStyle(textStyle).setFixedWidth(true).build());
+                            .addColumn(ColumnBuilder.getNew().setColumnProperty("nombre", String.class).setTitle("Producto").setWidth(200).setStyle(textStyle).build())
+                            .addColumn(ColumnBuilder.getNew().setColumnProperty("marca.nombre", String.class).setTitle("Marca").setWidth(80).setStyle(textStyle).build());
                     if (p.getCheckStock().isSelected()) {
-                        drb.addColumn(ColumnBuilder.getNew().setColumnProperty("stockactual", Integer.class.getName()).setTitle("Stock").setWidth(40).setFixedWidth(true).build());
+                        drb.addColumn(ColumnBuilder.getNew().setColumnProperty("stockactual", Integer.class.getName()).setTitle("Stock").setWidth(40).setStyle(currencyStyle).setFixedWidth(true).build());
                     }
                     if (p.getCheckCostoCompra().isSelected()) {
-                        drb.addColumn(ColumnBuilder.getNew().setColumnProperty("costoCompra", BigDecimal.class.getName()).setTitle("Costo U.").setWidth(80)
+                        drb.addColumn(ColumnBuilder.getNew().setColumnProperty("costoCompra", BigDecimal.class.getName()).setTitle("Costo U.").setWidth(60)
                                 .setStyle(currencyStyle)
                                 .setPattern("¤ #,##0.0000")
                                 .setFixedWidth(true).build());
@@ -729,7 +730,7 @@ public class ProductoController implements ActionListener, KeyListener {
                     ListaPrecios lp = null;
                     if (p.getCheckPrecioVenta().isSelected()) {
                         drb.addColumn(ColumnBuilder.getNew()
-                                .setColumnProperty("precioVenta", BigDecimal.class.getName()).setTitle("Precio U.").setWidth(80)
+                                .setColumnProperty("precioVenta", BigDecimal.class.getName()).setTitle("Precio U.").setWidth(60)
                                 .setStyle(currencyStyle)
                                 .setPattern("¤ #,##0.0000")
                                 .setFixedWidth(true).build());
@@ -738,10 +739,9 @@ public class ProductoController implements ActionListener, KeyListener {
                         for (Producto producto : list) {
                             BigDecimal precioVenta = producto.getPrecioVenta();
                             producto.setPrecioVenta(precioVenta.multiply(BigDecimal.valueOf(margen)));
-                            producto.setPrecioVenta(precioVenta);
                         }
                     }
-                    
+
                     drb.setTitle("Listado de Productos")
                             .setSubtitle(lp == null ? "" : "Según Lista Precios: " + lp.getNombre() + ", " + new Date())
                             .setPrintBackgroundOnOddRows(true)
@@ -754,7 +754,7 @@ public class ProductoController implements ActionListener, KeyListener {
                     DynamicReport dr = drb.build();
                     JRDataSource ds = new JRBeanCollectionDataSource(list);
                     JasperPrint jp = DynamicJasperHelper.generateJasperPrint(dr, new ClassicLayoutManager(), ds);
-                    
+
                     new Reportes(jp).viewReport();
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(jd, "algo salió mal");
@@ -769,13 +769,8 @@ public class ProductoController implements ActionListener, KeyListener {
             }
         });
         jd.setVisible(true);
-
-//        Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_ProductosList.jasper", "Listado Productos");
-//        r.addCurrent_User();
-//        r.addParameter("SUBREPORT_DIR", Reportes.FOLDER_REPORTES);
-//        r.printReport(true);
     }
-    
+
     public void initMovimientoProducto(JFrame frame, boolean modal) {
         panelito = new PanelBuscadorMovimientosPro();
         UTIL.loadComboBox(panelito.getCbMarcas(), JGestionUtils.getWrappedMarcas(new MarcaJpaController().findMarcaEntities()), true);
@@ -803,10 +798,10 @@ public class ProductoController implements ActionListener, KeyListener {
                     JOptionPane.showMessageDialog(buscador, ex.getMessage());
                     LOG.error("Error en cargarTablaMovimientosProductos()", ex);
                 }
-                
+
             }
         });
-        
+
         buscador.getbImprimir().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -844,9 +839,9 @@ public class ProductoController implements ActionListener, KeyListener {
             }
         });
         buscador.setVisible(true);
-        
+
     }
-    
+
     private void cargarTablaMovimientosProductos(String query) {
         UTIL.limpiarDtm(buscador.getjTable1());
         List<?> l = DAO.getEntityManager().createNativeQuery(query).getResultList();
@@ -860,23 +855,23 @@ public class ProductoController implements ActionListener, KeyListener {
             BigDecimal precioUnitario = (BigDecimal) o[5];
             total = total.add(precioUnitario);
             UTIL.getDtm(buscador.getjTable1()).addRow(new Object[]{
-                o[0],
-                o[1], //código
-                o[2],
-                o[3], //marca
-                o[4], //cantidad
-                precioUnitario,
-                o[7],
-                o[8].toString().replaceAll(" ", ""),
-                o[9],
-                UTIL.TIMESTAMP_FORMAT.format(((Date) o[6])),
-                o[11],
-                o[12]
-            });
+                        o[0],
+                        o[1], //código
+                        o[2],
+                        o[3], //marca
+                        o[4], //cantidad
+                        precioUnitario,
+                        o[7],
+                        o[8].toString().replaceAll(" ", ""),
+                        o[9],
+                        UTIL.TIMESTAMP_FORMAT.format(((Date) o[6])),
+                        o[11],
+                        o[12]
+                    });
         }
         buscador.getResumeItems().get("Total").setText(UTIL.DECIMAL_FORMAT.format(total));
     }
-    
+
     private String armarQueryMovimientosProductos() {
         String mainQuery = "SELECT * FROM ( ";
         String ingresoQuery = "SELECT 'COMPRA'::character varying(6) AS razon, p.codigo, p.nombre, marca.nombre AS marca, d.cantidad, d.precio_unitario, f.fechaalta, f.tipo, to_char(f.numero, '0000-00000000') as numero, f.movimiento_interno as movimiento, f.anulada, rubro.nombre AS rubro, sucursal.nombre as sucursal"
@@ -910,10 +905,10 @@ public class ProductoController implements ActionListener, KeyListener {
         mainQuery += ") as t ";
         mainQuery += " ORDER BY fechaalta";
         Logger.getLogger(Producto.class).trace(mainQuery);
-        
+
         return mainQuery;
     }
-    
+
     @SuppressWarnings("unchecked")
     private String concatQuery(String query) {
         StringBuilder sb = new StringBuilder(query);
@@ -962,7 +957,7 @@ public class ProductoController implements ActionListener, KeyListener {
         }
         return null;
     }
-    
+
     public List<ComboBoxWrapper<Producto>> findWrappedProductoToCombo() {
         List<Producto> ff = findProductoToCombo();
         List<ComboBoxWrapper<Producto>> l = new ArrayList<ComboBoxWrapper<Producto>>(ff.size());
@@ -971,7 +966,7 @@ public class ProductoController implements ActionListener, KeyListener {
         }
         return l;
     }
-    
+
     public void initListadoProducto(JFrame owner) {
         panelProductoListados = new PanelProductoListados();
         buscador = new JDBuscador(owner, "Productos - Listados", false, panelProductoListados);
@@ -1005,7 +1000,7 @@ public class ProductoController implements ActionListener, KeyListener {
         });
         buscador.setVisible(true);
     }
-    
+
     @SuppressWarnings("unchecked")
     private void armarQueryProductosListado(boolean imprimirReport) throws DatabaseErrorException, Exception {
         String query = "SELECT p.*, marca.nombre as marca_nombre, r.nombre as rubro_nombre, sr.nombre as subrubro_nombre "
@@ -1014,46 +1009,46 @@ public class ProductoController implements ActionListener, KeyListener {
                 + " JOIN rubro r ON p.rubro = r.idrubro"
                 + " LEFT JOIN rubro sr ON p.subrubro = sr.idrubro"
                 + " WHERE p.id IS NOT NULL";
-        
+
         if (panelProductoListados.getCbMarcas().getSelectedIndex() > 0) {
             query += " AND p.marca = " + ((ComboBoxWrapper<?>) panelProductoListados.getCbMarcas().getSelectedItem()).getId();
         }
-        
+
         if (panelProductoListados.getCbRubros().getSelectedIndex() > 0) {
             query += " AND p.rubro = " + ((Rubro) panelProductoListados.getCbRubros().getSelectedItem()).getIdrubro();
         }
-        
+
         if (panelProductoListados.getCbSubRubros().getSelectedIndex() > 0) {
             query += " AND p.subrubro = " + ((Rubro) panelProductoListados.getCbSubRubros().getSelectedItem()).getIdrubro();
         }
-        
+
         if (panelProductoListados.getCheckOrdenarPorFechaCreacion().isSelected()) {
             query += " ORDER BY p.fecha_alta ASC";
         } else {
             query += " ORDER BY p.nombre";
-            
-            
+
+
         }
         cargarTablaProductosListado((List<Producto>) DAO.getNativeQueryResultList(query, Producto.class));
-        
+
         if (imprimirReport) {
             doReportProductosListado(query);
         }
     }
-    
+
     private void cargarTablaProductosListado(List<Producto> listado) {
         UTIL.limpiarDtm(buscador.getjTable1());
         for (Producto producto : listado) {
             buscador.getDtm().addRow(new Object[]{
-                producto,
-                producto.getCodigo(),
-                producto.getMarca().getNombre(),
-                producto.getRubro().getNombre(),
-                (producto.getSubrubro() != null ? producto.getSubrubro() : null)
-            });
+                        producto,
+                        producto.getCodigo(),
+                        producto.getMarca().getNombre(),
+                        producto.getRubro().getNombre(),
+                        (producto.getSubrubro() != null ? producto.getSubrubro() : null)
+                    });
         }
     }
-    
+
     private void doReportProductosListado(String query) throws Exception {
 //      if (panelProductoListados.getCheckParaJurado().isSelected()) {
 //         Reportes r = new Reportes("evento_parajurado.jasper", "Lista para jurado");
@@ -1069,7 +1064,7 @@ public class ProductoController implements ActionListener, KeyListener {
         r.viewReport();
 //      }
     }
-    
+
     @SuppressWarnings("unchecked")
     List<Producto> findProductoByIva(Iva iva) {
         return DAO.getEntityManager().createQuery("SELECT o FROM " + CLASS_NAME + " o WHERE o.iva.id=" + iva.getId()).getResultList();

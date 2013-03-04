@@ -35,7 +35,7 @@ CREATE TABLE detalle_nota_debito (
   importe numeric(12,2) NOT NULL,
   iva_id integer,
   primary key (id),
-  foreign key (nota_debito_id) references nota_debito (id)
+  foreign key (nota_debito_id) references nota_debito (id),
   foreign key (iva_id) references iva (id)
  ) WITH (  OIDS=FALSE);
 COMMENT ON COLUMN detalle_nota_debito.iva_id IS 'Si la nota de débito es tipo "B", no se discriminan, por lo tanto esta columna va ser <null>';
