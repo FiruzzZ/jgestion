@@ -64,6 +64,12 @@ public class Sucursal implements Serializable {
     @Column(precision = 8, nullable = false)
     private Integer notaCredito;
     @Basic(optional = false)
+    @Column(name = "notadebito_a", precision = 8, nullable = false)
+    private Integer notaDebitoA;
+    @Basic(optional = false)
+    @Column(name = "notadebito_b", precision = 8, nullable = false)
+    private Integer notaDebitoB;
+    @Basic(optional = false)
     @Column(precision = 8, nullable = false)
     private Integer recibo;
     @Basic(optional = false)
@@ -71,27 +77,6 @@ public class Sucursal implements Serializable {
     private Integer remito;
 
     public Sucursal() {
-    }
-
-    public Sucursal(String nombre, String direccion, BigInteger tele1, BigInteger tele2, Integer estado, Integer interno1, Integer interno2, String encargado, String email, Departamento departamento, Municipio municipio, Provincia provincia, Long puntoVenta, Integer factura_a, Integer factura_b, Integer notaCredito, Integer recibo, Integer remito) {
-        this.nombre = nombre;
-        this.direccion = direccion;
-        this.tele1 = tele1;
-        this.tele2 = tele2;
-        this.estado = estado;
-        this.interno1 = interno1;
-        this.interno2 = interno2;
-        this.encargado = encargado;
-        this.email = email;
-        this.departamento = departamento;
-        this.municipio = municipio;
-        this.provincia = provincia;
-        this.puntoVenta = puntoVenta;
-        this.factura_a = factura_a;
-        this.factura_b = factura_b;
-        this.notaCredito = notaCredito;
-        this.recibo = recibo;
-        this.remito = remito;
     }
 
     public Sucursal(Integer id) {
@@ -234,6 +219,22 @@ public class Sucursal implements Serializable {
         this.notaCredito = notaCredito;
     }
 
+    public Integer getNotaDebitoA() {
+        return notaDebitoA;
+    }
+
+    public void setNotaDebitoA(Integer notaDebitoA) {
+        this.notaDebitoA = notaDebitoA;
+    }
+
+    public Integer getNotaDebitoB() {
+        return notaDebitoB;
+    }
+
+    public void setNotaDebitoB(Integer notaDebitoB) {
+        this.notaDebitoB = notaDebitoB;
+    }
+
     public Integer getRecibo() {
         return recibo;
     }
@@ -272,6 +273,6 @@ public class Sucursal implements Serializable {
 
     @Override
     public String toString() {
-        return "Sucursal{" + "id=" + id + ", nombre=" + nombre + ", direccion=" + direccion + ", tele1=" + tele1 + ", tele2=" + tele2 + ", estado=" + estado + ", interno1=" + interno1 + ", interno2=" + interno2 + ", encargado=" + encargado + ", email=" + email + ", departamento=" + departamento + ", municipio=" + municipio + ", provincia=" + provincia + ", puntoVenta=" + puntoVenta + '}';
+        return "Sucursal{" + "id=" + id + ", nombre=" + nombre + ", direccion=" + direccion + ", tele1=" + tele1 + ", tele2=" + tele2 + ", estado=" + estado + ", interno1=" + interno1 + ", interno2=" + interno2 + ", encargado=" + encargado + ", email=" + email + ", departamento=" + departamento + ", municipio=" + municipio + ", provincia=" + provincia + ", puntoVenta=" + puntoVenta + ", factura_a=" + factura_a + ", factura_b=" + factura_b + ", notaCredito=" + notaCredito + ", notaDebitoA=" + notaDebitoA + ", notaDebitoB=" + notaDebitoB + ", recibo=" + recibo + ", remito=" + remito + '}';
     }
 }

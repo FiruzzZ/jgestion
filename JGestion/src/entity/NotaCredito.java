@@ -42,8 +42,8 @@ public class NotaCredito implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Basic(optional = false)
-    @Column(name = "numero", nullable = false)
-    private long numero;
+    @Column(name = "numero", nullable = false, precision = 8)
+    private int numero;
     @Basic(optional = false)
     @Column(name = "fecha_nota_credito", nullable = false)
     @Temporal(TemporalType.DATE)
@@ -115,11 +115,11 @@ public class NotaCredito implements Serializable {
         this.id = id;
     }
 
-    public long getNumero() {
+    public int getNumero() {
         return numero;
     }
 
-    public void setNumero(long numero) {
+    public void setNumero(int numero) {
         this.numero = numero;
     }
 

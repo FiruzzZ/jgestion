@@ -294,7 +294,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                 ActionListenerManager.setUnidadDeNegocioSucursalActionListener(jdFactura.getCbUnidadDeNegocio(), false, jdFactura.getCbSucursal(), false, true);
                 ActionListenerManager.setCuentasIngresosSubcuentaActionListener(jdFactura.getCbCuenta(), false, jdFactura.getCbSubCuenta(), true, true);
                 try {
-                    cargarComboTiposFacturas((Cliente) jdFactura.getCbCliente().getSelectedItem());
+                    JGestionUtils.cargarComboTiposFacturas(jdFactura.getCbFacturaTipo(), (Cliente) jdFactura.getCbCliente().getSelectedItem());
                 } catch (ClassCastException ex) {
                     throw new MessageException("Debe crear un Cliente para poder realizar una Facturas venta, Recibos, Presupuestos o Remitos.");
                 }
@@ -303,7 +303,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         try {
-                            cargarComboTiposFacturas((Cliente) jdFactura.getCbCliente().getSelectedItem());
+                            JGestionUtils.cargarComboTiposFacturas(jdFactura.getCbFacturaTipo(), (Cliente) jdFactura.getCbCliente().getSelectedItem());
                             remitoToFacturar = null;
                             jdFactura.setTfRemito("Sin Remito");
                         } catch (ClassCastException ex) {
@@ -332,7 +332,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                     public void actionPerformed(ActionEvent e) {
                         if (jdFactura.getCbFacturaTipo().getSelectedItem() != null) {
                             Sucursal s = getSelectedSucursalFromJDFacturaVenta();
-                            setNumeroFactura(s, jpaController.getNextNumeroFactura(s, jdFactura.getCbFacturaTipo().getSelectedItem().toString().charAt(0)));
+                            setNumeroFactura(s, jpaController.getNextNumero(s, jdFactura.getCbFacturaTipo().getSelectedItem().toString().charAt(0)));
                         }
                     }
                 });
@@ -354,7 +354,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                 UTIL.loadComboBox(jdFactura.getCbCaja(), new UsuarioHelper().getCajas(true), false);
                 jdFactura.setTfNumMovimiento(jpaController.getNextMovimientoInterno().toString());
                 Sucursal s = getSelectedSucursalFromJDFacturaVenta();
-                setNumeroFactura(s, jpaController.getNextNumeroFactura(s, jdFactura.getCbFacturaTipo().getSelectedItem().toString().charAt(0)));
+                setNumeroFactura(s, jpaController.getNextNumero(s, jdFactura.getCbFacturaTipo().getSelectedItem().toString().charAt(0)));
             } else if (factVenta1_PresupNotaCredito2_Remito3 == 2) {
                 //Se cargan todas las sucursales a las cuales tiene permido, las unidades de negocio, cuentas y sub cuentas son solo para FacturasVenta
                 UTIL.loadComboBox(jdFactura.getCbSucursal(), JGestionUtils.getWrappedSucursales(uh.getSucursales()), false);
@@ -410,10 +410,10 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                 if (EL_OBJECT.getSucursal().equals(s)) {
                     setNumeroFactura(s, Long.valueOf(EL_OBJECT.getNumero()).intValue());
                 } else {
-                    setNumeroFactura(s, jpaController.getNextNumeroFactura(s, jdFactura.getCbFacturaTipo().getSelectedItem().toString().charAt(0)));
+                    setNumeroFactura(s, jpaController.getNextNumero(s, jdFactura.getCbFacturaTipo().getSelectedItem().toString().charAt(0)));
                 }
             } else {
-                setNumeroFactura(s, jpaController.getNextNumeroFactura(s, jdFactura.getCbFacturaTipo().getSelectedItem().toString().charAt(0)));
+                setNumeroFactura(s, jpaController.getNextNumero(s, jdFactura.getCbFacturaTipo().getSelectedItem().toString().charAt(0)));
             }
         } else if (factVenta1_PresupNotaCredito2_Remito3 == 2) {
             if (listener != null) {
@@ -541,18 +541,18 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         BigDecimal alicuota = BigDecimal.valueOf(selectedProducto.getIva().getIva());
         //carga detallesVenta en tabla
         jdFactura.getDtm().addRow(new Object[]{
-            selectedProducto.getIva().getIva(),
-            selectedProducto.getCodigo(),
-            selectedProducto.getNombre() + "(" + selectedProducto.getIva().getIva() + ")",
-            cantidad,
-            precioUnitarioSinIVA, //columnIndex == 4
-            precioUnitarioSinIVA.multiply((alicuota.divide(new BigDecimal("100")).add(BigDecimal.ONE))).setScale(4, RoundingMode.HALF_EVEN),
-            descuentoUnitario.multiply(BigDecimal.valueOf(cantidad)),
-            precioUnitarioSinIVA.multiply(BigDecimal.valueOf(cantidad)).multiply((alicuota.divide(new BigDecimal("100")).add(BigDecimal.ONE))).setScale(2, RoundingMode.HALF_EVEN), //subTotal
-            (descuentoUnitario.intValue() == 0) ? -1 : (jdFactura.getCbDesc().getSelectedIndex() + 1),//Tipo de descuento
-            selectedProducto.getId(),
-            productoEnOferta //columnIndex == 10
-        });
+                    selectedProducto.getIva().getIva(),
+                    selectedProducto.getCodigo(),
+                    selectedProducto.getNombre() + "(" + selectedProducto.getIva().getIva() + ")",
+                    cantidad,
+                    precioUnitarioSinIVA, //columnIndex == 4
+                    precioUnitarioSinIVA.multiply((alicuota.divide(new BigDecimal("100")).add(BigDecimal.ONE))).setScale(4, RoundingMode.HALF_EVEN),
+                    descuentoUnitario.multiply(BigDecimal.valueOf(cantidad)),
+                    precioUnitarioSinIVA.multiply(BigDecimal.valueOf(cantidad)).multiply((alicuota.divide(new BigDecimal("100")).add(BigDecimal.ONE))).setScale(2, RoundingMode.HALF_EVEN), //subTotal
+                    (descuentoUnitario.intValue() == 0) ? -1 : (jdFactura.getCbDesc().getSelectedIndex() + 1),//Tipo de descuento
+                    selectedProducto.getId(),
+                    productoEnOferta //columnIndex == 10
+                });
         refreshResumen(jdFactura);
     }
 
@@ -644,10 +644,10 @@ public class FacturaVentaController implements ActionListener, KeyListener {
 //                gravado = gravado.subtract(precioUnitario.multiply(cantidad));
             } else if (alicuota.toString().equalsIgnoreCase("10.5")) {
                 iva10 = iva10.add(cantidad.multiply(precioUnitario).multiply((alicuota.divide(new BigDecimal("100")))));
-            } else if (alicuota.toString().equalsIgnoreCase("21.0")) {
+            } else if (alicuota.intValue() == 21) {
                 iva21 = iva21.add(cantidad.multiply(precioUnitario).multiply((alicuota.divide(new BigDecimal("100")))));
             } else if (alicuota.compareTo(BigDecimal.ZERO) > 0) {
-                otrosImps = otrosImps.add(cantidad.multiply(alicuota.divide(new BigDecimal("100"))));
+                otrosImps = otrosImps.add(cantidad.multiply(precioUnitario).multiply((alicuota.divide(new BigDecimal("100")))));
             } else {
                 throw new IllegalArgumentException("IVA no determinado");
             }
@@ -804,7 +804,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                     throw new MessageException("Número de factura no válido, debe ser mayor a 0 y menor o igual a 99999999");
                 }
                 char letra = jdFactura.getCbFacturaTipo().getSelectedItem().toString().charAt(0);
-                FacturaVenta oldFactura = findBySucursal(letra, getSelectedSucursalFromJDFacturaVenta(), octeto);
+                FacturaVenta oldFactura = jpaController.findBy(getSelectedSucursalFromJDFacturaVenta(), letra, octeto);
                 if (oldFactura != null) {
                     throw new MessageException("Ya existe un registro de Factura Venta N° " + JGestionUtils.getNumeracion(oldFactura));
                 }
@@ -866,7 +866,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
             if (unlockedNumeracion) {
                 newFacturaVenta.setNumero(Integer.valueOf(jdFactura.getTfFacturaOcteto()));
             } else {
-                newFacturaVenta.setNumero(jpaController.getNextNumeroFactura(newFacturaVenta.getSucursal(), newFacturaVenta.getTipo()));
+                newFacturaVenta.setNumero(jpaController.getNextNumero(newFacturaVenta.getSucursal(), newFacturaVenta.getTipo()));
             }
         } else {
             newFacturaVenta.setNumero(0);
@@ -946,28 +946,6 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         jdFactura.setTfFacturaCuarto(UTIL.AGREGAR_CEROS(s.getPuntoVenta(), 4));
         jdFactura.setTfFacturaOcteto(UTIL.AGREGAR_CEROS(numero, 8));
     }
-
-    // <editor-fold defaultstate="collapsed" desc="Tipos de Factura A B C M X">
-    private void cargarComboTiposFacturas(Cliente cliente) {
-        if (cliente != null) {
-            jdFactura.getCbFacturaTipo().removeAllItems();
-            if (cliente.getContribuyente().getFactuA()) {
-                jdFactura.getCbFacturaTipo().addItem("A");
-            }
-            if (cliente.getContribuyente().getFactuB()) {
-                jdFactura.getCbFacturaTipo().addItem("B");
-            }
-            if (cliente.getContribuyente().getFactuC()) {
-                jdFactura.getCbFacturaTipo().addItem("C");
-            }
-            if (cliente.getContribuyente().getFactuM()) {
-                jdFactura.getCbFacturaTipo().addItem("M");
-            }
-            if (cliente.getContribuyente().getFactuX()) {
-                jdFactura.getCbFacturaTipo().addItem("X");
-            }
-        }
-    }// </editor-fold>
 
     private void initBuscarProducto() throws DatabaseErrorException {
         ProductoController p = new ProductoController();
@@ -1228,7 +1206,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         Sucursal s = EL_OBJECT.getSucursal();
         UTIL.setSelectedItem(jdFactura.getCbUnidadDeNegocio(), EL_OBJECT.getUnidadDeNegocio().getNombre());
         UTIL.setSelectedItem(jdFactura.getCbSucursal(), new ComboBoxWrapper<Sucursal>(s, s.getId(), s.getNombre()));
-        cargarComboTiposFacturas(EL_OBJECT.getCliente());
+        JGestionUtils.cargarComboTiposFacturas(jdFactura.getCbFacturaTipo(), EL_OBJECT.getCliente());
         if (EL_OBJECT.getRemito() != null) {
             jdFactura.setTfRemito(JGestionUtils.getNumeracion(EL_OBJECT.getRemito(), false));
         }
@@ -1262,17 +1240,17 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         List<FacturaVenta> l = jpaController.findByNativeQuery(query);
         for (FacturaVenta facturaVenta : l) {
             dtm.addRow(new Object[]{
-                facturaVenta.getId(), // <--- no es visible
-                JGestionUtils.getNumeracion(facturaVenta),
-                facturaVenta.getMovimientoInterno(),
-                facturaVenta.getCliente().getNombre(),
-                BigDecimal.valueOf(facturaVenta.getImporte()),
-                UTIL.DATE_FORMAT.format(facturaVenta.getFechaVenta()),
-                facturaVenta.getSucursal().getNombre(),
-                facturaVenta.getCaja().getNombre(),
-                facturaVenta.getUsuario().getNick(),
-                UTIL.TIMESTAMP_FORMAT.format(facturaVenta.getFechaalta())
-            });
+                        facturaVenta.getId(), // <--- no es visible
+                        JGestionUtils.getNumeracion(facturaVenta),
+                        facturaVenta.getMovimientoInterno(),
+                        facturaVenta.getCliente().getNombre(),
+                        BigDecimal.valueOf(facturaVenta.getImporte()),
+                        UTIL.DATE_FORMAT.format(facturaVenta.getFechaVenta()),
+                        facturaVenta.getSucursal().getNombre(),
+                        facturaVenta.getCaja().getNombre(),
+                        facturaVenta.getUsuario().getNick(),
+                        UTIL.TIMESTAMP_FORMAT.format(facturaVenta.getFechaalta())
+                    });
         }
     }
 
@@ -1393,6 +1371,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
      * @param facturaVenta
      * @param paraAnular
      */
+    @SuppressWarnings("unchecked")
     void show(FacturaVenta facturaVenta, final boolean paraAnular) throws MessageException {
         initFacturaVenta(null, true, this, 1, false, false);
         jdFactura.modoVista();
@@ -1435,6 +1414,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
             jdFactura.getCbVendedor().addItem(new ComboBoxWrapper<Vendedor>(v, v.getId(), v.getApellido() + " " + v.getNombre()));
         }
         jdFactura.getCbListaPrecio().addItem(facturaVenta.getListaPrecios());
+        
         jdFactura.setDcFechaFactura(facturaVenta.getFechaVenta());
         if (facturaVenta.getRemito() != null) {
             jdFactura.setTfRemito(JGestionUtils.getNumeracion(facturaVenta.getRemito(), false));
@@ -1442,13 +1422,14 @@ public class FacturaVentaController implements ActionListener, KeyListener {
 
         //Los tipos de factura se tienen q cargar antes, sinó modifica el Nº de factura y muestra el siguiente
         //y no el de Factura seleccionada
-        cargarComboTiposFacturas(facturaVenta.getCliente());
+        JGestionUtils.cargarComboTiposFacturas(jdFactura.getCbFacturaTipo(), facturaVenta.getCliente());
         jdFactura.setTfFacturaCuarto(UTIL.AGREGAR_CEROS(facturaVenta.getSucursal().getPuntoVenta(), 4));
         jdFactura.setTfFacturaOcteto(UTIL.AGREGAR_CEROS(facturaVenta.getNumero(), 8));
         jdFactura.setTfNumMovimiento(String.valueOf(facturaVenta.getMovimientoInterno()));
         jdFactura.getCbCaja().addItem(facturaVenta.getCaja());
         UTIL.loadComboBox(jdFactura.getCbFormaPago(), Valores.FormaPago.getFormasDePago(), false);
         UTIL.setSelectedItem(jdFactura.getCbFormaPago(), facturaVenta.getFormaPagoEnum().toString());
+        
         jdFactura.getTfObservacion().setText(facturaVenta.getObservacion());
         if (facturaVenta.getFormaPagoEnum() == Valores.FormaPago.CTA_CTE) {
             if (facturaVenta.getDiasCtaCte() != null) {
@@ -1548,7 +1529,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
 
     private String getNextNumeroFacturaConGuion(char letra) {
         Sucursal s = getSelectedSucursalFromJDFacturaVenta();
-        Integer nextNumero = jpaController.getNextNumeroFactura(s, letra);
+        Integer nextNumero = jpaController.getNextNumero(s, letra);
         String factuString = UTIL.AGREGAR_CEROS(nextNumero.toString(), 8);
         factuString = UTIL.AGREGAR_CEROS(s.getPuntoVenta(), 4) + "-" + factuString;
         return factuString;
@@ -1557,7 +1538,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
     private void cambiarMovimientoInternoToFactura(FacturaVenta facturaVenta) throws Exception {
         Sucursal s = getSelectedSucursalFromJDFacturaVenta();
         facturaVenta.setTipo(jdFactura.getCbFacturaTipo().getSelectedItem().toString().charAt(0));
-        facturaVenta.setNumero(jpaController.getNextNumeroFactura(s, facturaVenta.getTipo()));
+        facturaVenta.setNumero(jpaController.getNextNumero(s, facturaVenta.getTipo()));
         facturaVenta.setMovimientoInterno(0);
         DAO.doMerge(facturaVenta);
         if (facturaVenta.getFormaPago() == Valores.FormaPago.CONTADO.getId()) {
@@ -1771,7 +1752,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         if (jdFactura.getModoUso() == 1) {
             jdFactura.setTfNumMovimiento(jpaController.getNextMovimientoInterno().toString());
             Sucursal s = getSelectedSucursalFromJDFacturaVenta();
-            setNumeroFactura(s, jpaController.getNextNumeroFactura(s, jdFactura.getCbFacturaTipo().getSelectedItem().toString().charAt(0)));
+            setNumeroFactura(s, jpaController.getNextNumero(s, jdFactura.getCbFacturaTipo().getSelectedItem().toString().charAt(0)));
         }
     }
 
@@ -1882,11 +1863,6 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         jdFactura.setVisible(true);
     }
 
-    private FacturaVenta findBySucursal(char tipo, Sucursal sucursal, Integer numero) {
-        return jpaController.find(tipo, sucursal, numero);
-
-    }
-
     private void setDetalleData(FacturaVenta factura) throws MessageException {
         DefaultTableModel dtm = (DefaultTableModel) jdFactura.getjTable1().getModel();
         dtm.setRowCount(0);
@@ -1905,18 +1881,18 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                 BigDecimal productoConIVA = detalle.getPrecioUnitario().add(UTIL.getPorcentaje(detalle.getPrecioUnitario(), BigDecimal.valueOf(iva.getIva()))).setScale(4, RoundingMode.HALF_EVEN);
                 //"IVA","Cód. Producto","Producto","Cantidad","P. Unitario","P. final","Desc","Sub total"
                 dtm.addRow(new Object[]{
-                    iva.getIva(),
-                    detalle.getProducto().getCodigo(),
-                    detalle.getProducto().getNombre() + "(" + iva.getIva() + ")",
-                    detalle.getCantidad(),
-                    detalle.getPrecioUnitario(),
-                    productoConIVA,
-                    detalle.getDescuento(),
-                    UTIL.PRECIO_CON_PUNTO.format((detalle.getCantidad() * productoConIVA.doubleValue()) - detalle.getDescuento()),
-                    detalle.getTipoDesc(),
-                    detalle.getProducto().getId(),
-                    null
-                });
+                            iva.getIva(),
+                            detalle.getProducto().getCodigo(),
+                            detalle.getProducto().getNombre() + "(" + iva.getIva() + ")",
+                            detalle.getCantidad(),
+                            detalle.getPrecioUnitario(),
+                            productoConIVA,
+                            detalle.getDescuento(),
+                            UTIL.PRECIO_CON_PUNTO.format((detalle.getCantidad() * productoConIVA.doubleValue()) - detalle.getDescuento()),
+                            detalle.getTipoDesc(),
+                            detalle.getProducto().getId(),
+                            null
+                        });
             } catch (NullPointerException e) {
                 throw new MessageException("Ocurrió un error recuperando el detalle y los datos del Producto:"
                         + "\nCódigo:" + detalle.getProducto().getNombre()
@@ -2021,18 +1997,18 @@ public class FacturaVentaController implements ActionListener, KeyListener {
 
             System.out.println(facturaVenta.getId() + "\n\t" + facturaVenta.getUnidadDeNegocio() + "\n\t" + facturaVenta.getCuenta() + "\n\t" + facturaVenta.getSubCuenta());
             dtm.addRow(new Object[]{
-                facturaVenta.getId(), // <--- no es visible
-                JGestionUtils.getNumeracion(facturaVenta),
-                facturaVenta.getMovimientoInterno(),
-                facturaVenta.getCliente().getNombre(),
-                BigDecimal.valueOf(facturaVenta.getImporte()),
-                facturaVenta.getFechaVenta(),
-                facturaVenta.getSucursal().getNombre(),
-                facturaVenta.getCaja().getNombre(),
-                (facturaVenta.getUnidadDeNegocio() != null ? new ComboBoxWrapper<UnidadDeNegocio>(facturaVenta.getUnidadDeNegocio(), facturaVenta.getUnidadDeNegocio().getId(), facturaVenta.getUnidadDeNegocio().getNombre()) : null),
-                (facturaVenta.getCuenta() != null ? new ComboBoxWrapper<Cuenta>(facturaVenta.getCuenta(), facturaVenta.getCuenta().getId(), facturaVenta.getCuenta().getNombre()) : null),
-                (facturaVenta.getSubCuenta() != null ? new ComboBoxWrapper<SubCuenta>(facturaVenta.getSubCuenta(), facturaVenta.getSubCuenta().getId(), facturaVenta.getSubCuenta().getNombre()) : null)
-            });
+                        facturaVenta.getId(), // <--- no es visible
+                        JGestionUtils.getNumeracion(facturaVenta),
+                        facturaVenta.getMovimientoInterno(),
+                        facturaVenta.getCliente().getNombre(),
+                        BigDecimal.valueOf(facturaVenta.getImporte()),
+                        facturaVenta.getFechaVenta(),
+                        facturaVenta.getSucursal().getNombre(),
+                        facturaVenta.getCaja().getNombre(),
+                        (facturaVenta.getUnidadDeNegocio() != null ? new ComboBoxWrapper<UnidadDeNegocio>(facturaVenta.getUnidadDeNegocio(), facturaVenta.getUnidadDeNegocio().getId(), facturaVenta.getUnidadDeNegocio().getNombre()) : null),
+                        (facturaVenta.getCuenta() != null ? new ComboBoxWrapper<Cuenta>(facturaVenta.getCuenta(), facturaVenta.getCuenta().getId(), facturaVenta.getCuenta().getNombre()) : null),
+                        (facturaVenta.getSubCuenta() != null ? new ComboBoxWrapper<SubCuenta>(facturaVenta.getSubCuenta(), facturaVenta.getSubCuenta().getId(), facturaVenta.getSubCuenta().getNombre()) : null)
+                    });
         }
 
     }

@@ -8,6 +8,7 @@ import java.awt.event.FocusListener;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JComboBox;
 import javax.swing.JTextField;
 import utilities.general.UTIL;
 import utilities.swing.components.ComboBoxWrapper;
@@ -17,6 +18,14 @@ import utilities.swing.components.ComboBoxWrapper;
  * @author FiruzzZ
  */
 public class JGestionUtils {
+
+    private JGestionUtils() {
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        throw new CloneNotSupportedException();
+    }
 
     public static List<ComboBoxWrapper<CtacteProveedor>> getWrappedCtacteProveedor(List<CtacteProveedor> list) {
         List<ComboBoxWrapper<CtacteProveedor>> l = new ArrayList<ComboBoxWrapper<CtacteProveedor>>(list.size());
@@ -34,13 +43,6 @@ public class JGestionUtils {
         return wrappedList;
     }
 
-//    public static List<ComboBoxWrapper<Librado>> getWrappedLibrado(List<Librado> list) {
-//        List<ComboBoxWrapper<Librado>> l = new ArrayList<ComboBoxWrapper<Librado>>(list.size());
-//        for (Librado o : list) {
-//            l.add(new ComboBoxWrapper<Librado>(o, o.getId(), o.getNombre()));
-//        }
-//        return l;
-//    }
     public static List<ComboBoxWrapper<Cliente>> getWrappedClientes(List<Cliente> list) {
         List<ComboBoxWrapper<Cliente>> l = new ArrayList<ComboBoxWrapper<Cliente>>(list.size());
         for (Cliente o : list) {
@@ -153,6 +155,11 @@ public class JGestionUtils {
         }
     }
 
+    public static String getNumeracion(NotaDebito o, boolean conGuion) {
+        String guion = conGuion ? "-" : "";
+        return "ND" + o.getTipo() + UTIL.AGREGAR_CEROS(o.getSucursal().getPuntoVenta(), 4) + guion + UTIL.AGREGAR_CEROS(o.getNumero(), 8);
+    }
+
     /**
      * Si es Factura: <br> "F"+ TipoFactura + #### (punto de venta) + ########
      * (número). <br>EJ: FA0001-00001234 <br>Si es Interno: <br>"FI" + ####
@@ -205,27 +212,27 @@ public class JGestionUtils {
     public static void setCurrencyFormatterFocusListener(JTextField tf) {
         tf.addFocusListener(
                 new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                JTextField t = (JTextField) e.getSource();
-                if (!t.getText().trim().isEmpty()) {
-                    t.setText(UTIL.parseToDouble(t.getText()).toString());
-                }
-            }
-
-            @Override
-            public void focusLost(FocusEvent e) {
-                JTextField t = (JTextField) e.getSource();
-                try {
-                    if (!t.getText().trim().isEmpty()) {
-                        t.setText(UTIL.DECIMAL_FORMAT.format(new BigDecimal(t.getText())));
+                    @Override
+                    public void focusGained(FocusEvent e) {
+                        JTextField t = (JTextField) e.getSource();
+                        if (!t.getText().trim().isEmpty()) {
+                            t.setText(UTIL.parseToDouble(t.getText()).toString());
+                        }
                     }
-                    t.setBackground(Color.WHITE);
-                } catch (Exception ex) {
-                    t.setBackground(Color.RED);
-                }
-            }
-        });
+
+                    @Override
+                    public void focusLost(FocusEvent e) {
+                        JTextField t = (JTextField) e.getSource();
+                        try {
+                            if (!t.getText().trim().isEmpty()) {
+                                t.setText(UTIL.DECIMAL_FORMAT.format(new BigDecimal(t.getText())));
+                            }
+                            t.setBackground(Color.WHITE);
+                        } catch (Exception ex) {
+                            t.setBackground(Color.RED);
+                        }
+                    }
+                });
     }
 
     public static ComboBoxWrapper<Banco> wrap(Banco o) {
@@ -244,11 +251,33 @@ public class JGestionUtils {
         return l;
     }
 
-    private JGestionUtils() {
+    @SuppressWarnings("unchecked")
+    public static void cargarComboTiposFacturas(JComboBox cb, Cliente cliente) {
+        if (cliente != null) {
+            cb.removeAllItems();
+            if (cliente.getContribuyente().getFactuA()) {
+                cb.addItem("A");
+            }
+            if (cliente.getContribuyente().getFactuB()) {
+                cb.addItem("B");
+            }
+            if (cliente.getContribuyente().getFactuC()) {
+                cb.addItem("C");
+            }
+            if (cliente.getContribuyente().getFactuM()) {
+                cb.addItem("M");
+            }
+            if (cliente.getContribuyente().getFactuX()) {
+                cb.addItem("X");
+            }
+        }
     }
 
-    @Override
-    protected Object clone() throws CloneNotSupportedException {
-        throw new CloneNotSupportedException();
+    public static List<ComboBoxWrapper<Iva>> getWrappedIva(List<Iva> list) {
+        List<ComboBoxWrapper<Iva>> l = new ArrayList<ComboBoxWrapper<Iva>>(list.size());
+        for (Iva iva : list) {
+            l.add(new ComboBoxWrapper<Iva>(iva, iva.getId(), iva.getIva().toString() + "%"));
+        }
+        return l;
     }
 }

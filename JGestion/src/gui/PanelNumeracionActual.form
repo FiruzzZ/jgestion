@@ -18,19 +18,21 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="1" attributes="0">
-                  <Component id="jLabel16" alignment="1" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel17" alignment="1" min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="jLabel21" alignment="1" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel18" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel17" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel16" alignment="1" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="tfInicialRemito" alignment="0" min="-2" max="-2" attributes="0"/>
+                  <Component id="tfInicialNotaDebitoA" alignment="0" min="-2" max="-2" attributes="0"/>
+                  <Component id="tfInicialFacturaB" alignment="0" max="-2" attributes="0"/>
+                  <Component id="tfInicialFacturaA" alignment="0" max="-2" attributes="0"/>
+              </Group>
+              <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="tfInicialFacturaA" alignment="0" max="-2" attributes="0"/>
-                          <Component id="tfInicialFacturaB" alignment="0" max="-2" attributes="0"/>
-                      </Group>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
@@ -46,6 +48,12 @@
                           <Component id="tfInicialNotaCredito" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Component id="tfInicialRecibo" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
+                  </Group>
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jLabel22" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="tfInicialNotaDebitoB" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace max="32767" attributes="0"/>
@@ -74,6 +82,13 @@
                   <Component id="tfInicialRemito" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel18" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="jLabel22" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel21" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="tfInicialNotaDebitoA" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="tfInicialNotaDebitoB" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
               <EmptySpace max="32767" attributes="0"/>
           </Group>
       </Group>
@@ -87,8 +102,8 @@
     </Component>
     <Component class="javax.swing.JTextField" name="tfInicialNotaCredito">
       <Properties>
-        <Property name="columns" type="int" value="8"/>
         <Property name="editable" type="boolean" value="false"/>
+        <Property name="columns" type="int" value="8"/>
         <Property name="horizontalAlignment" type="int" value="4"/>
       </Properties>
     </Component>
@@ -99,8 +114,8 @@
     </Component>
     <Component class="javax.swing.JTextField" name="tfInicialRecibo">
       <Properties>
-        <Property name="columns" type="int" value="8"/>
         <Property name="editable" type="boolean" value="false"/>
+        <Property name="columns" type="int" value="8"/>
         <Property name="horizontalAlignment" type="int" value="4"/>
       </Properties>
       <Events>
@@ -124,22 +139,46 @@
     </Component>
     <Component class="javax.swing.JTextField" name="tfInicialFacturaB">
       <Properties>
-        <Property name="columns" type="int" value="8"/>
         <Property name="editable" type="boolean" value="false"/>
+        <Property name="columns" type="int" value="8"/>
         <Property name="horizontalAlignment" type="int" value="4"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="tfInicialFacturaA">
       <Properties>
-        <Property name="columns" type="int" value="8"/>
         <Property name="editable" type="boolean" value="false"/>
+        <Property name="columns" type="int" value="8"/>
         <Property name="horizontalAlignment" type="int" value="4"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="tfInicialRemito">
       <Properties>
-        <Property name="columns" type="int" value="8"/>
         <Property name="editable" type="boolean" value="false"/>
+        <Property name="columns" type="int" value="8"/>
+        <Property name="horizontalAlignment" type="int" value="4"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel21">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Nota D&#xe9;bito"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="tfInicialNotaDebitoA">
+      <Properties>
+        <Property name="editable" type="boolean" value="false"/>
+        <Property name="columns" type="int" value="8"/>
+        <Property name="horizontalAlignment" type="int" value="4"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel22">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Nota D&#xe9;bito"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="tfInicialNotaDebitoB">
+      <Properties>
+        <Property name="editable" type="boolean" value="false"/>
+        <Property name="columns" type="int" value="8"/>
         <Property name="horizontalAlignment" type="int" value="4"/>
       </Properties>
     </Component>

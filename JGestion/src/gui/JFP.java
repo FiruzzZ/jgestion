@@ -84,15 +84,20 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         menuItemSalir = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         jMenuItem2 = new javax.swing.JMenuItem();
+        jMenu23 = new javax.swing.JMenu();
         jMenuItem14 = new javax.swing.JMenuItem();
+        jMenuItem80 = new javax.swing.JMenuItem();
+        jMenuItem81 = new javax.swing.JMenuItem();
         jMenuItem5 = new javax.swing.JMenuItem();
         jMenuItem47 = new javax.swing.JMenuItem();
+        jMenuItem82 = new javax.swing.JMenuItem();
         jMenuItem6 = new javax.swing.JMenuItem();
         jMenu11 = new javax.swing.JMenu();
         jMenuItem18 = new javax.swing.JMenuItem();
         jMenuItem34 = new javax.swing.JMenuItem();
         jMenuItem35 = new javax.swing.JMenuItem();
         jMenuItem48 = new javax.swing.JMenuItem();
+        jMenuItem84 = new javax.swing.JMenuItem();
         jMenuItem36 = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
         jMenuItem4 = new javax.swing.JMenuItem();
@@ -100,11 +105,13 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem78 = new javax.swing.JMenuItem();
         jMenuItem79 = new javax.swing.JMenuItem();
+        jMenuItem69 = new javax.swing.JMenuItem();
+        jMenuItem83 = new javax.swing.JMenuItem();
         jMenu21 = new javax.swing.JMenu();
         jMenuItem28 = new javax.swing.JMenuItem();
         jMenuItem55 = new javax.swing.JMenuItem();
         jMenuItem70 = new javax.swing.JMenuItem();
-        jMenuItem69 = new javax.swing.JMenuItem();
+        jMenuItem85 = new javax.swing.JMenuItem();
         jMenu5 = new javax.swing.JMenu();
         jMenuItem7 = new javax.swing.JMenuItem();
         jSeparator4 = new javax.swing.JPopupMenu.Separator();
@@ -249,13 +256,23 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         });
         jMenu2.add(jMenuItem2);
 
-        jMenuItem14.setText("Recibo");
+        jMenu23.setText("Recibo");
+
+        jMenuItem14.setText("Alta");
         jMenuItem14.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem14ActionPerformed(evt);
             }
         });
-        jMenu2.add(jMenuItem14);
+        jMenu23.add(jMenuItem14);
+
+        jMenuItem80.setText("A Conciliar");
+        jMenu23.add(jMenuItem80);
+
+        jMenuItem81.setText("Buscar para Conciliar");
+        jMenu23.add(jMenuItem81);
+
+        jMenu2.add(jMenu23);
 
         jMenuItem5.setText("Remito");
         jMenuItem5.addActionListener(new java.awt.event.ActionListener() {
@@ -265,13 +282,21 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         });
         jMenu2.add(jMenuItem5);
 
-        jMenuItem47.setText("Nota de crédito");
+        jMenuItem47.setText("Nota de Crédito");
         jMenuItem47.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem47ActionPerformed(evt);
             }
         });
         jMenu2.add(jMenuItem47);
+
+        jMenuItem82.setText("Nota de Débito");
+        jMenuItem82.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem82ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem82);
 
         jMenuItem6.setText("Presupuesto                         ");
         jMenuItem6.addActionListener(new java.awt.event.ActionListener() {
@@ -308,13 +333,21 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         });
         jMenu11.add(jMenuItem35);
 
-        jMenuItem48.setText("Notas de crédito");
+        jMenuItem48.setText("Notas de Crédito");
         jMenuItem48.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem48ActionPerformed(evt);
             }
         });
         jMenu11.add(jMenuItem48);
+
+        jMenuItem84.setText("Notas de Débito");
+        jMenuItem84.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem84ActionPerformed(evt);
+            }
+        });
+        jMenu11.add(jMenuItem84);
 
         jMenuItem36.setText("Presupuestos");
         jMenuItem36.addActionListener(new java.awt.event.ActionListener() {
@@ -363,6 +396,17 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
         jMenu3.add(jMenu26);
 
+        jMenuItem69.setText("Nota de Crédito");
+        jMenuItem69.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem69ActionPerformed(evt);
+            }
+        });
+        jMenu3.add(jMenuItem69);
+
+        jMenuItem83.setText("Nota de Débito");
+        jMenu3.add(jMenuItem83);
+
         jMenu21.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/lupa-simple.png"))); // NOI18N
         jMenu21.setText("Buscar");
 
@@ -390,15 +434,10 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         });
         jMenu21.add(jMenuItem70);
 
-        jMenu3.add(jMenu21);
+        jMenuItem85.setText("Notas de Débito");
+        jMenu21.add(jMenuItem85);
 
-        jMenuItem69.setText("Nota de Crédito");
-        jMenuItem69.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem69ActionPerformed(evt);
-            }
-        });
-        jMenu3.add(jMenuItem69);
+        jMenu3.add(jMenu21);
 
         jMenuBar1.add(jMenu3);
 
@@ -1658,6 +1697,18 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         new VendedorController().initContenedor(this, true).setVisible(true);
     }//GEN-LAST:event_jMenuItem64ActionPerformed
 
+    private void jMenuItem84ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem84ActionPerformed
+        try {
+            new NotaDebitoController().initBuscador(this, true, false);
+        } catch (MessageException ex) {
+            ex.displayMessage(this);
+        }
+    }//GEN-LAST:event_jMenuItem84ActionPerformed
+
+    private void jMenuItem82ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem82ActionPerformed
+        new NotaDebitoController().initContenedor(this, true);
+    }//GEN-LAST:event_jMenuItem82ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JMenu jMenu1;
@@ -1675,6 +1726,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenu jMenu20;
     private javax.swing.JMenu jMenu21;
     private javax.swing.JMenu jMenu22;
+    private javax.swing.JMenu jMenu23;
     private javax.swing.JMenu jMenu24;
     private javax.swing.JMenu jMenu25;
     private javax.swing.JMenu jMenu26;
@@ -1764,6 +1816,12 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenuItem jMenuItem78;
     private javax.swing.JMenuItem jMenuItem79;
     private javax.swing.JMenuItem jMenuItem8;
+    private javax.swing.JMenuItem jMenuItem80;
+    private javax.swing.JMenuItem jMenuItem81;
+    private javax.swing.JMenuItem jMenuItem82;
+    private javax.swing.JMenuItem jMenuItem83;
+    private javax.swing.JMenuItem jMenuItem84;
+    private javax.swing.JMenuItem jMenuItem85;
     private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JMenuItem jMenuItemCatalogoWeb;
     private javax.swing.JMenuItem jMenuItemCuentasBancarias;

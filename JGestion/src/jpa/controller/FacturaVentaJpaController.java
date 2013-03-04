@@ -41,7 +41,7 @@ public class FacturaVentaJpaController extends AbstractDAO<FacturaVenta, Integer
 //        }
     }
 
-    public FacturaVenta find(char tipo, Sucursal sucursal, Integer numero) {
+    public FacturaVenta findBy(Sucursal sucursal, char tipo, Integer numero) {
         try {
             return getEntityManager().createQuery("SELECT o FROM FacturaVenta o"
                     + " WHERE o.sucursal.id=" + sucursal.getId()
@@ -53,7 +53,7 @@ public class FacturaVentaJpaController extends AbstractDAO<FacturaVenta, Integer
         }
     }
 
-    public Integer getNextNumeroFactura(Sucursal sucursal, char tipo) {
+    public Integer getNextNumero(Sucursal sucursal, char tipo) {
         EntityManager em = getEntityManager();
         Integer next = null;
         if (Character.toUpperCase(tipo) == 'A') {
@@ -90,12 +90,6 @@ public class FacturaVentaJpaController extends AbstractDAO<FacturaVenta, Integer
                 em.close();
             }
         }
-    }
-
-    public void clearAndClose() {
-        entityManager.clear();
-        entityManager.close();
-
     }
 
     @Override
