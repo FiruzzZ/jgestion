@@ -90,47 +90,7 @@ public class NotaCreditoController {
         }
     }
 
-    public List<NotaCredito> findNotaCreditoEntities() {
-        return findNotaCreditoEntities(true, -1, -1);
-    }
-
-    public List<NotaCredito> findNotaCreditoEntities(int maxResults, int firstResult) {
-        return findNotaCreditoEntities(false, maxResults, firstResult);
-    }
-
-    private List<NotaCredito> findNotaCreditoEntities(boolean all, int maxResults, int firstResult) {
-        EntityManager em = getEntityManager();
-        try {
-            Query q = em.createQuery("select object(o) from NotaCredito as o");
-            if (!all) {
-                q.setMaxResults(maxResults);
-                q.setFirstResult(firstResult);
-            }
-            return q.getResultList();
-        } finally {
-            em.close();
-        }
-    }
-
-    public NotaCredito findNotaCredito(Integer id) {
-        EntityManager em = getEntityManager();
-        try {
-            return em.find(NotaCredito.class, id);
-        } finally {
-            em.close();
-        }
-    }
-
-    public int getNotaCreditoCount() {
-        EntityManager em = getEntityManager();
-        try {
-            Query q = em.createQuery("select count(o) from NotaCredito as o");
-            return ((Long) q.getSingleResult()).intValue();
-        } finally {
-            em.close();
-        }
-    }// </editor-fold>
-
+    // </editor-fold>
     public void initComprobanteUI(JFrame owner, boolean modal, boolean setVisible, boolean loadDefaultData) throws MessageException {
         facturaVentaController = new FacturaVentaController();
         facturaVentaController.initFacturaVenta(owner, modal, null, 2, false, loadDefaultData);
@@ -230,7 +190,7 @@ public class NotaCreditoController {
 
     NotaCredito initBuscador(Window owner, final boolean toAnular, Cliente cliente, final boolean selectingMode) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.VENTA);
-        if(toAnular) {
+        if (toAnular) {
             UsuarioController.checkPermiso(PermisosController.PermisoDe.ANULAR_COMPROBANTES);
         }
         buscador = new JDBuscadorReRe(owner, "Buscador - Notas de crédito", true, "Cliente", "Nº");
@@ -262,7 +222,7 @@ public class NotaCreditoController {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() >= 2 && buscador.getjTable1().getSelectedRow() > -1) {
-                    EL_OBJECT = findNotaCredito(Integer.valueOf(buscador.getDtm().getValueAt(buscador.getjTable1().getSelectedRow(), 0).toString()));
+                    EL_OBJECT = jpaController.find(Integer.valueOf(buscador.getDtm().getValueAt(buscador.getjTable1().getSelectedRow(), 0).toString()));
                     if (selectingMode) {
                         buscador.dispose();
                     } else {
@@ -359,7 +319,7 @@ public class NotaCreditoController {
                         o.getImporte(),
                         o.getDesacreditado(),
                         UTIL.DATE_FORMAT.format(o.getFechaNotaCredito()),
-//                        o.getSucursal().getNombre(),
+                        //                        o.getSucursal().getNombre(),
                         o.getUsuario().getNick(),
                         UTIL.DATE_FORMAT.format(o.getFechaCarga()) + " (" + UTIL.TIME_FORMAT.format(o.getFechaCarga()) + ")"
                     });
@@ -465,7 +425,7 @@ public class NotaCreditoController {
     double getCreditoDisponible(Cliente cliente) {
 //        Object[] o = (Object[]) getEntityManager().createQuery(
 //                " SELECT sum(o.importe), sum (o.desacreditado) "
-        BigDecimal o = (BigDecimal) getEntityManager().createQuery(
+        BigDecimal o = (BigDecimal) DAO.getEntityManager().createQuery(
                 " SELECT sum(o.importe)"
                 + "FROM " + jpaController.getEntityClass().getSimpleName() + " o "
                 + "WHERE o.recibo IS NULL AND o.anulada = FALSE AND o.cliente.id =" + cliente.getId()).getSingleResult();
@@ -608,7 +568,6 @@ public class NotaCreditoController {
      * @return chocolate..
      */
     List<NotaCredito> findNotaCreditoAcreditables(Cliente cliente) {
-        return getEntityManager().createQuery(
-                "SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o WHERE o.importe <> o.desacreditado AND o.anulada = FALSE AND o.cliente.id=" + cliente.getId()).getResultList();
+        return jpaController.findByQuery("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o WHERE o.importe <> o.desacreditado AND o.anulada = FALSE AND o.cliente.id=" + cliente.getId());
     }
 }

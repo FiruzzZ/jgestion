@@ -711,6 +711,7 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
         tfFactu8.setVisible(false);
     }
 
+    @SuppressWarnings("unchecked")
     public void setParaRemito() {
         labelReRe.setText("Nº Remito");
         hideCaja();
@@ -730,5 +731,28 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
         cbCuenta.setVisible(false);
         labelSubCuenta.setVisible(false);
         cbSubCuenta.setVisible(false);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void setToNotaDebito() {
+        hideCaja();
+        hideFactura();
+        //reutilización del combo FormaDePago para saber si el Remito fue facturado
+        labelFormasDePago.setText("Facturado");
+        labelFormasDePago.setVisible(true);
+        cbFormasDePago.setVisible(true);
+        cbFormasDePago.removeAllItems();
+        cbFormasDePago.addItem("<Elegir>");
+        cbFormasDePago.addItem("No");
+        cbFormasDePago.addItem("Si");
+        checkAnulada.setVisible(true);
+        labelUnidadDeNegocio.setVisible(false);
+        cbUnidadDeNegocio.setVisible(false);
+        labelCuenta.setVisible(false);
+        cbCuenta.setVisible(false);
+        labelSubCuenta.setVisible(false);
+        cbSubCuenta.setVisible(false);
+        labelVendedor.setVisible(false);
+        cbVendedor.setVisible(false);
     }
 }

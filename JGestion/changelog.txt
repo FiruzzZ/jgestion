@@ -1,3 +1,44 @@
+--20130301
+ALTER TABLE sucursal ADD COLUMN notadebito_a NUMERIC(8,0) NOT NULL DEFAULT 1;
+ALTER TABLE sucursal ADD COLUMN notadebito_b NUMERIC(8,0) NOT NULL DEFAULT 1;
+ALTER TABLE sucursal ALTER COLUMN notadebito_a DROP DEFAULT;
+ALTER TABLE sucursal ALTER COLUMN notadebito_b DROP DEFAULT;
+CREATE TABLE nota_debito (
+  id serial NOT NULL,
+  numero numeric(8,0) NOT NULL,
+  fecha_nota_debito date NOT NULL,
+  fecha_carga timestamp with time zone NOT NULL DEFAULT now(),
+  importe numeric(12,2) NOT NULL,
+  usuario_id integer NOT NULL,
+  cliente_id integer NOT NULL,
+  sucursal_id integer NOT NULL,
+  observacion character varying(200),
+  gravado numeric(12,2) NOT NULL DEFAULT 0,
+  no_gravado numeric(12,2) NOT NULL DEFAULT 0,
+  iva10 numeric(12,2) NOT NULL DEFAULT 0,
+  iva21 numeric(12,2) NOT NULL DEFAULT 0,
+  otros_ivas numeric(12,2) NOT NULL DEFAULT 0,
+  anulada boolean NOT NULL DEFAULT false,
+  impuestos_recuperables numeric(12,2) NOT NULL DEFAULT 0,
+  recibo_id integer,
+  CONSTRAINT nota_debito_pkey PRIMARY KEY (id ),
+  CONSTRAINT fk_nota_debito_cliente FOREIGN KEY (cliente_id) REFERENCES cliente (id),
+  CONSTRAINT fk_nota_debito_sucursal FOREIGN KEY (sucursal_id) REFERENCES sucursal (id),
+  CONSTRAINT fk_nota_debito_usuario FOREIGN KEY (usuario_id) REFERENCES usuario (id),
+  CONSTRAINT fk_nota_debito_recibo FOREIGN KEY (recibo_id) REFERENCES recibo (id),
+  CONSTRAINT unq_nota_debito_sucursal_numero UNIQUE (sucursal_id, numero)
+) WITH (  OIDS=FALSE);
+CREATE TABLE detalle_nota_debito (
+  id serial NOT NULL,
+  nota_debito_id integer NOT NULL,
+  concepto character varying (200) NOT NULL,
+  importe numeric(12,2) NOT NULL,
+  iva_id integer,
+  primary key (id),
+  foreign key (nota_debito_id) references nota_debito (id)
+  foreign key (iva_id) references iva (id)
+ ) WITH (  OIDS=FALSE);
+COMMENT ON COLUMN detalle_nota_debito.iva_id IS 'Si la nota de débito es tipo "B", no se discriminan, por lo tanto esta columna va ser <null>';
 --20130228
 CREATE TABLE vendedor (
   id serial NOT NULL, 

@@ -26,6 +26,10 @@ public class SucursalJpaController extends AbstractDAO<Sucursal, Integer> {
         return entityManager;
     }
 
+    /**
+     *
+     * @return ordered by {@link Sucursal#nombre}.
+     */
     @Override
     public List<Sucursal> findAll() {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
@@ -35,6 +39,4 @@ public class SucursalJpaController extends AbstractDAO<Sucursal, Integer> {
         cq.orderBy(cb.asc(from.get(Sucursal_.nombre)));
         return getEntityManager().createQuery(cq).setHint(QueryHints.REFRESH, true).getResultList();
     }
-    
-    
 }
