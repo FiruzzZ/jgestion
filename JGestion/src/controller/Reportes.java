@@ -85,6 +85,7 @@ public class Reportes implements Runnable {
     }
 
     public Reportes(JasperPrint jp) {
+        jd = new WaitingDialog(null, "Imprimiendo", false, "Preparando reporte....");
         pathReport = null;
         tituloReporte = null;
         jPrint = jp;
