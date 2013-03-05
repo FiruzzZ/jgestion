@@ -449,7 +449,7 @@ public class NotaCreditoProveedorController implements ActionListener {
         UTIL.hideColumnsTable(jdFactura.getjTable1(), new int[]{0, 6, 7});
         UTIL.loadComboBox(jdFactura.getCbProveedor(), new ProveedorController().findEntities(), false);
         UTIL.loadComboBox(jdFactura.getCbFacturaTipo(), FacturaCompraController.TIPOS_FACTURA, false);
-        UTIL.loadComboBox(jdFactura.getCbProductos(), new ProductoController().findWrappedProductoToCombo(), false);
+        UTIL.loadComboBox(jdFactura.getCbProductos(), new ProductoController().findWrappedProductoToCombo(true), false);
     }
 
     private void cargarDtmBuscador(String query) {

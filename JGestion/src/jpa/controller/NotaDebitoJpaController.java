@@ -1,9 +1,11 @@
 package jpa.controller;
 
 import controller.DAO;
+import entity.Cliente;
 import entity.NotaDebito;
 import entity.NotaDebito_;
 import entity.Sucursal;
+import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -49,9 +51,6 @@ public class NotaDebitoJpaController extends AbstractDAO<NotaDebito, Integer> {
                 cb.equal(from.get(NotaDebito_.tipo), Character.toUpperCase(tipo))));
 
         Integer o = em.createQuery(cq).getSingleResult();
-//        Object o = em.createQuery("SELECT MAX(o.numero) FROM " + getEntityClass().getSimpleName() + " o"
-//                + " WHERE o.tipo ='" + Character.toUpperCase(tipo) + "'"
-//                + " AND o.sucursal.id= " + s.getId()).getSingleResult();
         if (o != null) {
             Integer nextNumeroSegunDB = 1 + Integer.valueOf(o.toString());
             if (nextNumeroSegunDB > next) {
@@ -71,5 +70,26 @@ public class NotaDebitoJpaController extends AbstractDAO<NotaDebito, Integer> {
         } catch (NoResultException e) {
             return null;
         }
+    }
+
+    /**
+     * 
+     * @param cliente
+     * @param recibadas <code>true</code> for {@link NotaDebito#recibo} != null
+     * @return 
+     */
+    public List<NotaDebito> findBy(Cliente cliente, Boolean recibadas) {
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<NotaDebito> cq = cb.createQuery(getEntityClass());
+        Root<NotaDebito> from = cq.from(getEntityClass());
+        cq.where(cb.equal(from.get(NotaDebito_.cliente), cliente));
+        if (recibadas != null) {
+            if (recibadas) {
+                cq.where(cb.isNotNull(from.get(NotaDebito_.recibo)));
+            } else {
+                cq.where(cb.isNull(from.get(NotaDebito_.recibo)));
+            }
+        }
+        return getEntityManager().createQuery(cq).getResultList();
     }
 }

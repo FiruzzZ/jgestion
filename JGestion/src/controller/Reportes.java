@@ -49,7 +49,7 @@ public class Reportes implements Runnable {
      * Si aparece el PrintDialog Default = true
      */
     private boolean withPrintDialog;
-    private WaitingDialog jd;
+    private final WaitingDialog jd;
     private JRBeanCollectionDataSource beanCollectionDataSource;
     private static final Logger LOG = Logger.getLogger(Reportes.class.getName());
     private JasperPrint jPrint;
@@ -86,10 +86,15 @@ public class Reportes implements Runnable {
 
     public Reportes(JasperPrint jp) {
         jd = new WaitingDialog(null, "Imprimiendo", false, "Preparando reporte....");
+        jd.setVisible(true);
         pathReport = null;
         tituloReporte = null;
         jPrint = jp;
 
+    }
+
+    public void setjPrint(JasperPrint jPrint) {
+        this.jPrint = jPrint;
     }
 
     public void viewReport() throws JRException {

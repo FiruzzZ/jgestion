@@ -1,3 +1,8 @@
+--20130304
+alter table producto add column bien_de_cambio boolean not null default true;
+ALTER TABLE detalle_recibo ALTER COLUMN factura_venta DROP NOT NULL;
+ALTER TABLE detalle_recibo ADD COLUMN nota_debito_id integer;
+ALTER TABLE detalle_recibo ADD FOREIGN KEY (nota_debito_id) REFERENCES nota_debito (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
 --20130301
 ALTER TABLE sucursal ADD COLUMN notadebito_a NUMERIC(8,0) NOT NULL DEFAULT 1;
 ALTER TABLE sucursal ADD COLUMN notadebito_b NUMERIC(8,0) NOT NULL DEFAULT 1;
@@ -6,6 +11,7 @@ ALTER TABLE sucursal ALTER COLUMN notadebito_b DROP DEFAULT;
 CREATE TABLE nota_debito (
   id serial NOT NULL,
   numero numeric(8,0) NOT NULL,
+  tipo character(1) NOT NULL,
   fecha_nota_debito date NOT NULL,
   fecha_carga timestamp with time zone NOT NULL DEFAULT now(),
   importe numeric(12,2) NOT NULL,
@@ -26,7 +32,7 @@ CREATE TABLE nota_debito (
   CONSTRAINT fk_nota_debito_sucursal FOREIGN KEY (sucursal_id) REFERENCES sucursal (id),
   CONSTRAINT fk_nota_debito_usuario FOREIGN KEY (usuario_id) REFERENCES usuario (id),
   CONSTRAINT fk_nota_debito_recibo FOREIGN KEY (recibo_id) REFERENCES recibo (id),
-  CONSTRAINT unq_nota_debito_sucursal_numero UNIQUE (sucursal_id, numero)
+  CONSTRAINT unq_nota_debito_sucursal_id_tipo_numero UNIQUE (sucursal_id, tipo, numero)
 ) WITH (  OIDS=FALSE);
 CREATE TABLE detalle_nota_debito (
   id serial NOT NULL,

@@ -80,6 +80,7 @@ public class PanelABMProductos extends javax.swing.JPanel {
         jEditorPane1 = new javax.swing.JEditorPane();
         btnAddRubros = new javax.swing.JButton();
         checkUpdatePrecioVenta = new javax.swing.JCheckBox();
+        checkBienDeCambio = new javax.swing.JCheckBox();
 
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
@@ -207,8 +208,8 @@ public class PanelABMProductos extends javax.swing.JPanel {
         bStockGral.setToolTipText("Ver stock gral. (Sucursales)");
         bStockGral.setName("bstockGral"); // NOI18N
 
-        jEditorPane1.setContentType("text/html"); // NOI18N
         jEditorPane1.setEditable(false);
+        jEditorPane1.setContentType("text/html"); // NOI18N
         jEditorPane1.setText("<html>\r\n  <head>\r\n\r\n  </head>\r\n  <body>\r\n    <p style=\"margin-top: 0\">\r\n      \r<p align=\"center\">\n  <b>[Doble click para editar]</b>\n</p>\n    </p>\r\n  </body>\r\n</html>\r\n");
         jScrollPane2.setViewportView(jEditorPane1);
 
@@ -218,6 +219,10 @@ public class PanelABMProductos extends javax.swing.JPanel {
         checkUpdatePrecioVenta.setSelected(true);
         checkUpdatePrecioVenta.setText("Actualizar Precio Venta según compras");
         checkUpdatePrecioVenta.setToolTipText("<html>\nChequeando está opción, permite al sistema actualizar automáticamente el <b>Precio de Venta</b>\n<br>según el <b>Costo de Compra</b>.\n<br>Cada vez que se registre una compra del producto, el <b>Costo de Compra</b> se modifica y\n<br>así también lo hará el <b>Precio de Venta</b>.\n</html>");
+
+        checkBienDeCambio.setSelected(true);
+        checkBienDeCambio.setText("Bien de Cambio");
+        checkBienDeCambio.setToolTipText("<html>Son aquellos que puede ser <b>vendidos</b>.\n<br>Por los cuales estarán compuestos los comprobantes de Ingresos como <b>Facturas de Venta, Remitos y Nota de Crédito</b>.");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -237,6 +242,7 @@ public class PanelABMProductos extends javax.swing.JPanel {
                     .addComponent(jLabel18))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(checkBienDeCambio)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(tfPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -336,10 +342,12 @@ public class PanelABMProductos extends javax.swing.JPanel {
                     .addComponent(tfCostoCompra, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel17)
                     .addComponent(checkUpdatePrecioVenta))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(checkBienDeCambio)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel13)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel13))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(cbSucursal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -399,6 +407,7 @@ public class PanelABMProductos extends javax.swing.JPanel {
     private javax.swing.JComboBox cbRubro;
     private javax.swing.JComboBox cbSubRubro;
     private javax.swing.JComboBox cbSucursal;
+    private javax.swing.JCheckBox checkBienDeCambio;
     private javax.swing.JCheckBox checkBoxSucursalTodas;
     private javax.swing.JCheckBox checkUpdatePrecioVenta;
     private com.toedter.calendar.JDateChooser dateUltimaCompra;
@@ -578,7 +587,10 @@ public class PanelABMProductos extends javax.swing.JPanel {
     public JCheckBox getCheckUpdatePrecioVenta() {
         return checkUpdatePrecioVenta;
     }
-    
+
+    public JCheckBox getCheckBienDeCambio() {
+        return checkBienDeCambio;
+    }
     // </editor-fold>
 
     private void soloNumeros(KeyEvent evt) {

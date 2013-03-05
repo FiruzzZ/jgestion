@@ -223,7 +223,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         if (loadDefaultData) {
             jdFactura.setTfRemito("Sin Remito");
             jdFactura.setDcFechaFactura(new Date());
-            UTIL.loadComboBox(jdFactura.getCbProductos(), new ProductoController().findWrappedProductoToCombo(), false);
+            UTIL.loadComboBox(jdFactura.getCbProductos(), new ProductoController().findWrappedProductoToCombo(true), false);
             // <editor-fold defaultstate="collapsed" desc="AutoCompleteProductoComboBox">
             // must be editable!!!.................
             jdFactura.getCbProductos().setEditable(true);
@@ -950,7 +950,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
     private void initBuscarProducto() throws DatabaseErrorException {
         ProductoController p = new ProductoController();
         p.initContenedor(null, true, false);
-        UTIL.loadComboBox(jdFactura.getCbProductos(), p.findWrappedProductoToCombo(), false);
+        UTIL.loadComboBox(jdFactura.getCbProductos(), p.findWrappedProductoToCombo(true), false);
     }
 
     public void initBuscador(JFrame frame, final boolean modal, final boolean toAnular) throws MessageException {
