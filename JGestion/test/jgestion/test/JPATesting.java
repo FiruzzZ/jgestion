@@ -9,8 +9,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import jpa.controller.FacturaCompraJpaController;
-import jpa.controller.ProductoJpaController;
+import jpa.controller.*;
 import org.apache.log4j.PropertyConfigurator;
 
 /**

@@ -9,9 +9,7 @@ import javax.persistence.*;
  * @author Administrador
  */
 @Entity
-@Table(name = "detalle_recibo", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"recibo", "factura_venta"})
-})
+@Table(name = "detalle_recibo")
 @NamedQueries({
     @NamedQuery(name = "DetalleRecibo.findAll", query = "SELECT d FROM DetalleRecibo d"),
     @NamedQuery(name = "DetalleRecibo.findById", query = "SELECT d FROM DetalleRecibo d WHERE d.id = :id"),

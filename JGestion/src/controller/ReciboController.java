@@ -10,7 +10,6 @@ import java.awt.Window;
 import java.awt.event.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -154,10 +153,7 @@ public class ReciboController implements ActionListener, FocusListener {
             public void actionPerformed(ActionEvent e) {
                 try {
                     if (selectedRecibo != null) {
-//                        if(!selectedRecibo.getEstado()) {
-//                            throw new MessageException("No se puede imprimir un Recibo ANULADO");
-//                        }
-                        // cuando se re-imprime un recibo elegido desde el buscador (uno pre existente)
+                        // cuando se re-imprime un recibo elegido desde el buscador
                         doReportRecibo(selectedRecibo);
                     } else {
                         //cuando se está creando un recibo y se va imprimir al tokesaun!
@@ -449,14 +445,12 @@ public class ReciboController implements ActionListener, FocusListener {
     }
 
     private void checkConstraints() throws MessageException {
-        if (jdReRe.getDtmAPagar().getRowCount() < 1) {
-            throw new MessageException("No ha hecho ninguna entrega");
-        }
-
         if (jdReRe.getDcFechaReRe() == null) {
             throw new MessageException("Fecha de " + jpaController.getEntityClass().getSimpleName() + " no válida");
         }
-
+        if (jdReRe.getDtmAPagar().getRowCount() < 1) {
+            throw new MessageException("No ha hecho ninguna entrega");
+        }
         if (unlockedNumeracion) {
             try {
                 Integer numero = Integer.valueOf(jdReRe.getTfOcteto());
@@ -501,8 +495,8 @@ public class ReciboController implements ActionListener, FocusListener {
         DefaultTableModel dtm = jdReRe.getDtmAPagar();
         FacturaVentaController fcc = new FacturaVentaController();
         BigDecimal monto = BigDecimal.ZERO;
-        for (int i = 0; i < dtm.getRowCount(); i++) {
-            Object o = dtm.getValueAt(i, 0);
+        for (int rowIndex = 0; rowIndex < dtm.getRowCount(); rowIndex++) {
+            Object o = dtm.getValueAt(rowIndex, 0);
             DetalleRecibo detalle = new DetalleRecibo();
             if (o instanceof FacturaVenta) {
                 FacturaVenta fv = fcc.findFacturaVenta(((FacturaVenta) o).getId());
@@ -511,8 +505,10 @@ public class ReciboController implements ActionListener, FocusListener {
                 NotaDebito nota = new NotaDebitoJpaController().find(((NotaDebito) o).getId());
                 nota.setRecibo(recibo);
                 detalle.setNotaDebito(nota);
+            } else {
+                throw new IllegalArgumentException();
             }
-            detalle.setMontoEntrega((BigDecimal) dtm.getValueAt(i, 3));
+            detalle.setMontoEntrega((BigDecimal) dtm.getValueAt(rowIndex, 3));
             detalle.setRecibo(recibo);
             recibo.getDetalleReciboList().add(detalle);
             monto = monto.add(detalle.getMontoEntrega());
@@ -710,7 +706,12 @@ public class ReciboController implements ActionListener, FocusListener {
         }
 //        bloquearVentana(true);
         //por no redundar en DATOOOOOOOOOSS...!!!
-        Cliente cliente = new FacturaVentaController().findFacturaVenta(recibo.getDetalleReciboList().get(0).getFacturaVenta().getId()).getCliente();
+        Cliente cliente;
+        if (recibo.getDetalleReciboList().get(0).getFacturaVenta() != null) {
+            cliente = new FacturaVentaController().findFacturaVenta(recibo.getDetalleReciboList().get(0).getFacturaVenta().getId()).getCliente();
+        } else {
+            cliente = new NotaDebitoJpaController().find(recibo.getDetalleReciboList().get(0).getNotaDebito().getId()).getCliente();
+        }
         //que compare por String's..
         //por si el combo está vacio <VACIO> o no eligió ninguno
         //van a tirar error de ClassCastException
@@ -776,14 +777,13 @@ public class ReciboController implements ActionListener, FocusListener {
         limpiarDetalle();
         List<CtacteCliente> ctacteClientePendientesList = new CtacteClienteController().findByCliente(cliente, Valores.CtaCteEstado.PENDIENTE.getId());
         List<NotaDebito> notas = new NotaDebitoJpaController().findBy(cliente, false);
-        TreeMap<Date, Object> tree = new TreeMap<Date, Object>();
+        List<Object> l = new ArrayList<Object>(ctacteClientePendientesList.size() + notas.size());
         for (CtacteCliente o : ctacteClientePendientesList) {
-            tree.put(o.getFactura().getFechaVenta(), o);
+            l.add(o);
         }
         for (NotaDebito o : notas) {
-            tree.put(o.getFechaNotaDebito(), o);
+            l.add(o);
         }
-        List<Object> l = new ArrayList<Object>(tree.values());
         UTIL.loadComboBox(jdReRe.getCbCtaCtes(), JGestionUtils.getWrappedCtacteCliente(l), false);
     }
 
@@ -811,8 +811,12 @@ public class ReciboController implements ActionListener, FocusListener {
         StringBuilder query = new StringBuilder(
                 "SELECT o.*"
                 + " FROM recibo o JOIN caja c ON (o.caja = c.id)"
-                + " JOIN detalle_recibo dr ON (o.id = dr.recibo) JOIN factura_venta f ON (dr.factura_venta = f.id)"
-                + " JOIN cliente p ON (f.cliente = p.id) JOIN usuario u ON (o.usuario = u.id) JOIN sucursal s ON (o.sucursal = s.id)"
+                + " JOIN detalle_recibo dr ON (o.id = dr.recibo)"
+                + " LEFT JOIN factura_venta f ON (dr.factura_venta = f.id)"
+                + " LEFT JOIN nota_debito ON (dr.nota_debito_id = nota_debito.id)"
+                + " LEFT JOIN cliente p ON (f.cliente = p.id) "
+                + " LEFT JOIN cliente pp ON (nota_debito.cliente_id = pp.id) "
+                + " JOIN usuario u ON (o.usuario = u.id) JOIN sucursal s ON (o.sucursal = s.id)"
                 + " WHERE o.id is not null  ");
 
         long numero;
@@ -877,7 +881,10 @@ public class ReciboController implements ActionListener, FocusListener {
             query.append(" AND o.estado = false");
         }
         if (buscador.getCbClieProv().getSelectedIndex() > 0) {
-            query.append(" AND p.id = ").append(((ComboBoxWrapper<Cliente>) buscador.getCbClieProv().getSelectedItem()).getId());
+            query.append(" AND (")
+                    .append(" p.id = ").append(((ComboBoxWrapper<Cliente>) buscador.getCbClieProv().getSelectedItem()).getId())
+                    .append(" OR pp.id = ").append(((ComboBoxWrapper<Cliente>) buscador.getCbClieProv().getSelectedItem()).getId())
+                    .append(")");
         }
 
         query.append(" GROUP BY o.id, o.numero, o.fecha_carga, o.monto, o.retencion, o.usuario, o.caja, o.sucursal, o.fecha_recibo, o.estado"
@@ -1022,6 +1029,8 @@ public class ReciboController implements ActionListener, FocusListener {
         if (recibo == null && recibo.getId() == null) {
             throw new MessageException("No hay " + CLASS_NAME + " seleccionado");
         }
+        DetalleRecibo d = recibo.getDetalleReciboList().get(0);
+        Cliente cliente = d.getFacturaVenta() != null ? d.getFacturaVenta().getCliente() : d.getNotaDebito().getCliente();
         List<GenericBeanCollection> cc = new ArrayList<GenericBeanCollection>(recibo.getDetalleReciboList().size());
         for (DetalleRecibo dr : recibo.getDetalleReciboList()) {
             String comprobanteString = dr.getFacturaVenta() != null ? JGestionUtils.getNumeracion(dr.getFacturaVenta()) : JGestionUtils.getNumeracion(dr.getNotaDebito(), true);
@@ -1053,7 +1062,8 @@ public class ReciboController implements ActionListener, FocusListener {
         JRDataSource c = new JRBeanCollectionDataSource(cc);
         JRDataSource p = new JRBeanCollectionDataSource(pp);
         Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_Recibo_ctacte.jasper", "Recibo");
-        r.addParameter("RECIBO_N", recibo.getId());
+        r.addParameter("RECIBO_ID", recibo.getId());
+        r.addParameter("CLIENTE_ID", cliente.getId());
         r.addCurrent_User();
         r.addMembreteParameter();
         r.addParameter("comprobantes", c);
