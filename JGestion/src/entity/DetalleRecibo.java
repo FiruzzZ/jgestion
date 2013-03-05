@@ -30,9 +30,12 @@ public class DetalleRecibo implements Serializable {
     private BigDecimal montoEntrega;
     @Column(name = "observacion", length = 200)
     private String observacion;
-    @JoinColumn(name = "factura_venta", referencedColumnName = "id", nullable = false)
-    @ManyToOne(optional = false)
+    @JoinColumn(name = "factura_venta")
+    @ManyToOne
     private FacturaVenta facturaVenta;
+    @JoinColumn(name = "nota_debito_id")
+    @ManyToOne
+    private NotaDebito notaDebito;
     @JoinColumn(name = "recibo", nullable = false)
     @ManyToOne(optional = false)
     private Recibo recibo;
@@ -75,6 +78,14 @@ public class DetalleRecibo implements Serializable {
 
     public void setFacturaVenta(FacturaVenta facturaVenta) {
         this.facturaVenta = facturaVenta;
+    }
+
+    public NotaDebito getNotaDebito() {
+        return notaDebito;
+    }
+
+    public void setNotaDebito(NotaDebito notaDebito) {
+        this.notaDebito = notaDebito;
     }
 
     public Recibo getRecibo() {

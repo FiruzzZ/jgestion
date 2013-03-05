@@ -35,12 +35,18 @@ public class JGestionUtils {
         return l;
     }
 
-    public static List<ComboBoxWrapper<CtacteCliente>> getWrappedCtacteCliente(List<CtacteCliente> list) {
-        List<ComboBoxWrapper<CtacteCliente>> wrappedList = new ArrayList<ComboBoxWrapper<CtacteCliente>>(list.size());
-        for (CtacteCliente o : list) {
-            wrappedList.add(new ComboBoxWrapper<CtacteCliente>(o, o.getId(), getNumeracion(o.getFactura())));
+    public static List<ComboBoxWrapper<?>> getWrappedCtacteCliente(List<?> list) {
+        List<ComboBoxWrapper<?>> l = new ArrayList<ComboBoxWrapper<?>>(list.size());
+        for (Object o : list) {
+            if (o instanceof CtacteCliente) {
+                CtacteCliente ccc = (CtacteCliente) o;
+                l.add(new ComboBoxWrapper<Object>(ccc, ccc.getId(), getNumeracion(ccc.getFactura())));
+            } else {
+                NotaDebito nota = (NotaDebito) o;
+                l.add(new ComboBoxWrapper<Object>(nota, nota.getId(), getNumeracion(nota, true)));
+            }
         }
-        return wrappedList;
+        return l;
     }
 
     public static List<ComboBoxWrapper<Cliente>> getWrappedClientes(List<Cliente> list) {

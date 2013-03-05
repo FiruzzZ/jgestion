@@ -57,7 +57,7 @@ public class JDOfertas extends javax.swing.JDialog {
         productoCtrller = new ProductoController();
         historialOfertasCtrller = new HistorialOfertasJpaController();
 
-        UTIL.loadComboBox(cbProductos, new ProductoController().findProductoToCombo(), Boolean.FALSE);
+        UTIL.loadComboBox(cbProductos, new ProductoController().findProductoToCombo(true), Boolean.FALSE);
         tfListaPreciosCatalogo.setText(listaPreciosParaCatalogo.getNombre());
         cargarTablaOfertas();
     }
@@ -646,7 +646,7 @@ public class JDOfertas extends javax.swing.JDialog {
     private void btnModificarProductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarProductoActionPerformed
         try {
             productoCtrller.initABM(selectedProducto);
-            UTIL.loadComboBox(cbProductos, productoCtrller.findProductoToCombo(), false);
+            UTIL.loadComboBox(cbProductos, productoCtrller.findProductoToCombo(true), false);
             setProducto(selectedProducto);
             UTIL.setSelectedItem(cbProductos, selectedProducto);
         } catch (Exception ex) {

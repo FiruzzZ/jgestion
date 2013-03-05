@@ -112,6 +112,8 @@ public class Producto implements Serializable {
     @JoinColumn(name = "idunidadmedida", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
     private Unidadmedida idunidadmedida;
+    @Column(name = "bien_de_cambio", nullable = false)
+    private boolean bienDeCambio;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "producto")
     private List<Stock> stockList;
 
@@ -299,6 +301,14 @@ public class Producto implements Serializable {
         return updatePrecioVenta;
     }
 
+    public boolean isBienDeCambio() {
+        return bienDeCambio;
+    }
+
+    public void setBienDeCambio(boolean bienDeCambio) {
+        this.bienDeCambio = bienDeCambio;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -321,7 +331,7 @@ public class Producto implements Serializable {
 
     @Override
     public String toString() {
-        return "Producto{" + "id=" + id + ", codigo=" + codigo + ", nombre=" + nombre + ", stockmaximo=" + stockmaximo + ", stockactual=" + stockactual + ", stockminimo=" + stockminimo + ", deposito=" + deposito + ", ubicacion=" + ubicacion + ", costoCompra=" + costoCompra + ", descripcion=" + descripcion + ", updatePrecioVenta=" + updatePrecioVenta + ", precioVenta=" + precioVenta + ", remunerativo=" + remunerativo + ", fechaAlta=" + fechaAlta + ", ultimaCompra=" + ultimaCompra + ", iva=" + iva + ", marca=" + marca + ", rubro=" + rubro + ", subrubro=" + subrubro + ", idunidadmedida=" + idunidadmedida + '}';
+        return "Producto{" + "id=" + id + ", codigo=" + codigo + ", nombre=" + nombre + ", stockmaximo=" + stockmaximo + ", stockactual=" + stockactual + ", stockminimo=" + stockminimo + ", deposito=" + deposito + ", ubicacion=" + ubicacion + ", costoCompra=" + costoCompra + ", descripcion=" + descripcion + ", updatePrecioVenta=" + updatePrecioVenta + ", precioVenta=" + precioVenta + ", remunerativo=" + remunerativo + ", fechaAlta=" + fechaAlta + ", ultimaCompra=" + ultimaCompra + ", iva=" + iva + ", marca=" + marca + ", rubro=" + rubro + ", subrubro=" + subrubro + ", idunidadmedida=" + idunidadmedida + ", bienDeCambio=" + bienDeCambio + '}';
     }
 
     /**

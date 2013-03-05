@@ -1,6 +1,7 @@
 package controller;
 
 import controller.exceptions.MessageException;
+import controller.exceptions.MissingReportException;
 import entity.Cliente;
 import entity.DetalleNotaDebito;
 import entity.Iva;
@@ -31,6 +32,7 @@ import jpa.controller.ClienteJpaController;
 import jpa.controller.IvaJpaController;
 import jpa.controller.NotaDebitoJpaController;
 import jpa.controller.SucursalJpaController;
+import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Logger;
 import org.bushe.swing.action.ActionList;
 import utilities.general.UTIL;
@@ -188,13 +190,29 @@ public class NotaDebitoController {
         if (viewMode) {
             if (JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog(abm,
                     "¿Re-Imprimir comprobante?", jpaController.getEntityClass().getSimpleName(), JOptionPane.OK_CANCEL_OPTION)) {
-                doReport(EL_OBJECT);
+                try {
+                    doReport(EL_OBJECT);
+                } catch (MissingReportException ex) {
+                    JOptionPane.showMessageDialog(abm, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                } catch (JRException ex) {
+                    JOptionPane.showMessageDialog(abm, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
             }
         } else {
             EL_OBJECT = getEntity();
             String msg = EL_OBJECT.getId() == null ? " registrada" : " modificada";
             if (EL_OBJECT.getId() == null) {
-                jpaController.create(EL_OBJECT);
+                try {
+                    jpaController.create(EL_OBJECT);
+                    doReport(EL_OBJECT);
+                } catch (MissingReportException ex) {
+                    JOptionPane.showMessageDialog(abm, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                } catch (JRException ex) {
+                    JOptionPane.showMessageDialog(abm, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(abm, ex.getMessage(), "Algo salió mal", JOptionPane.ERROR_MESSAGE);
+                    LOG.error("creando Nota debito > " + EL_OBJECT, ex);
+                }
             } else {
             }
             JOptionPane.showMessageDialog(abm, JGestionUtils.getNumeracion(EL_OBJECT, true) + msg);
@@ -331,7 +349,7 @@ public class NotaDebitoController {
              * Se calcula sin aplicar ningún redondeo (se trabaja posiblemente
              * mas de 2 decimales).
              */
-            BigDecimal sinRedondeo = importe.multiply(cantidad).multiply(alicuota.divide(new BigDecimal("100")));
+//            BigDecimal sinRedondeo = importe.multiply(cantidad).multiply(alicuota.divide(new BigDecimal("100")));
             if (alicuota == null || alicuota.intValue() == 0) {
                 noGravado = noGravado.add(cantidad.multiply(importe));
             } else if (alicuota.toString().equalsIgnoreCase("10.5")) {
@@ -343,7 +361,7 @@ public class NotaDebitoController {
             } else {
                 throw new IllegalArgumentException("IVA no determinado");
             }
-            LOG.debug("alicuota=" + alicuota + ", redondeo=" + sinRedondeo);
+//            LOG.debug("alicuota=" + alicuota + ", redondeo=" + sinRedondeo);
 
             subTotal = subTotal.add((BigDecimal) dtm.getValueAt(rowIndex, 2));
         }
@@ -552,6 +570,7 @@ public class NotaDebitoController {
         SwingUtil.setComponentsEnabled(abm.getPanelDetalle().getComponents(), false, true, (Class<? extends Component>[]) null);
         abm.getBtnAnular().setVisible(toAnular);
         setPanel(notaDebito);
+        abm.setVisible(true);
     }
 
     @SuppressWarnings("unchecked")
@@ -575,7 +594,10 @@ public class NotaDebitoController {
         refreshResumen();
     }
 
-    private void doReport(NotaDebito o) {
-        throw new UnsupportedOperationException("Not yet implemented");
+    private void doReport(NotaDebito o) throws MissingReportException, JRException {
+        Reportes r = new Reportes("JGestion_NotaDebito.jasper", jpaController.getEntityClass().getSimpleName() + " " + JGestionUtils.getNumeracion(o, true));
+        r.addParameter("ENTITY_ID", o.getId());
+        r.addCurrent_User();
+        r.printReport(true);
     }
 }

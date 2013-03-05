@@ -181,7 +181,7 @@ public class OrdenJpaController {
         UTIL.hideColumnTable(jdFactura.getjTable1(), 0);
         if (visible) {
             UTIL.loadComboBox(jdFactura.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), false);
-            UTIL.loadComboBox(jdFactura.getCbProductos(), new ProductoController().findWrappedProductoToCombo(), false);
+            UTIL.loadComboBox(jdFactura.getCbProductos(), new ProductoController().findWrappedProductoToCombo(true), false);
             // <editor-fold defaultstate="collapsed" desc="ajuste de foco, problemas de GUI">
             jdFactura.getTfCantidad().addFocusListener(new FocusAdapter() {
 

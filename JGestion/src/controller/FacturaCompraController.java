@@ -107,7 +107,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         UTIL.loadComboBox(jdFactura.getCbCaja(), uh.getCajas(true), false);
         UTIL.loadComboBox(jdFactura.getCbFacturaTipo(), TIPOS_FACTURA, false);
         UTIL.loadComboBox(jdFactura.getCbFormaPago(), Valores.FormaPago.getFormasDePago(), false);
-        UTIL.loadComboBox(jdFactura.getCbProductos(), new ProductoController().findWrappedProductoToCombo(), false);
+        UTIL.loadComboBox(jdFactura.getCbProductos(), new ProductoController().findWrappedProductoToCombo(true), false);
 
         jdFactura.getCbFacturaTipo().addActionListener(new ActionListener() {
             @Override
@@ -1018,7 +1018,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
     private void initBuscadorProducto() throws DatabaseErrorException {
         ProductoController p = new ProductoController();
         p.initContenedor(null, true, true);
-        UTIL.loadComboBox(jdFactura.getCbProductos(), new ProductoController().findWrappedProductoToCombo(), false);
+        UTIL.loadComboBox(jdFactura.getCbProductos(), new ProductoController().findWrappedProductoToCombo(true), false);
     }
 
     public JDFacturaCompra getContenedor() {

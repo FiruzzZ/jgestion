@@ -451,7 +451,7 @@ public class RemesaController implements ActionListener, FocusListener {
         FacturaCompra facturaToAddToDetail = selectedCtaCte.getFactura();
         BigDecimal entrega$;
         try {
-            entrega$ = new BigDecimal(jdReRe.getTfEntrega());
+            entrega$ = new BigDecimal(jdReRe.getTfEntrega().getText());
             if (entrega$.doubleValue() <= 0) {
                 throw new MessageException("Monto de entrega no válido (Debe ser mayor a 0)");
             }

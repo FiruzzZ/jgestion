@@ -774,8 +774,8 @@ private void tfEntregaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:even
         return labelReRe;
     }
 
-    public String getTfEntrega() {
-        return tfEntrega.getText().trim();
+    public JTextField getTfEntrega() {
+        return tfEntrega;
     }
 
     public JTable getTableAPagar() {

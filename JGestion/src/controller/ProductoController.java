@@ -324,6 +324,7 @@ public class ProductoController implements ActionListener, KeyListener {
         panel.setTfStockMax(String.valueOf(producto.getStockmaximo()));
         panel.setTfStockActual(String.valueOf(producto.getStockactual()));
         panel.getCheckUpdatePrecioVenta().setSelected(producto.getUpdatePrecioVenta());
+        panel.getCheckBienDeCambio().setSelected(producto.isBienDeCambio());
         if (producto.getPrecioVenta() != null) {
             panel.setTfPrecio(producto.getPrecioVenta().toString());
         }
@@ -427,6 +428,7 @@ public class ProductoController implements ActionListener, KeyListener {
         }
         EL_OBJECT.setPrecioVenta(panel.getTfPrecio().length() > 0 ? new BigDecimal(panel.getTfPrecio()) : BigDecimal.ZERO);
         EL_OBJECT.setUpdatePrecioVenta(panel.getCheckUpdatePrecioVenta().isSelected());
+        EL_OBJECT.setBienDeCambio(panel.getCheckBienDeCambio().isSelected());
         // no setteable desde la GUI
         // default's....
         EL_OBJECT.setRemunerativo(true);
@@ -707,7 +709,8 @@ public class ProductoController implements ActionListener, KeyListener {
             @SuppressWarnings("unchecked")
             public void actionPerformed(ActionEvent e) {
                 try {
-                    List<Producto> list = jpaController.findAll();
+                    Reportes r = new Reportes(null);
+                    List<Producto> list = jpaController.findByBienDeCambio(true);
                     DynamicReportBuilder drb = new DynamicReportBuilder();
                     Style currencyStyle = new Style();
                     currencyStyle.setFont(Font.ARIAL_MEDIUM);
@@ -743,7 +746,7 @@ public class ProductoController implements ActionListener, KeyListener {
                     }
 
                     drb.setTitle("Listado de Productos")
-                            .setSubtitle(lp == null ? "" : "Según Lista Precios: " + lp.getNombre() + ", " + new Date())
+                            .setSubtitle(lp == null ? "" : "Según Lista Precios: " + lp.getNombre() + ", " + UTIL.TIMESTAMP_FORMAT.format(new Date()))
                             .setPrintBackgroundOnOddRows(true)
                             .setUseFullPageWidth(true);
 //                    SubReportBuilder srb = new SubReportBuilder();
@@ -754,8 +757,8 @@ public class ProductoController implements ActionListener, KeyListener {
                     DynamicReport dr = drb.build();
                     JRDataSource ds = new JRBeanCollectionDataSource(list);
                     JasperPrint jp = DynamicJasperHelper.generateJasperPrint(dr, new ClassicLayoutManager(), ds);
-
-                    new Reportes(jp).viewReport();
+                    r.setjPrint(jp);
+                    r.viewReport();
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(jd, "algo salió mal");
                     LOG.error("Creando reporte producto", ex);
@@ -942,15 +945,17 @@ public class ProductoController implements ActionListener, KeyListener {
     /**
      * Retrieve a lightweigth List of Product (id, codigo, nombre, remunerativo)
      *
+     * @param bienDeCambio
      * @return a List of {@link Producto} or <tt>null</tt> if something goes
      * wrong.
      */
-    public List<Producto> findProductoToCombo() {
+    public List<Producto> findProductoToCombo(Boolean bienDeCambio) {
         try {
             List<Producto> resultList = jpaController.findByNativeQuery(
                     "SELECT p.id, p.codigo, p.nombre "
-                    + "FROM Producto p "
-                    + "ORDER BY p.nombre");
+                    + " FROM Producto p"
+                    + (bienDeCambio != null ? " WHERE  p.bienDeCambio=" + bienDeCambio : "")
+                    + " ORDER BY p.nombre");
             return resultList;
         } catch (Exception ex) {
             LOG.error(ex.getLocalizedMessage(), ex);
@@ -958,8 +963,8 @@ public class ProductoController implements ActionListener, KeyListener {
         return null;
     }
 
-    public List<ComboBoxWrapper<Producto>> findWrappedProductoToCombo() {
-        List<Producto> ff = findProductoToCombo();
+    public List<ComboBoxWrapper<Producto>> findWrappedProductoToCombo(Boolean bienDeCambio) {
+        List<Producto> ff = findProductoToCombo(bienDeCambio);
         List<ComboBoxWrapper<Producto>> l = new ArrayList<ComboBoxWrapper<Producto>>(ff.size());
         for (Producto producto : ff) {
             l.add(new ComboBoxWrapper<Producto>(producto, producto.getId(), producto.getNombre()));
