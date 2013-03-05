@@ -954,7 +954,7 @@ public class ProductoController implements ActionListener, KeyListener {
             List<Producto> resultList = jpaController.findByNativeQuery(
                     "SELECT p.id, p.codigo, p.nombre "
                     + " FROM Producto p"
-                    + (bienDeCambio != null ? " WHERE  p.bienDeCambio=" + bienDeCambio : "")
+                    + (bienDeCambio != null ? " WHERE  p.bien_De_Cambio=" + bienDeCambio : "")
                     + " ORDER BY p.nombre");
             return resultList;
         } catch (Exception ex) {

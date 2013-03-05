@@ -159,6 +159,12 @@ public class ReciboJpaController extends AbstractDAO<Recibo, Integer> {
             entityManager.getTransaction().begin();
         }
         entityManager.persist(recibo);
+        for (DetalleRecibo d : recibo.getDetalleReciboList()) {
+            if(d.getNotaDebito() != null) {
+                d.setRecibo(recibo);
+                entityManager.merge(d.getNotaDebito());
+            }
+        }
         entityManager.getTransaction().commit();
 
         entityManager.getTransaction().begin();
@@ -200,7 +206,6 @@ public class ReciboJpaController extends AbstractDAO<Recibo, Integer> {
         }
         entityManager.getTransaction().commit();
         entityManager.getTransaction().begin();
-//        recibo = entityManager.find(recibo.getClass(), recibo.getId());
         for (Object object : pagosPost) {
             Integer tipo = null, id = null;
             if (object instanceof DetalleCajaMovimientos) {

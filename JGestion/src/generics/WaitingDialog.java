@@ -23,7 +23,7 @@ public class WaitingDialog extends JDialog implements Serializable {
     private void initPrintingReportDialog() {
         this.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 //        this.setUndecorated(true);
-        this.setSize(400, 75);
+//        this.setSize(400, 75);
         this.setResizable(false);
         this.setAlwaysOnTop(true);
         labelMessage = new JLabel();
@@ -32,13 +32,17 @@ public class WaitingDialog extends JDialog implements Serializable {
         labelMessage.setHorizontalAlignment(SwingConstants.CENTER);
         labelMessage.setIcon(new ImageIcon(getClass().getResource("/iconos/impresora.png"))); // NOI18N
         labelMessage.setText(message);
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this.getContentPane());
+        GroupLayout layout = new GroupLayout(this.getContentPane());
         this.getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup().addContainerGap().addComponent(labelMessage, javax.swing.GroupLayout.DEFAULT_SIZE, 390, Short.MAX_VALUE).addContainerGap()));
+                layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup().addContainerGap()
+                .addComponent(labelMessage).addContainerGap()));
         layout.setVerticalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGroup(layout.createSequentialGroup().addGap(19, 19, 19).addComponent(labelMessage).addContainerGap(24, Short.MAX_VALUE)));
-
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()//.addGap(19, 19, 19)
+                .addComponent(labelMessage).addContainerGap(100, Short.MAX_VALUE)));
+        
         this.pack();
 //        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 //        Dimension frameSize = this.getSize();

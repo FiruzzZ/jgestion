@@ -43,7 +43,7 @@ public abstract class ShutDownListener {
                 } catch (Exception ex) {
                     LOG.warn("shutDownThread Exception!!", ex);
                     activeConnection = false;
-                    displayLostConnectionUI();
+                    displayLostConnectionUI(ex);
                 }
             }
             LOG.trace("finishing Thread > fuerzaBrutaShutDown");
@@ -109,12 +109,15 @@ public abstract class ShutDownListener {
         }
     }
 
-    private void displayLostConnectionUI() {
+    private void displayLostConnectionUI(Exception exception) {
         System.out.println("display lost connection");
         if (lostConnectionDialog == null) {
-            lostConnectionDialog = new WaitingDialog((JDialog) null, "Error de conexión", true, "<html>Error de conexión con la base de datos."
-                    + "\nEsta ventana desaparecerá cuando la conexión sea re-establecida o"
-                    + "\npuede cerrar la ventana para finalizar el programa.</html>");
+            lostConnectionDialog = new WaitingDialog((JDialog) null, "Error de conexión con la base de datos.", true,
+                    "<html>"
+                    + "<br>Esta ventana desaparecerá cuando la conexión sea re-establecida o"
+                    + "<br>puede cerrar la ventana para finalizar el programa."
+                    + "<br>" + exception.getLocalizedMessage()
+                    + "</html>");
             lostConnectionDialog.addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowClosing(WindowEvent e) {

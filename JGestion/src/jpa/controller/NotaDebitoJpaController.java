@@ -63,7 +63,7 @@ public class NotaDebitoJpaController extends AbstractDAO<NotaDebito, Integer> {
 
     public NotaDebito findBy(Sucursal sucursal, char tipo, Integer numero) {
         try {
-            return (NotaDebito) getEntityManager().createQuery("SELECT o FROM FacturaVenta o"
+            return (NotaDebito) getEntityManager().createQuery("SELECT o FROM " + getEntityClass().getSimpleName() + " o"
                     + " WHERE o.sucursal.id=" + sucursal.getId()
                     + " AND o.numero=" + numero
                     + " AND o.tipo='" + Character.toUpperCase(tipo) + "'").getSingleResult();
@@ -73,10 +73,10 @@ public class NotaDebitoJpaController extends AbstractDAO<NotaDebito, Integer> {
     }
 
     /**
-     * 
+     *
      * @param cliente
      * @param recibadas <code>true</code> for {@link NotaDebito#recibo} != null
-     * @return 
+     * @return
      */
     public List<NotaDebito> findBy(Cliente cliente, Boolean recibadas) {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
@@ -90,6 +90,7 @@ public class NotaDebitoJpaController extends AbstractDAO<NotaDebito, Integer> {
                 cq.where(cb.isNull(from.get(NotaDebito_.recibo)));
             }
         }
+        cq.orderBy(cb.asc(from.get(NotaDebito_.fechaNotaDebito)));
         return getEntityManager().createQuery(cq).getResultList();
     }
 }
