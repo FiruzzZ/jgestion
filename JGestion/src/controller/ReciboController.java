@@ -53,6 +53,7 @@ public class ReciboController implements ActionListener, FocusListener {
     private Recibo selectedRecibo;
     private ReciboJpaController jpaController;
     private boolean unlockedNumeracion = false;
+    private boolean viewMode;
 
     public ReciboController() {
         jpaController = new ReciboJpaController();
@@ -135,11 +136,13 @@ public class ReciboController implements ActionListener, FocusListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    Recibo re = getEntity();
-                    selectedRecibo = re;
-                    jdReRe.showMessage(jpaController.getEntityClass().getSimpleName() + "Nº" + JGestionUtils.getNumeracion(re, true) + " registrada..", null, 1);
-                    limpiarDetalle();
-                    resetPanel();
+                    if (!viewMode) {
+                        Recibo re = setAndPersist();
+                        selectedRecibo = re;
+                        jdReRe.showMessage(jpaController.getEntityClass().getSimpleName() + "Nº" + JGestionUtils.getNumeracion(re, true) + " registrada..", null, 1);
+                        limpiarDetalle();
+                        resetPanel();
+                    }
                 } catch (MessageException ex) {
                     jdReRe.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
@@ -157,7 +160,7 @@ public class ReciboController implements ActionListener, FocusListener {
                         doReportRecibo(selectedRecibo);
                     } else {
                         //cuando se está creando un recibo y se va imprimir al tokesaun!
-                        Recibo recibo = getEntity();
+                        Recibo recibo = setAndPersist();
                         selectedRecibo = recibo;
                         doReportRecibo(selectedRecibo);
                         limpiarDetalle();
@@ -473,7 +476,7 @@ public class ReciboController implements ActionListener, FocusListener {
         return cbw.getEntity();
     }
 
-    private Recibo getEntity() throws MessageException, Exception {
+    private Recibo setAndPersist() throws MessageException, Exception {
         checkConstraints();
         Recibo recibo = new Recibo();
         try {
@@ -532,7 +535,17 @@ public class ReciboController implements ActionListener, FocusListener {
         }
         recibo.setPagosEntities(pagos);
         recibo.setRetencion(BigDecimal.ZERO);
-        persist(recibo);
+
+        //persisting.....
+        jpaController.create(recibo);
+        Iterator<DetalleRecibo> iterator = recibo.getDetalleReciboList().iterator();
+        while (iterator.hasNext()) {
+            DetalleRecibo detalle = iterator.next();
+            if (detalle.getFacturaVenta() != null) {
+                //actuliza saldo pagado de cada ctacte
+                actualizarMontoEntrega(detalle.getFacturaVenta(), detalle.getMontoEntrega());
+            }
+        }
         if (asentarDiferenciaEnCaja) {
             double diferencia = importePagado.doubleValue() - recibo.getMonto();
             DetalleCajaMovimientos d = new DetalleCajaMovimientos();
@@ -550,26 +563,11 @@ public class ReciboController implements ActionListener, FocusListener {
         return recibo;
     }
 
-    private void persist(Recibo recibo) throws MessageException, Exception {
-        jpaController.create(recibo);
-
-        Iterator<DetalleRecibo> iterator = recibo.getDetalleReciboList().iterator();
-        while (iterator.hasNext()) {
-            DetalleRecibo detalle = iterator.next();
-            if (detalle.getFacturaVenta() != null) {
-                //actuliza saldo pagado de cada ctacte
-                actualizarMontoEntrega(detalle.getFacturaVenta(), detalle.getMontoEntrega());
-            }
-        }
-    }
-
     private void actualizarMontoEntrega(FacturaVenta factu, BigDecimal monto) {
         CtacteCliente ctacte = new CtacteClienteController().findByFactura(factu.getId());
-        LOG.debug("updatingMontoEntrega: CtaCte:" + ctacte.getId() + " -> Importe: " + ctacte.getImporte() + " Entregado:" + ctacte.getEntregado() + " + " + monto);
         ctacte.setEntregado(ctacte.getEntregado() + monto.doubleValue());
         if (ctacte.getImporte() == ctacte.getEntregado()) {
             ctacte.setEstado(Valores.CtaCteEstado.PAGADA.getId());
-            LOG.debug("CtaCte Nº:" + ctacte.getId() + " PAGADA");
         }
         DAO.doMerge(ctacte);
     }
@@ -667,7 +665,7 @@ public class ReciboController implements ActionListener, FocusListener {
      * @param toAnular if true, se chequea
      * {@link PermisosJpaController.PermisoDe#ANULAR_COMPROBANTES}
      */
-    public void initBuscador(Window owner, boolean modal, boolean toAnular) {
+    public void showBuscador(Window owner, boolean modal, boolean toAnular) {
         // <editor-fold defaultstate="collapsed" desc="checking Permiso">
         try {
             UsuarioController.checkPermiso(PermisosController.PermisoDe.VENTA);
@@ -683,9 +681,12 @@ public class ReciboController implements ActionListener, FocusListener {
 
     }
 
-    private void setSelectedRecibo(boolean toAnular) {
+    private void showReciboViewerMode(boolean toAnular) {
         try {
+            viewMode = true;
             setComprobanteUI(selectedRecibo);
+            jdReRe.getbAceptar().setVisible(false);
+            jdReRe.getbCancelar().setVisible(false);
             jdReRe.getbAnular().setVisible(toAnular);
             jdReRe.setLocationRelativeTo(buscador);
             jdReRe.setVisible(true);
@@ -754,8 +755,7 @@ public class ReciboController implements ActionListener, FocusListener {
                     int rowIndex = buscador.getjTable1().getSelectedRow();
                     int id = Integer.valueOf(buscador.getjTable1().getModel().getValueAt(rowIndex, 0).toString());
                     selectedRecibo = jpaController.find(id);
-                    setSelectedRecibo(toAnular);
-
+                    showReciboViewerMode(toAnular);
                 }
             }
         });
@@ -995,23 +995,6 @@ public class ReciboController implements ActionListener, FocusListener {
             }
         }
 
-    }
-
-    private void bloquearVentana(boolean habilitar) {
-        jdReRe.getbAnular().setEnabled(habilitar);
-        jdReRe.getbCancelar().setVisible(false);
-//      contenedor.getbImprimir().setEnabled(habilitar);
-        // !habilitar
-        jdReRe.getBtnADD().setEnabled(!habilitar);
-        jdReRe.getBtnDEL().setEnabled(!habilitar);
-        jdReRe.getBtnAddPago().setEnabled(!habilitar);
-        jdReRe.getBtnDelPago().setEnabled(!habilitar);
-        jdReRe.getbAceptar().setEnabled(!habilitar);
-        jdReRe.getCbCtaCtes().setEnabled(!habilitar);
-        jdReRe.getCbCaja().setEnabled(!habilitar);
-        jdReRe.getCbSucursal().setEnabled(!habilitar);
-        jdReRe.getCbClienteProveedor().setEnabled(!habilitar);
-        jdReRe.getDcFechaReRe(!habilitar);
     }
 
     /**

@@ -12,7 +12,9 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author FiruzzZ
  */
 @Entity
-@Table(name = "cheque_propio")
+@Table(name = "cheque_propio", uniqueConstraints={
+    @UniqueConstraint(name="unq_proveedor_banco_numero", columnNames={"proveedor", "banco", "numero"})
+})
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "ChequePropio.findAll", query = "SELECT c FROM ChequePropio c"),
