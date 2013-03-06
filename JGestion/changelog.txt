@@ -1,3 +1,6 @@
+--20130305
+ALTER TABLE cheque_terceros ADD CONSTRAINT unq_cliente_banco_numero UNIQUE (cliente, banco, numero);
+ALTER TABLE cheque_propio ADD CONSTRAINT unq_proveedor_banco_numero UNIQUE (proveedor, banco, numero);
 --20130304
 alter table producto add column bien_de_cambio boolean not null default true;
 ALTER TABLE detalle_recibo ALTER COLUMN factura_venta DROP NOT NULL;
