@@ -1,3 +1,5 @@
+--20130306
+alter table detalle_venta add column costo_compra numeric(12,4) not null default 0;
 --20130305
 ALTER TABLE cheque_terceros ADD CONSTRAINT unq_cliente_banco_numero UNIQUE (cliente, banco, numero);
 ALTER TABLE cheque_propio ADD CONSTRAINT unq_proveedor_banco_numero UNIQUE (proveedor, banco, numero);
