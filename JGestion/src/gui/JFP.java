@@ -192,6 +192,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenuItem44 = new javax.swing.JMenuItem();
         jMenu12 = new javax.swing.JMenu();
         jMenuItem76 = new javax.swing.JMenuItem();
+        jMenuItem86 = new javax.swing.JMenuItem();
         jMenu4 = new javax.swing.JMenu();
         jMenuItem16 = new javax.swing.JMenuItem();
         jMenuItem24 = new javax.swing.JMenuItem();
@@ -979,6 +980,14 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
         jMenuReportes.add(jMenu12);
 
+        jMenuItem86.setText("Productos (Costo / Venta)");
+        jMenuItem86.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem86ActionPerformed(evt);
+            }
+        });
+        jMenuReportes.add(jMenuItem86);
+
         jMenuBar1.add(jMenuReportes);
 
         jMenu4.setMnemonic('u');
@@ -1709,6 +1718,10 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         new NotaDebitoController().initContenedor(this, true);
     }//GEN-LAST:event_jMenuItem82ActionPerformed
 
+    private void jMenuItem86ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem86ActionPerformed
+        new Contabilidad().displayProductosCostoVenta(this);
+    }//GEN-LAST:event_jMenuItem86ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JMenu jMenu1;
@@ -1822,6 +1835,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenuItem jMenuItem83;
     private javax.swing.JMenuItem jMenuItem84;
     private javax.swing.JMenuItem jMenuItem85;
+    private javax.swing.JMenuItem jMenuItem86;
     private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JMenuItem jMenuItemCatalogoWeb;
     private javax.swing.JMenuItem jMenuItemCuentasBancarias;

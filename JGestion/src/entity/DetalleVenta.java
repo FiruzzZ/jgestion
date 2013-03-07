@@ -29,6 +29,9 @@ public class DetalleVenta implements Serializable {
     @Column(name = "precio_unitario", nullable = false, precision = 12, scale = 4)
     private BigDecimal precioUnitario;
     @Basic(optional = false)
+    @Column(name = "costo_compra", nullable = false, precision = 12, scale = 4)
+    private BigDecimal costoCompra;
+    @Basic(optional = false)
     @Column(name = "tipo_desc", nullable = false)
     private int tipoDesc;
     /**
@@ -116,6 +119,14 @@ public class DetalleVenta implements Serializable {
 
     public void setOferta(HistorialOfertas oferta) {
         this.oferta = oferta;
+    }
+
+    public BigDecimal getCostoCompra() {
+        return costoCompra;
+    }
+
+    public void setCostoCompra(BigDecimal costoCompra) {
+        this.costoCompra = costoCompra;
     }
 
     @Override

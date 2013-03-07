@@ -5,10 +5,14 @@ import entity.*;
 import generics.PropsUtils;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import jpa.controller.*;
 import org.apache.log4j.PropertyConfigurator;
 
@@ -29,8 +33,8 @@ public class JPATesting {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public JPATesting() {
-
     }
 
     private void updateCostoCompraYPrecioVentaSegunDetalleCompra() {

@@ -9,6 +9,7 @@ import entity.ChequeTerceros;
 import entity.Cliente;
 import entity.DetalleCajaMovimientos;
 import entity.DetalleListaPrecios;
+import entity.DetalleVenta;
 import entity.FacturaCompra;
 import entity.FacturaVenta;
 import entity.ListaPrecios;
@@ -21,11 +22,14 @@ import generics.GenericBeanCollection;
 import java.text.DecimalFormat;
 import utilities.general.UTIL;
 import gui.JDBalance;
+import gui.JDBuscador;
 import gui.JDBuscadorReRe;
 import gui.JDInformeUnidadesDeNegocios;
 import gui.JDResumenGeneralCtaCte;
+import gui.JFP;
 import gui.PanelBalanceComprasVentas;
 import gui.PanelBalanceGeneral;
+import gui.PanelProductosCostoVenta;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -46,11 +50,13 @@ import javax.persistence.NoResultException;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import jgestion.JGestionUtils;
 import jgestion.Main;
 import jpa.controller.ClienteJpaController;
+import jpa.controller.VendedorJpaController;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -90,6 +96,7 @@ public class Contabilidad {
 //        UTIL.setPRECIO_CON_PUNTO("#0.00", RoundingMode.HALF_DOWN);
     }
     private JDBuscadorReRe buscador;
+    private JDBuscador buscadorr;
 
     /**
      * GUI para ver de los movimientos INGRESOS/EGRESOS.
@@ -1137,5 +1144,104 @@ public class Contabilidad {
 
     public void showInformePorUnidadesDeNegocios(Window owner) {
         new JDInformeUnidadesDeNegocios(owner).setVisible(true);
+    }
+
+    public void displayProductosCostoVenta(Window owner) {
+        PanelProductosCostoVenta panelito = new PanelProductosCostoVenta();
+        UTIL.loadComboBox(panelito.getCbMarcas(), JGestionUtils.getWrappedMarcas(new MarcaJpaController().findMarcaEntities()), true);
+        UTIL.loadComboBox(panelito.getCbRubros(), JGestionUtils.getWrappedRubros(new RubroController().findRubros()), true);
+        UTIL.loadComboBox(panelito.getCbSubRubros(), JGestionUtils.getWrappedRubros(new RubroController().findRubros()), true);
+        UTIL.loadComboBox(panelito.getCbVendedores(), JGestionUtils.getWrappedVendedor(new VendedorJpaController().findAll()), true);
+        UTIL.loadComboBox(panelito.getCbClientes(), new ClienteController().findAll(), true);
+        UTIL.loadComboBox(panelito.getCbFormasDePago(), Valores.FormaPago.getFormasDePago(), true);
+        buscadorr = new JDBuscador(owner, "Productos: Costo / Venta", false, panelito);
+        buscadorr.getPanelInferior().setVisible(true);
+        buscadorr.addResumeItem("Costo", new JTextField(8));
+        buscadorr.addResumeItem("Venta", new JTextField(8));
+        buscadorr.addResumeItem("V - C", new JTextField(8));
+        buscadorr.addResumeItem("Total", new JTextField(8));
+        buscadorr.agrandar(200, 0);
+        UTIL.getDefaultTableModel(
+                buscadorr.getjTable1(),
+                new String[]{"Factura.id", "Cliente", "Factura", "Fecha", "Vendedor", "Producto", "Rubro", "SubRubro", "Marca", "Costo Compra", "P. Venta", "Venta-Costo", "Cantidad", "Rentabilidad"},
+                new int[]{1,100, 100, 50, 100, 80, 80, 60, 80, 80, 80, 40, 80},
+                new Class<?>[]{Integer.class, null, null, Date.class, null, null, null, null, null, BigDecimal.class, BigDecimal.class, BigDecimal.class, Integer.class, BigDecimal.class});
+        TableColumnModel tm = buscadorr.getjTable1().getColumnModel();
+        tm.getColumn(3).setCellRenderer(FormatRenderer.getDateRenderer());
+        tm.getColumn(9).setCellRenderer(NumberRenderer.getCurrencyRenderer(4));
+        tm.getColumn(10).setCellRenderer(NumberRenderer.getCurrencyRenderer(4));
+        tm.getColumn(11).setCellRenderer(NumberRenderer.getCurrencyRenderer(4));
+        tm.getColumn(12).setCellRenderer(NumberRenderer.getIntegerRenderer());
+        tm.getColumn(13).setCellRenderer(NumberRenderer.getCurrencyRenderer(4));
+        UTIL.hideColumnTable(buscadorr.getjTable1(), 0);
+        buscadorr.getjTable1().setAutoCreateRowSorter(true);
+        buscadorr.getbBuscar().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    String query = armarQueryProductosCostoVenta();
+                    cargarTablaProductosCostoVenta(query);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(buscadorr, ex.getMessage());
+                    LOG.error("Error en cargarTablaMovimientosProductos()", ex);
+                }
+
+            }
+        });
+
+        buscadorr.getbImprimir().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+//                try {
+//                    buscadorr.getbImprimir().setEnabled(false);
+//                    String query = armarQueryProductosCostoVenta();
+//                    cargarTablaProductosCostoVenta(query);
+//                    Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_MovimientosProductos.jasper", "Movimientos Productos");
+//                    List<GenericBeanCollection> data = new ArrayList<GenericBeanCollection>(buscadorr.getjTable1().getRowCount());
+//                    DefaultTableModel dtm = buscadorr.getDtm();
+//                    for (int row = 0; row < dtm.getRowCount(); row++) {
+//                        data.add(new GenericBeanCollection(
+//                                dtm.getValueAt(row, 0), dtm.getValueAt(row, 1), dtm.getValueAt(row, 2), dtm.getValueAt(row, 3),
+//                                dtm.getValueAt(row, 4), dtm.getValueAt(row, 5), dtm.getValueAt(row, 6), dtm.getValueAt(row, 7),
+//                                dtm.getValueAt(row, 8), dtm.getValueAt(row, 10), dtm.getValueAt(row, 11), null));
+//                    }
+////                    r.addCurrent_User();
+//                    r.setDataSource(data);
+//                    r.addMembreteParameter();
+//                    r.addConnection();
+//                    r.viewReport();
+//                } catch (JRException ex) {
+//                    JOptionPane.showMessageDialog(buscadorr, ex.getMessage());
+//                } catch (MissingReportException ex) {
+//                    JOptionPane.showMessageDialog(buscadorr, ex.getMessage());
+//                } finally {
+//                    buscadorr.getbImprimir().setEnabled(true);
+//                }
+            }
+        });
+        buscadorr.getbLimpiar().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                UTIL.limpiarDtm(buscadorr.getjTable1());
+            }
+        });
+        buscadorr.setVisible(true);
+    }
+
+    private String armarQueryProductosCostoVenta() {
+        StringBuilder sb = new StringBuilder(
+                "SELECT fv.id, fv.cliente.nombre, CONCAT(fv.tipo, SUBSTRING(CONCAT(10000+fv.sucursal.puntoVenta,''), 2), '-', SUBSTRING(CONCAT(100000000+fv.numero,''),2)), fv.fechaVenta, CONCAT(v.apellido,' ', v.nombre), p.nombre, p.rubro.nombre, sr.nombre, p.marca.nombre, dv.costoCompra, dv.precioUnitario, dv.precioUnitario - dv.costoCompra, dv.cantidad, (dv.cantidad * (dv.precioUnitario - dv.costoCompra))"
+                + " FROM FacturaVenta fv JOIN fv.detallesVentaList dv JOIN dv.producto p LEFT JOIN p.subrubro sr LEFT JOIN fv.vendedor v");
+        return sb.toString();
+    }
+
+    private void cargarTablaProductosCostoVenta(String query) {
+        DefaultTableModel dtm = buscadorr.getDtm();
+        dtm.setRowCount(0);
+        @SuppressWarnings("unchecked")
+        List<Object[]> l = DAO.getEntityManager().createQuery(query).getResultList();
+        for (Object[] o : l) {
+            dtm.addRow(o);
+        }
     }
 }

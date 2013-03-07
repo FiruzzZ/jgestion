@@ -899,7 +899,9 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                 detalleVenta.setPrecioUnitario((BigDecimal) dtm.getValueAt(i, 4));
                 detalleVenta.setDescuento(Double.valueOf(dtm.getValueAt(i, 6).toString()));
                 detalleVenta.setTipoDesc(Integer.valueOf(dtm.getValueAt(i, 8).toString()));
-                detalleVenta.setProducto(productoController.find((Integer) dtm.getValueAt(i, 9)));
+                Producto p = productoController.find((Integer) dtm.getValueAt(i, 9));
+                detalleVenta.setProducto(p);
+                detalleVenta.setCostoCompra(p.getCostoCompra());
                 detalleVenta.setFactura(newFacturaVenta);
                 if (dtm.getValueAt(i, 10) != null) {
                     detalleVenta.setOferta((HistorialOfertas) dtm.getValueAt(i, 10));
