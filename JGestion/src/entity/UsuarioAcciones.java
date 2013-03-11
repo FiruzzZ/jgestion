@@ -39,7 +39,7 @@ public class UsuarioAcciones implements Serializable {
     @Column(length = 2000)
     private String detalle;
     @Basic(optional = false)
-    @Column(nullable = false)
+    @Column(nullable = false, insertable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechasistema;
     @Column(length = 24)

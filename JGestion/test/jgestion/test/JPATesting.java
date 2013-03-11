@@ -1,6 +1,7 @@
 package jgestion.test;
 
 import controller.DAO;
+import controller.Reportes;
 import entity.*;
 import generics.PropsUtils;
 import java.io.File;
@@ -28,13 +29,13 @@ public class JPATesting {
             Properties properties = PropsUtils.load(new File("cfg.ini"));
             DAO.setProperties(properties);
             new JPATesting();
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(JPATesting.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     @SuppressWarnings("unchecked")
-    public JPATesting() {
+    public JPATesting() throws Exception {
     }
 
     private void updateCostoCompraYPrecioVentaSegunDetalleCompra() {

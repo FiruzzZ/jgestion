@@ -5,12 +5,16 @@ import controller.exceptions.MessageException;
 import entity.Banco;
 import entity.Caja;
 import entity.ChequeTerceros;
+import entity.ChequeTercerosEntrega;
+import entity.ChequeTercerosEntregaDetalle;
 import entity.Cliente;
 import entity.DetalleCajaMovimientos;
+import entity.Usuario;
 import entity.enums.ChequeEstado;
 import gui.JDABM;
 import gui.JDChequesManager;
 import gui.PanelABMCheques;
+import gui.PanelEntregaTerceros;
 import gui.PanelMovimientosVarios;
 import java.awt.Color;
 import java.awt.GridLayout;
@@ -20,9 +24,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -32,6 +38,7 @@ import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
 import jgestion.JGestionUtils;
 import jpa.controller.ChequeTercerosJpaController;
+import jpa.controller.UsuarioJpaController;
 import org.apache.log4j.Logger;
 import utilities.general.UTIL;
 import utilities.swing.RowColorRender;
@@ -57,6 +64,7 @@ public class ChequeTercerosController implements ActionListener {
     private final String[] orderByToComboBoxList = {"N° Cheque", "Fecha de Emisión", "Fecha de Cobro", "Importe", "Banco", "Cliente", "Estado"};
     //Y este es el equivalente (de lo seleccionado en el combo) para el SQL.
     private final String[] orderByToQueryKeyList = {"numero", "fecha_cheque", "fecha_cobro", "importe", "banco.nombre", "cliente.nombre", "estado"};
+    private PanelEntregaTerceros panelEntregaTerceros;
 
     public ChequeTercerosController() {
         jpaController = new ChequeTercerosJpaController();
@@ -408,6 +416,7 @@ public class ChequeTercerosController implements ActionListener {
         jdChequeManager.getjTable1().setDefaultRenderer(Object.class, new RowColorRender() {
             private static final long serialVersionUID = 1L;
             final Date hoy = new Date();
+
             @Override
             public Color condicion(Object value, int row, int column) {
                 Color c = null;
@@ -607,5 +616,143 @@ public class ChequeTercerosController implements ActionListener {
         abm.setLocationRelativeTo(jdChequeManager);
         abm.toFront();
         abm.setVisible(true);
+    }
+
+    public void showEntregas(Window owner) {
+        panelEntregaTerceros = new PanelEntregaTerceros();
+//        UTIL.loadComboBox(panelEntregaTerceros.getCbUsuarioEmisor(), JGestionUtils.getWrappedUsuarios(new UsuarioJpaController().findWithCheques()), true);
+        UTIL.loadComboBox(panelEntregaTerceros.getCbUsuarioReceptor(), JGestionUtils.getWrappedUsuarios(new UsuarioJpaController().findByEstado(1)), false);
+        UTIL.getDefaultTableModel(panelEntregaTerceros.getTableDisponibles(),
+                new String[]{"ChequeTercero.object", "Número", "Banco", "Importe"}, new int[]{1, 100, 100, 100});
+        panelEntregaTerceros.getTableDisponibles().getColumnModel().getColumn(3).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        UTIL.hideColumnTable(panelEntregaTerceros.getTableDisponibles(), 0);
+        UTIL.getDefaultTableModel(panelEntregaTerceros.getTableEntregados(),
+                new String[]{"ChequeTercero.object", "Número", "Banco", "Importe"}, new int[]{1, 100, 100, 100});
+        panelEntregaTerceros.getTableEntregados().getColumnModel().getColumn(3).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        UTIL.hideColumnTable(panelEntregaTerceros.getTableEntregados(), 0);
+//        panelEntregaTerceros.getCbUsuarioEmisor().addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                if (panelEntregaTerceros.getTableEntregados().getSelectedRows().length > 0) {
+//                }
+//                loadChequesEnCartera();
+//                refreshTotales();
+//            }
+//        });
+        panelEntregaTerceros.getBtnADD().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (panelEntregaTerceros.getTableDisponibles().getSelectedRows().length > 0) {
+                    DefaultTableModel dtmDisponibles = (DefaultTableModel) panelEntregaTerceros.getTableDisponibles().getModel();
+                    DefaultTableModel dtmEntregados = (DefaultTableModel) panelEntregaTerceros.getTableEntregados().getModel();
+                    for (int row : panelEntregaTerceros.getTableDisponibles().getSelectedRows()) {
+                        ChequeTerceros c = (ChequeTerceros) dtmDisponibles.getValueAt(row, 0);
+                        dtmEntregados.addRow(new Object[]{c, c.getNumero(), c.getBanco().getNombre(), c.getImporte()});
+                    }
+                    loadChequesEnCartera();
+                    refreshTotales();
+                } else {
+                    JOptionPane.showMessageDialog(abm, "Debe seleccionar al menos un cheque disponible");
+                }
+            }
+        });
+        panelEntregaTerceros.getBtnDEL().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (panelEntregaTerceros.getTableEntregados().getSelectedRows().length > 0) {
+                    UTIL.removeSelectedRows(panelEntregaTerceros.getTableEntregados());
+                    loadChequesEnCartera();
+                    refreshTotales();
+                } else {
+                    JOptionPane.showMessageDialog(abm, "Seleccione los cheques que desea quitar");
+                }
+            }
+        });
+        abm = new JDABM(owner, "Entrega de Cheques", true, panelEntregaTerceros);
+        abm.getbAceptar().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    ChequeTercerosEntrega cte = createEntregaTerceros();
+                    DAO.create(cte);
+                    for (ChequeTercerosEntregaDetalle d : cte.getDetalle()) {
+                        DAO.doMerge(d.getChequeTerceros());
+                    }
+                    JOptionPane.showConfirmDialog(abm, "Entrega N°" + cte.getId() + " registrada");
+                } catch (MessageException ex) {
+                    ex.displayMessage(abm);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(abm, "Algo salió mal\n" + ex.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    LOG.error("creando entregaTerceros", ex);
+                }
+            }
+        });
+        loadChequesEnCartera();
+        refreshTotales();
+        abm.setVisible(true);
+    }
+
+    @SuppressWarnings("unchecked")
+    private ChequeTercerosEntrega createEntregaTerceros() throws MessageException {
+//        if (panelEntregaTerceros.getCbUsuarioEmisor().getSelectedIndex() < 1) {
+//            throw new MessageException("Usuario emisor no válido");
+//        }
+//        Usuario emisor = ((ComboBoxWrapper<Usuario>) panelEntregaTerceros.getCbUsuarioEmisor().getSelectedItem()).getEntity();
+        Usuario emisor = UsuarioController.getCurrentUser();
+        Usuario receptor = ((ComboBoxWrapper<Usuario>) panelEntregaTerceros.getCbUsuarioReceptor().getSelectedItem()).getEntity();
+        if (emisor.equals(receptor)) {
+            throw new MessageException("Emisor y Receptor no puede ser iguales, ¿no te parece?");
+        }
+        DefaultTableModel dtm = (DefaultTableModel) panelEntregaTerceros.getTableEntregados().getModel();
+        if (dtm.getRowCount() < 1) {
+            throw new MessageException("No ha agregado ningún cheque a la entrega");
+        }
+        ChequeTercerosEntrega o = new ChequeTercerosEntrega(emisor, receptor, null);
+        List<ChequeTercerosEntregaDetalle> detalle = new ArrayList<ChequeTercerosEntregaDetalle>(dtm.getRowCount());
+        for (int row = 0; row < dtm.getRowCount(); row++) {
+            ChequeTerceros c = (ChequeTerceros) dtm.getValueAt(row, 0);
+            c.setUsuario(receptor);
+            detalle.add(new ChequeTercerosEntregaDetalle(c, o));
+        }
+        o.setDetalle(detalle);
+        return o;
+    }
+
+    private void loadChequesEnCartera() {
+        @SuppressWarnings("unchecked")
+        Usuario u = UsuarioController.getCurrentUser();
+        String query = "SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o"
+                + " WHERE o.estado=" + ChequeEstado.CARTERA.getId() + " AND o.usuario.id=" + u.getId();
+        DefaultTableModel dtm = (DefaultTableModel) panelEntregaTerceros.getTableEntregados().getModel();
+        if (dtm.getRowCount() > 0) {
+            for (int row = 0; row < dtm.getRowCount(); row++) {
+                ChequeTerceros c = (ChequeTerceros) dtm.getValueAt(row, 0);
+                query += " AND o.id <> " + c.getId();
+            }
+        }
+        List<ChequeTerceros> l = jpaController.findByQuery(query);
+        dtm = (DefaultTableModel) panelEntregaTerceros.getTableDisponibles().getModel();
+        dtm.setRowCount(0);
+        for (ChequeTerceros c : l) {
+            dtm.addRow(new Object[]{c, c.getNumero(), c.getBanco().getNombre(), c.getImporte()});
+        }
+    }
+
+    private void refreshTotales() {
+        DefaultTableModel dtm = (DefaultTableModel) panelEntregaTerceros.getTableDisponibles().getModel();
+        BigDecimal total = BigDecimal.ZERO;
+        for (int row = 0; row < dtm.getRowCount(); row++) {
+            ChequeTerceros c = (ChequeTerceros) dtm.getValueAt(row, 0);
+            total = total.add(c.getImporte());
+        }
+        panelEntregaTerceros.getTfTotalDisponible().setText(UTIL.DECIMAL_FORMAT.format(total));
+
+        total = BigDecimal.ZERO;
+        dtm = (DefaultTableModel) panelEntregaTerceros.getTableEntregados().getModel();
+        for (int row = 0; row < dtm.getRowCount(); row++) {
+            ChequeTerceros c = (ChequeTerceros) dtm.getValueAt(row, 0);
+            total = total.add(c.getImporte());
+        }
+        panelEntregaTerceros.getTfTotalRecepcion().setText(UTIL.DECIMAL_FORMAT.format(total));
     }
 }

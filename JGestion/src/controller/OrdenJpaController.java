@@ -376,8 +376,8 @@ public class OrdenJpaController {
                 new String[]{"entity", "Nº", "Sucursal", "Fecha", "Usuario"},
                 new int[]{1, 40, 60, 60, 60});
         UTIL.hideColumnTable(buscador.getjTable1(), 0);
-        buscador.getbImprimir().setVisible(false);
-        buscador.getbLimpiar().setVisible(false);
+        buscador.getBtnImprimir().setVisible(false);
+        buscador.getBtnToExcel().setVisible(false);
         buscador.getjTable1().addMouseListener(new MouseAdapter() {
 
             @Override
@@ -392,7 +392,7 @@ public class OrdenJpaController {
                 }
             }
         });
-        buscador.getbBuscar().addActionListener(new ActionListener() {
+        buscador.getBtnBuscar().addActionListener(new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {

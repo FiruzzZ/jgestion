@@ -50,12 +50,6 @@ public class PanelProductosCostoVenta extends javax.swing.JPanel {
 
         jLabel15.setText("Sub Rubro");
 
-        cbSubRubros.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cbSubRubrosActionPerformed(evt);
-            }
-        });
-
         jLabel1.setText("Vendedor");
 
         jLabel2.setText("Cliente");
@@ -135,10 +129,6 @@ public class PanelProductosCostoVenta extends javax.swing.JPanel {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
-
-    private void cbSubRubrosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbSubRubrosActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cbSubRubrosActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox cbClientes;

@@ -2,15 +2,12 @@ package controller;
 
 import ar.com.fdvs.dj.core.DynamicJasperHelper;
 import ar.com.fdvs.dj.core.layout.ClassicLayoutManager;
-import ar.com.fdvs.dj.domain.DJDataSource;
 import ar.com.fdvs.dj.domain.DynamicReport;
 import ar.com.fdvs.dj.domain.Style;
 import ar.com.fdvs.dj.domain.builders.ColumnBuilder;
 import ar.com.fdvs.dj.domain.builders.DynamicReportBuilder;
-import ar.com.fdvs.dj.domain.builders.SubReportBuilder;
 import ar.com.fdvs.dj.domain.constants.Font;
 import ar.com.fdvs.dj.domain.constants.HorizontalAlign;
-import ar.com.fdvs.dj.domain.entities.Subreport;
 import controller.exceptions.DatabaseErrorException;
 import controller.exceptions.MessageException;
 import controller.exceptions.MissingReportException;
@@ -22,12 +19,13 @@ import java.awt.BorderLayout;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import javax.persistence.NoResultException;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -38,12 +36,12 @@ import jpa.controller.ProductoJpaController;
 import net.atlanticbb.tantlinger.shef.HTMLEditorPane;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.apache.log4j.Logger;
 import utilities.general.UTIL;
 import utilities.swing.components.ComboBoxWrapper;
 import utilities.swing.components.NumberRenderer;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
 /**
  *
@@ -709,7 +707,8 @@ public class ProductoController implements ActionListener, KeyListener {
             @SuppressWarnings("unchecked")
             public void actionPerformed(ActionEvent e) {
                 try {
-                    Reportes r = new Reportes(null);
+                    Reportes r = new Reportes(null, true);
+                    r.showWaitingDialog();
                     List<Producto> list = jpaController.findByBienDeCambio(true);
                     DynamicReportBuilder drb = new DynamicReportBuilder();
                     Style currencyStyle = new Style();
@@ -760,9 +759,10 @@ public class ProductoController implements ActionListener, KeyListener {
                     r.setjPrint(jp);
                     r.viewReport();
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(jd, "algo salió mal");
+                    JOptionPane.showMessageDialog(null, "algo salió mal");
                     LOG.error("Creando reporte producto", ex);
                 }
+
             }
         });
         jd.getbAceptar().addActionListener(new ActionListener() {
@@ -791,7 +791,7 @@ public class ProductoController implements ActionListener, KeyListener {
                 new Class<?>[]{null, null, null, null, null, null, null, null, null, null, null, null});
         TableColumnModel tm = buscador.getjTable1().getColumnModel();
         tm.getColumn(5).setCellRenderer(NumberRenderer.getCurrencyRenderer(4));
-        buscador.getbBuscar().addActionListener(new ActionListener() {
+        buscador.getBtnBuscar().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -805,11 +805,11 @@ public class ProductoController implements ActionListener, KeyListener {
             }
         });
 
-        buscador.getbImprimir().addActionListener(new ActionListener() {
+        buscador.getBtnImprimir().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    buscador.getbImprimir().setEnabled(false);
+                    buscador.getBtnImprimir().setEnabled(false);
                     String query = armarQueryMovimientosProductos();
                     cargarTablaMovimientosProductos(query);
                     Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_MovimientosProductos.jasper", "Movimientos Productos");
@@ -831,14 +831,14 @@ public class ProductoController implements ActionListener, KeyListener {
                 } catch (MissingReportException ex) {
                     JOptionPane.showMessageDialog(buscador, ex.getMessage());
                 } finally {
-                    buscador.getbImprimir().setEnabled(true);
+                    buscador.getBtnImprimir().setEnabled(true);
                 }
             }
         });
-        buscador.getbLimpiar().addActionListener(new ActionListener() {
+        buscador.getBtnToExcel().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                UTIL.limpiarDtm(buscador.getjTable1());
+                JOptionPane.showMessageDialog(null, "No implementado aún");
             }
         });
         buscador.setVisible(true);
@@ -982,7 +982,7 @@ public class ProductoController implements ActionListener, KeyListener {
                 buscador.getjTable1(),
                 new String[]{"NOMBRE", "CÓDIGO", "MARCA", "RUBRO", "SUB RUBRO"},
                 new int[]{250, 60, 60, 50, 50});
-        buscador.getbBuscar().addActionListener(new ActionListener() {
+        buscador.getBtnBuscar().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -992,7 +992,7 @@ public class ProductoController implements ActionListener, KeyListener {
                 }
             }
         });
-        buscador.getbImprimir().addActionListener(new ActionListener() {
+        buscador.getBtnImprimir().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {

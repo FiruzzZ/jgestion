@@ -1,3 +1,32 @@
+--20130310
+CREATE TABLE cheque_terceros_entrega (
+  id serial NOT NULL,
+  usuario_emisor_id integer NOT NULL,
+  usuario_receptor_id integer NOT NULL,
+  fecha_creacion timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT cheque_terceros_entrega_pkey PRIMARY KEY (id ),
+  CONSTRAINT cheque_terceros_entrega_usuario_emisor_id_fkey FOREIGN KEY (usuario_emisor_id)
+      REFERENCES usuario (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT cheque_terceros_entrega_usuario_receptor_id_fkey FOREIGN KEY (usuario_receptor_id)
+      REFERENCES usuario (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (  OIDS=FALSE);
+CREATE TABLE cheque_terceros_entrega_detalle (
+  id serial NOT NULL,
+  cheque_terceros_id integer NOT NULL,
+  cheque_terceros_entrega_id integer NOT NULL,
+  CONSTRAINT cheque_terceros_entrega_detalle_pkey PRIMARY KEY (id ),
+  CONSTRAINT cheque_terceros_entrega_detalle_cheque_terceros_entrega_id_fkey FOREIGN KEY (cheque_terceros_entrega_id)
+      REFERENCES cheque_terceros_entrega (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT cheque_terceros_entrega_detalle_cheque_terceros_id_fkey FOREIGN KEY (cheque_terceros_id)
+      REFERENCES cheque_terceros (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT cheque_terceros_entrega_detalle_cheque_terceros_entrega_id_key UNIQUE (cheque_terceros_entrega_id , cheque_terceros_id )
+)
+WITH (  OIDS=FALSE);
 --20130306
 alter table detalle_venta add column costo_compra numeric(12,4) not null default 0;
 --20130305

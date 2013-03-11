@@ -677,7 +677,7 @@ public class CajaMovimientosController implements ActionListener {
         buscador.getjTable1().getColumnModel().getColumn(7).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         buscador.getjTable1().getColumnModel().getColumn(8).setCellRenderer(FormatRenderer.getDateTimeRenderer());
         UTIL.hideColumnTable(buscador.getjTable1(), 0);
-        buscador.getbBuscar().addActionListener(new ActionListener() {
+        buscador.getBtnBuscar().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -688,7 +688,7 @@ public class CajaMovimientosController implements ActionListener {
                 }
             }
         });
-        buscador.getbImprimir().addActionListener(new ActionListener() {
+        buscador.getBtnImprimir().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -787,7 +787,7 @@ public class CajaMovimientosController implements ActionListener {
                 new int[]{150, 20, 60, 50});
         buscador.hideLimpiar();
         buscador.setListener(this);
-        buscador.getbBuscar().addActionListener(new ActionListener() {
+        buscador.getBtnBuscar().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -797,7 +797,7 @@ public class CajaMovimientosController implements ActionListener {
                 }
             }
         });
-        buscador.getbImprimir().addActionListener(new ActionListener() {
+        buscador.getBtnImprimir().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -868,7 +868,7 @@ public class CajaMovimientosController implements ActionListener {
         panelBuscadorCajasCerradas = new PanelBuscadorCajasCerradas();
         UTIL.loadComboBox(panelBuscadorCajasCerradas.getCbCaja(), new CajaController().findCajasPermitidasByUsuario(UsuarioController.getCurrentUser(), true), true);
         buscador = new JDBuscador(jdCierreCaja, "Buscador - Cajas cerradas", true, panelBuscadorCajasCerradas);
-        buscador.getbImprimir().setEnabled(false);
+        buscador.getBtnImprimir().setEnabled(false);
         buscador.hideLimpiar();
         // <editor-fold defaultstate="collapsed" desc="InitJTable">
         UTIL.getDefaultTableModel(
@@ -887,7 +887,7 @@ public class CajaMovimientosController implements ActionListener {
                 }
             }
         });// </editor-fold>
-        buscador.getbBuscar().addActionListener(new ActionListener() {
+        buscador.getBtnBuscar().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -1087,7 +1087,7 @@ public class CajaMovimientosController implements ActionListener {
         buscador.getjTable1().getColumnModel().getColumn(7).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         buscador.getjTable1().getColumnModel().getColumn(8).setCellRenderer(FormatRenderer.getDateTimeRenderer());
         UTIL.hideColumnTable(buscador.getjTable1(), 0);
-        buscador.getbBuscar().addActionListener(new ActionListener() {
+        buscador.getBtnBuscar().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -1125,7 +1125,7 @@ public class CajaMovimientosController implements ActionListener {
                 }
             }
         });
-        buscador.getbImprimir().setEnabled(false);
+        buscador.getBtnImprimir().setEnabled(false);
         buscador.hideLimpiar();
         buscador.setLocationRelativeTo(null);
         buscador.setVisible(true);

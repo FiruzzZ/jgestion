@@ -492,7 +492,7 @@ public class CtacteClienteController implements ActionListener {
         DefaultTableCellRenderer defaultTableCellRender = new DefaultTableCellRenderer();
         defaultTableCellRender.setHorizontalAlignment(JLabel.RIGHT);
         buscador.getjTable1().setDefaultRenderer(String.class, defaultTableCellRender);
-        buscador.getbBuscar().addActionListener(new ActionListener() {
+        buscador.getBtnBuscar().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -508,7 +508,7 @@ public class CtacteClienteController implements ActionListener {
                 }
             }
         });
-        buscador.getbImprimir().addActionListener(new ActionListener() {
+        buscador.getBtnImprimir().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {

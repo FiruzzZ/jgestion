@@ -276,12 +276,14 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                             //consulta al usuario antes de limpiar el detalle de factura
                             if (JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog(jdFactura,
                                     "Si cambia la lista de precios, se borrarán todos los items ingresados."
-                                    + "\nEsto es necesario para volver a calcular los precios en base al porcentaje de ganancia.",
+                                    + "\nEsto es necesario para volver a calcular los precios en base la lista seleccionada.",
                                     "Advertencia",
                                     JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE)) {
                                 borrarDetalles();
                                 selectedListaPrecios = (ListaPrecios) jdFactura.getCbListaPrecio().getSelectedItem();
                                 setIconoListaPrecios(selectedListaPrecios);
+                            } else {
+                                UTIL.setSelectedItem(jdFactura.getCbListaPrecio(), selectedListaPrecios);
                             }
                         } else {
                             selectedListaPrecios = (ListaPrecios) jdFactura.getCbListaPrecio().getSelectedItem();
@@ -999,8 +1001,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    String query = armarQuery();
-                    cargarTablaBuscador(query);
+                    cargarTablaBuscador(armarQuery());
                 } catch (MessageException ex) {
                     buscador.showMessage(ex.getMessage(), "Buscador - " + jpaController.getEntityClass().getSimpleName(), 0);
                 }
@@ -1011,8 +1012,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    String query = armarQuery();
-                    cargarTablaBuscador(query);
+                    cargarTablaBuscador(armarQuery());
                     doReportFacturas(null);
                 } catch (MissingReportException ex) {
                     JOptionPane.showMessageDialog(null, ex.getMessage());
@@ -1060,8 +1060,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                             }
                         }
                         setDatosToEdit();
-                        String query = armarQuery();
-                        cargarTablaBuscador(query);
+                        cargarTablaBuscador(armarQuery());
                     } catch (MessageException ex) {
                         buscador.showMessage(ex.getMessage(), "Error de datos", 0);
                     }
@@ -1416,7 +1415,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
             jdFactura.getCbVendedor().addItem(new ComboBoxWrapper<Vendedor>(v, v.getId(), v.getApellido() + " " + v.getNombre()));
         }
         jdFactura.getCbListaPrecio().addItem(facturaVenta.getListaPrecios());
-        
+
         jdFactura.setDcFechaFactura(facturaVenta.getFechaVenta());
         if (facturaVenta.getRemito() != null) {
             jdFactura.setTfRemito(JGestionUtils.getNumeracion(facturaVenta.getRemito(), false));
@@ -1431,7 +1430,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         jdFactura.getCbCaja().addItem(facturaVenta.getCaja());
         UTIL.loadComboBox(jdFactura.getCbFormaPago(), Valores.FormaPago.getFormasDePago(), false);
         UTIL.setSelectedItem(jdFactura.getCbFormaPago(), facturaVenta.getFormaPagoEnum().toString());
-        
+
         jdFactura.getTfObservacion().setText(facturaVenta.getObservacion());
         if (facturaVenta.getFormaPagoEnum() == Valores.FormaPago.CTA_CTE) {
             if (facturaVenta.getDiasCtaCte() != null) {
@@ -1935,8 +1934,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    String query = armarQuery();
-                    cargarTablaBuscadorAsignacion(query);
+                    cargarTablaBuscadorAsignacion(armarQuery());
                 } catch (MessageException ex) {
                     buscador.showMessage(ex.getMessage(), "Buscador - " + jpaController.getEntityClass().getSimpleName(), 0);
                 }
@@ -1972,14 +1970,23 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                             UnidadDeNegocio unidad = ((ComboBoxWrapper<UnidadDeNegocio>) data).getEntity();
                             selected.setUnidadDeNegocio(unidad);
                         } else if (column == 9) {
-                            Cuenta unidad = ((ComboBoxWrapper<Cuenta>) data).getEntity();
-                            selected.setCuenta(unidad);
-                            JComboBox subCuentas = new JComboBox();
-                            UTIL.loadComboBox(subCuentas, JGestionUtils.getWrappedSubCuentas(unidad.getSubCuentas()), false);
-                            buscador.getjTable1().getModel().setValueAt(subCuentas, row, column);
+                            @SuppressWarnings("unchecked")
+                            Cuenta cuenta = ((ComboBoxWrapper<Cuenta>) data).getEntity();
+                            selected.setCuenta(cuenta);
+
+                            //carga las subCuentas
+                            DefaultCellEditor dce = (DefaultCellEditor) buscador.getjTable1().getColumnModel()
+                                    //columnIndex is one lesser than its original position because one column was removed from table
+                                    .getColumn(9).getCellEditor();
+                            JComboBox cbSubCuentas = (JComboBox) dce.getComponent();
+                            if (cuenta.getSubCuentas().isEmpty()) {
+                                cbSubCuentas.removeAllItems();
+                            } else {
+                                UTIL.loadComboBox(cbSubCuentas, JGestionUtils.getWrappedSubCuentas(cuenta.getSubCuentas()), false);
+                            }
                         } else if (column == 10) {
-                            SubCuenta unidad = ((ComboBoxWrapper<SubCuenta>) data).getEntity();
-                            selected.setSubCuenta(unidad);
+                            SubCuenta subCuenta = ((ComboBoxWrapper<SubCuenta>) data).getEntity();
+                            selected.setSubCuenta(subCuenta);
                         }
                         jpaController.merge(selected);
                     }
@@ -1996,8 +2003,6 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         dtm.setRowCount(0);
         List<FacturaVenta> l = jpaController.findByNativeQuery(query);
         for (FacturaVenta facturaVenta : l) {
-
-            System.out.println(facturaVenta.getId() + "\n\t" + facturaVenta.getUnidadDeNegocio() + "\n\t" + facturaVenta.getCuenta() + "\n\t" + facturaVenta.getSubCuenta());
             dtm.addRow(new Object[]{
                         facturaVenta.getId(), // <--- no es visible
                         JGestionUtils.getNumeracion(facturaVenta),

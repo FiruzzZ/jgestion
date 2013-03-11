@@ -34,7 +34,7 @@ public class JDBuscador extends javax.swing.JDialog {
         initComponents();
         panelInferior.setVisible(false);
         ajustarAlPanel(panel.getWidth(), panel.getHeight());
-        this.getRootPane().setDefaultButton(bBuscar);
+        this.getRootPane().setDefaultButton(btnBuscar);
         panelInferior.setLayout(new FlowLayout(FlowLayout.RIGHT));
         resumeItems = new HashMap<String, JTextField>(0);
     }
@@ -59,9 +59,9 @@ public class JDBuscador extends javax.swing.JDialog {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
-        bLimpiar = new javax.swing.JButton();
-        bBuscar = new javax.swing.JButton();
-        bImprimir = new javax.swing.JButton();
+        btnBuscar = new javax.swing.JButton();
+        btnImprimir = new javax.swing.JButton();
+        btnToExcel = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         panelInferior = new javax.swing.JPanel();
 
@@ -77,18 +77,18 @@ public class JDBuscador extends javax.swing.JDialog {
 
         jPanel1.setMinimumSize(new java.awt.Dimension(143, 143));
 
-        bLimpiar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/broom32x32.png"))); // NOI18N
-        bLimpiar.setText("Limpiar");
-        bLimpiar.setFocusable(false);
-        bLimpiar.setName("limpiarBuscador"); // NOI18N
+        btnBuscar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/lupa.png"))); // NOI18N
+        btnBuscar.setText("Buscar");
+        btnBuscar.setName("buscarBuscador"); // NOI18N
 
-        bBuscar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/lupa.png"))); // NOI18N
-        bBuscar.setText("Buscar");
-        bBuscar.setName("buscarBuscador"); // NOI18N
+        btnImprimir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/impresora.png"))); // NOI18N
+        btnImprimir.setText("Imprimir");
+        btnImprimir.setName("imprimirBuscador"); // NOI18N
 
-        bImprimir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/impresora.png"))); // NOI18N
-        bImprimir.setText("Imprimir");
-        bImprimir.setName("imprimirBuscador"); // NOI18N
+        btnToExcel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px_excel.png"))); // NOI18N
+        btnToExcel.setText("To  Excel");
+        btnToExcel.setFocusable(false);
+        btnToExcel.setName("limpiarBuscador"); // NOI18N
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -97,21 +97,21 @@ public class JDBuscador extends javax.swing.JDialog {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(bImprimir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(bBuscar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(bLimpiar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(btnBuscar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnImprimir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnToExcel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(bLimpiar, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(bBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(bImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(18, Short.MAX_VALUE))
+                .addComponent(btnToExcel, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(19, Short.MAX_VALUE))
         );
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 10)); // NOI18N
@@ -166,9 +166,9 @@ public class JDBuscador extends javax.swing.JDialog {
        jLabel1.setText("Nº Registros: " + getDtm().getRowCount());
    }//GEN-LAST:event_jTable1ComponentResized
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton bBuscar;
-    private javax.swing.JButton bImprimir;
-    private javax.swing.JButton bLimpiar;
+    private javax.swing.JButton btnBuscar;
+    private javax.swing.JButton btnImprimir;
+    private javax.swing.JButton btnToExcel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
@@ -177,9 +177,9 @@ public class JDBuscador extends javax.swing.JDialog {
     // End of variables declaration//GEN-END:variables
 
     public void setListener(Object o) {
-        bBuscar.addActionListener((ActionListener) o);
-        bImprimir.addActionListener((ActionListener) o);
-        bLimpiar.addActionListener((ActionListener) o);
+        btnBuscar.addActionListener((ActionListener) o);
+        btnImprimir.addActionListener((ActionListener) o);
+        btnToExcel.addActionListener((ActionListener) o);
         try {
             jTable1.addMouseListener((MouseListener) o);
         } catch (ClassCastException ex) {
@@ -196,23 +196,23 @@ public class JDBuscador extends javax.swing.JDialog {
     }
 
     public void hideImprimir() {
-        bImprimir.setVisible(false);
+        btnImprimir.setVisible(false);
     }
 
     public void hideLimpiar() {
-        bLimpiar.setVisible(false);
+        btnToExcel.setVisible(false);
     }
 
-    public JButton getbBuscar() {
-        return bBuscar;
+    public JButton getBtnBuscar() {
+        return btnBuscar;
     }
 
-    public JButton getbImprimir() {
-        return bImprimir;
+    public JButton getBtnImprimir() {
+        return btnImprimir;
     }
 
-    public JButton getbLimpiar() {
-        return bLimpiar;
+    public JButton getBtnToExcel() {
+        return btnToExcel;
     }
 
     public JPanel getPanelInferior() {
@@ -231,13 +231,24 @@ public class JDBuscador extends javax.swing.JDialog {
      * @param bloquear <code>true</code> bloquea los botones
      */
     public void bloquearBotones(boolean bloquear) {
-        bBuscar.setEnabled(!bloquear);
-        bImprimir.setEnabled(!bloquear);
-        bLimpiar.setEnabled(!bloquear);
+        btnBuscar.setEnabled(!bloquear);
+        btnImprimir.setEnabled(!bloquear);
+        btnToExcel.setEnabled(!bloquear);
     }
 
+    /**
+     * Sirve para agregar JTextFields al pié del buscador, normalmente para
+     * representar sumatorias y totales. Los componentes se agregan alineados a
+     * la derecha y los demás van desplazando a los anteriores hacia la izq
+     *
+     * @param labelText label text and the key with which the specified
+     * JTextField is to be associated
+     * @param tf will be setted as {@link JTextField#setEditable(false)} and
+     * {@link JTextField#setHorizontalAlignment(JTextField.RIGHT)}
+     */
     public void addResumeItem(String labelText, JTextField tf) {
         tf.setEditable(false);
+        tf.setHorizontalAlignment(JTextField.RIGHT);
         resumeItems.put(labelText, tf);
         panelInferior.add(new JLabel(labelText));
         panelInferior.add(tf);

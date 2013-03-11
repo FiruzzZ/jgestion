@@ -680,15 +680,13 @@ public class FacturaCompraController implements ActionListener, KeyListener {
             if (buscador != null && buscador.isActive()) {
                 if (boton.equals(buscador.getbBuscar())) {
                     try {
-                        String query = armarQuery();
-                        cargarTablaBuscador(query);
+                        cargarTablaBuscador(armarQuery());
                     } catch (MessageException ex) {
                         ex.displayMessage(buscador);
                     }
                 } else if (boton.equals(buscador.getbImprimir())) {
                     try {
-                        String query = armarQuery();
-                        cargarTablaBuscador(query);
+                        cargarTablaBuscador(armarQuery());
                         doReportFacturas();
                     } catch (JRException ex) {
                         JOptionPane.showMessageDialog(null, ex.getMessage());
@@ -727,6 +725,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         }
         buscador = new JDBuscadorReRe(frame, "Buscador - Factura compra", modal, "Proveedor", "Nº Factura");
         buscador.hideFactura();
+        buscador.hideVendedor();
         buscador.getbImprimir().setVisible(true);
         ActionListenerManager.setUnidadDeNegocioSucursalActionListener(buscador.getCbUnidadDeNegocio(), true, buscador.getCbSucursal(), true, true);
         ActionListenerManager.setCuentasEgresosSubcuentaActionListener(buscador.getCbCuenta(), true, buscador.getCbSubCuenta(), true, true);
@@ -914,11 +913,16 @@ public class FacturaCompraController implements ActionListener, KeyListener {
                 public void actionPerformed(ActionEvent e) {
                     try {
                         String msg_extra_para_ctacte = EL_OBJECT.getFormaPago() == Valores.FormaPago.CTA_CTE.getId() ? "\n- Remesas de pago de Cta.Cte." : "";
-                        if (0 == JOptionPane.showOptionDialog(jdFactura, "- Factura Nº:" + UTIL.AGREGAR_CEROS(EL_OBJECT.getNumero() + "\n- Movimiento de Caja\n- Movimiento de Stock" + msg_extra_para_ctacte, 12), "Confirmación de anulación", JOptionPane.YES_OPTION, 2, null, null, null)) {
+                        if (JOptionPane.YES_OPTION == JOptionPane.showOptionDialog(jdFactura,
+                                "- " + JGestionUtils.getNumeracion(EL_OBJECT)
+                                + "\n- Movimiento de Caja"
+                                + "\n- Movimiento de Stock" + msg_extra_para_ctacte, "Confirmación de anulación", JOptionPane.YES_OPTION, 2, null, null, null)) {
                             anular(EL_OBJECT);
+                            EL_OBJECT = null;
+                            jdFactura.showMessage("Anulada", CLASS_NAME, 2);
+                            jdFactura.dispose();
+                            cargarTablaBuscador(armarQuery());
                         }
-                        jdFactura.showMessage("Anulada", CLASS_NAME, 2);
-                        jdFactura.dispose();
                     } catch (MessageException ex) {
                         jdFactura.showMessage(ex.getMessage(), CLASS_NAME, 2);
                     }
@@ -1089,8 +1093,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    String query = armarQuery();
-                    cargarTablaBuscadorAsignacion(query);
+                    cargarTablaBuscadorAsignacion(armarQuery());
                 } catch (MessageException ex) {
                     buscador.showMessage(ex.getMessage(), "Buscador - " + jpaController.getEntityClass().getSimpleName(), 0);
                 }
@@ -1129,14 +1132,28 @@ public class FacturaCompraController implements ActionListener, KeyListener {
                     FacturaCompra selected = jpaController.find((Integer) model.getValueAt(row, 0));
                     if (data != null) {
                         if (column == 8) {
+                            @SuppressWarnings("unchecked")
                             UnidadDeNegocio unidad = ((ComboBoxWrapper<UnidadDeNegocio>) data).getEntity();
                             selected.setUnidadDeNegocio(unidad);
                         } else if (column == 9) {
-                            Cuenta unidad = ((ComboBoxWrapper<Cuenta>) data).getEntity();
-                            selected.setCuenta(unidad);
+                            @SuppressWarnings("unchecked")
+                            Cuenta cuenta = ((ComboBoxWrapper<Cuenta>) data).getEntity();
+                            selected.setCuenta(cuenta);
+
+                            //carga las subCuentas
+                            DefaultCellEditor dce = (DefaultCellEditor) buscador.getjTable1().getColumnModel()
+                                    //columnIndex is one lesser than its original position because one column was removed from table
+                                    .getColumn(9).getCellEditor();
+                            JComboBox cbSubCuentas = (JComboBox) dce.getComponent();
+                            if (cuenta.getSubCuentas().isEmpty()) {
+                                cbSubCuentas.removeAllItems();
+                            } else {
+                                UTIL.loadComboBox(cbSubCuentas, JGestionUtils.getWrappedSubCuentas(cuenta.getSubCuentas()), false);
+                            }
                         } else if (column == 10) {
-                            SubCuenta unidad = ((ComboBoxWrapper<SubCuenta>) data).getEntity();
-                            selected.setSubCuenta(unidad);
+                            @SuppressWarnings("unchecked")
+                            SubCuenta subCuenta = ((ComboBoxWrapper<SubCuenta>) data).getEntity();
+                            selected.setSubCuenta(subCuenta);
                         }
                         jpaController.merge(selected);
                     }
@@ -1166,12 +1183,6 @@ public class FacturaCompraController implements ActionListener, KeyListener {
                         (factura.getCuenta() != null ? new ComboBoxWrapper<Cuenta>(factura.getCuenta(), factura.getCuenta().getId(), factura.getCuenta().getNombre()) : null),
                         (factura.getSubCuenta() != null ? new ComboBoxWrapper<SubCuenta>(factura.getSubCuenta(), factura.getSubCuenta().getId(), factura.getSubCuenta().getNombre()) : null)
                     });
-//            ComboBoxWrapper<Cuenta> cb = (ComboBoxWrapper<Cuenta>) dtm.getValueAt(dtm.getRowCount() - 1, 8);
-//            ComboBoxWrapper<Cuenta> x = facturaVenta.getCuenta() != null ? new ComboBoxWrapper<Cuenta>(facturaVenta.getCuenta(), facturaVenta.getCuenta().getId(), facturaVenta.getCuenta().getNombre()) : null;
-//            JComboBox c = (JComboBox) buscador.getjTable1().getColumnModel().getColumn(8).getCellEditor().getTableCellEditorComponent(null, x, false, dtm.getRowCount() - 1, 8);
-//            if (x != null) {
-//                UTIL.setSelectedItem(c, x);
-//            }
         }
 
     }

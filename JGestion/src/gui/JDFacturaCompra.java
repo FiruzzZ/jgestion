@@ -34,7 +34,7 @@ public class JDFacturaCompra extends javax.swing.JDialog {
     public JDFacturaCompra(Window parent, boolean modal) {
         super(parent, modal ? DEFAULT_MODALITY_TYPE : ModalityType.MODELESS);
         initComponents();
-        setLocation(this.getOwner().getX() + 100, this.getOwner().getY() + 50);
+//        setLocation(this.getOwner().getX() + 100, this.getOwner().getY() + 50);
         labelCodigoNoRegistrado.setVisible(false);
         labelDescuento.setVisible(false);
         cbDesc.setVisible(false);
@@ -1564,6 +1564,12 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         tfOtrosImpuestosRecuperables.setVisible(false);
         jLabel19.setVisible(false);
         tfOtrosImpuestosNoRecuperables.setVisible(false);
+        labelUnidad.setVisible(false);
+        cbUnidadDeNegocio.setVisible(false);
+        labelCuenta.setVisible(false);
+        cbCuenta.setVisible(false);
+        labelSubCuenta.setVisible(false);
+        cbSubCuenta.setVisible(false);
     }
 
     public void setUIToNotaCredito() {
