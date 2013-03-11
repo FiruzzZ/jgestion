@@ -11,7 +11,11 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExporter;
 import net.sf.jasperreports.engine.JRExporterParameter;
@@ -53,6 +57,9 @@ public class Reportes implements Runnable {
     private JRBeanCollectionDataSource beanCollectionDataSource;
     private static final Logger LOG = Logger.getLogger(Reportes.class.getName());
     private JasperPrint jPrint;
+    private final Icon impresoraIcon = new ImageIcon(getClass().getResource("/iconos/impresora.png"));
+    private boolean dinamycReport;
+    private Thread reportThread;
 
     /**
      *
@@ -76,7 +83,7 @@ public class Reportes implements Runnable {
             }
             pathReport = FOLDER_REPORTES + pathReport;
         }
-        jd = new WaitingDialog(null, "Imprimiendo", false, "Preparando reporte....");
+        jd = new WaitingDialog(null, "Imprimiendo", false, "Preparando reporte....", impresoraIcon);
         parameters = new HashMap<String, Object>();
         this.pathReport = pathReport;
         tituloReporte = title;
@@ -84,13 +91,22 @@ public class Reportes implements Runnable {
         withPrintDialog = true;
     }
 
-    public Reportes(JasperPrint jp) {
-        jd = new WaitingDialog(null, "Imprimiendo", false, "Preparando reporte....");
-        jd.setVisible(true);
+    public Reportes(JasperPrint jp, boolean dinamycReport) {
+        jd = new WaitingDialog(null, "Imprimiendo", false, "Preparando reporte....", impresoraIcon);
         pathReport = null;
         tituloReporte = null;
         jPrint = jp;
+        this.dinamycReport = dinamycReport;
+    }
 
+    public void showWaitingDialog() {
+        isViewerReport = false;
+        reportThread = new Thread(this);
+        reportThread.start();
+    }
+
+    public void setWaitingDialogMessage(String string) {
+        jd.getLabelMessage().setText(string);
     }
 
     public void setjPrint(JasperPrint jPrint) {
@@ -99,7 +115,12 @@ public class Reportes implements Runnable {
 
     public void viewReport() throws JRException {
         isViewerReport = true;
-        new Thread(this).start();
+        if (reportThread == null) {
+            reportThread = new Thread(this);
+        }
+        if (!reportThread.isAlive()) {
+            reportThread.start();
+        }
     }
 
     /**
@@ -119,7 +140,8 @@ public class Reportes implements Runnable {
 
     public void printReport() throws JRException {
         isViewerReport = false;
-        new Thread(this).start();
+        reportThread = new Thread(this);
+        reportThread.start();
     }
 
     public void exportToPDF(String filePathSafer) throws JRException {
@@ -147,6 +169,13 @@ public class Reportes implements Runnable {
         jd.setVisible(true);
         LOG.trace("Initializing Thread Reportes:" + pathReport);
         try {
+            if (dinamycReport) {
+                LOG.trace("Waiting JasperPrint for DynamicJasper..");
+                while (!isViewerReport) {
+                    jd.getLabelMessage().setText(jd.getLabelMessage().getText() + ".");
+                    Thread.sleep(500);
+                }
+            }
             doReport();
         } catch (PrinterException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage(), "Error de impresora", JOptionPane.WARNING_MESSAGE);
@@ -165,6 +194,7 @@ public class Reportes implements Runnable {
     private synchronized void doReport() throws PrinterException, JRException {
         LOG.trace("Running doReport()..");
         try {
+            //DynamicJasper already set JasperPrinter
             if (jPrint == null) {
                 if (beanCollectionDataSource == null) {
                     jPrint = JasperFillManager.fillReport(pathReport, parameters, controller.DAO.getJDBCConnection());

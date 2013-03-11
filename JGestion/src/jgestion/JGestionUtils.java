@@ -105,6 +105,14 @@ public class JGestionUtils {
         return l;
     }
 
+    public static List<ComboBoxWrapper<Usuario>> getWrappedUsuarios(List<Usuario> list) {
+        List<ComboBoxWrapper<Usuario>> l = new ArrayList<ComboBoxWrapper<Usuario>>(list.size());
+        for (Usuario usuario : list) {
+            l.add(new ComboBoxWrapper<Usuario>(usuario, usuario.getId(), usuario.getNick()));
+        }
+        return l;
+    }
+
     public static List<ComboBoxWrapper<Sucursal>> getWrappedSucursales(List<Sucursal> list) {
         List<ComboBoxWrapper<Sucursal>> l = new ArrayList<ComboBoxWrapper<Sucursal>>(list.size());
         for (Sucursal o : list) {

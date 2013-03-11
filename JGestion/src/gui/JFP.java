@@ -154,6 +154,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenuItem60 = new javax.swing.JMenuItem();
         jMenu20 = new javax.swing.JMenu();
         jMenuItem56 = new javax.swing.JMenuItem();
+        jMenuItem87 = new javax.swing.JMenuItem();
         jMenu22 = new javax.swing.JMenu();
         jMenuItem57 = new javax.swing.JMenuItem();
         jMenuItem61 = new javax.swing.JMenuItem();
@@ -717,6 +718,14 @@ public class JFP extends javax.swing.JFrame implements Runnable {
             }
         });
         jMenu20.add(jMenuItem56);
+
+        jMenuItem87.setText("Entregas");
+        jMenuItem87.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem87ActionPerformed(evt);
+            }
+        });
+        jMenu20.add(jMenuItem87);
 
         jMenu17.add(jMenu20);
 
@@ -1722,6 +1731,10 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         new Contabilidad().displayProductosCostoVenta(this);
     }//GEN-LAST:event_jMenuItem86ActionPerformed
 
+    private void jMenuItem87ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem87ActionPerformed
+        new ChequeTercerosController().showEntregas(this);
+    }//GEN-LAST:event_jMenuItem87ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JMenu jMenu1;
@@ -1836,6 +1849,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenuItem jMenuItem84;
     private javax.swing.JMenuItem jMenuItem85;
     private javax.swing.JMenuItem jMenuItem86;
+    private javax.swing.JMenuItem jMenuItem87;
     private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JMenuItem jMenuItemCatalogoWeb;
     private javax.swing.JMenuItem jMenuItemCuentasBancarias;
