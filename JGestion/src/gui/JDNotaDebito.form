@@ -184,6 +184,10 @@
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="requestFocusEnabled" type="boolean" value="false"/>
           </Properties>
+          <Events>
+            <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="tfFacturaCuartoFocusLost"/>
+            <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="tfFacturaCuartoKeyTyped"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JTextField" name="tfFacturaOcteto">
           <Properties>

@@ -477,7 +477,7 @@ public class NotaCreditoController {
     void desacreditar(Recibo recibo, Cliente cliente, BigDecimal montoDesacreditar) {
         List<NotaCredito> notaCreditoList = findNotaCreditoAcreditables(cliente);
         List<DetalleRecibo> acreditadosList = new ArrayList<DetalleRecibo>(5);
-        for (DetalleRecibo detalleRecibo : recibo.getDetalleReciboList()) {
+        for (DetalleRecibo detalleRecibo : recibo.getDetalle()) {
             if (detalleRecibo.isAcreditado()) {
                 acreditadosList.add(detalleRecibo);
             }

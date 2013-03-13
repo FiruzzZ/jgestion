@@ -407,6 +407,11 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenu3.add(jMenuItem69);
 
         jMenuItem83.setText("Nota de Débito");
+        jMenuItem83.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem83ActionPerformed(evt);
+            }
+        });
         jMenu3.add(jMenuItem83);
 
         jMenu21.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/lupa-simple.png"))); // NOI18N
@@ -437,6 +442,11 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenu21.add(jMenuItem70);
 
         jMenuItem85.setText("Notas de Débito");
+        jMenuItem85.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem85ActionPerformed(evt);
+            }
+        });
         jMenu21.add(jMenuItem85);
 
         jMenu3.add(jMenu21);
@@ -1529,16 +1539,16 @@ private void jMenuItem45ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
 }//GEN-LAST:event_jMenuItem45ActionPerformed
 
 private void jMenuItem54ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem54ActionPerformed
-    new ProveedorController().initProveedorToCliente((JFrame) this).setVisible(true);
+        new ProveedorController().initProveedorToCliente((JFrame) this).setVisible(true);
 }//GEN-LAST:event_jMenuItem54ActionPerformed
 
 private void jMenuItem58ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem58ActionPerformed
-    try {
-        new BancoController().initContenedor(this, true, false).setVisible(true);
-    } catch (DatabaseErrorException ex) {
-        JOptionPane.showMessageDialog(this, ex.getMessage());
-        Logger.getLogger(JFP.class.getName()).error(ex);
-    }
+        try {
+            new BancoController().initContenedor(this, true, false).setVisible(true);
+        } catch (DatabaseErrorException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage());
+            Logger.getLogger(JFP.class.getName()).error(ex);
+        }
 }//GEN-LAST:event_jMenuItem58ActionPerformed
 
 private void jMenuItem59ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem59ActionPerformed
@@ -1550,19 +1560,19 @@ private void jMenuItem59ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
 }//GEN-LAST:event_jMenuItem59ActionPerformed
 
 private void jMenuItem60ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem60ActionPerformed
-    try {
-        new ChequePropioController().getManager(this).setVisible(true);
-    } catch (MessageException ex) {
-        JOptionPane.showMessageDialog(this, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
-    }
+        try {
+            new ChequePropioController().getManager(this).setVisible(true);
+        } catch (MessageException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+        }
 }//GEN-LAST:event_jMenuItem60ActionPerformed
 
 private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem56ActionPerformed
-    try {
-        new ChequeTercerosController().getManager(this).setVisible(true);
-    } catch (MessageException ex) {
-        JOptionPane.showMessageDialog(this, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
-    }
+        try {
+            new ChequeTercerosController().getManager(this).setVisible(true);
+        } catch (MessageException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+        }
 }//GEN-LAST:event_jMenuItem56ActionPerformed
 
     private void jMenuItem55ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem55ActionPerformed
@@ -1734,6 +1744,22 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private void jMenuItem87ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem87ActionPerformed
         new ChequeTercerosController().showEntregas(this);
     }//GEN-LAST:event_jMenuItem87ActionPerformed
+
+    private void jMenuItem83ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem83ActionPerformed
+        try {
+            new NotaDebitoProveedorController().initContenedor(this, true);
+        } catch (MessageException ex) {
+            ex.displayMessage(this);
+        }
+    }//GEN-LAST:event_jMenuItem83ActionPerformed
+
+    private void jMenuItem85ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem85ActionPerformed
+        try {
+            new NotaDebitoProveedorController().initBuscador(this, false, false);
+        } catch (MessageException ex) {
+            ex.displayMessage(this);
+        }
+    }//GEN-LAST:event_jMenuItem85ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktopPane1;

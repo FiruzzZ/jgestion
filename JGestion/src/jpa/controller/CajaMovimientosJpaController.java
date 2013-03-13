@@ -286,10 +286,10 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
                     boolean detalleUnico;
                     for (Recibo reciboQueEnSuDetalleContieneLaFacturaVenta : recibosList) {
                         //if this is setted as TRUE, the entire Recibo must be annulled
-                        detalleUnico = (reciboQueEnSuDetalleContieneLaFacturaVenta.getDetalleReciboList().size() == 1);
+                        detalleUnico = (reciboQueEnSuDetalleContieneLaFacturaVenta.getDetalle().size() == 1);
                         //NOTE!: A Recibo can have two details of the same facturaVenta.
                         //One with DetalleRecibo.acreditado = FALSE and one with TRUE
-                        for (DetalleRecibo detalleRecibo : reciboQueEnSuDetalleContieneLaFacturaVenta.getDetalleReciboList()) {
+                        for (DetalleRecibo detalleRecibo : reciboQueEnSuDetalleContieneLaFacturaVenta.getDetalle()) {
                             if (detalleRecibo.getFacturaVenta().equals(facturaVenta)) {
                                 detalleRecibo.setObservacion("[ANULADO] " + detalleRecibo.getObservacion());
                                 detalleRecibo.setAnulado(true);
@@ -375,10 +375,10 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
                     boolean detalleUnico; //Therefore, the entire Recibo must be annulled
                     for (Remesa remesaQueEnSuDetalleContieneLaFactura : remesaList) {
                         detalleUnico = false;
-                        if (remesaQueEnSuDetalleContieneLaFactura.getDetalleRemesaList().size() == 1) {
+                        if (remesaQueEnSuDetalleContieneLaFactura.getDetalle().size() == 1) {
                             detalleUnico = true;
                         }
-                        for (DetalleRemesa detalleRemesa : remesaQueEnSuDetalleContieneLaFactura.getDetalleRemesaList()) {
+                        for (DetalleRemesa detalleRemesa : remesaQueEnSuDetalleContieneLaFactura.getDetalle()) {
                             if (detalleRemesa.getFacturaCompra().equals(facturaCompra)) {
                                 detalleRemesa.setObservacion("ANULADO - " + detalleRemesa.getObservacion());
                                 detalleRemesa.setAnulado(true);

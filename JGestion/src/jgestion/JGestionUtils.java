@@ -27,10 +27,17 @@ public class JGestionUtils {
         throw new CloneNotSupportedException();
     }
 
-    public static List<ComboBoxWrapper<CtacteProveedor>> getWrappedCtacteProveedor(List<CtacteProveedor> list) {
-        List<ComboBoxWrapper<CtacteProveedor>> l = new ArrayList<ComboBoxWrapper<CtacteProveedor>>(list.size());
-        for (CtacteProveedor o : list) {
-            l.add(new ComboBoxWrapper<CtacteProveedor>(o, o.getId(), getNumeracion(o.getFactura())));
+    public static List<ComboBoxWrapper<?>> getWrappedCtacteProveedor(List<?> list) {
+        List<ComboBoxWrapper<?>> l = new ArrayList<ComboBoxWrapper<?>>(list.size());
+        for (Object o : list) {
+            if(o instanceof CtacteProveedor) {
+                CtacteProveedor cc = (CtacteProveedor) o;
+                l.add(new ComboBoxWrapper<Object>(cc, cc.getId(), getNumeracion(cc.getFactura())));
+            } else {
+                NotaDebitoProveedor nota = (NotaDebitoProveedor) o;
+                l.add(new ComboBoxWrapper<Object>(nota, nota.getId(), getNumeracion(nota)));
+                
+            }
         }
         return l;
     }
@@ -43,7 +50,7 @@ public class JGestionUtils {
                 l.add(new ComboBoxWrapper<Object>(ccc, ccc.getId(), getNumeracion(ccc.getFactura())));
             } else {
                 NotaDebito nota = (NotaDebito) o;
-                l.add(new ComboBoxWrapper<Object>(nota, nota.getId(), getNumeracion(nota, true)));
+                l.add(new ComboBoxWrapper<Object>(nota, nota.getId(), getNumeracion(nota)));
             }
         }
         return l;
@@ -169,9 +176,13 @@ public class JGestionUtils {
         }
     }
 
-    public static String getNumeracion(NotaDebito o, boolean conGuion) {
-        String guion = conGuion ? "-" : "";
-        return "ND" + o.getTipo() + UTIL.AGREGAR_CEROS(o.getSucursal().getPuntoVenta(), 4) + guion + UTIL.AGREGAR_CEROS(o.getNumero(), 8);
+    public static String getNumeracion(NotaDebito o) {
+        return "ND" + o.getTipo() + UTIL.AGREGAR_CEROS(o.getSucursal().getPuntoVenta(), 4) + "-" + UTIL.AGREGAR_CEROS(o.getNumero(), 8);
+    }
+
+    public static String getNumeracion(NotaDebitoProveedor o) {
+        String numero = UTIL.AGREGAR_CEROS(o.getNumero(), 12);
+        return "ND" + o.getTipo() + numero.substring(0, 4) + "-" + numero.substring(4);
     }
 
     /**
@@ -266,22 +277,44 @@ public class JGestionUtils {
     }
 
     @SuppressWarnings("unchecked")
-    public static void cargarComboTiposFacturas(JComboBox cb, Cliente cliente) {
-        if (cliente != null) {
+    public static void cargarComboTiposFacturas(JComboBox cb, Proveedor o) {
+        if (o != null) {
             cb.removeAllItems();
-            if (cliente.getContribuyente().getFactuA()) {
+            if (o.getContribuyente().getFactuA()) {
                 cb.addItem("A");
             }
-            if (cliente.getContribuyente().getFactuB()) {
+            if (o.getContribuyente().getFactuB()) {
                 cb.addItem("B");
             }
-            if (cliente.getContribuyente().getFactuC()) {
+            if (o.getContribuyente().getFactuC()) {
                 cb.addItem("C");
             }
-            if (cliente.getContribuyente().getFactuM()) {
+            if (o.getContribuyente().getFactuM()) {
                 cb.addItem("M");
             }
-            if (cliente.getContribuyente().getFactuX()) {
+            if (o.getContribuyente().getFactuX()) {
+                cb.addItem("X");
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static void cargarComboTiposFacturas(JComboBox cb, Cliente o) {
+        if (o != null) {
+            cb.removeAllItems();
+            if (o.getContribuyente().getFactuA()) {
+                cb.addItem("A");
+            }
+            if (o.getContribuyente().getFactuB()) {
+                cb.addItem("B");
+            }
+            if (o.getContribuyente().getFactuC()) {
+                cb.addItem("C");
+            }
+            if (o.getContribuyente().getFactuM()) {
+                cb.addItem("M");
+            }
+            if (o.getContribuyente().getFactuX()) {
                 cb.addItem("X");
             }
         }

@@ -71,22 +71,13 @@ public class CtacteClienteController implements ActionListener {
         }
     }
 
-    public void edit(CtacteCliente ctacteCliente) throws NonexistentEntityException, Exception {
+    public void edit(CtacteCliente ctacteCliente) {
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
             ctacteCliente = em.merge(ctacteCliente);
             em.getTransaction().commit();
-        } catch (Exception ex) {
-            String msg = ex.getLocalizedMessage();
-            if (msg == null || msg.length() == 0) {
-                Integer id = ctacteCliente.getId();
-                if (findCtacteCliente(id) == null) {
-                    throw new NonexistentEntityException("The ctacteCliente with id " + id + " no longer exists.");
-                }
-            }
-            throw ex;
         } finally {
             if (em != null) {
                 em.close();
@@ -171,6 +162,7 @@ public class CtacteClienteController implements ActionListener {
     public CtacteCliente find(Integer id) {
         return DAO.getEntityManager().find(CtacteCliente.class, id);
     }
+
     public CtacteCliente findByFactura(Integer id) {
         return (CtacteCliente) DAO.getEntityManager().createQuery("SELECT o FROM " + CLASS_NAME + " o "
                 + " where o.factura.id = " + id).getSingleResult();
@@ -233,7 +225,7 @@ public class CtacteClienteController implements ActionListener {
                 Integer selectedRow = resumenCtaCtes.getjTableResumen().getSelectedRow();
                 if (selectedRow > 0) {
                     //selecciona una factura (a CtaCteCliente)
-                    cargarComboBoxRecibosDeCtaCte(find((Integer)(resumenCtaCtes.getDtmResumen().getValueAt(selectedRow, 0))));
+                    cargarComboBoxRecibosDeCtaCte(find((Integer) (resumenCtaCtes.getDtmResumen().getValueAt(selectedRow, 0))));
                 }
             }
 
@@ -241,7 +233,7 @@ public class CtacteClienteController implements ActionListener {
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
                     Integer selectedRow = resumenCtaCtes.getjTableResumen().getSelectedRow();
-                    CtacteCliente ccc = find((Integer)(resumenCtaCtes.getDtmResumen().getValueAt(selectedRow, 0)));
+                    CtacteCliente ccc = find((Integer) (resumenCtaCtes.getDtmResumen().getValueAt(selectedRow, 0)));
                     FacturaVenta factura = ccc.getFactura();
                     try {
                         FacturaVentaController fvc = new FacturaVentaController();
@@ -434,7 +426,7 @@ public class CtacteClienteController implements ActionListener {
     private void cargarTablaDetallesDeCtaCte(Recibo recibo) {
         DefaultTableModel dtm = (DefaultTableModel) resumenCtaCtes.getjTableDetalle().getModel();
         dtm.setRowCount(0);
-        List<DetalleRecibo> detalleReciboList = recibo.getDetalleReciboList();
+        List<DetalleRecibo> detalleReciboList = recibo.getDetalle();
         for (DetalleRecibo detalleRecibo : detalleReciboList) {
             dtm.addRow(new Object[]{
                         JGestionUtils.getNumeracion(detalleRecibo.getFacturaVenta()),
