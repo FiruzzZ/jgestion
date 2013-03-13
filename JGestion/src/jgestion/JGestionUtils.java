@@ -30,13 +30,13 @@ public class JGestionUtils {
     public static List<ComboBoxWrapper<?>> getWrappedCtacteProveedor(List<?> list) {
         List<ComboBoxWrapper<?>> l = new ArrayList<ComboBoxWrapper<?>>(list.size());
         for (Object o : list) {
-            if(o instanceof CtacteProveedor) {
+            if (o instanceof CtacteProveedor) {
                 CtacteProveedor cc = (CtacteProveedor) o;
                 l.add(new ComboBoxWrapper<Object>(cc, cc.getId(), getNumeracion(cc.getFactura())));
             } else {
                 NotaDebitoProveedor nota = (NotaDebitoProveedor) o;
                 l.add(new ComboBoxWrapper<Object>(nota, nota.getId(), getNumeracion(nota)));
-                
+
             }
         }
         return l;
@@ -84,6 +84,14 @@ public class JGestionUtils {
         List<ComboBoxWrapper<Marca>> l = new ArrayList<ComboBoxWrapper<Marca>>(list.size());
         for (Marca o : list) {
             l.add(new ComboBoxWrapper<Marca>(o, o.getId(), o.getNombre()));
+        }
+        return l;
+    }
+
+    public static List<ComboBoxWrapper<Remesa>> getWrappedRemesas(List<Remesa> list) {
+        List<ComboBoxWrapper<Remesa>> l = new ArrayList<ComboBoxWrapper<Remesa>>(list.size());
+        for (Remesa remesa : list) {
+            l.add(new ComboBoxWrapper<Remesa>(remesa, remesa.getId(), JGestionUtils.getNumeracion(remesa, true)));
         }
         return l;
     }

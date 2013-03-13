@@ -570,6 +570,7 @@ public class RemesaController implements ActionListener, FocusListener {
                     buscador.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
                     buscador.showMessage(ex.getMessage(), CLASS_NAME, 2);
+                    LOG.error("Error en Buscador", ex);
                 }
             }
         });
@@ -670,10 +671,16 @@ public class RemesaController implements ActionListener, FocusListener {
         }
         for (Remesa remesa : l) {
             //new String[]{"ID", "Nº", "Monto", "Fecha", "Caja", "Usuario", "Fecha/Hora (Sist)"},
+            Proveedor p;
+            if (remesa.getDetalle().get(0).getFacturaCompra() != null) {
+                p = remesa.getDetalle().get(0).getFacturaCompra().getProveedor();
+            } else {
+                p = remesa.getDetalle().get(0).getNotaDebitoProveedor().getProveedor();
+            }
             dtm.addRow(new Object[]{
                         remesa.getId(),
                         JGestionUtils.getNumeracion(remesa, true),
-                        remesa.getDetalle().get(0).getFacturaCompra().getProveedor().getNombre(),
+                        p.getNombre(),
                         remesa.getMonto(),
                         UTIL.DATE_FORMAT.format(remesa.getFechaRemesa()),
                         remesa.getCaja().getNombre() + "(" + remesa.getCaja().getId() + ")",
@@ -700,7 +707,12 @@ public class RemesaController implements ActionListener, FocusListener {
             initRemesa(null, true, false);
         }
         //por no redundar en DATOOOOOOOOOSS...!!!
-        Proveedor p = new FacturaCompraJpaController().find(remesa.getDetalle().get(0).getFacturaCompra().getId()).getProveedor();
+        Proveedor p;
+        if (remesa.getDetalle().get(0).getFacturaCompra() != null) {
+            p = remesa.getDetalle().get(0).getFacturaCompra().getProveedor();
+        } else {
+            p = remesa.getDetalle().get(0).getNotaDebitoProveedor().getProveedor();
+        }
         //que compare por String's..
         //por si el combo está vacio <VACIO> o no eligió ninguno
         //van a tirar error de ClassCastException

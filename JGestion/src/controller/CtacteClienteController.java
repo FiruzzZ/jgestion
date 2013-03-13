@@ -429,7 +429,9 @@ public class CtacteClienteController implements ActionListener {
         List<DetalleRecibo> detalleReciboList = recibo.getDetalle();
         for (DetalleRecibo detalleRecibo : detalleReciboList) {
             dtm.addRow(new Object[]{
-                        JGestionUtils.getNumeracion(detalleRecibo.getFacturaVenta()),
+                        detalleRecibo.getFacturaVenta() != null
+                        ? JGestionUtils.getNumeracion(detalleRecibo.getFacturaVenta())
+                        : JGestionUtils.getNumeracion(detalleRecibo.getNotaDebito()),
                         detalleRecibo.getObservacion(),
                         detalleRecibo.getMontoEntrega()
                     });

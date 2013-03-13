@@ -30,13 +30,16 @@ public class NotaDebitoProveedorJpaController extends AbstractDAO<NotaDebitoProv
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<NotaDebitoProveedor> cq = cb.createQuery(getEntityClass());
         Root<NotaDebitoProveedor> from = cq.from(getEntityClass());
-        cq.where(cb.equal(from.get(NotaDebitoProveedor_.proveedor), proveedor));
         if (recibadas != null) {
             if (recibadas) {
-                cq.where(cb.isNotNull(from.get(NotaDebitoProveedor_.remesa)));
+                cq.where(cb.equal(from.get(NotaDebitoProveedor_.proveedor), proveedor),
+                        cb.isNotNull(from.get(NotaDebitoProveedor_.remesa)));
             } else {
-                cq.where(cb.isNull(from.get(NotaDebitoProveedor_.remesa)));
+                cq.where(cb.equal(from.get(NotaDebitoProveedor_.proveedor), proveedor),
+                        cb.isNull(from.get(NotaDebitoProveedor_.remesa)));
             }
+        } else {
+            cq.where(cb.equal(from.get(NotaDebitoProveedor_.proveedor), proveedor));
         }
         cq.orderBy(cb.asc(from.get(NotaDebitoProveedor_.fechaNotaDebito)));
         return getEntityManager().createQuery(cq).getResultList();

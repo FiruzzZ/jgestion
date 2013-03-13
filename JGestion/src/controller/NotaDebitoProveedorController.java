@@ -95,6 +95,7 @@ public class NotaDebitoProveedorController {
         abm.getTfImporte().addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
+                super.keyTyped(e);
                 calcularSubTotal();
             }
         });

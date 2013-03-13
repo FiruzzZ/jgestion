@@ -197,6 +197,15 @@ public class NotaCreditoController {
         buscador.hideCaja();
         buscador.hideFactura();
         buscador.hideFormaPago();
+        UTIL.loadComboBox(buscador.getCbClieProv(), new ClienteController().findAll(), true);
+        UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), true);
+        UTIL.getDefaultTableModel(
+                buscador.getjTable1(),
+                new String[]{"NotaCreditoID", "Nº Nota de Crédito", "Cliente", "Importe", "Recibo", "Fecha", "Usuario", "Fecha (Sistema)"},
+                new int[]{1, 60, 150, 50, 50, 50, 50, 70},
+                new Class<?>[]{null, null, null, Double.class, null, null, null, null});
+        buscador.getjTable1().getColumnModel().getColumn(3).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        UTIL.hideColumnTable(buscador.getjTable1(), 0);
         buscador.getbBuscar().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -207,17 +216,6 @@ public class NotaCreditoController {
                 }
             }
         });
-        UTIL.loadComboBox(buscador.getCbClieProv(), new ClienteController().findAll(), true);
-        UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), true);
-        UTIL.getDefaultTableModel(
-                buscador.getjTable1(),
-                new String[]{"NotaCreditoID", "Nº Nota de Crédito", "Cliente", "Importe", "Acreditado", "Fecha", "Usuario", "Fecha (Sistema)"},
-                new int[]{1, 60, 150, 50, 50, 50, 50, 70},
-                new Class<?>[]{null, null, null, Double.class, Double.class, null, null, null});
-        //escondiendo facturaID
-        buscador.getjTable1().getColumnModel().getColumn(3).setCellRenderer(NumberRenderer.getCurrencyRenderer());
-        buscador.getjTable1().getColumnModel().getColumn(4).setCellRenderer(NumberRenderer.getCurrencyRenderer());
-        UTIL.hideColumnTable(buscador.getjTable1(), 0);
         buscador.getjTable1().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -309,17 +307,16 @@ public class NotaCreditoController {
 
     private void cargarDtmBuscador(String query) {
         DefaultTableModel dtm = buscador.getDtm();
-        UTIL.limpiarDtm(dtm);
-        List<NotaCredito> l = DAO.getEntityManager().createNativeQuery(query, NotaCredito.class).getResultList();
+        dtm.setRowCount(0);
+        List<NotaCredito> l = jpaController.findByNativeQuery(query);
         for (NotaCredito o : l) {
             dtm.addRow(new Object[]{
                         o.getId(), // <--- no es visible
                         JGestionUtils.getNumeracion(o, true),
                         o.getCliente().getNombre(),
                         o.getImporte(),
-                        o.getDesacreditado(),
+                        o.getRecibo() != null ? JGestionUtils.getNumeracion(o.getRecibo(), true) : null,
                         UTIL.DATE_FORMAT.format(o.getFechaNotaCredito()),
-                        //                        o.getSucursal().getNombre(),
                         o.getUsuario().getNick(),
                         UTIL.DATE_FORMAT.format(o.getFechaCarga()) + " (" + UTIL.TIME_FORMAT.format(o.getFechaCarga()) + ")"
                     });

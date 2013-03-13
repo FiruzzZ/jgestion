@@ -139,11 +139,13 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenuItem41 = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
         jMenu14 = new javax.swing.JMenu();
+        jMenu27 = new javax.swing.JMenu();
         jMenuItem3 = new javax.swing.JMenuItem();
-        jMenuItem38 = new javax.swing.JMenuItem();
         jMenuItem49 = new javax.swing.JMenuItem();
-        jMenuItem71 = new javax.swing.JMenuItem();
         jMenuItem77 = new javax.swing.JMenuItem();
+        jMenuItem71 = new javax.swing.JMenuItem();
+        jMenu28 = new javax.swing.JMenu();
+        jMenuItem38 = new javax.swing.JMenuItem();
         menuCtaCte = new javax.swing.JMenu();
         jMenuItem37 = new javax.swing.JMenuItem();
         jMenuItem30 = new javax.swing.JMenuItem();
@@ -621,21 +623,15 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenu14.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/lupa-simple.png"))); // NOI18N
         jMenu14.setText("Anular Comprobante..");
 
-        jMenuItem3.setText("Factura venta");
+        jMenu27.setText("Ingresos");
+
+        jMenuItem3.setText("Facturas");
         jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem3ActionPerformed(evt);
             }
         });
-        jMenu14.add(jMenuItem3);
-
-        jMenuItem38.setText("Factura compra");
-        jMenuItem38.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem38ActionPerformed(evt);
-            }
-        });
-        jMenu14.add(jMenuItem38);
+        jMenu27.add(jMenuItem3);
 
         jMenuItem49.setText("Nota de crédito");
         jMenuItem49.addActionListener(new java.awt.event.ActionListener() {
@@ -643,7 +639,16 @@ public class JFP extends javax.swing.JFrame implements Runnable {
                 jMenuItem49ActionPerformed(evt);
             }
         });
-        jMenu14.add(jMenuItem49);
+        jMenu27.add(jMenuItem49);
+
+        jMenuItem77.setText("Recibo");
+        jMenuItem77.setEnabled(false);
+        jMenuItem77.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem77ActionPerformed(evt);
+            }
+        });
+        jMenu27.add(jMenuItem77);
 
         jMenuItem71.setText("Remito");
         jMenuItem71.addActionListener(new java.awt.event.ActionListener() {
@@ -651,15 +656,21 @@ public class JFP extends javax.swing.JFrame implements Runnable {
                 jMenuItem71ActionPerformed(evt);
             }
         });
-        jMenu14.add(jMenuItem71);
+        jMenu27.add(jMenuItem71);
 
-        jMenuItem77.setText("Recibo");
-        jMenuItem77.addActionListener(new java.awt.event.ActionListener() {
+        jMenu14.add(jMenu27);
+
+        jMenu28.setText("Egresos");
+
+        jMenuItem38.setText("Facturas");
+        jMenuItem38.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem77ActionPerformed(evt);
+                jMenuItem38ActionPerformed(evt);
             }
         });
-        jMenu14.add(jMenuItem77);
+        jMenu28.add(jMenuItem38);
+
+        jMenu14.add(jMenu28);
 
         menuTesoreria.add(jMenu14);
 
@@ -1782,6 +1793,8 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenu jMenu24;
     private javax.swing.JMenu jMenu25;
     private javax.swing.JMenu jMenu26;
+    private javax.swing.JMenu jMenu27;
+    private javax.swing.JMenu jMenu28;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenu jMenu4;
     private javax.swing.JMenu jMenu5;
