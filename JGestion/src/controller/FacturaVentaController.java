@@ -86,7 +86,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         jpaController = new FacturaVentaJpaController();
     }
 
-    public FacturaVenta findFacturaVenta(Integer id) {
+    public FacturaVenta find(Integer id) {
         FacturaVenta f = jpaController.find(id);
         return f;
     }
@@ -1376,6 +1376,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
     void show(FacturaVenta facturaVenta, final boolean paraAnular) throws MessageException {
         initFacturaVenta(null, true, this, 1, false, false);
         jdFactura.modoVista();
+        viewMode =true;
         EL_OBJECT = facturaVenta;
         jdFactura.getBtnAceptar().addActionListener(new ActionListener() {
             @Override

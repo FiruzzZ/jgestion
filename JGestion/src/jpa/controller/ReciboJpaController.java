@@ -66,7 +66,7 @@ public class ReciboJpaController extends AbstractDAO<Recibo, Integer> {
             throw new MessageException("El " + getEntityClass().getSimpleName() + " ya está anulado");
         }
 
-        List<DetalleRecibo> detalleReciboList = recibo.getDetalleReciboList();
+        List<DetalleRecibo> detalleReciboList = recibo.getDetalle();
         CtacteCliente ctaCteCliente;
         try {
             em.getTransaction().begin();
@@ -159,9 +159,9 @@ public class ReciboJpaController extends AbstractDAO<Recibo, Integer> {
             entityManager.getTransaction().begin();
         }
         entityManager.persist(recibo);
-        for (DetalleRecibo d : recibo.getDetalleReciboList()) {
+        for (DetalleRecibo d : recibo.getDetalle()) {
             if(d.getNotaDebito() != null) {
-                d.setRecibo(recibo);
+                d.getNotaDebito().setRecibo(recibo);
                 entityManager.merge(d.getNotaDebito());
             }
         }

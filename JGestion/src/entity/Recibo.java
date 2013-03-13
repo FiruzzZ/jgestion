@@ -58,7 +58,7 @@ public class Recibo implements Serializable {
     @ManyToOne(optional = false)
     private Usuario usuario;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "recibo", orphanRemoval = true)
-    private List<DetalleRecibo> detalleReciboList;
+    private List<DetalleRecibo> detalle;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "recibo", orphanRemoval = true)
     private List<ReciboPagos> pagos;
     @Transient
@@ -145,12 +145,12 @@ public class Recibo implements Serializable {
         this.usuario = usuario;
     }
 
-    public List<DetalleRecibo> getDetalleReciboList() {
-        return detalleReciboList;
+    public List<DetalleRecibo> getDetalle() {
+        return detalle;
     }
 
-    public void setDetalleReciboList(List<DetalleRecibo> detalleReciboList) {
-        this.detalleReciboList = detalleReciboList;
+    public void setDetalleReciboList(List<DetalleRecibo> detalle) {
+        this.detalle = detalle;
     }
 
     public List<ReciboPagos> getPagos() {
@@ -197,6 +197,6 @@ public class Recibo implements Serializable {
 
     @Override
     public String toString() {
-        return "Recibo{" + "id=" + id + ", numero=" + numero + ", fechaCarga=" + fechaCarga + ", monto=" + monto + ", retencion=" + retencion + ", fechaRecibo=" + fechaRecibo + ", estado=" + estado + ", caja=" + caja + ", sucursal=" + sucursal + ", usuario=" + usuario + ", detalleReciboList=" + detalleReciboList.size() + '}';
+        return "Recibo{" + "id=" + id + ", numero=" + numero + ", fechaCarga=" + fechaCarga + ", monto=" + monto + ", retencion=" + retencion + ", fechaRecibo=" + fechaRecibo + ", estado=" + estado + ", caja=" + caja + ", sucursal=" + sucursal + ", usuario=" + usuario + ", detalleReciboList=" + detalle.size() + '}';
     }
 }

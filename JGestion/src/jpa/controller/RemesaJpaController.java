@@ -63,6 +63,12 @@ public class RemesaJpaController extends AbstractDAO<Remesa, Integer> {
             entityManager.getTransaction().begin();
         }
         entityManager.persist(remesa);
+        for (DetalleRemesa d : remesa.getDetalle()) {
+            if(d.getNotaDebitoProveedor() != null) {
+                d.getNotaDebitoProveedor().setRemesa(remesa);
+                entityManager.merge(d.getNotaDebitoProveedor());
+            }
+        }
         entityManager.getTransaction().commit();
 
         entityManager.getTransaction().begin();
@@ -79,7 +85,7 @@ public class RemesaJpaController extends AbstractDAO<Remesa, Integer> {
                 ChequeTerceros pago = (ChequeTerceros) object;
                 pago.setEstado(ChequeEstado.ENDOSADO.getId());
                 pago.setFechaEndoso(remesa.getFechaRemesa());
-                pago.setEndosatario(remesa.getDetalleRemesaList().get(0).getFacturaCompra().getProveedor().getNombre());
+                pago.setEndosatario(remesa.getDetalle().get(0).getFacturaCompra().getProveedor().getNombre());
                 pago.setComprobanteEgreso(getEntityClass().getSimpleName() + " " + JGestionUtils.getNumeracion(remesa, true));
                 entityManager.merge(pago);
                 pagosPost.add(pago);

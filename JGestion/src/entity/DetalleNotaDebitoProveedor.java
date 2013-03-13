@@ -10,8 +10,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 /**
@@ -19,8 +17,8 @@ import javax.persistence.Table;
  * @author FiruzzZ
  */
 @Entity
-@Table(name = "detalle_nota_debito")
-public class DetalleNotaDebito implements Serializable {
+@Table(name = "detalle_nota_debito_proveedor")
+public class DetalleNotaDebitoProveedor implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -42,24 +40,21 @@ public class DetalleNotaDebito implements Serializable {
     @JoinColumn(name = "iva_id")
     @ManyToOne
     private Iva iva;
-    @JoinColumn(name = "nota_debito_id", nullable = false)
+    @JoinColumn(name = "nota_debito_proveedor_id", nullable = false)
     @ManyToOne(optional = false)
-    private NotaDebito notaDebito;
+    private NotaDebitoProveedor notaDebitoProveedor;
 
-    public DetalleNotaDebito() {
+    public DetalleNotaDebitoProveedor() {
     }
 
-    public DetalleNotaDebito(Integer id) {
-        this.id = id;
-    }
-
-    public DetalleNotaDebito(Integer id, String concepto, BigDecimal importe, Iva iva) {
+    public DetalleNotaDebitoProveedor(Integer id, String concepto, BigDecimal importe, Iva iva) {
         this.id = id;
         this.concepto = concepto;
         this.importe = importe;
         this.iva = iva;
     }
 
+    
     public Integer getId() {
         return id;
     }
@@ -92,12 +87,12 @@ public class DetalleNotaDebito implements Serializable {
         this.iva = iva;
     }
 
-    public NotaDebito getNotaDebito() {
-        return notaDebito;
+    public NotaDebitoProveedor getNotaDebitoProveedor() {
+        return notaDebitoProveedor;
     }
 
-    public void setNotaDebito(NotaDebito notaDebito) {
-        this.notaDebito = notaDebito;
+    public void setNotaDebitoProveedor(NotaDebitoProveedor notaDebitoProveedor) {
+        this.notaDebitoProveedor = notaDebitoProveedor;
     }
 
     @Override
@@ -110,10 +105,10 @@ public class DetalleNotaDebito implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof DetalleNotaDebito)) {
+        if (!(object instanceof DetalleNotaDebitoProveedor)) {
             return false;
         }
-        DetalleNotaDebito other = (DetalleNotaDebito) object;
+        DetalleNotaDebitoProveedor other = (DetalleNotaDebitoProveedor) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -122,6 +117,6 @@ public class DetalleNotaDebito implements Serializable {
 
     @Override
     public String toString() {
-        return "DetalleNotaDebito{" + "id=" + id + ", concepto=" + concepto + ", importe=" + importe + ", iva=" + iva + '}';
+        return "entity.DetalleNotaDebitoProveedor[ id=" + id + " ]";
     }
 }

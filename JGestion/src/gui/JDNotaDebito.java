@@ -1,7 +1,6 @@
 package gui;
 
 import com.toedter.calendar.JDateChooser;
-import controller.Contabilidad;
 import java.awt.Color;
 import java.awt.Window;
 import javax.swing.JButton;
@@ -19,12 +18,15 @@ import utilities.gui.SwingUtil;
  */
 public class JDNotaDebito extends javax.swing.JDialog {
 
-    public JDNotaDebito(Window owner, boolean modal) {
+    public JDNotaDebito(Window owner, boolean modal, boolean paraProveedor) {
         super(owner, modal ? DEFAULT_MODALITY_TYPE : ModalityType.MODELESS);
         initComponents();
         SwingUtil.getInstance().getCharacterCountListener(tfObservacion, labelObservacionCharactersCount, 100);
         SwingUtil.getInstance().getCharacterCountListener(tfConcepto, labelConceptoCharactersCount, 200);
         this.setLocationRelativeTo(owner);
+        if(paraProveedor) {
+            setToProveedor();
+        }
     }
 
     /**
@@ -104,6 +106,16 @@ public class JDNotaDebito extends javax.swing.JDialog {
         tfFacturaCuarto.setText("0000");
         tfFacturaCuarto.setFocusable(false);
         tfFacturaCuarto.setRequestFocusEnabled(false);
+        tfFacturaCuarto.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                tfFacturaCuartoFocusLost(evt);
+            }
+        });
+        tfFacturaCuarto.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                tfFacturaCuartoKeyTyped(evt);
+            }
+        });
 
         tfFacturaOcteto.setEditable(false);
         tfFacturaOcteto.setColumns(8);
@@ -569,6 +581,15 @@ public class JDNotaDebito extends javax.swing.JDialog {
             tfImporte.setForeground(Color.RED);
         }
     }//GEN-LAST:event_tfImporteFocusLost
+
+    private void tfFacturaCuartoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfFacturaCuartoKeyTyped
+        SwingUtil.checkInputDigit(evt, false, 4);
+    }//GEN-LAST:event_tfFacturaCuartoKeyTyped
+
+    private void tfFacturaCuartoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfFacturaCuartoFocusLost
+        String x = UTIL.AGREGAR_CEROS(tfFacturaCuarto.getText(), 4);
+        tfFacturaCuarto.setText(x);
+    }//GEN-LAST:event_tfFacturaCuartoFocusLost
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnADD;
     private javax.swing.JButton btnAceptar;
@@ -621,6 +642,20 @@ public class JDNotaDebito extends javax.swing.JDialog {
     private javax.swing.JTextField tfTotalNoGravado;
     private javax.swing.JTextField tfTotalOtrosImps;
     // End of variables declaration//GEN-END:variables
+
+    private void setToProveedor() {
+        jLabel1.setText("Proveedor");
+        jLabel2.setVisible(false);
+        cbSucursal.setVisible(false);
+        tfFacturaCuarto.setEditable(true);
+        tfFacturaCuarto.setText("");
+        tfFacturaCuarto.setFocusable(true);
+        tfFacturaCuarto.setRequestFocusEnabled(true);
+        tfFacturaOcteto.setEditable(true);
+        tfFacturaOcteto.setText("");
+        tfFacturaOcteto.setFocusable(true);
+        tfFacturaOcteto.setRequestFocusEnabled(true);
+    }
 
     public JButton getBtnADD() {
         return btnADD;

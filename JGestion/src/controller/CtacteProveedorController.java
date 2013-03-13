@@ -426,7 +426,7 @@ public class CtacteProveedorController implements ActionListener {
     private void cargarDtmDetallesDeCtaCte(Remesa remesa) {
         javax.swing.table.DefaultTableModel dtm = resumenCtaCtes.getDtmDetalle();
         UTIL.limpiarDtm(dtm);
-        List<DetalleRemesa> detalleReList = remesa.getDetalleRemesaList();
+        List<DetalleRemesa> detalleReList = remesa.getDetalle();
         for (DetalleRemesa detalleRe : detalleReList) {
             dtm.addRow(new Object[]{
                         UTIL.AGREGAR_CEROS(detalleRe.getFacturaCompra().getNumero(), 12),

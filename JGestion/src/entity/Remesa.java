@@ -45,7 +45,7 @@ public class Remesa implements Serializable {
     @Column(name = "estado", nullable = false)
     private boolean estado;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "remesa", orphanRemoval = true)
-    private List<DetalleRemesa> detalleRemesaList;
+    private List<DetalleRemesa> detalle;
     @JoinColumn(name = "caja", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
     private Caja caja;
@@ -60,7 +60,7 @@ public class Remesa implements Serializable {
     @Transient
     private transient List<Object> pagosEntities;
     @Column(name = "anulada")
-    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date anulada;
 
     public Remesa() {
@@ -114,12 +114,12 @@ public class Remesa implements Serializable {
         this.estado = estado;
     }
 
-    public List<DetalleRemesa> getDetalleRemesaList() {
-        return detalleRemesaList;
+    public List<DetalleRemesa> getDetalle() {
+        return detalle;
     }
 
-    public void setDetalleRemesaList(List<DetalleRemesa> detalleRemesaList) {
-        this.detalleRemesaList = detalleRemesaList;
+    public void setDetalle(List<DetalleRemesa> detalle) {
+        this.detalle = detalle;
     }
 
     public Caja getCaja() {
@@ -192,6 +192,6 @@ public class Remesa implements Serializable {
 
     @Override
     public String toString() {
-        return "Remesa{" + "id=" + id + ", numero=" + numero + ", fechaCarga=" + fechaCarga + ", montoEntrega=" + montoEntrega + ", fechaRemesa=" + fechaRemesa + ", estado=" + estado + ", detalleRemesaList=" + detalleRemesaList + ", caja=" + caja + ", sucursal=" + sucursal + ", usuario=" + usuario + ", pagos=" + pagos + ", anulada=" + anulada + ", pagosEntities=" + pagosEntities + '}';
+        return "Remesa{" + "id=" + id + ", numero=" + numero + ", fechaCarga=" + fechaCarga + ", montoEntrega=" + montoEntrega + ", fechaRemesa=" + fechaRemesa + ", estado=" + estado + ", detalleRemesaList=" + detalle + ", caja=" + caja + ", sucursal=" + sucursal + ", usuario=" + usuario + ", pagos=" + pagos + ", anulada=" + anulada + ", pagosEntities=" + pagosEntities + '}';
     }
 }

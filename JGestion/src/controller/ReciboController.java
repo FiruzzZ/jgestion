@@ -195,33 +195,31 @@ public class ReciboController implements ActionListener, FocusListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    try {
-                        @SuppressWarnings("unchecked")
-                        ComboBoxWrapper<?> cbw = (ComboBoxWrapper<?>) jdReRe.getCbCtaCtes().getSelectedItem();
-                        if (cbw.getEntity() instanceof CtacteCliente) {
-                            selectedCtaCte = (CtacteCliente) cbw.getEntity();
-                            selectedNotaDebito = null;
-                            jdReRe.setTfImporte(UTIL.PRECIO_CON_PUNTO.format(selectedCtaCte.getImporte()));
-                            jdReRe.setTfPagado(UTIL.PRECIO_CON_PUNTO.format(selectedCtaCte.getEntregado()));
-                            jdReRe.setTfSaldo(UTIL.PRECIO_CON_PUNTO.format(selectedCtaCte.getImporte() - selectedCtaCte.getEntregado()));
-                            jdReRe.setTfEntrega(UTIL.PRECIO_CON_PUNTO.format(selectedCtaCte.getImporte() - selectedCtaCte.getEntregado()));
-                            jdReRe.getTfEntrega().setEditable(true);
-                        } else {
-                            selectedNotaDebito = (NotaDebito) cbw.getEntity();
-                            selectedCtaCte = null;
-                            jdReRe.setTfImporte(UTIL.PRECIO_CON_PUNTO.format(selectedNotaDebito.getImporte()));
-                            jdReRe.setTfPagado(null);
-                            jdReRe.setTfSaldo(null);
-                            jdReRe.setTfEntrega(UTIL.PRECIO_CON_PUNTO.format(selectedNotaDebito.getImporte()));
-                            jdReRe.getTfEntrega().setEditable(false);
-                        }
-                    } catch (ClassCastException ex) {
-                        selectedCtaCte = null;
+                    @SuppressWarnings("unchecked")
+                    ComboBoxWrapper<?> cbw = (ComboBoxWrapper<?>) jdReRe.getCbCtaCtes().getSelectedItem();
+                    if (cbw.getEntity() instanceof CtacteCliente) {
+                        selectedCtaCte = (CtacteCliente) cbw.getEntity();
                         selectedNotaDebito = null;
-                        System.out.println("No se pudo caster a CombBoxWrapper<CtaCteProveedor / NotaDebito> -> " + jdReRe.getCbCtaCtes().getSelectedItem());
+                        jdReRe.setTfImporte(UTIL.PRECIO_CON_PUNTO.format(selectedCtaCte.getImporte()));
+                        jdReRe.setTfPagado(UTIL.PRECIO_CON_PUNTO.format(selectedCtaCte.getEntregado()));
+                        jdReRe.setTfSaldo(UTIL.PRECIO_CON_PUNTO.format(selectedCtaCte.getImporte() - selectedCtaCte.getEntregado()));
+                        jdReRe.setTfEntrega(UTIL.PRECIO_CON_PUNTO.format(selectedCtaCte.getImporte() - selectedCtaCte.getEntregado()));
+                        jdReRe.getTfEntrega().setEditable(true);
+                    } else {
+                        selectedNotaDebito = (NotaDebito) cbw.getEntity();
+                        selectedCtaCte = null;
+                        jdReRe.setTfImporte(UTIL.PRECIO_CON_PUNTO.format(selectedNotaDebito.getImporte()));
+                        jdReRe.setTfPagado(null);
+                        jdReRe.setTfSaldo(null);
+                        jdReRe.setTfEntrega(UTIL.PRECIO_CON_PUNTO.format(selectedNotaDebito.getImporte()));
+                        jdReRe.getTfEntrega().setEditable(false);
                     }
+                } catch (ClassCastException ex) {
+                    selectedCtaCte = null;
+                    selectedNotaDebito = null;
                 } catch (NullPointerException ex) {
-                    //cuando no eligio una ctacte aún o el cliente/proveedor no tiene ninguna
+                    selectedCtaCte = null;
+                    selectedNotaDebito = null;
                 }
             }
         });
@@ -478,23 +476,23 @@ public class ReciboController implements ActionListener, FocusListener {
 
     private Recibo setAndPersist() throws MessageException, Exception {
         checkConstraints();
-        Recibo recibo = new Recibo();
+        Recibo re = new Recibo();
         try {
-            recibo.setCaja((Caja) jdReRe.getCbCaja().getSelectedItem());
+            re.setCaja((Caja) jdReRe.getCbCaja().getSelectedItem());
         } catch (ClassCastException e) {
-            recibo.setCaja(null);
+            re.setCaja(null);
         }
-        recibo.setSucursal(getSelectedSucursalFromJD());
+        re.setSucursal(getSelectedSucursalFromJD());
         if (unlockedNumeracion) {
-            recibo.setNumero(Integer.valueOf(jdReRe.getTfOcteto()));
+            re.setNumero(Integer.valueOf(jdReRe.getTfOcteto()));
         } else {
-            recibo.setNumero(jpaController.getNextNumero(recibo.getSucursal()));
+            re.setNumero(jpaController.getNextNumero(re.getSucursal()));
         }
-        recibo.setUsuario(UsuarioController.getCurrentUser());
-        recibo.setEstado(true);
-        recibo.setFechaRecibo(jdReRe.getDcFechaReRe());
-        recibo.setDetalleReciboList(new ArrayList<DetalleRecibo>(jdReRe.getDtmAPagar().getRowCount()));
-        recibo.setPagos(new ArrayList<ReciboPagos>(jdReRe.getDtmPagos().getRowCount()));
+        re.setUsuario(UsuarioController.getCurrentUser());
+        re.setEstado(true);
+        re.setFechaRecibo(jdReRe.getDcFechaReRe());
+        re.setDetalleReciboList(new ArrayList<DetalleRecibo>(jdReRe.getDtmAPagar().getRowCount()));
+        re.setPagos(new ArrayList<ReciboPagos>(jdReRe.getDtmPagos().getRowCount()));
         DefaultTableModel dtm = jdReRe.getDtmAPagar();
         FacturaVentaController fcc = new FacturaVentaController();
         BigDecimal monto = BigDecimal.ZERO;
@@ -502,21 +500,21 @@ public class ReciboController implements ActionListener, FocusListener {
             Object o = dtm.getValueAt(rowIndex, 0);
             DetalleRecibo detalle = new DetalleRecibo();
             if (o instanceof FacturaVenta) {
-                FacturaVenta fv = fcc.findFacturaVenta(((FacturaVenta) o).getId());
+                FacturaVenta fv = fcc.find(((FacturaVenta) o).getId());
                 detalle.setFacturaVenta(fv);
             } else if (o instanceof NotaDebito) {
                 NotaDebito nota = new NotaDebitoJpaController().find(((NotaDebito) o).getId());
-                nota.setRecibo(recibo);
+                nota.setRecibo(re);
                 detalle.setNotaDebito(nota);
             } else {
                 throw new IllegalArgumentException();
             }
             detalle.setMontoEntrega((BigDecimal) dtm.getValueAt(rowIndex, 3));
-            detalle.setRecibo(recibo);
-            recibo.getDetalleReciboList().add(detalle);
+            detalle.setRecibo(re);
+            re.getDetalle().add(detalle);
             monto = monto.add(detalle.getMontoEntrega());
         }
-        recibo.setMonto(monto.doubleValue());
+        re.setMonto(monto.doubleValue());
         dtm = jdReRe.getDtmPagos();
         List<Object> pagos = new ArrayList<Object>(dtm.getRowCount());
         BigDecimal importePagado = BigDecimal.ZERO;
@@ -527,18 +525,18 @@ public class ReciboController implements ActionListener, FocusListener {
         boolean asentarDiferenciaEnCaja = false;
         if (0 != jdReRe.getTfTotalAPagar().getText().compareTo(jdReRe.getTfTotalPagado().getText())) {
             if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(jdReRe, "El importe a pagar no coincide el detalle de pagos."
-                    + "¿Desea que la diferencia ($" + UTIL.DECIMAL_FORMAT.format(recibo.getMonto() - importePagado.doubleValue()) + ") sea reflejada en la Caja?", "Arqueo de valores", JOptionPane.YES_NO_OPTION)) {
+                    + "¿Desea que la diferencia ($" + UTIL.DECIMAL_FORMAT.format(re.getMonto() - importePagado.doubleValue()) + ") sea reflejada en la Caja?", "Arqueo de valores", JOptionPane.YES_NO_OPTION)) {
                 asentarDiferenciaEnCaja = true;
             } else {
                 throw new MessageException("Operación cancelada");
             }
         }
-        recibo.setPagosEntities(pagos);
-        recibo.setRetencion(BigDecimal.ZERO);
+        re.setPagosEntities(pagos);
+        re.setRetencion(BigDecimal.ZERO);
 
         //persisting.....
-        jpaController.create(recibo);
-        Iterator<DetalleRecibo> iterator = recibo.getDetalleReciboList().iterator();
+        jpaController.create(re);
+        Iterator<DetalleRecibo> iterator = re.getDetalle().iterator();
         while (iterator.hasNext()) {
             DetalleRecibo detalle = iterator.next();
             if (detalle.getFacturaVenta() != null) {
@@ -547,20 +545,20 @@ public class ReciboController implements ActionListener, FocusListener {
             }
         }
         if (asentarDiferenciaEnCaja) {
-            double diferencia = importePagado.doubleValue() - recibo.getMonto();
+            double diferencia = importePagado.doubleValue() - re.getMonto();
             DetalleCajaMovimientos d = new DetalleCajaMovimientos();
             d.setIngreso(diferencia < 0);
             d.setTipo(DetalleCajaMovimientosController.RECIBO);
             d.setUsuario(UsuarioController.getCurrentUser());
             d.setCuenta(CuentaController.SIN_CLASIFICAR);
-            d.setDescripcion(jpaController.getEntityClass().getSimpleName() + " " + JGestionUtils.getNumeracion(recibo, true) + " (DIFERENCIA)");
-            CajaMovimientos cm = new CajaMovimientosJpaController().findCajaMovimientoAbierta(recibo.getCaja());
+            d.setDescripcion(jpaController.getEntityClass().getSimpleName() + " " + JGestionUtils.getNumeracion(re, true) + " (DIFERENCIA)");
+            CajaMovimientos cm = new CajaMovimientosJpaController().findCajaMovimientoAbierta(re.getCaja());
             d.setCajaMovimientos(cm); // no te olvides este tampoco!! 
-            d.setNumero(recibo.getId());
+            d.setNumero(re.getId());
             d.setMonto(d.getIngreso() ? diferencia : -diferencia);
             new DetalleCajaMovimientosController().create(d);
         }
-        return recibo;
+        return re;
     }
 
     private void actualizarMontoEntrega(FacturaVenta factu, BigDecimal monto) {
@@ -569,13 +567,13 @@ public class ReciboController implements ActionListener, FocusListener {
         if (ctacte.getImporte() == ctacte.getEntregado()) {
             ctacte.setEstado(Valores.CtaCteEstado.PAGADA.getId());
         }
-        DAO.doMerge(ctacte);
+        new CtacteClienteController().edit(ctacte);
     }
 
     private void addEntregaToDetalle() throws MessageException {
         Date comprobanteFecha;
         if (jdReRe.getDcFechaReRe() == null) {
-            throw new MessageException("Debe especificar una fecha de " + CLASS_NAME + " antes de empezar a cargar Facturas.");
+            throw new MessageException("Debe especificar una fecha de " + CLASS_NAME + " antes de agregar comprobantes a pagar.");
         }
         if (selectedCtaCte == null && selectedNotaDebito == null) {
             throw new MessageException("No hay Factura o Nota de Débito seleccionada.");
@@ -602,18 +600,18 @@ public class ReciboController implements ActionListener, FocusListener {
         } else {
             selectedFechaReRe = jdReRe.getDcFechaReRe();
         }
-        double entrega;
+        BigDecimal entrega$;
         try {
-            entrega = Double.parseDouble(jdReRe.getTfEntrega().getText());
+            entrega$ = new BigDecimal(jdReRe.getTfEntrega().getText());
         } catch (NumberFormatException ex) {
             throw new MessageException("Monto de entrega no válido");
         }
-        if (entrega <= 0) {
+        if (entrega$.doubleValue() <= 0) {
             throw new MessageException("Monto de entrega no válido (Debe ser mayor a 0)");
         }
         FacturaVenta facturaToAddToDetail = null;
         if (selectedCtaCte != null) {
-            if (entrega > (selectedCtaCte.getImporte() - selectedCtaCte.getEntregado())) {
+            if (entrega$.doubleValue() > (selectedCtaCte.getImporte() - selectedCtaCte.getEntregado())) {
                 throw new MessageException("Monto de entrega no puede ser mayor al Saldo restante (" + (selectedCtaCte.getImporte() - selectedCtaCte.getEntregado()) + ")");
             }
             facturaToAddToDetail = selectedCtaCte.getFactura();
@@ -627,16 +625,15 @@ public class ReciboController implements ActionListener, FocusListener {
         } else {
             for (int i = 0; i < jdReRe.getDtmAPagar().getRowCount(); i++) {
                 if (selectedNotaDebito.equals(jdReRe.getDtmAPagar().getValueAt(i, 0))) {
-                    throw new MessageException("La Nota de Débito " + JGestionUtils.getNumeracion(selectedNotaDebito, true) + " ya se ha agregada al detalle");
+                    throw new MessageException("La Nota de Débito " + JGestionUtils.getNumeracion(selectedNotaDebito) + " ya se ha agregado al detalle");
                 }
             }
-
         }
         jdReRe.getDtmAPagar().addRow(new Object[]{
                     selectedCtaCte != null ? facturaToAddToDetail : selectedNotaDebito,
-                    selectedCtaCte != null ? JGestionUtils.getNumeracion(facturaToAddToDetail) : JGestionUtils.getNumeracion(selectedNotaDebito, true),
+                    selectedCtaCte != null ? JGestionUtils.getNumeracion(facturaToAddToDetail) : JGestionUtils.getNumeracion(selectedNotaDebito),
                     null,
-                    BigDecimal.valueOf(entrega)
+                    entrega$
                 });
         updateTotales();
     }
@@ -708,10 +705,10 @@ public class ReciboController implements ActionListener, FocusListener {
 //        bloquearVentana(true);
         //por no redundar en DATOOOOOOOOOSS...!!!
         Cliente cliente;
-        if (recibo.getDetalleReciboList().get(0).getFacturaVenta() != null) {
-            cliente = new FacturaVentaController().findFacturaVenta(recibo.getDetalleReciboList().get(0).getFacturaVenta().getId()).getCliente();
+        if (recibo.getDetalle().get(0).getFacturaVenta() != null) {
+            cliente = new FacturaVentaController().find(recibo.getDetalle().get(0).getFacturaVenta().getId()).getCliente();
         } else {
-            cliente = new NotaDebitoJpaController().find(recibo.getDetalleReciboList().get(0).getNotaDebito().getId()).getCliente();
+            cliente = new NotaDebitoJpaController().find(recibo.getDetalle().get(0).getNotaDebito().getId()).getCliente();
         }
         //que compare por String's..
         //por si el combo está vacio <VACIO> o no eligió ninguno
@@ -775,10 +772,10 @@ public class ReciboController implements ActionListener, FocusListener {
 
     private void cargarFacturasCtaCtesYNotasDebito(Cliente cliente) {
         limpiarDetalle();
-        List<CtacteCliente> ctacteClientePendientesList = new CtacteClienteController().findByCliente(cliente, Valores.CtaCteEstado.PENDIENTE.getId());
+        List<CtacteCliente> ccList = new CtacteClienteController().findByCliente(cliente, Valores.CtaCteEstado.PENDIENTE.getId());
         List<NotaDebito> notas = new NotaDebitoJpaController().findBy(cliente, false);
-        List<Object> l = new ArrayList<Object>(ctacteClientePendientesList.size() + notas.size());
-        for (CtacteCliente o : ctacteClientePendientesList) {
+        List<Object> l = new ArrayList<Object>(ccList.size() + notas.size());
+        for (CtacteCliente o : ccList) {
             l.add(o);
         }
         for (NotaDebito o : notas) {
@@ -911,13 +908,13 @@ public class ReciboController implements ActionListener, FocusListener {
     }
 
     private void cargarDetalleReRe(Recibo recibo) {
-        List<DetalleRecibo> detalleReciboList = recibo.getDetalleReciboList();
+        List<DetalleRecibo> detalleReciboList = recibo.getDetalle();
         DefaultTableModel dtm = jdReRe.getDtmAPagar();
         dtm.setRowCount(0);
         for (DetalleRecibo r : detalleReciboList) {
             dtm.addRow(new Object[]{
                         r.getFacturaVenta() != null ? r.getFacturaVenta() : r.getNotaDebito(),
-                        r.getFacturaVenta() != null ? JGestionUtils.getNumeracion(r.getFacturaVenta()) : JGestionUtils.getNumeracion(r.getNotaDebito(), true),
+                        r.getFacturaVenta() != null ? JGestionUtils.getNumeracion(r.getFacturaVenta()) : JGestionUtils.getNumeracion(r.getNotaDebito()),
                         null,
                         r.getMontoEntrega()
                     });
@@ -1012,11 +1009,11 @@ public class ReciboController implements ActionListener, FocusListener {
         if (recibo == null && recibo.getId() == null) {
             throw new MessageException("No hay " + CLASS_NAME + " seleccionado");
         }
-        DetalleRecibo d = recibo.getDetalleReciboList().get(0);
+        DetalleRecibo d = recibo.getDetalle().get(0);
         Cliente cliente = d.getFacturaVenta() != null ? d.getFacturaVenta().getCliente() : d.getNotaDebito().getCliente();
-        List<GenericBeanCollection> cc = new ArrayList<GenericBeanCollection>(recibo.getDetalleReciboList().size());
-        for (DetalleRecibo dr : recibo.getDetalleReciboList()) {
-            String comprobanteString = dr.getFacturaVenta() != null ? JGestionUtils.getNumeracion(dr.getFacturaVenta()) : JGestionUtils.getNumeracion(dr.getNotaDebito(), true);
+        List<GenericBeanCollection> cc = new ArrayList<GenericBeanCollection>(recibo.getDetalle().size());
+        for (DetalleRecibo dr : recibo.getDetalle()) {
+            String comprobanteString = dr.getFacturaVenta() != null ? JGestionUtils.getNumeracion(dr.getFacturaVenta()) : JGestionUtils.getNumeracion(dr.getNotaDebito());
             cc.add(new GenericBeanCollection(comprobanteString, dr.getMontoEntrega()));
         }
         List<GenericBeanCollection> pp = new ArrayList<GenericBeanCollection>(recibo.getPagos().size());

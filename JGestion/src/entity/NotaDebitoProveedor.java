@@ -4,17 +4,33 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.UniqueConstraint;
 
 /**
  *
  * @author FiruzzZ
  */
 @Entity
-@Table(name = "nota_debito", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"sucursal_id", "numero", "tipo"})
-})
-public class NotaDebito implements Serializable {
+@Table(name = "nota_debito_proveedor", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"proveedor_id", "numero"})})
+@NamedQueries({
+    @NamedQuery(name = "NotaDebitoProveedor.findAll", query = "SELECT n FROM NotaDebitoProveedor n")})
+public class NotaDebitoProveedor implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -23,8 +39,8 @@ public class NotaDebito implements Serializable {
     @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
-    @Column(nullable = false, precision = 8)
-    private int numero;
+    @Column(nullable = false, precision = 12)
+    private Long numero;
     @Basic(optional = false)
     @Column(name = "fecha_nota_debito", nullable = false)
     @Temporal(TemporalType.DATE)
@@ -64,23 +80,13 @@ public class NotaDebito implements Serializable {
     @JoinColumn(nullable = false)
     @ManyToOne(optional = false)
     private Usuario usuario;
-    @JoinColumn(nullable = false)
-    @ManyToOne(optional = false)
-    private Sucursal sucursal;
     @ManyToOne
-    private Recibo recibo;
+    private Remesa remesa;
     @JoinColumn(nullable = false)
     @ManyToOne(optional = false)
-    private Cliente cliente;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "notaDebito", orphanRemoval = true)
-    private List<DetalleNotaDebito> detalle;
-
-    public NotaDebito() {
-    }
-
-    public NotaDebito(Integer id) {
-        this.id = id;
-    }
+    private Proveedor proveedor;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "notaDebitoProveedor", orphanRemoval = true)
+    private List<DetalleNotaDebitoProveedor> detalle;
 
     public Integer getId() {
         return id;
@@ -90,11 +96,11 @@ public class NotaDebito implements Serializable {
         this.id = id;
     }
 
-    public int getNumero() {
+    public Long getNumero() {
         return numero;
     }
 
-    public void setNumero(int numero) {
+    public void setNumero(Long numero) {
         this.numero = numero;
     }
 
@@ -170,7 +176,7 @@ public class NotaDebito implements Serializable {
         this.otrosIvas = otrosIvas;
     }
 
-    public boolean getAnulada() {
+    public boolean isAnulada() {
         return anulada;
     }
 
@@ -194,14 +200,6 @@ public class NotaDebito implements Serializable {
         this.tipo = tipo;
     }
 
-    public Sucursal getSucursal() {
-        return sucursal;
-    }
-
-    public void setSucursal(Sucursal sucursal) {
-        this.sucursal = sucursal;
-    }
-
     public Usuario getUsuario() {
         return usuario;
     }
@@ -210,27 +208,27 @@ public class NotaDebito implements Serializable {
         this.usuario = usuario;
     }
 
-    public Recibo getRecibo() {
-        return recibo;
+    public Remesa getRemesa() {
+        return remesa;
     }
 
-    public void setRecibo(Recibo recibo) {
-        this.recibo = recibo;
+    public void setRemesa(Remesa remesa) {
+        this.remesa = remesa;
     }
 
-    public Cliente getCliente() {
-        return cliente;
+    public Proveedor getProveedor() {
+        return proveedor;
     }
 
-    public void setCliente(Cliente cliente) {
-        this.cliente = cliente;
+    public void setProveedor(Proveedor proveedor) {
+        this.proveedor = proveedor;
     }
 
-    public List<DetalleNotaDebito> getDetalle() {
+    public List<DetalleNotaDebitoProveedor> getDetalle() {
         return detalle;
     }
 
-    public void setDetalle(List<DetalleNotaDebito> detalle) {
+    public void setDetalle(List<DetalleNotaDebitoProveedor> detalle) {
         this.detalle = detalle;
     }
 
@@ -244,10 +242,10 @@ public class NotaDebito implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof NotaDebito)) {
+        if (!(object instanceof NotaDebitoProveedor)) {
             return false;
         }
-        NotaDebito other = (NotaDebito) object;
+        NotaDebitoProveedor other = (NotaDebitoProveedor) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -256,6 +254,6 @@ public class NotaDebito implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.NotaDebito[ id=" + id + " ]";
+        return "NotaDebitoProveedor{" + "id=" + id + ", numero=" + numero + ", fechaNotaDebito=" + fechaNotaDebito + ", fechaCarga=" + fechaCarga + ", importe=" + importe + ", observacion=" + observacion + ", gravado=" + gravado + ", noGravado=" + noGravado + ", iva10=" + iva10 + ", iva21=" + iva21 + ", otrosIvas=" + otrosIvas + ", anulada=" + anulada + ", impuestosRecuperables=" + impuestosRecuperables + ", tipo=" + tipo + ", usuario=" + usuario.getId() + ", remesa=" + (remesa != null ? remesa.getId() : null) + ", proveedor=" + (proveedor != null ? proveedor.getId() : null) + ", detalle=" + (detalle != null ? detalle.size() : null) + '}';
     }
 }

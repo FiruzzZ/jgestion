@@ -17,12 +17,10 @@ import javax.persistence.UniqueConstraint;
 
 /**
  *
- * @author Administrador
+ * @author FiruzzZ
  */
 @Entity
-@Table(name = "detalle_remesa", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"remesa", "factura_compra"})
-})
+@Table(name = "detalle_remesa")
 @NamedQueries({
     @NamedQuery(name = "DetalleRemesa.findAll", query = "SELECT d FROM DetalleRemesa d"),
     @NamedQuery(name = "DetalleRemesa.findById", query = "SELECT d FROM DetalleRemesa d WHERE d.id = :id")
@@ -40,10 +38,13 @@ public class DetalleRemesa implements Serializable {
     private BigDecimal montoEntrega;
     @Column(name = "observacion", length = 200)
     private String observacion;
-    @JoinColumn(name = "factura_compra", referencedColumnName = "id", nullable = false)
-    @ManyToOne(optional = false)
+    @JoinColumn(name = "factura_compra")
+    @ManyToOne
     private FacturaCompra facturaCompra;
-    @JoinColumn(name = "remesa", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "nota_debito_proveedor_id")
+    @ManyToOne
+    private NotaDebitoProveedor notaDebitoProveedor;
+    @JoinColumn(name = "remesa", nullable = false)
     @ManyToOne(optional = false)
     private Remesa remesa;
     @Basic(optional = false)
@@ -87,6 +88,14 @@ public class DetalleRemesa implements Serializable {
 
     public void setFacturaCompra(FacturaCompra facturaCompra) {
         this.facturaCompra = facturaCompra;
+    }
+
+    public NotaDebitoProveedor getNotaDebitoProveedor() {
+        return notaDebitoProveedor;
+    }
+
+    public void setNotaDebitoProveedor(NotaDebitoProveedor notaDebitoProveedor) {
+        this.notaDebitoProveedor = notaDebitoProveedor;
     }
 
     public Remesa getRemesa() {
