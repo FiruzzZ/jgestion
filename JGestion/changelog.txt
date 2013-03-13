@@ -1,3 +1,5 @@
+--20130313
+
 --20130311
 CREATE TABLE nota_debito_proveedor (
   id serial NOT NULL,

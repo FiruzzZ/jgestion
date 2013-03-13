@@ -23,17 +23,19 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import javax.persistence.*;
+import org.eclipse.persistence.config.QueryHints;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import jgestion.JGestionUtils;
 import jpa.controller.CreditoProveedorJpaController;
 import jpa.controller.RemesaJpaController;
 import net.sf.jasperreports.engine.JRException;
+import utilities.swing.components.ComboBoxWrapper;
 import utilities.swing.components.FormatRenderer;
 import utilities.swing.components.NumberRenderer;
 
@@ -159,8 +161,9 @@ public class CtacteProveedorController implements ActionListener {
         List<CtacteProveedor> listaCtaCteProveedor = em.createQuery(
                 "SELECT o FROM " + CtacteProveedor.class.getSimpleName() + " o"
                 + " WHERE o.estado=" + estadoCtaCte + " AND o.factura.proveedor.id =" + idProveedor
-                + " ORDER BY o.factura.numero",
-                CtacteProveedor.class).getResultList();
+                + " ORDER BY o.factura.numero", CtacteProveedor.class)
+                .setHint(QueryHints.REFRESH, Boolean.TRUE)
+                .getResultList();
         return listaCtaCteProveedor;
     }
 
@@ -170,8 +173,9 @@ public class CtacteProveedorController implements ActionListener {
         List<CtacteProveedor> listaCtaCteProveedor = em.createNativeQuery(
                 "SELECT o.* FROM ctacte_proveedor o, factura_compra f, proveedor p"
                 + " WHERE p.id = f.proveedor AND f.id = o.factura "
-                + " AND p.id =" + idProveedor,
-                CtacteProveedor.class).getResultList();
+                + " AND p.id =" + idProveedor, CtacteProveedor.class)
+                .setHint(QueryHints.REFRESH, Boolean.TRUE)
+                .getResultList();
         return listaCtaCteProveedor;
     }
 
@@ -403,14 +407,15 @@ public class CtacteProveedorController implements ActionListener {
     }
 
     private void cargarComboBoxRecibosDeCtaCte(CtacteProveedor ctacteProveedor) {
-        List<Remesa> recibosList = new RemesaJpaController().findByFactura(ctacteProveedor.getFactura());
-        UTIL.loadComboBox(resumenCtaCtes.getCbReRes(), recibosList, false);
+        List<Remesa> list = new RemesaJpaController().findByFactura(ctacteProveedor.getFactura());
+        UTIL.loadComboBox(resumenCtaCtes.getCbReRes(), JGestionUtils.getWrappedRemesas(list), false);
         setDatosReciboSelected();
     }
 
     private void setDatosReciboSelected() {
         try {
-            Remesa remesa = (Remesa) resumenCtaCtes.getCbReRes().getSelectedItem();
+            @SuppressWarnings("unchecked")
+            Remesa remesa = ((ComboBoxWrapper<Remesa>) resumenCtaCtes.getCbReRes().getSelectedItem()).getEntity();
             resumenCtaCtes.setTfReciboFecha(UTIL.DATE_FORMAT.format(remesa.getFechaRemesa()));
             resumenCtaCtes.setTfReciboMonto(UTIL.DECIMAL_FORMAT.format(remesa.getMonto()));
             cargarDtmDetallesDeCtaCte(remesa);
@@ -429,7 +434,9 @@ public class CtacteProveedorController implements ActionListener {
         List<DetalleRemesa> detalleReList = remesa.getDetalle();
         for (DetalleRemesa detalleRe : detalleReList) {
             dtm.addRow(new Object[]{
-                        UTIL.AGREGAR_CEROS(detalleRe.getFacturaCompra().getNumero(), 12),
+                        detalleRe.getFacturaCompra() != null
+                        ? JGestionUtils.getNumeracion(detalleRe.getFacturaCompra())
+                        : JGestionUtils.getNumeracion(detalleRe.getNotaDebitoProveedor()),
                         detalleRe.getObservacion(),
                         UTIL.PRECIO_CON_PUNTO.format(detalleRe.getMontoEntrega())
                     });
