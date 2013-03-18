@@ -453,19 +453,19 @@ public class PanelABMSucursal extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void tfTele1KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfTele1KeyTyped
-        SwingUtil.checkInputDigit(((JTextField) evt.getSource()), evt, 12);
+        SwingUtil.checkInputDigit(evt, 12);
 }//GEN-LAST:event_tfTele1KeyTyped
 
     private void tfTele2KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfTele2KeyTyped
-        SwingUtil.checkInputDigit(((JTextField) evt.getSource()), evt, 12);
+        SwingUtil.checkInputDigit(evt, 12);
 }//GEN-LAST:event_tfTele2KeyTyped
 
     private void tfInterno1KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfInterno1KeyTyped
-        SwingUtil.checkInputDigit(((JTextField) evt.getSource()), evt, 4);
+        SwingUtil.checkInputDigit(evt, 4);
     }//GEN-LAST:event_tfInterno1KeyTyped
 
     private void tfInterno2KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfInterno2KeyTyped
-        SwingUtil.checkInputDigit(((JTextField) evt.getSource()), evt, 4);
+        SwingUtil.checkInputDigit(evt, 4);
     }//GEN-LAST:event_tfInterno2KeyTyped
 
     private void tfNombreKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfNombreKeyTyped
@@ -473,7 +473,7 @@ public class PanelABMSucursal extends javax.swing.JPanel {
     }//GEN-LAST:event_tfNombreKeyTyped
 
     private void tfPuntoVentaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfPuntoVentaKeyTyped
-        SwingUtil.checkInputDigit(((JTextField) evt.getSource()), evt, 4);
+        SwingUtil.checkInputDigit(evt, 4);
     }//GEN-LAST:event_tfPuntoVentaKeyTyped
 
     private void tfPuntoVentaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfPuntoVentaFocusLost
@@ -485,7 +485,7 @@ public class PanelABMSucursal extends javax.swing.JPanel {
     }//GEN-LAST:event_tfInicialFacturaBFocusLost
 
     private void tfInicialFacturaBKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfInicialFacturaBKeyTyped
-        SwingUtil.checkInputDigit(((JTextField) evt.getSource()), evt, 8);
+        SwingUtil.checkInputDigit(evt, 8);
     }//GEN-LAST:event_tfInicialFacturaBKeyTyped
 
     private void tfInicialFacturaAFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfInicialFacturaAFocusLost
@@ -493,11 +493,11 @@ public class PanelABMSucursal extends javax.swing.JPanel {
     }//GEN-LAST:event_tfInicialFacturaAFocusLost
 
     private void tfInicialFacturaAKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfInicialFacturaAKeyTyped
-        SwingUtil.checkInputDigit(((JTextField) evt.getSource()), evt, 8);
+        SwingUtil.checkInputDigit(evt, 8);
     }//GEN-LAST:event_tfInicialFacturaAKeyTyped
 
     private void tfInicialRemitoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfInicialRemitoKeyTyped
-        SwingUtil.checkInputDigit(((JTextField) evt.getSource()), evt, 8);
+        SwingUtil.checkInputDigit(evt, 8);
     }//GEN-LAST:event_tfInicialRemitoKeyTyped
 
     private void tfInicialReciboFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfInicialReciboFocusLost
@@ -505,7 +505,7 @@ public class PanelABMSucursal extends javax.swing.JPanel {
     }//GEN-LAST:event_tfInicialReciboFocusLost
 
     private void tfInicialReciboKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfInicialReciboKeyTyped
-        SwingUtil.checkInputDigit(((JTextField) evt.getSource()), evt, 8);
+        SwingUtil.checkInputDigit(evt, 8);
     }//GEN-LAST:event_tfInicialReciboKeyTyped
 
     private void tfInicialNotaCreditoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfInicialNotaCreditoFocusLost
@@ -513,7 +513,7 @@ public class PanelABMSucursal extends javax.swing.JPanel {
     }//GEN-LAST:event_tfInicialNotaCreditoFocusLost
 
     private void tfInicialNotaCreditoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfInicialNotaCreditoKeyTyped
-        SwingUtil.checkInputDigit(((JTextField) evt.getSource()), evt, 8);
+        SwingUtil.checkInputDigit(evt, 8);
     }//GEN-LAST:event_tfInicialNotaCreditoKeyTyped
 
     private void tfInicialRemitoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfInicialRemitoFocusLost
@@ -536,7 +536,7 @@ public class PanelABMSucursal extends javax.swing.JPanel {
     }//GEN-LAST:event_tfInicialNotaDebitoAFocusLost
 
     private void tfInicialNotaDebitoAKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfInicialNotaDebitoAKeyTyped
-        SwingUtil.checkInputDigit(((JTextField) evt.getSource()), evt, 8);
+        SwingUtil.checkInputDigit(evt, 8);
     }//GEN-LAST:event_tfInicialNotaDebitoAKeyTyped
 
     private void tfInicialNotaDebitoBFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfInicialNotaDebitoBFocusLost
