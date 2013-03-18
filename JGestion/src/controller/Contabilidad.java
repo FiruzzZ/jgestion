@@ -42,6 +42,7 @@ import java.math.BigDecimal;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -57,6 +58,7 @@ import javax.swing.table.TableColumnModel;
 import jgestion.JGestionUtils;
 import jgestion.Main;
 import jpa.controller.ClienteJpaController;
+import jpa.controller.ProveedorJpaController;
 import jpa.controller.VendedorJpaController;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Level;
@@ -706,6 +708,8 @@ public class Contabilidad {
         buscadorReRe = new JDBuscadorReRe(owner, "Informe - Comprobantes Ventas", false, "Cliente", "Nº Factura");
         buscadorReRe.getjTable1().setAutoCreateRowSorter(true);
         buscadorReRe.hideFactura();
+        buscadorReRe.hideUDNCuentaSubCuenta();
+        buscadorReRe.hideVendedor();
         buscadorReRe.setFechaSistemaFieldsVisible(false);
         buscadorReRe.getbImprimir().setVisible(true);
         UTIL.loadComboBox(buscadorReRe.getCbClieProv(), JGestionUtils.getWrappedClientes(new ClienteController().findAll()), true);
@@ -772,13 +776,13 @@ public class Contabilidad {
                                     facturaVenta.getFechaVenta(),
                                     facturaVenta.getCliente().getNombre(),
                                     facturaVenta.getCliente().getNumDoc(),
-                                    new BigDecimal(facturaVenta.getGravado()),
-                                    new BigDecimal(facturaVenta.getIva10()),
-                                    new BigDecimal(facturaVenta.getIva21()),
+                                    facturaVenta.getTipo() == 'B' ? BigDecimal.ZERO : new BigDecimal(facturaVenta.getGravado()),
+                                    facturaVenta.getTipo() == 'B' ? BigDecimal.ZERO : new BigDecimal(facturaVenta.getIva10()),
+                                    facturaVenta.getTipo() == 'B' ? BigDecimal.ZERO : new BigDecimal(facturaVenta.getIva21()),
                                     BigDecimal.ZERO,
                                     BigDecimal.ZERO,
-                                    facturaVenta.getNoGravado(),
-                                    new BigDecimal(facturaVenta.getDescuento()),
+                                    facturaVenta.getTipo() == 'B' ? BigDecimal.ZERO : facturaVenta.getNoGravado(),
+                                    facturaVenta.getTipo() == 'B' ? BigDecimal.ZERO : new BigDecimal(facturaVenta.getDescuento()),
                                     new BigDecimal(facturaVenta.getImporte())
                                 });
                     }
@@ -803,7 +807,7 @@ public class Contabilidad {
         buscadorReRe.hideCheckAnulado();
         buscadorReRe.setFechaSistemaFieldsVisible(false);
         buscadorReRe.getbImprimir().setVisible(true);
-        UTIL.loadComboBox(buscadorReRe.getCbClieProv(), new ProveedorController().findEntities(), true);
+        UTIL.loadComboBox(buscadorReRe.getCbClieProv(), JGestionUtils.getWrappedProveedores(new ProveedorJpaController().findAll()), true);
         UTIL.loadComboBox(buscadorReRe.getCbCaja(), new CajaController().findCajasPermitidasByUsuario(UsuarioController.getCurrentUser(), true), true);
         UTIL.loadComboBox(buscadorReRe.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), true);
         buscadorReRe.getLabelFormasDePago().setText("Tipo");
@@ -896,6 +900,7 @@ public class Contabilidad {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private List<?> getComprobantesCompra() throws MessageException, DatabaseErrorException {
         StringBuilder queryFactuCompra = new StringBuilder(300);
         StringBuilder queryNotaCredito = new StringBuilder(300);
@@ -964,7 +969,7 @@ public class Contabilidad {
         }
 
         if (buscadorReRe.getCbClieProv().getSelectedIndex() > 0) {
-            queryFactuCompra.append(" AND o.proveedor = ").append(((Proveedor) buscadorReRe.getCbClieProv().getSelectedItem()).getId());
+            queryFactuCompra.append(" AND o.proveedor = ").append(((ComboBoxWrapper<Proveedor>) buscadorReRe.getCbClieProv().getSelectedItem()).getId());
         }
 
         String sql =
@@ -1065,7 +1070,7 @@ public class Contabilidad {
         }
 
         if (buscadorReRe.getCbClieProv().getSelectedIndex() > 0) {
-            queryWhereFactuVenta.append(" AND o.cliente.id = ").append(((Cliente) buscadorReRe.getCbClieProv().getSelectedItem()).getId());
+            queryWhereFactuVenta.append(" AND o.cliente.id = ").append(((ComboBoxWrapper<Cliente>) buscadorReRe.getCbClieProv().getSelectedItem()).getId());
         }
 
         queryWhereFactuVenta.append(" AND o.anulada = ").append(buscadorReRe.getCheckAnulada().isSelected());

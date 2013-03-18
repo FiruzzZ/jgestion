@@ -23,6 +23,7 @@ import entity.RemesaPagos;
 import utilities.general.UTIL;
 import gui.JDBuscadorReRe;
 import gui.JDReRe;
+import java.awt.Window;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
@@ -56,7 +57,7 @@ import utilities.swing.components.NumberRenderer;
  *
  * @author Administrador
  */
-public class RemesaController implements ActionListener, FocusListener {
+public class RemesaController implements FocusListener {
 
     private final String CLASS_NAME = Remesa.class.getSimpleName();
     private static final String[] COLUMN_NAMES = {"facturaID", "Factura", "Observación", "Entrega"};
@@ -66,7 +67,7 @@ public class RemesaController implements ActionListener, FocusListener {
     private NotaDebitoProveedor selectedNotaDebito;
     private Date selectedFechaReRe = null;
     private JDBuscadorReRe buscador;
-    private Remesa rereSelected;
+    private Remesa selectedRemesa;
     private static Logger LOG = Logger.getLogger(RemesaController.class);
     private RemesaJpaController jpaController;
     private boolean unlockedNumeracion = false;
@@ -95,13 +96,14 @@ public class RemesaController implements ActionListener, FocusListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-//                    anular(rereSelected);
-//                    jdReRe.showMessage(CLASS_NAME + " anulada ..", CLASS_NAME, 1);
-//                    resetPanel();
-//                } catch (MessageException ex) {
-                    jdReRe.showMessage("No no no no..!", CLASS_NAME, 2);
+                    anular(selectedRemesa);
+                    jdReRe.showMessage(CLASS_NAME + " anulada ..", CLASS_NAME, 1);
+                    armarQuery();
+                } catch (MessageException ex) {
+                    ex.displayMessage(jdReRe);
                 } catch (Exception ex) {
                     jdReRe.showMessage(ex.getMessage(), CLASS_NAME, 2);
+                    LOG.error("Anulando Remesa.id=" + selectedRemesa.getId(), ex);
                 }
             }
         });
@@ -325,10 +327,6 @@ public class RemesaController implements ActionListener, FocusListener {
         }
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-    }
-
     private void checkConstraints() throws MessageException {
         if (jdReRe.getDtmAPagar().getRowCount() < 1) {
             throw new MessageException("No ha hecho ninguna entrega");
@@ -546,15 +544,22 @@ public class RemesaController implements ActionListener, FocusListener {
         updateTotales();
     }
 
-    public JDialog initBuscador(JDialog dialog, boolean modal) throws MessageException {
+    public void showBuscador(Window owner, boolean modal, final boolean toAnular) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.COMPRA);
-        buscador = new JDBuscadorReRe(dialog, "Buscador - " + CLASS_NAME, modal, "Proveedor", "Nº " + CLASS_NAME);
+        if (toAnular) {
+            UsuarioController.checkPermiso(PermisosController.PermisoDe.ANULAR_COMPROBANTES);
+        }
+        buscador = new JDBuscadorReRe(owner, "Buscador - " + CLASS_NAME, modal, "Proveedor", "Nº " + CLASS_NAME);
+        if (toAnular) {
+            buscador.setTitle(buscador.getTitle() + " para ANULAR");
+        }
         buscador.hideFormaPago();
-        buscador.setLocationRelativeTo(dialog);
-        buscador.setListeners(this);
+        buscador.hideVendedor();
+        buscador.hideUDNCuentaSubCuenta();
+        buscador.setLocationRelativeTo(owner);
         UTIL.loadComboBox(buscador.getCbClieProv(), new ProveedorController().findEntities(), true);
         UTIL.loadComboBox(buscador.getCbCaja(), new UsuarioHelper().getCajas(true), true);
-        UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getSucursales(), true);
+        UTIL.loadComboBox(buscador.getCbSucursal(), JGestionUtils.getWrappedSucursales(new UsuarioHelper().getSucursales()), true);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
                 new String[]{"ID", "(Sucursal) Nº", "Proveedor", "Monto", "Fecha", "Caja", "Usuario", "Fecha/Hora (Sist)"},
@@ -578,10 +583,14 @@ public class RemesaController implements ActionListener, FocusListener {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() > 1) {
-                    setSelectedRemesa();
+                    int rowIndex = buscador.getjTable1().getSelectedRow();
+                    Integer id = (Integer) buscador.getjTable1().getModel().getValueAt(rowIndex, 0);
+                    selectedRemesa = jpaController.find(id);
                     try {
-                        setComprobanteUI(rereSelected);
+                        setComprobanteUI(selectedRemesa);
                         jdReRe.setLocationRelativeTo(buscador);
+                        jdReRe.getbAnular().setVisible(toAnular);
+                        jdReRe.getbAnular().setEnabled(toAnular);
                         jdReRe.setVisible(true);
                     } catch (MessageException ex) {
                         ex.displayMessage(buscador);
@@ -589,7 +598,8 @@ public class RemesaController implements ActionListener, FocusListener {
                 }
             }
         });
-        return buscador;
+        buscador.setLocationRelativeTo(owner);
+        buscador.setVisible(true);
     }
 
     private void cargarFacturasCtaCtesYNotasDebito(Proveedor proveedor) {
@@ -612,18 +622,26 @@ public class RemesaController implements ActionListener, FocusListener {
         SwingUtil.setComponentsEnabled(jdReRe.getComponents(), false, true);
     }
 
+    @SuppressWarnings("unchecked")
     private void armarQuery() throws MessageException {
-        String query = "SELECT o.* "
-                + "FROM remesa o JOIN detalle_remesa dr ON o.id = dr.remesa JOIN sucursal s ON o.sucursal = s.id"
-                + " JOIN factura_compra f ON f.id = dr.factura_compra JOIN proveedor p ON p.id = f.proveedor"
-                + " JOIN caja c ON o.caja = c.id JOIN usuario u ON o.usuario = u.id";
+        StringBuilder query = new StringBuilder("SELECT o.* "
+                + " FROM remesa o "
+                + " JOIN detalle_remesa dr ON o.id = dr.remesa"
+                + " LEFT JOIN factura_compra f ON f.id = dr.factura_compra"
+                + " LEFT JOIN nota_debito_proveedor ndp ON ndp.id = dr.nota_debito_proveedor_id"
+                + " LEFT JOIN proveedor p ON p.id = f.proveedor"
+                + " LEFT JOIN proveedor pp ON pp.id = ndp.proveedor_id"
+                + " JOIN caja c ON o.caja = c.id"
+                + " JOIN sucursal s ON o.sucursal = s.id"
+                + " JOIN usuario u ON o.usuario = u.id"
+                + " WHERE o.id is not null ");
 
         long numero;
         //filtro por nº de ReRe
         if (buscador.getTfOcteto().length() > 0) {
             try {
                 numero = Long.parseLong(buscador.getTfOcteto());
-                query += " AND o.numero = " + numero;
+                query.append(" AND o.numero = ").append(numero);
             } catch (NumberFormatException ex) {
                 throw new MessageException("Número de " + CLASS_NAME + " no válido");
             }
@@ -633,32 +651,56 @@ public class RemesaController implements ActionListener, FocusListener {
         if (buscador.getTfFactu4().length() > 0 && buscador.getTfFactu8().length() > 0) {
             try {
                 numero = Long.parseLong(buscador.getTfFactu4() + buscador.getTfFactu8());
-                query += " AND f.numero = " + numero;
+                query.append(" AND f.numero = ").append(numero);
             } catch (NumberFormatException ex) {
                 throw new MessageException("Número de " + CLASS_NAME + " no válido");
             }
         }
         if (buscador.getDcDesde() != null) {
-            query += " AND o.fecha_remesa >= '" + buscador.getDcDesde() + "'";
+            query.append(" AND o.fecha_remesa >= '").append(buscador.getDcDesde()).append("'");
         }
         if (buscador.getDcHasta() != null) {
-            query += " AND o.fecha_remesa <= '" + buscador.getDcHasta() + "'";
+            query.append(" AND o.fecha_remesa <= '").append(buscador.getDcHasta()).append("'");
         }
         if (buscador.getCbCaja().getSelectedIndex() > 0) {
-            query += " AND o.caja = " + ((Caja) buscador.getCbCaja().getSelectedItem()).getId();
+            query.append(" AND o.caja = ").append(((Caja) buscador.getCbCaja().getSelectedItem()).getId());
+        } else {
+            query.append(" AND (");
+            for (int i = 1; i < buscador.getCbCaja().getItemCount(); i++) {
+                Caja caja = (Caja) buscador.getCbCaja().getItemAt(i);
+                query.append(" o.caja=").append(caja.getId());
+                if ((i + 1) < buscador.getCbCaja().getItemCount()) {
+                    query.append(" OR ");
+                }
+            }
+            query.append(")");
         }
         if (buscador.getCbSucursal().getSelectedIndex() > 0) {
-            query += " AND o.sucursal = " + ((Sucursal) buscador.getCbSucursal().getSelectedItem()).getId();
+            query.append(" AND o.sucursal = ").append(((ComboBoxWrapper<Sucursal>) buscador.getCbSucursal().getSelectedItem()).getId());
+        } else {
+            query.append(" AND (");
+            for (int i = 1; i < buscador.getCbSucursal().getItemCount(); i++) {
+                ComboBoxWrapper<Sucursal> cbw = (ComboBoxWrapper<Sucursal>) buscador.getCbSucursal().getItemAt(i);
+                query.append(" o.sucursal=").append(cbw.getId());
+                if ((i + 1) < buscador.getCbSucursal().getItemCount()) {
+                    query.append(" OR ");
+                }
+            }
+            query.append(")");
         }
         if (buscador.isCheckAnuladaSelected()) {
-            query += " AND o.estado = false";
+            query.append(" AND o.estado = false");
         }
         if (buscador.getCbClieProv().getSelectedIndex() > 0) {
-            query += " AND p.id = " + ((Proveedor) buscador.getCbClieProv().getSelectedItem()).getId();
+            query.append(" AND (")
+                    .append(" p.id = ").append(((ComboBoxWrapper<Proveedor>) buscador.getCbClieProv().getSelectedItem()).getId())
+                    .append(" OR pp.id = ").append(((ComboBoxWrapper<Proveedor>) buscador.getCbClieProv().getSelectedItem()).getId())
+                    .append(")");
         }
-        query += " ORDER BY o.id";
+        query.append(" GROUP bY o.id, o.fecha_remesa, o.estado,o.fecha_carga ,o.monto_entrega,o.sucursal,o.usuario,o.caja ,o.numero,o.anulada");
+        query.append(" ORDER BY o.sucursal, o.numero");
         System.out.println("QUERY: " + query);
-        cargarDtmBuscador(query);
+        cargarDtmBuscador(query.toString());
     }
 
     private void cargarDtmBuscador(String query) {
@@ -690,12 +732,6 @@ public class RemesaController implements ActionListener, FocusListener {
         }
     }
 
-    private void setSelectedRemesa() {
-        int rowIndex = buscador.getjTable1().getSelectedRow();
-        Integer id = (Integer) buscador.getjTable1().getModel().getValueAt(rowIndex, 0);
-        rereSelected = jpaController.find(id);
-    }
-
     /**
      * Setea la ventana de JDReRe de forma q solo se puedan ver los datos y
      * detalles de la Remesa, imprimir y ANULAR, pero NO MODIFICAR
@@ -713,6 +749,7 @@ public class RemesaController implements ActionListener, FocusListener {
         } else {
             p = remesa.getDetalle().get(0).getNotaDebitoProveedor().getProveedor();
         }
+        jdReRe.getLabelAnulado().setVisible(!remesa.getEstado());
         //que compare por String's..
         //por si el combo está vacio <VACIO> o no eligió ninguno
         //van a tirar error de ClassCastException
@@ -749,7 +786,7 @@ public class RemesaController implements ActionListener, FocusListener {
                         r.getMontoEntrega()
                     });
         }
-        getPagos(remesa);
+        loadPagos(remesa);
         dtm = jdReRe.getDtmPagos();
         dtm.setRowCount(0);
         for (Object object : remesa.getPagosEntities()) {
@@ -795,41 +832,13 @@ public class RemesaController implements ActionListener, FocusListener {
     }
 
     public void anular(Remesa remesa) throws MessageException, Exception {
-        EntityManager em = getEntityManager();
         if (remesa == null) {
             throw new MessageException("Remesa is NULL");
         }
         if (!remesa.getEstado()) {
             throw new MessageException("Esta " + CLASS_NAME + " ya está anulada");
         }
-
-        List<DetalleRemesa> detalleRemesaList = remesa.getDetalle();
-        CtacteProveedor ctaCteProveedor;
-        try {
-            em.getTransaction().begin();
-            for (DetalleRemesa dr : detalleRemesaList) {
-                //se resta la entrega ($) que implicaba este detalle con respecto a la factura
-                ctaCteProveedor = new CtacteProveedorController().findCtacteProveedorByFactura(dr.getFacturaCompra().getId());
-                ctaCteProveedor.setEntregado(ctaCteProveedor.getEntregado().subtract(dr.getMontoEntrega()));
-                // y si había sido pagada en su totalidad..
-                if (ctaCteProveedor.getEstado() == Valores.CtaCteEstado.PAGADA.getId()) {
-                    ctaCteProveedor.setEstado(Valores.CtaCteEstado.PENDIENTE.getId());
-                }
-                em.merge(ctaCteProveedor);
-            }
-            em.getTransaction().commit();
-        } catch (Exception ex) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            throw ex;
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
-        remesa.setEstado(false);
-        jpaController.merge(remesa);
+        jpaController.anular(remesa);
     }
 
     List<Remesa> findByFactura(FacturaCompra factura) {
@@ -841,7 +850,7 @@ public class RemesaController implements ActionListener, FocusListener {
         return remesas;
     }
 
-    private List<Object> getPagos(Remesa remesa) {
+    public List<Object> loadPagos(Remesa remesa) {
         List<Object> pagos = new ArrayList<Object>(remesa.getPagos().size());
         for (RemesaPagos pago : remesa.getPagos()) {
             if (pago.getFormaPago() == 0) {

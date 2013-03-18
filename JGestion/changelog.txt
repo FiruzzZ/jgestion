@@ -1,5 +1,6 @@
---20130313
-
+--20130316
+alter table usuario_acciones add column accion character(1) not null;
+alter table usuario_acciones alter column accion drop default;
 --20130311
 CREATE TABLE nota_debito_proveedor (
   id serial NOT NULL,

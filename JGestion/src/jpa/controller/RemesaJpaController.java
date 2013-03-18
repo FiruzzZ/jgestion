@@ -1,8 +1,11 @@
 package jpa.controller;
 
+import controller.CtacteProveedorController;
 import controller.DAO;
 import controller.OperacionesBancariasController;
 import controller.UsuarioController;
+import controller.Valores;
+import controller.exceptions.MessageException;
 import entity.*;
 import entity.enums.ChequeEstado;
 import java.math.BigDecimal;
@@ -64,7 +67,7 @@ public class RemesaJpaController extends AbstractDAO<Remesa, Integer> {
         }
         entityManager.persist(remesa);
         for (DetalleRemesa d : remesa.getDetalle()) {
-            if(d.getNotaDebitoProveedor() != null) {
+            if (d.getNotaDebitoProveedor() != null) {
                 d.getNotaDebitoProveedor().setRemesa(remesa);
                 entityManager.merge(d.getNotaDebitoProveedor());
             }
@@ -172,6 +175,80 @@ public class RemesaJpaController extends AbstractDAO<Remesa, Integer> {
                     + " WHERE o.sucursal.id=" + sucursal.getId() + " AND o.numero=" + numero, getEntityClass()).getSingleResult();
         } catch (NoResultException e) {
             return null;
+        }
+    }
+
+    public void anular(Remesa remesa) throws Exception {
+        EntityManager em = getEntityManager();
+        List<DetalleRemesa> detalleRemesaList = remesa.getDetalle();
+        CtacteProveedor ctaCteProveedor;
+        try {
+            em.getTransaction().begin();
+            for (DetalleRemesa dr : detalleRemesaList) {
+                if (dr.getFacturaCompra() != null) {
+                    //se resta la entrega ($) que implicaba este detalle con respecto a la factura
+                    ctaCteProveedor = new CtacteProveedorController().findCtacteProveedorByFactura(dr.getFacturaCompra().getId());
+                    ctaCteProveedor.setEntregado(ctaCteProveedor.getEntregado().subtract(dr.getMontoEntrega()));
+                    // y si había sido pagada en su totalidad..
+                    if (ctaCteProveedor.getEstado() == Valores.CtaCteEstado.PAGADA.getId()) {
+                        ctaCteProveedor.setEstado(Valores.CtaCteEstado.PENDIENTE.getId());
+                    }
+                    em.merge(ctaCteProveedor);
+                } else {
+                    NotaDebitoProveedor nd = em.find(dr.getNotaDebitoProveedor().getClass(), dr.getNotaDebitoProveedor().getId());
+                    nd.setRemesa(null);
+                    em.merge(nd);
+                }
+            }
+            for (Object object : remesa.getPagosEntities()) {
+                if (object instanceof ChequePropio) {
+                    ChequePropio pago = (ChequePropio) object;
+                    pago = em.find(pago.getClass(), pago.getId());
+                    if (pago.getEstado() != ChequeEstado.CARTERA.getId()) {
+                        throw new MessageException("¡ANULACIÓN CANCELADA!:"
+                                + "\nEl Cheque Propio " + pago.getBanco().getNombre() + " " + pago.getNumero() + ", Importe $" + pago.getImporte()
+                                + "\nfue COBRADO/DEBITADO, no se encuentra mas en " + ChequeEstado.CARTERA);
+                    }
+                    CuentabancariaMovimientos cbm = new CuentabancariaMovimientosJpaController().findBy(pago);
+                    cbm = em.find(cbm.getClass(), cbm.getId());
+                    em.remove(cbm);
+                    em.remove(pago);
+                } else if (object instanceof ChequeTerceros) {
+                    ChequeTerceros pago = (ChequeTerceros) object;
+                    pago = em.find(pago.getClass(), pago.getId());
+                    pago.setComprobanteEgreso(null);
+                    pago.setEstado(ChequeEstado.CARTERA.getId());
+                    em.merge(pago);
+                } else if (object instanceof NotaCreditoProveedor) {
+                    NotaCreditoProveedor pago = (NotaCreditoProveedor) object;
+                    pago = em.find(pago.getClass(), pago.getId());
+                    pago.setRemesa(null);
+                    em.merge(pago);
+                } else if (object instanceof ComprobanteRetencion) {
+                    ComprobanteRetencion pago = (ComprobanteRetencion) object;
+                    pago = em.find(pago.getClass(), pago.getId());
+                    em.remove(pago);
+                } else if (object instanceof DetalleCajaMovimientos) {
+//                    DetalleCajaMovimientos dcm = (DetalleCajaMovimientos) object;
+//                    rp = em.find(RemesaPagos.class, dcm.getId());
+                    new CajaMovimientosJpaController().anular(remesa);
+                } else if (object instanceof CuentabancariaMovimientos) {
+                    CuentabancariaMovimientos pago = (CuentabancariaMovimientos) object;
+                    pago = em.find(pago.getClass(), pago.getId());
+                    em.remove(pago);
+                }
+            }
+            remesa.setEstado(false);
+            em.getTransaction().commit();
+        } catch (Exception ex) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw ex;
+        } finally {
+            if (em != null) {
+                em.close();
+            }
         }
     }
 }

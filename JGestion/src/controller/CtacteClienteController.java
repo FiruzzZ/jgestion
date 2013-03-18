@@ -6,6 +6,7 @@ import utilities.general.UTIL;
 import gui.JDBuscador;
 import gui.JDResumenCtaCtes;
 import gui.PanelCtaCteCheckVencimientos;
+import gui.generics.JDialogTable;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,6 +17,7 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
@@ -27,9 +29,12 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import jgestion.JGestionUtils;
+import jpa.controller.CreditoProveedorJpaController;
+import jpa.controller.NotaCreditoJpaController;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Logger;
 import utilities.swing.components.ComboBoxWrapper;
@@ -278,6 +283,21 @@ public class CtacteClienteController implements ActionListener {
                 }
             }
         });
+        resumenCtaCtes.getBtnCuenta().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    @SuppressWarnings("unchecked")
+                    Cliente c = ((ComboBoxWrapper<Cliente>) resumenCtaCtes.getCbClieProv().getSelectedItem()).getEntity();
+                    initBuscadorNotaCredito(c);
+                } catch (MessageException ex) {
+                    ex.displayMessage(resumenCtaCtes);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(resumenCtaCtes, "Algo salió mal:\n" + ex.getLocalizedMessage());
+                    LOG.error("Iniciando buscador de NotaCredito desde Resumen CCC", ex);
+                }
+            }
+        });
         UTIL.loadComboBox(resumenCtaCtes.getCbClieProv(), JGestionUtils.getWrappedClientes(new ClienteController().findAll()), false);
         UTIL.loadComboBox(resumenCtaCtes.getCbReRes(), null, true);
         UTIL.getDefaultTableModel(
@@ -293,18 +313,13 @@ public class CtacteClienteController implements ActionListener {
                 resumenCtaCtes.getjTableDetalle(),
                 new String[]{"Nº Factura", "Observación", "Monton"},
                 new int[]{60, 100, 50});
-        resumenCtaCtes.getjTableDetalle().getColumnModel().getColumn(0).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        resumenCtaCtes.getjTableDetalle().getColumnModel().getColumn(2).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         resumenCtaCtes.setListener(this);
         return resumenCtaCtes;
     }
 
-    private double getSaldoAcumulado() {
-        double saldo = 0.0;
-        DefaultTableModel dtm = resumenCtaCtes.getDtmResumen();
-        for (int i = dtm.getRowCount() - 1; i > -1; i--) {
-            saldo += Double.parseDouble(dtm.getValueAt(i, 6).toString());
-        }
-        return saldo;
+    private void initBuscadorNotaCredito(Cliente c) throws MessageException {
+        new NotaCreditoController().initBuscador(resumenCtaCtes, false, c, false);
     }
 
     @Override

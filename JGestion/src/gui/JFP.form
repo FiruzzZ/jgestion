@@ -493,7 +493,6 @@
                     <MenuItem class="javax.swing.JMenuItem" name="jMenuItem77">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="Recibo"/>
-                        <Property name="enabled" type="boolean" value="false"/>
                       </Properties>
                       <Events>
                         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem77ActionPerformed"/>
@@ -520,6 +519,14 @@
                       </Properties>
                       <Events>
                         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem38ActionPerformed"/>
+                      </Events>
+                    </MenuItem>
+                    <MenuItem class="javax.swing.JMenuItem" name="jMenuItem88">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="Remesas"/>
+                      </Properties>
+                      <Events>
+                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem88ActionPerformed"/>
                       </Events>
                     </MenuItem>
                   </SubComponents>
@@ -953,7 +960,7 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItem65">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Tracker de usuarios"/>
+                <Property name="text" type="java.lang.String" value="Registro de acciones de usuarios"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem65ActionPerformed"/>

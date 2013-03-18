@@ -2,6 +2,7 @@ package controller;
 
 import controller.exceptions.MessageException;
 import entity.*;
+import entity.enums.ChequeEstado;
 import generics.GenericBeanCollection;
 import gui.JDBuscadorReRe;
 import gui.JDReRe;
@@ -95,10 +96,11 @@ public class ReciboController implements ActionListener, FocusListener {
                 try {
                     if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(jdReRe, "La anulación de un implica:"
                             + "\n- Deshacer el pago realizado a cada Factura."
-                            + "\n- La eliminación completa de las Formas de Pago de Tipo: Cheques Terceros, Retenciones, Transferencias."
+                            + "\n- La eliminación completa de las Formas de Pago de Tipo: Cheques Terceros (si aún está en " + ChequeEstado.CARTERA + "), Retenciones, Transferencias."
                             + "\n- La desvinculación de las Notas de Crédito con el Recibo."
+                            + "\n- La desvinculación de las Notas de Débito con el Recibo."
                             + "\n- El cambio de estado de Cheques Propios a \"Entregados\" y dejando en blanco el concepto \"Comprobante de Ingreso\"."
-                            + "\n- La generación de un movimiento de Egreso de la entrega en Efectivo, en la misma Caja en la cual se originó el Recibo."
+                            + "\n- La generación de un movimiento de Egreso de la entrega en Efectivo, en la misma Caja en la cual se originó el ingreso por el Recibo."
                             + "\n¿Confirmar anulación?")) {
                         jpaController.anular(selectedRecibo);
                         jdReRe.showMessage(CLASS_NAME + " anulada..", CLASS_NAME, 1);
@@ -674,6 +676,9 @@ public class ReciboController implements ActionListener, FocusListener {
             return;
         }// </editor-fold>
         buscador = new JDBuscadorReRe(owner, "Buscador - " + CLASS_NAME, modal, "Cliente", "Nº " + CLASS_NAME);
+        if (toAnular) {
+            buscador.setTitle(buscador.getTitle() + " para ANULAR");
+        }
         initBuscador(toAnular);
 
     }
@@ -807,13 +812,15 @@ public class ReciboController implements ActionListener, FocusListener {
     private void armarQuery() throws MessageException {
         StringBuilder query = new StringBuilder(
                 "SELECT o.*"
-                + " FROM recibo o JOIN caja c ON (o.caja = c.id)"
+                + " FROM recibo o"
                 + " JOIN detalle_recibo dr ON (o.id = dr.recibo)"
                 + " LEFT JOIN factura_venta f ON (dr.factura_venta = f.id)"
                 + " LEFT JOIN nota_debito ON (dr.nota_debito_id = nota_debito.id)"
                 + " LEFT JOIN cliente p ON (f.cliente = p.id) "
                 + " LEFT JOIN cliente pp ON (nota_debito.cliente_id = pp.id) "
-                + " JOIN usuario u ON (o.usuario = u.id) JOIN sucursal s ON (o.sucursal = s.id)"
+                + " JOIN caja c ON (o.caja = c.id)"
+                + " JOIN sucursal s ON (o.sucursal = s.id)"
+                + " JOIN usuario u ON (o.usuario = u.id)"
                 + " WHERE o.id is not null  ");
 
         long numero;

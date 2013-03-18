@@ -493,6 +493,7 @@ public class ProductoController implements ActionListener, KeyListener {
         if (object.getId() == null) {
             jpaController.create(object);
         } else {
+            new UsuarioAccionesController().log(object);
             jpaController.merge(object);
         }
     }
