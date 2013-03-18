@@ -54,7 +54,7 @@ public class UsuarioAccionesController {
         if (sb.toString().isEmpty()) {
             return;
         }
-        UsuarioAcciones ua = new UsuarioAcciones(sb.toString(), null, old.getClass().getSimpleName(), old.getId(), UsuarioController.getCurrentUser());
+        UsuarioAcciones ua = new UsuarioAcciones('u',sb.toString(), null, old.getClass().getSimpleName(), old.getId(), UsuarioController.getCurrentUser());
         create(ua);
     }
 }

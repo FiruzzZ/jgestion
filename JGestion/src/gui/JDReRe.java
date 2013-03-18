@@ -607,7 +607,7 @@ private void tfEntregaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:even
 }//GEN-LAST:event_tfEntregaFocusLost
 
     private void tfOctetoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfOctetoKeyTyped
-        SwingUtil.checkInputDigit(tfOcteto, evt, 8);
+        SwingUtil.checkInputDigit(evt, 8);
     }//GEN-LAST:event_tfOctetoKeyTyped
 
     private void tfEntregaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfEntregaKeyTyped

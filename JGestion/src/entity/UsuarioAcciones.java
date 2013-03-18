@@ -9,8 +9,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -23,8 +21,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @Table(name = "usuario_acciones")
 @XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "UsuarioAcciones.findAll", query = "SELECT u FROM UsuarioAcciones u")})
 public class UsuarioAcciones implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -36,6 +32,7 @@ public class UsuarioAcciones implements Serializable {
     /**
      * i = insert, u = update, d =....
      */
+    @Basic( optional = false)
     @Column(nullable = false, updatable = false)
     private char accion;
     @Basic(optional = false)
@@ -67,7 +64,8 @@ public class UsuarioAcciones implements Serializable {
         this.id = id;
     }
 
-    public UsuarioAcciones(String descripcion, String detalle, String entidad, int entidadId, Usuario usuario) {
+    public UsuarioAcciones(char accion, String descripcion, String detalle, String entidad, int entidadId, Usuario usuario) {
+        this.accion = accion;
         this.descripcion = descripcion;
         this.detalle = detalle;
         this.entidad = entidad;
@@ -177,6 +175,6 @@ public class UsuarioAcciones implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.UsuarioAcciones[ id=" + id + " ]";
+        return "UsuarioAcciones{" + "id=" + id + ", accion=" + accion + ", descripcion=" + descripcion + ", detalle=" + detalle + ", fechasistema=" + fechasistema + ", ip=" + ip + ", hostname=" + hostname + ", entidad=" + entidad + ", entidadId=" + entidadId + '}';
     }
 }

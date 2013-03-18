@@ -974,7 +974,7 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
 }//GEN-LAST:event_tfProductoDescFocusLost
 
     private void tfFacturaOctetoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfFacturaOctetoKeyTyped
-        SwingUtil.checkInputDigit(tfFacturaOcteto, evt, 8);
+        SwingUtil.checkInputDigit(evt, 8);
     }//GEN-LAST:event_tfFacturaOctetoKeyTyped
 
     private void tfFacturaOctetoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfFacturaOctetoFocusLost

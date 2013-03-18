@@ -562,7 +562,7 @@ public class JDNotaDebito extends javax.swing.JDialog {
     }//GEN-LAST:event_tfFacturaOctetoFocusLost
 
     private void tfFacturaOctetoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfFacturaOctetoKeyTyped
-        SwingUtil.checkInputDigit(tfFacturaOcteto, evt, 8);
+        SwingUtil.checkInputDigit(evt, 8);
     }//GEN-LAST:event_tfFacturaOctetoKeyTyped
 
     private void btnADDFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_btnADDFocusLost
