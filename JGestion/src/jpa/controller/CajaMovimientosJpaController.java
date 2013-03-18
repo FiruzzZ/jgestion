@@ -121,7 +121,6 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
 //            }
 //        }
 //    }
-
 //    @Deprecated
 //    public void asentarMovimiento(Remesa remesa) throws Exception {
 //        Logger.getLogger(this.getClass()).trace("asentarMovimiento (Remesa)");
@@ -151,7 +150,6 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
 //            }
 //        }
 //    }
-
     public void asentarMovimiento(ChequeTerceros cheque, Caja caja) throws Exception {
         CajaMovimientos cm = findCajaMovimientoAbierta(caja);
         EntityManager em = getEntityManager();
@@ -197,6 +195,50 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
             throw e;
         } finally {
             if (em != null) {
+                em.close();
+            }
+        }
+    }
+
+    public void anular(Remesa remesa) throws Exception {
+        boolean hayPagosEnEfectivo = false;
+        for (RemesaPagos reciboPagos : remesa.getPagos()) {
+            if (reciboPagos.getFormaPago() == 0) { // hay un pago en efectivo
+                hayPagosEnEfectivo = true;
+                break;
+            }
+        }
+        if (!hayPagosEnEfectivo) {
+            return;
+        }
+        //caja en la q se va asentar
+        CajaMovimientos cm = findCajaMovimientoAbierta(remesa.getCaja());
+        EntityManager em = getEntityManager();
+        DetalleCajaMovimientos dcm = null;
+        try {
+            em.getTransaction().begin();
+            new RemesaController().loadPagos(remesa);
+            for (Object object : remesa.getPagosEntities()) {
+                if (object instanceof DetalleCajaMovimientos) {
+                    dcm = (DetalleCajaMovimientos) object;
+                    break;
+                }
+            }
+            CajaMovimientos cajaMovimientoActual = em.find(CajaMovimientos.class, cm.getId());
+            DetalleCajaMovimientos newDetalleCajaMovimiento = new DetalleCajaMovimientos();
+            newDetalleCajaMovimiento.setCajaMovimientos(cajaMovimientoActual);
+            newDetalleCajaMovimiento.setIngreso(true);
+            newDetalleCajaMovimiento.setMonto(dcm.getMonto());
+            newDetalleCajaMovimiento.setNumero(remesa.getId());
+            newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosController.REMESA);
+            newDetalleCajaMovimiento.setDescripcion("R" + JGestionUtils.getNumeracion(remesa, true) + " [ANULADO]");
+            newDetalleCajaMovimiento.setUsuario(UsuarioController.getCurrentUser());
+            new DetalleCajaMovimientosController().create(newDetalleCajaMovimiento);
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        } finally {
+            if (em != null && em.isOpen()) {
                 em.close();
             }
         }

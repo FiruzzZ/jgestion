@@ -33,6 +33,11 @@ public class UsuarioAcciones implements Serializable {
     @Basic(optional = false)
     @Column(nullable = false)
     private Integer id;
+    /**
+     * i = insert, u = update, d =....
+     */
+    @Column(nullable = false, updatable = false)
+    private char accion;
     @Basic(optional = false)
     @Column(nullable = false, length = 200)
     private String descripcion;
@@ -62,10 +67,9 @@ public class UsuarioAcciones implements Serializable {
         this.id = id;
     }
 
-    public UsuarioAcciones(Integer id, String descripcion, Date fechasistema, String entidad, int entidadId, Usuario usuario) {
-        this.id = id;
+    public UsuarioAcciones(String descripcion, String detalle, String entidad, int entidadId, Usuario usuario) {
         this.descripcion = descripcion;
-        this.fechasistema = fechasistema;
+        this.detalle = detalle;
         this.entidad = entidad;
         this.entidadId = entidadId;
         this.usuario = usuario;
@@ -77,6 +81,14 @@ public class UsuarioAcciones implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public char getAccion() {
+        return accion;
+    }
+
+    public void setAccion(char accion) {
+        this.accion = accion;
     }
 
     public String getDescripcion() {

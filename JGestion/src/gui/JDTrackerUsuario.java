@@ -1,10 +1,14 @@
 package gui;
 
-import controller.UsuarioController;
 import entity.Usuario;
-import java.util.Date;
+import entity.UsuarioAcciones;
 import java.util.List;
+import javax.swing.table.DefaultTableModel;
+import jgestion.JGestionUtils;
+import jpa.controller.UsuarioAccionesJpaController;
+import jpa.controller.UsuarioJpaController;
 import utilities.general.UTIL;
+import utilities.swing.components.ComboBoxWrapper;
 
 /**
  *
@@ -19,10 +23,8 @@ public class JDTrackerUsuario extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         UTIL.hideColumnTable(jXTable1, 0);
-        List<Usuario> l = new UsuarioController().findUsuarioEntities();
-        UTIL.loadComboBox(cbUsuarios, l, true);
-        dcDesde.setDate(new Date());
-        
+        List<Usuario> l = new UsuarioJpaController().findAll();
+        UTIL.loadComboBox(cbUsuarios, JGestionUtils.getWrappedUsuarios(l), false);
     }
 
     /**
@@ -43,6 +45,9 @@ public class JDTrackerUsuario extends javax.swing.JDialog {
         jScrollPane1 = new javax.swing.JScrollPane();
         jXTable1 = new org.jdesktop.swingx.JXTable();
         btnBuscar = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        taDetalle = new javax.swing.JTextArea();
+        jLabel4 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -56,35 +61,35 @@ public class JDTrackerUsuario extends javax.swing.JDialog {
 
         jXTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+
             },
             new String [] {
-                "id", "Usuario", "Acción", "Detalle", "Fecha"
+                "Object", "Usuario", "Acción", "Descripción", "Detalle", "Fecha"
             }
         ) {
-            Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
-            };
             boolean[] canEdit = new boolean [] {
-                true, true, false, false, false
+                false, false, false, false, false, false
             };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
         });
+        jXTable1.getTableHeader().setReorderingAllowed(false);
+        jXTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jXTable1MouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(jXTable1);
         jXTable1.getColumnModel().getColumn(0).setResizable(false);
-        jXTable1.getColumnModel().getColumn(1).setPreferredWidth(80);
-        jXTable1.getColumnModel().getColumn(2).setPreferredWidth(100);
-        jXTable1.getColumnModel().getColumn(3).setPreferredWidth(300);
+        jXTable1.getColumnModel().getColumn(1).setResizable(false);
+        jXTable1.getColumnModel().getColumn(1).setPreferredWidth(50);
+        jXTable1.getColumnModel().getColumn(2).setResizable(false);
+        jXTable1.getColumnModel().getColumn(2).setPreferredWidth(20);
+        jXTable1.getColumnModel().getColumn(3).setPreferredWidth(100);
+        jXTable1.getColumnModel().getColumn(4).setPreferredWidth(300);
+        jXTable1.getColumnModel().getColumn(5).setPreferredWidth(80);
 
         btnBuscar.setText("Buscar");
         btnBuscar.addActionListener(new java.awt.event.ActionListener() {
@@ -92,6 +97,13 @@ public class JDTrackerUsuario extends javax.swing.JDialog {
                 btnBuscarActionPerformed(evt);
             }
         });
+
+        taDetalle.setColumns(20);
+        taDetalle.setFont(new java.awt.Font("Monospaced", 0, 12)); // NOI18N
+        taDetalle.setRows(5);
+        jScrollPane2.setViewportView(taDetalle);
+
+        jLabel4.setText("Seleccionar una fila para ver la acción + detalle");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -113,8 +125,12 @@ public class JDTrackerUsuario extends javax.swing.JDialog {
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(dcHasta, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
-                        .addComponent(btnBuscar)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnBuscar))
+                    .addComponent(jScrollPane2)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -136,17 +152,29 @@ public class JDTrackerUsuario extends javax.swing.JDialog {
                         .addGap(14, 14, 14)
                         .addComponent(jLabel1)))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 337, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel4)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(16, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-        
+        String query = armarQuery();
+        List<UsuarioAcciones> l = new UsuarioAccionesJpaController().findByQuery(query);
+        cargarTabla(l);
     }//GEN-LAST:event_btnBuscarActionPerformed
 
+    private void jXTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jXTable1MouseClicked
+        if (jXTable1.getSelectedRow() > -1) {
+            UsuarioAcciones ua = (UsuarioAcciones) jXTable1.getModel().getValueAt(jXTable1.getSelectedRow(), 0);
+            taDetalle.setText(ua.getDescripcion() + "\n" + ua.getDetalle());
+        }
+    }//GEN-LAST:event_jXTable1MouseClicked
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBuscar;
     private javax.swing.JComboBox cbUsuarios;
@@ -155,7 +183,40 @@ public class JDTrackerUsuario extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private org.jdesktop.swingx.JXTable jXTable1;
+    private javax.swing.JTextArea taDetalle;
     // End of variables declaration//GEN-END:variables
+
+    private String armarQuery() {
+        StringBuilder sb = new StringBuilder("SELECT o FROM " + UsuarioAcciones.class.getSimpleName() + " o "
+                + " WHERE o.id is not null ");
+        @SuppressWarnings("unchecked")
+        Usuario u = ((ComboBoxWrapper<Usuario>) cbUsuarios.getSelectedItem()).getEntity();
+        sb.append(" AND o.usuario.id = ").append(u.getId());
+        if (dcDesde.getDate() != null) {
+            sb.append(" AND o.fechasistema >='").append(UTIL.yyyy_MM_dd.format(dcDesde.getDate())).append("'");
+        }
+        if (dcHasta.getDate() != null) {
+            sb.append(" AND o.fechasistema <='").append(UTIL.yyyy_MM_dd.format(dcHasta.getDate())).append("'");
+        }
+        return sb.toString();
+    }
+
+    private void cargarTabla(List<UsuarioAcciones> l) {
+        DefaultTableModel dtm = (DefaultTableModel) jXTable1.getModel();
+        dtm.setRowCount(0);
+        for (UsuarioAcciones ua : l) {
+            dtm.addRow(new Object[]{
+                        ua,
+                        ua.getUsuario().getNick(),
+                        ua.getAccion(),
+                        ua.getDescripcion(),
+                        ua.getDetalle(),
+                        UTIL.TIMESTAMP_FORMAT.format(ua.getFechasistema())
+                    });
+        }
+    }
 }

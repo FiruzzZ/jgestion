@@ -58,7 +58,6 @@ public class ReciboJpaController extends AbstractDAO<Recibo, Integer> {
      * @throws Exception si Recibo es null, o si ya está anulado
      */
     public void anular(Recibo recibo) throws MessageException, Exception {
-        EntityManager em = getEntityManager();
         if (recibo == null) {
             throw new MessageException(getEntityClass().getSimpleName() + " no válido");
         }
@@ -66,34 +65,41 @@ public class ReciboJpaController extends AbstractDAO<Recibo, Integer> {
             throw new MessageException("El " + getEntityClass().getSimpleName() + " ya está anulado");
         }
 
+        EntityManager em = getEntityManager();
         List<DetalleRecibo> detalleReciboList = recibo.getDetalle();
         CtacteCliente ctaCteCliente;
         try {
             em.getTransaction().begin();
             for (DetalleRecibo dr : detalleReciboList) {
-                //se resta la entrega ($) que implicaba este detalle con respecto a CADA factura
-                ctaCteCliente = new CtacteClienteController().findByFactura(dr.getFacturaVenta().getId());
-                ctaCteCliente.setEntregado(ctaCteCliente.getEntregado() - dr.getMontoEntrega().doubleValue());
-                // y si había sido pagada en su totalidad..
-                if (ctaCteCliente.getEstado() == Valores.CtaCteEstado.PAGADA.getId()) {
-                    ctaCteCliente.setEstado(Valores.CtaCteEstado.PENDIENTE.getId());
+                if (dr.getFacturaVenta() != null) {
+                    //se resta la entrega ($) que implicaba este detalle con respecto a CADA factura
+                    ctaCteCliente = new CtacteClienteController().findByFactura(dr.getFacturaVenta().getId());
+                    ctaCteCliente.setEntregado(ctaCteCliente.getEntregado() - dr.getMontoEntrega().doubleValue());
+                    // y si había sido pagada en su totalidad..
+                    if (ctaCteCliente.getEstado() == Valores.CtaCteEstado.PAGADA.getId()) {
+                        ctaCteCliente.setEstado(Valores.CtaCteEstado.PENDIENTE.getId());
+                    }
+                    em.merge(ctaCteCliente);
+                } else {
+                    NotaDebito nd = em.find(dr.getNotaDebito().getClass(), dr.getNotaDebito().getId());
+                    nd.setRecibo(null);
+                    em.merge(nd);
                 }
-                em.merge(ctaCteCliente);
             }
             for (Object object : recibo.getPagosEntities()) {
                 if (object instanceof ChequePropio) {
                     ChequePropio pago = (ChequePropio) object;
                     pago = em.find(pago.getClass(), pago.getId());
                     pago.setComprobanteIngreso(null);
-//                    pago.setEstado(ChequeEstado.CARTERA.getId());
-                    em.remove(pago);
+                    pago.setEstado(ChequeEstado.CARTERA.getId());
+                    em.merge(pago);
                 } else if (object instanceof ChequeTerceros) {
                     ChequeTerceros pago = (ChequeTerceros) object;
                     pago = em.find(pago.getClass(), pago.getId());
                     if (pago.getEstado() != ChequeEstado.CARTERA.getId()) {
-                        throw new MessageException("CANCELACIÓN DE ANULACIÓN:"
+                        throw new MessageException("¡ANULACIÓN CANCELADA!:"
                                 + "\nEl Cheque Tercero " + pago.getBanco().getNombre() + " " + pago.getNumero() + ", Importe $" + pago.getImporte()
-                                + "\nfue utilizado, no se encuentra mas en \"Cartera\".");
+                                + "\nfue utilizado, no se encuentra mas en " + ChequeEstado.CARTERA);
                     }
                     em.remove(pago);
                 } else if (object instanceof NotaCredito) {
@@ -160,7 +166,7 @@ public class ReciboJpaController extends AbstractDAO<Recibo, Integer> {
         }
         entityManager.persist(recibo);
         for (DetalleRecibo d : recibo.getDetalle()) {
-            if(d.getNotaDebito() != null) {
+            if (d.getNotaDebito() != null) {
                 d.getNotaDebito().setRecibo(recibo);
                 entityManager.merge(d.getNotaDebito());
             }

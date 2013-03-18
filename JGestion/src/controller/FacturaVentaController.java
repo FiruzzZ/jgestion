@@ -419,19 +419,23 @@ public class FacturaVentaController implements ActionListener, KeyListener {
             }
         } else if (factVenta1_PresupNotaCredito2_Remito3 == 2) {
             if (listener != null) {
-                setNumeroFactura(s, ((PresupuestoJpaController) listener).getNextNumero(s));
+                if (listener instanceof PresupuestoJpaController) {
+                    setNumeroFactura(s, ((PresupuestoJpaController) listener).getNextNumero(s));
+                } else if(listener instanceof NotaCreditoController) {
+                    setNumeroFactura(s, ((NotaCreditoController) listener).getNextNumero(s));
+                }
             }
         } else if (factVenta1_PresupNotaCredito2_Remito3 == 3) {
-            RemitoController remitoController = (RemitoController) listener;
+            RemitoController controller = (RemitoController) listener;
             if (jdFactura.isEditMode()) {
-                Remito r = remitoController.getSelectedRemito();
+                Remito r = controller.getSelectedRemito();
                 if (r.getSucursal().equals(s)) {
                     setNumeroFactura(s, r.getNumero());
                 } else {
-                    setNumeroFactura(s, remitoController.getNextNumero(s));
+                    setNumeroFactura(s, controller.getNextNumero(s));
                 }
             } else {
-                setNumeroFactura(s, remitoController.getNextNumero(s));
+                setNumeroFactura(s, controller.getNextNumero(s));
             }
         }
     }
@@ -1288,10 +1292,10 @@ public class FacturaVentaController implements ActionListener, KeyListener {
             query.append(" AND o.fecha_venta <= '").append(yyyyMMdd.format(buscador.getDcHasta())).append("'");
         }
         if (buscador.getDcDesdeSistema() != null) {
-            query.append(" AND o.fechaalta >= '").append(yyyyMMdd.format(UTIL.clearTimeFields(buscador.getDcDesdeSistema()))).append("'");
+            query.append(" AND o.fechaalta >= '").append(yyyyMMdd.format(buscador.getDcDesdeSistema())).append("'");
         }
         if (buscador.getDcHastaSistema() != null) {
-            query.append(" AND o.fechaalta <= '").append(yyyyMMdd.format(UTIL.clearTimeFields(buscador.getDcHastaSistema()))).append("'");
+            query.append(" AND o.fechaalta <= '").append(yyyyMMdd.format(buscador.getDcHastaSistema())).append("'");
         }
         if (buscador.getCbCaja().getSelectedIndex() > 0) {
             query.append(" AND o.caja = ").append(((Caja) buscador.getCbCaja().getSelectedItem()).getId());
@@ -1376,7 +1380,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
     void show(FacturaVenta facturaVenta, final boolean paraAnular) throws MessageException {
         initFacturaVenta(null, true, this, 1, false, false);
         jdFactura.modoVista();
-        viewMode =true;
+        viewMode = true;
         EL_OBJECT = facturaVenta;
         jdFactura.getBtnAceptar().addActionListener(new ActionListener() {
             @Override

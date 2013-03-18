@@ -146,6 +146,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenuItem71 = new javax.swing.JMenuItem();
         jMenu28 = new javax.swing.JMenu();
         jMenuItem38 = new javax.swing.JMenuItem();
+        jMenuItem88 = new javax.swing.JMenuItem();
         menuCtaCte = new javax.swing.JMenu();
         jMenuItem37 = new javax.swing.JMenuItem();
         jMenuItem30 = new javax.swing.JMenuItem();
@@ -642,7 +643,6 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenu27.add(jMenuItem49);
 
         jMenuItem77.setText("Recibo");
-        jMenuItem77.setEnabled(false);
         jMenuItem77.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem77ActionPerformed(evt);
@@ -669,6 +669,14 @@ public class JFP extends javax.swing.JFrame implements Runnable {
             }
         });
         jMenu28.add(jMenuItem38);
+
+        jMenuItem88.setText("Remesas");
+        jMenuItem88.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem88ActionPerformed(evt);
+            }
+        });
+        jMenu28.add(jMenuItem88);
 
         jMenu14.add(jMenu28);
 
@@ -1040,7 +1048,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         });
         jMenu4.add(jMenuItem24);
 
-        jMenuItem65.setText("Tracker de usuarios");
+        jMenuItem65.setText("Registro de acciones de usuarios");
         jMenuItem65.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem65ActionPerformed(evt);
@@ -1588,9 +1596,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
 
     private void jMenuItem55ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem55ActionPerformed
         try {
-            JDialog jdd = new RemesaController().initBuscador(null, true);
-            jdd.setLocationRelativeTo(this);
-            jdd.setVisible(true);
+            new RemesaController().showBuscador(this, true, false);
         } catch (MessageException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
         }
@@ -1772,6 +1778,14 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         }
     }//GEN-LAST:event_jMenuItem85ActionPerformed
 
+    private void jMenuItem88ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem88ActionPerformed
+        try {
+            new RemesaController().showBuscador(null, false, true);
+        } catch (MessageException ex) {
+            ex.displayMessage(this);
+        }
+    }//GEN-LAST:event_jMenuItem88ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JMenu jMenu1;
@@ -1889,6 +1903,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenuItem jMenuItem85;
     private javax.swing.JMenuItem jMenuItem86;
     private javax.swing.JMenuItem jMenuItem87;
+    private javax.swing.JMenuItem jMenuItem88;
     private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JMenuItem jMenuItemCatalogoWeb;
     private javax.swing.JMenuItem jMenuItemCuentasBancarias;

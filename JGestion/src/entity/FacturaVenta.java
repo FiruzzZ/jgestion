@@ -38,13 +38,13 @@ public class FacturaVenta implements Serializable {
     @Temporal(TemporalType.DATE)
     private Date fechaVenta;
     @Basic(optional = false)
-    @Column(name = "importe", nullable = false, precision = 9, scale = 2)
+    @Column(name = "importe", nullable = false, precision = 12, scale = 2)
     private Double importe;
     @Basic(optional = false)
     @Column(name = "fechaalta", nullable = false, insertable = false, updatable = false, columnDefinition = "timestamp with time zone NOT NULL DEFAULT now()")
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaalta;
-    @Column(name = "descuento", precision = 9, scale = 2)
+    @Column(name = "descuento", precision = 12, scale = 2)
     private Double descuento;
     @Basic(optional = false)
     @Column(name = "numero", nullable = false)
@@ -53,10 +53,10 @@ public class FacturaVenta implements Serializable {
     @ManyToOne(optional = false)
     private Sucursal sucursal;
     @Basic(optional = false)
-    @Column(name = "iva10", nullable = false)
+    @Column(name = "iva10", nullable = false, precision = 12, scale = 2)
     private double iva10;
     @Basic(optional = false)
-    @Column(name = "iva21", nullable = false)
+    @Column(name = "iva21", nullable = false, precision = 12, scale = 2)
     private double iva21;
     @Basic(optional = false)
     @Column(name = "movimiento_interno", nullable = false)
@@ -76,7 +76,7 @@ public class FacturaVenta implements Serializable {
     @ManyToOne(optional = false)
     private Caja caja;
     @Basic(optional = false)
-    @Column(name = "gravado", nullable = false)
+    @Column(name = "gravado", nullable = false, precision = 12, scale = 2)
     private Double gravado;
     @Basic(optional = false)
     @Column(name = "no_gravado", nullable = false, precision = 12, scale = 2)

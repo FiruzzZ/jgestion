@@ -11,7 +11,6 @@ import entity.NotaCredito;
 import java.util.Iterator;
 import java.util.List;
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import entity.DetalleNotaCredito;
 import entity.FacturaVenta;
 import entity.Iva;
@@ -65,35 +64,10 @@ public class NotaCreditoController {
         return DAO.getEntityManager();
     }
 
-    public void create(NotaCredito notaCredito) throws PreexistingEntityException, Exception {
-        Collection<DetalleNotaCredito> toAttach = notaCredito.getDetalleNotaCreditoCollection();
-        notaCredito.setDetalleNotaCreditoCollection(new ArrayList<DetalleNotaCredito>());
-        EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            em.persist(notaCredito);
-            em.getTransaction().commit();
-            for (DetalleNotaCredito detalleNotaCredito : toAttach) {
-                detalleNotaCredito.setNotaCredito(notaCredito);
-                DAO.create(detalleNotaCredito);
-            }
-        } catch (Exception ex) {
-            if (em != null && em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            throw ex;
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
-    }
-
     // </editor-fold>
     public void initComprobanteUI(JFrame owner, boolean modal, boolean setVisible, boolean loadDefaultData) throws MessageException {
         facturaVentaController = new FacturaVentaController();
-        facturaVentaController.initFacturaVenta(owner, modal, null, 2, false, loadDefaultData);
+        facturaVentaController.initFacturaVenta(owner, modal, this, 2, false, loadDefaultData);
         facturaVentaController.getContenedor().getBtnAceptar().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -102,7 +76,7 @@ public class NotaCreditoController {
                     facturaVentaController.getContenedor().getBtnAceptar().setEnabled(false);
                     if (!facturaVentaController.getContenedor().isViewMode()) {
                         NotaCredito notaCreditoToPersist = setEntity();
-                        create(notaCreditoToPersist);
+                        jpaController.create(notaCreditoToPersist);
                         reporte(notaCreditoToPersist);
                         facturaVentaController.setNumeroFactura(notaCreditoToPersist.getSucursal(), jpaController.getNextNumero(notaCreditoToPersist.getSucursal()));
                         facturaVentaController.borrarDetalles();
@@ -188,15 +162,22 @@ public class NotaCreditoController {
         return newNotaCredito;
     }
 
-    NotaCredito initBuscador(Window owner, final boolean toAnular, Cliente cliente, final boolean selectingMode) throws MessageException {
+    /**
+     * 
+     * @param owner
+     * @param toAnular
+     * @param cliente
+     * @param soloAcreditables no están ligadas a un Recibo aún.
+     * @return
+     * @throws MessageException 
+     */
+    NotaCredito initBuscador(Window owner, final boolean toAnular, Cliente cliente, final boolean soloAcreditables) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.VENTA);
         if (toAnular) {
             UsuarioController.checkPermiso(PermisosController.PermisoDe.ANULAR_COMPROBANTES);
         }
         buscador = new JDBuscadorReRe(owner, "Buscador - Notas de crédito", true, "Cliente", "Nº");
-        buscador.hideCaja();
-        buscador.hideFactura();
-        buscador.hideFormaPago();
+        buscador.setParaNotaCreditoCliente();
         UTIL.loadComboBox(buscador.getCbClieProv(), new ClienteController().findAll(), true);
         UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), true);
         UTIL.getDefaultTableModel(
@@ -210,7 +191,7 @@ public class NotaCreditoController {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    cargarDtmBuscador(armarQuery(selectingMode));
+                    cargarDtmBuscador(armarQuery(soloAcreditables));
                 } catch (MessageException ex) {
                     ex.displayMessage(buscador);
                 }
@@ -221,14 +202,14 @@ public class NotaCreditoController {
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() >= 2 && buscador.getjTable1().getSelectedRow() > -1) {
                     EL_OBJECT = jpaController.find(Integer.valueOf(buscador.getDtm().getValueAt(buscador.getjTable1().getSelectedRow(), 0).toString()));
-                    if (selectingMode) {
+                    if (soloAcreditables) {
                         buscador.dispose();
                     } else {
                         try {
                             setComprobanteUI(EL_OBJECT, toAnular);
                             //refresh post anulación...
                             if (EL_OBJECT == null) {
-                                cargarDtmBuscador(armarQuery(selectingMode));
+                                cargarDtmBuscador(armarQuery(soloAcreditables));
                             }
                         } catch (MessageException ex) {
                             ex.displayMessage(buscador);
@@ -262,11 +243,11 @@ public class NotaCreditoController {
      * @throws MessageException
      */
     @SuppressWarnings("unchecked")
-    private String armarQuery(boolean selecting) throws MessageException {
+    private String armarQuery(boolean soloAcreditables) throws MessageException {
         StringBuilder query = new StringBuilder("SELECT o.* FROM nota_credito o"
                 + " WHERE o.anulada = " + buscador.isCheckAnuladaSelected());
-        if (selecting) {
-            query.append(" AND o.desacreditado=0");
+        if (soloAcreditables) {
+            query.append(" AND o.recibo IS NULL");
         }
         long numero;
         //filtro por nº de ReRe
@@ -566,5 +547,9 @@ public class NotaCreditoController {
      */
     List<NotaCredito> findNotaCreditoAcreditables(Cliente cliente) {
         return jpaController.findByQuery("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o WHERE o.importe <> o.desacreditado AND o.anulada = FALSE AND o.cliente.id=" + cliente.getId());
+    }
+
+    Integer getNextNumero(Sucursal s) {
+        return jpaController.getNextNumero(s);
     }
 }

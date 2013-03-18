@@ -410,7 +410,7 @@ public class NotaDebitoController {
             UsuarioController.checkPermiso(PermisosController.PermisoDe.ANULAR_COMPROBANTES);
         }
         buscador = new JDBuscadorReRe(frame, "Buscador - Notas de Débito", modal, "Cliente", "Nº Nota");
-        buscador.setToNotaDebito();
+        buscador.setParaNotaDebito();
         UTIL.loadComboBox(buscador.getCbClieProv(), new ClienteController().findAll(), true);
         UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), true);
         UTIL.getDefaultTableModel(
