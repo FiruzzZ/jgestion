@@ -37,7 +37,7 @@ public class Recibo implements Serializable {
     private Date fechaCarga;
     @Basic(optional = false)
     @Column(name = "monto", nullable = false, precision = 12, scale = 2)
-    private double monto;
+    private BigDecimal monto;
     @Column(name = "retencion", precision = 10, scale = 2)
     @Deprecated
     private BigDecimal retencion;
@@ -79,11 +79,11 @@ public class Recibo implements Serializable {
         return fechaCarga;
     }
 
-    public double getMonto() {
+    public BigDecimal getMonto() {
         return monto;
     }
 
-    public void setMonto(double monto) {
+    public void setMonto(BigDecimal monto) {
         this.monto = monto;
     }
 

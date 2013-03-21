@@ -4,6 +4,7 @@
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/j2se-project/3">
             <name>JGestion</name>
+            <explicit-platform explicit-source-supported="true"/>
             <source-roots>
                 <root id="src.dir"/>
                 <root id="src.reportes.dir"/>
@@ -14,7 +15,7 @@
         </data>
         <references xmlns="http://www.netbeans.org/ns/ant-project-references/1">
             <reference>
-                <foreign-project>SHEF</foreign-project>
+                <foreign-project>SHEF-1</foreign-project>
                 <artifact-type>jar</artifact-type>
                 <script>build.xml</script>
                 <target>jar</target>
@@ -22,7 +23,7 @@
                 <id>jar</id>
             </reference>
             <reference>
-                <foreign-project>WSAFIP</foreign-project>
+                <foreign-project>WSAFIP-1</foreign-project>
                 <artifact-type>jar</artifact-type>
                 <script>build.xml</script>
                 <target>jar</target>

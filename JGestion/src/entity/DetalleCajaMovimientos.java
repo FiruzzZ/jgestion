@@ -1,6 +1,7 @@
 package entity;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import javax.persistence.*;
 
@@ -49,8 +50,8 @@ public class DetalleCajaMovimientos implements Serializable {
     @Column(name = "numero", nullable = false)
     private long numero;
     @Basic(optional = false)
-    @Column(name = "monto", nullable = false)
-    private double monto;
+    @Column(name = "monto", nullable = false, precision = 12, scale = 2)
+    private BigDecimal monto;
     @Basic(optional = false)
     @Column(name = "fecha", nullable = false, insertable = false, updatable = false, columnDefinition = "timestamp with time zone NOT NULL DEFAULT now()")
     @Temporal(TemporalType.TIMESTAMP)
@@ -122,11 +123,11 @@ public class DetalleCajaMovimientos implements Serializable {
         this.numero = numero;
     }
 
-    public double getMonto() {
+    public BigDecimal getMonto() {
         return monto;
     }
 
-    public void setMonto(double monto) {
+    public void setMonto(BigDecimal monto) {
         this.monto = monto;
     }
 
