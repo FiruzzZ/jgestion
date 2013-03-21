@@ -244,7 +244,7 @@ public class JDInformeUnidadesDeNegocios extends javax.swing.JDialog {
                     }
                     List<DetalleCajaMovimientos> mviList = getMovimientosVariosIngresos(month);
                     for (DetalleCajaMovimientos o : mviList) {
-                        BigDecimal importe = BigDecimal.valueOf(o.getMonto());
+                        BigDecimal importe = o.getMonto();
                         if (o.getUnidadDeNegocio() == null) {
                             ingresosSinUNDniCuenta = ingresosSinUNDniCuenta.add(importe);
                             continue;
@@ -302,7 +302,7 @@ public class JDInformeUnidadesDeNegocios extends javax.swing.JDialog {
                     List<DetalleCajaMovimientos> mveList = getMovimientosVariosEgresos(month);
                     for (DetalleCajaMovimientos o : mveList) {
                         // LOS MV EGRESOS YA son Negativos!!!!!
-                        BigDecimal importe = BigDecimal.valueOf(o.getMonto());
+                        BigDecimal importe = o.getMonto();
                         if (o.getUnidadDeNegocio() == null) {
                             egresosSinUNDniCuenta = egresosSinUNDniCuenta.add(importe);
                             continue;

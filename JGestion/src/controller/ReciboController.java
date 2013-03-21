@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.TreeMap;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
@@ -313,7 +312,7 @@ public class ReciboController implements ActionListener, FocusListener {
     }
 
     private void displayABMEfectivo(DetalleCajaMovimientos toEdit) {
-        BigDecimal monto = jdReRe.displayABMEfectivo(toEdit == null ? null : BigDecimal.valueOf(toEdit.getMonto()));
+        BigDecimal monto = jdReRe.displayABMEfectivo(toEdit == null ? null : toEdit.getMonto());
         if (monto != null) {
             DefaultTableModel dtm = jdReRe.getDtmPagos();
             if (toEdit == null) {
@@ -325,10 +324,10 @@ public class ReciboController implements ActionListener, FocusListener {
                 d.setDescripcion(null); // <--- setear con el N° del comprobante
                 d.setCajaMovimientos(null); // no te olvides este tampoco!! 
                 d.setNumero(0l); // Comprobante.id!!!!
-                d.setMonto(monto.doubleValue());
+                d.setMonto(monto);
                 dtm.addRow(new Object[]{d, "EF", null, monto});
             } else {
-                toEdit.setMonto(monto.doubleValue());
+                toEdit.setMonto(monto);
                 int selectedRow = jdReRe.getTablePagos().getSelectedRow();
                 dtm.setValueAt(toEdit, selectedRow, 0);
                 dtm.setValueAt(toEdit.getNumero(), selectedRow, 2);
@@ -516,7 +515,7 @@ public class ReciboController implements ActionListener, FocusListener {
             re.getDetalle().add(detalle);
             monto = monto.add(detalle.getMontoEntrega());
         }
-        re.setMonto(monto.doubleValue());
+        re.setMonto(monto);
         dtm = jdReRe.getDtmPagos();
         List<Object> pagos = new ArrayList<Object>(dtm.getRowCount());
         BigDecimal importePagado = BigDecimal.ZERO;
@@ -527,7 +526,7 @@ public class ReciboController implements ActionListener, FocusListener {
         boolean asentarDiferenciaEnCaja = false;
         if (0 != jdReRe.getTfTotalAPagar().getText().compareTo(jdReRe.getTfTotalPagado().getText())) {
             if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(jdReRe, "El importe a pagar no coincide el detalle de pagos."
-                    + "¿Desea que la diferencia ($" + UTIL.DECIMAL_FORMAT.format(re.getMonto() - importePagado.doubleValue()) + ") sea reflejada en la Caja?", "Arqueo de valores", JOptionPane.YES_NO_OPTION)) {
+                    + "¿Desea que la diferencia ($" + UTIL.DECIMAL_FORMAT.format(re.getMonto().subtract(importePagado)) + ") sea reflejada en la Caja?", "Arqueo de valores", JOptionPane.YES_NO_OPTION)) {
                 asentarDiferenciaEnCaja = true;
             } else {
                 throw new MessageException("Operación cancelada");
@@ -547,9 +546,9 @@ public class ReciboController implements ActionListener, FocusListener {
             }
         }
         if (asentarDiferenciaEnCaja) {
-            double diferencia = importePagado.doubleValue() - re.getMonto();
+            BigDecimal diferencia = importePagado.subtract(re.getMonto());
             DetalleCajaMovimientos d = new DetalleCajaMovimientos();
-            d.setIngreso(diferencia < 0);
+            d.setIngreso(diferencia.compareTo(BigDecimal.ZERO) == -1);
             d.setTipo(DetalleCajaMovimientosController.RECIBO);
             d.setUsuario(UsuarioController.getCurrentUser());
             d.setCuenta(CuentaController.SIN_CLASIFICAR);
@@ -557,7 +556,7 @@ public class ReciboController implements ActionListener, FocusListener {
             CajaMovimientos cm = new CajaMovimientosJpaController().findCajaMovimientoAbierta(re.getCaja());
             d.setCajaMovimientos(cm); // no te olvides este tampoco!! 
             d.setNumero(re.getId());
-            d.setMonto(d.getIngreso() ? diferencia : -diferencia);
+            d.setMonto(d.getIngreso() ? diferencia : diferencia.negate());
             new DetalleCajaMovimientosController().create(d);
         }
         return re;
@@ -905,7 +904,7 @@ public class ReciboController implements ActionListener, FocusListener {
             dtm.addRow(new Object[]{
                         o.getId(),
                         JGestionUtils.getNumeracion(o, true),
-                        BigDecimal.valueOf(o.getMonto()),
+                        o.getMonto(),
                         o.getFechaRecibo(),
                         o.getCaja().getNombre(),
                         o.getUsuario().getNick(),
@@ -944,7 +943,7 @@ public class ReciboController implements ActionListener, FocusListener {
                 dtm.addRow(new Object[]{pago, "RE", pago.getNumero(), pago.getImporte()});
             } else if (object instanceof DetalleCajaMovimientos) {
                 DetalleCajaMovimientos pago = (DetalleCajaMovimientos) object;
-                dtm.addRow(new Object[]{pago, "EF", null, BigDecimal.valueOf(pago.getMonto())});
+                dtm.addRow(new Object[]{pago, "EF", null, pago.getMonto()});
             } else if (object instanceof CuentabancariaMovimientos) {
                 CuentabancariaMovimientos pago = (CuentabancariaMovimientos) object;
                 dtm.addRow(new Object[]{pago, "TR", pago.getDescripcion(), pago.getCredito()});
@@ -1039,7 +1038,7 @@ public class ReciboController implements ActionListener, FocusListener {
                 pp.add(new GenericBeanCollection("RE " + pago.getNumero(), pago.getImporte()));
             } else if (object instanceof DetalleCajaMovimientos) {
                 DetalleCajaMovimientos pago = (DetalleCajaMovimientos) object;
-                pp.add(new GenericBeanCollection("EF", BigDecimal.valueOf(pago.getMonto())));
+                pp.add(new GenericBeanCollection("EF", pago.getMonto()));
             } else if (object instanceof CuentabancariaMovimientos) {
                 CuentabancariaMovimientos pago = (CuentabancariaMovimientos) object;
                 int indexOf = pago.getDescripcion().indexOf(", ");

@@ -51,6 +51,7 @@ import utilities.swing.components.NumberRenderer;
  */
 public class CajaMovimientosController implements ActionListener {
 
+    private static final Logger LOG = Logger.getLogger(CajaMovimientosController.class);
     public static final String CLASS_NAME = CajaMovimientos.class.getSimpleName();
     private JDCierreCaja jdCierreCaja;
     private JDCajaToCaja jdCajaToCaja;
@@ -99,13 +100,13 @@ public class CajaMovimientosController implements ActionListener {
         CajaMovimientos cm = new CajaMovimientos();
         cm.setCaja(caja);
         cm.setFechaApertura(new Date());
-        cm.setMontoApertura(0.0);
+        cm.setMontoApertura(BigDecimal.ZERO);
         cm.setDetalleCajaMovimientosList(new ArrayList<DetalleCajaMovimientos>(1));
         //creando el 1er movimiento de la caja (apertura en $0)
         DetalleCajaMovimientos dcm = new DetalleCajaMovimientos();
         dcm.setDescripcion("Apertura de caja (creación)");
         dcm.setIngreso(true);
-        dcm.setMonto(0);
+        dcm.setMonto(BigDecimal.ZERO);
         dcm.setNumero(-1); //meaningless yet...
         dcm.setTipo(DetalleCajaMovimientosController.APERTURA_CAJA);
         dcm.setUsuario(UsuarioController.getCurrentUser());
@@ -263,16 +264,16 @@ public class CajaMovimientosController implements ActionListener {
         // el detalleCajaMov de "apertura de caja" es ingreso = true
         // PERO NO DEBE ser parte del Total de Ingresos de la Caja
         // por eso se le resta una vez ... y luego se suma..
-        Double totalIngresos = 0.0 - (cajaMovimientos.getMontoApertura());
-        Double totalEgresos = 0.0;
+        BigDecimal totalIngresos = cajaMovimientos.getMontoApertura().negate();
+        BigDecimal totalEgresos = BigDecimal.ZERO;
         List<DetalleCajaMovimientos> detalleCajaMovimientoList = new DetalleCajaMovimientosController().getDetalleCajaMovimientosByCajaMovimiento(cajaMovimientos.getId());
         for (DetalleCajaMovimientos detalleCajaMovimientos : detalleCajaMovimientoList) {
             //sumando totales..
             if (detalleCajaMovimientos.getIngreso()) {
-                totalIngresos += detalleCajaMovimientos.getMonto();
+                totalIngresos = totalIngresos.add(detalleCajaMovimientos.getMonto());
             } else {
                 //los montos "egreso" son negativos
-                totalEgresos += detalleCajaMovimientos.getMonto();
+                totalEgresos = totalEgresos.add(detalleCajaMovimientos.getMonto());
             }
 
             //carga de tabla..............
@@ -285,7 +286,7 @@ public class CajaMovimientosController implements ActionListener {
         }
         dtm.addRow(new Object[]{"Total Ingresos", UTIL.PRECIO_CON_PUNTO.format(totalIngresos)});
         dtm.addRow(new Object[]{"Total Egresos", UTIL.PRECIO_CON_PUNTO.format(totalEgresos)});
-        dtm.addRow(new Object[]{"Total", UTIL.PRECIO_CON_PUNTO.format(cajaMovimientos.getMontoApertura() + totalIngresos + totalEgresos)});
+        dtm.addRow(new Object[]{"Total", UTIL.PRECIO_CON_PUNTO.format(cajaMovimientos.getMontoApertura().add(totalIngresos).add(totalEgresos))});
         if (cajaMovimientos.getFechaCierre() != null) {
             selectedCajaMovimientos = cajaMovimientos;
             jdCierreCaja.setDcCierre(cajaMovimientos.getFechaCierre());
@@ -320,7 +321,7 @@ public class CajaMovimientosController implements ActionListener {
                 "Cierre de Caja",
                 JOptionPane.OK_CANCEL_OPTION);
         cajaMovimientos.setFechaCierre(jdCierreCaja.getFechaCierre());
-        cajaMovimientos.setMontoCierre(getTotal());
+        cajaMovimientos.setMontoCierre(new BigDecimal(jdCierreCaja.getjTable1().getValueAt(jdCierreCaja.getjTable1().getRowCount() - 1, 1).toString()));
         //datos implicitos
         cajaMovimientos.setSistemaFechaCierre(new Date());
         cajaMovimientos.setUsuarioCierre(UsuarioController.getCurrentUser());
@@ -332,10 +333,6 @@ public class CajaMovimientosController implements ActionListener {
         }
         //refresh jdCierreCaja...................
         reloadJDCierreCaja();
-    }
-
-    private Double getTotal() {
-        return Double.valueOf(jdCierreCaja.getjTable1().getValueAt(jdCierreCaja.getjTable1().getRowCount() - 1, 1).toString());
     }
 
     /**
@@ -429,10 +426,10 @@ public class CajaMovimientosController implements ActionListener {
         if (jdCajaToCaja.getTfMontoMovimiento().getText().length() < 1) {
             throw new MessageException("Ingresar monto del movimiento");
         }
-        double monto;
+        BigDecimal monto;
         try {
-            monto = Double.valueOf(jdCajaToCaja.getTfMontoMovimiento().getText().trim());
-            if (monto <= 0) {
+            monto = BigDecimal.valueOf(Double.valueOf(jdCajaToCaja.getTfMontoMovimiento().getText().trim()));
+            if (monto.compareTo(BigDecimal.ZERO) != 1) {
                 throw new MessageException("El monto de movimiento debe ser mayor a 0");
             }
         } catch (NumberFormatException ex) {
@@ -457,7 +454,7 @@ public class CajaMovimientosController implements ActionListener {
         dcm.setCajaMovimientos(cajaOrigen);
         dcm.setDescripcion(descripcion);
         dcm.setIngreso(false);
-        dcm.setMonto(-monto); // <--- NEGATIVIZAR!
+        dcm.setMonto(monto.negate()); // <--- NEGATIVIZAR!
         dcm.setNumero(Integer.parseInt(jdCajaToCaja.getTfMovimiento().getText()));
         dcm.setTipo(DetalleCajaMovimientosController.MOVIMIENTO_CAJA);
         dcm.setUsuario(UsuarioController.getCurrentUser());
@@ -485,10 +482,10 @@ public class CajaMovimientosController implements ActionListener {
     }
 
     private void setDatosCajaToCajaCombo(String name) {
-        CajaMovimientos cajaMovimientos = null;
         String balanceCajaActual = null;
         Date fechaApertura = null;
         try {
+            CajaMovimientos cajaMovimientos;
             if (name.equalsIgnoreCase("cajaOrigen")) {
                 cajaMovimientos = (CajaMovimientos) jdCajaToCaja.getCbCajaOrigen().getSelectedItem();
             } else {
@@ -498,19 +495,20 @@ public class CajaMovimientosController implements ActionListener {
             cajaMovimientos = jpaController.find(cajaMovimientos.getId());
             fechaApertura = cajaMovimientos.getFechaApertura();
 
-            Double totalIngresos = 0.0; // VA INCLUIR monto de apertura
-            Double totalEgresos = 0.0;
+            BigDecimal totalIngresos = BigDecimal.ZERO; // VA INCLUIR monto de apertura
+            BigDecimal totalEgresos = BigDecimal.ZERO;
             List<DetalleCajaMovimientos> detalleCajaMovimientoList = cajaMovimientos.getDetalleCajaMovimientosList();
             for (DetalleCajaMovimientos detalleCajaMovimientos : detalleCajaMovimientoList) {
                 if (detalleCajaMovimientos.getIngreso()) {
-                    totalIngresos += detalleCajaMovimientos.getMonto();
+                    totalIngresos = totalIngresos.add(detalleCajaMovimientos.getMonto());
                 } else {
                     //siempre son montos negativos
-                    totalEgresos += detalleCajaMovimientos.getMonto();
+                    totalEgresos = totalEgresos.add(detalleCajaMovimientos.getMonto());
                 }
             }
-            balanceCajaActual = UTIL.PRECIO_CON_PUNTO.format(totalIngresos + totalEgresos);
+            balanceCajaActual = UTIL.PRECIO_CON_PUNTO.format(totalIngresos.add(totalEgresos));
         } catch (ClassCastException e) {
+            LOG.error("casteando caja movimientos", e);
         }
 
         if (name.equalsIgnoreCase("CajaOrigen")) {
@@ -634,10 +632,10 @@ public class CajaMovimientosController implements ActionListener {
         } catch (ClassCastException ex) {
             subCuenta = null;
         }
-        double monto;
+        BigDecimal monto;
         try {
-            monto = Double.valueOf(panelMovVarios.getTfMontoMovimiento().getText().trim());
-            if (monto <= 0) {
+            monto = BigDecimal.valueOf(Double.valueOf(panelMovVarios.getTfMontoMovimiento().getText().trim()));
+            if (monto.compareTo(BigDecimal.ZERO) != 1) {
                 throw new MessageException("El monto debe ser mayor a 0");
             }
         } catch (NumberFormatException ex) {
@@ -653,7 +651,7 @@ public class CajaMovimientosController implements ActionListener {
         dcm.setCajaMovimientos(new CajaMovimientosJpaController().findCajaMovimientoAbierta(caja));
         dcm.setIngreso(panelMovVarios.isIngreso());
         dcm.setDescripcion("MV" + (dcm.getIngreso() ? "I" : "E") + "-" + descripcion);
-        dcm.setMonto(dcm.getIngreso() ? monto : -monto);
+        dcm.setMonto(dcm.getIngreso() ? monto : monto.negate());
         dcm.setTipo(DetalleCajaMovimientosController.MOVIMIENTO_VARIOS);
         dcm.setUsuario(UsuarioController.getCurrentUser());
         dcm.setFechaMovimiento(panelMovVarios.getDcMovimientoFecha());

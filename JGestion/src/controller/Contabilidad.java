@@ -225,20 +225,19 @@ public class Contabilidad {
 
     private void cargarTablaBalanceGeneral(List<DetalleCajaMovimientos> lista) {
         UTIL.limpiarDtm(jdBalanceUI.getjTable1());
-        Double subTotal, ingresos, egresos;
-        subTotal = 0.0;
-        ingresos = 0.0;
-        egresos = 0.0;
+        BigDecimal subTotal = BigDecimal.ZERO;
+        BigDecimal ingresos = BigDecimal.ZERO;
+        BigDecimal egresos = BigDecimal.ZERO;
         SimpleDateFormat dateFormat = UTIL.instanceOfDATE_FORMAT();
         for (DetalleCajaMovimientos detalleCajaMovimientos : lista) {
             //los movimientos entre caja no representan un ingreso/egreso real
             if (detalleCajaMovimientos.getTipo() != DetalleCajaMovimientosController.MOVIMIENTO_CAJA) {
                 if (detalleCajaMovimientos.getIngreso()) {
-                    ingresos += detalleCajaMovimientos.getMonto();
+                    ingresos = ingresos.add(detalleCajaMovimientos.getMonto());
                 } else {
-                    egresos += detalleCajaMovimientos.getMonto();
+                    egresos = egresos.add(detalleCajaMovimientos.getMonto());
                 }
-                subTotal += detalleCajaMovimientos.getMonto();
+                subTotal = subTotal.add(detalleCajaMovimientos.getMonto());
             }
             UTIL.getDtm(jdBalanceUI.getjTable1()).addRow(new Object[]{
                         dateFormat.format(detalleCajaMovimientos.getFecha()),

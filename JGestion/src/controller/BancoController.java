@@ -20,11 +20,14 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
+import javax.persistence.RollbackException;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.table.DefaultTableModel;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.postgresql.util.PSQLException;
 import utilities.general.UTIL;
 
 /**
@@ -87,7 +90,7 @@ public class BancoController {
         }
     }
 
-    public void destroy(Integer id) throws NonexistentEntityException, IllegalOrphanException {
+    public void destroy(Integer id) throws NonexistentEntityException, IllegalOrphanException, MessageException {
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -112,6 +115,14 @@ public class BancoController {
             }
             em.remove(banco);
             em.getTransaction().commit();
+            } catch (RollbackException ex) {
+            if (ex.getCause() instanceof DatabaseException) {
+                PSQLException ps = (PSQLException) ex.getCause().getCause();
+                if (ps.getMessage().contains("viola la llave foránea") || ps.getMessage().contains("violates foreign key constraint")) {
+                    throw new MessageException("No se puede eliminar porque existen otros registros que están relacionados a este");
+                }
+            }
+            throw ex;
         } finally {
             if (em != null) {
                 em.close();
@@ -227,6 +238,8 @@ public class BancoController {
                         contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                     }
                     contenedor.showMessage("Eliminado..", CLASS_NAME, 1);
+                } catch (MessageException ex) {
+                    contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (IllegalOrphanException ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (NonexistentEntityException ex) {

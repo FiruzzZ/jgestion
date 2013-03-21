@@ -1,6 +1,7 @@
 package entity;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
@@ -61,10 +62,10 @@ public class CajaMovimientos implements Serializable {
    @Temporal(TemporalType.TIMESTAMP)
    private Date sistemaFechaCierre;
    @Basic(optional = false)
-   @Column(name = "monto_apertura", nullable = false)
-   private double montoApertura;
-   @Column(name = "monto_cierre", precision = 17, scale = 17)
-   private Double montoCierre;
+   @Column(name = "monto_apertura", nullable = false, precision=12, scale=2)
+   private BigDecimal montoApertura;
+   @Column(name = "monto_cierre", precision = 12, scale = 2)
+   private BigDecimal montoCierre;
    @JoinColumn(name = "usuario_cierre", referencedColumnName = "id")
    @ManyToOne
    private Usuario usuarioCierre;
@@ -121,19 +122,19 @@ public class CajaMovimientos implements Serializable {
       this.sistemaFechaCierre = sistemaFechaCierre;
    }
 
-   public double getMontoApertura() {
+   public BigDecimal getMontoApertura() {
       return montoApertura;
    }
 
-   public void setMontoApertura(double montoApertura) {
+   public void setMontoApertura(BigDecimal montoApertura) {
       this.montoApertura = montoApertura;
    }
 
-   public Double getMontoCierre() {
+   public BigDecimal getMontoCierre() {
       return montoCierre;
    }
 
-   public void setMontoCierre(Double montoCierre) {
+   public void setMontoCierre(BigDecimal montoCierre) {
       this.montoCierre = montoCierre;
    }
 

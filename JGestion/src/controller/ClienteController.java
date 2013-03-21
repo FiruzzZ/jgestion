@@ -65,7 +65,7 @@ public class ClienteController implements ActionListener {
         } catch (RollbackException ex) {
             if (ex.getCause() instanceof DatabaseException) {
                 PSQLException ps = (PSQLException) ex.getCause().getCause();
-                if (ps.getMessage().contains("viola la llave foránea")) {
+                if (ps.getMessage().contains("viola la llave foránea") || ps.getMessage().contains("violates foreign key constraint")) {
                     throw new MessageException("No se puede eliminar porque existen otros registros que están relacionados a este");
                 }
             }

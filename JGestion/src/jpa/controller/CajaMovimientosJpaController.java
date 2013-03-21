@@ -2,6 +2,7 @@ package jpa.controller;
 
 import controller.*;
 import entity.*;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -44,7 +45,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
             newDetalleCajaMovimiento.setCajaMovimientos(cajaMovimientoActual);
             newDetalleCajaMovimiento.setIngreso(false);
             //el importe de las FacturaCompra son siempre negativos..
-            newDetalleCajaMovimiento.setMonto(-facturaCompra.getImporte());
+            newDetalleCajaMovimiento.setMonto(BigDecimal.valueOf(-facturaCompra.getImporte()));
             newDetalleCajaMovimiento.setNumero(facturaCompra.getId());
             newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosController.FACTU_COMPRA);
             newDetalleCajaMovimiento.setDescripcion(JGestionUtils.getNumeracion(facturaCompra) + " " + facturaCompra.getProveedor().getNombre());
@@ -72,7 +73,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
             newDetalleCajaMovimiento.setCajaMovimientos(cajaMovimientoActual);
             newDetalleCajaMovimiento.setIngreso(true);
             if (facturaVenta.getFormaPagoEnum().equals(Valores.FormaPago.CONTADO)) {
-                newDetalleCajaMovimiento.setMonto(facturaVenta.getImporte());
+                newDetalleCajaMovimiento.setMonto(BigDecimal.valueOf(facturaVenta.getImporte()));
             } else {
                 throw new IllegalArgumentException(facturaVenta.getClass() + ".id=" + facturaVenta.getId()
                         + " contiene FormaPago=" + facturaVenta.getFormaPagoEnum() + " NO ASENTABLE COMO MOVIMIENTO CONTABLE.");
@@ -159,7 +160,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
             DetalleCajaMovimientos newDetalleCajaMovimiento = new DetalleCajaMovimientos();
             newDetalleCajaMovimiento.setCajaMovimientos(cajaMovimientoActual);
             newDetalleCajaMovimiento.setIngreso(true);
-            newDetalleCajaMovimiento.setMonto(cheque.getImporte().doubleValue());
+            newDetalleCajaMovimiento.setMonto(cheque.getImporte());
             newDetalleCajaMovimiento.setNumero(cheque.getId());
             newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosController.CHEQUE_TERCEROS);
             newDetalleCajaMovimiento.setDescripcion("CH" + cheque.getNumero() + " (" + cheque.getCliente().getNombre() + ")");
@@ -184,7 +185,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
             DetalleCajaMovimientos newDetalleCajaMovimiento = new DetalleCajaMovimientos();
             newDetalleCajaMovimiento.setCajaMovimientos(cajaMovimientoActual);
             newDetalleCajaMovimiento.setIngreso(false);
-            newDetalleCajaMovimiento.setMonto(-cheque.getImporte().doubleValue());
+            newDetalleCajaMovimiento.setMonto(cheque.getImporte().negate());
             newDetalleCajaMovimiento.setNumero(cheque.getId());
             newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosController.CHEQUE_PROPIO);
             newDetalleCajaMovimiento.setDescripcion("CH" + cheque.getNumero() + " (" + cheque.getProveedor().getNombre() + ")");
@@ -272,7 +273,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
             DetalleCajaMovimientos newDetalleCajaMovimiento = new DetalleCajaMovimientos();
             newDetalleCajaMovimiento.setCajaMovimientos(cajaMovimientoActual);
             newDetalleCajaMovimiento.setIngreso(false);
-            newDetalleCajaMovimiento.setMonto(-dcm.getMonto());
+            newDetalleCajaMovimiento.setMonto(dcm.getMonto().negate());
             newDetalleCajaMovimiento.setNumero(Long.valueOf(recibo.getId()));
             newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosController.RECIBO);
             newDetalleCajaMovimiento.setDescripcion("R" + JGestionUtils.getNumeracion(recibo, true) + " [ANULADO]");
@@ -317,7 +318,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
             newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosController.ANULACION);
 
             if (facturaVenta.getFormaPagoEnum().equals(Valores.FormaPago.CONTADO)) {
-                newDetalleCajaMovimiento.setMonto(-facturaVenta.getImporte());
+                newDetalleCajaMovimiento.setMonto(BigDecimal.valueOf(-facturaVenta.getImporte()));
                 newDetalleCajaMovimiento.setDescripcion(JGestionUtils.getNumeracion(facturaVenta) + " [ANULADA]");
                 new DetalleCajaMovimientosController().create(newDetalleCajaMovimiento);
             } else if (facturaVenta.getFormaPagoEnum().equals(Valores.FormaPago.CTA_CTE)) {
@@ -336,12 +337,12 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
                                 detalleRecibo.setObservacion("[ANULADO] " + detalleRecibo.getObservacion());
                                 detalleRecibo.setAnulado(true);
                                 reciboQueEnSuDetalleContieneLaFacturaVenta.setMonto(
-                                        reciboQueEnSuDetalleContieneLaFacturaVenta.getMonto() - detalleRecibo.getMontoEntrega().doubleValue());
+                                        reciboQueEnSuDetalleContieneLaFacturaVenta.getMonto().subtract(detalleRecibo.getMontoEntrega()));
                                 if (detalleRecibo.isAcreditado()) {
                                     DetalleAcreditacion anular = new DetalleAcreditacionJpaController().anular(detalleRecibo);
                                     new NotaCreditoController().acreditar(anular);
                                 } else {
-                                    newDetalleCajaMovimiento.setMonto(-detalleRecibo.getMontoEntrega().doubleValue());
+                                    newDetalleCajaMovimiento.setMonto(detalleRecibo.getMontoEntrega().negate());
                                     newDetalleCajaMovimiento.setDescripcion(JGestionUtils.getNumeracion(facturaVenta) + " -> R" + JGestionUtils.getNumeracion(reciboQueEnSuDetalleContieneLaFacturaVenta, true) + " [ANULADA]");
                                     new DetalleCajaMovimientosController().create(newDetalleCajaMovimiento);
                                 }
@@ -402,7 +403,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
                 newDetalleCajaMovimiento = new DetalleCajaMovimientos();
                 newDetalleCajaMovimiento.setCajaMovimientos(cajaMovimientoDestino);
                 newDetalleCajaMovimiento.setIngreso(true);
-                newDetalleCajaMovimiento.setMonto(facturaCompra.getImporte());
+                newDetalleCajaMovimiento.setMonto(BigDecimal.valueOf(facturaCompra.getImporte()));
                 newDetalleCajaMovimiento.setNumero(facturaCompra.getId());
                 newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosController.ANULACION);
                 newDetalleCajaMovimiento.setDescripcion(JGestionUtils.getNumeracion(facturaCompra) + " [ANULADA]");
@@ -428,7 +429,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
                                 newDetalleCajaMovimiento = new DetalleCajaMovimientos();
                                 newDetalleCajaMovimiento.setCajaMovimientos(cajaMovimientoDestino);
                                 newDetalleCajaMovimiento.setIngreso(true);
-                                newDetalleCajaMovimiento.setMonto(detalleRemesa.getMontoEntrega().doubleValue());
+                                newDetalleCajaMovimiento.setMonto(detalleRemesa.getMontoEntrega());
                                 newDetalleCajaMovimiento.setNumero(facturaCompra.getId());
                                 newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosController.ANULACION);
                                 newDetalleCajaMovimiento.setDescripcion(JGestionUtils.getNumeracion(facturaCompra)

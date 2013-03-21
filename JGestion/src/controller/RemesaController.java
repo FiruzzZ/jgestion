@@ -238,7 +238,7 @@ public class RemesaController implements FocusListener {
         if (monto != null) {
             DetalleCajaMovimientos d = new DetalleCajaMovimientos();
             d.setIngreso(false);
-            d.setMonto(-monto.doubleValue());
+            d.setMonto(monto.negate());
             d.setTipo(DetalleCajaMovimientosController.REMESA);
             d.setUsuario(UsuarioController.getCurrentUser());
             d.setCuenta(CuentaController.SIN_CLASIFICAR);
@@ -804,7 +804,7 @@ public class RemesaController implements FocusListener {
                 dtm.addRow(new Object[]{pago, "RE", pago.getNumero(), pago.getImporte()});
             } else if (object instanceof DetalleCajaMovimientos) {
                 DetalleCajaMovimientos pago = (DetalleCajaMovimientos) object;
-                dtm.addRow(new Object[]{pago, "EF", null, BigDecimal.valueOf(-pago.getMonto())});
+                dtm.addRow(new Object[]{pago, "EF", null, pago.getMonto().negate()});
             } else if (object instanceof CuentabancariaMovimientos) {
                 CuentabancariaMovimientos pago = (CuentabancariaMovimientos) object;
                 dtm.addRow(new Object[]{pago, "TR", pago.getDescripcion(), pago.getDebito()});
@@ -828,7 +828,6 @@ public class RemesaController implements FocusListener {
                 }
             }
         }
-
     }
 
     public void anular(Remesa remesa) throws MessageException, Exception {
