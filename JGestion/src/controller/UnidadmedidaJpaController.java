@@ -45,7 +45,7 @@ public class UnidadmedidaJpaController implements ActionListener, MouseListener 
     }
 
     public void edit(Unidadmedida unidadmedida) throws NonexistentEntityException, Exception {
-        DAO.doMerge(unidadmedida);
+        DAO.merge(unidadmedida);
     }
 
     public void destroy(Integer id) throws NonexistentEntityException, IllegalOrphanException {

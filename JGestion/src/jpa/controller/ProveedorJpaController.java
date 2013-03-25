@@ -27,7 +27,7 @@ public class ProveedorJpaController extends AbstractDAO<Proveedor, Integer> {
     }
 
     /**
-     *
+     * Ordered by nombre
      *
      * @return a list ordered by {@link Proveedor#nombre}
      */

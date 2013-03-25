@@ -30,7 +30,7 @@ public class ProvinciaJpaController {
    }
 
    public void edit(Provincia provincia) throws IllegalOrphanException, NonexistentEntityException, Exception {
-      Provincia mergedEntity = DAO.doMerge(provincia);
+      Provincia mergedEntity = DAO.merge(provincia);
    }
 
    public void destroy(Integer id) throws IllegalOrphanException, NonexistentEntityException {

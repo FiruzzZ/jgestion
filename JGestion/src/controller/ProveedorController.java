@@ -60,7 +60,7 @@ public class ProveedorController implements ActionListener {
     }
 
     public void edit(Proveedor proveedor) {
-        DAO.doMerge(proveedor);
+        DAO.merge(proveedor);
     }
 
     public void destroy(Integer id) throws NonexistentEntityException, MessageException {

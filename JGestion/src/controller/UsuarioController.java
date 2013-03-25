@@ -332,7 +332,7 @@ public class UsuarioController implements ActionListener, MouseListener, KeyList
             if (jdCambiarPass.getPass2().equals(jdCambiarPass.getPass3())) {
                 if (jdCambiarPass.getPass2().length() >= 5) {
                     CURRENT_USER.setPass(jdCambiarPass.getPass2());
-                    DAO.doMerge(CURRENT_USER);
+                    DAO.merge(CURRENT_USER);
                     jdCambiarPass.getLabelMsj().setText("Contraseña actualizada");
                 } else {
                     throw new MessageException("<html>La contraseña actual debe tener al menos<br> 5 caracteres</html>");

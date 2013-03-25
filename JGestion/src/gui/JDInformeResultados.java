@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -38,14 +39,15 @@ import utilities.swing.components.NumberRenderer;
  *
  * @author FiruzzZ
  */
-public class JDInformeUnidadesDeNegocios extends javax.swing.JDialog {
+public class JDInformeResultados extends javax.swing.JDialog {
 
-    private static final Logger LOG = Logger.getLogger(JDInformeUnidadesDeNegocios.class.getName());
+    private static final Logger LOG = Logger.getLogger(JDInformeResultados.class.getName());
+    private static final long serialVersionUID = 1L;
     private final String[] columnNames = new String[13];
     private SimpleDateFormat yyyyMMdd = new SimpleDateFormat("yyyy/MM/dd");
 
-    public JDInformeUnidadesDeNegocios(Window owner) {
-        super(owner, ModalityType.MODELESS);
+    public JDInformeResultados(Window owner) {
+        super(owner);
         String[] months = DateFormatSymbols.getInstance().getMonths();
         columnNames[0] = "Unidades";
         System.arraycopy(months, 0, columnNames, 1, 12);
@@ -72,7 +74,7 @@ public class JDInformeUnidadesDeNegocios extends javax.swing.JDialog {
                 }
             }
         });
-        ActionListenerManager.setCuentasIngresosSubcuentaActionListener(getCbCuenta(), true, getCbSubCuenta(), true, true);
+//        ActionListenerManager.setCuentasIngresosSubcuentaActionListener(getCbCuenta(), true, getCbSubCuenta(), true, true);
         jTable1.setTreeTableModel(new CuentaTreeTableModel());
         jTable1.setRootVisible(true);
         for (int indexColumn = 1; indexColumn < jTable1.getColumnModel().getColumnCount(); indexColumn++) {
@@ -89,16 +91,13 @@ public class JDInformeUnidadesDeNegocios extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jComboBox1 = new javax.swing.JComboBox();
-        cbSubCuenta = new javax.swing.JComboBox();
-        labelSucursal3 = new javax.swing.JLabel();
-        jYearChooser1 = new com.toedter.calendar.JYearChooser();
         labelSucursal1 = new javax.swing.JLabel();
         cbUnidadDeNegocio = new javax.swing.JComboBox();
         labelSucursal = new javax.swing.JLabel();
         cbSucursal = new javax.swing.JComboBox();
-        labelSucursal2 = new javax.swing.JLabel();
         cbCuenta = new javax.swing.JComboBox();
+        labelCuenta = new javax.swing.JLabel();
+        jYearChooser1 = new com.toedter.calendar.JYearChooser();
         bBuscar = new javax.swing.JButton();
         bImprimir = new javax.swing.JButton();
         btnToExcel = new javax.swing.JButton();
@@ -106,17 +105,13 @@ public class JDInformeUnidadesDeNegocios extends javax.swing.JDialog {
         jTable1 = new org.jdesktop.swingx.JXTreeTable();
         jLabel1 = new javax.swing.JLabel();
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-
-        labelSucursal3.setText("SubCuenta");
 
         labelSucursal1.setText("Unid. de Neg.");
 
         labelSucursal.setText("Sucursal");
 
-        labelSucursal2.setText("Cuenta");
+        labelCuenta.setText("Cuenta");
 
         bBuscar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/lupa.png"))); // NOI18N
         bBuscar.setText("Buscar");
@@ -145,10 +140,9 @@ public class JDInformeUnidadesDeNegocios extends javax.swing.JDialog {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane2)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(labelSucursal)
@@ -158,23 +152,19 @@ public class JDInformeUnidadesDeNegocios extends javax.swing.JDialog {
                             .addComponent(cbUnidadDeNegocio, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(cbSucursal, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(labelSucursal3)
-                            .addComponent(labelSucursal2))
+                        .addComponent(labelCuenta)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(cbCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(10, 10, 10)
-                                .addComponent(jLabel1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jYearChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(cbSubCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 272, Short.MAX_VALUE)
+                        .addComponent(cbCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(25, 25, 25)
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jYearChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 275, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(bImprimir, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(bBuscar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnToExcel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(btnToExcel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 1077, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -188,14 +178,12 @@ public class JDInformeUnidadesDeNegocios extends javax.swing.JDialog {
                             .addComponent(cbUnidadDeNegocio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jYearChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(cbCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(labelSucursal2)
+                            .addComponent(labelCuenta)
                             .addComponent(jLabel1))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                             .addComponent(labelSucursal)
-                            .addComponent(cbSucursal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(cbSubCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(labelSucursal3)))
+                            .addComponent(cbSucursal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(bBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -203,7 +191,7 @@ public class JDInformeUnidadesDeNegocios extends javax.swing.JDialog {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnToExcel, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 213, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 151, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -219,19 +207,20 @@ public class JDInformeUnidadesDeNegocios extends javax.swing.JDialog {
             public void run() {
                 CuentaNode root = (CuentaNode) jTable1.getTreeTableModel().getRoot();
                 resetTabla();
+                CuentaNode ingresos = root.getChildren().get(0);
+                CuentaNode egresos = root.getChildren().get(1);
                 for (int month = 0; month < 12; month++) {
                     BigDecimal ingresosSinUNDniCuenta = BigDecimal.ZERO;
                     BigDecimal egresosSinUNDniCuenta = BigDecimal.ZERO;
                     List<FacturaVenta> fvList = getFacturasVenta(month);
                     for (FacturaVenta o : fvList) {
                         BigDecimal importe = BigDecimal.valueOf(o.getImporte());
-                        if (o.getUnidadDeNegocio() == null && o.getCuenta() == null) {
+                        if (o.getUnidadDeNegocio() == null) {
                             ingresosSinUNDniCuenta = ingresosSinUNDniCuenta.add(importe);
                             continue;
                         }
-                        for (CuentaNode udnNode : root.getChildren()) {
-                            if (udnNode.getName().equalsIgnoreCase(o.getUnidadDeNegocio().getNombre())) {
-                                CuentaNode ingresos = udnNode.getChildren().get(0);
+//                        for (CuentaNode udnNode : root.getChildren()) {
+//                            if (udnNode.getName().equalsIgnoreCase(o.getUnidadDeNegocio().getNombre())) {
                                 if (o.getCuenta() != null) {
                                     for (CuentaNode cuentaNode : ingresos.getChildren()) {
                                         if (cuentaNode.getName().equalsIgnoreCase(o.getCuenta().getNombre())) {
@@ -241,13 +230,14 @@ public class JDInformeUnidadesDeNegocios extends javax.swing.JDialog {
                                         }
                                     }
                                 } else {
-                                    //Cuenta a Identificar
+                                    //Cuenta a Identificar 
                                     importe = ingresos.getChildren().get(ingresos.getChildren().size() - 1).getPeriodos()[month].add(importe);
+                                    //siempre es el último nodo
                                     ingresos.getChildren().get(ingresos.getChildren().size() - 1).getPeriodos()[month] = importe;
                                 }
-                                break;
-                            }
-                        }
+//                                break;
+//                            }
+//                        }
                     }
                     List<DetalleCajaMovimientos> mviList = getMovimientosVariosIngresos(month);
                     for (DetalleCajaMovimientos o : mviList) {
@@ -256,9 +246,9 @@ public class JDInformeUnidadesDeNegocios extends javax.swing.JDialog {
                             ingresosSinUNDniCuenta = ingresosSinUNDniCuenta.add(importe);
                             continue;
                         }
-                        for (CuentaNode udnNode : root.getChildren()) {
-                            if (udnNode.getName().equalsIgnoreCase(o.getUnidadDeNegocio().getNombre())) {
-                                CuentaNode ingresos = udnNode.getChildren().get(0);
+//                        for (CuentaNode udnNode : root.getChildren()) {
+//                            if (udnNode.getName().equalsIgnoreCase(o.getUnidadDeNegocio().getNombre())) {
+//                                CuentaNode ingresos = udnNode.getChildren().get(0);
                                 if (o.getCuenta() != null) {
                                     for (CuentaNode cuentaNode : ingresos.getChildren()) {
                                         if (cuentaNode.getName().equalsIgnoreCase(o.getCuenta().getNombre())) {
@@ -272,23 +262,22 @@ public class JDInformeUnidadesDeNegocios extends javax.swing.JDialog {
                                     importe = ingresos.getChildren().get(ingresos.getChildren().size() - 1).getPeriodos()[month].add(importe);
                                     ingresos.getChildren().get(ingresos.getChildren().size() - 1).getPeriodos()[month] = importe;
                                 }
-                                break;
-                            }
-                        }
-
+//                                break;
+//                            }
+//                        }
                     }
-                    root.getChildren().get(root.getChildren().size() - 1).getChildren().get(0).getPeriodos()[month] = ingresosSinUNDniCuenta;
+//                    root.getChildren().get(root.getChildren().size() - 1).getChildren().get(0).getPeriodos()[month] = ingresosSinUNDniCuenta;
 
                     List<FacturaCompra> fcList = getFacturasCompra(month);
                     for (FacturaCompra o : fcList) {
                         BigDecimal importe = BigDecimal.valueOf(-o.getImporte());
-                        if (o.getUnidadDeNegocio() == null && o.getCuenta() == null) {
+                        if (o.getUnidadDeNegocio() == null) {
                             egresosSinUNDniCuenta = egresosSinUNDniCuenta.add(importe);
                             continue;
                         }
-                        for (CuentaNode udnNode : root.getChildren()) {
-                            if (udnNode.getName().equalsIgnoreCase(o.getUnidadDeNegocio().getNombre())) {
-                                CuentaNode egresos = udnNode.getChildren().get(1);
+//                        for (CuentaNode udnNode : root.getChildren()) {
+//                            if (udnNode.getName().equalsIgnoreCase(o.getUnidadDeNegocio().getNombre())) {
+//                                CuentaNode egresos = udnNode.getChildren().get(1);
                                 if (o.getCuenta() != null) {
                                     for (CuentaNode cuentaNode : egresos.getChildren()) {
                                         if (cuentaNode.getName().equalsIgnoreCase(o.getCuenta().getNombre())) {
@@ -302,9 +291,9 @@ public class JDInformeUnidadesDeNegocios extends javax.swing.JDialog {
                                     importe = egresos.getChildren().get(egresos.getChildren().size() - 1).getPeriodos()[month].add(importe);
                                     egresos.getChildren().get(egresos.getChildren().size() - 1).getPeriodos()[month] = importe;
                                 }
-                                break;
-                            }
-                        }
+//                                break;
+//                            }
+//                        }
                     }
                     List<DetalleCajaMovimientos> mveList = getMovimientosVariosEgresos(month);
                     for (DetalleCajaMovimientos o : mveList) {
@@ -314,9 +303,9 @@ public class JDInformeUnidadesDeNegocios extends javax.swing.JDialog {
                             egresosSinUNDniCuenta = egresosSinUNDniCuenta.add(importe);
                             continue;
                         }
-                        for (CuentaNode udnNode : root.getChildren()) {
-                            if (udnNode.getName().equalsIgnoreCase(o.getUnidadDeNegocio().getNombre())) {
-                                CuentaNode egresos = udnNode.getChildren().get(1);
+//                        for (CuentaNode udnNode : root.getChildren()) {
+//                            if (udnNode.getName().equalsIgnoreCase(o.getUnidadDeNegocio().getNombre())) {
+//                                CuentaNode egresos = udnNode.getChildren().get(1);
                                 if (o.getCuenta() != null) {
                                     for (CuentaNode cuentaNode : egresos.getChildren()) {
                                         if (cuentaNode.getName().equalsIgnoreCase(o.getCuenta().getNombre())) {
@@ -330,35 +319,29 @@ public class JDInformeUnidadesDeNegocios extends javax.swing.JDialog {
                                     importe = egresos.getChildren().get(egresos.getChildren().size() - 1).getPeriodos()[month].add(importe);
                                     egresos.getChildren().get(egresos.getChildren().size() - 1).getPeriodos()[month] = importe;
                                 }
-                                break;
-                            }
-                        }
-
+//                                break;
+//                            }
+//                        }
                     }
-                    root.getChildren().get(root.getChildren().size() - 1).getChildren().get(1).getPeriodos()[month] = egresosSinUNDniCuenta;
+//                    root.getChildren().get(root.getChildren().size() - 1).getChildren().get(1).getPeriodos()[month] = egresosSinUNDniCuenta;
                 }
                 //<editor-fold defaultstate="collapsed" desc="Limpiando las que están en ZERO">
-                for (CuentaNode udn : root.getChildren()) {
-                    for (CuentaNode ingresos : udn.getChildren()) {
                         for (Iterator<CuentaNode> it = ingresos.getChildren().iterator(); it.hasNext();) {
                             CuentaNode cuenta = it.next();
                             if (cuenta.isEmpty()) {
                                 it.remove();
                             }
                         }
-                    }
-                    for (CuentaNode egresos : udn.getChildren()) {
                         for (Iterator<CuentaNode> it = egresos.getChildren().iterator(); it.hasNext();) {
                             CuentaNode cuenta = it.next();
                             if (cuenta.isEmpty()) {
                                 it.remove();
                             }
                         }
-                    }
-                }
                 //</editor-fold>
                 jTable1.setEnabled(true);
                 bBuscar.setEnabled(true);
+                jTable1.expandAll();
             }
         }).start();
     }//GEN-LAST:event_bBuscarActionPerformed
@@ -381,9 +364,9 @@ public class JDInformeUnidadesDeNegocios extends javax.swing.JDialog {
         if (getCbCuenta().getSelectedIndex() > 0) {
             query.append(" AND o.cuenta.id = ").append(((ComboBoxWrapper<Cuenta>) getCbCuenta().getSelectedItem()).getId());
         }
-        if (getCbSubCuenta().getSelectedIndex() > 0) {
-            query.append(" AND o.subCuenta.id = ").append(((ComboBoxWrapper<SubCuenta>) getCbSubCuenta().getSelectedItem()).getId());
-        }
+//        if (getCbSubCuenta().getSelectedIndex() > 0) {
+//            query.append(" AND o.subCuenta.id = ").append(((ComboBoxWrapper<SubCuenta>) getCbSubCuenta().getSelectedItem()).getId());
+//        }
         LOG.trace(query.toString());
         return DAO.getEntityManager().createQuery(query.toString()).getResultList();
     }
@@ -406,9 +389,9 @@ public class JDInformeUnidadesDeNegocios extends javax.swing.JDialog {
         if (getCbCuenta().getSelectedIndex() > 0) {
             query.append(" AND o.cuenta.id = ").append(((ComboBoxWrapper<Cuenta>) getCbCuenta().getSelectedItem()).getId());
         }
-        if (getCbSubCuenta().getSelectedIndex() > 0) {
-            query.append(" AND o.subCuenta.id = ").append(((ComboBoxWrapper<SubCuenta>) getCbSubCuenta().getSelectedItem()).getId());
-        }
+//        if (getCbSubCuenta().getSelectedIndex() > 0) {
+//            query.append(" AND o.subCuenta.id = ").append(((ComboBoxWrapper<SubCuenta>) getCbSubCuenta().getSelectedItem()).getId());
+//        }
         if (getCbSucursal().getSelectedIndex() > 0) {
             query.append(" AND o.sucursal.id = ").append(((ComboBoxWrapper<Sucursal>) getCbSucursal().getSelectedItem()).getId());
         } else {
@@ -456,9 +439,9 @@ public class JDInformeUnidadesDeNegocios extends javax.swing.JDialog {
         if (getCbCuenta().getSelectedIndex() > 0) {
             query.append(" AND o.cuenta.id = ").append(((ComboBoxWrapper<Cuenta>) getCbCuenta().getSelectedItem()).getId());
         }
-        if (getCbSubCuenta().getSelectedIndex() > 0) {
-            query.append(" AND o.subCuenta.id = ").append(((ComboBoxWrapper<SubCuenta>) getCbSubCuenta().getSelectedItem()).getId());
-        }
+//        if (getCbSubCuenta().getSelectedIndex() > 0) {
+//            query.append(" AND o.subCuenta.id = ").append(((ComboBoxWrapper<SubCuenta>) getCbSubCuenta().getSelectedItem()).getId());
+//        }
         if (getCbSucursal().getSelectedIndex() > 0) {
             query.append(" AND o.sucursal.id = ").append(((ComboBoxWrapper<Sucursal>) getCbSucursal().getSelectedItem()).getId());
         } else {
@@ -506,9 +489,9 @@ public class JDInformeUnidadesDeNegocios extends javax.swing.JDialog {
         if (getCbCuenta().getSelectedIndex() > 0) {
             query.append(" AND o.cuenta.id = ").append(((ComboBoxWrapper<Cuenta>) getCbCuenta().getSelectedItem()).getId());
         }
-        if (getCbSubCuenta().getSelectedIndex() > 0) {
-            query.append(" AND o.subCuenta.id = ").append(((ComboBoxWrapper<SubCuenta>) getCbSubCuenta().getSelectedItem()).getId());
-        }
+//        if (getCbSubCuenta().getSelectedIndex() > 0) {
+//            query.append(" AND o.subCuenta.id = ").append(((ComboBoxWrapper<SubCuenta>) getCbSubCuenta().getSelectedItem()).getId());
+//        }
         System.out.println(query.toString());
         return DAO.getEntityManager().createQuery(query.toString()).getResultList();
     }
@@ -539,18 +522,15 @@ public class JDInformeUnidadesDeNegocios extends javax.swing.JDialog {
     private javax.swing.JButton bImprimir;
     private javax.swing.JButton btnToExcel;
     private javax.swing.JComboBox cbCuenta;
-    private javax.swing.JComboBox cbSubCuenta;
     private javax.swing.JComboBox cbSucursal;
     private javax.swing.JComboBox cbUnidadDeNegocio;
-    private javax.swing.JComboBox jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane2;
     private org.jdesktop.swingx.JXTreeTable jTable1;
     private com.toedter.calendar.JYearChooser jYearChooser1;
+    private javax.swing.JLabel labelCuenta;
     private javax.swing.JLabel labelSucursal;
     private javax.swing.JLabel labelSucursal1;
-    private javax.swing.JLabel labelSucursal2;
-    private javax.swing.JLabel labelSucursal3;
     // End of variables declaration//GEN-END:variables
 
     private class CuentaTreeTableModel extends AbstractTreeTableModel {
@@ -560,32 +540,20 @@ public class JDInformeUnidadesDeNegocios extends javax.swing.JDialog {
         CuentaTreeTableModel() {
             rootNode = new CuentaNode("Resultado Bruto", null);
             List<Cuenta> cuentas = new CuentaController().findAll();
-            //obtener facturas filtradas...
-            for (int i = 1; i < getCbUnidadDeNegocio().getItemCount(); i++) {
-                @SuppressWarnings("unchecked")
-                ComboBoxWrapper<UnidadDeNegocio> udn = (ComboBoxWrapper<UnidadDeNegocio>) getCbUnidadDeNegocio().getItemAt(i);
-                CuentaNode udnNode = new CuentaNode(udn.getText(), null);
-
-                CuentaNode ingresos = new CuentaNode("Ingresos", null);
-                for (Cuenta cuenta : cuentas) {
-                    ingresos.getChildren().add(new CuentaNode(cuenta.getNombre(), null));
-                }
-                ingresos.getChildren().add(new CuentaNode("Cuenta a Identificar", null));
-
-                CuentaNode egresos = new CuentaNode("Egresos", null);
-                for (Cuenta cuenta : cuentas) {
-                    egresos.getChildren().add(new CuentaNode(cuenta.getNombre(), null));
-                }
-                egresos.getChildren().add(new CuentaNode("Cuenta a Identificar", null));
-
-                udnNode.getChildren().add(ingresos);
-                udnNode.getChildren().add(egresos);
-                rootNode.getChildren().add(udnNode);
+            CuentaNode ingresos = new CuentaNode("Ingresos", null);
+            for (Cuenta cuenta : cuentas) {
+                ingresos.getChildren().add(new CuentaNode(cuenta.getNombre(), null));
             }
-            CuentaNode udnAIdentificar = new CuentaNode("A Identificar", null);
-            udnAIdentificar.getChildren().add(new CuentaNode("Ingresos a Identificar", null));
-            udnAIdentificar.getChildren().add(new CuentaNode("Egresos a Identificar", null));
-            rootNode.getChildren().add(udnAIdentificar);
+            ingresos.getChildren().add(new CuentaNode("Cuenta a Identificar", null));
+
+            CuentaNode egresos = new CuentaNode("Egresos", null);
+            for (Cuenta cuenta : cuentas) {
+                egresos.getChildren().add(new CuentaNode(cuenta.getNombre(), null));
+            }
+            egresos.getChildren().add(new CuentaNode("Cuenta a Identificar", null));
+
+            rootNode.getChildren().add(ingresos);
+            rootNode.getChildren().add(egresos);
         }
 
         @Override
@@ -610,54 +578,53 @@ public class JDInformeUnidadesDeNegocios extends javax.swing.JDialog {
                     }
                     if (!rootNode.equals(node)) {
                         BigDecimal subTotal = BigDecimal.ZERO;
-                        for (CuentaNode posibleUDN : treenode.getChildren()) {
-                            if (isLeaf(posibleUDN)) {
-                                //es cuenta... o UDN Ingresos/Egresos a identificar
-                                subTotal = subTotal.add(posibleUDN.getPeriodos()[column - 1]);
+                        for (CuentaNode ingresoEgreso : treenode.getChildren()) {
+                            if (isLeaf(ingresoEgreso)) {
+                                //es cuenta...
+                                subTotal = subTotal.add(ingresoEgreso.getPeriodos()[column - 1]);
 
                             } else {
+                                System.out.println("no debería entrar acá: column=" + column + ", node=" + treenode);
                                 //si no es LEAF, tiene 2 hijos y no son LEAF tampoco, estás en una UDN
-                                if (posibleUDN.getChildren().size() == 2 && !isLeaf(posibleUDN.getChildren().get(0))) {
-                                    CuentaNode ingresos = posibleUDN.getChildren().get(0);
-                                    for (CuentaNode ingresoCuentaNode : ingresos.getChildren()) {
-                                        subTotal = subTotal.add(ingresoCuentaNode.getPeriodos()[column - 1]);
-
-                                    }
-                                    CuentaNode egresos = posibleUDN.getChildren().get(1);
-                                    for (CuentaNode egresoCuentaNode : egresos.getChildren()) {
-                                        subTotal = subTotal.add(egresoCuentaNode.getPeriodos()[column - 1]);
-
-                                    }
-                                } else {
-                                    //Ingresos o Egresos
-                                    for (CuentaNode ingresosOegresosNode : posibleUDN.getChildren()) {
-                                        subTotal = subTotal.add(ingresosOegresosNode.getPeriodos()[column - 1]);
-                                    }
-                                }
+//                                if (ingresoEgreso.getChildren().size() == 2 && !isLeaf(ingresoEgreso.getChildren().get(0))) {
+//                                    CuentaNode ingresos = ingresoEgreso.getChildren().get(0);
+//                                    for (CuentaNode ingresoCuentaNode : ingresos.getChildren()) {
+//                                        subTotal = subTotal.add(ingresoCuentaNode.getPeriodos()[column - 1]);
+//                                    }
+//                                    CuentaNode egresos = ingresoEgreso.getChildren().get(1);
+//                                    for (CuentaNode egresoCuentaNode : egresos.getChildren()) {
+//                                        subTotal = subTotal.add(egresoCuentaNode.getPeriodos()[column - 1]);
+//                                    }
+//                                } else {
+//                                    //Ingresos o Egresos
+//                                    for (CuentaNode ingresosOegresosNode : ingresoEgreso.getChildren()) {
+//                                        subTotal = subTotal.add(ingresosOegresosNode.getPeriodos()[column - 1]);
+//                                    }
+//                                }
                             }
                         }
                         return subTotal;
                     } else {
                         //ROOT!
                         BigDecimal resultadoBruto = BigDecimal.ZERO;
-                        for (CuentaNode udnNode : treenode.getChildren()) {
-                            //udn a identificar
-                            if (udnNode.getChildren().size() == 2 && isLeaf(udnNode.getChildren().get(0)) && isLeaf(udnNode.getChildren().get(1))) {
-                                //ingresos a identificar
-                                resultadoBruto = resultadoBruto.add(udnNode.getChildren().get(0).getPeriodos()[column - 1]);
-                                //egresos a identificar
-                                resultadoBruto = resultadoBruto.add(udnNode.getChildren().get(1).getPeriodos()[column - 1]);
-                            } else {
-                                CuentaNode ingresos = udnNode.getChildren().get(0);
-                                for (CuentaNode cuentaNode : ingresos.getChildren()) {
-                                    resultadoBruto = resultadoBruto.add(cuentaNode.getPeriodos()[column - 1]);
-                                }
-                                CuentaNode egresos = udnNode.getChildren().get(1);
-                                for (CuentaNode cuentaNode : egresos.getChildren()) {
-                                    resultadoBruto = resultadoBruto.add(cuentaNode.getPeriodos()[column - 1]);
-                                }
-                            }
+//                        for (CuentaNode udnNode : treenode.getChildren()) {
+                        //udn a identificar
+//                            if (udnNode.getChildren().size() == 2 && isLeaf(udnNode.getChildren().get(0)) && isLeaf(udnNode.getChildren().get(1))) {
+//                                //Nodo ingresos a identificar
+//                                resultadoBruto = resultadoBruto.add(udnNode.getChildren().get(0).getPeriodos()[column - 1]);
+//                                //Nodo egresos a identificar
+//                                resultadoBruto = resultadoBruto.add(udnNode.getChildren().get(1).getPeriodos()[column - 1]);
+//                            } else {
+                        CuentaNode ingresos = treenode.getChildren().get(0);
+                        for (CuentaNode cuentaNode : ingresos.getChildren()) {
+                            resultadoBruto = resultadoBruto.add(cuentaNode.getPeriodos()[column - 1]);
                         }
+                        CuentaNode egresos = treenode.getChildren().get(1);
+                        for (CuentaNode cuentaNode : egresos.getChildren()) {
+                            resultadoBruto = resultadoBruto.add(cuentaNode.getPeriodos()[column - 1]);
+                        }
+//                            }
+//                        }
                         return resultadoBruto;
                     }
                 }
@@ -765,10 +732,6 @@ public class JDInformeUnidadesDeNegocios extends javax.swing.JDialog {
 
     public JComboBox getCbCuenta() {
         return cbCuenta;
-    }
-
-    public JComboBox getCbSubCuenta() {
-        return cbSubCuenta;
     }
 
     public JComboBox getCbSucursal() {

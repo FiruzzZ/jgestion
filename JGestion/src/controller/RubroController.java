@@ -57,7 +57,7 @@ public class RubroController implements ActionListener, MouseListener {
     }
 
     public void edit(Rubro rubro) {
-        DAO.doMerge(rubro);
+        DAO.merge(rubro);
     }
 
     public void destroy(Integer id) throws NonexistentEntityException, IllegalOrphanException {
