@@ -50,7 +50,7 @@ public class CajaController implements ActionListener {
     }
 
     public void edit(Caja caja) throws IllegalOrphanException, NonexistentEntityException, Exception {
-        DAO.doMerge(caja);
+        DAO.merge(caja);
     }
 
     public void destroy(Integer id) throws IllegalOrphanException, NonexistentEntityException {

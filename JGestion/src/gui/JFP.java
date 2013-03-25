@@ -195,6 +195,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenu8 = new javax.swing.JMenu();
         jMenuItem44 = new javax.swing.JMenuItem();
         jMenu12 = new javax.swing.JMenu();
+        jMenuItem89 = new javax.swing.JMenuItem();
         jMenuItem76 = new javax.swing.JMenuItem();
         jMenuItem86 = new javax.swing.JMenuItem();
         jMenu4 = new javax.swing.JMenu();
@@ -1008,7 +1009,15 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
         jMenu12.setText("Cosas raras");
 
-        jMenuItem76.setText("Informe de Resultados");
+        jMenuItem89.setText("Informe de Resultados");
+        jMenuItem89.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem89ActionPerformed(evt);
+            }
+        });
+        jMenu12.add(jMenuItem89);
+
+        jMenuItem76.setText("Informe de Resultados v2");
         jMenuItem76.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem76ActionPerformed(evt);
@@ -1786,6 +1795,10 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         }
     }//GEN-LAST:event_jMenuItem88ActionPerformed
 
+    private void jMenuItem89ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem89ActionPerformed
+        new Contabilidad().showInformeResultados(this);
+    }//GEN-LAST:event_jMenuItem89ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JMenu jMenu1;
@@ -1904,6 +1917,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenuItem jMenuItem86;
     private javax.swing.JMenuItem jMenuItem87;
     private javax.swing.JMenuItem jMenuItem88;
+    private javax.swing.JMenuItem jMenuItem89;
     private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JMenuItem jMenuItemCatalogoWeb;
     private javax.swing.JMenuItem jMenuItemCuentasBancarias;

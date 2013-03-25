@@ -390,7 +390,7 @@ public class NotaCreditoController {
             throw new MessageException("La Nota de crédito Nº" + JGestionUtils.getNumeracion(notaCredito, true) + " ya está anulada.");
         }
         notaCredito.setAnulada(true);
-        DAO.doMerge(notaCredito);
+        DAO.merge(notaCredito);
     }
 
     private void reporte(NotaCredito notaCredito) throws MissingReportException, JRException {
@@ -534,7 +534,7 @@ public class NotaCreditoController {
         }
         NotaCredito notaCredito = anular.getNotaCredito();
         notaCredito.setDesacreditado(notaCredito.getDesacreditado().subtract(BigDecimal.valueOf(anular.getMonto())));
-        DAO.doMerge(notaCredito);
+        DAO.merge(notaCredito);
         return notaCredito;
     }
 

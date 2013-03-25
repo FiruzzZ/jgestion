@@ -258,6 +258,6 @@ public class StockController {
         Stock stock = findStock(producto, sucursal);
         stock.setStockSucu(stock.getStockSucu() + cantidad);
         stock.setFechaCarga(new Date());
-        DAO.doMerge(stock);
+        DAO.merge(stock);
     }
 }

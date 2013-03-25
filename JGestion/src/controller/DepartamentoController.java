@@ -226,7 +226,7 @@ public class DepartamentoController implements ActionListener, MouseListener, Ke
         if (entity.getId() == null) {
             DAO.create(entity);
         } else {
-            DAO.doMerge(entity);
+            DAO.merge(entity);
         }
     }
 

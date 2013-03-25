@@ -43,7 +43,7 @@ public class ContribuyenteController implements ActionListener, MouseListener {
    }
 
    public void edit(Contribuyente contribuyente) throws IllegalOrphanException, NonexistentEntityException, Exception {
-      DAO.doMerge(contribuyente);
+      DAO.merge(contribuyente);
    }
 
    public void destroy(Integer id) throws IllegalOrphanException, NonexistentEntityException {

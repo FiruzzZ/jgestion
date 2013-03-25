@@ -24,6 +24,9 @@ public class FacturaCompraJpaController extends AbstractDAO<FacturaCompra, Integ
     private static final Logger LOG = Logger.getLogger(FacturaCompraJpaController.class.getName());
     private EntityManager entityManager;
 
+    public FacturaCompraJpaController() {
+    }
+
     @Override
     protected EntityManager getEntityManager() {
         if (entityManager == null || !entityManager.isOpen()) {
@@ -73,7 +76,7 @@ public class FacturaCompraJpaController extends AbstractDAO<FacturaCompra, Integ
                     cb.equal(from.get(FacturaCompra_.sucursal), sucursal));
             cq.select(cb.max(from.get(FacturaCompra_.numero)));
             Long max = getEntityManager().createQuery(cq).getSingleResult();
-            if(max == null) {
+            if (max == null) {
                 return 0;
             } else {
                 String s = UTIL.AGREGAR_CEROS(max, 12);

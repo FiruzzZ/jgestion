@@ -1,20 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<Form version="1.5" maxVersion="1.8" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
-  <NonVisualComponents>
-    <Component class="javax.swing.JComboBox" name="jComboBox1">
-      <Properties>
-        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-          <StringArray count="4">
-            <StringItem index="0" value="Item 1"/>
-            <StringItem index="1" value="Item 2"/>
-            <StringItem index="2" value="Item 3"/>
-            <StringItem index="3" value="Item 4"/>
-          </StringArray>
-        </Property>
-      </Properties>
-    </Component>
-  </NonVisualComponents>
+<Form version="1.3" maxVersion="1.8" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="2"/>
   </Properties>
@@ -36,11 +22,10 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="1" attributes="0">
+          <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="1" attributes="0">
-                  <Component id="jScrollPane2" max="32767" attributes="0"/>
-                  <Group type="102" attributes="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="1" attributes="0">
                           <Component id="labelSucursal" alignment="1" min="-2" max="-2" attributes="0"/>
                           <Component id="labelSucursal1" alignment="1" min="-2" max="-2" attributes="0"/>
@@ -51,28 +36,21 @@
                           <Component id="cbSucursal" alignment="0" min="-2" pref="220" max="-2" attributes="1"/>
                       </Group>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                          <Component id="labelSucursal3" alignment="1" min="-2" max="-2" attributes="0"/>
-                          <Component id="labelSucursal2" alignment="1" min="-2" max="-2" attributes="0"/>
-                      </Group>
+                      <Component id="labelCuenta" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" attributes="0">
-                              <Component id="cbCuenta" min="-2" pref="220" max="-2" attributes="1"/>
-                              <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
-                              <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jYearChooser1" min="-2" pref="72" max="-2" attributes="0"/>
-                          </Group>
-                          <Component id="cbSubCuenta" min="-2" pref="220" max="-2" attributes="1"/>
-                      </Group>
-                      <EmptySpace pref="272" max="32767" attributes="0"/>
+                      <Component id="cbCuenta" min="-2" pref="220" max="-2" attributes="1"/>
+                      <EmptySpace min="-2" pref="25" max="-2" attributes="0"/>
+                      <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jYearChooser1" min="-2" pref="72" max="-2" attributes="0"/>
+                      <EmptySpace pref="275" max="32767" attributes="0"/>
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
                           <Component id="bImprimir" alignment="1" max="32767" attributes="1"/>
                           <Component id="bBuscar" alignment="1" max="32767" attributes="1"/>
-                          <Component id="btnToExcel" alignment="1" max="32767" attributes="1"/>
+                          <Component id="btnToExcel" alignment="1" min="-2" pref="123" max="-2" attributes="1"/>
                       </Group>
                   </Group>
+                  <Component id="jScrollPane2" alignment="0" pref="1077" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -81,7 +59,7 @@
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
-              <EmptySpace min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="2" attributes="0">
@@ -89,15 +67,13 @@
                           <Component id="cbUnidadDeNegocio" alignment="2" min="-2" max="-2" attributes="0"/>
                           <Component id="jYearChooser1" alignment="2" min="-2" max="-2" attributes="0"/>
                           <Component id="cbCuenta" alignment="2" min="-2" max="-2" attributes="0"/>
-                          <Component id="labelSucursal2" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="labelCuenta" alignment="2" min="-2" max="-2" attributes="0"/>
                           <Component id="jLabel1" alignment="2" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="2" attributes="0">
                           <Component id="labelSucursal" alignment="2" min="-2" max="-2" attributes="0"/>
                           <Component id="cbSucursal" alignment="2" min="-2" max="-2" attributes="0"/>
-                          <Component id="cbSubCuenta" alignment="2" min="-2" max="-2" attributes="0"/>
-                          <Component id="labelSucursal3" alignment="2" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
@@ -108,28 +84,14 @@
                       <Component id="btnToExcel" min="-2" pref="34" max="-2" attributes="0"/>
                   </Group>
               </Group>
-              <EmptySpace min="-2" max="-2" attributes="0"/>
-              <Component id="jScrollPane2" pref="213" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="jScrollPane2" pref="151" max="32767" attributes="0"/>
               <EmptySpace min="-2" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Component class="javax.swing.JComboBox" name="cbSubCuenta">
-      <Properties>
-        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-          <StringArray count="0"/>
-        </Property>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="labelSucursal3">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="SubCuenta"/>
-      </Properties>
-    </Component>
-    <Component class="com.toedter.calendar.JYearChooser" name="jYearChooser1">
-    </Component>
     <Component class="javax.swing.JLabel" name="labelSucursal1">
       <Properties>
         <Property name="text" type="java.lang.String" value="Unid. de Neg."/>
@@ -154,17 +116,19 @@
         </Property>
       </Properties>
     </Component>
-    <Component class="javax.swing.JLabel" name="labelSucursal2">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Cuenta"/>
-      </Properties>
-    </Component>
     <Component class="javax.swing.JComboBox" name="cbCuenta">
       <Properties>
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
           <StringArray count="0"/>
         </Property>
       </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="labelCuenta">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Cuenta"/>
+      </Properties>
+    </Component>
+    <Component class="com.toedter.calendar.JYearChooser" name="jYearChooser1">
     </Component>
     <Component class="javax.swing.JButton" name="bBuscar">
       <Properties>

@@ -2,6 +2,7 @@ package controller;
 
 import controller.exceptions.DatabaseErrorException;
 import controller.exceptions.MessageException;
+import controller.exceptions.MissingReportException;
 import entity.Banco;
 import entity.Caja;
 import entity.ChequeTerceros;
@@ -39,6 +40,7 @@ import javax.swing.table.DefaultTableModel;
 import jgestion.JGestionUtils;
 import jpa.controller.ChequeTercerosJpaController;
 import jpa.controller.UsuarioJpaController;
+import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Logger;
 import utilities.general.UTIL;
 import utilities.swing.RowColorRender;
@@ -405,7 +407,7 @@ public class ChequeTercerosController implements ActionListener {
         UTIL.loadComboBox(jdChequeManager.getCbEmisor(), JGestionUtils.getWrappedClientes(new ClienteController().findAll()), true);
         UTIL.getDefaultTableModel(jdChequeManager.getjTable1(),
                 // los valores de las columnas 4 (F. Cobro) y 7 (Estado) son usados en otros lados!!! ojo piojo!
-                new String[]{"id", "Nº Cheque", "F. Cheque", "Emisor", "F. Cobro", "Banco", "Importe", "Estado", "Cruzado", "Endosatario", "F. Endoso", "C. Ingreso", "C. Egreso", "Observacion", "Usuario"},
+                new String[]{"id", "Nº Cheque", "F. Cheque", "Emisor", "F. Cobro", "Banco", "Importe", "Estado", "Cruzado", "Endosatario", "F. Endoso", "C. Ingreso", "C. Egreso", "Observacion", "Tenedor/a"},
                 new int[]{1, 80, 80, 100, 80, 100, 100, 100, 50, 100, 100, 150, 150, 100, 80},
                 new Class<?>[]{Integer.class, Number.class, null, null, null, null, Number.class, null, Boolean.class, null});
         jdChequeManager.getjTable1().setAutoCreateRowSorter(true);
@@ -676,9 +678,14 @@ public class ChequeTercerosController implements ActionListener {
                     ChequeTercerosEntrega cte = createEntregaTerceros();
                     DAO.create(cte);
                     for (ChequeTercerosEntregaDetalle d : cte.getDetalle()) {
-                        DAO.doMerge(d.getChequeTerceros());
+                        DAO.merge(d.getChequeTerceros());
                     }
-                    JOptionPane.showConfirmDialog(abm, "Entrega N°" + cte.getId() + " registrada");
+                    JOptionPane.showMessageDialog(abm, "Entrega N°" + cte.getId() + " registrada");
+                    loadChequesEnCartera();
+                    DefaultTableModel dtm = (DefaultTableModel) panelEntregaTerceros.getTableEntregados().getModel();
+                    dtm.setRowCount(0);
+                    refreshTotales();
+                    doReportRendicion(cte);
                 } catch (MessageException ex) {
                     ex.displayMessage(abm);
                 } catch (Exception ex) {
@@ -690,6 +697,13 @@ public class ChequeTercerosController implements ActionListener {
         loadChequesEnCartera();
         refreshTotales();
         abm.setVisible(true);
+    }
+
+    private void doReportRendicion(ChequeTercerosEntrega cte) throws MissingReportException, JRException {
+        Reportes r = new Reportes("JGestion_ChequeTercerosRendicion.jasper", "Cheque Terceros Rendición N°" + cte.getId());
+        r.addParameter("ENTITY_ID", cte.getId());
+        r.addMembreteParameter();
+        r.printReport(true);
     }
 
     @SuppressWarnings("unchecked")

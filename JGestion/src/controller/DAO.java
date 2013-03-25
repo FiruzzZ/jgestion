@@ -38,6 +38,12 @@ public abstract class DAO implements Runnable {
         //singleton..
     }
 
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        //singleton..
+        throw new CloneNotSupportedException("This Object can not be cloned, because it's a Singleton Design Class!!! [666]");
+    }
+
     @SuppressWarnings("AssignmentToCollectionOrArrayFieldFromParameter")
     public static void setProperties(final Properties p) {
         if (p == null) {
@@ -52,12 +58,6 @@ public abstract class DAO implements Runnable {
             throw new IllegalArgumentException("Archivo de configuración de conexión no válido");
         }
         properties = p;
-    }
-
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        //singleton..
-        throw new CloneNotSupportedException("This Object can not be cloned, because it's a Singleton Design Class!!! [666]");
     }
 
     public static EntityManager getEntityManager() {
@@ -188,18 +188,19 @@ public abstract class DAO implements Runnable {
      * @return the managed instance that the state was merged to or
      * <code>null</code> if a exception occurs
      */
-    static <T extends Object> T doMerge(T o) {
-        EntityManager em = getEntityManager();
+    static <T extends Object> T merge(T o) {
+        EntityManager em = null;
         try {
+            em = getEntityManager();
             em.getTransaction().begin();
             T merge = em.merge(o);
             em.getTransaction().commit();
             return merge;
-        } catch (Exception e) {
+        } catch (Exception ex) {
+            Logger.getLogger(DAO.class).log(Level.ERROR, o.toString() + " > " + ex.getLocalizedMessage(), ex);
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            Logger.getLogger(DAO.class).log(Level.ERROR, e);
         } finally {
             if (em != null) {
                 em.close();
@@ -492,15 +493,15 @@ public abstract class DAO implements Runnable {
                 em.createNativeQuery(sb.toString()).executeUpdate();
             }
             //</editor-fold>
-            
+
             if (em.createNativeQuery("SELECT * FROM operaciones_bancarias").getResultList().isEmpty()) {
                 System.out.println("Creando cheque_estado's..");
                 StringBuilder sb;
-                    sb = new StringBuilder("INSERT INTO operaciones_bancarias VALUES ");
-                    sb.append("(").append(OperacionesBancariasController.DEPOSITO).append(",'DEPÓSITO'),");
-                    sb.append("(").append(OperacionesBancariasController.EXTRACCION).append(",'EXTRACCIÓN'),");
-                    sb.append("(").append(OperacionesBancariasController.TRANSFERENCIA).append(",'TRANSFERENCIA');");
-                    sb.append("SELECT SETVAL('operaciones_bancarias_id_seq'::regclass, 3);");
+                sb = new StringBuilder("INSERT INTO operaciones_bancarias VALUES ");
+                sb.append("(").append(OperacionesBancariasController.DEPOSITO).append(",'DEPÓSITO'),");
+                sb.append("(").append(OperacionesBancariasController.EXTRACCION).append(",'EXTRACCIÓN'),");
+                sb.append("(").append(OperacionesBancariasController.TRANSFERENCIA).append(",'TRANSFERENCIA');");
+                sb.append("SELECT SETVAL('operaciones_bancarias_id_seq'::regclass, 3);");
                 em.createNativeQuery(sb.toString()).executeUpdate();
             }
             em.getTransaction().commit();

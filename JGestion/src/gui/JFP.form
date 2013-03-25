@@ -913,9 +913,17 @@
                 <Property name="text" type="java.lang.String" value="Cosas raras"/>
               </Properties>
               <SubComponents>
-                <MenuItem class="javax.swing.JMenuItem" name="jMenuItem76">
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuItem89">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="Informe de Resultados"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem89ActionPerformed"/>
+                  </Events>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuItem76">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Informe de Resultados v2"/>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem76ActionPerformed"/>

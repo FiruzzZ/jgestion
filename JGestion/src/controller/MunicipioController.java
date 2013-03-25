@@ -50,7 +50,7 @@ public class MunicipioController implements ActionListener, MouseListener, KeyLi
     }
 
     public void edit(Municipio municipio) throws NonexistentEntityException, Exception {
-        DAO.doMerge(municipio);
+        DAO.merge(municipio);
     }
 
     public void destroy(Integer id) throws NonexistentEntityException, IllegalOrphanException {

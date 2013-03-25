@@ -1546,7 +1546,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         facturaVenta.setTipo(jdFactura.getCbFacturaTipo().getSelectedItem().toString().charAt(0));
         facturaVenta.setNumero(jpaController.getNextNumero(s, facturaVenta.getTipo()));
         facturaVenta.setMovimientoInterno(0);
-        DAO.doMerge(facturaVenta);
+        DAO.merge(facturaVenta);
         if (facturaVenta.getFormaPago() == Valores.FormaPago.CONTADO.getId()) {
             //si NO es al CONTADO no tiene un registro de DetalleCajaMovimiento
             new CajaMovimientosController().actualizarDescripcion(facturaVenta);

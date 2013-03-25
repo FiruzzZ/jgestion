@@ -46,6 +46,8 @@ import jgestion.Main;
 import jgestion.Wrapper;
 import jpa.controller.CajaMovimientosJpaController;
 import jpa.controller.FacturaCompraJpaController;
+import jpa.controller.ProductoJpaController;
+import jpa.controller.ProveedorJpaController;
 import jpa.controller.SubCuentaJpaController;
 import jpa.controller.UnidadDeNegocioJpaController;
 import net.sf.jasperreports.engine.JRException;
@@ -101,7 +103,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         initComprobanteUI(owner, modal);
         //set next nº movimiento
         jdFactura.setTfNumMovimiento("");
-        UTIL.loadComboBox(jdFactura.getCbProveedor(), new ProveedorController().findEntities(), false);
+        UTIL.loadComboBox(jdFactura.getCbProveedor(), new ProveedorJpaController().findAll(), false);
         ActionListenerManager.setUnidadDeNegocioSucursalActionListener(jdFactura.getCbUnidadDeNegocio(), false, jdFactura.getCbSucursal(), false, true);
         ActionListenerManager.setCuentasEgresosSubcuentaActionListener(jdFactura.getCbCuenta(), false, jdFactura.getCbSubCuenta(), true, true);
         UTIL.loadComboBox(jdFactura.getCbCaja(), uh.getCajas(true), false);
@@ -931,6 +933,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         }
         LOG.trace(EL_OBJECT.toString());
         // seteando datos de FacturaCompra
+        jdFactura.getCbProveedor().removeAllItems();
         jdFactura.getCbProveedor().addItem(EL_OBJECT.getProveedor());
         UnidadDeNegocio udn = EL_OBJECT.getUnidadDeNegocio();
         Sucursal s = EL_OBJECT.getSucursal();
@@ -952,6 +955,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         } catch (Exception e) {
         }
         jdFactura.setDcFechaFactura(EL_OBJECT.getFechaCompra());
+        jdFactura.getCbFacturaTipo().removeAllItems();
         jdFactura.getCbFacturaTipo().addItem(EL_OBJECT.getTipo());
         String numFactura = UTIL.AGREGAR_CEROS(EL_OBJECT.getNumero(), 12);
         jdFactura.setTfFacturaCuarto(numFactura.substring(0, 4));
@@ -1191,26 +1195,24 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         DefaultTableModel dtm = jdFactura.getDtm();
         dtm.setRowCount(0);
         IvaController ivaController = new IvaController();
+        ProductoJpaController productoJpaController = new ProductoJpaController();
+        Producto producto;
         for (DetalleCompra detalle : factura.getDetalleCompraList()) {
-            Iva iva = detalle.getProducto().getIva();
-            if (iva == null) {
-                Producto findProducto = (Producto) DAO.findEntity(Producto.class, detalle.getProducto().getId());
-                iva = findProducto.getIva();
-//                LOG.debug("Producto con Iva NULL!!" + detalle.getProducto());
-                while (iva == null || iva.getIva() == null) {
-                    System.out.print(".");
-                    iva = ivaController.findByProducto(detalle.getProducto().getId());
-                }
+            producto = productoJpaController.find(detalle.getProducto().getId());
+            Iva iva = producto.getIva();
+            while (iva == null || iva.getIva() == null) {
+                System.out.print(".");
+                iva = ivaController.findByProducto(producto.getId());
             }
             try {
                 //"IVA", "Cód. Producto", "Producto", "Cantidad", "Precio U.", "Sub total", "Mod
                 dtm.addRow(new Object[]{
                             iva.getIva(),
-                            detalle.getProducto().getCodigo(),
-                            detalle.getProducto().getNombre() + " " + detalle.getProducto().getMarca().getNombre(),
+                            producto.getCodigo(),
+                            producto.getNombre() + " " + producto.getMarca().getNombre(),
                             detalle.getCantidad(),
                             detalle.getPrecioUnitario(),
-                            BigDecimal.valueOf(detalle.getCantidad()).multiply(detalle.getPrecioUnitario()),
+                            detalle.getPrecioUnitario().multiply(BigDecimal.valueOf(detalle.getCantidad())),
                             null});
             } catch (NullPointerException e) {
                 jpaController.closeEntityManager();

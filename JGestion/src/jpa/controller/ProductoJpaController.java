@@ -19,7 +19,6 @@ public class ProductoJpaController extends AbstractDAO<Producto, Integer> {
     private EntityManager entityManager;
 
     public ProductoJpaController() {
-        getEntityManager();
     }
 
     @Override

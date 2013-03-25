@@ -25,6 +25,7 @@ import utilities.general.UTIL;
 import gui.JDBalance;
 import gui.JDBuscador;
 import gui.JDBuscadorReRe;
+import gui.JDInformeResultados;
 import gui.JDInformeUnidadesDeNegocios;
 import gui.JDResumenGeneralCtaCte;
 import gui.JFP;
@@ -1248,5 +1249,9 @@ public class Contabilidad {
         buscador.getResumeItems().get("Costo").setText(UTIL.DECIMAL_FORMAT.format(costo));
         buscador.getResumeItems().get("Venta").setText(UTIL.DECIMAL_FORMAT.format(venta));
         buscador.getResumeItems().get("Ve - Co").setText(UTIL.DECIMAL_FORMAT.format(rentabilidad));
+    }
+
+    public void showInformeResultados(Window owner) {
+        new JDInformeResultados(owner).setVisible(true);
     }
 }
