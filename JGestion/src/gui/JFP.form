@@ -36,8 +36,13 @@
         </Menu>
         <Menu class="javax.swing.JMenu" name="jMenu2">
           <Properties>
+            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/iconos/32px_coins.png"/>
+            </Property>
             <Property name="mnemonic" type="int" value="105"/>
             <Property name="text" type="java.lang.String" value="Ingresos"/>
+            <Property name="horizontalTextPosition" type="int" value="0"/>
+            <Property name="verticalTextPosition" type="int" value="3"/>
           </Properties>
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItem2">
@@ -68,11 +73,17 @@
                   <Properties>
                     <Property name="text" type="java.lang.String" value="A Conciliar"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem80ActionPerformed"/>
+                  </Events>
                 </MenuItem>
                 <MenuItem class="javax.swing.JMenuItem" name="jMenuItem81">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="Buscar para Conciliar"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem81ActionPerformed"/>
+                  </Events>
                 </MenuItem>
               </SubComponents>
             </Menu>
@@ -275,8 +286,13 @@
         </Menu>
         <Menu class="javax.swing.JMenu" name="jMenu5">
           <Properties>
+            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/iconos/32px_products.png"/>
+            </Property>
             <Property name="mnemonic" type="int" value="112"/>
             <Property name="text" type="java.lang.String" value="Productos"/>
+            <Property name="horizontalTextPosition" type="int" value="0"/>
+            <Property name="verticalTextPosition" type="int" value="3"/>
           </Properties>
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItem7">
@@ -346,8 +362,13 @@
         </Menu>
         <Menu class="javax.swing.JMenu" name="jMenu6">
           <Properties>
+            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/iconos/agt_family.png"/>
+            </Property>
             <Property name="mnemonic" type="int" value="108"/>
             <Property name="text" type="java.lang.String" value="Clientes"/>
+            <Property name="horizontalTextPosition" type="int" value="0"/>
+            <Property name="verticalTextPosition" type="int" value="3"/>
           </Properties>
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItem8">
@@ -370,8 +391,13 @@
         </Menu>
         <Menu class="javax.swing.JMenu" name="jMenu7">
           <Properties>
+            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/iconos/agt_family.png"/>
+            </Property>
             <Property name="mnemonic" type="int" value="118"/>
             <Property name="text" type="java.lang.String" value="Proveedores"/>
+            <Property name="horizontalTextPosition" type="int" value="0"/>
+            <Property name="verticalTextPosition" type="int" value="3"/>
           </Properties>
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItem9">
@@ -394,8 +420,13 @@
         </Menu>
         <Menu class="javax.swing.JMenu" name="menuTesoreria">
           <Properties>
+            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/iconos/32px_change_values.png"/>
+            </Property>
             <Property name="mnemonic" type="int" value="116"/>
             <Property name="text" type="java.lang.String" value="Tesorer&#xed;a"/>
+            <Property name="horizontalTextPosition" type="int" value="0"/>
+            <Property name="verticalTextPosition" type="int" value="3"/>
           </Properties>
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItem25">
@@ -631,6 +662,14 @@
                         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem87ActionPerformed"/>
                       </Events>
                     </MenuItem>
+                    <MenuItem class="javax.swing.JMenuItem" name="jMenuItem90">
+                      <Properties>
+                        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                          <Image iconType="3" name="/iconos/lupa-simple.png"/>
+                        </Property>
+                        <Property name="text" type="java.lang.String" value="Buscar Entregas"/>
+                      </Properties>
+                    </MenuItem>
                   </SubComponents>
                 </Menu>
               </SubComponents>
@@ -740,8 +779,13 @@
         </Menu>
         <Menu class="javax.swing.JMenu" name="jMenu9">
           <Properties>
+            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/iconos/home.png"/>
+            </Property>
             <Property name="mnemonic" type="int" value="100"/>
             <Property name="text" type="java.lang.String" value="Datos Generales"/>
+            <Property name="horizontalTextPosition" type="int" value="0"/>
+            <Property name="verticalTextPosition" type="int" value="3"/>
           </Properties>
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItem22">
@@ -838,8 +882,13 @@
         </Menu>
         <Menu class="javax.swing.JMenu" name="jMenuReportes">
           <Properties>
+            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/iconos/32px_view_detail.png"/>
+            </Property>
             <Property name="mnemonic" type="int" value="114"/>
             <Property name="text" type="java.lang.String" value="Informes"/>
+            <Property name="horizontalTextPosition" type="int" value="0"/>
+            <Property name="verticalTextPosition" type="int" value="3"/>
           </Properties>
           <SubComponents>
             <Menu class="javax.swing.JMenu" name="jMenu24">
@@ -943,8 +992,13 @@
         </Menu>
         <Menu class="javax.swing.JMenu" name="jMenu4">
           <Properties>
+            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/iconos/edit_user.png"/>
+            </Property>
             <Property name="mnemonic" type="int" value="117"/>
             <Property name="text" type="java.lang.String" value="Usuarios"/>
+            <Property name="horizontalTextPosition" type="int" value="0"/>
+            <Property name="verticalTextPosition" type="int" value="3"/>
           </Properties>
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItem16">
@@ -983,9 +1037,6 @@
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItem33">
               <Properties>
-                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/iconos/16px_blue_system-help.png"/>
-                </Property>
                 <Property name="text" type="java.lang.String" value="Sobre.."/>
               </Properties>
               <Events>
@@ -1023,7 +1074,12 @@
         </Menu>
         <Menu class="javax.swing.JMenu" name="jMenu16">
           <Properties>
+            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/iconos/gnome-panel-force-quit.png"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="WS-AFIP"/>
+            <Property name="horizontalTextPosition" type="int" value="0"/>
+            <Property name="verticalTextPosition" type="int" value="3"/>
           </Properties>
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItem53">
@@ -1082,7 +1138,7 @@
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="jDesktopPane1" alignment="1" pref="430" max="32767" attributes="0"/>
+          <Component id="jDesktopPane1" alignment="1" pref="381" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
   </Layout>

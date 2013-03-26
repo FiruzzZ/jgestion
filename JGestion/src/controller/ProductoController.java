@@ -129,7 +129,7 @@ public class ProductoController implements ActionListener, KeyListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    doReportProductList();
+                    doDynamicReportProductos();
                 } catch (MessageException ex) {
                     contenedor.showMessage(ex.getMessage(), "Advertencia", 2);
                 } catch (Exception ex) {
@@ -696,7 +696,7 @@ public class ProductoController implements ActionListener, KeyListener {
         }
     }
 
-    private void doReportProductList() throws Exception {
+    private void doDynamicReportProductos() throws Exception {
         if (jpaController.count() == 0) {
             throw new MessageException("No existen " + CLASS_NAME + "s para imprimir un listado.");
         }
@@ -1046,7 +1046,7 @@ public class ProductoController implements ActionListener, KeyListener {
         UTIL.limpiarDtm(buscador.getjTable1());
         for (Producto producto : listado) {
             buscador.getDtm().addRow(new Object[]{
-                        producto,
+                        producto.getNombre(),
                         producto.getCodigo(),
                         producto.getMarca().getNombre(),
                         producto.getRubro().getNombre(),

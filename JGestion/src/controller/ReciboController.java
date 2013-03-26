@@ -6,7 +6,9 @@ import entity.enums.ChequeEstado;
 import generics.GenericBeanCollection;
 import gui.JDBuscadorReRe;
 import gui.JDReRe;
+import gui.JFP;
 import gui.generics.JDialogTable;
+import java.awt.Component;
 import java.awt.Window;
 import java.awt.event.*;
 import java.math.BigDecimal;
@@ -54,6 +56,8 @@ public class ReciboController implements ActionListener, FocusListener {
     private ReciboJpaController jpaController;
     private boolean unlockedNumeracion = false;
     private boolean viewMode;
+    private boolean toConciliar = false;
+    private boolean conciliando = false;
 
     public ReciboController() {
         jpaController = new ReciboJpaController();
@@ -93,14 +97,15 @@ public class ReciboController implements ActionListener, FocusListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(jdReRe, "La anulación de un implica:"
+                    if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(jdReRe, "La anulación de un Recibo implica:"
                             + "\n- Deshacer el pago realizado a cada Factura."
                             + "\n- La eliminación completa de las Formas de Pago de Tipo: Cheques Terceros (si aún está en " + ChequeEstado.CARTERA + "), Retenciones, Transferencias."
                             + "\n- La desvinculación de las Notas de Crédito con el Recibo."
                             + "\n- La desvinculación de las Notas de Débito con el Recibo."
                             + "\n- El cambio de estado de Cheques Propios a \"Entregados\" y dejando en blanco el concepto \"Comprobante de Ingreso\"."
                             + "\n- La generación de un movimiento de Egreso de la entrega en Efectivo, en la misma Caja en la cual se originó el ingreso por el Recibo."
-                            + "\n¿Confirmar anulación?")) {
+                            + "\n¿Confirmar anulación?",
+                            "Anulación de Recibo " + JGestionUtils.getNumeracion(selectedRecibo, true), JOptionPane.YES_NO_OPTION)) {
                         jpaController.anular(selectedRecibo);
                         jdReRe.showMessage(CLASS_NAME + " anulada..", CLASS_NAME, 1);
                         resetPanel();
@@ -140,7 +145,7 @@ public class ReciboController implements ActionListener, FocusListener {
                     if (!viewMode) {
                         Recibo re = setAndPersist();
                         selectedRecibo = re;
-                        jdReRe.showMessage(jpaController.getEntityClass().getSimpleName() + "Nº" + JGestionUtils.getNumeracion(re, true) + " registrada..", null, 1);
+                        jdReRe.showMessage(jpaController.getEntityClass().getSimpleName() + " Nº" + JGestionUtils.getNumeracion(re, true) + " registrado.", null, 1);
                         limpiarDetalle();
                         resetPanel();
                     }
@@ -156,7 +161,7 @@ public class ReciboController implements ActionListener, FocusListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    if (selectedRecibo != null) {
+                    if (!conciliando && selectedRecibo != null) {
                         // cuando se re-imprime un recibo elegido desde el buscador
                         doReportRecibo(selectedRecibo);
                     } else {
@@ -347,7 +352,13 @@ public class ReciboController implements ActionListener, FocusListener {
 
     private void displayABMChequeTerceros() {
         try {
-            ChequeTerceros cheque = new ChequeTercerosController().initABM(jdReRe, false, (Cliente) jdReRe.getCbClienteProveedor().getSelectedItem());
+            Cliente c = null;
+            try {
+                c = (Cliente) jdReRe.getCbClienteProveedor().getSelectedItem();
+            } catch (ClassCastException ex) {
+                throw new MessageException("Debe especificar un cliente para poder agregar un Cheque");
+            }
+            ChequeTerceros cheque = new ChequeTercerosController().initABM(jdReRe, false, c);
             if (cheque != null) {
                 ChequesController.checkUniquenessOnTable(jdReRe.getDtmPagos(), cheque);
                 DefaultTableModel dtm = jdReRe.getDtmPagos();
@@ -450,8 +461,14 @@ public class ReciboController implements ActionListener, FocusListener {
         if (jdReRe.getDcFechaReRe() == null) {
             throw new MessageException("Fecha de " + jpaController.getEntityClass().getSimpleName() + " no válida");
         }
-        if (jdReRe.getDtmAPagar().getRowCount() < 1) {
-            throw new MessageException("No ha hecho ninguna entrega");
+        if (toConciliar) {
+            if (jdReRe.getDtmPagos().getRowCount() < 1) {
+                throw new MessageException("No ha ingresado ningún pago");
+            }
+        } else {
+            if (jdReRe.getDtmAPagar().getRowCount() < 1) {
+                throw new MessageException("No ha hecho ninguna entrega");
+            }
         }
         if (unlockedNumeracion) {
             try {
@@ -484,7 +501,7 @@ public class ReciboController implements ActionListener, FocusListener {
             re.setCaja(null);
         }
         re.setSucursal(getSelectedSucursalFromJD());
-        if (unlockedNumeracion) {
+        if (unlockedNumeracion || conciliando) {
             re.setNumero(Integer.valueOf(jdReRe.getTfOcteto()));
         } else {
             re.setNumero(jpaController.getNextNumero(re.getSucursal()));
@@ -494,6 +511,8 @@ public class ReciboController implements ActionListener, FocusListener {
         re.setFechaRecibo(jdReRe.getDcFechaReRe());
         re.setDetalleReciboList(new ArrayList<DetalleRecibo>(jdReRe.getDtmAPagar().getRowCount()));
         re.setPagos(new ArrayList<ReciboPagos>(jdReRe.getDtmPagos().getRowCount()));
+        re.setPorConciliar(toConciliar);
+        re.setCliente((Cliente) jdReRe.getCbClienteProveedor().getSelectedItem());
         DefaultTableModel dtm = jdReRe.getDtmAPagar();
         FacturaVentaController fcc = new FacturaVentaController();
         BigDecimal monto = BigDecimal.ZERO;
@@ -524,19 +543,25 @@ public class ReciboController implements ActionListener, FocusListener {
             importePagado = importePagado.add((BigDecimal) dtm.getValueAt(row, 3));
         }
         boolean asentarDiferenciaEnCaja = false;
-        if (0 != jdReRe.getTfTotalAPagar().getText().compareTo(jdReRe.getTfTotalPagado().getText())) {
-            if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(jdReRe, "El importe a pagar no coincide el detalle de pagos."
-                    + "¿Desea que la diferencia ($" + UTIL.DECIMAL_FORMAT.format(re.getMonto().subtract(importePagado)) + ") sea reflejada en la Caja?", "Arqueo de valores", JOptionPane.YES_NO_OPTION)) {
-                asentarDiferenciaEnCaja = true;
-            } else {
-                throw new MessageException("Operación cancelada");
+        if (!re.isPorConciliar() || conciliando) {
+            if (0 != jdReRe.getTfTotalAPagar().getText().compareTo(jdReRe.getTfTotalPagado().getText())) {
+                if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(jdReRe, "El importe a pagar no coincide el detalle de pagos."
+                        + "¿Desea que la diferencia ($" + UTIL.DECIMAL_FORMAT.format(re.getMonto().subtract(importePagado)) + ") sea reflejada en la Caja?", "Arqueo de valores", JOptionPane.YES_NO_OPTION)) {
+                    asentarDiferenciaEnCaja = true;
+                } else {
+                    throw new MessageException("Operación cancelada");
+                }
             }
         }
         re.setPagosEntities(pagos);
         re.setRetencion(BigDecimal.ZERO);
 
         //persisting.....
-        jpaController.create(re);
+        if (conciliando) {
+            jpaController.conciliar(re);
+        } else {
+            jpaController.create(re);
+        }
         Iterator<DetalleRecibo> iterator = re.getDetalle().iterator();
         while (iterator.hasNext()) {
             DetalleRecibo detalle = iterator.next();
@@ -662,8 +687,9 @@ public class ReciboController implements ActionListener, FocusListener {
      * @param modal
      * @param toAnular if true, se chequea
      * {@link PermisosJpaController.PermisoDe#ANULAR_COMPROBANTES}
+     * @param toConciliar
      */
-    public void showBuscador(Window owner, boolean modal, boolean toAnular) {
+    public void showBuscador(Window owner, boolean modal, boolean toAnular, boolean toConciliar) {
         // <editor-fold defaultstate="collapsed" desc="checking Permiso">
         try {
             UsuarioController.checkPermiso(PermisosController.PermisoDe.VENTA);
@@ -678,17 +704,23 @@ public class ReciboController implements ActionListener, FocusListener {
         if (toAnular) {
             buscador.setTitle(buscador.getTitle() + " para ANULAR");
         }
+        conciliando = toConciliar;
         initBuscador(toAnular);
-
     }
 
     private void showReciboViewerMode(boolean toAnular) {
         try {
-            viewMode = true;
             setComprobanteUI(selectedRecibo);
+            if (selectedRecibo.isPorConciliar()) {
+                viewMode = false;
+                SwingUtil.setComponentsEnabled(jdReRe.getPanelAPagar().getComponents(), true, true, (Class<? extends Component>[]) null);
+                jdReRe.getCbCtaCtes().setSelectedIndex(0);
+            } else {
+                viewMode = true;
+            }
             jdReRe.getbAceptar().setVisible(false);
             jdReRe.getbCancelar().setVisible(false);
-            jdReRe.getbAnular().setVisible(toAnular);
+            jdReRe.getbAnular().setVisible(!toAnular);
             jdReRe.setLocationRelativeTo(buscador);
             jdReRe.setVisible(true);
         } catch (MessageException ex) {
@@ -709,7 +741,9 @@ public class ReciboController implements ActionListener, FocusListener {
 //        bloquearVentana(true);
         //por no redundar en DATOOOOOOOOOSS...!!!
         Cliente cliente;
-        if (recibo.getDetalle().get(0).getFacturaVenta() != null) {
+        if (recibo.isPorConciliar()) {
+            cliente = recibo.getCliente();
+        } else if (recibo.getDetalle().get(0).getFacturaVenta() != null) {
             cliente = new FacturaVentaController().find(recibo.getDetalle().get(0).getFacturaVenta().getId()).getCliente();
         } else {
             cliente = new NotaDebitoJpaController().find(recibo.getDetalle().get(0).getNotaDebito().getId()).getCliente();
@@ -770,6 +804,9 @@ public class ReciboController implements ActionListener, FocusListener {
                 }
             }
         });
+        if (conciliando) {
+            buscador.setTitle(buscador.getTitle() + " para Conciliar");
+        }
         buscador.setVisible(true);
         return selectedRecibo;
     }
@@ -810,9 +847,9 @@ public class ReciboController implements ActionListener, FocusListener {
     @SuppressWarnings("unchecked")
     private void armarQuery() throws MessageException {
         StringBuilder query = new StringBuilder(
-                "SELECT o.*"
+                "SELECT o.id"
                 + " FROM recibo o"
-                + " JOIN detalle_recibo dr ON (o.id = dr.recibo)"
+                + " LEFT JOIN detalle_recibo dr ON (o.id = dr.recibo)"
                 + " LEFT JOIN factura_venta f ON (dr.factura_venta = f.id)"
                 + " LEFT JOIN nota_debito ON (dr.nota_debito_id = nota_debito.id)"
                 + " LEFT JOIN cliente p ON (f.cliente = p.id) "
@@ -820,8 +857,8 @@ public class ReciboController implements ActionListener, FocusListener {
                 + " JOIN caja c ON (o.caja = c.id)"
                 + " JOIN sucursal s ON (o.sucursal = s.id)"
                 + " JOIN usuario u ON (o.usuario = u.id)"
-                + " WHERE o.id is not null  ");
-
+                + " WHERE o.id is not null "
+                + " AND o.por_conciliar=" + conciliando);
         long numero;
         //filtro por nº de ReRe
         if (buscador.getTfOcteto().length() > 0) {
@@ -887,19 +924,19 @@ public class ReciboController implements ActionListener, FocusListener {
             query.append(" AND (")
                     .append(" p.id = ").append(((ComboBoxWrapper<Cliente>) buscador.getCbClieProv().getSelectedItem()).getId())
                     .append(" OR pp.id = ").append(((ComboBoxWrapper<Cliente>) buscador.getCbClieProv().getSelectedItem()).getId())
+                    .append(" OR o.cliente_id = ").append(((ComboBoxWrapper<Cliente>) buscador.getCbClieProv().getSelectedItem()).getId())
                     .append(")");
         }
 
-        query.append(" GROUP BY o.id, o.numero, o.fecha_carga, o.monto, o.retencion, o.usuario, o.caja, o.sucursal, o.fecha_recibo, o.estado"
-                + " ORDER BY o.sucursal, o.numero");
-        LOG.debug(query.toString());
+        query.append(" GROUP BY o.id");
+//        LOG.debug(query.toString());
         cargarBuscador(query.toString());
     }
 
     private void cargarBuscador(String query) {
         DefaultTableModel dtm = (DefaultTableModel) buscador.getjTable1().getModel();
         dtm.setRowCount(0);
-        List<Recibo> l = jpaController.findByNativeQuery(query);
+        List<Recibo> l = jpaController.findByNativeQuery("SELECT r.* FROM Recibo r WHERE r.id IN (" + query + ") ORDER BY r.sucursal, r.numero");
         for (Recibo o : l) {
             dtm.addRow(new Object[]{
                         o.getId(),
@@ -1081,6 +1118,16 @@ public class ReciboController implements ActionListener, FocusListener {
         unlockedNumeracion = true;
         initRecibos(owner, true, false);
         jdReRe.setTfOctetoEditable(true);
+        jdReRe.setVisible(true);
+    }
+
+    public void initReciboAConciliar(Window owner) throws MessageException {
+        initRecibos(owner, true, false);
+        jdReRe.setTitle("Recibo a conciliar");
+        toConciliar = true;
+        conciliando = false;
+        jdReRe.getbImprimir().setEnabled(false);
+        SwingUtil.setComponentsEnabled(jdReRe.getPanelAPagar().getComponents(), false, true, (Class<? extends Component>[]) null);
         jdReRe.setVisible(true);
     }
 }

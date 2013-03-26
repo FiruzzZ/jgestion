@@ -149,6 +149,8 @@ public class PanelEntregaTerceros extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnADD;
+    private javax.swing.JButton btnBuscar;
+    private javax.swing.JButton btnBuscar1;
     private javax.swing.JButton btnDEL;
     private javax.swing.JComboBox cbUsuarioEmisor;
     private javax.swing.JComboBox cbUsuarioReceptor;

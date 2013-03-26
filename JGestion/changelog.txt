@@ -1,3 +1,7 @@
+--20130325
+alter table recibo add column por_conciliar boolean not null default false;
+alter table recibo add column cliente_id integer;
+alter table recibo add constraint fk_recibo_cliente_id foreign key (cliente_id) references cliente (id);
 --20130316
 alter table usuario_acciones add column accion character(1) not null;
 alter table usuario_acciones alter column accion drop default;
