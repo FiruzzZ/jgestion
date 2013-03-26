@@ -63,6 +63,11 @@ public class Recibo implements Serializable {
     private List<ReciboPagos> pagos;
     @Transient
     private transient List<Object> pagosEntities;
+    @Column(name = "por_conciliar", nullable = false)
+    private boolean porConciliar;
+    @JoinColumn(name = "cliente_id")
+    @ManyToOne()
+    private Cliente cliente;
 
     public Recibo() {
     }
@@ -173,6 +178,22 @@ public class Recibo implements Serializable {
 
     public void setPagosEntities(List<Object> pagosEntities) {
         this.pagosEntities = pagosEntities;
+    }
+
+    public boolean isPorConciliar() {
+        return porConciliar;
+    }
+
+    public void setPorConciliar(boolean porConciliar) {
+        this.porConciliar = porConciliar;
+    }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
     }
 
     @Override

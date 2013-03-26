@@ -665,6 +665,7 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
         this.setTitle("Buscador de Notas de Crédito de Clientes");
         labelN_Factura.setText("N° Recibo");
     }
+
     public void setParaNotaCreditoProveedor() {
         this.setTitle("Buscador de Notas de Crédito de Proveedores");
         labelReRe.setText("Nº Nota Crédito");
@@ -694,8 +695,16 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
         cbFormasDePago.setVisible(false);
         labelN_Factura.setVisible(false);
         tfFactu4.setVisible(false);
+        tfFactu8.setVisible(false);
         labelVendedor.setVisible(false);
         cbVendedor.setVisible(false);
+        checkAnulada.setEnabled(false);
+        labelUnidadDeNegocio.setVisible(false);
+        cbUnidadDeNegocio.setVisible(false);
+        labelCuenta.setVisible(false);
+        cbCuenta.setVisible(false);
+        labelSubCuenta.setVisible(false);
+        cbSubCuenta.setVisible(false);
     }
 
     public Map<String, Object> getData() {

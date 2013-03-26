@@ -158,6 +158,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenu20 = new javax.swing.JMenu();
         jMenuItem56 = new javax.swing.JMenuItem();
         jMenuItem87 = new javax.swing.JMenuItem();
+        jMenuItem90 = new javax.swing.JMenuItem();
         jMenu22 = new javax.swing.JMenu();
         jMenuItem57 = new javax.swing.JMenuItem();
         jMenuItem61 = new javax.swing.JMenuItem();
@@ -250,8 +251,11 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
         jMenuBar1.add(jMenu1);
 
+        jMenu2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px_coins.png"))); // NOI18N
         jMenu2.setMnemonic('i');
         jMenu2.setText("Ingresos");
+        jMenu2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jMenu2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 
         jMenuItem2.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F2, 0));
         jMenuItem2.setText("Facturación");
@@ -273,9 +277,19 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenu23.add(jMenuItem14);
 
         jMenuItem80.setText("A Conciliar");
+        jMenuItem80.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem80ActionPerformed(evt);
+            }
+        });
         jMenu23.add(jMenuItem80);
 
         jMenuItem81.setText("Buscar para Conciliar");
+        jMenuItem81.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem81ActionPerformed(evt);
+            }
+        });
         jMenu23.add(jMenuItem81);
 
         jMenu2.add(jMenu23);
@@ -457,8 +471,11 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
         jMenuBar1.add(jMenu3);
 
+        jMenu5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px_products.png"))); // NOI18N
         jMenu5.setMnemonic('p');
         jMenu5.setText("Productos");
+        jMenu5.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jMenu5.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 
         jMenuItem7.setText("ABM Productos");
         jMenuItem7.addActionListener(new java.awt.event.ActionListener() {
@@ -521,8 +538,11 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
         jMenuBar1.add(jMenu5);
 
+        jMenu6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/agt_family.png"))); // NOI18N
         jMenu6.setMnemonic('l');
         jMenu6.setText("Clientes");
+        jMenu6.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jMenu6.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 
         jMenuItem8.setText("ABM Cliente");
         jMenuItem8.addActionListener(new java.awt.event.ActionListener() {
@@ -542,8 +562,11 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
         jMenuBar1.add(jMenu6);
 
+        jMenu7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/agt_family.png"))); // NOI18N
         jMenu7.setMnemonic('v');
         jMenu7.setText("Proveedores");
+        jMenu7.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jMenu7.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 
         jMenuItem9.setText("ABM Proveedor");
         jMenuItem9.addActionListener(new java.awt.event.ActionListener() {
@@ -563,8 +586,11 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
         jMenuBar1.add(jMenu7);
 
+        menuTesoreria.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px_change_values.png"))); // NOI18N
         menuTesoreria.setMnemonic('t');
         menuTesoreria.setText("Tesorería");
+        menuTesoreria.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        menuTesoreria.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 
         jMenuItem25.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/candadito.png"))); // NOI18N
         jMenuItem25.setText("Cierre cajas");
@@ -757,6 +783,10 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         });
         jMenu20.add(jMenuItem87);
 
+        jMenuItem90.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/lupa-simple.png"))); // NOI18N
+        jMenuItem90.setText("Buscar Entregas");
+        jMenu20.add(jMenuItem90);
+
         jMenu17.add(jMenu20);
 
         menuTesoreria.add(jMenu17);
@@ -855,8 +885,11 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
         jMenuBar1.add(menuTesoreria);
 
+        jMenu9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/home.png"))); // NOI18N
         jMenu9.setMnemonic('d');
         jMenu9.setText("Datos Generales");
+        jMenu9.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jMenu9.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 
         jMenuItem22.setText("Datos de la empresa");
         jMenuItem22.addActionListener(new java.awt.event.ActionListener() {
@@ -946,8 +979,11 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
         jMenuBar1.add(jMenu9);
 
+        jMenuReportes.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px_view_detail.png"))); // NOI18N
         jMenuReportes.setMnemonic('r');
         jMenuReportes.setText("Informes");
+        jMenuReportes.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jMenuReportes.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 
         jMenu24.setText("Comprobantes..");
 
@@ -1037,8 +1073,11 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
         jMenuBar1.add(jMenuReportes);
 
+        jMenu4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/edit_user.png"))); // NOI18N
         jMenu4.setMnemonic('u');
         jMenu4.setText("Usuarios");
+        jMenu4.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jMenu4.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 
         jMenuItem16.setText("ABM Usuarios");
         jMenuItem16.addActionListener(new java.awt.event.ActionListener() {
@@ -1069,7 +1108,6 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
         jMenu13.setText("Ayuda");
 
-        jMenuItem33.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/16px_blue_system-help.png"))); // NOI18N
         jMenuItem33.setText("Sobre..");
         jMenuItem33.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1102,7 +1140,10 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
         jMenuBar1.add(jMenu10);
 
+        jMenu16.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/gnome-panel-force-quit.png"))); // NOI18N
         jMenu16.setText("WS-AFIP");
+        jMenu16.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jMenu16.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 
         jMenuItem53.setText("Certificación");
         jMenuItem53.addActionListener(new java.awt.event.ActionListener() {
@@ -1135,7 +1176,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jDesktopPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 430, Short.MAX_VALUE)
+            .addComponent(jDesktopPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 381, Short.MAX_VALUE)
         );
 
         pack();
@@ -1405,7 +1446,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
     }//GEN-LAST:event_jMenuItem36ActionPerformed
 
     private void jMenuItem34ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem34ActionPerformed
-        new ReciboController().showBuscador(this, false, false);
+        new ReciboController().showBuscador(this, false, false, false);
         refreshConnectionDB();
     }//GEN-LAST:event_jMenuItem34ActionPerformed
 
@@ -1448,7 +1489,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
     }//GEN-LAST:event_jMenuItem38ActionPerformed
 
     private void jMenuItem33ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem33ActionPerformed
-        new JDAbout(this, true).setVisible(true);
+        new JDAbout(this).setVisible(true);
     }//GEN-LAST:event_jMenuItem33ActionPerformed
 
     private void jMenuItem40ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem40ActionPerformed
@@ -1740,7 +1781,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     }//GEN-LAST:event_jMenuItem76ActionPerformed
 
     private void jMenuItem77ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem77ActionPerformed
-        new ReciboController().showBuscador(this, false, true);
+        new ReciboController().showBuscador(this, false, true, false);
     }//GEN-LAST:event_jMenuItem77ActionPerformed
 
     private void jMenuItem78ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem78ActionPerformed
@@ -1798,6 +1839,18 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private void jMenuItem89ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem89ActionPerformed
         new Contabilidad().showInformeResultados(this);
     }//GEN-LAST:event_jMenuItem89ActionPerformed
+
+    private void jMenuItem80ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem80ActionPerformed
+        try{
+            new ReciboController().initReciboAConciliar(this);
+        } catch (MessageException ex) {
+            ex.displayMessage(this);
+        }
+    }//GEN-LAST:event_jMenuItem80ActionPerformed
+
+    private void jMenuItem81ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem81ActionPerformed
+       new ReciboController().showBuscador(this, false, false, true);
+    }//GEN-LAST:event_jMenuItem81ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktopPane1;
@@ -1919,6 +1972,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenuItem jMenuItem88;
     private javax.swing.JMenuItem jMenuItem89;
     private javax.swing.JMenuItem jMenuItem9;
+    private javax.swing.JMenuItem jMenuItem90;
     private javax.swing.JMenuItem jMenuItemCatalogoWeb;
     private javax.swing.JMenuItem jMenuItemCuentasBancarias;
     private javax.swing.JMenuItem jMenuItemOfertas;
