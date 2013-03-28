@@ -28,7 +28,7 @@ import org.eclipse.persistence.exceptions.DatabaseException;
  */
 public class Main {
 
-    private static final String propertiesFile = "cfg.ini";
+    private static final String propertiesFile = System.getProperty("user.dir") + System.getProperty("file.separator") + "cfg.ini";
     private static final Logger LOG = Logger.getLogger(Main.class);
     private static boolean OCURRIO_ERROR = false;
     public static final ResourceBundle resourceBundle = ResourceBundle.getBundle("resources");
@@ -130,7 +130,7 @@ public class Main {
         if (sdl.isShutDownSystem()) {
             try {
                 String shutDownMessage = sdl.getMessage();
-                if (new File(System.getProperty("user.dir") + "\\Messenger.jar").exists()) {
+                if (new File(System.getProperty("user.dir") + System.getProperty("file.separator") + "Messenger.jar").exists()) {
                     Process p = Runtime.getRuntime().exec("java -jar Messenger.jar " + shutDownMessage + " Cerrado_por_mantenimiento");
                 }
             } catch (Exception ex) {
