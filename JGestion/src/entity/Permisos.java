@@ -79,6 +79,8 @@ public class Permisos implements Serializable {
     private boolean ventaNumeracionManual;
     @Column(name = "anular_comprobantes", nullable = false)
     private boolean anularComprobantes;
+    @Column(name = "cheques_administrador", nullable = false)
+    private boolean chequesAdministrador;
 
     public Permisos() {
     }
@@ -227,6 +229,14 @@ public class Permisos implements Serializable {
         this.anularComprobantes = anularComprobantes;
     }
 
+    public boolean getChequesAdministrador() {
+        return chequesAdministrador;
+    }
+
+    public void setChequesAdministrador(boolean chequesAdministrador) {
+        this.chequesAdministrador = chequesAdministrador;
+    }
+
     /**
      * Usuario al que pertenece estos Permisos
      *
@@ -262,6 +272,6 @@ public class Permisos implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.Permisos[id=" + id + "]";
+        return "Permisos{" + "id=" + id + ", usuario=" + (usuario != null ? usuario.getId() : null) + ", abmProductos=" + abmProductos + ", abmProveedores=" + abmProveedores + ", abmClientes=" + abmClientes + ", abmCajas=" + abmCajas + ", abmUsuarios=" + abmUsuarios + ", abmListaPrecios=" + abmListaPrecios + ", tesoreria=" + tesoreria + ", datosGeneral=" + datosGeneral + ", venta=" + venta + ", compra=" + compra + ", cerrarCajas=" + cerrarCajas + ", abmCatalogoweb=" + abmCatalogoweb + ", abmOfertasweb=" + abmOfertasweb + ", ordenesES=" + ordenesES + ", abmCuentabancaria=" + abmCuentabancaria + ", ventaNumeracionManual=" + ventaNumeracionManual + ", anularComprobantes=" + anularComprobantes + ", chequesAdministrador=" + chequesAdministrador + '}';
     }
 }

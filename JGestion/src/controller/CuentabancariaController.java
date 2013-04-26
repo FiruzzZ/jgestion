@@ -296,7 +296,7 @@ public class CuentabancariaController {
                         throw new MessageException("Descripción de operación no válida");
                     }
                     CuentabancariaMovimientos cbm = new CuentabancariaMovimientos(fechaOperacion, descripcion, fechaCreditoDebito, chequeToDeposit.getImporte(), BigDecimal.ZERO, false, UsuarioController.getCurrentUser(),
-                            new OperacionesBancariasController().getOperacion(OperacionesBancariasController.DEPOSITO), cb, chequeToDeposit, null);
+                            new OperacionesBancariasController().getOperacion(OperacionesBancariasController.DEPOSITO), cb, chequeToDeposit, null, false);
                     new CuentabancariaMovimientosJpaController().create(cbm);
                     chequeToDeposit.setEstado(ChequeEstado.DEPOSITADO.getId());
                     new ChequeTercerosJpaController().merge(chequeToDeposit);
@@ -371,7 +371,7 @@ public class CuentabancariaController {
                         throw new MessageException("Descripción de operación no válida");
                     }
                     CuentabancariaMovimientos cbm = new CuentabancariaMovimientos(fechaOperacion, descripcion, fechaCreditoDebito, BigDecimal.ZERO, chequeToDeposit.getImporte(), false, UsuarioController.getCurrentUser(),
-                            new OperacionesBancariasController().getOperacion(OperacionesBancariasController.EXTRACCION), chequeToDeposit.getCuentabancaria(), null, chequeToDeposit);
+                            new OperacionesBancariasController().getOperacion(OperacionesBancariasController.EXTRACCION), chequeToDeposit.getCuentabancaria(), null, chequeToDeposit, false);
                     new CuentabancariaMovimientosJpaController().create(cbm);
                     chequeToDeposit.setEstado(ChequeEstado.DEBITADO.getId());
                     new ChequePropioJpaController().merge(chequeToDeposit);

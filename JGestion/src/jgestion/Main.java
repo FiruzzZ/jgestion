@@ -12,6 +12,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -141,7 +142,21 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        Main main = new Main();
+        System.out.println("args" + Arrays.toString(args));
+        if (args.length > 0) {
+            for (String arg : args) {
+                if (arg.equalsIgnoreCase("updateChecked=0")) {
+                    System.exit(0);
+
+                } else if (arg.equalsIgnoreCase("updateChecked=1")) {
+                    Main main = new Main();
+                }
+            }
+            //<editor-fold defaultstate="collapsed" desc="quitar código cuando JUPAR esté terminado">
+        } else {
+            Main main = new Main();
+            //</editor-fold>
+        }
     }
 
     private static void threadSafe() {

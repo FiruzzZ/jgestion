@@ -171,21 +171,26 @@
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="checkClientes" alignment="0" min="-2" max="-2" attributes="0"/>
-                      <Component id="checkProveedores" alignment="0" min="-2" max="-2" attributes="0"/>
-                      <Component id="checkProductos" alignment="0" min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <EmptySpace max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="checkListaPrecios" alignment="0" min="-2" max="-2" attributes="0"/>
-                      <Component id="checkUsuarios" alignment="0" min="-2" max="-2" attributes="0"/>
-                      <Component id="checkCajas" alignment="0" min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <EmptySpace max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="checkDatosGeneral" alignment="0" min="-2" max="-2" attributes="0"/>
-                      <Component id="checkTesoreria" alignment="0" min="-2" max="-2" attributes="0"/>
-                      <Component id="checkCerrarCajas" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Group type="102" attributes="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="checkClientes" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="checkProveedores" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="checkProductos" alignment="0" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="checkListaPrecios" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="checkUsuarios" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="checkCajas" alignment="0" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="checkDatosGeneral" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="checkTesoreria" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="checkCerrarCajas" alignment="0" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <Component id="checkChequesAdmin" alignment="0" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
@@ -237,6 +242,7 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Component id="checkCuentasBancarias" min="-2" max="-2" attributes="0"/>
                       <Component id="checkAnularComprobantes" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Component id="checkChequesAdmin" alignment="0" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace pref="50" max="32767" attributes="0"/>
               </Group>
@@ -335,6 +341,12 @@
         <Component class="javax.swing.JCheckBox" name="checkAnularComprobantes">
           <Properties>
             <Property name="text" type="java.lang.String" value="Anular Comprobantes"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="checkChequesAdmin">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Adm. de Cheques"/>
+            <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;Administrador de Cheques Global.&#xa;&lt;br&gt;Permite al usuario administrar cheques que no est&#xe1;n en su cartera.&lt;/html&gt;"/>
           </Properties>
         </Component>
       </SubComponents>

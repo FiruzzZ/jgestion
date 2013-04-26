@@ -29,6 +29,12 @@ public class JDCuentabancariaManager extends javax.swing.JDialog {
         super(owner, ModalityType.APPLICATION_MODAL);
         initComponents();
         otroInit();
+        UTIL.getDefaultTableModel(jTable1,
+                new String[]{"N°", "Descrip. Mov", "Crédito", "Débito", "Fecha Cré/Déb", "Concepto. Op.", "Fecha Op.", "Usuario", "F. Sistema"},
+                new int[]{20,100, 80, 80, 60, 50, 60, 50, 80},
+                new Class<?>[]{Integer.class, null, BigDecimal.class, BigDecimal.class, Date.class, null, Date.class, null, Date.class});
+        jTable1.getColumnModel().getColumn(2).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        jTable1.getColumnModel().getColumn(3).setCellRenderer(NumberRenderer.getCurrencyRenderer());
     }
 
     private void otroInit() {
@@ -103,24 +109,9 @@ public class JDCuentabancariaManager extends javax.swing.JDialog {
 
             },
             new String [] {
-                "N°", "Descrip. Mov", "Crédito", "Débito", "Fecha Cré/Déb", "Concepto. Op.", "Fecha Op.", "Usuario", "F. Sistema"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
-            };
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false, false
-            };
 
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
             }
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
+        ));
         jTable1.getTableHeader().setReorderingAllowed(false);
         jTable1.addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentResized(java.awt.event.ComponentEvent evt) {
@@ -128,28 +119,6 @@ public class JDCuentabancariaManager extends javax.swing.JDialog {
             }
         });
         jScrollPane1.setViewportView(jTable1);
-        jTable1.getColumnModel().getColumn(0).setResizable(false);
-        jTable1.getColumnModel().getColumn(0).setPreferredWidth(30);
-        jTable1.getColumnModel().getColumn(1).setMinWidth(50);
-        jTable1.getColumnModel().getColumn(1).setPreferredWidth(100);
-        jTable1.getColumnModel().getColumn(2).setResizable(false);
-        jTable1.getColumnModel().getColumn(2).setPreferredWidth(80);
-        jTable1.getColumnModel().getColumn(2).setCellRenderer(NumberRenderer.getCurrencyRenderer());
-        jTable1.getColumnModel().getColumn(3).setResizable(false);
-        jTable1.getColumnModel().getColumn(3).setPreferredWidth(80);
-        jTable1.getColumnModel().getColumn(3).setCellRenderer(NumberRenderer.getCurrencyRenderer());
-        jTable1.getColumnModel().getColumn(4).setMinWidth(60);
-        jTable1.getColumnModel().getColumn(4).setPreferredWidth(60);
-        jTable1.getColumnModel().getColumn(4).setCellEditor(new JDateChooserCellEditor());
-        jTable1.getColumnModel().getColumn(4).setCellRenderer(FormatRenderer.getDateRenderer());
-        jTable1.getColumnModel().getColumn(6).setResizable(false);
-        jTable1.getColumnModel().getColumn(6).setPreferredWidth(60);
-        jTable1.getColumnModel().getColumn(6).setCellRenderer(FormatRenderer.getDateRenderer());
-        jTable1.getColumnModel().getColumn(7).setResizable(false);
-        jTable1.getColumnModel().getColumn(7).setPreferredWidth(50);
-        jTable1.getColumnModel().getColumn(8).setResizable(false);
-        jTable1.getColumnModel().getColumn(8).setPreferredWidth(60);
-        jTable1.getColumnModel().getColumn(8).setCellRenderer(FormatRenderer.getDateTimeRenderer());
 
         btnBuscar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/lupa.png"))); // NOI18N
         btnBuscar.setText("Buscar");
@@ -257,7 +226,7 @@ public class JDCuentabancariaManager extends javax.swing.JDialog {
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(jLabel2)
                                 .addComponent(cbOperacionesBancariasFiltro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addComponent(btnBuscar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(btnBuscar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 237, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -294,7 +263,6 @@ public class JDCuentabancariaManager extends javax.swing.JDialog {
     private void jTable1ComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_jTable1ComponentResized
         sumarCreditoDebito();
     }//GEN-LAST:event_jTable1ComponentResized
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup bgFechas;
     private javax.swing.JButton btnAgregar;

@@ -469,6 +469,7 @@ public class UsuarioController implements ActionListener, MouseListener, KeyList
         panel.getCheckCuentasBancarias().setSelected(p.getAbmCuentabancaria());
         panel.getCheckVentaNumeracionManual().setSelected(p.getVentaNumeracionManual());
         panel.getCheckAnularComprobantes().setSelected(p.getAnularComprobantes());
+        panel.getCheckChequesAdmin().setSelected(p.getChequesAdministrador());
         setCajasPermitidas(u.getPermisosCajaList());
         setSucursalesPermitidas(u.getSucursales());
     }
@@ -549,6 +550,7 @@ public class UsuarioController implements ActionListener, MouseListener, KeyList
         permisos.setAbmCuentabancaria(panel.getCheckCuentasBancarias().isSelected());
         permisos.setVentaNumeracionManual(panel.getCheckVentaNumeracionManual().isSelected());
         permisos.setAnularComprobantes(panel.getCheckAnularComprobantes().isSelected());
+        permisos.setChequesAdministrador(panel.getCheckChequesAdmin().isSelected());
         return permisos;
     }
 
@@ -694,6 +696,8 @@ public class UsuarioController implements ActionListener, MouseListener, KeyList
             permitido = CURRENT_USER.getPermisos().getVentaNumeracionManual();
         } else if (PermisoDe.ANULAR_COMPROBANTES.equals(permisoToCheck)) {
             permitido = CURRENT_USER.getPermisos().getAnularComprobantes();
+        } else if (PermisoDe.CHEQUES_ADMINISTRADOR.equals(permisoToCheck)) {
+            permitido = CURRENT_USER.getPermisos().getChequesAdministrador();
         }
         if (!permitido) {
             throw new MessageException("Acceso denegado: No tiene permiso para "

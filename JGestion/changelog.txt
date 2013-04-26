@@ -1,3 +1,7 @@
+--20130425
+alter table permisos add column cheques_administrador boolean not null default false;
+--20130415
+alter table cuentabancaria_movimientos add column conciliado boolean not null default false;
 --20130325
 alter table recibo add column por_conciliar boolean not null default false;
 alter table recibo add column cliente_id integer;

@@ -173,6 +173,9 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenuItem50 = new javax.swing.JMenuItem();
         jMenuItem74 = new javax.swing.JMenuItem();
         jMenuItem75 = new javax.swing.JMenuItem();
+        jMenu29 = new javax.swing.JMenu();
+        jMenuItem91 = new javax.swing.JMenuItem();
+        jMenuItem92 = new javax.swing.JMenuItem();
         jMenu9 = new javax.swing.JMenu();
         jMenuItem22 = new javax.swing.JMenuItem();
         jMenuItem19 = new javax.swing.JMenuItem();
@@ -882,6 +885,21 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenu25.add(jMenuItem75);
 
         menuTesoreria.add(jMenu25);
+
+        jMenu29.setText("Conciliacion Bancaria");
+
+        jMenuItem91.setText("Conciliar");
+        jMenuItem91.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem91ActionPerformed(evt);
+            }
+        });
+        jMenu29.add(jMenuItem91);
+
+        jMenuItem92.setText("Buscar");
+        jMenu29.add(jMenuItem92);
+
+        menuTesoreria.add(jMenu29);
 
         jMenuBar1.add(menuTesoreria);
 
@@ -1852,6 +1870,10 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
        new ReciboController().showBuscador(this, false, false, true);
     }//GEN-LAST:event_jMenuItem81ActionPerformed
 
+    private void jMenuItem91ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem91ActionPerformed
+        new CuentabancariaMovimientosController().getConciliacion(this);
+    }//GEN-LAST:event_jMenuItem91ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JMenu jMenu1;
@@ -1875,6 +1897,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenu jMenu26;
     private javax.swing.JMenu jMenu27;
     private javax.swing.JMenu jMenu28;
+    private javax.swing.JMenu jMenu29;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenu jMenu4;
     private javax.swing.JMenu jMenu5;
@@ -1973,6 +1996,8 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenuItem jMenuItem89;
     private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JMenuItem jMenuItem90;
+    private javax.swing.JMenuItem jMenuItem91;
+    private javax.swing.JMenuItem jMenuItem92;
     private javax.swing.JMenuItem jMenuItemCatalogoWeb;
     private javax.swing.JMenuItem jMenuItemCuentasBancarias;
     private javax.swing.JMenuItem jMenuItemOfertas;
