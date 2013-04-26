@@ -62,6 +62,7 @@ public class PanelABMUsuarios extends javax.swing.JPanel {
         checkVentaNumeracionManual = new javax.swing.JCheckBox();
         checkCuentasBancarias = new javax.swing.JCheckBox();
         checkAnularComprobantes = new javax.swing.JCheckBox();
+        checkChequesAdmin = new javax.swing.JCheckBox();
         jScrollPane1 = new javax.swing.JScrollPane();
         tableCajas = new javax.swing.JTable();
         jLabel8 = new javax.swing.JLabel();
@@ -137,6 +138,9 @@ public class PanelABMUsuarios extends javax.swing.JPanel {
 
         checkAnularComprobantes.setText("Anular Comprobantes");
 
+        checkChequesAdmin.setText("Adm. de Cheques");
+        checkChequesAdmin.setToolTipText("<html>Administrador de Cheques Global.\n<br>Permite al usuario administrar cheques que no están en su cartera.</html>");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -144,19 +148,22 @@ public class PanelABMUsuarios extends javax.swing.JPanel {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(checkClientes)
-                    .addComponent(checkProveedores)
-                    .addComponent(checkProductos))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(checkListaPrecios)
-                    .addComponent(checkUsuarios)
-                    .addComponent(checkCajas))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(checkDatosGeneral)
-                    .addComponent(checkTesoreria)
-                    .addComponent(checkCerrarCajas))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(checkClientes)
+                            .addComponent(checkProveedores)
+                            .addComponent(checkProductos))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(checkListaPrecios)
+                            .addComponent(checkUsuarios)
+                            .addComponent(checkCajas))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(checkDatosGeneral)
+                            .addComponent(checkTesoreria)
+                            .addComponent(checkCerrarCajas)))
+                    .addComponent(checkChequesAdmin))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(checkCompra)
@@ -198,7 +205,8 @@ public class PanelABMUsuarios extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(checkCuentasBancarias)
-                    .addComponent(checkAnularComprobantes))
+                    .addComponent(checkAnularComprobantes)
+                    .addComponent(checkChequesAdmin))
                 .addContainerGap(50, Short.MAX_VALUE))
         );
 
@@ -348,6 +356,7 @@ public class PanelABMUsuarios extends javax.swing.JPanel {
     private javax.swing.JCheckBox checkAnularComprobantes;
     private javax.swing.JCheckBox checkCajas;
     private javax.swing.JCheckBox checkCerrarCajas;
+    private javax.swing.JCheckBox checkChequesAdmin;
     private javax.swing.JCheckBox checkClientes;
     private javax.swing.JCheckBox checkCompra;
     private javax.swing.JCheckBox checkCuentasBancarias;
@@ -484,6 +493,10 @@ public class PanelABMUsuarios extends javax.swing.JPanel {
 
     public JCheckBox getCheckCuentasBancarias() {
         return checkCuentasBancarias;
+    }
+
+    public JCheckBox getCheckChequesAdmin() {
+        return checkChequesAdmin;
     }
 
     public void setEnableTfNick(boolean habilitar) {

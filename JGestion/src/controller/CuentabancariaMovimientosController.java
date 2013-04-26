@@ -6,7 +6,9 @@ import entity.Banco;
 import entity.CuentabancariaMovimientos;
 import entity.OperacionesBancarias;
 import gui.JDABM;
+import gui.JDConciliacionBancaria;
 import gui.JDCuentabancariaManager;
+import gui.JFP;
 import gui.PanelOperacionBancariaDeposito;
 import gui.PanelOperacionBancariaTransferencia;
 import java.awt.Window;
@@ -15,6 +17,7 @@ import java.awt.event.ActionListener;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -46,7 +49,8 @@ public class CuentabancariaMovimientosController {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String jpql = armarQuery();
-                cargarManagerTable(jpql);
+                List<CuentabancariaMovimientos> l = jpaController.findByQuery(jpql);
+                cargarManagerTable(l);
             }
         });
         manager.getBtnAgregar().addActionListener(new ActionListener() {
@@ -96,7 +100,7 @@ public class CuentabancariaMovimientosController {
                     Date fechaOP = panelDeposito.getDcFechaOperacion().getDate();
                     Date fechaCre = panelDeposito.getDcFechaCreditoDebito().getDate();
                     OperacionesBancarias op = ((ComboBoxWrapper<OperacionesBancarias>) manager.getCbOperacionesBancarias().getSelectedItem()).getEntity();
-                    CuentabancariaMovimientos cbm = new CuentabancariaMovimientos(fechaOP, descrip, fechaCre, monto, BigDecimal.ZERO, false, UsuarioController.getCurrentUser(), op, cb, null, null);
+                    CuentabancariaMovimientos cbm = new CuentabancariaMovimientos(fechaOP, descrip, fechaCre, monto, BigDecimal.ZERO, false, UsuarioController.getCurrentUser(), op, cb, null, null, false);
                     new CuentabancariaMovimientosJpaController().create(cbm);
                     abm.showMessage("operación n° " + cbm.getId() + " realizada", null, 1);
                     abm.dispose();
@@ -146,7 +150,7 @@ public class CuentabancariaMovimientosController {
                     Date fechaOP = panelDeposito.getDcFechaOperacion().getDate();
                     Date fechaCre = panelDeposito.getDcFechaCreditoDebito().getDate();
                     OperacionesBancarias op = ((ComboBoxWrapper<OperacionesBancarias>) manager.getCbOperacionesBancarias().getSelectedItem()).getEntity();
-                    CuentabancariaMovimientos cbm = new CuentabancariaMovimientos(fechaOP, descrip, fechaCre, BigDecimal.ZERO, monto, false, UsuarioController.getCurrentUser(), op, cb, null, null);
+                    CuentabancariaMovimientos cbm = new CuentabancariaMovimientos(fechaOP, descrip, fechaCre, BigDecimal.ZERO, monto, false, UsuarioController.getCurrentUser(), op, cb, null, null, false);
                     new CuentabancariaMovimientosJpaController().create(cbm);
                     abm.showMessage("operación n° " + cbm.getId() + " realizada", null, 1);
                     abm.dispose();
@@ -199,7 +203,7 @@ public class CuentabancariaMovimientosController {
                     }
                     Date fechaOP = panelTransf.getDcFechaOperacion().getDate();
                     OperacionesBancarias op = ((ComboBoxWrapper<OperacionesBancarias>) manager.getCbOperacionesBancarias().getSelectedItem()).getEntity();
-                    CuentabancariaMovimientos cbmOrigen = new CuentabancariaMovimientos(fechaOP, descripOrigen, null, BigDecimal.ZERO, monto, false, UsuarioController.getCurrentUser(), op, origen, null, null);
+                    CuentabancariaMovimientos cbmOrigen = new CuentabancariaMovimientos(fechaOP, descripOrigen, null, BigDecimal.ZERO, monto, false, UsuarioController.getCurrentUser(), op, origen, null, null, false);
                     if (panelTransf.getRbPropia().isSelected()) {
                         try {
                             destino = ((ComboBoxWrapper<CuentaBancaria>) panelTransf.getCbCuentabancariaDestino().getSelectedItem()).getEntity();
@@ -212,7 +216,7 @@ public class CuentabancariaMovimientosController {
                         descripOrigen = destino.getBanco().getNombre() + " N° " + destino.getNumero() + " (" + descripOrigen + ")";
                         cbmOrigen.setDescripcion(descripOrigen);
                         descripDestino = origen.getBanco().getNombre() + " N° " + origen.getNumero();
-                        cbmDestino = new CuentabancariaMovimientos(fechaOP, descripDestino, null, monto, BigDecimal.ZERO, false, UsuarioController.getCurrentUser(), op, destino, null, null);
+                        cbmDestino = new CuentabancariaMovimientos(fechaOP, descripDestino, null, monto, BigDecimal.ZERO, false, UsuarioController.getCurrentUser(), op, destino, null, null, false);
                     }
                     new CuentabancariaMovimientosJpaController().create(cbmOrigen);
                     String x = "Operación de Transferencia n° " + cbmOrigen.getId() + " realizada";
@@ -284,7 +288,7 @@ public class CuentabancariaMovimientosController {
                     }
                     Date fechaOP = panelTransf.getDcFechaOperacion().getDate();
                     OperacionesBancarias op = new OperacionesBancariasController().getOperacion(OperacionesBancariasController.TRANSFERENCIA);
-                    CuentabancariaMovimientos cbmEXTRACCION = new CuentabancariaMovimientos(fechaOP, descrip, null, BigDecimal.ZERO, importe, false, UsuarioController.getCurrentUser(), op, origen, null, null);
+                    CuentabancariaMovimientos cbmEXTRACCION = new CuentabancariaMovimientos(fechaOP, descrip, null, BigDecimal.ZERO, importe, false, UsuarioController.getCurrentUser(), op, origen, null, null, false);
                     EL_OBJECT = cbmEXTRACCION;
                     abm.dispose();
                 } catch (MessageException ex) {
@@ -351,7 +355,7 @@ public class CuentabancariaMovimientosController {
 //                    }
                     Date fechaOP = panelTransf.getDcFechaOperacion().getDate();
                     OperacionesBancarias op = new OperacionesBancariasController().getOperacion(OperacionesBancariasController.TRANSFERENCIA);
-                    CuentabancariaMovimientos cbm = new CuentabancariaMovimientos(fechaOP, descrip, null, importe, BigDecimal.ZERO, false, UsuarioController.getCurrentUser(), op, destino, null, null);
+                    CuentabancariaMovimientos cbm = new CuentabancariaMovimientos(fechaOP, descrip, null, importe, BigDecimal.ZERO, false, UsuarioController.getCurrentUser(), op, destino, null, null, false);
                     EL_OBJECT = cbm;
                     abm.dispose();
                 } catch (MessageException ex) {
@@ -407,17 +411,17 @@ public class CuentabancariaMovimientosController {
         if (manager.getDcDesde() != null || manager.getDcHasta() != null) {
             if (manager.getRbOperacion()) {
                 if (manager.getDcDesde() != null) {
-                    query.append(" AND o.fechaOperacion >='").append(UTIL.DATE_FORMAT.format(manager.getDcDesde())).append("'");
+                    query.append(" AND o.fechaOperacion >='").append(UTIL.yyyy_MM_dd.format(manager.getDcDesde())).append("'");
                 }
                 if (manager.getDcHasta() != null) {
-                    query.append(" AND o.fechaOperacion <='").append(UTIL.DATE_FORMAT.format(manager.getDcHasta())).append("'");
+                    query.append(" AND o.fechaOperacion <='").append(UTIL.yyyy_MM_dd.format(manager.getDcHasta())).append("'");
                 }
             } else {
                 if (manager.getDcDesde() != null) {
-                    query.append(" AND o.fechaCreditoDebito >='").append(UTIL.DATE_FORMAT.format(manager.getDcDesde())).append("'");
+                    query.append(" AND o.fechaCreditoDebito >='").append(UTIL.yyyy_MM_dd.format(manager.getDcDesde())).append("'");
                 }
                 if (manager.getDcHasta() != null) {
-                    query.append(" AND o.fechaCreditoDebito <='").append(UTIL.DATE_FORMAT.format(manager.getDcHasta())).append("'");
+                    query.append(" AND o.fechaCreditoDebito <='").append(UTIL.yyyy_MM_dd.format(manager.getDcHasta())).append("'");
                 }
             }
         }
@@ -425,10 +429,9 @@ public class CuentabancariaMovimientosController {
         return query.toString();
     }
 
-    private void cargarManagerTable(String jpql) {
+    private void cargarManagerTable(List<CuentabancariaMovimientos> l) {
         DefaultTableModel dtm = (DefaultTableModel) manager.getjTable1().getModel();
         dtm.setRowCount(0);
-        List<CuentabancariaMovimientos> l = jpaController.findByQuery(jpql);
         for (CuentabancariaMovimientos o : l) {
             dtm.addRow(new Object[]{
                         o.getId(),
@@ -442,5 +445,37 @@ public class CuentabancariaMovimientosController {
                         o.getFechaSistema()
                     });
         }
+    }
+
+    public JDialog getConciliacion(Window owner) {
+        final JDConciliacionBancaria jd = new JDConciliacionBancaria(owner, true);
+        UTIL.getDefaultTableModel(jd.getjTable1(),
+                new String[]{"Object", "Fecha", "Concepto", "Débito", "Crédito", "Salgo", "Consolidado"},
+                new int[]{1, 60, 300, 100, 100, 100, 30},
+                new Class<?>[]{null, Date.class, null, BigDecimal.class, BigDecimal.class, BigDecimal.class, Boolean.class}, new int[]{6});
+        UTIL.hideColumnTable(jd.getjTable1(), 0);
+        jd.getBtnImportar().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    StringBuilder query = new StringBuilder("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o "
+                            + "WHERE ");
+                    query.append(" o.cuentaBancaria.id=").append(((ComboBoxWrapper<?>) jd.getCbCuentabancaria().getSelectedItem()).getId());
+                    if (jd.getDcDesde() != null || jd.getDcHasta() != null) {
+                        query.append(" AND o.fechaCreditoDebito BETWEEN '").append(UTIL.yyyy_MM_dd.format(jd.getDcDesde())).append("'");
+                        query.append("  AND '").append(UTIL.yyyy_MM_dd.format(jd.getDcHasta())).append("'");
+                    } else {
+                        throw new MessageException("");
+                    }
+                    LOG.debug(query.toString());
+                    List<CuentabancariaMovimientos> l = jpaController.findByQuery(query.toString());
+                } catch (MessageException ex) {
+                    ex.displayMessage(jd);
+                } catch (Exception ex) {
+                    LOG.error("query conciliacion", ex);
+                }
+            }
+        });
+        return jd;
     }
 }

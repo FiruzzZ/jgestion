@@ -1,5 +1,13 @@
 package controller;
 
+import ar.com.fdvs.dj.core.DynamicJasperHelper;
+import ar.com.fdvs.dj.core.layout.ClassicLayoutManager;
+import ar.com.fdvs.dj.domain.DynamicReport;
+import ar.com.fdvs.dj.domain.Style;
+import ar.com.fdvs.dj.domain.builders.ColumnBuilder;
+import ar.com.fdvs.dj.domain.builders.DynamicReportBuilder;
+import ar.com.fdvs.dj.domain.constants.Font;
+import ar.com.fdvs.dj.domain.constants.HorizontalAlign;
 import controller.exceptions.DatabaseErrorException;
 import controller.exceptions.MessageException;
 import controller.exceptions.MissingReportException;
@@ -10,6 +18,8 @@ import entity.ChequeTercerosEntrega;
 import entity.ChequeTercerosEntregaDetalle;
 import entity.Cliente;
 import entity.DetalleCajaMovimientos;
+import entity.ListaPrecios;
+import entity.Producto;
 import entity.Usuario;
 import entity.enums.ChequeEstado;
 import gui.JDABM;
@@ -17,6 +27,7 @@ import gui.JDChequesManager;
 import gui.PanelABMCheques;
 import gui.PanelEntregaTerceros;
 import gui.PanelMovimientosVarios;
+import gui.PanelProductoReporteOptions;
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.Window;
@@ -40,7 +51,10 @@ import javax.swing.table.DefaultTableModel;
 import jgestion.JGestionUtils;
 import jpa.controller.ChequeTercerosJpaController;
 import jpa.controller.UsuarioJpaController;
+import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.apache.log4j.Logger;
 import utilities.general.UTIL;
 import utilities.swing.RowColorRender;
@@ -409,8 +423,9 @@ public class ChequeTercerosController implements ActionListener {
                 // los valores de las columnas 4 (F. Cobro) y 7 (Estado) son usados en otros lados!!! ojo piojo!
                 new String[]{"id", "Nº Cheque", "F. Cheque", "Emisor", "F. Cobro", "Banco", "Importe", "Estado", "Cruzado", "Endosatario", "F. Endoso", "C. Ingreso", "C. Egreso", "Observacion", "Tenedor/a"},
                 new int[]{1, 80, 80, 100, 80, 100, 100, 100, 50, 100, 100, 150, 150, 100, 80},
-                new Class<?>[]{Integer.class, Number.class, null, null, null, null, Number.class, null, Boolean.class, null});
+                new Class<?>[]{Integer.class, Number.class, null, null, null, null, BigDecimal.class, null, Boolean.class, null});
         jdChequeManager.getjTable1().setAutoCreateRowSorter(true);
+        jdChequeManager.getjTable1().getColumnModel().getColumn(1).setCellRenderer(NumberRenderer.getNumberRenderer());
         jdChequeManager.getjTable1().getColumnModel().getColumn(2).setCellRenderer(FormatRenderer.getDateRenderer());
         jdChequeManager.getjTable1().getColumnModel().getColumn(4).setCellRenderer(FormatRenderer.getDateRenderer());
         jdChequeManager.getjTable1().getColumnModel().getColumn(6).setCellRenderer(NumberRenderer.getCurrencyRenderer());
@@ -438,6 +453,9 @@ public class ChequeTercerosController implements ActionListener {
         DefaultTableModel dtm = UTIL.getDtm(jdChequeManager.getjTable1());
         dtm.setRowCount(0);
         List<?> l = DAO.getNativeQueryResultList(query);
+        if (l.isEmpty()) {
+            JOptionPane.showMessageDialog(jdChequeManager, "La busqueda no produjo ningún resultado.\nUtilice otras opciones de filtro, también puede que no disponga de ningún en su cartera.");
+        }
         for (Object object : l) {
             //"id", "Nº Cheque", "F. Cheque", "Emisor", "F. Cobro", "Banco", "Importe", "Estado", "Cruzado", "Endosatario", "F. Endoso", "C. Ingreso", "C. Egreso", "Observacion", "Usuario"};
             dtm.addRow((Object[]) object);
@@ -477,6 +495,12 @@ public class ChequeTercerosController implements ActionListener {
         if (jdChequeManager.getDcCobroHasta() != null) {
             query.append(" AND c.fecha_cobro <='").append(UTIL.DATE_FORMAT.format(jdChequeManager.getDcCobroHasta())).append("'");
         }
+        try {
+            UsuarioController.checkPermiso(PermisosController.PermisoDe.CHEQUES_ADMINISTRADOR);
+        } catch (MessageException ex) {
+            query.append(" AND usuario.id=").append(UsuarioController.getCurrentUser().getId());
+        }
+
         if (jdChequeManager.getTfImporte().getText().trim().length() > 0) {
             try {
                 Double importe = Double.valueOf(jdChequeManager.getTfImporte().getText());
@@ -503,6 +527,70 @@ public class ChequeTercerosController implements ActionListener {
     }
 
     private void doChequeTercerosReport(String query) {
+        
+//        final JDABM jd = new JDABM(null, "Reporte de Productos", true, p);
+//        jd.getbAceptar().addActionListener(new ActionListener() {
+//            @Override
+//            @SuppressWarnings("unchecked")
+//            public void actionPerformed(ActionEvent e) {
+//                try {
+//                    Reportes r = new Reportes(null, true);
+//                    r.showWaitingDialog();
+//                    List<Producto> list = jpaController.findByBienDeCambio(true);
+//                    DynamicReportBuilder drb = new DynamicReportBuilder();
+//                    Style currencyStyle = new Style();
+//                    currencyStyle.setFont(Font.ARIAL_MEDIUM);
+//                    currencyStyle.setHorizontalAlign(HorizontalAlign.RIGHT);
+//                    Style textStyle = new Style();
+//                    textStyle.setFont(Font.ARIAL_MEDIUM);
+//                    drb
+//                            .addColumn(ColumnBuilder.getNew().setColumnProperty("codigo", String.class).setTitle("Código").setWidth(60).setStyle(textStyle).setFixedWidth(true).build())
+//                            .addColumn(ColumnBuilder.getNew().setColumnProperty("nombre", String.class).setTitle("Producto").setWidth(200).setStyle(textStyle).build())
+//                            .addColumn(ColumnBuilder.getNew().setColumnProperty("marca.nombre", String.class).setTitle("Marca").setWidth(80).setStyle(textStyle).build());
+//                    if (p.getCheckStock().isSelected()) {
+//                        drb.addColumn(ColumnBuilder.getNew().setColumnProperty("stockactual", Integer.class.getName()).setTitle("Stock").setWidth(40).setStyle(currencyStyle).setFixedWidth(true).build());
+//                    }
+//                    if (p.getCheckCostoCompra().isSelected()) {
+//                        drb.addColumn(ColumnBuilder.getNew().setColumnProperty("costoCompra", BigDecimal.class.getName()).setTitle("Costo U.").setWidth(60)
+//                                .setStyle(currencyStyle)
+//                                .setPattern("¤ #,##0.0000")
+//                                .setFixedWidth(true).build());
+//                    }
+//                    ListaPrecios lp = null;
+//                    if (p.getCheckPrecioVenta().isSelected()) {
+//                        drb.addColumn(ColumnBuilder.getNew()
+//                                .setColumnProperty("precioVenta", BigDecimal.class.getName()).setTitle("Precio U.").setWidth(60)
+//                                .setStyle(currencyStyle)
+//                                .setPattern("¤ #,##0.0000")
+//                                .setFixedWidth(true).build());
+//                        lp = ((ComboBoxWrapper<ListaPrecios>) p.getCbListaPrecio().getSelectedItem()).getEntity();
+//                        Double margen = (lp.getMargen() / 100) + 1;
+//                        for (Producto producto : list) {
+//                            BigDecimal precioVenta = producto.getPrecioVenta();
+//                            producto.setPrecioVenta(precioVenta.multiply(BigDecimal.valueOf(margen)));
+//                        }
+//                    }
+//
+//                    drb.setTitle("Listado de Productos")
+//                            .setSubtitle(lp == null ? "" : "Según Lista Precios: " + lp.getNombre() + ", " + UTIL.TIMESTAMP_FORMAT.format(new Date()))
+//                            .setPrintBackgroundOnOddRows(true)
+//                            .setUseFullPageWidth(true);
+////                    SubReportBuilder srb = new SubReportBuilder();
+////                    srb.setPathToReport(Reportes.FOLDER_REPORTES + "JGestion_membrete.jasper");
+////                    srb.setDataSource("");
+////                    Subreport sr = srb.build();
+////                    drb.addSubreportInGroupHeader(0, sr);
+//                    DynamicReport dr = drb.build();
+//                    JRDataSource ds = new JRBeanCollectionDataSource(list);
+//                    JasperPrint jp = DynamicJasperHelper.generateJasperPrint(dr, new ClassicLayoutManager(), ds);
+//                    r.setjPrint(jp);
+//                    r.viewReport();
+//                } catch (Exception ex) {
+//                    JOptionPane.showMessageDialog(null, "algo salió mal");
+//                    LOG.error("Creando reporte producto", ex);
+//                }
+//            }
+//        });
     }
 
     ChequeTerceros getChequeTerceroInstance() {

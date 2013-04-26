@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -73,85 +74,92 @@ public class RemesaJpaController extends AbstractDAO<Remesa, Integer> {
             }
         }
         entityManager.getTransaction().commit();
-
-        entityManager.getTransaction().begin();
-        List<Object> pagosPost = new ArrayList<Object>(remesa.getPagosEntities().size());
-        for (Object object : remesa.getPagosEntities()) {
-            if (object instanceof ChequePropio) {
-                ChequePropio pago = (ChequePropio) object;
-                pago.setComprobanteEgreso(getEntityClass().getSimpleName() + " " + JGestionUtils.getNumeracion(remesa, true));
-                entityManager.persist(pago);
-                CuentabancariaMovimientos cbm = new CuentabancariaMovimientos(pago.getFechaCheque(), pago.getComprobanteEgreso(), null, BigDecimal.ZERO, pago.getImporte(), false, UsuarioController.getCurrentUser(), new OperacionesBancariasController().getOperacion(OperacionesBancariasController.EXTRACCION), pago.getCuentabancaria(), null, pago);
-                entityManager.persist(cbm);
-                pagosPost.add(pago);
-            } else if (object instanceof ChequeTerceros) {
-                ChequeTerceros pago = (ChequeTerceros) object;
-                pago.setEstado(ChequeEstado.ENDOSADO.getId());
-                pago.setFechaEndoso(remesa.getFechaRemesa());
-                pago.setEndosatario(remesa.getDetalle().get(0).getFacturaCompra().getProveedor().getNombre());
-                pago.setComprobanteEgreso(getEntityClass().getSimpleName() + " " + JGestionUtils.getNumeracion(remesa, true));
-                entityManager.merge(pago);
-                pagosPost.add(pago);
-            } else if (object instanceof NotaCreditoProveedor) {
-                NotaCreditoProveedor pago = (NotaCreditoProveedor) object;
-                pago.setDesacreditado(pago.getImporte());
-                pago.setRemesa(remesa);
-                entityManager.merge(object);
-                pagosPost.add(pago);
-            } else if (object instanceof ComprobanteRetencion) {
-                ComprobanteRetencion pago = (ComprobanteRetencion) object;
-                entityManager.persist(pago);
-                pagosPost.add(pago);
-            } else if (object instanceof DetalleCajaMovimientos) {
-                DetalleCajaMovimientos pago = (DetalleCajaMovimientos) object;
-                CajaMovimientos cm = new CajaMovimientosJpaController().findCajaMovimientoAbierta(remesa.getCaja());
-                pago.setCajaMovimientos(cm);
-                pago.setDescripcion(getEntityClass().getSimpleName() + " " + JGestionUtils.getNumeracion(remesa, true));
-                pago.setNumero(Long.valueOf(remesa.getId()));
-                entityManager.persist(pago);
-                pagosPost.add(pago);
-            } else if (object instanceof CuentabancariaMovimientos) {
-                CuentabancariaMovimientos pago = (CuentabancariaMovimientos) object;
-                entityManager.persist(pago);
-                pagosPost.add(pago);
-            } else {
-                throw new IllegalArgumentException("Forma Pago Remesa no válida:" + object);
+        boolean todoBien = false;
+        try {
+            entityManager.getTransaction().begin();
+            List<Object> pagosPost = new ArrayList<Object>(remesa.getPagosEntities().size());
+            for (Object object : remesa.getPagosEntities()) {
+                if (object instanceof ChequePropio) {
+                    ChequePropio pago = (ChequePropio) object;
+                    pago.setComprobanteEgreso(getEntityClass().getSimpleName() + " " + JGestionUtils.getNumeracion(remesa, true));
+                    entityManager.persist(pago);
+                    CuentabancariaMovimientos cbm = new CuentabancariaMovimientos(pago.getFechaCheque(), pago.getComprobanteEgreso(), null, BigDecimal.ZERO, pago.getImporte(), false, UsuarioController.getCurrentUser(), new OperacionesBancariasController().getOperacion(OperacionesBancariasController.EXTRACCION), pago.getCuentabancaria(), null, pago, false);
+                    entityManager.persist(cbm);
+                    pagosPost.add(pago);
+                } else if (object instanceof ChequeTerceros) {
+                    ChequeTerceros pago = (ChequeTerceros) object;
+                    pago.setEstado(ChequeEstado.ENDOSADO.getId());
+                    pago.setFechaEndoso(remesa.getFechaRemesa());
+                    pago.setEndosatario(remesa.getDetalle().get(0).getFacturaCompra().getProveedor().getNombre());
+                    pago.setComprobanteEgreso(getEntityClass().getSimpleName() + " " + JGestionUtils.getNumeracion(remesa, true));
+                    entityManager.merge(pago);
+                    pagosPost.add(pago);
+                } else if (object instanceof NotaCreditoProveedor) {
+                    NotaCreditoProveedor pago = (NotaCreditoProveedor) object;
+                    pago.setDesacreditado(pago.getImporte());
+                    pago.setRemesa(remesa);
+                    entityManager.merge(object);
+                    pagosPost.add(pago);
+                } else if (object instanceof ComprobanteRetencion) {
+                    ComprobanteRetencion pago = (ComprobanteRetencion) object;
+                    entityManager.persist(pago);
+                    pagosPost.add(pago);
+                } else if (object instanceof DetalleCajaMovimientos) {
+                    DetalleCajaMovimientos pago = (DetalleCajaMovimientos) object;
+                    CajaMovimientos cm = new CajaMovimientosJpaController().findCajaMovimientoAbierta(remesa.getCaja());
+                    pago.setCajaMovimientos(cm);
+                    pago.setDescripcion(getEntityClass().getSimpleName() + " " + JGestionUtils.getNumeracion(remesa, true));
+                    pago.setNumero(Long.valueOf(remesa.getId()));
+                    entityManager.persist(pago);
+                    pagosPost.add(pago);
+                } else if (object instanceof CuentabancariaMovimientos) {
+                    CuentabancariaMovimientos pago = (CuentabancariaMovimientos) object;
+                    entityManager.persist(pago);
+                    pagosPost.add(pago);
+                } else {
+                    throw new IllegalArgumentException("Forma Pago Remesa no válida:" + object);
+                }
             }
-        }
-        entityManager.getTransaction().commit();
-        entityManager.getTransaction().begin();
+            entityManager.getTransaction().commit();
+            entityManager.getTransaction().begin();
 //        remesa = entityManager.find(remesa.getClass(), remesa.getId());
-        for (Object object : pagosPost) {
-            Integer tipo = null, id = null;
-            if (object instanceof DetalleCajaMovimientos) {
-                DetalleCajaMovimientos pago = (DetalleCajaMovimientos) object;
-                tipo = 0;
-                id = pago.getId();
-            } else if (object instanceof ChequePropio) {
-                ChequePropio pago = (ChequePropio) object;
-                tipo = 1;
-                id = pago.getId();
-            } else if (object instanceof ChequeTerceros) {
-                ChequeTerceros pago = (ChequeTerceros) object;
-                tipo = 2;
-                id = pago.getId();
-            } else if (object instanceof NotaCreditoProveedor) {
-                NotaCreditoProveedor pago = (NotaCreditoProveedor) object;
-                tipo = 3;
-                id = pago.getId();
-            } else if (object instanceof ComprobanteRetencion) {
-                ComprobanteRetencion pago = (ComprobanteRetencion) object;
-                tipo = 4;
-                id = pago.getId();
-            } else if (object instanceof CuentabancariaMovimientos) {
-                CuentabancariaMovimientos pago = (CuentabancariaMovimientos) object;
-                tipo = 5;
-                id = pago.getId();
+            for (Object object : pagosPost) {
+                Integer tipo = null, id = null;
+                if (object instanceof DetalleCajaMovimientos) {
+                    DetalleCajaMovimientos pago = (DetalleCajaMovimientos) object;
+                    tipo = 0;
+                    id = pago.getId();
+                } else if (object instanceof ChequePropio) {
+                    ChequePropio pago = (ChequePropio) object;
+                    tipo = 1;
+                    id = pago.getId();
+                } else if (object instanceof ChequeTerceros) {
+                    ChequeTerceros pago = (ChequeTerceros) object;
+                    tipo = 2;
+                    id = pago.getId();
+                } else if (object instanceof NotaCreditoProveedor) {
+                    NotaCreditoProveedor pago = (NotaCreditoProveedor) object;
+                    tipo = 3;
+                    id = pago.getId();
+                } else if (object instanceof ComprobanteRetencion) {
+                    ComprobanteRetencion pago = (ComprobanteRetencion) object;
+                    tipo = 4;
+                    id = pago.getId();
+                } else if (object instanceof CuentabancariaMovimientos) {
+                    CuentabancariaMovimientos pago = (CuentabancariaMovimientos) object;
+                    tipo = 5;
+                    id = pago.getId();
+                }
+                RemesaPagos rp = new RemesaPagos(null, tipo, id, remesa);
+                entityManager.persist(rp);
             }
-            RemesaPagos rp = new RemesaPagos(null, tipo, id, remesa);
-            entityManager.persist(rp);
+            entityManager.getTransaction().commit();
+            todoBien = true;
+        } finally {
+            if (!todoBien) {
+                remove(remesa);
+            }
         }
-        entityManager.getTransaction().commit();
     }
 
     public Integer getNextNumero(Sucursal sucursal) {

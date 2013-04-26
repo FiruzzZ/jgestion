@@ -128,7 +128,7 @@
                               <Component id="cbOperacionesBancariasFiltro" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
-                      <Component id="btnBuscar" alignment="1" min="-2" pref="34" max="-2" attributes="0"/>
+                      <Component id="btnBuscar" alignment="1" min="-2" pref="30" max="-2" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
@@ -227,78 +227,10 @@
           <Properties>
             <Property name="autoCreateRowSorter" type="boolean" value="true"/>
             <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-              <Table columnCount="9" rowCount="0">
-                <Column editable="false" title="N&#xb0;" type="java.lang.Integer"/>
-                <Column editable="false" title="Descrip. Mov" type="java.lang.String"/>
-                <Column editable="false" title="Cr&#xe9;dito" type="java.lang.Object"/>
-                <Column editable="false" title="D&#xe9;bito" type="java.lang.Object"/>
-                <Column editable="false" title="Fecha Cr&#xe9;/D&#xe9;b" type="java.lang.Object"/>
-                <Column editable="false" title="Concepto. Op." type="java.lang.Object"/>
-                <Column editable="false" title="Fecha Op." type="java.lang.Object"/>
-                <Column editable="false" title="Usuario" type="java.lang.Object"/>
-                <Column editable="false" title="F. Sistema" type="java.lang.Object"/>
-              </Table>
+              <Table columnCount="0" rowCount="0"/>
             </Property>
             <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
-              <TableColumnModel selectionModel="0">
-                <Column maxWidth="-1" minWidth="-1" prefWidth="30" resizable="false">
-                  <Title/>
-                  <Editor/>
-                  <Renderer/>
-                </Column>
-                <Column maxWidth="-1" minWidth="50" prefWidth="100" resizable="true">
-                  <Title/>
-                  <Editor/>
-                  <Renderer/>
-                </Column>
-                <Column maxWidth="-1" minWidth="-1" prefWidth="80" resizable="false">
-                  <Title/>
-                  <Editor/>
-                  <Renderer editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                    <Connection code="NumberRenderer.getCurrencyRenderer()" type="code"/>
-                  </Renderer>
-                </Column>
-                <Column maxWidth="-1" minWidth="-1" prefWidth="80" resizable="false">
-                  <Title/>
-                  <Editor/>
-                  <Renderer editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                    <Connection code="NumberRenderer.getCurrencyRenderer()" type="code"/>
-                  </Renderer>
-                </Column>
-                <Column maxWidth="-1" minWidth="60" prefWidth="60" resizable="true">
-                  <Title/>
-                  <Editor editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                    <Connection code="new JDateChooserCellEditor()" type="code"/>
-                  </Editor>
-                  <Renderer editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                    <Connection code="FormatRenderer.getDateRenderer()" type="code"/>
-                  </Renderer>
-                </Column>
-                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                  <Title/>
-                  <Editor/>
-                  <Renderer/>
-                </Column>
-                <Column maxWidth="-1" minWidth="-1" prefWidth="60" resizable="false">
-                  <Title/>
-                  <Editor/>
-                  <Renderer editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                    <Connection code="FormatRenderer.getDateRenderer()" type="code"/>
-                  </Renderer>
-                </Column>
-                <Column maxWidth="-1" minWidth="-1" prefWidth="50" resizable="false">
-                  <Title/>
-                  <Editor/>
-                  <Renderer/>
-                </Column>
-                <Column maxWidth="-1" minWidth="-1" prefWidth="60" resizable="false">
-                  <Title/>
-                  <Editor/>
-                  <Renderer editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                    <Connection code="FormatRenderer.getDateTimeRenderer()" type="code"/>
-                  </Renderer>
-                </Column>
-              </TableColumnModel>
+              <TableColumnModel selectionModel="0"/>
             </Property>
             <Property name="tableHeader" type="javax.swing.table.JTableHeader" editor="org.netbeans.modules.form.editors2.JTableHeaderEditor">
               <TableHeader reorderingAllowed="false" resizingAllowed="true"/>

@@ -710,7 +710,6 @@ public class Contabilidad {
         buscadorReRe.hideFactura();
         buscadorReRe.hideUDNCuentaSubCuenta();
         buscadorReRe.hideVendedor();
-        buscadorReRe.setFechaSistemaFieldsVisible(false);
         buscadorReRe.getbImprimir().setVisible(true);
         UTIL.loadComboBox(buscadorReRe.getCbClieProv(), JGestionUtils.getWrappedClientes(new ClienteController().findAll()), true);
         UTIL.loadComboBox(buscadorReRe.getCbCaja(), new CajaController().findCajasPermitidasByUsuario(UsuarioController.getCurrentUser(), true), true);
@@ -805,7 +804,6 @@ public class Contabilidad {
         buscadorReRe.hideCaja();
         buscadorReRe.hideFactura();
         buscadorReRe.hideCheckAnulado();
-        buscadorReRe.setFechaSistemaFieldsVisible(false);
         buscadorReRe.getbImprimir().setVisible(true);
         UTIL.loadComboBox(buscadorReRe.getCbClieProv(), JGestionUtils.getWrappedProveedores(new ProveedorJpaController().findAll()), true);
         UTIL.loadComboBox(buscadorReRe.getCbCaja(), new CajaController().findCajasPermitidasByUsuario(UsuarioController.getCurrentUser(), true), true);
@@ -929,12 +927,20 @@ public class Contabilidad {
             }
         }
         if (buscadorReRe.getDcDesde() != null) {
-            queryFactuCompra.append(" AND o.fecha_compra >= '").append(buscadorReRe.getDcDesde()).append("'");
-            queryNotaCredito.append(" AND o.fecha_nota_credito >= '").append(buscadorReRe.getDcDesde()).append("'");
+            queryFactuCompra.append(" AND o.fecha_compra >= '").append(yyyyMMdd.format(buscadorReRe.getDcDesde())).append("'");
+            queryNotaCredito.append(" AND o.fecha_nota_credito >= '").append(yyyyMMdd.format(buscadorReRe.getDcDesde())).append("'");
         }
         if (buscadorReRe.getDcHasta() != null) {
-            queryFactuCompra.append(" AND o.fecha_compra <= '").append(buscadorReRe.getDcHasta()).append("'");
-            queryNotaCredito.append(" AND o.fecha_nota_credito <= '").append(buscadorReRe.getDcDesde()).append("'");
+            queryFactuCompra.append(" AND o.fecha_compra <= '").append(yyyyMMdd.format(buscadorReRe.getDcHasta())).append("'");
+            queryNotaCredito.append(" AND o.fecha_nota_credito <= '").append(yyyyMMdd.format(buscadorReRe.getDcDesde())).append("'");
+        }
+        if(buscadorReRe.getDcDesdeSistema() != null) {
+            queryFactuCompra.append(" AND o.fechaalta >= '").append(yyyyMMdd.format(buscadorReRe.getDcDesdeSistema())).append("'");
+            queryNotaCredito.append(" AND o.fecha_Carga >= '").append(yyyyMMdd.format(buscadorReRe.getDcDesdeSistema())).append("'");
+        }
+        if(buscadorReRe.getDcHastaSistema() != null) {
+            queryFactuCompra.append(" AND o.fechaalta <= '").append(yyyyMMdd.format(buscadorReRe.getDcHastaSistema())).append("'");
+            queryNotaCredito.append(" AND o.fecha_Carga <= '").append(yyyyMMdd.format(buscadorReRe.getDcHastaSistema())).append("'");
         }
         if (buscadorReRe.getCbFormasDePago().getSelectedIndex() > 0) {
             queryFactuCompra.append(" AND o.tipo = '").append(buscadorReRe.getCbFormasDePago().getSelectedItem()).append("'");
@@ -1039,6 +1045,14 @@ public class Contabilidad {
         if (buscadorReRe.getDcHasta() != null) {
             queryWhereFactuVenta.append(" AND o.fechaVenta <= '").append(yyyyMMdd.format(buscadorReRe.getDcHasta())).append("'");
             queryWhereNotaCredito.append(" AND o.fechaNotaCredito <= '").append(yyyyMMdd.format(buscadorReRe.getDcDesde())).append("'");
+        }
+        if(buscadorReRe.getDcDesdeSistema() != null) {
+            queryWhereFactuVenta.append(" AND o.fechaalta >= '").append(yyyyMMdd.format(buscadorReRe.getDcDesdeSistema())).append("'");
+            queryWhereNotaCredito.append(" AND o.fechaCarga >= '").append(yyyyMMdd.format(buscadorReRe.getDcDesdeSistema())).append("'");
+        }
+        if(buscadorReRe.getDcHastaSistema() != null) {
+            queryWhereFactuVenta.append(" AND o.fechaalta <= '").append(yyyyMMdd.format(buscadorReRe.getDcHastaSistema())).append("'");
+            queryWhereNotaCredito.append(" AND o.fechaCarga <= '").append(yyyyMMdd.format(buscadorReRe.getDcHastaSistema())).append("'");
         }
         UsuarioHelper usuarioHelper = new UsuarioHelper();
         if (buscadorReRe.getCbCaja().getSelectedIndex() > 0) {

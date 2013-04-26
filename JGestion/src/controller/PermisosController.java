@@ -39,7 +39,8 @@ public class PermisosController {
         ABM_OFERTASWEB,
         ORDENES_IO,
         VENTA_NUMERACION_MANUAL,
-        ANULAR_COMPROBANTES;
+        ANULAR_COMPROBANTES,
+        CHEQUES_ADMINISTRADOR;
     }
 
     public PermisosController() {
