@@ -216,7 +216,7 @@ public class ChequePropioController implements ActionListener {
                         }
                         armarQuery(false);
                     }
-                } else if (boton.equals(jdChequeManager.getbImprimir())) {
+                } else if (boton.equals(jdChequeManager.getBtnImprimir())) {
                     try {
                         armarQuery(true);
                     } catch (Exception ex) {

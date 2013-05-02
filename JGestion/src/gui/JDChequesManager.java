@@ -53,7 +53,7 @@ public class JDChequesManager extends javax.swing.JDialog {
         bAnular = new javax.swing.JButton();
         btnReemplazar = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
-        bImprimir = new javax.swing.JButton();
+        btnImprimir = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         tfChequeNumero = new javax.swing.JTextField();
@@ -178,9 +178,9 @@ public class JDChequesManager extends javax.swing.JDialog {
         btnReemplazar.setText("Reemplazar");
         btnReemplazar.setToolTipText("Anula el cheque seleccionado mientras que genera otro en reemplazo");
 
-        bImprimir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/impresora.png"))); // NOI18N
-        bImprimir.setMnemonic('p');
-        bImprimir.setText("Imprimir");
+        btnImprimir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/impresora.png"))); // NOI18N
+        btnImprimir.setMnemonic('p');
+        btnImprimir.setText("Imprimir");
 
         javax.swing.GroupLayout panelBotonesLayout = new javax.swing.GroupLayout(panelBotones);
         panelBotones.setLayout(panelBotonesLayout);
@@ -196,7 +196,7 @@ public class JDChequesManager extends javax.swing.JDialog {
                     .addComponent(bDeposito, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(bAnular, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnReemplazar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(bImprimir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(btnImprimir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         panelBotonesLayout.setVerticalGroup(
@@ -217,7 +217,7 @@ public class JDChequesManager extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnReemplazar, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 54, Short.MAX_VALUE)
-                .addComponent(bImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -507,7 +507,7 @@ private void tfImporteKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_t
     private javax.swing.JButton bAnular;
     private javax.swing.JButton bBuscar;
     private javax.swing.JButton bDeposito;
-    private javax.swing.JButton bImprimir;
+    private javax.swing.JButton btnImprimir;
     private javax.swing.JButton btnNuevo;
     private javax.swing.JButton btnReemplazar;
     private javax.swing.JComboBox cbBancoSucursales;
@@ -575,8 +575,8 @@ private void tfImporteKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_t
         return bDeposito;
     }
 
-    public JButton getbImprimir() {
-        return btnReemplazar;
+    public JButton getBtnImprimir() {
+        return btnImprimir;
     }
 
     public JButton getBtnNuevo() {
@@ -658,6 +658,7 @@ private void tfImporteKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_t
         bAnular.addActionListener(actionListener);
         btnReemplazar.addActionListener(actionListener);
         bDeposito.addActionListener(actionListener);
+        btnImprimir.addActionListener(actionListener);
     }
 
     public JTextField getTf30() {
