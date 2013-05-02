@@ -8,6 +8,7 @@ import ar.com.fdvs.dj.domain.builders.ColumnBuilder;
 import ar.com.fdvs.dj.domain.builders.DynamicReportBuilder;
 import ar.com.fdvs.dj.domain.constants.Font;
 import ar.com.fdvs.dj.domain.constants.HorizontalAlign;
+import ar.com.fdvs.dj.domain.constants.Page;
 import controller.exceptions.DatabaseErrorException;
 import controller.exceptions.MessageException;
 import controller.exceptions.MissingReportException;
@@ -22,9 +23,11 @@ import entity.ListaPrecios;
 import entity.Producto;
 import entity.Usuario;
 import entity.enums.ChequeEstado;
+import generics.GenericBeanCollection;
 import gui.JDABM;
 import gui.JDChequesManager;
 import gui.PanelABMCheques;
+import gui.PanelChequesColumnsReport;
 import gui.PanelEntregaTerceros;
 import gui.PanelMovimientosVarios;
 import gui.PanelProductoReporteOptions;
@@ -340,7 +343,7 @@ public class ChequeTercerosController implements ActionListener {
                                 JOptionPane.showMessageDialog(jdChequeManager, "Solo los cheques en cartera pueden ser depositados", "Error", JOptionPane.WARNING_MESSAGE);
                             }
                         }
-                    } else if (boton.equals(jdChequeManager.getbImprimir())) {
+                    } else if (boton.equals(jdChequeManager.getBtnImprimir())) {
                         try {
                             armarQuery(true);
                         } catch (DatabaseErrorException ex) {
@@ -522,75 +525,108 @@ public class ChequeTercerosController implements ActionListener {
         LOG.debug(query.toString());
         cargarTablaChequeManager(query.toString());
         if (imprimir) {
-            doChequeTercerosReport(query.toString());
+            if (jdChequeManager.getjTable1().getModel().getRowCount() < 1) {
+                JOptionPane.showMessageDialog(jdChequeManager, "No sea han filtrados cheques para crear el reporte");
+            } else {
+                doChequeTercerosReport();
+            }
         }
     }
 
-    private void doChequeTercerosReport(String query) {
-        
-//        final JDABM jd = new JDABM(null, "Reporte de Productos", true, p);
-//        jd.getbAceptar().addActionListener(new ActionListener() {
-//            @Override
-//            @SuppressWarnings("unchecked")
-//            public void actionPerformed(ActionEvent e) {
-//                try {
-//                    Reportes r = new Reportes(null, true);
-//                    r.showWaitingDialog();
-//                    List<Producto> list = jpaController.findByBienDeCambio(true);
-//                    DynamicReportBuilder drb = new DynamicReportBuilder();
-//                    Style currencyStyle = new Style();
-//                    currencyStyle.setFont(Font.ARIAL_MEDIUM);
-//                    currencyStyle.setHorizontalAlign(HorizontalAlign.RIGHT);
-//                    Style textStyle = new Style();
-//                    textStyle.setFont(Font.ARIAL_MEDIUM);
-//                    drb
-//                            .addColumn(ColumnBuilder.getNew().setColumnProperty("codigo", String.class).setTitle("Código").setWidth(60).setStyle(textStyle).setFixedWidth(true).build())
-//                            .addColumn(ColumnBuilder.getNew().setColumnProperty("nombre", String.class).setTitle("Producto").setWidth(200).setStyle(textStyle).build())
-//                            .addColumn(ColumnBuilder.getNew().setColumnProperty("marca.nombre", String.class).setTitle("Marca").setWidth(80).setStyle(textStyle).build());
-//                    if (p.getCheckStock().isSelected()) {
-//                        drb.addColumn(ColumnBuilder.getNew().setColumnProperty("stockactual", Integer.class.getName()).setTitle("Stock").setWidth(40).setStyle(currencyStyle).setFixedWidth(true).build());
-//                    }
-//                    if (p.getCheckCostoCompra().isSelected()) {
-//                        drb.addColumn(ColumnBuilder.getNew().setColumnProperty("costoCompra", BigDecimal.class.getName()).setTitle("Costo U.").setWidth(60)
-//                                .setStyle(currencyStyle)
-//                                .setPattern("¤ #,##0.0000")
-//                                .setFixedWidth(true).build());
-//                    }
-//                    ListaPrecios lp = null;
-//                    if (p.getCheckPrecioVenta().isSelected()) {
-//                        drb.addColumn(ColumnBuilder.getNew()
-//                                .setColumnProperty("precioVenta", BigDecimal.class.getName()).setTitle("Precio U.").setWidth(60)
-//                                .setStyle(currencyStyle)
-//                                .setPattern("¤ #,##0.0000")
-//                                .setFixedWidth(true).build());
-//                        lp = ((ComboBoxWrapper<ListaPrecios>) p.getCbListaPrecio().getSelectedItem()).getEntity();
-//                        Double margen = (lp.getMargen() / 100) + 1;
-//                        for (Producto producto : list) {
-//                            BigDecimal precioVenta = producto.getPrecioVenta();
-//                            producto.setPrecioVenta(precioVenta.multiply(BigDecimal.valueOf(margen)));
-//                        }
-//                    }
-//
-//                    drb.setTitle("Listado de Productos")
-//                            .setSubtitle(lp == null ? "" : "Según Lista Precios: " + lp.getNombre() + ", " + UTIL.TIMESTAMP_FORMAT.format(new Date()))
-//                            .setPrintBackgroundOnOddRows(true)
-//                            .setUseFullPageWidth(true);
-////                    SubReportBuilder srb = new SubReportBuilder();
-////                    srb.setPathToReport(Reportes.FOLDER_REPORTES + "JGestion_membrete.jasper");
-////                    srb.setDataSource("");
-////                    Subreport sr = srb.build();
-////                    drb.addSubreportInGroupHeader(0, sr);
-//                    DynamicReport dr = drb.build();
-//                    JRDataSource ds = new JRBeanCollectionDataSource(list);
-//                    JasperPrint jp = DynamicJasperHelper.generateJasperPrint(dr, new ClassicLayoutManager(), ds);
-//                    r.setjPrint(jp);
-//                    r.viewReport();
-//                } catch (Exception ex) {
-//                    JOptionPane.showMessageDialog(null, "algo salió mal");
-//                    LOG.error("Creando reporte producto", ex);
-//                }
-//            }
-//        });
+    private void doChequeTercerosReport() throws DatabaseErrorException {
+        final PanelChequesColumnsReport p = new PanelChequesColumnsReport();
+        final JDABM jd = new JDABM(null, "Reporte de Productos", true, p);
+        jd.getbAceptar().addActionListener(new ActionListener() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    Reportes r = new Reportes(null, true);
+                    r.showWaitingDialog();
+                    //"id",
+                    //"Nº Cheque", "F. Cheque", "Emisor", "F. Cobro", "Banco", 
+                    //"Importe", "Estado", "Cruzado", "Endosatario", "F. Endoso", 
+                    //"C. Ingreso", "C. Egreso", "Observacion", "Usuario"};
+                    DefaultTableModel dtm = (DefaultTableModel) jdChequeManager.getjTable1().getModel();
+                    List<GenericBeanCollection> data = new ArrayList<GenericBeanCollection>(dtm.getRowCount());
+                    for (int row = 0; row < dtm.getRowCount(); row++) {
+                        data.add(new GenericBeanCollection(
+                                dtm.getValueAt(row, 1),
+                                dtm.getValueAt(row, 2),
+                                dtm.getValueAt(row, 3),
+                                dtm.getValueAt(row, 4),
+                                dtm.getValueAt(row, 5),
+                                dtm.getValueAt(row, 6),
+                                dtm.getValueAt(row, 7),
+                                dtm.getValueAt(row, 8),
+                                dtm.getValueAt(row, 11),
+                                dtm.getValueAt(row, 12),
+                                dtm.getValueAt(row, 13),
+                                dtm.getValueAt(row, 14)));
+                    }
+
+                    DynamicReportBuilder drb = new DynamicReportBuilder();
+                    Style currencyStyle = new Style();
+                    currencyStyle.setFont(Font.ARIAL_MEDIUM);
+                    currencyStyle.setHorizontalAlign(HorizontalAlign.RIGHT);
+                    Style textStyle = new Style();
+                    textStyle.setFont(Font.ARIAL_MEDIUM);
+                    drb.addColumn(ColumnBuilder.getNew().setColumnProperty("o1", Object.class).setTitle("Número").setWidth(60).setStyle(currencyStyle).setFixedWidth(true).build());
+                    drb.addColumn(ColumnBuilder.getNew().setColumnProperty("o6", Object.class).setTitle("Importe").setWidth(80).setStyle(currencyStyle).setPattern("¤ #,##0.00").setFixedWidth(true).build());
+                    if (p.getCheckFechaCheque()) {
+                        drb.addColumn(ColumnBuilder.getNew().setColumnProperty("o2", Object.class).setTitle("F. Cheque").setWidth(60).setPattern("dd/MM/yyyy").setFixedWidth(true).build());
+                    }
+                    if (p.getCheckEmisor()) {
+                        drb.addColumn(ColumnBuilder.getNew().setColumnProperty("o3", Object.class).setTitle("Emisor").setWidth(200).setStyle(textStyle).setFixedWidth(true).build());
+                    }
+                    if (p.getCheckFechaCobro()) {
+                        drb.addColumn(ColumnBuilder.getNew().setColumnProperty("o4", Object.class).setTitle("F. Cobro").setWidth(60).setPattern("dd/MM/yyyy").setFixedWidth(true).build());
+                    }
+                    if (p.getCheckBanco()) {
+                        drb.addColumn(ColumnBuilder.getNew().setColumnProperty("o5", Object.class).setTitle("Banco").setWidth(80).setStyle(textStyle).build());
+                    }
+                    if (p.getCheckEstado()) {
+                        drb.addColumn(ColumnBuilder.getNew().setColumnProperty("o7", Object.class).setTitle("Estado").setWidth(40).setStyle(textStyle).build());
+                    }
+                    if (p.getCheckCruzado()) {
+                        drb.addColumn(ColumnBuilder.getNew().setColumnProperty("o8", Object.class).setTitle("Cruzado").setWidth(40).setStyle(textStyle).build());
+                    }
+                    if (p.getCheckCompIngreso()) {
+                        drb.addColumn(ColumnBuilder.getNew().setColumnProperty("o9", Object.class).setTitle("Comp. Ingreso").setWidth(100).setStyle(textStyle).build());
+                    }
+                    if (p.getCheckCompEgreso()) {
+                        drb.addColumn(ColumnBuilder.getNew().setColumnProperty("o10", Object.class).setTitle("Comp. Egreso").setWidth(100).setStyle(textStyle).build());
+                    }
+                    if (p.getCheckObservacion()) {
+                        drb.addColumn(ColumnBuilder.getNew().setColumnProperty("o11", Object.class).setTitle("Observ.").setWidth(100).setStyle(textStyle).build());
+                    }
+                    if (p.getCheckUsuario()) {
+                        drb.addColumn(ColumnBuilder.getNew().setColumnProperty("o12", Object.class).setTitle("Usuario").setWidth(50).setStyle(textStyle).setFixedWidth(true).build());
+                    }
+                    if (p.getCheckLandscapePage()) {
+                        drb.setPageSizeAndOrientation(Page.Page_A4_Landscape());
+                    }
+                    drb.setTitle("Informe: Cheques Terceros")
+                            .setSubtitle(UTIL.TIMESTAMP_FORMAT.format(new Date()))
+                            .setPrintBackgroundOnOddRows(true)
+                            .setUseFullPageWidth(true);
+                    //                    SubReportBuilder srb = new SubReportBuilder();
+                    //                    srb.setPathToReport(Reportes.FOLDER_REPORTES + "JGestion_membrete.jasper");
+                    //                    srb.setDataSource("");
+                    //                    Subreport sr = srb.build();
+                    //                    drb.addSubreportInGroupHeader(0, sr);
+                    DynamicReport dr = drb.build();
+                    JRDataSource ds = new JRBeanCollectionDataSource(data);
+                    JasperPrint jp = DynamicJasperHelper.generateJasperPrint(dr, new ClassicLayoutManager(), ds);
+                    r.setjPrint(jp);
+                    r.viewReport();
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "algo salió mal");
+                    LOG.error("Creando dynamic report chequeterceros", ex);
+                }
+            }
+        });
+        jd.setVisible(true);
     }
 
     ChequeTerceros getChequeTerceroInstance() {
