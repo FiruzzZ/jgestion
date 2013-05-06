@@ -438,7 +438,7 @@ public class ChequeTercerosController implements ActionListener {
             final Date hoy = new Date();
 
             @Override
-            public Color condicion(Object value, int row, int column) {
+            public Color condicionByRow(int row) {
                 Color c = null;
                 Date fechaCobro = (Date) jdChequeManager.getjTable1().getModel().getValueAt(row, 4);
                 String estado = jdChequeManager.getjTable1().getModel().getValueAt(row, 7).toString();
