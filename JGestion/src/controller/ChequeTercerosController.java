@@ -360,15 +360,15 @@ public class ChequeTercerosController implements ActionListener {
     }
 
     private void checkConstraints(ChequeTerceros object) throws MessageException {
-        ChequeTerceros cheque = jpaController.findBy(object.getBanco(), object.getNumero());
-        if (cheque != null && !cheque.equals(object)) {
-            throw new MessageException("Ya existe un Cheque del banco " + cheque.getBanco().getNombre() + " con el N° " + cheque.getNumero()
-                    + "\nFecha emisión:" + UTIL.DATE_FORMAT.format(cheque.getFechaCheque())
-                    + "\nFecha cobro: " + UTIL.DATE_FORMAT.format(cheque.getFechaCobro())
-                    + "\nEstado:" + cheque.getChequeEstado()
-                    + "\nIngreso:" + cheque.getComprobanteIngreso()
-                    + "\nEgreso:" + cheque.getComprobanteEgreso());
-        }
+//        ChequeTerceros cheque = jpaController.findBy(object.getBanco(), object.getNumero());
+//        if (cheque != null && !cheque.equals(object)) {
+//            throw new MessageException("Ya existe un Cheque del banco " + cheque.getBanco().getNombre() + " con el N° " + cheque.getNumero()
+//                    + "\nFecha emisión:" + UTIL.DATE_FORMAT.format(cheque.getFechaCheque())
+//                    + "\nFecha cobro: " + UTIL.DATE_FORMAT.format(cheque.getFechaCobro())
+//                    + "\nEstado:" + cheque.getChequeEstado()
+//                    + "\nIngreso:" + cheque.getComprobanteIngreso()
+//                    + "\nEgreso:" + cheque.getComprobanteEgreso());
+//        }
     }
 
     /**

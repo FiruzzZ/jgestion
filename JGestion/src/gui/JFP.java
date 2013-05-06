@@ -231,8 +231,11 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         labelConnetionState.setBounds(820, 390, 32, 32);
         jDesktopPane1.add(labelConnetionState, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
+        jMenu1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/kf.png"))); // NOI18N
         jMenu1.setMnemonic('a');
         jMenu1.setText("Archivo");
+        jMenu1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jMenu1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 
         jMenuItem23.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F3, java.awt.event.InputEvent.ALT_MASK));
         jMenuItem23.setText("Cerrar sesión                 ");
@@ -384,8 +387,11 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
         jMenuBar1.add(jMenu2);
 
+        jMenu3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px_invoice.png"))); // NOI18N
         jMenu3.setMnemonic('e');
         jMenu3.setText("Egresos");
+        jMenu3.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jMenu3.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 
         jMenuItem4.setText("Facturas");
         jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
@@ -1803,7 +1809,11 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     }//GEN-LAST:event_jMenuItem77ActionPerformed
 
     private void jMenuItem78ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem78ActionPerformed
-        // TODO add your handling code here:
+        try {
+            new RemesaController().initRemesaAConciliar(this);
+        } catch (MessageException ex) {
+            ex.displayMessage(this);
+        }
     }//GEN-LAST:event_jMenuItem78ActionPerformed
 
     private void jMenuItem64ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem64ActionPerformed

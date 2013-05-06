@@ -62,6 +62,11 @@ public class Remesa implements Serializable {
     @Column(name = "anulada")
     @Temporal(TemporalType.TIMESTAMP)
     private Date anulada;
+    @Column(name = "por_conciliar", nullable = false)
+    private boolean porConciliar;
+    @JoinColumn(name = "proveedor_id")
+    @ManyToOne
+    private Proveedor proveedor;
 
     public Remesa() {
     }
@@ -168,6 +173,22 @@ public class Remesa implements Serializable {
 
     public void setAnulada(Date anulada) {
         this.anulada = anulada;
+    }
+
+    public Proveedor getProveedor() {
+        return proveedor;
+    }
+
+    public void setProveedor(Proveedor proveedor) {
+        this.proveedor = proveedor;
+    }
+
+    public boolean isPorConciliar() {
+        return porConciliar;
+    }
+
+    public void setPorConciliar(boolean porConciliar) {
+        this.porConciliar = porConciliar;
     }
 
     @Override
