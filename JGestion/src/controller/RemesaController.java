@@ -23,6 +23,7 @@ import entity.RemesaPagos;
 import utilities.general.UTIL;
 import gui.JDBuscadorReRe;
 import gui.JDReRe;
+import java.awt.Component;
 import java.awt.Window;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusListener;
@@ -69,6 +70,8 @@ public class RemesaController implements FocusListener {
     private static Logger LOG = Logger.getLogger(RemesaController.class);
     private RemesaJpaController jpaController;
     private boolean unlockedNumeracion = false;
+    private boolean toConciliar;
+    private boolean conciliando;
 
     public RemesaController() {
         jpaController = new RemesaJpaController();
@@ -78,7 +81,17 @@ public class RemesaController implements FocusListener {
         return DAO.getEntityManager();
     }
 
-    public void initRemesa(JFrame owner, boolean modal, boolean visible) throws MessageException {
+    public void initRemesaAConciliar(Window owner) throws MessageException {
+        initRemesa(owner, true, false);
+        jdReRe.setTitle("Recibo a conciliar");
+        toConciliar = true;
+        conciliando = false;
+        jdReRe.getbImprimir().setEnabled(false);
+        SwingUtil.setComponentsEnabled(jdReRe.getPanelAPagar().getComponents(), false, true, (Class<? extends Component>[]) null);
+        jdReRe.setVisible(true);
+    }
+
+    public void initRemesa(Window owner, boolean modal, boolean visible) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.COMPRA);
         jdReRe = new JDReRe(owner, modal);
         jdReRe.setUIForRemesas();
@@ -326,10 +339,14 @@ public class RemesaController implements FocusListener {
     }
 
     private void checkConstraints() throws MessageException {
-        if (jdReRe.getDtmAPagar().getRowCount() < 1) {
-            throw new MessageException("No ha hecho ninguna entrega");
+        if (!toConciliar) {
+            if (jdReRe.getDtmAPagar().getRowCount() < 1) {
+                throw new MessageException("No ha hecho ninguna entrega");
+            }
         }
-
+        if (jdReRe.getDtmPagos().getRowCount() < 1) {
+            throw new MessageException("No ha ingresado ningún pago");
+        }
         if (jdReRe.getDcFechaReRe() == null) {
             throw new MessageException("Fecha de " + jpaController.getEntityClass().getSimpleName() + " no válida");
         }
@@ -360,6 +377,10 @@ public class RemesaController implements FocusListener {
         re.setFechaRemesa(jdReRe.getDcFechaReRe());
         re.setPagos(new ArrayList<RemesaPagos>(jdReRe.getDtmPagos().getRowCount()));
         re.setDetalle(new ArrayList<DetalleRemesa>(jdReRe.getDtmAPagar().getRowCount()));
+        re.setPorConciliar(toConciliar);
+        re.setProveedor((Proveedor) jdReRe.getCbClienteProveedor().getSelectedItem());
+        re.setUsuario(UsuarioController.getCurrentUser());
+
         DefaultTableModel dtm = jdReRe.getDtmAPagar();
         FacturaCompraJpaController fcc = new FacturaCompraJpaController();
         BigDecimal monto = BigDecimal.ZERO;
@@ -391,12 +412,14 @@ public class RemesaController implements FocusListener {
         }
         re.setPagosEntities(pagos);
         boolean asentarDiferenciaEnCaja = false;
-        if (0 != jdReRe.getTfTotalAPagar().getText().compareTo(jdReRe.getTfTotalPagado().getText())) {
-            if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(jdReRe, "El importe a pagar no coincide con el detalle de pagos."
-                    + "\n¿Confirma que la diferencia ($" + UTIL.DECIMAL_FORMAT.format(re.getMonto() - importePagado.doubleValue()) + ") sea acreditada?", "Confirmación de diferencia", JOptionPane.YES_NO_OPTION)) {
-                asentarDiferenciaEnCaja = true;
-            } else {
-                throw new MessageException("Operación cancelada");
+        if (!re.isPorConciliar() || conciliando) {
+            if (0 != jdReRe.getTfTotalAPagar().getText().compareTo(jdReRe.getTfTotalPagado().getText())) {
+                if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(jdReRe, "El importe a pagar no coincide con el detalle de pagos."
+                        + "\n¿Confirma que la diferencia ($" + UTIL.DECIMAL_FORMAT.format(re.getMonto() - importePagado.doubleValue()) + ") sea acreditada?", "Confirmación de diferencia", JOptionPane.YES_NO_OPTION)) {
+                    asentarDiferenciaEnCaja = true;
+                } else {
+                    throw new MessageException("Operación cancelada");
+                }
             }
         }
         if (unlockedNumeracion) {
@@ -404,8 +427,11 @@ public class RemesaController implements FocusListener {
         } else {
             re.setNumero(jpaController.getNextNumero(re.getSucursal()));
         }
-        re.setUsuario(UsuarioController.getCurrentUser());
-        jpaController.create(re);
+        if (conciliando) {
+            jpaController.conciliar(re);
+        } else {
+            jpaController.create(re);
+        }
         for (DetalleRemesa detalle : re.getDetalle()) {
             if (detalle.getFacturaCompra() != null) {
                 actualizarMontoEntrega(detalle.getFacturaCompra(), detalle.getMontoEntrega());

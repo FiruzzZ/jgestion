@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 import javax.persistence.NoResultException;
 import javax.swing.DefaultCellEditor;
+import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -578,6 +579,9 @@ public class CajaMovimientosController implements ActionListener {
                         DetalleCajaMovimientos dcm = setMovimientoVarios();
                         new DetalleCajaMovimientosController().create(dcm);
                         abm.showMessage("Realizado..", "Movimientos Varios Nº" + dcm.getId(), 1);
+                        if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(abm, "¿Imprimir comprobante?")) {
+                            doReport(dcm);
+                        }
                         cleanPanelMovimientosVarios();
                     } else {
                         DetalleCajaMovimientos dcm = setMovimientoVarios();
@@ -598,6 +602,13 @@ public class CajaMovimientosController implements ActionListener {
         });
         abm.setLocationRelativeTo(owner);
         abm.toFront();
+    }
+
+    private void doReport(DetalleCajaMovimientos dcm) throws MissingReportException, JRException {
+        Reportes r = new Reportes("JGestion_ComprobanteMovimientosVarios.jasper", "Comprobante N° " + dcm.getId());
+        r.addMembreteParameter();
+        r.addParameter("ENTITY_ID", dcm.getId());
+        r.printReport(true);
     }
 
     /**
@@ -698,7 +709,27 @@ public class CajaMovimientosController implements ActionListener {
                 }
             }
         });
-        buscador.hideLimpiar();
+        buscador.getBtnToExcel().setIcon(new ImageIcon(getClass().getResource("/iconos/impresora.png")));
+        buscador.getBtnToExcel().setText("Imp. Comprobante");
+        buscador.getBtnToExcel().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Integer dcmID = (Integer) UTIL.getSelectedValueFromModel(buscador.getjTable1(), 0);
+                try {
+                    if (dcmID == null) {
+                        throw new MessageException("Debe seleccionar la fila del comprobante que desea imprimir");
+                    }
+                    doReport(new DetalleCajaMovimientos(dcmID));
+                } catch (MissingReportException ex) {
+                    JOptionPane.showMessageDialog(buscador, ex.getMessage());
+                } catch (JRException ex) {
+                    JOptionPane.showMessageDialog(buscador, ex.getMessage());
+                } catch (MessageException ex) {
+                    ex.displayMessage(buscador);
+                }
+
+            }
+        });
         buscador.setLocationRelativeTo((Component) owner);
         buscador.setVisible(true);
     }
@@ -783,7 +814,7 @@ public class CajaMovimientosController implements ActionListener {
                 buscador.getjTable1(),
                 new String[]{"Descripción", "Monto", "Fecha (Hora)", "Usuario"},
                 new int[]{150, 20, 60, 50});
-        buscador.hideLimpiar();
+        buscador.hideBtnToExcel();
         buscador.setListener(this);
         buscador.getBtnBuscar().addActionListener(new ActionListener() {
             @Override
@@ -867,7 +898,7 @@ public class CajaMovimientosController implements ActionListener {
         UTIL.loadComboBox(panelBuscadorCajasCerradas.getCbCaja(), new CajaController().findCajasPermitidasByUsuario(UsuarioController.getCurrentUser(), true), true);
         buscador = new JDBuscador(jdCierreCaja, "Buscador - Cajas cerradas", true, panelBuscadorCajasCerradas);
         buscador.getBtnImprimir().setEnabled(false);
-        buscador.hideLimpiar();
+        buscador.hideBtnToExcel();
         // <editor-fold defaultstate="collapsed" desc="InitJTable">
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
@@ -1124,7 +1155,7 @@ public class CajaMovimientosController implements ActionListener {
             }
         });
         buscador.getBtnImprimir().setEnabled(false);
-        buscador.hideLimpiar();
+        buscador.hideBtnToExcel();
         buscador.setLocationRelativeTo(null);
         buscador.setVisible(true);
     }

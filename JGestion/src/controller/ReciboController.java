@@ -461,11 +461,10 @@ public class ReciboController implements ActionListener, FocusListener {
         if (jdReRe.getDcFechaReRe() == null) {
             throw new MessageException("Fecha de " + jpaController.getEntityClass().getSimpleName() + " no válida");
         }
-        if (toConciliar) {
-            if (jdReRe.getDtmPagos().getRowCount() < 1) {
-                throw new MessageException("No ha ingresado ningún pago");
-            }
-        } else {
+        if (jdReRe.getDtmPagos().getRowCount() < 1) {
+            throw new MessageException("No ha ingresado ningún pago");
+        }
+        if (!toConciliar) {
             if (jdReRe.getDtmAPagar().getRowCount() < 1) {
                 throw new MessageException("No ha hecho ninguna entrega");
             }
@@ -509,7 +508,7 @@ public class ReciboController implements ActionListener, FocusListener {
         re.setUsuario(UsuarioController.getCurrentUser());
         re.setEstado(true);
         re.setFechaRecibo(jdReRe.getDcFechaReRe());
-        re.setDetalleReciboList(new ArrayList<DetalleRecibo>(jdReRe.getDtmAPagar().getRowCount()));
+        re.setDetalle(new ArrayList<DetalleRecibo>(jdReRe.getDtmAPagar().getRowCount()));
         re.setPagos(new ArrayList<ReciboPagos>(jdReRe.getDtmPagos().getRowCount()));
         re.setPorConciliar(toConciliar);
         re.setCliente((Cliente) jdReRe.getCbClienteProveedor().getSelectedItem());
@@ -562,11 +561,8 @@ public class ReciboController implements ActionListener, FocusListener {
         } else {
             jpaController.create(re);
         }
-        Iterator<DetalleRecibo> iterator = re.getDetalle().iterator();
-        while (iterator.hasNext()) {
-            DetalleRecibo detalle = iterator.next();
+        for (DetalleRecibo detalle : re.getDetalle()) {
             if (detalle.getFacturaVenta() != null) {
-                //actuliza saldo pagado de cada ctacte
                 actualizarMontoEntrega(detalle.getFacturaVenta(), detalle.getMontoEntrega());
             }
         }

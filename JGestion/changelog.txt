@@ -1,3 +1,7 @@
+--20130504
+alter table remesa add column por_conciliar boolean not null default false;
+alter table remesa add column proveedor_id integer;
+alter table remesa add constraint fk_remesa_proveedor_id foreign key (proveedor_id) references proveedor (id);
 --20130425
 alter table permisos add column cheques_administrador boolean not null default false;
 --20130415

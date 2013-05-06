@@ -154,7 +154,7 @@ public class Recibo implements Serializable {
         return detalle;
     }
 
-    public void setDetalleReciboList(List<DetalleRecibo> detalle) {
+    public void setDetalle(List<DetalleRecibo> detalle) {
         this.detalle = detalle;
     }
 

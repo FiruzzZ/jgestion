@@ -251,7 +251,7 @@ public class ReciboJpaController extends AbstractDAO<Recibo, Integer> {
             entityManager.getTransaction().begin();
         }
         Recibo old = find(recibo.getSucursal(), recibo.getNumero());
-        old.setDetalleReciboList(recibo.getDetalle());
+        old.setDetalle(recibo.getDetalle());
         old.setPorConciliar(false);
         old.setMonto(recibo.getMonto());
         for (DetalleRecibo d : old.getDetalle()) {
@@ -265,7 +265,7 @@ public class ReciboJpaController extends AbstractDAO<Recibo, Integer> {
         entityManager.merge(old);
         entityManager.getTransaction().commit();
         recibo.setId(old.getId());
-        recibo.setDetalleReciboList(old.getDetalle());
+        recibo.setDetalle(old.getDetalle());
         closeEntityManager();
     }
 }

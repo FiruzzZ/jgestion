@@ -90,7 +90,17 @@ public class RemesaJpaController extends AbstractDAO<Remesa, Integer> {
                     ChequeTerceros pago = (ChequeTerceros) object;
                     pago.setEstado(ChequeEstado.ENDOSADO.getId());
                     pago.setFechaEndoso(remesa.getFechaRemesa());
-                    pago.setEndosatario(remesa.getDetalle().get(0).getFacturaCompra().getProveedor().getNombre());
+                    Proveedor proveedor = null;
+                    if (!remesa.getDetalle().isEmpty()) {
+                        if (remesa.getDetalle().get(0).getFacturaCompra() != null) {
+                            proveedor = remesa.getDetalle().get(0).getFacturaCompra().getProveedor();
+                        } else if (remesa.getDetalle().get(0).getNotaDebitoProveedor() != null) {
+                            proveedor = remesa.getDetalle().get(0).getNotaDebitoProveedor().getProveedor();
+                        }
+                    } else {
+                        proveedor = remesa.getProveedor();
+                    }
+                    pago.setEndosatario(proveedor.getNombre());
                     pago.setComprobanteEgreso(getEntityClass().getSimpleName() + " " + JGestionUtils.getNumeracion(remesa, true));
                     entityManager.merge(pago);
                     pagosPost.add(pago);
@@ -258,5 +268,29 @@ public class RemesaJpaController extends AbstractDAO<Remesa, Integer> {
                 em.close();
             }
         }
+    }
+
+    public void conciliar(Remesa recibo) {
+        getEntityManager();
+        if (!entityManager.getTransaction().isActive()) {
+            entityManager.getTransaction().begin();
+        }
+        Remesa old = find(recibo.getSucursal(), recibo.getNumero());
+        old.setDetalle(recibo.getDetalle());
+        old.setPorConciliar(false);
+        old.setMontoEntrega(recibo.getMonto());
+        for (DetalleRemesa d : old.getDetalle()) {
+            d.setRemesa(old);
+            entityManager.persist(d);
+            if (d.getNotaDebitoProveedor() != null) {
+                d.getNotaDebitoProveedor().setRemesa(old);
+                entityManager.merge(d.getNotaDebitoProveedor());
+            }
+        }
+        entityManager.merge(old);
+        entityManager.getTransaction().commit();
+        recibo.setId(old.getId());
+        recibo.setDetalle(old.getDetalle());
+        closeEntityManager();
     }
 }

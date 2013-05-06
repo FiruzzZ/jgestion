@@ -199,7 +199,7 @@ public class JDBuscador extends javax.swing.JDialog {
         btnImprimir.setVisible(false);
     }
 
-    public void hideLimpiar() {
+    public void hideBtnToExcel() {
         btnToExcel.setVisible(false);
     }
 
