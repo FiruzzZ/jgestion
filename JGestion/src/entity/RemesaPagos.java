@@ -41,7 +41,7 @@ public class RemesaPagos implements Serializable {
     /**
      * 0=Efectivo ({@link DetalleCajaMovimientos}), 1=Cheque Propio, 2=Cheque
      * Tercero, 3=Nota de Crédito
-     * {@link NotaCreditoProveedor}, 4= {@link ComprobanteRetencion}
+     * {@link NotaCreditoProveedor}, 4= {@link ComprobanteRetencion}, 5= {@link CuentabancariaMovimientos}
      */
     @Basic(optional = false)
     @Column(name = "forma_pago", nullable = false)
@@ -82,9 +82,8 @@ public class RemesaPagos implements Serializable {
 
     /**
      *
-     * @return 0=Efectivo ({@link DetalleCajaMovimientos}), 1=Cheque Propio,
-     * 2=Cheque Tercero, 3=Nota de Crédito
-     * {@link NotaCreditoProveedor}, 4= {@link ComprobanteRetencion}
+     * @return value of formaPago
+     * @see #formaPago
      */
     public int getFormaPago() {
         return formaPago;
@@ -92,9 +91,8 @@ public class RemesaPagos implements Serializable {
 
     /**
      *
-     * @param formaPago 0=Efectivo ({@link DetalleCajaMovimientos}), 1=Cheque
-     * Propio, 2=Cheque Tercero, 3=Nota de Crédito {@link NotaCreditoProveedor}, 4=
-     * {@link ComprobanteRetencion}
+     * @param formaPago 
+     * @see #formaPago
      */
     public void setFormaPago(int formaPago) {
         this.formaPago = formaPago;

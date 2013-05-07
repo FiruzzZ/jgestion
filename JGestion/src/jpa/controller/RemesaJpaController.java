@@ -69,7 +69,7 @@ public class RemesaJpaController extends AbstractDAO<Remesa, Integer> {
         entityManager.persist(remesa);
         for (DetalleRemesa d : remesa.getDetalle()) {
             if (d.getNotaDebitoProveedor() != null) {
-                d.getNotaDebitoProveedor().setRemesa(remesa);
+                d.getNotaDebitoProveedor().setRemesa(remesa);       
                 entityManager.merge(d.getNotaDebitoProveedor());
             }
         }
@@ -270,15 +270,15 @@ public class RemesaJpaController extends AbstractDAO<Remesa, Integer> {
         }
     }
 
-    public void conciliar(Remesa recibo) {
+    public void conciliar(Remesa remesa) {
         getEntityManager();
         if (!entityManager.getTransaction().isActive()) {
             entityManager.getTransaction().begin();
         }
-        Remesa old = find(recibo.getSucursal(), recibo.getNumero());
-        old.setDetalle(recibo.getDetalle());
+        Remesa old = find(remesa.getSucursal(), remesa.getNumero());
+        old.setDetalle(remesa.getDetalle());
         old.setPorConciliar(false);
-        old.setMontoEntrega(recibo.getMonto());
+        old.setMontoEntrega(remesa.getMonto());
         for (DetalleRemesa d : old.getDetalle()) {
             d.setRemesa(old);
             entityManager.persist(d);
@@ -289,8 +289,8 @@ public class RemesaJpaController extends AbstractDAO<Remesa, Integer> {
         }
         entityManager.merge(old);
         entityManager.getTransaction().commit();
-        recibo.setId(old.getId());
-        recibo.setDetalle(old.getDetalle());
+        remesa.setId(old.getId());
+        remesa.setDetalle(old.getDetalle());
         closeEntityManager();
     }
 }
