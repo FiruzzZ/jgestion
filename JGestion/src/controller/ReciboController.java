@@ -683,9 +683,8 @@ public class ReciboController implements ActionListener, FocusListener {
      * @param modal
      * @param toAnular if true, se chequea
      * {@link PermisosJpaController.PermisoDe#ANULAR_COMPROBANTES}
-     * @param toConciliar
      */
-    public void showBuscador(Window owner, boolean modal, boolean toAnular, boolean toConciliar) {
+    public void showBuscador(Window owner, boolean modal, boolean toAnular) {
         // <editor-fold defaultstate="collapsed" desc="checking Permiso">
         try {
             UsuarioController.checkPermiso(PermisosController.PermisoDe.VENTA);
@@ -700,8 +699,12 @@ public class ReciboController implements ActionListener, FocusListener {
         if (toAnular) {
             buscador.setTitle(buscador.getTitle() + " para ANULAR");
         }
-        conciliando = toConciliar;
         initBuscador(toAnular);
+    }
+
+    public void showBuscadorToConciliar(Window owner) {
+        conciliando = true;
+        showBuscador(owner, true, false);
     }
 
     private void showReciboViewerMode(boolean toAnular) {
@@ -843,7 +846,7 @@ public class ReciboController implements ActionListener, FocusListener {
     @SuppressWarnings("unchecked")
     private void armarQuery() throws MessageException {
         StringBuilder query = new StringBuilder(
-                "SELECT o.id"
+                "   SELECT o.id"
                 + " FROM recibo o"
                 + " LEFT JOIN detalle_recibo dr ON (o.id = dr.recibo)"
                 + " LEFT JOIN factura_venta f ON (dr.factura_venta = f.id)"
@@ -932,7 +935,14 @@ public class ReciboController implements ActionListener, FocusListener {
     private void cargarBuscador(String query) {
         DefaultTableModel dtm = (DefaultTableModel) buscador.getjTable1().getModel();
         dtm.setRowCount(0);
-        List<Recibo> l = jpaController.findByNativeQuery("SELECT r.* FROM Recibo r WHERE r.id IN (" + query + ") ORDER BY r.sucursal, r.numero");
+        List<Recibo> l = jpaController.findByNativeQuery("SELECT r.*"
+                + " FROM " + jpaController.getEntityClass().getSimpleName() + " r"
+                + " WHERE r.id IN (" + query + ")"
+                + " ORDER BY r.sucursal, r.numero");
+        if (l.isEmpty()) {
+            JOptionPane.showMessageDialog(buscador, "La busqueda no produjo ningún resultado", null, JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
         for (Recibo o : l) {
             dtm.addRow(new Object[]{
                         o.getId(),

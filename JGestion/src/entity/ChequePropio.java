@@ -12,8 +12,8 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author FiruzzZ
  */
 @Entity
-@Table(name = "cheque_propio", uniqueConstraints={
-    @UniqueConstraint(name="unq_proveedor_banco_numero", columnNames={"proveedor", "banco", "numero"})
+@Table(name = "cheque_propio", uniqueConstraints = {
+    @UniqueConstraint(name = "unq_proveedor_banco_numero", columnNames = {"proveedor", "banco", "numero"})
 })
 @XmlRootElement
 @NamedQueries({
@@ -89,5 +89,10 @@ public class ChequePropio extends Cheque implements Serializable {
             return false;
         }
         return super.equals(object);
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + "ChequePropio{" + "id=" + id + ", proveedor=" + proveedor + ", cuentabancaria=" + cuentabancaria + '}';
     }
 }

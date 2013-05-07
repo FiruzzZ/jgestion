@@ -421,6 +421,11 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
         jMenuItem79.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/lupa-simple.png"))); // NOI18N
         jMenuItem79.setText("Buscador para Conciliar");
+        jMenuItem79.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem79ActionPerformed(evt);
+            }
+        });
         jMenu26.add(jMenuItem79);
 
         jMenu3.add(jMenu26);
@@ -1470,7 +1475,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
     }//GEN-LAST:event_jMenuItem36ActionPerformed
 
     private void jMenuItem34ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem34ActionPerformed
-        new ReciboController().showBuscador(this, false, false, false);
+        new ReciboController().showBuscador(this, false, false);
         refreshConnectionDB();
     }//GEN-LAST:event_jMenuItem34ActionPerformed
 
@@ -1805,7 +1810,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     }//GEN-LAST:event_jMenuItem76ActionPerformed
 
     private void jMenuItem77ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem77ActionPerformed
-        new ReciboController().showBuscador(this, false, true, false);
+        new ReciboController().showBuscador(this, false, true);
     }//GEN-LAST:event_jMenuItem77ActionPerformed
 
     private void jMenuItem78ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem78ActionPerformed
@@ -1877,12 +1882,20 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     }//GEN-LAST:event_jMenuItem80ActionPerformed
 
     private void jMenuItem81ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem81ActionPerformed
-       new ReciboController().showBuscador(this, false, false, true);
+       new ReciboController().showBuscadorToConciliar(this);
     }//GEN-LAST:event_jMenuItem81ActionPerformed
 
     private void jMenuItem91ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem91ActionPerformed
         new CuentabancariaMovimientosController().getConciliacion(this);
     }//GEN-LAST:event_jMenuItem91ActionPerformed
+
+    private void jMenuItem79ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem79ActionPerformed
+        try {
+            new RemesaController().showBuscadorToConciliar(this);
+        } catch (MessageException ex) {
+            ex.displayMessage(this);
+        }
+    }//GEN-LAST:event_jMenuItem79ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktopPane1;
