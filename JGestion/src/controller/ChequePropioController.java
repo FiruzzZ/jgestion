@@ -489,7 +489,7 @@ public class ChequePropioController implements ActionListener {
             query.append(" AND c.banco=").append(((ComboBoxWrapper<Banco>) jdChequeManager.getCbBancos().getSelectedItem()).getId());
         }
         if (jdChequeManager.getCbEmisor().getSelectedIndex() > 0) {
-            query.append(" AND c.cliente=").append(((Cliente) jdChequeManager.getCbEmisor().getSelectedItem()).getId());
+            query.append(" AND c.proveedor=").append(((ComboBoxWrapper<Proveedor>) jdChequeManager.getCbEmisor().getSelectedItem()).getId());
         }
         if (jdChequeManager.getCbEstados().getSelectedIndex() > 0) {
             query.append(" AND c.estado=").append(((ChequeEstado) jdChequeManager.getCbEstados().getSelectedItem()).getId());
@@ -514,7 +514,7 @@ public class ChequePropioController implements ActionListener {
             }
         } catch (DatabaseErrorException ex) {
             LOG.error(ex, ex);
-            JOptionPane.showMessageDialog(jdChequeManager, ex.getLocalizedMessage(), "Error recuperando Cheques Propios", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(jdChequeManager, ex.getLocalizedMessage()+":\n" + ex.getCause(), "Error recuperando Cheques Propios", JOptionPane.ERROR_MESSAGE);
         }
         totalizarSegunFechaCobro();
     }
