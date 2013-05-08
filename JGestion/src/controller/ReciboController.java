@@ -12,6 +12,7 @@ import java.awt.Component;
 import java.awt.Window;
 import java.awt.event.*;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -633,8 +634,11 @@ public class ReciboController implements ActionListener, FocusListener {
         }
         FacturaVenta facturaToAddToDetail = null;
         if (selectedCtaCte != null) {
-            if (entrega$.doubleValue() > (selectedCtaCte.getImporte() - selectedCtaCte.getEntregado())) {
-                throw new MessageException("Monto de entrega no puede ser mayor al Saldo restante (" + (selectedCtaCte.getImporte() - selectedCtaCte.getEntregado()) + ")");
+            BigDecimal d = BigDecimal.valueOf(selectedCtaCte.getImporte()).setScale(2, RoundingMode.HALF_EVEN)
+                    .subtract(
+                    BigDecimal.valueOf(selectedCtaCte.getEntregado()).setScale(2, RoundingMode.HALF_EVEN));
+            if (entrega$.compareTo(d) == 1) {
+                throw new MessageException("Monto de entrega no puede ser mayor al Saldo restante (" + d + ")");
             }
             facturaToAddToDetail = selectedCtaCte.getFactura();
             //check que no se inserte + de una entrega de la misma factura
