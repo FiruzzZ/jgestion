@@ -40,7 +40,6 @@ public class TableExcelExporter {
     private HSSFSheet sheet;
     // the style for Date column
     private CellStyle DATE_CELL_STYLE;
-    private CellStyle TIMESTAMP_CELL_STYLE;
     // the style for Money cells
     private CellStyle MONEY_CELL_STYLE;
     // the style for Money cells with negative value
@@ -50,6 +49,11 @@ public class TableExcelExporter {
     private HashMap<Integer, CellStyle> cellStylePerColumn;
     private HSSFWorkbook workBook;
 
+    /**
+     * 
+     * @param file
+     * @param table where the values are taken (NOT FROM THE MODEL!)
+     */
     public TableExcelExporter(File file, JTable table) {
         this.table = table;
         this.file = file;
@@ -121,7 +125,6 @@ public class TableExcelExporter {
                     }
                     if (cellStylePerColumn.containsKey(columnIdx)) {
                         cell.setCellStyle(cellStylePerColumn.get(columnIdx));
-
                     }
                 }
             }
@@ -134,7 +137,6 @@ public class TableExcelExporter {
         DATE_CELL_STYLE = wb.createCellStyle();
         // add date format
         DATE_CELL_STYLE.setDataFormat(createHelper.createDataFormat().getFormat("dd/MM/yyyy"));
-        TIMESTAMP_CELL_STYLE.setDataFormat(createHelper.createDataFormat().getFormat("dd/MM/yyyy HH:mm:ss"));
         // vertical align top
 //        _dateCellStyle.setVerticalAlignment(CellStyle.VERTICAL_TOP);
 
@@ -213,7 +215,6 @@ public class TableExcelExporter {
         // CreationHelper for create CellStyle
         CreationHelper createHelper = wb.getCreationHelper();
         CellStyle cs = wb.createCellStyle();
-        // add date format
         cs.setDataFormat(createHelper.createDataFormat().getFormat(format));
         cellStylePerColumn.put(column, cs);
     }
