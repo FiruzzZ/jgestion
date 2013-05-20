@@ -411,7 +411,6 @@ public class CajaMovimientosController implements ActionListener {
         });
         jdCajaToCaja.setListener(this);
         jdCajaToCaja.setVisible(true);
-        jdCajaToCaja.dispose();
     }
 
     private void asentarMovimientoCajaToCaja() throws MessageException, Exception {
@@ -509,7 +508,7 @@ public class CajaMovimientosController implements ActionListener {
             }
             balanceCajaActual = UTIL.PRECIO_CON_PUNTO.format(totalIngresos.add(totalEgresos));
         } catch (ClassCastException e) {
-            LOG.error("casteando caja movimientos", e);
+            //ignored..
         }
 
         if (name.equalsIgnoreCase("CajaOrigen")) {
@@ -736,7 +735,6 @@ public class CajaMovimientosController implements ActionListener {
 
     @SuppressWarnings("unchecked")
     private String armarQueryMovimientosVarios() throws Exception {
-        SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd");
         String query = "SELECT o.id, CONCAT(o.cajaMovimientos.caja.nombre, CONCAT(\" (\", CONCAT(o.cajaMovimientos.id, \")\"))),"
                 + " o.descripcion, o.unidadDeNegocio, o.cuenta, o.subCuenta, o.fechaMovimiento, o.monto, o.fecha, o.usuario.nick FROM " + DetalleCajaMovimientos.class.getSimpleName() + " o "
                 + " WHERE o.tipo=" + DetalleCajaMovimientosController.MOVIMIENTO_VARIOS;
@@ -767,11 +765,11 @@ public class CajaMovimientosController implements ActionListener {
         }
 
         if (panelBuscadorMovimientosVarios.getDcDesde() != null) {
-            query += " AND o.fechaMovimiento >='" + df.format(panelBuscadorMovimientosVarios.getDcDesde()) + "'";
+            query += " AND o.fechaMovimiento >='" + UTIL.yyyy_MM_dd.format(panelBuscadorMovimientosVarios.getDcDesde()) + "'";
         }
 
         if (panelBuscadorMovimientosVarios.getDcHasta() != null) {
-            query += " AND o.fechaMovimiento <='" + df.format(panelBuscadorMovimientosVarios.getDcHasta()) + "'";
+            query += " AND o.fechaMovimiento <='" + UTIL.yyyy_MM_dd.format(panelBuscadorMovimientosVarios.getDcHasta()) + "'";
         }
         if (panelBuscadorMovimientosVarios.getCbUnidadDeNegocio().getSelectedIndex() > 0) {
             query += " AND o.unidadDeNegocio.id = " + ((ComboBoxWrapper<UnidadDeNegocio>) panelBuscadorMovimientosVarios.getCbUnidadDeNegocio().getSelectedItem()).getId();
@@ -846,7 +844,7 @@ public class CajaMovimientosController implements ActionListener {
         DefaultTableModel dtm = (DefaultTableModel) buscador.getjTable1().getModel();
         for (int row = 0; row < dtm.getRowCount(); row++) {
             data.add(new GenericBeanCollection(dtm.getValueAt(row, 1), dtm.getValueAt(row, 2), dtm.getValueAt(row, 3), dtm.getValueAt(row, 4), dtm.getValueAt(row, 5),
-                    dtm.getValueAt(row, 6), BigDecimal.valueOf((Double) dtm.getValueAt(row, 7)), null, null, null, null, null));
+                    dtm.getValueAt(row, 6), dtm.getValueAt(row, 7), null, null, null, null, null));
         }
         r.setDataSource(data);
         r.addConnection();

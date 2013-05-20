@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Form version="1.3" maxVersion="1.8" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+  </AuxValues>
+
+  <Layout>
+    <DimensionLayout dim="0">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" attributes="0">
+                      <Component id="checkContado" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="checkCtaCte" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="checkAnuladas" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                  </Group>
+                  <Group type="102" attributes="0">
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Component id="labelClieProv" max="-2" attributes="0"/>
+                          <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="cbComprasVentas" min="-2" pref="117" max="-2" attributes="0"/>
+                          <Component id="cbClieProv" min="-2" pref="220" max="-2" attributes="1"/>
+                      </Group>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                          <Component id="labelSucursal" alignment="1" min="-2" max="-2" attributes="0"/>
+                          <Component id="labelUnidadDeNegocio" alignment="1" min="-2" max="-2" attributes="0"/>
+                          <Component id="labelCuenta" alignment="1" min="-2" max="-2" attributes="0"/>
+                          <Component id="labelSubCuenta" alignment="1" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                          <Component id="cbSubCuenta" alignment="0" pref="220" max="32767" attributes="1"/>
+                          <Component id="cbUnidadDeNegocio" alignment="0" max="32767" attributes="1"/>
+                          <Component id="cbSucursal" alignment="0" max="32767" attributes="1"/>
+                          <Component id="cbCuenta" alignment="0" max="32767" attributes="1"/>
+                      </Group>
+                      <EmptySpace type="separate" max="32767" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="jLabel3" alignment="1" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jLabel4" alignment="1" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jLabel5" alignment="1" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jLabel2" alignment="1" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="dcDesdeSistema" alignment="0" min="-2" pref="120" max="-2" attributes="1"/>
+                                  <Component id="dcDesde" alignment="0" min="-2" pref="120" max="-2" attributes="1"/>
+                                  <Component id="dcHasta" alignment="0" min="-2" pref="120" max="-2" attributes="1"/>
+                              </Group>
+                          </Group>
+                          <Group type="102" alignment="1" attributes="0">
+                              <EmptySpace min="-2" pref="74" max="-2" attributes="0"/>
+                              <Component id="dcHastaSistema" min="-2" pref="120" max="-2" attributes="1"/>
+                          </Group>
+                      </Group>
+                  </Group>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+    <DimensionLayout dim="1">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" attributes="0">
+              <EmptySpace min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="2" attributes="0">
+                  <Component id="labelUnidadDeNegocio" alignment="2" min="-2" max="-2" attributes="0"/>
+                  <Component id="cbComprasVentas" alignment="2" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel1" alignment="2" min="-2" max="-2" attributes="0"/>
+                  <Component id="dcDesde" alignment="2" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel2" alignment="2" min="-2" max="-2" attributes="0"/>
+                  <Component id="cbUnidadDeNegocio" alignment="2" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="2" attributes="0">
+                  <Component id="labelClieProv" alignment="2" min="-2" max="-2" attributes="0"/>
+                  <Component id="cbClieProv" alignment="2" min="-2" max="-2" attributes="0"/>
+                  <Component id="dcHasta" alignment="2" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel3" alignment="2" min="-2" pref="20" max="-2" attributes="0"/>
+                  <Component id="labelSucursal" alignment="2" min="-2" pref="20" max="-2" attributes="0"/>
+                  <Component id="cbSucursal" alignment="2" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="2" attributes="0">
+                  <Component id="dcDesdeSistema" alignment="2" min="-2" max="-2" attributes="0"/>
+                  <Component id="cbCuenta" alignment="2" min="-2" max="-2" attributes="0"/>
+                  <Component id="labelCuenta" alignment="2" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel4" alignment="2" min="-2" max="-2" attributes="0"/>
+                  <Component id="checkAnuladas" alignment="2" min="-2" max="-2" attributes="0"/>
+                  <Component id="checkContado" alignment="2" min="-2" max="-2" attributes="0"/>
+                  <Component id="checkCtaCte" alignment="2" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="2" attributes="0">
+                  <Component id="labelSubCuenta" alignment="2" min="-2" max="-2" attributes="0"/>
+                  <Component id="cbSubCuenta" alignment="2" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel5" alignment="2" min="-2" max="-2" attributes="0"/>
+                  <Component id="dcHastaSistema" alignment="2" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+  </Layout>
+  <SubComponents>
+    <Component class="javax.swing.JLabel" name="jLabel1">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Facturas"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="cbComprasVentas">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="3">
+            <StringItem index="0" value="&lt;Elegir&gt;"/>
+            <StringItem index="1" value="COMPRA"/>
+            <StringItem index="2" value="VENTA"/>
+          </StringArray>
+        </Property>
+      </Properties>
+      <Events>
+        <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="cbComprasVentasItemStateChanged"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="checkContado">
+      <Properties>
+        <Property name="selected" type="boolean" value="true"/>
+        <Property name="text" type="java.lang.String" value="Contado"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="checkCtaCte">
+      <Properties>
+        <Property name="selected" type="boolean" value="true"/>
+        <Property name="text" type="java.lang.String" value="a Ctas. Ctes."/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="checkAnuladas">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Anuladas"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel3">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Hasta"/>
+      </Properties>
+    </Component>
+    <Component class="com.toedter.calendar.JDateChooser" name="dcHasta">
+    </Component>
+    <Component class="com.toedter.calendar.JDateChooser" name="dcDesde">
+    </Component>
+    <Component class="com.toedter.calendar.JDateChooser" name="dcDesdeSistema">
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel4">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Sistema Desde"/>
+      </Properties>
+    </Component>
+    <Component class="com.toedter.calendar.JDateChooser" name="dcHastaSistema">
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel5">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Sistema Hasta"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel2">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Desde"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="labelUnidadDeNegocio">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Unid. de Neg."/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="labelClieProv">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Client/Proveed"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="cbClieProv">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="0"/>
+        </Property>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="cbUnidadDeNegocio">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="0"/>
+        </Property>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="labelSucursal">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Sucursal"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="cbSucursal">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="0"/>
+        </Property>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="labelCuenta">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Cuenta"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="cbCuenta">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="0"/>
+        </Property>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="labelSubCuenta">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="SubCuenta"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="cbSubCuenta">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="0"/>
+        </Property>
+      </Properties>
+    </Component>
+  </SubComponents>
+</Form>

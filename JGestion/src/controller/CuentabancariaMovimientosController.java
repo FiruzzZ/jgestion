@@ -4,6 +4,7 @@ import entity.CuentaBancaria;
 import controller.exceptions.MessageException;
 import entity.Banco;
 import entity.CuentabancariaMovimientos;
+import entity.CuentabancariaMovimientos_;
 import entity.OperacionesBancarias;
 import gui.JDABM;
 import gui.JDConciliacionBancaria;
@@ -15,12 +16,14 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import jgestion.JGestionUtils;
 import jpa.controller.CuentabancariaMovimientosJpaController;
 import org.apache.log4j.Logger;
 import utilities.general.UTIL;
@@ -449,6 +452,7 @@ public class CuentabancariaMovimientosController {
 
     public JDialog getConciliacion(Window owner) {
         final JDConciliacionBancaria jd = new JDConciliacionBancaria(owner, true);
+        UTIL.loadComboBox(jd.getCbBancos(), JGestionUtils.getWrappedBancos(new BancoController().findAllWithCuentasBancarias()), false);
         UTIL.getDefaultTableModel(jd.getjTable1(),
                 new String[]{"Object", "Fecha", "Concepto", "Débito", "Crédito", "Salgo", "Consolidado"},
                 new int[]{1, 60, 300, 100, 100, 100, 30},
@@ -458,21 +462,71 @@ public class CuentabancariaMovimientosController {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
+                    CuentaBancaria cuentaBancaria;
+                    try {
+                        cuentaBancaria = ((ComboBoxWrapper<CuentaBancaria>) jd.getCbCuentabancaria().getSelectedItem()).getEntity();
+                    } catch (ClassCastException ex) {
+                        throw new MessageException("Cuenta bancaria no válida");
+                    }
+                    if (jd.getDcDesde() == null || jd.getDcHasta() == null) {
+                        throw new MessageException("Debe especificar una rango de fechas (Desde y Hasta) para recuperar los movimientos bancarios");
+                    }
                     StringBuilder query = new StringBuilder("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o "
                             + "WHERE ");
-                    query.append(" o.cuentaBancaria.id=").append(((ComboBoxWrapper<?>) jd.getCbCuentabancaria().getSelectedItem()).getId());
-                    if (jd.getDcDesde() != null || jd.getDcHasta() != null) {
-                        query.append(" AND o.fechaCreditoDebito BETWEEN '").append(UTIL.yyyy_MM_dd.format(jd.getDcDesde())).append("'");
-                        query.append("  AND '").append(UTIL.yyyy_MM_dd.format(jd.getDcHasta())).append("'");
-                    } else {
-                        throw new MessageException("");
-                    }
+                    query.append(" o.cuentaBancaria.id=").append(cuentaBancaria.getId())
+                            .append(" AND o.").append(CuentabancariaMovimientos_.fechaCreditoDebito.getName())
+                            .append(" BETWEEN '").append(UTIL.yyyy_MM_dd.format(jd.getDcDesde().getDate())).append("'")
+                            .append("  AND '").append(UTIL.yyyy_MM_dd.format(jd.getDcHasta().getDate())).append("'");
+                    query.append(" ORDER BY o.").append(CuentabancariaMovimientos_.fechaCreditoDebito.getName()).append(" DESC");
                     LOG.debug(query.toString());
                     List<CuentabancariaMovimientos> l = jpaController.findByQuery(query.toString());
+                    DefaultTableModel dtm = (DefaultTableModel) jd.getjTable1().getModel();
+                    dtm.setRowCount(0);
+                    BigDecimal saldo = BigDecimal.ZERO.setScale(2, RoundingMode.HALF_EVEN);
+                    for (CuentabancariaMovimientos cbm : l) {
+                        saldo = saldo.add(cbm.getCredito());
+                        saldo = saldo.subtract(cbm.getDebito());
+                        dtm.addRow(new Object[]{cbm, cbm.getFechaCreditoDebito(), cbm.getDescripcion(), cbm.getDebito(), cbm.getCredito(), saldo});
+                    }
                 } catch (MessageException ex) {
                     ex.displayMessage(jd);
                 } catch (Exception ex) {
                     LOG.error("query conciliacion", ex);
+                }
+            }
+        });
+        jd.getBtnAgregar().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    CuentaBancaria cuentaBancaria;
+                    try {
+                        cuentaBancaria = ((ComboBoxWrapper<CuentaBancaria>) jd.getCbCuentabancaria().getSelectedItem()).getEntity();
+                    } catch (ClassCastException ex) {
+                        throw new MessageException("Cuenta bancaria no válida");
+                    }
+                    String concepto = jd.getTfConcepto().getText().trim();
+                    BigDecimal importe;
+                    if (concepto.isEmpty()) {
+                        throw new MessageException("Concepto no válido");
+                    }
+                    if (jd.getDcConceptoFecha().getDate() == null) {
+                        throw new MessageException("Fecha no válida");
+                    }
+                    try {
+                        importe = new BigDecimal(jd.getTfImporte().getText());
+                    } catch (Exception ex) {
+                        throw new MessageException("Importe no válido");
+                    }
+                    CuentabancariaMovimientos cbm = new CuentabancariaMovimientos(new Date(), concepto, jd.getDcConceptoFecha().getDate(),
+                            jd.getRadioDebito().isSelected() ? BigDecimal.ZERO : importe,
+                            jd.getRadioDebito().isSelected() ? importe : BigDecimal.ZERO, false, UsuarioController.getCurrentUser(),
+                            new OperacionesBancariasController().getOperacion(OperacionesBancariasController.AJUSTE), cuentaBancaria, null, null, false);
+                } catch (MessageException ex) {
+                    ex.displayMessage(jd);
+                } catch (Exception ex) {
+                    LOG.error("Agregando concepto en conciliacion", ex);
+                    JOptionPane.showMessageDialog(jd, "Algo salió mal", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });

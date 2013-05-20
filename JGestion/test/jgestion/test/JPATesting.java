@@ -6,33 +6,54 @@ import ar.com.fdvs.dj.domain.DynamicReport;
 import ar.com.fdvs.dj.domain.Style;
 import ar.com.fdvs.dj.domain.builders.ColumnBuilder;
 import ar.com.fdvs.dj.domain.builders.DynamicReportBuilder;
-import ar.com.fdvs.dj.domain.builders.SubReportBuilder;
 import ar.com.fdvs.dj.domain.constants.Font;
 import ar.com.fdvs.dj.domain.constants.HorizontalAlign;
-import ar.com.fdvs.dj.domain.entities.Subreport;
+import controller.Contabilidad;
 import controller.DAO;
 import controller.Reportes;
+import controller.TableExcelExporter;
+import controller.UsuarioController;
 import entity.*;
 import generics.PropsUtils;
+import gui.PanelDetalleFacturacion;
 import java.io.File;
-import java.io.IOException;
+import java.io.FileOutputStream;
 import java.math.BigDecimal;
-import java.util.Arrays;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 import jpa.controller.*;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.apache.log4j.PropertyConfigurator;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRichTextString;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.CellRangeAddress;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import utilities.general.UTIL;
-import utilities.swing.components.ComboBoxWrapper;
+import utilities.swing.components.FormatRenderer;
+import utilities.swing.components.NumberRenderer;
 
 /**
  *
@@ -47,7 +68,8 @@ public class JPATesting {
             PropertyConfigurator.configure("log4j.properties");
             Properties properties = PropsUtils.load(new File("cfg.ini"));
             DAO.setProperties(properties);
-            new JPATesting().dynamicReport();
+            new UsuarioController().checkLoginUser("admin", "asdfasdf");
+            new JPATesting();
         } catch (Exception ex) {
             LOG.log(Level.SEVERE, null, ex);
         }
@@ -55,6 +77,24 @@ public class JPATesting {
 
     @SuppressWarnings("unchecked")
     public JPATesting() throws Exception {
+        List<Object[]> l = new Contabilidad().armarQueryDetalleFacturacion(new PanelDetalleFacturacion());
+        JTable table = new JTable();
+        UTIL.getDefaultTableModel(
+                table,
+                new String[]{"DetalleVenta.id", "I-E", "Egreso", "Ingreso", "Cond. Vta", "Fecha", "Fecha Sistema", "UDN", "Cuenta", "Sub cuenta", "Sujeto", "Productos", "F. Tipo", "F. Sucursal", "F Nro", "Sucursal", "Caja", "Año", "Mes"},
+                new int[]{1, 10, 90, 90, 10, 50, 80, 100, 100, 100, 200, 50, 20, 40, 60, 100, 100, 20, 20});
+        TableColumnModel tm = table.getColumnModel();
+        tm.getColumn(2).setCellRenderer(NumberRenderer.getCurrencyRenderer(4));
+        tm.getColumn(3).setCellRenderer(NumberRenderer.getCurrencyRenderer(4));
+        tm.getColumn(5).setCellRenderer(FormatRenderer.getDateRenderer());
+        tm.getColumn(6).setCellRenderer(FormatRenderer.getDateTimeRenderer());
+        UTIL.hideColumnTable(table, 0);
+        table.setAutoCreateRowSorter(true);
+        DefaultTableModel dtm = (DefaultTableModel) table.getModel();
+        for (Object[] objects : l) {
+            dtm.addRow(objects);
+        }
+        new TableExcelExporter(new File("d:\\asdf.xls"), table).export();
     }
 
     private void updateCostoCompraYPrecioVentaSegunDetalleCompra() {
