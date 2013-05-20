@@ -1,15 +1,20 @@
 package jgestion;
 
-import entity.CuentaBancaria;
 import entity.*;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import utilities.general.UTIL;
 import utilities.swing.components.ComboBoxWrapper;
 
@@ -19,7 +24,26 @@ import utilities.swing.components.ComboBoxWrapper;
  */
 public class JGestionUtils {
 
-    private JGestionUtils() {
+    public JGestionUtils() {
+    }
+
+    public File openFileChooser(Component parent, String description, File fileDir, String... fileExtensionsAllow) throws IOException {
+        JFileChooser fileChooser = new JFileChooser();
+        File file = null;
+        if (fileExtensionsAllow != null && fileExtensionsAllow.length > 0) {
+            FileNameExtensionFilter filter = new FileNameExtensionFilter(description, fileExtensionsAllow);
+            fileChooser.setFileFilter(filter);
+            fileChooser.addChoosableFileFilter(filter);
+        }
+        fileChooser.setCurrentDirectory(fileDir);
+        int stateFileChoosed = fileChooser.showOpenDialog(parent);
+        if (stateFileChoosed == JFileChooser.APPROVE_OPTION) {
+            file = fileChooser.getSelectedFile();
+            if (file.exists() && JOptionPane.YES_OPTION != JOptionPane.showConfirmDialog(parent, "Ya existe el archivo " + file.getName() + ", ¿Desea reemplazarlo?", null, JOptionPane.YES_NO_OPTION)) {
+                return null;
+            }
+        }
+        return file;
     }
 
     @Override

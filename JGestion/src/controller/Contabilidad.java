@@ -39,6 +39,7 @@ import gui.PanelBalanceComprasVentas;
 import gui.PanelBalanceGeneral;
 import gui.PanelDetalleFacturacion;
 import gui.PanelProductosCostoVenta;
+import java.awt.Desktop;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -46,6 +47,8 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
@@ -1288,15 +1291,13 @@ public class Contabilidad {
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
                 new String[]{"DetalleVenta.id", "I-E", "Egreso", "Ingreso", "Cond. Vta", "Fecha", "Fecha Sistema", "UDN", "Cuenta", "Sub cuenta", "Sujeto", "Productos", "F. Tipo", "F. Sucursal", "F Nro", "Sucursal", "Caja", "Año", "Mes"},
-                new int[]{1, 10, 90, 90, 10, 50, 80, 100, 100, 100, 200, 50, 20, 40, 60, 100, 100, 20, 20});
+                new int[]{1, 10, 90, 90, 10, 50, 80, 100, 100, 100, 200, 50, 20, 40, 60, 100, 100, 20, 20},
+                new Class<?>[]{null, null, null, null, null, null, null, null, null, null, null, null, null, Integer.class, Integer.class, null, null, Integer.class, Integer.class});
         TableColumnModel tm = buscador.getjTable1().getColumnModel();
         tm.getColumn(2).setCellRenderer(NumberRenderer.getCurrencyRenderer(4));
         tm.getColumn(3).setCellRenderer(NumberRenderer.getCurrencyRenderer(4));
         tm.getColumn(5).setCellRenderer(FormatRenderer.getDateRenderer());
         tm.getColumn(6).setCellRenderer(FormatRenderer.getDateTimeRenderer());
-//        tm.getColumn(11).setCellRenderer(NumberRenderer.getCurrencyRenderer(4));
-//        tm.getColumn(12).setCellRenderer(NumberRenderer.getIntegerRenderer());
-//        tm.getColumn(13).setCellRenderer(NumberRenderer.getCurrencyRenderer(4));
         UTIL.hideColumnTable(buscador.getjTable1(), 0);
         buscador.getjTable1().setAutoCreateRowSorter(true);
         buscador.getBtnBuscar().addActionListener(new ActionListener() {
@@ -1316,8 +1317,34 @@ public class Contabilidad {
 
             }
         });
-//        buscador.getBtnImprimir().setVisible(false);
-//        buscador.getBtnToExcel().setVisible(false);
+        buscador.getBtnToExcel().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    if (buscador.getjTable1().getRowCount() < 1) {
+                        throw new MessageException("La tabla no tiene ningún dato a exportar");
+                    }
+                    File file = new JGestionUtils().openFileChooser(buscador, "Exportar Detalle de Facturacion", null, "xls", "xlsx");
+                    if (file != null) {
+                        TableExcelExporter tee = new TableExcelExporter(file, buscador.getjTable1());
+                        tee.setCellStyle(5, "dd/MM/yyyy HH:mm:ss");
+                        tee.export();
+                        if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(buscador, "Archivo creado\n¿Abrir archivo generado?", null, JOptionPane.YES_NO_OPTION)) {
+                            Desktop.getDesktop().open(file);
+                        }
+                    }
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(buscador, "Algo salió mal exportando detalle de facturación\n" + ex.getLocalizedMessage(), null, JOptionPane.ERROR_MESSAGE);
+                    LOG.error("exportando detallefacturacion", ex);
+                } catch (MessageException ex) {
+                    ex.displayMessage(buscador);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(buscador, "Algo salió mal exportando detalle de facturación\n" + ex.getLocalizedMessage(), null, JOptionPane.ERROR_MESSAGE);
+                    LOG.error("exportando detallefacturacion", ex);
+                }
+            }
+        });
+        buscador.getBtnImprimir().setEnabled(false);
         buscador.setVisible(true);
     }
 
@@ -1358,10 +1385,10 @@ public class Contabilidad {
         }
         queryIngresos.append(")");
         queryEgresos.append(")");
-        
+
         queryIngresos.append(" AND fv.anulada=").append(p.isCheckAnuladas());
         queryEgresos.append(" AND fv.anulada=").append(p.isCheckAnuladas());
-        
+
         if (p.getCbClieProv().getSelectedIndex() > 0) {
             queryIngresos.append(" AND fv.cliente.id=").append(((ComboBoxWrapper<?>) p.getCbClieProv().getSelectedItem()).getId());
             queryEgresos.append(" AND fv.proveedor.id=").append(((ComboBoxWrapper<?>) p.getCbClieProv().getSelectedItem()).getId());
@@ -1379,28 +1406,28 @@ public class Contabilidad {
             queryEgresos.append(" AND fv.subCuenta.id=").append(((ComboBoxWrapper<?>) p.getCbSubCuenta().getSelectedItem()).getId());
         }
         if (p.getDcDesde() != null) {
-            queryIngresos.append(" AND fv.fechaVenta >='").append(UTIL.DATE_FORMAT.format(p.getDcDesde())).append("'");
-            queryEgresos.append(" AND fv.fechaCompra >='").append(UTIL.DATE_FORMAT.format(p.getDcDesde())).append("'");
+            queryIngresos.append(" AND fv.fechaVenta >='").append(UTIL.yyyy_MM_dd.format(p.getDcDesde())).append("'");
+            queryEgresos.append(" AND fv.fechaCompra >='").append(UTIL.yyyy_MM_dd.format(p.getDcDesde())).append("'");
         }
         if (p.getDcHasta() != null) {
-            queryIngresos.append(" AND fv.fechaVenta <='").append(UTIL.DATE_FORMAT.format(p.getDcHasta())).append("'");
-            queryEgresos.append(" AND fv.fechaCompra <='").append(UTIL.DATE_FORMAT.format(p.getDcHasta())).append("'");
+            queryIngresos.append(" AND fv.fechaVenta <='").append(UTIL.yyyy_MM_dd.format(p.getDcHasta())).append("'");
+            queryEgresos.append(" AND fv.fechaCompra <='").append(UTIL.yyyy_MM_dd.format(p.getDcHasta())).append("'");
         }
         if (p.getDcDesdeSistema() != null) {
-            queryIngresos.append(" AND fv.").append(FacturaVenta_.fechaalta.getName()).append(" >='").append(UTIL.DATE_FORMAT.format(p.getDcDesdeSistema())).append("'");
-            queryEgresos.append(" AND fv.").append(FacturaCompra_.fechaalta.getName()).append(" >='").append(UTIL.DATE_FORMAT.format(p.getDcDesdeSistema())).append("'");
+            queryIngresos.append(" AND fv.").append(FacturaVenta_.fechaalta.getName()).append(" >='").append(UTIL.yyyy_MM_dd.format(p.getDcDesdeSistema())).append("'");
+            queryEgresos.append(" AND fv.").append(FacturaCompra_.fechaalta.getName()).append(" >='").append(UTIL.yyyy_MM_dd.format(p.getDcDesdeSistema())).append("'");
         }
         if (p.getDcHastaSistema() != null) {
-            queryIngresos.append(" AND fv.").append(FacturaVenta_.fechaalta.getName()).append(" <='").append(UTIL.DATE_FORMAT.format(p.getDcHastaSistema())).append("'");
-            queryEgresos.append(" AND fv.").append(FacturaCompra_.fechaalta.getName()).append(" <='").append(UTIL.DATE_FORMAT.format(p.getDcHastaSistema())).append("'");
+            queryIngresos.append(" AND fv.").append(FacturaVenta_.fechaalta.getName()).append(" <='").append(UTIL.yyyy_MM_dd.format(p.getDcHastaSistema())).append("'");
+            queryEgresos.append(" AND fv.").append(FacturaCompra_.fechaalta.getName()).append(" <='").append(UTIL.yyyy_MM_dd.format(p.getDcHastaSistema())).append("'");
         }
         String q;
         if (p.getCbComprasVentas().getSelectedIndex() == 0) {
             q = queryIngresos.toString() + " UNION " + queryEgresos.toString();
         } else if (p.getCbComprasVentas().getSelectedIndex() == 1) {
-            q = queryIngresos.toString();
-        } else {
             q = queryEgresos.toString();
+        } else {
+            q = queryIngresos.toString();
         }
         @SuppressWarnings("unchecked")
         List<Object[]> l = DAO.createQuery(q, false).getResultList();

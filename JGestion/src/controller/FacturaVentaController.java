@@ -1080,18 +1080,18 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                     if (buscador.getjTable1().getRowCount() < 1) {
                         throw new MessageException("No hay info para exportar.");
                     }
-                    File currentDirectory = openFileChooser("Archivo Excel", null, "xls");
+                    File currentDirectory = new JGestionUtils().openFileChooser(buscador, "Archivo Excel", null, "xls");
                     if (currentDirectory != null) {
                         doReportFacturas(currentDirectory.getCanonicalPath());
                     }
                 } catch (MissingReportException ex) {
-                    java.util.logging.Logger.getLogger(FacturaVentaController.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                    JOptionPane.showMessageDialog(buscador, ex.getMessage());
                 } catch (JRException ex) {
-                    java.util.logging.Logger.getLogger(FacturaVentaController.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                    JOptionPane.showMessageDialog(buscador, ex.getMessage());
                 } catch (IOException ex) {
-                    java.util.logging.Logger.getLogger(FacturaVentaController.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                    JOptionPane.showMessageDialog(buscador, ex.getMessage());
                 } catch (MessageException ex) {
-                    java.util.logging.Logger.getLogger(FacturaVentaController.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                    JOptionPane.showMessageDialog(buscador, ex.getMessage());
                 }
             }
         });
@@ -1099,25 +1099,6 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         buscador.setListeners(this);
         buscador.setLocationRelativeTo(frame);
         buscador.setVisible(true);
-    }
-
-    private File openFileChooser(String description, File fileDir, String... fileExtensionsAllow) throws IOException {
-        JFileChooser fileChooser = new JFileChooser();
-        File file = null;
-        if (fileExtensionsAllow != null && fileExtensionsAllow.length > 0) {
-            FileNameExtensionFilter filter = new FileNameExtensionFilter(description, fileExtensionsAllow);
-            fileChooser.setFileFilter(filter);
-            fileChooser.addChoosableFileFilter(filter);
-        }
-        fileChooser.setCurrentDirectory(fileDir);
-        int stateFileChoosed = fileChooser.showOpenDialog(buscador);
-        if (stateFileChoosed == JFileChooser.APPROVE_OPTION) {
-            file = fileChooser.getSelectedFile();
-            if (file.exists()) {
-                JOptionPane.showConfirmDialog(buscador, "");
-            }
-        }
-        return file;
     }
 
     private void doReportFacturas(String excelFilePath) throws MissingReportException, JRException, FileNotFoundException, IOException {
