@@ -7,18 +7,24 @@ import entity.Caja;
 import entity.ChequePropio;
 import entity.ChequeTerceros;
 import entity.Cliente;
+import entity.Cuenta;
 import entity.DetalleCajaMovimientos;
+import entity.DetalleCompra;
 import entity.DetalleListaPrecios;
 import entity.DetalleVenta;
 import entity.FacturaCompra;
+import entity.FacturaCompra_;
 import entity.FacturaVenta;
+import entity.FacturaVenta_;
 import entity.ListaPrecios;
 import entity.Marca;
 import entity.NotaCredito;
 import entity.Producto;
 import entity.Proveedor;
 import entity.Rubro;
+import entity.SubCuenta;
 import entity.Sucursal;
+import entity.UnidadDeNegocio;
 import generics.GenericBeanCollection;
 import java.text.DecimalFormat;
 import utilities.general.UTIL;
@@ -31,6 +37,7 @@ import gui.JDResumenGeneralCtaCte;
 import gui.JFP;
 import gui.PanelBalanceComprasVentas;
 import gui.PanelBalanceGeneral;
+import gui.PanelDetalleFacturacion;
 import gui.PanelProductosCostoVenta;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
@@ -44,6 +51,7 @@ import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -934,11 +942,11 @@ public class Contabilidad {
             queryFactuCompra.append(" AND o.fecha_compra <= '").append(yyyyMMdd.format(buscadorReRe.getDcHasta())).append("'");
             queryNotaCredito.append(" AND o.fecha_nota_credito <= '").append(yyyyMMdd.format(buscadorReRe.getDcDesde())).append("'");
         }
-        if(buscadorReRe.getDcDesdeSistema() != null) {
+        if (buscadorReRe.getDcDesdeSistema() != null) {
             queryFactuCompra.append(" AND o.fechaalta >= '").append(yyyyMMdd.format(buscadorReRe.getDcDesdeSistema())).append("'");
             queryNotaCredito.append(" AND o.fecha_Carga >= '").append(yyyyMMdd.format(buscadorReRe.getDcDesdeSistema())).append("'");
         }
-        if(buscadorReRe.getDcHastaSistema() != null) {
+        if (buscadorReRe.getDcHastaSistema() != null) {
             queryFactuCompra.append(" AND o.fechaalta <= '").append(yyyyMMdd.format(buscadorReRe.getDcHastaSistema())).append("'");
             queryNotaCredito.append(" AND o.fecha_Carga <= '").append(yyyyMMdd.format(buscadorReRe.getDcHastaSistema())).append("'");
         }
@@ -1046,11 +1054,11 @@ public class Contabilidad {
             queryWhereFactuVenta.append(" AND o.fechaVenta <= '").append(yyyyMMdd.format(buscadorReRe.getDcHasta())).append("'");
             queryWhereNotaCredito.append(" AND o.fechaNotaCredito <= '").append(yyyyMMdd.format(buscadorReRe.getDcDesde())).append("'");
         }
-        if(buscadorReRe.getDcDesdeSistema() != null) {
+        if (buscadorReRe.getDcDesdeSistema() != null) {
             queryWhereFactuVenta.append(" AND o.fechaalta >= '").append(yyyyMMdd.format(buscadorReRe.getDcDesdeSistema())).append("'");
             queryWhereNotaCredito.append(" AND o.fechaCarga >= '").append(yyyyMMdd.format(buscadorReRe.getDcDesdeSistema())).append("'");
         }
-        if(buscadorReRe.getDcHastaSistema() != null) {
+        if (buscadorReRe.getDcHastaSistema() != null) {
             queryWhereFactuVenta.append(" AND o.fechaalta <= '").append(yyyyMMdd.format(buscadorReRe.getDcHastaSistema())).append("'");
             queryWhereNotaCredito.append(" AND o.fechaCarga <= '").append(yyyyMMdd.format(buscadorReRe.getDcHastaSistema())).append("'");
         }
@@ -1267,5 +1275,149 @@ public class Contabilidad {
 
     public void showInformeResultados(Window owner) {
         new JDInformeResultados(owner).setVisible(true);
+    }
+
+    public void displayInformeDetalleFacturacion(Window window) {
+        final PanelDetalleFacturacion panelDetalleFacturacion = new PanelDetalleFacturacion();
+        buscador = new JDBuscador(window, "", false, panelDetalleFacturacion);
+        buscador.getPanelInferior().setVisible(true);
+        buscador.addResumeItem("Ingresos", new JTextField(8));
+        buscador.addResumeItem("Egresos", new JTextField(8));
+        buscador.addResumeItem("Resultado", new JTextField(8));
+//        buscador.agrandar(200, 0);
+        UTIL.getDefaultTableModel(
+                buscador.getjTable1(),
+                new String[]{"DetalleVenta.id", "I-E", "Egreso", "Ingreso", "Cond. Vta", "Fecha", "Fecha Sistema", "UDN", "Cuenta", "Sub cuenta", "Sujeto", "Productos", "F. Tipo", "F. Sucursal", "F Nro", "Sucursal", "Caja", "Año", "Mes"},
+                new int[]{1, 10, 90, 90, 10, 50, 80, 100, 100, 100, 200, 50, 20, 40, 60, 100, 100, 20, 20});
+        TableColumnModel tm = buscador.getjTable1().getColumnModel();
+        tm.getColumn(2).setCellRenderer(NumberRenderer.getCurrencyRenderer(4));
+        tm.getColumn(3).setCellRenderer(NumberRenderer.getCurrencyRenderer(4));
+        tm.getColumn(5).setCellRenderer(FormatRenderer.getDateRenderer());
+        tm.getColumn(6).setCellRenderer(FormatRenderer.getDateTimeRenderer());
+//        tm.getColumn(11).setCellRenderer(NumberRenderer.getCurrencyRenderer(4));
+//        tm.getColumn(12).setCellRenderer(NumberRenderer.getIntegerRenderer());
+//        tm.getColumn(13).setCellRenderer(NumberRenderer.getCurrencyRenderer(4));
+        UTIL.hideColumnTable(buscador.getjTable1(), 0);
+        buscador.getjTable1().setAutoCreateRowSorter(true);
+        buscador.getBtnBuscar().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    List<Object[]> data = armarQueryDetalleFacturacion(panelDetalleFacturacion);
+                    DefaultTableModel dtm = (DefaultTableModel) buscador.getjTable1().getModel();
+                    dtm.setRowCount(0);
+                    for (Object[] objects : data) {
+                        dtm.addRow(objects);
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(buscador, ex.getMessage(), null, JOptionPane.ERROR_MESSAGE);
+                    LOG.error("Error query detalleFacturacion", ex);
+                }
+
+            }
+        });
+//        buscador.getBtnImprimir().setVisible(false);
+//        buscador.getBtnToExcel().setVisible(false);
+        buscador.setVisible(true);
+    }
+
+    public List<Object[]> armarQueryDetalleFacturacion(PanelDetalleFacturacion p) {
+        StringBuilder queryIngresos = new StringBuilder(""
+                + "SELECT dv.id, 'I', 0, dv.cantidad*dv.precioUnitario, fv.formaPago, fv.fechaVenta, fv.fechaalta, udn.nombre"
+                + ", cuenta.nombre, subCuenta.nombre, fv.cliente.nombre, dv.producto.nombre, fv.tipo, fv.sucursal.puntoVenta, fv.numero"
+                + ", fv.sucursal.nombre, caja.nombre"
+                + ", fv.fechaVenta, fv.fechaVenta "
+                + " FROM " + DetalleVenta.class.getSimpleName() + " dv"
+                + " JOIN dv.factura fv"
+                + " JOIN fv.caja caja"
+                + " LEFT JOIN fv.unidadDeNegocio udn"
+                + " LEFT JOIN fv.cuenta cuenta"
+                + " LEFT JOIN fv.subCuenta subCuenta");
+        StringBuilder queryEgresos = new StringBuilder(""
+                + "SELECT dv.id, 'E', dv.cantidad*dv.precioUnitario, 0, fv.formaPago, fv.fechaCompra, fv.fechaalta, udn.nombre"
+                + ", cuenta.nombre, subCuenta.nombre, fv.proveedor.nombre, dv.producto.nombre, fv.tipo"
+                + ", CAST(SUBSTRING(CAST(1000000000000+fv.numero as text), 2,4) AS INTEGER)"
+                + ", CAST(SUBSTRING(CAST(1000000000000+fv.numero AS text), 6) AS INTEGER)"
+                + ", fv.sucursal.nombre, caja.nombre"
+                + ", fv.fechaCompra, fv.fechaCompra "
+                + " FROM " + DetalleCompra.class.getSimpleName() + " dv"
+                + " JOIN dv.factura fv"
+                + " JOIN fv.caja caja"
+                + " LEFT JOIN fv.unidadDeNegocio udn"
+                + " LEFT JOIN fv.cuenta cuenta"
+                + " LEFT JOIN fv.subCuenta subCuenta");
+
+        queryIngresos.append(" WHERE fv.formaPago IN (");
+        queryEgresos.append(" WHERE fv.formaPago IN (");
+        if (p.isCheckContado() && p.isCheckCtaCte()) {
+            queryIngresos.append(Valores.FormaPago.CONTADO.getId()).append(", ").append(Valores.FormaPago.CTA_CTE.getId());
+            queryEgresos.append(Valores.FormaPago.CONTADO.getId()).append(", ").append(Valores.FormaPago.CTA_CTE.getId());
+        } else {
+            queryIngresos.append(p.isCheckContado() ? Valores.FormaPago.CONTADO.getId() : Valores.FormaPago.CTA_CTE.getId());
+            queryEgresos.append(p.isCheckContado() ? Valores.FormaPago.CONTADO.getId() : Valores.FormaPago.CTA_CTE.getId());
+        }
+        queryIngresos.append(")");
+        queryEgresos.append(")");
+        
+        queryIngresos.append(" AND fv.anulada=").append(p.isCheckAnuladas());
+        queryEgresos.append(" AND fv.anulada=").append(p.isCheckAnuladas());
+        
+        if (p.getCbClieProv().getSelectedIndex() > 0) {
+            queryIngresos.append(" AND fv.cliente.id=").append(((ComboBoxWrapper<?>) p.getCbClieProv().getSelectedItem()).getId());
+            queryEgresos.append(" AND fv.proveedor.id=").append(((ComboBoxWrapper<?>) p.getCbClieProv().getSelectedItem()).getId());
+        }
+        if (p.getCbSucursal().getSelectedIndex() > 0) {
+            queryIngresos.append(" AND fv.sucursal.id=").append(((ComboBoxWrapper<?>) p.getCbSucursal().getSelectedItem()).getId());
+            queryEgresos.append(" AND fv.sucursal.id=").append(((ComboBoxWrapper<?>) p.getCbSucursal().getSelectedItem()).getId());
+        }
+        if (p.getCbCuenta().getSelectedIndex() > 0) {
+            queryIngresos.append(" AND fv.cuenta.id=").append(((ComboBoxWrapper<?>) p.getCbCuenta().getSelectedItem()).getId());
+            queryEgresos.append(" AND fv.cuenta.id=").append(((ComboBoxWrapper<?>) p.getCbCuenta().getSelectedItem()).getId());
+        }
+        if (p.getCbSubCuenta().getSelectedIndex() > 0) {
+            queryIngresos.append(" AND fv.subCuenta.id=").append(((ComboBoxWrapper<?>) p.getCbSubCuenta().getSelectedItem()).getId());
+            queryEgresos.append(" AND fv.subCuenta.id=").append(((ComboBoxWrapper<?>) p.getCbSubCuenta().getSelectedItem()).getId());
+        }
+        if (p.getDcDesde() != null) {
+            queryIngresos.append(" AND fv.fechaVenta >='").append(UTIL.DATE_FORMAT.format(p.getDcDesde())).append("'");
+            queryEgresos.append(" AND fv.fechaCompra >='").append(UTIL.DATE_FORMAT.format(p.getDcDesde())).append("'");
+        }
+        if (p.getDcHasta() != null) {
+            queryIngresos.append(" AND fv.fechaVenta <='").append(UTIL.DATE_FORMAT.format(p.getDcHasta())).append("'");
+            queryEgresos.append(" AND fv.fechaCompra <='").append(UTIL.DATE_FORMAT.format(p.getDcHasta())).append("'");
+        }
+        if (p.getDcDesdeSistema() != null) {
+            queryIngresos.append(" AND fv.").append(FacturaVenta_.fechaalta.getName()).append(" >='").append(UTIL.DATE_FORMAT.format(p.getDcDesdeSistema())).append("'");
+            queryEgresos.append(" AND fv.").append(FacturaCompra_.fechaalta.getName()).append(" >='").append(UTIL.DATE_FORMAT.format(p.getDcDesdeSistema())).append("'");
+        }
+        if (p.getDcHastaSistema() != null) {
+            queryIngresos.append(" AND fv.").append(FacturaVenta_.fechaalta.getName()).append(" <='").append(UTIL.DATE_FORMAT.format(p.getDcHastaSistema())).append("'");
+            queryEgresos.append(" AND fv.").append(FacturaCompra_.fechaalta.getName()).append(" <='").append(UTIL.DATE_FORMAT.format(p.getDcHastaSistema())).append("'");
+        }
+        String q;
+        if (p.getCbComprasVentas().getSelectedIndex() == 0) {
+            q = queryIngresos.toString() + " UNION " + queryEgresos.toString();
+        } else if (p.getCbComprasVentas().getSelectedIndex() == 1) {
+            q = queryIngresos.toString();
+        } else {
+            q = queryEgresos.toString();
+        }
+        @SuppressWarnings("unchecked")
+        List<Object[]> l = DAO.createQuery(q, false).getResultList();
+        Calendar c = Calendar.getInstance();
+        for (Object[] o : l) {
+            c.setTime((Date) o[o.length - 2]);
+            o[o.length - 2] = c.get(Calendar.YEAR);
+            c.setTime((Date) o[o.length - 1]);
+            o[o.length - 1] = c.get(Calendar.MONTH);
+        }
+        Collections.sort(l, new Comparator<Object[]>() {
+            @Override
+            public int compare(Object[] o1, Object[] o2) {
+                return ((Date) o1[6]).compareTo((Date) o2[6]);
+            }
+        });
+        return l;
+
     }
 }

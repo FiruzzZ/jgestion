@@ -127,7 +127,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
         labelSubCuenta = new javax.swing.JLabel();
         cbSubCuenta = new javax.swing.JComboBox();
         labelObservacionCharactersCount = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
+        labelVendedor = new javax.swing.JLabel();
         cbVendedor = new javax.swing.JComboBox();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
@@ -328,7 +328,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
         labelObservacionCharactersCount.setFocusable(false);
         labelObservacionCharactersCount.setRequestFocusEnabled(false);
 
-        jLabel3.setText("Vendedor");
+        labelVendedor.setText("Vendedor");
 
         javax.swing.GroupLayout panelDatosFacturacionLayout = new javax.swing.GroupLayout(panelDatosFacturacion);
         panelDatosFacturacion.setLayout(panelDatosFacturacionLayout);
@@ -411,7 +411,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(cbSubCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jLabel3)
+                                        .addComponent(labelVendedor)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(cbVendedor, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)))))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -465,7 +465,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
                         .addComponent(labelSubCuenta))
                     .addGroup(panelDatosFacturacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(cbSubCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel3)
+                        .addComponent(labelVendedor)
                         .addComponent(cbVendedor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelDatosFacturacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -1022,7 +1022,6 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
     private javax.swing.JLabel jLabel27;
     private javax.swing.JLabel jLabel28;
     private javax.swing.JLabel jLabel29;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel30;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel8;
@@ -1048,6 +1047,7 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
     private javax.swing.JLabel labelRemito;
     private javax.swing.JLabel labelSubCuenta;
     private javax.swing.JLabel labelUnidadNegocio;
+    private javax.swing.JLabel labelVendedor;
     private javax.swing.JPanel panelDatosFacturacion;
     private javax.swing.JPanel panelProducto;
     private javax.swing.JTextField tfCantidad;
@@ -1445,6 +1445,9 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
         tfNumMovimiento.setVisible(false);
         labelCaja.setVisible(false);
         cbCaja.setVisible(false);
+        //no se Vendedor
+        labelVendedor.setVisible(false);
+        cbVendedor.setVisible(false);
         //no descuentos
         labelDescuento.setVisible(false);
         cbDesc.setVisible(false);

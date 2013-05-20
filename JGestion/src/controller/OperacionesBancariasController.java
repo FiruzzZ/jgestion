@@ -28,6 +28,7 @@ public class OperacionesBancariasController {
     public static final int DEPOSITO = 1;
     public static final int EXTRACCION = 2;
     public static final int TRANSFERENCIA = 3;
+    public static final int AJUSTE = 4;
 
     public OperacionesBancariasController() {
         jpaController = new OperacionesBancariasJpaController();

@@ -196,6 +196,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenuItem39 = new javax.swing.JMenuItem();
         jMenuItem72 = new javax.swing.JMenuItem();
         jMenuItem46 = new javax.swing.JMenuItem();
+        jMenuItem93 = new javax.swing.JMenuItem();
         jMenu8 = new javax.swing.JMenu();
         jMenuItem44 = new javax.swing.JMenuItem();
         jMenu12 = new javax.swing.JMenu();
@@ -1060,6 +1061,14 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         });
         jMenuReportes.add(jMenuItem46);
 
+        jMenuItem93.setText("Detalle Facturación");
+        jMenuItem93.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem93ActionPerformed(evt);
+            }
+        });
+        jMenuReportes.add(jMenuItem93);
+
         jMenu8.setText("Flujo de fondos");
 
         jMenuItem44.setText("Movimientos de Cajas");
@@ -1092,7 +1101,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
         jMenuReportes.add(jMenu12);
 
-        jMenuItem86.setText("Productos (Costo / Venta)");
+        jMenuItem86.setText("Productos (Costo/Venta)");
         jMenuItem86.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem86ActionPerformed(evt);
@@ -1637,16 +1646,16 @@ private void jMenuItem45ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
 }//GEN-LAST:event_jMenuItem45ActionPerformed
 
 private void jMenuItem54ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem54ActionPerformed
-        new ProveedorController().initProveedorToCliente((JFrame) this).setVisible(true);
+    new ProveedorController().initProveedorToCliente((JFrame) this).setVisible(true);
 }//GEN-LAST:event_jMenuItem54ActionPerformed
 
 private void jMenuItem58ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem58ActionPerformed
-        try {
-            new BancoController().initContenedor(this, true, false).setVisible(true);
-        } catch (DatabaseErrorException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage());
-            Logger.getLogger(JFP.class.getName()).error(ex);
-        }
+    try {
+        new BancoController().initContenedor(this, true, false).setVisible(true);
+    } catch (DatabaseErrorException ex) {
+        JOptionPane.showMessageDialog(this, ex.getMessage());
+        Logger.getLogger(JFP.class.getName()).error(ex);
+    }
 }//GEN-LAST:event_jMenuItem58ActionPerformed
 
 private void jMenuItem59ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem59ActionPerformed
@@ -1658,19 +1667,19 @@ private void jMenuItem59ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
 }//GEN-LAST:event_jMenuItem59ActionPerformed
 
 private void jMenuItem60ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem60ActionPerformed
-        try {
-            new ChequePropioController().getManager(this).setVisible(true);
-        } catch (MessageException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
-        }
+    try {
+        new ChequePropioController().getManager(this).setVisible(true);
+    } catch (MessageException ex) {
+        JOptionPane.showMessageDialog(this, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+    }
 }//GEN-LAST:event_jMenuItem60ActionPerformed
 
 private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem56ActionPerformed
-        try {
-            new ChequeTercerosController().getManager(this).setVisible(true);
-        } catch (MessageException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
-        }
+    try {
+        new ChequeTercerosController().getManager(this).setVisible(true);
+    } catch (MessageException ex) {
+        JOptionPane.showMessageDialog(this, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+    }
 }//GEN-LAST:event_jMenuItem56ActionPerformed
 
     private void jMenuItem55ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem55ActionPerformed
@@ -1874,7 +1883,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     }//GEN-LAST:event_jMenuItem89ActionPerformed
 
     private void jMenuItem80ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem80ActionPerformed
-        try{
+        try {
             new ReciboController().initReciboAConciliar(this);
         } catch (MessageException ex) {
             ex.displayMessage(this);
@@ -1882,11 +1891,11 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     }//GEN-LAST:event_jMenuItem80ActionPerformed
 
     private void jMenuItem81ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem81ActionPerformed
-       new ReciboController().showBuscadorToConciliar(this);
+        new ReciboController().showBuscadorToConciliar(this);
     }//GEN-LAST:event_jMenuItem81ActionPerformed
 
     private void jMenuItem91ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem91ActionPerformed
-        new CuentabancariaMovimientosController().getConciliacion(this);
+        new CuentabancariaMovimientosController().getConciliacion(this).setVisible(true);
     }//GEN-LAST:event_jMenuItem91ActionPerformed
 
     private void jMenuItem79ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem79ActionPerformed
@@ -1896,6 +1905,10 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
             ex.displayMessage(this);
         }
     }//GEN-LAST:event_jMenuItem79ActionPerformed
+
+    private void jMenuItem93ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem93ActionPerformed
+        new Contabilidad().displayInformeDetalleFacturacion((Window)this);
+    }//GEN-LAST:event_jMenuItem93ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktopPane1;
@@ -2021,6 +2034,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenuItem jMenuItem90;
     private javax.swing.JMenuItem jMenuItem91;
     private javax.swing.JMenuItem jMenuItem92;
+    private javax.swing.JMenuItem jMenuItem93;
     private javax.swing.JMenuItem jMenuItemCatalogoWeb;
     private javax.swing.JMenuItem jMenuItemCuentasBancarias;
     private javax.swing.JMenuItem jMenuItemOfertas;

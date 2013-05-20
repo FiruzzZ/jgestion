@@ -975,6 +975,14 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem46ActionPerformed"/>
               </Events>
             </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem93">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Detalle Facturaci&#xf3;n"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem93ActionPerformed"/>
+              </Events>
+            </MenuItem>
             <Menu class="javax.swing.JMenu" name="jMenu8">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Flujo de fondos"/>
@@ -1015,7 +1023,7 @@
             </Menu>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItem86">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Productos (Costo / Venta)"/>
+                <Property name="text" type="java.lang.String" value="Productos (Costo/Venta)"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem86ActionPerformed"/>
