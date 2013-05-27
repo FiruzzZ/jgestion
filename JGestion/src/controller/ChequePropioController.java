@@ -1,5 +1,14 @@
 package controller;
 
+import ar.com.fdvs.dj.core.DynamicJasperHelper;
+import ar.com.fdvs.dj.core.layout.ClassicLayoutManager;
+import ar.com.fdvs.dj.domain.DynamicReport;
+import ar.com.fdvs.dj.domain.Style;
+import ar.com.fdvs.dj.domain.builders.ColumnBuilder;
+import ar.com.fdvs.dj.domain.builders.DynamicReportBuilder;
+import ar.com.fdvs.dj.domain.constants.Font;
+import ar.com.fdvs.dj.domain.constants.HorizontalAlign;
+import ar.com.fdvs.dj.domain.constants.Page;
 import controller.exceptions.DatabaseErrorException;
 import controller.exceptions.MessageException;
 import entity.Banco;
@@ -9,10 +18,12 @@ import entity.Cliente;
 import entity.CuentaBancaria;
 import entity.Proveedor;
 import entity.enums.ChequeEstado;
+import generics.GenericBeanCollection;
 import gui.JDABM;
 import gui.JDChequesManager;
 import gui.JDContenedor;
 import gui.PanelABMCheques;
+import gui.PanelChequesColumnsReport;
 import java.awt.Color;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
@@ -20,6 +31,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -31,6 +43,9 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import jgestion.JGestionUtils;
 import jpa.controller.ChequePropioJpaController;
+import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.apache.log4j.Logger;
 import utilities.general.UTIL;
 import utilities.swing.RowColorRender;
@@ -499,7 +514,11 @@ public class ChequePropioController implements ActionListener {
         LOG.debug(query.toString());
         cargarTablaChequeManager(query.toString());
         if (imprimir) {
-            doChequePropioReport(query.toString());
+            if (jdChequeManager.getjTable1().getModel().getRowCount() < 1) {
+                JOptionPane.showMessageDialog(jdChequeManager, "No sea han filtrados cheques para crear el reporte");
+            } else {
+                doChequePropioReport();
+            }
         }
     }
 
@@ -514,7 +533,7 @@ public class ChequePropioController implements ActionListener {
             }
         } catch (DatabaseErrorException ex) {
             LOG.error(ex, ex);
-            JOptionPane.showMessageDialog(jdChequeManager, ex.getLocalizedMessage()+":\n" + ex.getCause(), "Error recuperando Cheques Propios", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(jdChequeManager, ex.getLocalizedMessage() + ":\n" + ex.getCause(), "Error recuperando Cheques Propios", JOptionPane.ERROR_MESSAGE);
         }
         totalizarSegunFechaCobro();
     }
@@ -554,8 +573,100 @@ public class ChequePropioController implements ActionListener {
         jdChequeManager.getTf90mas().setText(UTIL.DECIMAL_FORMAT.format($90mas));
     }
 
-    private void doChequePropioReport(String query) {
-        throw new UnsupportedOperationException("Not yet implemented");
+    private void doChequePropioReport() {
+        final PanelChequesColumnsReport p = new PanelChequesColumnsReport();
+        final JDABM jd = new JDABM(null, "Informe: Cheques Propios", true, p);
+        jd.getbAceptar().addActionListener(new ActionListener() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    Reportes r = new Reportes(null, true);
+                    r.showWaitingDialog();
+                    //"id",
+                    //"Nº Cheque", "F. Cheque", "Emisor", "F. Cobro", "Banco", 
+                    //"Importe", "Estado", "Cruzado", "Endosatario", "F. Endoso", 
+                    //"C. Ingreso", "C. Egreso", "Observacion", "Usuario"};
+                    DefaultTableModel dtm = (DefaultTableModel) jdChequeManager.getjTable1().getModel();
+                    List<GenericBeanCollection> data = new ArrayList<GenericBeanCollection>(dtm.getRowCount());
+                    for (int row = 0; row < dtm.getRowCount(); row++) {
+                        data.add(new GenericBeanCollection(
+                                dtm.getValueAt(row, 1),
+                                dtm.getValueAt(row, 2),
+                                dtm.getValueAt(row, 3),
+                                dtm.getValueAt(row, 4),
+                                dtm.getValueAt(row, 5),
+                                dtm.getValueAt(row, 6),
+                                dtm.getValueAt(row, 7),
+                                dtm.getValueAt(row, 8),
+                                dtm.getValueAt(row, 11),
+                                dtm.getValueAt(row, 12),
+                                dtm.getValueAt(row, 13),
+                                dtm.getValueAt(row, 14)));
+                    }
+
+                    DynamicReportBuilder drb = new DynamicReportBuilder();
+                    Style currencyStyle = new Style();
+                    currencyStyle.setFont(Font.ARIAL_MEDIUM);
+                    currencyStyle.setHorizontalAlign(HorizontalAlign.RIGHT);
+                    Style textStyle = new Style();
+                    textStyle.setFont(Font.ARIAL_MEDIUM);
+                    drb.addColumn(ColumnBuilder.getNew().setColumnProperty("o1", Object.class).setTitle("Número").setWidth(60).setStyle(currencyStyle).setFixedWidth(true).build());
+                    drb.addColumn(ColumnBuilder.getNew().setColumnProperty("o6", Object.class).setTitle("Importe").setWidth(80).setStyle(currencyStyle).setPattern("¤ #,##0.00").setFixedWidth(true).build());
+                    if (p.getCheckFechaCheque()) {
+                        drb.addColumn(ColumnBuilder.getNew().setColumnProperty("o2", Object.class).setTitle("F. Cheque").setWidth(60).setPattern("dd/MM/yyyy").setFixedWidth(true).build());
+                    }
+                    if (p.getCheckEmisor()) {
+                        drb.addColumn(ColumnBuilder.getNew().setColumnProperty("o3", Object.class).setTitle("Emisor").setWidth(200).setStyle(textStyle).setFixedWidth(true).build());
+                    }
+                    if (p.getCheckFechaCobro()) {
+                        drb.addColumn(ColumnBuilder.getNew().setColumnProperty("o4", Object.class).setTitle("F. Cobro").setWidth(60).setPattern("dd/MM/yyyy").setFixedWidth(true).build());
+                    }
+                    if (p.getCheckBanco()) {
+                        drb.addColumn(ColumnBuilder.getNew().setColumnProperty("o5", Object.class).setTitle("Banco").setWidth(80).setStyle(textStyle).build());
+                    }
+                    if (p.getCheckEstado()) {
+                        drb.addColumn(ColumnBuilder.getNew().setColumnProperty("o7", Object.class).setTitle("Estado").setWidth(45).setStyle(textStyle).build());
+                    }
+                    if (p.getCheckCruzado()) {
+                        drb.addColumn(ColumnBuilder.getNew().setColumnProperty("o8", Object.class).setTitle("Cruzado").setWidth(40).setStyle(textStyle).build());
+                    }
+                    if (p.getCheckCompIngreso()) {
+                        drb.addColumn(ColumnBuilder.getNew().setColumnProperty("o9", Object.class).setTitle("Comp. Ingreso").setWidth(100).setStyle(textStyle).build());
+                    }
+                    if (p.getCheckCompEgreso()) {
+                        drb.addColumn(ColumnBuilder.getNew().setColumnProperty("o10", Object.class).setTitle("Comp. Egreso").setWidth(100).setStyle(textStyle).build());
+                    }
+                    if (p.getCheckObservacion()) {
+                        drb.addColumn(ColumnBuilder.getNew().setColumnProperty("o11", Object.class).setTitle("Observ.").setWidth(100).setStyle(textStyle).build());
+                    }
+                    if (p.getCheckUsuario()) {
+                        drb.addColumn(ColumnBuilder.getNew().setColumnProperty("o12", Object.class).setTitle("Usuario").setWidth(50).setStyle(textStyle).setFixedWidth(true).build());
+                    }
+                    if (p.getCheckLandscapePage()) {
+                        drb.setPageSizeAndOrientation(Page.Page_A4_Landscape());
+                    }
+                    drb.setTitle("Informe: Cheques Propios")
+                            .setSubtitle(UTIL.TIMESTAMP_FORMAT.format(new Date()))
+                            .setPrintBackgroundOnOddRows(true)
+                            .setUseFullPageWidth(true);
+                    //                    SubReportBuilder srb = new SubReportBuilder();
+                    //                    srb.setPathToReport(Reportes.FOLDER_REPORTES + "JGestion_membrete.jasper");
+                    //                    srb.setDataSource("");
+                    //                    Subreport sr = srb.build();
+                    //                    drb.addSubreportInGroupHeader(0, sr);
+                    DynamicReport dr = drb.build();
+                    JRDataSource ds = new JRBeanCollectionDataSource(data);
+                    JasperPrint jp = DynamicJasperHelper.generateJasperPrint(dr, new ClassicLayoutManager(), ds);
+                    r.setjPrint(jp);
+                    r.viewReport();
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "algo salió mal");
+                    LOG.error("Creando dynamic report chequepropios", ex);
+                }
+            }
+        });
+        jd.setVisible(true);
     }
 
     ChequePropio getChequePropioInstance() {

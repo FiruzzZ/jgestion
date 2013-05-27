@@ -77,24 +77,6 @@ public class JPATesting {
 
     @SuppressWarnings("unchecked")
     public JPATesting() throws Exception {
-        List<Object[]> l = new Contabilidad().armarQueryDetalleFacturacion(new PanelDetalleFacturacion());
-        JTable table = new JTable();
-        UTIL.getDefaultTableModel(
-                table,
-                new String[]{"DetalleVenta.id", "I-E", "Egreso", "Ingreso", "Cond. Vta", "Fecha", "Fecha Sistema", "UDN", "Cuenta", "Sub cuenta", "Sujeto", "Productos", "F. Tipo", "F. Sucursal", "F Nro", "Sucursal", "Caja", "Año", "Mes"},
-                new int[]{1, 10, 90, 90, 10, 50, 80, 100, 100, 100, 200, 50, 20, 40, 60, 100, 100, 20, 20});
-        TableColumnModel tm = table.getColumnModel();
-        tm.getColumn(2).setCellRenderer(NumberRenderer.getCurrencyRenderer(4));
-        tm.getColumn(3).setCellRenderer(NumberRenderer.getCurrencyRenderer(4));
-        tm.getColumn(5).setCellRenderer(FormatRenderer.getDateRenderer());
-        tm.getColumn(6).setCellRenderer(FormatRenderer.getDateTimeRenderer());
-        UTIL.hideColumnTable(table, 0);
-        table.setAutoCreateRowSorter(true);
-        DefaultTableModel dtm = (DefaultTableModel) table.getModel();
-        for (Object[] objects : l) {
-            dtm.addRow(objects);
-        }
-        new TableExcelExporter(new File("d:\\asdf.xls"), table).export();
     }
 
     private void updateCostoCompraYPrecioVentaSegunDetalleCompra() {

@@ -23,34 +23,37 @@ import utilities.swing.components.ComboBoxWrapper;
  * @author FiruzzZ
  */
 public class JGestionUtils {
-
+    
     public JGestionUtils() {
     }
-
-    public File openFileChooser(Component parent, String description, File fileDir, String... fileExtensionsAllow) throws IOException {
+    
+    public static File showSaveDialogFileChooser(Component parent, String description, File fileDir, String fileExtension) throws IOException {
         JFileChooser fileChooser = new JFileChooser();
         File file = null;
-        if (fileExtensionsAllow != null && fileExtensionsAllow.length > 0) {
-            FileNameExtensionFilter filter = new FileNameExtensionFilter(description, fileExtensionsAllow);
+        if (fileExtension != null) {
+            FileNameExtensionFilter filter = new FileNameExtensionFilter(description, fileExtension);
             fileChooser.setFileFilter(filter);
             fileChooser.addChoosableFileFilter(filter);
         }
         fileChooser.setCurrentDirectory(fileDir);
-        int stateFileChoosed = fileChooser.showOpenDialog(parent);
+        int stateFileChoosed = fileChooser.showSaveDialog(parent);
         if (stateFileChoosed == JFileChooser.APPROVE_OPTION) {
             file = fileChooser.getSelectedFile();
+            if (fileExtension != null && !file.getName().endsWith("." + fileExtension)) {
+                file = new File(file.getPath() + "." + fileExtension);
+            }
             if (file.exists() && JOptionPane.YES_OPTION != JOptionPane.showConfirmDialog(parent, "Ya existe el archivo " + file.getName() + ", ¿Desea reemplazarlo?", null, JOptionPane.YES_NO_OPTION)) {
                 return null;
             }
         }
         return file;
     }
-
+    
     @Override
     protected Object clone() throws CloneNotSupportedException {
         throw new CloneNotSupportedException();
     }
-
+    
     public static List<ComboBoxWrapper<?>> getWrappedCtacteProveedor(List<?> list) {
         List<ComboBoxWrapper<?>> l = new ArrayList<ComboBoxWrapper<?>>(list.size());
         for (Object o : list) {
@@ -60,12 +63,12 @@ public class JGestionUtils {
             } else {
                 NotaDebitoProveedor nota = (NotaDebitoProveedor) o;
                 l.add(new ComboBoxWrapper<Object>(nota, nota.getId(), getNumeracion(nota)));
-
+                
             }
         }
         return l;
     }
-
+    
     public static List<ComboBoxWrapper<?>> getWrappedCtacteCliente(List<?> list) {
         List<ComboBoxWrapper<?>> l = new ArrayList<ComboBoxWrapper<?>>(list.size());
         for (Object o : list) {
@@ -79,7 +82,7 @@ public class JGestionUtils {
         }
         return l;
     }
-
+    
     public static List<ComboBoxWrapper<Cliente>> getWrappedClientes(List<Cliente> list) {
         List<ComboBoxWrapper<Cliente>> l = new ArrayList<ComboBoxWrapper<Cliente>>(list.size());
         for (Cliente o : list) {
@@ -87,7 +90,7 @@ public class JGestionUtils {
         }
         return l;
     }
-
+    
     public static List<ComboBoxWrapper<Proveedor>> getWrappedProveedores(List<Proveedor> list) {
         List<ComboBoxWrapper<Proveedor>> l = new ArrayList<ComboBoxWrapper<Proveedor>>(list.size());
         for (Proveedor o : list) {
@@ -95,7 +98,7 @@ public class JGestionUtils {
         }
         return l;
     }
-
+    
     public static List<ComboBoxWrapper<ListaPrecios>> getWrappedListaPrecios(List<ListaPrecios> list) {
         List<ComboBoxWrapper<ListaPrecios>> l = new ArrayList<ComboBoxWrapper<ListaPrecios>>(list.size());
         for (ListaPrecios o : list) {
@@ -103,7 +106,7 @@ public class JGestionUtils {
         }
         return l;
     }
-
+    
     public static List<ComboBoxWrapper<Marca>> getWrappedMarcas(List<Marca> list) {
         List<ComboBoxWrapper<Marca>> l = new ArrayList<ComboBoxWrapper<Marca>>(list.size());
         for (Marca o : list) {
@@ -111,7 +114,7 @@ public class JGestionUtils {
         }
         return l;
     }
-
+    
     public static List<ComboBoxWrapper<Remesa>> getWrappedRemesas(List<Remesa> list) {
         List<ComboBoxWrapper<Remesa>> l = new ArrayList<ComboBoxWrapper<Remesa>>(list.size());
         for (Remesa remesa : list) {
@@ -119,7 +122,7 @@ public class JGestionUtils {
         }
         return l;
     }
-
+    
     public static List<ComboBoxWrapper<Rubro>> getWrappedRubros(List<Rubro> list) {
         List<ComboBoxWrapper<Rubro>> l = new ArrayList<ComboBoxWrapper<Rubro>>(list.size());
         for (Rubro o : list) {
@@ -127,7 +130,7 @@ public class JGestionUtils {
         }
         return l;
     }
-
+    
     public static List<ComboBoxWrapper<SubCuenta>> getWrappedSubCuentas(List<SubCuenta> list) {
         List<ComboBoxWrapper<SubCuenta>> l = new ArrayList<ComboBoxWrapper<SubCuenta>>(list.size());
         for (SubCuenta o : list) {
@@ -135,7 +138,7 @@ public class JGestionUtils {
         }
         return l;
     }
-
+    
     public static List<ComboBoxWrapper<UnidadDeNegocio>> getWrappedUnidadDeNegocios(List<UnidadDeNegocio> list) {
         List<ComboBoxWrapper<UnidadDeNegocio>> l = new ArrayList<ComboBoxWrapper<UnidadDeNegocio>>(list.size());
         for (UnidadDeNegocio o : list) {
@@ -143,7 +146,7 @@ public class JGestionUtils {
         }
         return l;
     }
-
+    
     public static List<ComboBoxWrapper<Usuario>> getWrappedUsuarios(List<Usuario> list) {
         List<ComboBoxWrapper<Usuario>> l = new ArrayList<ComboBoxWrapper<Usuario>>(list.size());
         for (Usuario usuario : list) {
@@ -151,7 +154,7 @@ public class JGestionUtils {
         }
         return l;
     }
-
+    
     public static List<ComboBoxWrapper<Sucursal>> getWrappedSucursales(List<Sucursal> list) {
         List<ComboBoxWrapper<Sucursal>> l = new ArrayList<ComboBoxWrapper<Sucursal>>(list.size());
         for (Sucursal o : list) {
@@ -159,7 +162,7 @@ public class JGestionUtils {
         }
         return l;
     }
-
+    
     public static List<ComboBoxWrapper<Cuenta>> getWrappedCuentas(List<Cuenta> list) {
         List<ComboBoxWrapper<Cuenta>> l = new ArrayList<ComboBoxWrapper<Cuenta>>(list.size());
         for (Cuenta o : list) {
@@ -167,7 +170,7 @@ public class JGestionUtils {
         }
         return l;
     }
-
+    
     public static List<ComboBoxWrapper<CuentaBancaria>> getWrappedCuentasBancarias(List<CuentaBancaria> list) {
         List<ComboBoxWrapper<CuentaBancaria>> l = new ArrayList<ComboBoxWrapper<CuentaBancaria>>(list.size());
         for (CuentaBancaria o : list) {
@@ -175,7 +178,7 @@ public class JGestionUtils {
         }
         return l;
     }
-
+    
     public static List<ComboBoxWrapper<OperacionesBancarias>> getWrappedOperacionesBancarias(List<OperacionesBancarias> list) {
         List<ComboBoxWrapper<OperacionesBancarias>> l = new ArrayList<ComboBoxWrapper<OperacionesBancarias>>(list.size());
         for (OperacionesBancarias o : list) {
@@ -183,7 +186,7 @@ public class JGestionUtils {
         }
         return l;
     }
-
+    
     public static List<ComboBoxWrapper<Banco>> getWrappedBancos(final List<Banco> list) {
         List<ComboBoxWrapper<Banco>> l = new ArrayList<ComboBoxWrapper<Banco>>(list.size());
         for (Banco o : list) {
@@ -207,11 +210,11 @@ public class JGestionUtils {
             return "F" + o.getTipo() + UTIL.AGREGAR_CEROS(o.getSucursal().getPuntoVenta(), 4) + "-" + UTIL.AGREGAR_CEROS(o.getNumero(), 8);
         }
     }
-
+    
     public static String getNumeracion(NotaDebito o) {
         return "ND" + o.getTipo() + UTIL.AGREGAR_CEROS(o.getSucursal().getPuntoVenta(), 4) + "-" + UTIL.AGREGAR_CEROS(o.getNumero(), 8);
     }
-
+    
     public static String getNumeracion(NotaDebitoProveedor o) {
         String numero = UTIL.AGREGAR_CEROS(o.getNumero(), 12);
         return "ND" + o.getTipo() + numero.substring(0, 4) + "-" + numero.substring(4);
@@ -234,38 +237,38 @@ public class JGestionUtils {
             return "F" + o.getTipo() + numero.substring(0, 4) + "-" + numero.substring(4);
         }
     }
-
+    
     public static String getNumeracion(Presupuesto o, boolean conGuion) {
         String guion = conGuion ? "-" : "";
         return UTIL.AGREGAR_CEROS(o.getSucursal().getPuntoVenta(), 4) + guion + UTIL.AGREGAR_CEROS(o.getNumero(), 8);
     }
-
+    
     public static String getNumeracion(Remito o, boolean conGuion) {
         String guion = conGuion ? "-" : "";
         return UTIL.AGREGAR_CEROS(o.getSucursal().getPuntoVenta(), 4) + guion + UTIL.AGREGAR_CEROS(o.getNumero(), 8);
     }
-
+    
     public static String getNumeracion(Recibo o, boolean conGuion) {
         String guion = conGuion ? "-" : "";
         return UTIL.AGREGAR_CEROS(o.getSucursal().getPuntoVenta(), 4) + guion + UTIL.AGREGAR_CEROS(o.getNumero(), 8);
     }
-
+    
     public static String getNumeracion(NotaCredito o, boolean conGuion) {
         String guion = conGuion ? "-" : "";
         return UTIL.AGREGAR_CEROS(o.getSucursal().getPuntoVenta(), 4) + guion + UTIL.AGREGAR_CEROS(o.getNumero(), 8);
     }
-
+    
     public static String getNumeracion(NotaCreditoProveedor o, boolean conGuion) {
         String guion = conGuion ? "-" : "";
         String numero = UTIL.AGREGAR_CEROS(o.getNumero(), 12);
         return numero.substring(0, 4) + guion + numero.substring(4);
     }
-
+    
     public static String getNumeracion(Remesa o, boolean conGuion) {
         String guion = conGuion ? "-" : "";
         return UTIL.AGREGAR_CEROS(o.getSucursal().getPuntoVenta(), 4) + guion + UTIL.AGREGAR_CEROS(o.getNumero(), 8);
     }
-
+    
     public static void setCurrencyFormatterFocusListener(JTextField tf) {
         tf.addFocusListener(
                 new FocusListener() {
@@ -276,7 +279,7 @@ public class JGestionUtils {
                             t.setText(UTIL.parseToDouble(t.getText()).toString());
                         }
                     }
-
+                    
                     @Override
                     public void focusLost(FocusEvent e) {
                         JTextField t = (JTextField) e.getSource();
@@ -291,15 +294,15 @@ public class JGestionUtils {
                     }
                 });
     }
-
+    
     public static ComboBoxWrapper<Banco> wrap(Banco o) {
         return new ComboBoxWrapper<Banco>(o, o.getId(), o.getNombre());
     }
-
+    
     public static ComboBoxWrapper<CuentaBancaria> wrap(CuentaBancaria o) {
         return new ComboBoxWrapper<CuentaBancaria>(o, o.getId(), o.getNumero());
     }
-
+    
     public static List<ComboBoxWrapper<Vendedor>> getWrappedVendedor(List<Vendedor> list) {
         List<ComboBoxWrapper<Vendedor>> l = new ArrayList<ComboBoxWrapper<Vendedor>>(list.size());
         for (Vendedor o : list) {
@@ -307,7 +310,7 @@ public class JGestionUtils {
         }
         return l;
     }
-
+    
     @SuppressWarnings("unchecked")
     public static void cargarComboTiposFacturas(JComboBox cb, Proveedor o) {
         if (o != null) {
@@ -329,7 +332,7 @@ public class JGestionUtils {
             }
         }
     }
-
+    
     @SuppressWarnings("unchecked")
     public static void cargarComboTiposFacturas(JComboBox cb, Cliente o) {
         if (o != null) {
@@ -351,7 +354,7 @@ public class JGestionUtils {
             }
         }
     }
-
+    
     public static List<ComboBoxWrapper<Iva>> getWrappedIva(List<Iva> list) {
         List<ComboBoxWrapper<Iva>> l = new ArrayList<ComboBoxWrapper<Iva>>(list.size());
         for (Iva iva : list) {

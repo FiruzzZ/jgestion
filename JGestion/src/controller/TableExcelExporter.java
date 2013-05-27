@@ -12,7 +12,11 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JTable;
+import jgestion.JGestionUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.usermodel.HSSFHeader;
 import org.apache.poi.hssf.usermodel.HSSFRichTextString;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -50,11 +54,15 @@ public class TableExcelExporter {
     private HSSFWorkbook workBook;
 
     /**
-     * 
+     *
      * @param file
      * @param table where the values are taken (NOT FROM THE MODEL!)
+     * @throws IllegalArgumentException if the table does not contain rows
      */
     public TableExcelExporter(File file, JTable table) {
+        if (table.getRowCount() < 1) {
+            throw new IllegalArgumentException("no rows");
+        }
         this.table = table;
         this.file = file;
         columnIdxToSkip = new ArrayList<Integer>();
@@ -95,9 +103,16 @@ public class TableExcelExporter {
 
     private void addTitleFromColumnHeaders() {
         HSSFRow titleRow = sheet.createRow(0);
+
+        HSSFFont font = workBook.createFont();
+        font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+        HSSFCellStyle style = workBook.createCellStyle();
+        style.setFont(font);
+        style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
         for (int columnIdx = 0; columnIdx < table.getColumnCount(); columnIdx++) {
             HSSFCell celda = titleRow.createCell(columnIdx);
             celda.setCellValue(new HSSFRichTextString(table.getColumnModel().getColumn(columnIdx).getHeaderValue().toString()));
+            celda.setCellStyle(style);
         }
     }
 

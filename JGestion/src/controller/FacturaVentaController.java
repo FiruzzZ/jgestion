@@ -1080,7 +1080,7 @@ public class FacturaVentaController implements ActionListener, KeyListener {
                     if (buscador.getjTable1().getRowCount() < 1) {
                         throw new MessageException("No hay info para exportar.");
                     }
-                    File currentDirectory = new JGestionUtils().openFileChooser(buscador, "Archivo Excel", null, "xls");
+                    File currentDirectory = JGestionUtils.showSaveDialogFileChooser(buscador, "Archivo Excel (.xls)", null, "xls");
                     if (currentDirectory != null) {
                         doReportFacturas(currentDirectory.getCanonicalPath());
                     }
