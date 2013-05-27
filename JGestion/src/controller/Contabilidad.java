@@ -331,7 +331,7 @@ public class Contabilidad {
                             && !panelBalanceComprasVentas.getCheckCtaCte().isSelected()) {
                         throw new MessageException("Debe elegir al menos una forma de facturación (CONTADO, CTA. CTE.)");
                     }
-                    doIt();
+                    cargarTablaBalanceCompraVenta();
                 } catch (MessageException ex) {
                     JOptionPane.showMessageDialog(jdBalanceUI, ex.getMessage(), null, 2);
                 } catch (Exception ex) {
@@ -349,19 +349,28 @@ public class Contabilidad {
                             && !panelBalanceComprasVentas.getCheckCtaCte().isSelected()) {
                         throw new MessageException("Debe elegir al menos una forma de facturación (CONTADO, CTA. CTE.)");
                     }
-                    doIt();
-                    //                    doReportBalanceCompraVenta(query,
-                    //                            panelBalanceComprasVentas.getDcDesde().getDate(),
-                    //                            panelBalanceComprasVentas.getDcHasta().getDate(),
-                    //                            panelBalanceComprasVentas.getCbComprasVentas().getSelectedItem().toString(), //title
-                    //                            panelBalanceComprasVentas.getCheckContado().isSelected(),
-                    //                            panelBalanceComprasVentas.getCheckCtaCte().isSelected(),
-                    //                            panelBalanceComprasVentas.getCheckAnuladas().isSelected());
-                    //                } catch (JRException ex) {
-                    //                    Logger.getLogger(Contabilidad.class.getName()).log(Level.FATAL, null, ex);
-                    //                    JOptionPane.showMessageDialog(jdBalanceUI, ex.getMessage(), "ERROR", 0);
-                    //                } catch (MissingReportException ex) {
-                    //                    JOptionPane.showMessageDialog(jdBalanceUI, ex.getMessage(), "ERROR", 0);
+                    cargarTablaBalanceCompraVenta();
+                } catch (MessageException ex) {
+                    JOptionPane.showMessageDialog(jdBalanceUI, ex.getMessage(), null, 2);
+                } catch (Exception ex) {
+                    LOG.error(null, ex);
+                    JOptionPane.showMessageDialog(jdBalanceUI, ex.getMessage(), "ERROR", 0);
+                }
+            }
+        });
+        jdBalanceUI.getBtnToExcel().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    if (jdBalanceUI.getjTable1().getRowCount() < 1) {
+                        throw new MessageException(Main.resourceBundle.getString("warn.emptytable"));
+                    }
+                    File file = JGestionUtils.showSaveDialogFileChooser(jdBalanceUI, "Archivo Excel (.xls)", new File("balance.xls"), "xls");
+                    TableExcelExporter tee = new TableExcelExporter(file, jdBalanceUI.getjTable1());
+                    tee.export();
+                    if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(buscador, "¿Abrir archivo generado?", null, JOptionPane.YES_NO_OPTION)) {
+                        Desktop.getDesktop().open(file);
+                    }
                 } catch (MessageException ex) {
                     JOptionPane.showMessageDialog(jdBalanceUI, ex.getMessage(), null, 2);
                 } catch (Exception ex) {
@@ -371,10 +380,11 @@ public class Contabilidad {
             }
         });
         jdBalanceUI.setLocationRelativeTo(parent);
+        jdBalanceUI.setSize(jdBalanceUI.getWidth() + 100, jdBalanceUI.getHeight());
         jdBalanceUI.setVisible(true);
     }
 
-    private void doIt() throws DatabaseErrorException, MessageException {
+    private void cargarTablaBalanceCompraVenta() throws DatabaseErrorException, MessageException {
         int index = panelBalanceComprasVentas.getCbComprasVentas().getSelectedIndex();
         List<Object[]> dataCompra = new ArrayList<Object[]>(0);
         List<Object[]> dataVenta = new ArrayList<Object[]>(0);
@@ -1324,12 +1334,12 @@ public class Contabilidad {
                     if (buscador.getjTable1().getRowCount() < 1) {
                         throw new MessageException("La tabla no tiene ningún dato a exportar");
                     }
-                    File file = new JGestionUtils().openFileChooser(buscador, "Exportar Detalle de Facturacion", null, "xls", "xlsx");
+                    File file = JGestionUtils.showSaveDialogFileChooser(buscador, "Exportar Detalle de Facturacion (.xls)", null, "xls");
                     if (file != null) {
                         TableExcelExporter tee = new TableExcelExporter(file, buscador.getjTable1());
                         tee.setCellStyle(5, "dd/MM/yyyy HH:mm:ss");
                         tee.export();
-                        if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(buscador, "Archivo creado\n¿Abrir archivo generado?", null, JOptionPane.YES_NO_OPTION)) {
+                        if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(buscador, "¿Abrir archivo generado?", null, JOptionPane.YES_NO_OPTION)) {
                             Desktop.getDesktop().open(file);
                         }
                     }
@@ -1436,8 +1446,10 @@ public class Contabilidad {
             c.setTime((Date) o[o.length - 2]);
             o[o.length - 2] = c.get(Calendar.YEAR);
             c.setTime((Date) o[o.length - 1]);
-            o[o.length - 1] = c.get(Calendar.MONTH);
+            o[o.length - 1] = c.get(Calendar.MONTH) + 1;
         }
+        
+        //como no se puede aplicar un order by fv.fechaalta sobre una UNION en JPA
         Collections.sort(l, new Comparator<Object[]>() {
             @Override
             public int compare(Object[] o1, Object[] o2) {

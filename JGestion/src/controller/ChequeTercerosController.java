@@ -19,8 +19,6 @@ import entity.ChequeTercerosEntrega;
 import entity.ChequeTercerosEntregaDetalle;
 import entity.Cliente;
 import entity.DetalleCajaMovimientos;
-import entity.ListaPrecios;
-import entity.Producto;
 import entity.Usuario;
 import entity.enums.ChequeEstado;
 import generics.GenericBeanCollection;
@@ -30,7 +28,6 @@ import gui.PanelABMCheques;
 import gui.PanelChequesColumnsReport;
 import gui.PanelEntregaTerceros;
 import gui.PanelMovimientosVarios;
-import gui.PanelProductoReporteOptions;
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.Window;
@@ -43,7 +40,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -535,7 +531,7 @@ public class ChequeTercerosController implements ActionListener {
 
     private void doChequeTercerosReport() throws DatabaseErrorException {
         final PanelChequesColumnsReport p = new PanelChequesColumnsReport();
-        final JDABM jd = new JDABM(null, "Reporte de Productos", true, p);
+        final JDABM jd = new JDABM(null, "Informes: Cheques de Terceros", true, p);
         jd.getbAceptar().addActionListener(new ActionListener() {
             @Override
             @SuppressWarnings("unchecked")
@@ -586,7 +582,7 @@ public class ChequeTercerosController implements ActionListener {
                         drb.addColumn(ColumnBuilder.getNew().setColumnProperty("o5", Object.class).setTitle("Banco").setWidth(80).setStyle(textStyle).build());
                     }
                     if (p.getCheckEstado()) {
-                        drb.addColumn(ColumnBuilder.getNew().setColumnProperty("o7", Object.class).setTitle("Estado").setWidth(40).setStyle(textStyle).build());
+                        drb.addColumn(ColumnBuilder.getNew().setColumnProperty("o7", Object.class).setTitle("Estado").setWidth(45).setStyle(textStyle).build());
                     }
                     if (p.getCheckCruzado()) {
                         drb.addColumn(ColumnBuilder.getNew().setColumnProperty("o8", Object.class).setTitle("Cruzado").setWidth(40).setStyle(textStyle).build());
@@ -606,7 +602,7 @@ public class ChequeTercerosController implements ActionListener {
                     if (p.getCheckLandscapePage()) {
                         drb.setPageSizeAndOrientation(Page.Page_A4_Landscape());
                     }
-                    drb.setTitle("Informe: Cheques Terceros")
+                    drb.setTitle("Informe: Cheques de Terceros")
                             .setSubtitle(UTIL.TIMESTAMP_FORMAT.format(new Date()))
                             .setPrintBackgroundOnOddRows(true)
                             .setUseFullPageWidth(true);
