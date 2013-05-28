@@ -37,7 +37,8 @@ public class ReciboPagos implements Serializable {
     private Integer id;
     /**
      * 0=Efectivo ({@link DetalleCajaMovimientos}), 1=Cheque Propio, 2=Cheque
-     * Tercero, 3=Nota de Crédito, 4=Retención
+     * Tercero, 3=Nota de Crédito, 4=Retención, 5=Cuenta Bancaria Movimientos
+     * (trasnferencia), 6={@link Especie}
      */
     @Basic(optional = false)
     @Column(name = "forma_pago", nullable = false)

@@ -77,11 +77,9 @@ public class FacturaCompraController implements ActionListener, KeyListener {
 
     static {
         String[] tipos = {"A", "B", "C", "M", "X", "O"};
-        TIPOS_FACTURA = new ArrayList<String>();
-        TIPOS_FACTURA.addAll(Arrays.asList(tipos));
+        TIPOS_FACTURA = Arrays.asList(tipos);
         String[] formas = {"Contado", "Cta. Cte."};
-        FORMAS_PAGO = new ArrayList<String>();
-        FORMAS_PAGO.addAll(Arrays.asList(formas));
+        FORMAS_PAGO = Arrays.asList(formas);
     }
 
     public FacturaCompraController() {
@@ -319,7 +317,8 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         BigDecimal desc = new BigDecimal(jdFactura.getTfDescuento().getText().trim());
         BigDecimal gravado27 = BigDecimal.ZERO;
         DefaultTableModel dtm = jdFactura.getDtm();
-        if (jdFactura.getCbFacturaTipo().getSelectedItem().toString().equalsIgnoreCase("A")) {
+        if (jdFactura.getCbFacturaTipo().getSelectedItem().toString().equalsIgnoreCase("A")
+                || jdFactura.getCbFacturaTipo().getSelectedItem().toString().equalsIgnoreCase("M")) {
             for (int i = (dtm.getRowCount() - 1); i > -1; i--) {
                 String iva = dtm.getValueAt(i, 0).toString();
                 BigDecimal subTotalSinIVA = (BigDecimal) dtm.getValueAt(i, 5);
@@ -432,7 +431,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         } else {
             newFacturaCompra.setNumero(Long.valueOf(jdFactura.getTfFacturaCuarto() + jdFactura.getTfFacturaOcteto()));
         }
-        if (newFacturaCompra.getTipo() == 'A') {
+        if (newFacturaCompra.getTipo() == 'A' || newFacturaCompra.getTipo() == 'M') {
             newFacturaCompra.setGravado(new BigDecimal(jdFactura.getTfGravado()));
             newFacturaCompra.setNoGravado(new BigDecimal(jdFactura.getTfTotalNoGravado()));
             newFacturaCompra.setIva10(Double.valueOf(jdFactura.getTfTotalIVA105()));

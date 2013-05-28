@@ -24,10 +24,9 @@ public class ComprobanteRetencionController {
      */
     private ComprobanteRetencion entity;
     private PanelABMComprobanteRetencion panelABM;
-    private final ComprobanteRetencionJpaController jpaController;
+    private final ComprobanteRetencionJpaController jpaController = new ComprobanteRetencionJpaController();
 
     public ComprobanteRetencionController() {
-        jpaController = new ComprobanteRetencionJpaController();
     }
 
     public ComprobanteRetencion displayComprobanteRetencion(Window owner, ComprobanteRetencion toEdit) {
@@ -86,7 +85,7 @@ public class ComprobanteRetencionController {
                 jd.dispose();
             }
         });
-        
+
         jd.setLocationRelativeTo(owner);
         jd.setVisible(true);
         return entity;

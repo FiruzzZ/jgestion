@@ -6,7 +6,6 @@ import entity.enums.ChequeEstado;
 import generics.GenericBeanCollection;
 import gui.JDBuscadorReRe;
 import gui.JDReRe;
-import gui.JFP;
 import gui.generics.JDialogTable;
 import java.awt.Component;
 import java.awt.Window;
@@ -15,7 +14,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -27,6 +25,7 @@ import jpa.controller.ChequePropioJpaController;
 import jpa.controller.ChequeTercerosJpaController;
 import jpa.controller.ComprobanteRetencionJpaController;
 import jpa.controller.CuentabancariaMovimientosJpaController;
+import jpa.controller.EspecieJpaController;
 import jpa.controller.NotaCreditoJpaController;
 import jpa.controller.NotaDebitoJpaController;
 import jpa.controller.ReciboJpaController;
@@ -314,6 +313,8 @@ public class ReciboController implements ActionListener, FocusListener {
             displayABMRetencion(null);
         } else if (formaPago == 5) {
             displayABMTransferencia();
+        } else if (formaPago == 6) {
+            displayABMEspecie(null);
         }
     }
 
@@ -387,6 +388,33 @@ public class ReciboController implements ActionListener, FocusListener {
             }
         } catch (MessageException ex) {
             ex.displayMessage(jdReRe);
+        }
+    }
+
+    private void displayABMEspecie(Especie toEdit) {
+        Especie especie = new EspecieController().displayEspecie(jdReRe, toEdit);
+        if (especie != null) {
+            DefaultTableModel dtm = jdReRe.getDtmPagos();
+            try {
+                for (int row = 0; row < dtm.getRowCount(); row++) {
+                    if (dtm.getValueAt(row, 0) instanceof Especie) {
+                        Especie old = (Especie) dtm.getValueAt(row, 0);
+                        if (especie.getDescripcion().equalsIgnoreCase(old.getDescripcion())) {
+                            throw new MessageException("Ya existe un pago en Especie en este Recibo con la misma descripción: " + old.getDescripcion());
+                        }
+                    }
+                }
+                if (toEdit == null) {
+                    dtm.addRow(new Object[]{especie, "ES", especie.getDescripcion(), especie.getImporte()});
+                } else {
+                    int selectedRow = jdReRe.getTablePagos().getSelectedRow();
+                    dtm.setValueAt(especie, selectedRow, 0);
+                    dtm.setValueAt(especie.getDescripcion(), selectedRow, 2);
+                    dtm.setValueAt(especie.getImporte(), selectedRow, 3);
+                }
+            } catch (MessageException ex) {
+                ex.displayMessage(jdReRe);
+            }
         }
     }
 
@@ -545,7 +573,7 @@ public class ReciboController implements ActionListener, FocusListener {
         boolean asentarDiferenciaEnCaja = false;
         if (!re.isPorConciliar() || conciliando) {
             if (0 != jdReRe.getTfTotalAPagar().getText().compareTo(jdReRe.getTfTotalPagado().getText())) {
-                if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(jdReRe, "El importe a pagar no coincide el detalle de pagos."
+                if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(jdReRe, "El importe a pagar no coincide con el detalle de pagos."
                         + "¿Desea que la diferencia ($" + UTIL.DECIMAL_FORMAT.format(re.getMonto().subtract(importePagado)) + ") sea reflejada en la Caja?", "Arqueo de valores", JOptionPane.YES_NO_OPTION)) {
                     asentarDiferenciaEnCaja = true;
                 } else {
@@ -883,16 +911,16 @@ public class ReciboController implements ActionListener, FocusListener {
             }
         }
         if (buscador.getDcDesde() != null) {
-            query.append(" AND o.fecha_recibo >= '").append(buscador.getDcDesde()).append("'");
+            query.append(" AND o.fecha_recibo >= '").append(UTIL.yyyy_MM_dd.format(buscador.getDcDesde())).append("'");
         }
         if (buscador.getDcHasta() != null) {
-            query.append(" AND o.fecha_recibo <= '").append(buscador.getDcHasta()).append("'");
+            query.append(" AND o.fecha_recibo <= '").append(UTIL.yyyy_MM_dd.format(buscador.getDcHasta())).append("'");
         }
         if (buscador.getDcDesdeSistema() != null) {
-            query.append(" AND o.fecha_carga >= '").append(UTIL.clearTimeFields(buscador.getDcDesdeSistema())).append("'");
+            query.append(" AND o.fecha_carga >= '").append(UTIL.yyyy_MM_dd.format(buscador.getDcDesdeSistema())).append("'");
         }
         if (buscador.getDcHastaSistema() != null) {
-            query.append(" AND o.fecha_carga <= '").append(UTIL.clearTimeFields(buscador.getDcHastaSistema())).append("'");
+            query.append(" AND o.fecha_carga <= '").append(UTIL.yyyy_MM_dd.format(buscador.getDcHastaSistema())).append("'");
         }
         if (buscador.getCbCaja().getSelectedIndex() > 0) {
             query.append(" AND o.caja = ").append(((Caja) buscador.getCbCaja().getSelectedItem()).getId());
@@ -994,6 +1022,9 @@ public class ReciboController implements ActionListener, FocusListener {
             } else if (object instanceof CuentabancariaMovimientos) {
                 CuentabancariaMovimientos pago = (CuentabancariaMovimientos) object;
                 dtm.addRow(new Object[]{pago, "TR", pago.getDescripcion(), pago.getCredito()});
+            } else if (object instanceof Especie) {
+                Especie pago = (Especie) object;
+                dtm.addRow(new Object[]{pago, "ES", pago.getDescripcion(), pago.getImporte()});
             }
         }
     }
@@ -1018,6 +1049,9 @@ public class ReciboController implements ActionListener, FocusListener {
                 pagos.add(o);
             } else if (pago.getFormaPago() == 5) {
                 CuentabancariaMovimientos o = new CuentabancariaMovimientosJpaController().find(pago.getComprobanteId());
+                pagos.add(o);
+            } else if (pago.getFormaPago() == 6) {
+                Especie o = new EspecieJpaController().find(pago.getComprobanteId());
                 pagos.add(o);
             } else {
                 throw new IllegalArgumentException("Forma Pago Recibo no válida:" + pago.getFormaPago());
@@ -1083,6 +1117,9 @@ public class ReciboController implements ActionListener, FocusListener {
             } else if (object instanceof ComprobanteRetencion) {
                 ComprobanteRetencion pago = (ComprobanteRetencion) object;
                 pp.add(new GenericBeanCollection("RE " + pago.getNumero(), pago.getImporte()));
+            } else if (object instanceof Especie) {
+                Especie pago = (Especie) object;
+                pp.add(new GenericBeanCollection("ES " + pago.getDescripcion(), pago.getImporte()));
             } else if (object instanceof DetalleCajaMovimientos) {
                 DetalleCajaMovimientos pago = (DetalleCajaMovimientos) object;
                 pp.add(new GenericBeanCollection("EF", pago.getMonto()));

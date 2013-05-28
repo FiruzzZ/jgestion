@@ -15,6 +15,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import javax.persistence.EntityManager;
 import entity.DetalleRemesa;
+import entity.Especie;
 import entity.FacturaCompra;
 import entity.NotaCreditoProveedor;
 import entity.NotaDebitoProveedor;
@@ -42,6 +43,7 @@ import jpa.controller.ChequeTercerosJpaController;
 import jpa.controller.ComprobanteRetencionJpaController;
 import jpa.controller.CreditoProveedorJpaController;
 import jpa.controller.CuentabancariaMovimientosJpaController;
+import jpa.controller.EspecieJpaController;
 import jpa.controller.FacturaCompraJpaController;
 import jpa.controller.NotaCreditoProveedorJpaController;
 import jpa.controller.NotaDebitoProveedorJpaController;
@@ -229,6 +231,8 @@ public class RemesaController implements FocusListener {
                     displayABMRetencion();
                 } else if (formaPago == 5) {
                     displayABMTransferencia();
+                } else if (formaPago == 6) {
+                    displayABMEspecie(null);
                 }
             }
         });
@@ -304,6 +308,33 @@ public class RemesaController implements FocusListener {
             }
         } catch (MessageException ex) {
             ex.displayMessage(jdReRe);
+        }
+    }
+
+    private void displayABMEspecie(Especie toEdit) {
+        Especie especie = new EspecieController().displayEspecie(jdReRe, toEdit);
+        if (especie != null) {
+            DefaultTableModel dtm = jdReRe.getDtmPagos();
+            try {
+                for (int row = 0; row < dtm.getRowCount(); row++) {
+                    if (dtm.getValueAt(row, 0) instanceof Especie) {
+                        Especie old = (Especie) dtm.getValueAt(row, 0);
+                        if (especie.getDescripcion().equalsIgnoreCase(old.getDescripcion())) {
+                            throw new MessageException("Ya existe un pago en Especie en este Recibo con la misma descripción: " + old.getDescripcion());
+                        }
+                    }
+                }
+                if (toEdit == null) {
+                    dtm.addRow(new Object[]{especie, "ES", especie.getDescripcion(), especie.getImporte()});
+                } else {
+                    int selectedRow = jdReRe.getTablePagos().getSelectedRow();
+                    dtm.setValueAt(especie, selectedRow, 0);
+                    dtm.setValueAt(especie.getDescripcion(), selectedRow, 2);
+                    dtm.setValueAt(especie.getImporte(), selectedRow, 3);
+                }
+            } catch (MessageException ex) {
+                ex.displayMessage(jdReRe);
+            }
         }
     }
 
@@ -688,11 +719,18 @@ public class RemesaController implements FocusListener {
             }
         }
         if (buscador.getDcDesde() != null) {
-            query.append(" AND o.fecha_remesa >= '").append(buscador.getDcDesde()).append("'");
+            query.append(" AND o.fecha_remesa >= '").append(UTIL.yyyy_MM_dd.format(buscador.getDcDesde())).append("'");
         }
         if (buscador.getDcHasta() != null) {
-            query.append(" AND o.fecha_remesa <= '").append(buscador.getDcHasta()).append("'");
+            query.append(" AND o.fecha_remesa <= '").append(UTIL.yyyy_MM_dd.format(buscador.getDcHasta())).append("'");
         }
+        if (buscador.getDcDesdeSistema() != null) {
+            query.append(" AND o.fecha_carga >= '").append(UTIL.yyyy_MM_dd.format(buscador.getDcDesdeSistema())).append("'");
+        }
+        if (buscador.getDcHastaSistema() != null) {
+            query.append(" AND o.fecha_carga <= '").append(UTIL.yyyy_MM_dd.format(buscador.getDcHastaSistema())).append("'");
+        }
+        
         if (buscador.getCbCaja().getSelectedIndex() > 0) {
             query.append(" AND o.caja = ").append(((Caja) buscador.getCbCaja().getSelectedItem()).getId());
         } else {
@@ -861,6 +899,9 @@ public class RemesaController implements FocusListener {
             } else if (object instanceof ComprobanteRetencion) {
                 ComprobanteRetencion pago = (ComprobanteRetencion) object;
                 dtm.addRow(new Object[]{pago, "RE", pago.getNumero(), pago.getImporte()});
+            } else if (object instanceof Especie) {
+                Especie pago = (Especie) object;
+                dtm.addRow(new Object[]{pago, "ES", pago.getDescripcion(), pago.getImporte()});
             } else if (object instanceof DetalleCajaMovimientos) {
                 DetalleCajaMovimientos pago = (DetalleCajaMovimientos) object;
                 dtm.addRow(new Object[]{pago, "EF", null, pago.getMonto().negate()});
@@ -928,6 +969,9 @@ public class RemesaController implements FocusListener {
                 pagos.add(o);
             } else if (pago.getFormaPago() == 5) {
                 CuentabancariaMovimientos o = new CuentabancariaMovimientosJpaController().find(pago.getComprobanteId());
+                pagos.add(o);
+            } else if (pago.getFormaPago() == 6) {
+                Especie o = new EspecieJpaController().find(pago.getComprobanteId());
                 pagos.add(o);
             } else {
                 throw new IllegalArgumentException("Forma Pago Remesa no válida:" + pago.getFormaPago());

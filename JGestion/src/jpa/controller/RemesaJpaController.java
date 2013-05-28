@@ -126,6 +126,10 @@ public class RemesaJpaController extends AbstractDAO<Remesa, Integer> {
                     CuentabancariaMovimientos pago = (CuentabancariaMovimientos) object;
                     entityManager.persist(pago);
                     pagosPost.add(pago);
+                } else if (object instanceof Especie) {
+                    Especie pago = (Especie) object;
+                    entityManager.persist(pago);
+                    pagosPost.add(pago);
                 } else {
                     throw new IllegalArgumentException("Forma Pago Remesa no válida:" + object);
                 }
@@ -158,6 +162,10 @@ public class RemesaJpaController extends AbstractDAO<Remesa, Integer> {
                 } else if (object instanceof CuentabancariaMovimientos) {
                     CuentabancariaMovimientos pago = (CuentabancariaMovimientos) object;
                     tipo = 5;
+                    id = pago.getId();
+                } else if (object instanceof Especie) {
+                    Especie pago = (Especie) object;
+                    tipo = 6;
                     id = pago.getId();
                 }
                 RemesaPagos rp = new RemesaPagos(null, tipo, id, remesa);
@@ -252,6 +260,10 @@ public class RemesaJpaController extends AbstractDAO<Remesa, Integer> {
                     new CajaMovimientosJpaController().anular(remesa);
                 } else if (object instanceof CuentabancariaMovimientos) {
                     CuentabancariaMovimientos pago = (CuentabancariaMovimientos) object;
+                    pago = em.find(pago.getClass(), pago.getId());
+                    em.remove(pago);
+                } else if (object instanceof Especie) {
+                    Especie pago = (Especie) object;
                     pago = em.find(pago.getClass(), pago.getId());
                     em.remove(pago);
                 }

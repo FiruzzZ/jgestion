@@ -208,6 +208,10 @@ public class ReciboJpaController extends AbstractDAO<Recibo, Integer> {
                 CuentabancariaMovimientos pago = (CuentabancariaMovimientos) object;
                 entityManager.persist(pago);
                 pagosPost.add(pago);
+            } else if (object instanceof Especie) {
+                Especie pago = (Especie) object;
+                entityManager.persist(pago);
+                pagosPost.add(pago);
             }
         }
         entityManager.getTransaction().commit();
@@ -237,6 +241,10 @@ public class ReciboJpaController extends AbstractDAO<Recibo, Integer> {
             } else if (object instanceof CuentabancariaMovimientos) {
                 CuentabancariaMovimientos pago = (CuentabancariaMovimientos) object;
                 tipo = 5;
+                id = pago.getId();
+            } else if (object instanceof Especie) {
+                Especie pago = (Especie) object;
+                tipo = 6;
                 id = pago.getId();
             }
             ReciboPagos rp = new ReciboPagos(null, tipo, id, recibo);
