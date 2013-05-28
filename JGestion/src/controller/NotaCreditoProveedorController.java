@@ -328,7 +328,7 @@ public class NotaCreditoProveedorController implements ActionListener {
         buscador = new JDBuscadorReRe(frame, null, modal, "Proveedor", null);
         buscador.setParaNotaCreditoProveedor();
         buscador.getbImprimir().setVisible(false);
-        UTIL.loadComboBox(buscador.getCbClieProv(), new ProveedorController().findEntities(), true);
+        UTIL.loadComboBox(buscador.getCbClieProv(), JGestionUtils.getWrappedProveedores(new ProveedorController().findEntities()), true);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
                 new String[]{"ID", "Nº NotaCredito", "Proveedor", "Importe", "Fecha", "Remesa", "Usuario", "Fecha (Sistema)"},
