@@ -1046,7 +1046,7 @@ public class JDFacturaCompra extends javax.swing.JDialog {
     }//GEN-LAST:event_tfOtrosImpuestosNoRecuperablesKeyTyped
 
     private void tfDescuentoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfDescuentoKeyTyped
-        // TODO add your handling code here:
+        SwingUtil.checkInputDigit(evt, true, 13);
     }//GEN-LAST:event_tfDescuentoKeyTyped
 
     private void xxx(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_xxx
