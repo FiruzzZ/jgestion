@@ -22,6 +22,7 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -77,6 +78,28 @@ public class JPATesting {
 
     @SuppressWarnings("unchecked")
     public JPATesting() throws Exception {
+        List<Object[]> resultList = DAO.getEntityManager().createQuery(""
+                + " SELECT CONCAT(o.sucursal.puntoVenta, '-', o.numero), 'Contado', o.fechaVenta, CAST(o.importe as numeric(12,2)) "
+                + "FROM FacturaVenta o WHERE o.formaPago=1 "
+                + "UNION SELECT CONCAT(o.sucursal.puntoVenta, '-', o.numero), CONCAT('EF ', dcm.cajaMovimientos.caja.nombre, ' N°', dcm.cajaMovimientos.id), o.fechaRecibo, dcm.monto "
+                + "FROM Recibo o JOIN o.pagos p JOIN DetalleCajaMovimientos dcm ON p.comprobanteId = dcm.id WHERE p.formaPago = 0 "
+                + "UNION SELECT CONCAT(o.sucursal.puntoVenta, '-', o.numero), CONCAT('CHP ', dcm.numero),                                                   dcm.fechaCobro, dcm.importe "
+                + "FROM Recibo o JOIN o.pagos p JOIN ChequePropio dcm ON p.comprobanteId = dcm.id WHERE p.formaPago = 1 "
+                + "UNION SELECT CONCAT(o.sucursal.puntoVenta, '-', o.numero), concat('CH ', dcm.numero),                                                    dcm.fechaCobro, dcm.importe "
+                + "FROM Recibo o JOIN o.pagos p JOIN ChequeTerceros dcm ON p.comprobanteId = dcm.id WHERE p.formaPago = 2 "
+                + "UNION SELECT CONCAT(o.sucursal.puntoVenta, '-', o.numero), CONCAT('NC ', dcm.sucursal.puntoVenta, '-', dcm.numero),                dcm.fechaNotaCredito, dcm.importe "
+                + "FROM Recibo o JOIN o.pagos p JOIN NotaCredito dcm ON p.comprobanteId = dcm.id WHERE p.formaPago = 3 "
+                + "UNION SELECT CONCAT(o.sucursal.puntoVenta, '-', o.numero), concat('RE ', dcm.numero),                                                         dcm.fecha, dcm.importe "
+                + "FROM Recibo o JOIN o.pagos p JOIN ComprobanteRetencion dcm ON p.comprobanteId = dcm.id WHERE p.formaPago = 4 "
+                + "UNION SELECT CONCAT(o.sucursal.puntoVenta, '-', o.numero), concat('TR ', dcm.descripcion),                                       dcm.fechaCreditoDebito, dcm.credito "
+                + "FROM Recibo o JOIN o.pagos p JOIN  CuentabancariaMovimientos dcm ON p.comprobanteId = dcm.id WHERE p.formaPago = 5 "
+                + "UNION SELECT CONCAT(o.sucursal.puntoVenta, '-', o.numero), concat('ES ', dcm.descripcion),                                                o.fechaRecibo, dcm.importe "
+                + "FROM Recibo o JOIN o.pagos p JOIN Especie dcm ON p.comprobanteId = dcm.id WHERE p.formaPago = 6 "
+                ).getResultList();
+        for (Object[] o : resultList) {
+            System.out.println(Arrays.toString(o));
+        }
+        System.out.println(resultList.size());
     }
 
     private void updateCostoCompraYPrecioVentaSegunDetalleCompra() {

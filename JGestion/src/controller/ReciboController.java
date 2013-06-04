@@ -1006,7 +1006,7 @@ public class ReciboController implements ActionListener, FocusListener {
         for (Object object : recibo.getPagosEntities()) {
             if (object instanceof ChequePropio) {
                 ChequePropio pago = (ChequePropio) object;
-                dtm.addRow(new Object[]{pago, "CH", pago.getBanco().getNombre() + " N°" + pago.getNumero(), pago.getImporte()});
+                dtm.addRow(new Object[]{pago, "CHP", pago.getBanco().getNombre() + " N°" + pago.getNumero(), pago.getImporte()});
             } else if (object instanceof ChequeTerceros) {
                 ChequeTerceros pago = (ChequeTerceros) object;
                 dtm.addRow(new Object[]{pago, "CH", pago.getBanco().getNombre() + " N°" + pago.getNumero(), pago.getImporte()});
