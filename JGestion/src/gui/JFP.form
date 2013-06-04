@@ -990,17 +990,25 @@
               <SubComponents>
                 <MenuItem class="javax.swing.JMenuItem" name="jMenuItem44">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="Movimientos de Cajas"/>
+                    <Property name="text" type="java.lang.String" value="de Movimientos de Cajas"/>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem44ActionPerformed"/>
+                  </Events>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuItem94">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="de Ventas"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem94ActionPerformed"/>
                   </Events>
                 </MenuItem>
               </SubComponents>
             </Menu>
             <Menu class="javax.swing.JMenu" name="jMenu12">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Cosas raras"/>
+                <Property name="text" type="java.lang.String" value="Resultados"/>
               </Properties>
               <SubComponents>
                 <MenuItem class="javax.swing.JMenuItem" name="jMenuItem89">

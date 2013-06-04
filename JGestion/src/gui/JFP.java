@@ -199,6 +199,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenuItem93 = new javax.swing.JMenuItem();
         jMenu8 = new javax.swing.JMenu();
         jMenuItem44 = new javax.swing.JMenuItem();
+        jMenuItem94 = new javax.swing.JMenuItem();
         jMenu12 = new javax.swing.JMenu();
         jMenuItem89 = new javax.swing.JMenuItem();
         jMenuItem76 = new javax.swing.JMenuItem();
@@ -1071,7 +1072,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
         jMenu8.setText("Flujo de fondos");
 
-        jMenuItem44.setText("Movimientos de Cajas");
+        jMenuItem44.setText("de Movimientos de Cajas");
         jMenuItem44.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem44ActionPerformed(evt);
@@ -1079,9 +1080,17 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         });
         jMenu8.add(jMenuItem44);
 
+        jMenuItem94.setText("de Ventas");
+        jMenuItem94.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem94ActionPerformed(evt);
+            }
+        });
+        jMenu8.add(jMenuItem94);
+
         jMenuReportes.add(jMenu8);
 
-        jMenu12.setText("Cosas raras");
+        jMenu12.setText("Resultados");
 
         jMenuItem89.setText("Informe de Resultados");
         jMenuItem89.addActionListener(new java.awt.event.ActionListener() {
@@ -1910,6 +1919,10 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         new Contabilidad().displayInformeDetalleFacturacion((Window)this);
     }//GEN-LAST:event_jMenuItem93ActionPerformed
 
+    private void jMenuItem94ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem94ActionPerformed
+        new Contabilidad().displayFlujoPorVentas((Window)this);
+    }//GEN-LAST:event_jMenuItem94ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JMenu jMenu1;
@@ -2035,6 +2048,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenuItem jMenuItem91;
     private javax.swing.JMenuItem jMenuItem92;
     private javax.swing.JMenuItem jMenuItem93;
+    private javax.swing.JMenuItem jMenuItem94;
     private javax.swing.JMenuItem jMenuItemCatalogoWeb;
     private javax.swing.JMenuItem jMenuItemCuentasBancarias;
     private javax.swing.JMenuItem jMenuItemOfertas;

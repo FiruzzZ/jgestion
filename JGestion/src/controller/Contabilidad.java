@@ -21,6 +21,7 @@ import entity.Marca;
 import entity.NotaCredito;
 import entity.Producto;
 import entity.Proveedor;
+import entity.Recibo;
 import entity.Rubro;
 import entity.SubCuenta;
 import entity.Sucursal;
@@ -38,6 +39,7 @@ import gui.JFP;
 import gui.PanelBalanceComprasVentas;
 import gui.PanelBalanceGeneral;
 import gui.PanelDetalleFacturacion;
+import gui.PanelInformeFlujoVentas;
 import gui.PanelProductosCostoVenta;
 import java.awt.Desktop;
 import java.awt.Window;
@@ -60,6 +62,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import javax.persistence.NoResultException;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -1292,12 +1295,7 @@ public class Contabilidad {
 
     public void displayInformeDetalleFacturacion(Window window) {
         final PanelDetalleFacturacion panelDetalleFacturacion = new PanelDetalleFacturacion();
-        buscador = new JDBuscador(window, "", false, panelDetalleFacturacion);
-        buscador.getPanelInferior().setVisible(true);
-        buscador.addResumeItem("Ingresos", new JTextField(8));
-        buscador.addResumeItem("Egresos", new JTextField(8));
-        buscador.addResumeItem("Resultado", new JTextField(8));
-//        buscador.agrandar(200, 0);
+        buscador = new JDBuscador(window, "Informe: Detalle de Facturación", false, panelDetalleFacturacion);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
                 new String[]{"DetalleVenta.id", "I-E", "Egreso", "Ingreso", "Cond. Vta", "Fecha", "Fecha Sistema", "UDN", "Cuenta", "Sub cuenta", "Sujeto", "Productos", "F. Tipo", "F. Sucursal", "F Nro", "Sucursal", "Caja", "Año", "Mes"},
@@ -1448,7 +1446,7 @@ public class Contabilidad {
             c.setTime((Date) o[o.length - 1]);
             o[o.length - 1] = c.get(Calendar.MONTH) + 1;
         }
-        
+
         //como no se puede aplicar un order by fv.fechaalta sobre una UNION en JPA
         Collections.sort(l, new Comparator<Object[]>() {
             @Override
@@ -1458,5 +1456,145 @@ public class Contabilidad {
         });
         return l;
 
+    }
+
+    public void displayFlujoPorVentas(Window window) {
+        final PanelInformeFlujoVentas panelFlujoVentas = new PanelInformeFlujoVentas();
+        buscador = new JDBuscador(window, "Informe: Flujo de Ventas", false, panelFlujoVentas);
+        UTIL.getDefaultTableModel(
+                buscador.getjTable1(),
+                new String[]{"Factura", "Concepto", "Fecha", "Importe"}, new int[]{100, 500, 80, 80}, new Class<?>[]{null, null, Date.class, BigDecimal.class});
+        TableColumnModel tm = buscador.getjTable1().getColumnModel();
+        tm.getColumn(2).setCellRenderer(FormatRenderer.getDateRenderer());
+        tm.getColumn(3).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        buscador.getPanelInferior().setVisible(true);
+        buscador.addResumeItem("Total", new JTextField(8));
+//        UTIL.hideColumnTable(buscador.getjTable1(), 0);
+        buscador.getjTable1().setAutoCreateRowSorter(true);
+        buscador.getBtnBuscar().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    List<Object[]> data = armarQueryFlujoVentas(panelFlujoVentas.getData());
+                    DefaultTableModel dtm = (DefaultTableModel) buscador.getjTable1().getModel();
+                    dtm.setRowCount(0);
+                    BigDecimal total = BigDecimal.ZERO;
+                    for (Object[] o : data) {
+                        String[] xx = o[0].toString().substring(2).split("-");
+                        o[0] = o[0].toString().substring(0, 2) + UTIL.AGREGAR_CEROS(xx[0], 4) + "-" + UTIL.AGREGAR_CEROS(xx[1], 8);
+                        dtm.addRow(o);
+                        total = total.add((BigDecimal)o[3]);
+                    }
+                    buscador.getResumeItems().get("Total").setText(UTIL.DECIMAL_FORMAT.format(total));
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, ex.getMessage(), null, JOptionPane.ERROR_MESSAGE);
+                    LOG.error("Error informes: flujo ventas", ex);
+                }
+
+            }
+        });
+        buscador.getBtnToExcel().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    if (buscador.getjTable1().getRowCount() < 1) {
+                        throw new MessageException("La tabla no tiene ningún dato a exportar");
+                    }
+                    File file = JGestionUtils.showSaveDialogFileChooser(buscador, "Exportar Detalle de Facturacion (.xls)", null, "xls");
+                    if (file != null) {
+                        TableExcelExporter tee = new TableExcelExporter(file, buscador.getjTable1());
+                        tee.setCellStyle(5, "dd/MM/yyyy HH:mm:ss");
+                        tee.export();
+                        if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(buscador, "¿Abrir archivo generado?", null, JOptionPane.YES_NO_OPTION)) {
+                            Desktop.getDesktop().open(file);
+                        }
+                    }
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(buscador, "Algo salió mal exportando detalle de facturación\n" + ex.getLocalizedMessage(), null, JOptionPane.ERROR_MESSAGE);
+                    LOG.error("exportando detallefacturacion", ex);
+                } catch (MessageException ex) {
+                    ex.displayMessage(buscador);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(buscador, "Algo salió mal exportando detalle de facturación\n" + ex.getLocalizedMessage(), null, JOptionPane.ERROR_MESSAGE);
+                    LOG.error("exportando detallefacturacion", ex);
+                }
+            }
+        });
+        buscador.getBtnImprimir().setEnabled(false);
+        buscador.setVisible(true);
+    }
+
+    private List<Object[]> armarQueryFlujoVentas(Map<String, Object> data) {
+        Date flujoDesde = (Date) data.get("flujoDesde");
+        String fd = flujoDesde != null ? ">= '" + UTIL.yyyy_MM_dd.format(flujoDesde) + "'" : "";
+        Date flujoHasta = (Date) data.get("flujoHasta");
+        String fh = flujoHasta != null ? "<= '" + UTIL.yyyy_MM_dd.format(flujoHasta) + "'" : "";
+
+        StringBuilder facturasVentaContado = new StringBuilder("SELECT concat('F', o.tipo, o.sucursal.puntoVenta, '-', o.numero), 'Contado', o.fechaVenta, CAST(o.importe as NUMERIC(12,2)) "
+                + " from " + FacturaVenta.class.getSimpleName() + " o WHERE o.formaPago=" + Valores.FormaPago.CONTADO.getId())
+                .append(fd.isEmpty() ? "" : " AND o.fechaVenta" + fd).append(fh.isEmpty() ? "" : " AND o.fechaVenta" + fh);
+
+//        0=Efectivo ({@link DetalleCajaMovimientos}), 1=Cheque Propio, 2=Cheque
+//     * Tercero, 3=Nota de Crédito, 4=Retención, 5=Cuenta Bancaria Movimientos
+//     * (trasnferencia), 6={@link Especie}
+        StringBuilder pagos = new StringBuilder(1000);
+        if ((Boolean) data.get("efectivo")) {
+            pagos.append(" UNION SELECT CONCAT('RE', o.sucursal.puntoVenta, '-', o.numero), CONCAT('EF ', dcm.cajaMovimientos.caja.nombre, ' (', dcm.cajaMovimientos.id, ')'), o.fechaRecibo, dcm.monto "
+                    + " FROM Recibo o JOIN o.pagos p JOIN DetalleCajaMovimientos dcm ON p.comprobanteId = dcm.id WHERE p.formaPago = 0 ")
+                    .append(fd.isEmpty() ? "" : " AND o.fechaRecibo" + fd).append(fh.isEmpty() ? "" : " AND o.fechaRecibo" + fh);
+        }
+        if ((Boolean) data.get("propio")) {
+            pagos.append(" UNION SELECT CONCAT('RE', o.sucursal.puntoVenta, '-', o.numero), CONCAT('CHP ', dcm.numero), dcm.fechaCobro, dcm.importe")
+                    .append(" FROM Recibo o JOIN o.pagos p JOIN ChequePropio dcm ON p.comprobanteId = dcm.id ")
+                    .append(" WHERE p.formaPago = 1").append(fd.isEmpty() ? "" : " AND dcm.fechaCobro" + fd).append(fh.isEmpty() ? "" : " AND dcm.fechaCobro" + fh);
+        }
+        if ((Boolean) data.get("terceros")) {
+            pagos.append(" UNION SELECT CONCAT('RE', o.sucursal.puntoVenta, '-', o.numero), CONCAT('CH ', dcm.numero), dcm.fechaCobro, dcm.importe")
+                    .append(" FROM Recibo o JOIN o.pagos p JOIN ChequeTerceros dcm ON p.comprobanteId = dcm.id ")
+                    .append(" WHERE p.formaPago = 2").append(fd.isEmpty() ? "" : " AND dcm.fechaCobro" + fd).append(fh.isEmpty() ? "" : " AND dcm.fechaCobro" + fh);
+        }
+        if ((Boolean) data.get("nota")) {
+            pagos.append(" UNION SELECT CONCAT('RE', o.sucursal.puntoVenta, '-', o.numero), CONCAT('NC ', dcm.sucursal.puntoVenta, '-', dcm.numero), dcm.fechaNotaCredito, dcm.importe")
+                    .append(" FROM Recibo o JOIN o.pagos p JOIN NotaCredito dcm ON p.comprobanteId = dcm.id ")
+                    .append(" WHERE p.formaPago = 3").append(fd.isEmpty() ? "" : " AND dcm.fechaNotaCredito" + fd).append(fh.isEmpty() ? "" : " AND dcm.fechaNotaCredito" + fh);
+        }
+        if ((Boolean) data.get("retencion")) {
+            pagos.append(" UNION SELECT CONCAT('RE', o.sucursal.puntoVenta, '-', o.numero), CONCAT('RE ', dcm.numero), dcm.fecha, dcm.importe")
+                    .append(" FROM Recibo o JOIN o.pagos p JOIN ComprobanteRetencion dcm ON p.comprobanteId = dcm.id ")
+                    .append(" WHERE p.formaPago = 4").append(fd.isEmpty() ? "" : " AND dcm.fecha" + fd).append(fh.isEmpty() ? "" : " AND dcm.fecha" + fh);
+        }
+        if ((Boolean) data.get("transferencia")) {
+            pagos.append(" UNION SELECT CONCAT('RE', o.sucursal.puntoVenta, '-', o.numero), CONCAT('TR ', dcm.descripcion), dcm.fechaCreditoDebito, dcm.credito")
+                    .append(" FROM Recibo o JOIN o.pagos p JOIN CuentabancariaMovimientos dcm ON p.comprobanteId = dcm.id ")
+                    .append(" WHERE p.formaPago = 5").append(fd.isEmpty() ? "" : " AND dcm.fechaCreditoDebito" + fd).append(fh.isEmpty() ? "" : " AND dcm.fechaCreditoDebito" + fh);
+        }
+        if ((Boolean) data.get("especie")) {
+            pagos.append(" UNION SELECT CONCAT('RE', o.sucursal.puntoVenta, '-', o.numero), CONCAT('ES ', dcm.descripcion), o.fechaRecibo, dcm.importe")
+                    .append(" FROM Recibo o JOIN o.pagos p JOIN Especie dcm ON p.comprobanteId = dcm.id ")
+                    .append(" WHERE p.formaPago = 6").append(fd.isEmpty() ? "" : " AND o.fechaRecibo" + fd).append(fh.isEmpty() ? "" : " AND o.fechaRecibo" + fh);
+        }
+        String q;
+        if ((Boolean) data.get("efectivo")) {
+            q = facturasVentaContado.toString() + pagos.toString();
+        } else {
+            q = pagos.toString().substring(6); // descarta " UNION"
+        }
+        @SuppressWarnings("unchecked")
+        List<Object[]> l = DAO.createQuery(q, false).getResultList();
+        //como no se puede aplicar un order by fv.fechaalta sobre una UNION en JPA
+        Collections.sort(l, new Comparator<Object[]>() {
+            @Override
+            public int compare(Object[] o1, Object[] o2) {
+                if (o1[2] == null) {
+                    return -1;
+                }
+                if (o2[2] == null) {
+                    return 1;
+                }
+
+                return ((Date) o1[2]).compareTo((Date) o2[2]);
+            }
+        });
+        return l;
     }
 }
