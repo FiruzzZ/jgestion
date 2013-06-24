@@ -1,3 +1,13 @@
+--20130619
+CREATE TABLE dominio (
+   id serial NOT NULL, 
+   nombre character varying(100) NOT NULL, 
+    PRIMARY KEY (id), 
+    UNIQUE (nombre)
+); 
+ALTER TABLE factura_compra ADD COLUMN dominio_id integer;
+ALTER TABLE factura_compra ADD FOREIGN KEY (dominio_id) REFERENCES dominio (id);
+ALTER TABLE factura_compra ADD COLUMN dominio_id integer;
 --20130504
 alter table remesa add column por_conciliar boolean not null default false;
 alter table remesa add column proveedor_id integer;

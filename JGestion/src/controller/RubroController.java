@@ -163,10 +163,10 @@ public class RubroController implements ActionListener, MouseListener {
         if (e.getSource().getClass().equals(javax.swing.JButton.class)) {
             javax.swing.JButton boton = (javax.swing.JButton) e.getSource();
 
-            if (boton.getName().equalsIgnoreCase("new")) {
+            if (boton.equals(abm.getbNuevo())) {
                 rubro = null;
                 abm.clearPanelFields();
-            } else if (boton.getName().equalsIgnoreCase("del")) {
+            } else if (boton.equals(abm.getbEliminar())) {
                 try {
                     eliminarRubro();
                     rubro = null;
@@ -200,8 +200,6 @@ public class RubroController implements ActionListener, MouseListener {
                     ex.printStackTrace();
                 }
             }
-
-            return;
         }// </editor-fold>
     }
 

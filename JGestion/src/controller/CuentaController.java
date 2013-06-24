@@ -28,16 +28,12 @@ import utilities.general.UTIL;
 public class CuentaController {
 
     private static final Logger LOG = Logger.getLogger(CuentaController.class.getName());
-    private final CuentaJpaController jpaController;
+    private final CuentaJpaController jpaController = new CuentaJpaController();
     private Cuenta EL_OBJECT;
     public static final Cuenta SIN_CLASIFICAR; //antes llamado EFECTIVO
 
     static {
         SIN_CLASIFICAR = DAO.getEntityManager().find(Cuenta.class, 1);
-    }
-
-    public CuentaController() {
-        jpaController = new CuentaJpaController();
     }
 
     public void destroy(Integer id) throws NonexistentEntityException, IllegalOrphanException {

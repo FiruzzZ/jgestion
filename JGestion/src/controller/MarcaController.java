@@ -10,27 +10,31 @@ import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import utilities.general.UTIL;
 import gui.JDMiniABM;
+import java.awt.Window;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.NoResultException;
+import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
  *
  * @author FiruzzZ
  */
-public class MarcaJpaController implements ActionListener, MouseListener {
+public class MarcaController implements ActionListener{
 
     public static final String CLASS_NAME = Marca.class.getSimpleName();
     private final String[] colsName = {"Nº", "Nombre", "Código"};
     private final int[] colsWidth = {20, 120, 80};
     private JDMiniABM abm;
-    private Marca marca;
+    private Marca entity;
 
     // <editor-fold defaultstate="collapsed" desc="DAO - CRUD Methods">
     public EntityManager getEntityManager() {
@@ -84,7 +88,7 @@ public class MarcaJpaController implements ActionListener, MouseListener {
         }
     }
 
-    public List<Marca> findMarcaEntities() {
+    public List<Marca> findAll() {
         return findMarcaEntities(true, -1, -1);
     }
 
@@ -124,14 +128,7 @@ public class MarcaJpaController implements ActionListener, MouseListener {
         }
     }// </editor-fold>
 
-    public void getABM(JFrame owner, boolean modal) throws MessageException {
-        UsuarioController.checkPermiso(PermisosController.PermisoDe.ABM_PRODUCTOS);
-        abm = new JDMiniABM(owner, modal);
-        abm.setLocationRelativeTo(owner);
-        initABM();
-    }
-
-    public void getABM(JDialog owner, boolean modal) throws MessageException {
+    public void getABM(Window owner, boolean modal) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.ABM_PRODUCTOS);
         abm = new JDMiniABM(owner, modal);
         abm.setLocationRelativeTo(owner);
@@ -142,36 +139,36 @@ public class MarcaJpaController implements ActionListener, MouseListener {
         abm.hideBtnLock();
         abm.hideFieldExtra();
         abm.setTitle("ABM - " + CLASS_NAME + "s");
-        abm.getTaInformacion().setText("La Marca es un atributo del Producto, "
-                + "es necesario crear al menos una para poder crear Productos."
-                + "\nPuede ser usado como una forma de agrupación/clasificación.");
+        abm.getTaInformacion().setText("La Marca es un atributo del Producto.");
         UTIL.getDefaultTableModel(abm.getjTable1(), colsName, colsWidth);
-        cargarDTM(abm.getDTM(), null);
+        abm.getjTable1().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                Integer selectedRow = abm.getjTable1().getSelectedRow();
+                if (selectedRow > -1) {
+                    entity = DAO.getEntityManager().find(Marca.class,
+                            Integer.valueOf(UTIL.getSelectedValue(abm.getjTable1(), 0).toString()));
+                }
+                if (entity != null) {
+                    abm.setTfNombre(entity.getNombre());
+                    if (entity.getCodigo() != null) {
+                        abm.setTfCodigo(entity.getCodigo());
+                    } else {
+                        abm.setTfCodigo("");
+                    }
+                    abm.tfNombreRequestFocus();
+                }
+            }
+        });
+        cargarDTM();
         abm.setListeners(this);
         abm.setVisible(true);
     }
 
-    public void mouseReleased(MouseEvent e) {
-        Integer selectedRow = ((javax.swing.JTable) e.getSource()).getSelectedRow();
-        if (selectedRow > -1) {
-            marca = (Marca) DAO.getEntityManager().find(Marca.class,
-                    Integer.valueOf((((javax.swing.JTable) e.getSource()).getValueAt(selectedRow, 0)).toString()));
-        }
-        if (marca != null) {
-            setPanelFields(marca);
-        }
-    }
-
-    private void cargarDTM(DefaultTableModel dtm, String query) {
-        UTIL.limpiarDtm(dtm);
-        List<Marca> l;
-        if (query == null || query.length() < 10) {
-            l = DAO.getEntityManager().createNamedQuery(CLASS_NAME + ".findAll").getResultList();
-        } else {
-            // para cuando se usa el Buscador del ABM
-            l = DAO.getEntityManager().createNativeQuery(query, this.getClass()).getResultList();
-        }
-        for (Marca o : l) {
+    private void cargarDTM() {
+        DefaultTableModel dtm = (DefaultTableModel) abm.getjTable1().getModel();
+        dtm.setRowCount(0);
+        for (Marca o : findAll()) {
             dtm.addRow(new Object[]{
                         o.getId(),
                         o.getNombre(),
@@ -180,109 +177,95 @@ public class MarcaJpaController implements ActionListener, MouseListener {
         }
     }
 
-    private void setPanelFields(Marca o) {
-        abm.setTfNombre(o.getNombre());
-        if (o.getCodigo() != null) {
-            abm.setTfCodigo(o.getCodigo());
-        } else {
-            abm.setTfCodigo("");
-        }
-        abm.tfNombreRequestFocus();
-    }
-
     private void eliminar() throws MessageException, NonexistentEntityException, IllegalOrphanException {
-        if (marca == null) {
+        if (entity == null) {
             throw new MessageException("No hay " + CLASS_NAME + " seleccionada");
         }
-        destroy(marca.getId());
+        destroy(entity.getId());
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         // <editor-fold defaultstate="collapsed" desc="JButton">
-        if (e.getSource().getClass().equals(javax.swing.JButton.class)) {
-            javax.swing.JButton boton = (javax.swing.JButton) e.getSource();
-
-            if (boton.getName().equalsIgnoreCase("new")) {
-                marca = null;
-                abm.clearPanelFields();
-            } else if (boton.getName().equalsIgnoreCase("del")) {
-                try {
-                    eliminar();
-                    marca = null;
+        if (e.getSource().getClass().equals(JButton.class)) {
+            JButton boton = (JButton) e.getSource();
+            //<editor-fold defaultstate="collapsed" desc="abm Actions">
+            if (abm != null) {
+                if (boton.equals(abm.getbNuevo())) {
+                    entity = null;
                     abm.clearPanelFields();
-                    cargarDTM(abm.getDTM(), "");
-                    abm.showMessage("Eliminado..", CLASS_NAME, 1);
-                } catch (MessageException ex) {
-                    abm.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                } catch (NonexistentEntityException ex) {
-                    abm.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    ex.printStackTrace();
-                } catch (IllegalOrphanException ex) {
-                    abm.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            } else if (boton.getName().equalsIgnoreCase("cancelar")) {
-                marca = null;
-                abm.clearPanelFields();
-            } else if (boton.getName().equalsIgnoreCase("guardar")) {
-                try {
-                    if (marca == null) {
-                        marca = new Marca();
+                } else if (boton.equals(abm.getbEliminar())) {
+                    try {
+                        eliminar();
+                        entity = null;
+                        abm.clearPanelFields();
+                        cargarDTM();
+                        JOptionPane.showMessageDialog(abm, "Eliminado");
+                    } catch (MessageException ex) {
+                        JOptionPane.showMessageDialog(abm, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(abm, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                     }
-                    setEntity(marca);
-                    checkConstraints(marca);
-                    marca = null;
+                } else if (boton.equals(abm.getbCancelar())) {
+                    entity = null;
                     abm.clearPanelFields();
-                    cargarDTM(abm.getDTM(), "");
-                } catch (MessageException ex) {
-                    abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
+                } else if (boton.equals(abm.getbAceptar())) {
+                    try {
+                        setEntity();
+                        checkConstraints(entity);
+                        entity = null;
+                        abm.clearPanelFields();
+                        cargarDTM();
+                    } catch (MessageException ex) {
+                        JOptionPane.showMessageDialog(abm, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(abm, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
-            }
-            return;
+            }//</editor-fold>
         }// </editor-fold>
     }
 
-    private void checkConstraints(Marca object) throws MessageException, IllegalOrphanException, NonexistentEntityException, Exception {
+    private void checkConstraints(Marca o) throws MessageException, IllegalOrphanException, NonexistentEntityException, Exception {
         String idQuery = "";
-        if (object.getId() != null) {
-            idQuery = "o.id!=" + object.getId() + " AND ";
+        if (o.getId() != null) {
+            idQuery = "o.id!=" + o.getId() + " AND ";
         }
         try {
             DAO.getEntityManager().createNativeQuery("SELECT * FROM " + CLASS_NAME + " o "
-                    + " WHERE " + idQuery + " o.nombre='" + object.getNombre() + "' ", Marca.class).getSingleResult();
+                    + " WHERE " + idQuery + " o.nombre='" + o.getNombre() + "' ", Marca.class).getSingleResult();
             throw new MessageException("Ya existe otra " + CLASS_NAME + " con este nombre.");
         } catch (NoResultException ex) {
         }
 
-        if (object.getCodigo() != null && object.getCodigo().length() > 0) {
+        if (o.getCodigo() != null && o.getCodigo().length() > 0) {
             try {
                 DAO.getEntityManager().createNativeQuery("SELECT * FROM " + CLASS_NAME + " o "
-                        + " WHERE " + idQuery + " o.codigo='" + object.getCodigo() + "' ", Marca.class).getSingleResult();
+                        + " WHERE " + idQuery + " o.codigo='" + o.getCodigo() + "' ", Marca.class).getSingleResult();
                 throw new MessageException("Ya existe otra " + CLASS_NAME + " con este código.");
             } catch (NoResultException ex) {
             }
         }
 
         //persistiendo......
-        if (object.getId() == null) {
-            create(object);
+        if (o.getId() == null) {
+            create(o);
         } else {
-            edit(object);
+            edit(o);
         }
     }
 
-    private void setEntity(Marca marca) throws MessageException {
-        if (abm.getTfNombre() == null || abm.getTfNombre().trim().length() < 1) {
-            throw new MessageException("Debe ingresar un nombre de " + CLASS_NAME.toLowerCase());
-        }
-        if (abm.getTfNombre().length() > 50) {
-            throw new MessageException("Nombre no puede superar los 50 caracteres");
+    private void setEntity() throws MessageException {
+        if (entity == null) {
+            entity = new Marca();
         }
         String nombre = abm.getTfNombre().trim().toUpperCase();
+        if (nombre.isEmpty()) {
+            throw new MessageException("Nombre no válido");
+        }
+        if (nombre.length() > 50) {
+            throw new MessageException("El nombre no puede superar los 50 caracteres");
+        }
         String codigo = null;
         if (abm.getTfCodigo().trim().length() > 0) {
             if (abm.getTfNombre().length() > 50) {
@@ -290,19 +273,7 @@ public class MarcaJpaController implements ActionListener, MouseListener {
             }
             codigo = abm.getTfCodigo().trim().toUpperCase();
         }
-        marca.setNombre(nombre);
-        marca.setCodigo(codigo);
-    }
-
-    public void mouseClicked(MouseEvent e) {
-    }
-
-    public void mousePressed(MouseEvent e) {
-    }
-
-    public void mouseEntered(MouseEvent e) {
-    }
-
-    public void mouseExited(MouseEvent e) {
+        entity.setNombre(nombre);
+        entity.setCodigo(codigo);
     }
 }

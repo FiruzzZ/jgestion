@@ -258,7 +258,7 @@ public class ContribuyenteController implements ActionListener, MouseListener {
       try {
       UTIL.getDefaultTableModel(abm.getjTable1(), colsName, colsWidth);
       } catch (Exception ex) {
-         Logger.getLogger(MarcaJpaController.class.getName()).log(Level.SEVERE, null, ex);
+         Logger.getLogger(MarcaController.class.getName()).log(Level.SEVERE, null, ex);
       }
       cargarDTM(abm.getDTM(), null);
       abm.setListeners(this);

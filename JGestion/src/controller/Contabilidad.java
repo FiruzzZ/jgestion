@@ -1193,7 +1193,7 @@ public class Contabilidad {
 
     public void displayProductosCostoVenta(Window owner) {
         panelito = new PanelProductosCostoVenta();
-        UTIL.loadComboBox(panelito.getCbMarcas(), JGestionUtils.getWrappedMarcas(new MarcaJpaController().findMarcaEntities()), true);
+        UTIL.loadComboBox(panelito.getCbMarcas(), JGestionUtils.getWrappedMarcas(new MarcaController().findAll()), true);
         UTIL.loadComboBox(panelito.getCbRubros(), JGestionUtils.getWrappedRubros(new RubroController().findRubros()), true);
         UTIL.loadComboBox(panelito.getCbSubRubros(), JGestionUtils.getWrappedRubros(new RubroController().findRubros()), true);
         UTIL.loadComboBox(panelito.getCbVendedores(), JGestionUtils.getWrappedVendedor(new VendedorJpaController().findAll()), true);

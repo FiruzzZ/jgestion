@@ -78,7 +78,7 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
     public List<T> findAll() {
         //        Criteria cq = getEntityManager().createCriteria(entityClass);
         //        return cq.list();
-        CriteriaQuery<T> cq = getEntityManager().getCriteriaBuilder().createQuery(getEntityClass());
+        CriteriaQuery<T> cq = getEntityManager().getCriteriaBuilder().createQuery(entityClass);
         cq.select(cq.from(entityClass));
         return getEntityManager().createQuery(cq).setHint(QueryHints.REFRESH, true).getResultList();
     }
@@ -86,7 +86,7 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
     @Override
     public List<T> findRange(int first, int max) {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        CriteriaQuery<T> cq = cb.createQuery(getEntityClass());
+        CriteriaQuery<T> cq = cb.createQuery(entityClass);
         cq.select(cq.from(entityClass));
         TypedQuery<T> q = getEntityManager().createQuery(cq);
         q.setMaxResults(max);
@@ -109,7 +109,7 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
 
     @Override
     public List<T> findByNamedQuery(String queryName, Object... params) {
-        TypedQuery<T> query = getEntityManager().createNamedQuery(queryName, getEntityClass());
+        TypedQuery<T> query = getEntityManager().createNamedQuery(queryName, entityClass);
         for (int i = 0; i < params.length; i++) {
             query.setParameter(i + 1, params[i]);
         }
@@ -120,7 +120,7 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
     @Override
     public List<T> findByNamedQueryAndNamedParams(final String name,
             final Map<String, ? extends Object> params) {
-        TypedQuery<T> query = getEntityManager().createNamedQuery(name, getEntityClass());
+        TypedQuery<T> query = getEntityManager().createNamedQuery(name, entityClass);
 
         for (final Map.Entry<String, ? extends Object> param : params.entrySet()) {
             query.setParameter(param.getKey(), param.getValue());
@@ -142,7 +142,7 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
     public List<T> findByNativeQuery(String sqlString, String stringSetMapping, Map<String, Object> hints) {
         Query query;
         if (stringSetMapping == null) {
-            query = getEntityManager().createNativeQuery(sqlString, getEntityClass());
+            query = getEntityManager().createNativeQuery(sqlString, entityClass);
         } else {
             query = getEntityManager().createNativeQuery(sqlString, stringSetMapping);
         }
@@ -188,7 +188,7 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
      */
     @Override
     public List<T> findByQuery(String qlString) {
-        TypedQuery<T> typedQuery = getEntityManager().createQuery(qlString, getEntityClass());
+        TypedQuery<T> typedQuery = getEntityManager().createQuery(qlString, entityClass);
         typedQuery.setHint(QueryHints.REFRESH, Boolean.TRUE);
         return typedQuery.getResultList();
     }
@@ -197,7 +197,7 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
         if (!getEntityManager().isOpen()) {
             getEntityManager().close();
         } else {
-            System.out.println("EntityManager en: " + getEntityClass() + " ya estaba cerrado");
+            System.out.println("EntityManager en: " + entityClass + " ya estaba cerrado");
         }
     }
 }
