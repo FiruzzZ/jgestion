@@ -117,6 +117,9 @@ public class FacturaCompra implements Serializable {
     private SubCuenta subCuenta;
     @Column(length = 100, name = "observacion")
     private String observacion;
+    @JoinColumn(name = "dominio_id")
+    @ManyToOne
+    private Dominio dominio;
 
     public FacturaCompra() {
     }
@@ -376,6 +379,14 @@ public class FacturaCompra implements Serializable {
 
     public void setObservacion(String observacion) {
         this.observacion = observacion;
+    }
+
+    public Dominio getDominio() {
+        return dominio;
+    }
+
+    public void setDominio(Dominio dominio) {
+        this.dominio = dominio;
     }
 
     @Override

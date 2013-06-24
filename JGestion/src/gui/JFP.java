@@ -112,6 +112,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenuItem55 = new javax.swing.JMenuItem();
         jMenuItem70 = new javax.swing.JMenuItem();
         jMenuItem85 = new javax.swing.JMenuItem();
+        jMenuItem95 = new javax.swing.JMenuItem();
         jMenu5 = new javax.swing.JMenu();
         jMenuItem7 = new javax.swing.JMenuItem();
         jSeparator4 = new javax.swing.JPopupMenu.Separator();
@@ -484,6 +485,14 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenu21.add(jMenuItem85);
 
         jMenu3.add(jMenu21);
+
+        jMenuItem95.setText("ABM Dominios");
+        jMenuItem95.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem95ActionPerformed(evt);
+            }
+        });
+        jMenu3.add(jMenuItem95);
 
         jMenuBar1.add(jMenu3);
 
@@ -1294,7 +1303,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
     private void jMenuItem17ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem17ActionPerformed
         try {
-            new MarcaJpaController().getABM(this, true);
+            new MarcaController().getABM(this, true);
         } catch (MessageException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
         }
@@ -1923,6 +1932,14 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         new Contabilidad().displayFlujoPorVentas((Window)this);
     }//GEN-LAST:event_jMenuItem94ActionPerformed
 
+    private void jMenuItem95ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem95ActionPerformed
+        try {
+            new DominioController().getABM(this, true);
+        } catch (MessageException ex) {
+            ex.displayMessage(this);
+        }
+    }//GEN-LAST:event_jMenuItem95ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JMenu jMenu1;
@@ -2049,6 +2066,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenuItem jMenuItem92;
     private javax.swing.JMenuItem jMenuItem93;
     private javax.swing.JMenuItem jMenuItem94;
+    private javax.swing.JMenuItem jMenuItem95;
     private javax.swing.JMenuItem jMenuItemCatalogoWeb;
     private javax.swing.JMenuItem jMenuItemCuentasBancarias;
     private javax.swing.JMenuItem jMenuItemOfertas;

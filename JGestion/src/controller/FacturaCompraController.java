@@ -5,6 +5,7 @@ import entity.Caja;
 import entity.CajaMovimientos;
 import entity.Cuenta;
 import entity.DetalleCompra;
+import entity.Dominio;
 import entity.FacturaCompra;
 import entity.Iva;
 import entity.Proveedor;
@@ -45,6 +46,7 @@ import jgestion.JGestionUtils;
 import jgestion.Main;
 import jgestion.Wrapper;
 import jpa.controller.CajaMovimientosJpaController;
+import jpa.controller.DominioJpaController;
 import jpa.controller.FacturaCompraJpaController;
 import jpa.controller.ProductoJpaController;
 import jpa.controller.ProveedorJpaController;
@@ -108,6 +110,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         UTIL.loadComboBox(jdFactura.getCbFacturaTipo(), TIPOS_FACTURA, false);
         UTIL.loadComboBox(jdFactura.getCbFormaPago(), Valores.FormaPago.getFormasDePago(), false);
         UTIL.loadComboBox(jdFactura.getCbProductos(), new ProductoController().findWrappedProductoToCombo(true), false);
+        UTIL.loadComboBox(jdFactura.getCbDominio(), JGestionUtils.getWrappedDominios(new DominioJpaController().findAll()), true);
 
         jdFactura.getCbFacturaTipo().addActionListener(new ActionListener() {
             @Override
@@ -423,6 +426,13 @@ public class FacturaCompraController implements ActionListener, KeyListener {
                 newFacturaCompra.setSubCuenta(null);
             }
         }
+        if (jdFactura.getCbDominio().getSelectedIndex() > 0) {
+            try {
+                newFacturaCompra.setDominio(((ComboBoxWrapper<Dominio>) jdFactura.getCbDominio().getSelectedItem()).getEntity());
+            } catch (Exception e) {
+                newFacturaCompra.setDominio(null);
+            }
+        }
         newFacturaCompra.setTipo(jdFactura.getCbFacturaTipo().getSelectedItem().toString().charAt(0));
         newFacturaCompra.setImporte(Double.valueOf(jdFactura.getTfTotalText()));
         if (newFacturaCompra.getTipo() == 'X' || newFacturaCompra.getTipo() == 'O') {
@@ -647,21 +657,21 @@ public class FacturaCompraController implements ActionListener, KeyListener {
                         if (f.getTipo() == 'X') {
                             extra = JGestionUtils.getNumeracion(f);
                         }
-                        jdFactura.showMessage("Factura " + extra + " cargada", CLASS_NAME, 1);
+                        JOptionPane.showMessageDialog(jdFactura, "Factura " + extra + " cargada", CLASS_NAME, 1);
                         jdFactura.limpiarPanel();
                     } catch (MessageException ex) {
-                        jdFactura.showMessage(ex.getMessage(), CLASS_NAME, 2);
+                        JOptionPane.showMessageDialog(jdFactura, ex.getMessage(), CLASS_NAME, 2);
                     } catch (Exception ex) {
-                        jdFactura.showMessage(ex.getMessage(), CLASS_NAME, 0);
+                        JOptionPane.showMessageDialog(jdFactura, ex.getMessage(), CLASS_NAME, 0);
                         LOG.error(ex, ex);
                     }
                 } else if (boton.equals(jdFactura.getBtnADD())) {
                     try {
                         addProductoToDetalle();
                     } catch (MessageException ex) {
-                        jdFactura.showMessage(ex.getMessage(), CLASS_NAME, 2);
+                        JOptionPane.showMessageDialog(jdFactura, ex.getMessage(), CLASS_NAME, 2);
                     } catch (Exception ex) {
-                        jdFactura.showMessage(ex.getMessage(), CLASS_NAME, 0);
+                        JOptionPane.showMessageDialog(jdFactura, ex.getMessage(), CLASS_NAME, 0);
                         LOG.error(ex, ex);
                     }
                 } else if (boton.equals(jdFactura.getBtnDEL())) {
@@ -756,7 +766,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
                                 initComprobanteUI(buscador, true);
                             }
                             jdFactura.setLocationRelativeTo(buscador);
-                            setDataToAnular(toAnular);
+                            fillForm(toAnular);
                             SwingUtil.setComponentsEnabled(jdFactura.getPanelDatosCompra().getComponents(), false, true, (Class<? extends Component>[]) null);
                             SwingUtil.setComponentsEnabled(jdFactura.getPanelOpcionesCompra().getComponents(), false, true, (Class<? extends Component>[]) null);
                             SwingUtil.setComponentsEnabled(jdFactura.getPanelProducto().getComponents(), false, true, (Class<? extends Component>[]) null);
@@ -906,7 +916,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         return query.toString();
     }
 
-    private void setDataToAnular(boolean paraAnular) throws MessageException {
+    private void fillForm(boolean paraAnular) throws MessageException {
         if (paraAnular) {
             jdFactura.getBtnAnular().setEnabled(paraAnular);
             jdFactura.getBtnAnular().addActionListener(new ActionListener() {
@@ -950,9 +960,15 @@ public class FacturaCompraController implements ActionListener, KeyListener {
             JOptionPane.showMessageDialog(null, "Cuenta no especificada");
         }
         try {
-            jdFactura.getCbSubCuenta().addItem(new ComboBoxWrapper<SubCuenta>(subCuenta, subCuenta.getId(), subCuenta.getNombre()));
+            if (EL_OBJECT.getSubCuenta() != null) {
+                jdFactura.getCbSubCuenta().addItem(new ComboBoxWrapper<SubCuenta>(subCuenta, subCuenta.getId(), subCuenta.getNombre()));
+            }
         } catch (Exception e) {
         }
+        if (EL_OBJECT.getDominio() != null) {
+            jdFactura.getCbDominio().addItem(new ComboBoxWrapper<Dominio>(EL_OBJECT.getDominio(), EL_OBJECT.getDominio().getId(), EL_OBJECT.getDominio().getNombre()));
+        }
+        
         jdFactura.setDcFechaFactura(EL_OBJECT.getFechaCompra());
         jdFactura.getCbFacturaTipo().removeAllItems();
         jdFactura.getCbFacturaTipo().addItem(EL_OBJECT.getTipo());
@@ -1113,7 +1129,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
                                 initComprobanteUI(buscador, true);
                             }
                             jdFactura.setLocationRelativeTo(buscador);
-                            setDataToAnular(false);
+                            fillForm(false);
                             jdFactura.modoVista(false);
                             jdFactura.setVisible(true);
                         } catch (MessageException ex) {

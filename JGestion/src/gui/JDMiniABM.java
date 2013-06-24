@@ -5,15 +5,16 @@
  */
 package gui;
 
-import java.awt.Dialog;
 import java.awt.Window;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseListener;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.swing.table.DefaultTableModel;
 
 /**
  * Pantalla de ABM para Rubros y Marcas, UnidadMedidas
@@ -21,21 +22,6 @@ import javax.swing.JTextArea;
  * @author FiruzzZ
  */
 public class JDMiniABM extends javax.swing.JDialog {
-
-    /**
-     * Creates new form JDMiniABM
-     */
-    public JDMiniABM(java.awt.Frame parent, boolean modal) {
-        super(parent, modal);
-        initComponents();
-        this.setLocationRelativeTo(parent);
-    }
-
-    public JDMiniABM(Dialog owner, boolean modal) {
-        super(owner, modal);
-        initComponents();
-        this.setLocationRelativeTo(owner);
-    }
 
     public JDMiniABM(Window owner, boolean modal) {
         super(owner, modal ? DEFAULT_MODALITY_TYPE : ModalityType.MODELESS);
@@ -220,8 +206,8 @@ public class JDMiniABM extends javax.swing.JDialog {
    private javax.swing.JTextField tfNombre;
    // End of variables declaration//GEN-END:variables
 
-    public javax.swing.table.DefaultTableModel getDTM() {
-        return (javax.swing.table.DefaultTableModel) jTable1.getModel();
+    public DefaultTableModel getDTM() {
+        return (DefaultTableModel) jTable1.getModel();
     }
 
     public JTable getjTable1() {
@@ -282,9 +268,9 @@ public class JDMiniABM extends javax.swing.JDialog {
             return;
         }
         if (messageType == 3) {
-            javax.swing.JOptionPane.showMessageDialog(this, msg);
+            JOptionPane.showMessageDialog(this, msg);
         } else {
-            javax.swing.JOptionPane.showMessageDialog(this, msg, titulo, messageType);
+            JOptionPane.showMessageDialog(this, msg, titulo, messageType);
         }
 
     }
