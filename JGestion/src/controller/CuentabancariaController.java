@@ -13,13 +13,13 @@ import gui.JDContenedor;
 import gui.PanelABMCuentabancaria;
 import gui.PanelDepositoCheque;
 import java.awt.Component;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import jgestion.JGestionUtils;
@@ -52,7 +52,7 @@ public class CuentabancariaController {
         jpaController = new CuentabancariaJpaController();
     }
 
-    public JDialog initContenedor(JFrame owner) throws MessageException {
+    public JDialog initContenedor(Window owner) throws MessageException {
         contenedor = new JDContenedor(owner, true, "Administrar Cuentas Bancarias");
         contenedor.getbNuevo().addActionListener(new ActionListener() {
             @Override

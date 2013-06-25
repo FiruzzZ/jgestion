@@ -200,4 +200,37 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
             System.out.println("EntityManager en: " + entityClass + " ya estaba cerrado");
         }
     }
+
+    public Object findAttribute(String jpql) {
+        try {
+            return getEntityManager().createQuery(jpql).getSingleResult();
+        } finally {
+            closeEntityManager();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Object[]> findAttributes(String jpql) {
+        try {
+            return findAttributes(jpql, null, null);
+        } finally {
+            closeEntityManager();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Object[]> findAttributes(String jpql, Integer first, Integer max) {
+        try {
+            Query query = getEntityManager().createQuery(jpql);
+            if (first != null) {
+                query.setFirstResult(first);
+            }
+            if (max != null) {
+                query.setMaxResults(max);
+            }
+            return query.getResultList();
+        } finally {
+            closeEntityManager();
+        }
+    }
 }

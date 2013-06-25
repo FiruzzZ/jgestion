@@ -2,8 +2,10 @@ package jpa.controller;
 
 import controller.DAO;
 import entity.ChequePropio;
+import entity.CuentaBancaria;
 import entity.CuentabancariaMovimientos;
 import entity.CuentabancariaMovimientos_;
+import java.math.BigDecimal;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -13,7 +15,7 @@ import javax.persistence.criteria.Root;
  *
  * @author FiruzzZ
  */
-public class CuentabancariaMovimientosJpaController extends AbstractDAO<CuentabancariaMovimientos, Integer>  {
+public class CuentabancariaMovimientosJpaController extends AbstractDAO<CuentabancariaMovimientos, Integer> {
 
     private EntityManager entityManager;
 
@@ -35,5 +37,16 @@ public class CuentabancariaMovimientosJpaController extends AbstractDAO<Cuentaba
         Root<CuentabancariaMovimientos> from = cq.from(getEntityClass());
         cq.where(cb.equal(from.get(CuentabancariaMovimientos_.chequePropio), chequePropio));
         return getEntityManager().createQuery(cq).getSingleResult();
+    }
+
+    public BigDecimal getSaldo(CuentaBancaria cb) {
+        BigDecimal saldo = (BigDecimal) findAttribute(
+                "SELECT "
+                + "SUM(o." + CuentabancariaMovimientos_.credito.getName() + ") -"
+                + "SUM(o." + CuentabancariaMovimientos_.debito.getName() + ") "
+                + "FROM " + getEntityClass().getSimpleName() + " o "
+                + "WHERE o.cuentaBancaria.id=" + cb.getId());
+
+        return saldo;
     }
 }
