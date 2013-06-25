@@ -9,7 +9,6 @@ import entity.OperacionesBancarias;
 import gui.JDABM;
 import gui.JDConciliacionBancaria;
 import gui.JDCuentabancariaManager;
-import gui.JFP;
 import gui.PanelOperacionBancariaDeposito;
 import gui.PanelOperacionBancariaTransferencia;
 import java.awt.Window;
@@ -19,7 +18,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -51,6 +49,14 @@ public class CuentabancariaMovimientosController {
         manager.getBtnBuscar().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (manager.getCbCuentabancaria().getSelectedIndex() > 0) {
+                    CuentaBancaria cb = new CuentaBancaria();
+                    cb.setId(((ComboBoxWrapper<?>) manager.getCbCuentabancaria().getSelectedItem()).getId());
+                    BigDecimal saldo = jpaController.getSaldo(cb);
+                    manager.getTfSaldoTotal().setText(UTIL.DECIMAL_FORMAT.format(saldo));
+                } else {
+                    manager.getTfSaldoTotal().setText(null);
+                }
                 String jpql = armarQuery();
                 List<CuentabancariaMovimientos> l = jpaController.findByQuery(jpql);
                 cargarManagerTable(l);
@@ -437,16 +443,16 @@ public class CuentabancariaMovimientosController {
         dtm.setRowCount(0);
         for (CuentabancariaMovimientos o : l) {
             dtm.addRow(new Object[]{
-                        o.getId(),
-                        o.getDescripcion(),
-                        o.getCredito(),
-                        o.getDebito(),
-                        o.getFechaCreditoDebito(),
-                        o.getOperacionesBancarias().getNombre(),
-                        o.getFechaOperacion(),
-                        o.getUsuario(),
-                        o.getFechaSistema()
-                    });
+                o.getId(),
+                o.getDescripcion(),
+                o.getCredito(),
+                o.getDebito(),
+                o.getFechaCreditoDebito(),
+                o.getOperacionesBancarias().getNombre(),
+                o.getFechaOperacion(),
+                o.getUsuario(),
+                o.getFechaSistema()
+            });
         }
     }
 
