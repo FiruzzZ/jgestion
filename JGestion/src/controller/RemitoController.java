@@ -242,21 +242,6 @@ public class RemitoController implements ActionListener, KeyListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         //todo las demás acciones son manejadas (delegadas) -> FacturaVentaJpaController
-        if (e.getSource() instanceof JButton) {
-            JButton boton = (JButton) e.getSource();
-            if (buscador != null && buscador.isActive() && boton.equals(buscador.getbBuscar())) {
-                try {
-                    armarQuery();
-                } catch (MessageException ex) {
-                    buscador.showMessage(ex.getMessage(), "Buscador - " + CLASS_NAME, 0);
-                } catch (Exception ex) {
-                    buscador.showMessage(ex.getMessage(), "Buscador - " + CLASS_NAME, 0);
-                    ex.printStackTrace();
-                }
-            } else {
-                facturaVentaController.actionPerformed(e);
-            }
-        }
     }
 
     public void keyTyped(KeyEvent e) {
@@ -392,6 +377,19 @@ public class RemitoController implements ActionListener, KeyListener {
     }
 
     private void initBuscador(boolean setVisible) {
+        buscador.getbBuscar().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    armarQuery();
+                } catch (MessageException ex) {
+                    buscador.showMessage(ex.getMessage(), "Buscador - " + CLASS_NAME, 0);
+                } catch (Exception ex) {
+                    buscador.showMessage(ex.getMessage(), "Buscador - " + CLASS_NAME, 0);
+                    LOG.error(ex, ex);
+                }
+            }
+        });
         buscador.getjTable1().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {

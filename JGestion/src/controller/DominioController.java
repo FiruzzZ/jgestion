@@ -1,18 +1,27 @@
 package controller;
 
+import com.toedter.calendar.JDateChooser;
 import controller.exceptions.MessageException;
 import entity.Dominio;
+import gui.JDABM;
 import gui.JDMiniABM;
+import gui.generics.GroupLayoutPanelBuilder;
+import java.awt.Color;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.RollbackException;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
+import jgestion.JGestionUtils;
 import jpa.controller.DominioJpaController;
 import org.apache.log4j.Logger;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -24,19 +33,19 @@ import utilities.general.UTIL;
  * @author FiruzzZ
  */
 public class DominioController implements ActionListener {
-
+    
     private static final Logger LOG = Logger.getLogger(DominioController.class);
     private final DominioJpaController jpaController = new DominioJpaController();
     private JDMiniABM abm;
     private Dominio entity;
-
+    
     public void getABM(Window owner, boolean modal) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.ABM_PRODUCTOS);
         abm = new JDMiniABM(owner, modal);
         abm.setLocationRelativeTo(owner);
         initABM();
     }
-
+    
     private void initABM() {
         abm.hideBtnLock();
         abm.hideFieldExtra();
@@ -62,19 +71,19 @@ public class DominioController implements ActionListener {
         abm.setListeners(this);
         abm.setVisible(true);
     }
-
+    
     private void cargarDTM() {
         List<Dominio> findAll = jpaController.findAll();
         DefaultTableModel dtm = (DefaultTableModel) abm.getjTable1().getModel();
         dtm.setRowCount(0);
         for (Dominio o : findAll) {
             dtm.addRow(new Object[]{
-                        o,
-                        o.getNombre()
-                    });
+                o,
+                o.getNombre()
+            });
         }
     }
-
+    
     @Override
     public void actionPerformed(ActionEvent e) {
         // <editor-fold defaultstate="collapsed" desc="JButton">
@@ -119,7 +128,7 @@ public class DominioController implements ActionListener {
             }//</editor-fold>
         }// </editor-fold>
     }
-
+    
     private void setEntity() throws MessageException {
         if (entity == null) {
             entity = new Dominio();
@@ -133,7 +142,7 @@ public class DominioController implements ActionListener {
         }
         entity.setNombre(nombre);
     }
-
+    
     private void save(Dominio o) throws MessageException {
         if (!jpaController.findByQuery("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o WHERE "
                 + " o.nombre ='" + o.getNombre() + "'"
@@ -146,7 +155,7 @@ public class DominioController implements ActionListener {
             jpaController.merge(o);
         }
     }
-
+    
     private void eliminar(Dominio o) throws MessageException {
         try {
             jpaController.remove(o);
@@ -161,5 +170,30 @@ public class DominioController implements ActionListener {
         } finally {
             jpaController.closeEntityManager();
         }
+    }
+    
+    public void displayInforme(Window owner) {
+        JDateChooser dcDesde = new JDateChooser();
+        JDateChooser dcHasta = new JDateChooser();
+        dcHasta.setVisible(false);
+        JLabel l = new JLabel("Fecha Hasta");
+        l.setVisible(false);
+        JComboBox cbDominios = new JComboBox();
+        UTIL.loadComboBox(cbDominios, JGestionUtils.getWrappedDominios(jpaController.findAll()), true);
+        final GroupLayoutPanelBuilder glpb = new GroupLayoutPanelBuilder();
+        glpb.getInfoLabel().setText("Todos los campos son necesarios");
+        glpb.getInfoLabel().setForeground(Color.BLUE);
+        glpb.addFormItem(new JLabel("Fecha Desde"), dcDesde);
+        glpb.addFormItem(l, dcHasta);
+        glpb.addFormItem(new JLabel("Dominios"), cbDominios);
+        JPanel panel = glpb.build();
+        final JDABM jdabm = new JDABM(owner, "Informe de Facturas Compra por Dominio", true, panel);
+        jdabm.setLocationRelativeTo(owner);
+        jdabm.getbCancelar().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            }
+        });
+        jdabm.setVisible(true);
     }
 }

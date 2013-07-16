@@ -51,7 +51,9 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         if (this.isVisible()) {
             this.setVisible(false);
         }
-        new UsuarioController().initLogin(this);
+        if (UsuarioController.getCurrentUser() == null) { // para ingresar logeado
+            new UsuarioController().initLogin(this);
+        }
         if (UsuarioController.getCurrentUser() == null) {
             DAO.getEntityManager().close();
             Runtime.getRuntime().exit(0);
@@ -194,6 +196,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenu24 = new javax.swing.JMenu();
         jMenuItem67 = new javax.swing.JMenuItem();
         jMenuItem29 = new javax.swing.JMenuItem();
+        jMenuItem96 = new javax.swing.JMenuItem();
         jMenuItem39 = new javax.swing.JMenuItem();
         jMenuItem72 = new javax.swing.JMenuItem();
         jMenuItem46 = new javax.swing.JMenuItem();
@@ -1042,6 +1045,14 @@ public class JFP extends javax.swing.JFrame implements Runnable {
             }
         });
         jMenu24.add(jMenuItem29);
+
+        jMenuItem96.setText("de Compras por Dominio");
+        jMenuItem96.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem96ActionPerformed(evt);
+            }
+        });
+        jMenu24.add(jMenuItem96);
 
         jMenuReportes.add(jMenu24);
 
@@ -1925,11 +1936,11 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     }//GEN-LAST:event_jMenuItem79ActionPerformed
 
     private void jMenuItem93ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem93ActionPerformed
-        new Contabilidad().displayInformeDetalleFacturacion((Window)this);
+        new Contabilidad().displayInformeDetalleFacturacion((Window) this);
     }//GEN-LAST:event_jMenuItem93ActionPerformed
 
     private void jMenuItem94ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem94ActionPerformed
-        new Contabilidad().displayFlujoPorVentas((Window)this);
+        new Contabilidad().displayFlujoPorVentas((Window) this);
     }//GEN-LAST:event_jMenuItem94ActionPerformed
 
     private void jMenuItem95ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem95ActionPerformed
@@ -1940,6 +1951,9 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         }
     }//GEN-LAST:event_jMenuItem95ActionPerformed
 
+    private void jMenuItem96ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem96ActionPerformed
+        new DominioController().displayInforme(this);
+    }//GEN-LAST:event_jMenuItem96ActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JMenu jMenu1;
@@ -2067,6 +2081,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenuItem jMenuItem93;
     private javax.swing.JMenuItem jMenuItem94;
     private javax.swing.JMenuItem jMenuItem95;
+    private javax.swing.JMenuItem jMenuItem96;
     private javax.swing.JMenuItem jMenuItemCatalogoWeb;
     private javax.swing.JMenuItem jMenuItemCuentasBancarias;
     private javax.swing.JMenuItem jMenuItemOfertas;

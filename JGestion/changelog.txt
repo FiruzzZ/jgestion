@@ -1,3 +1,6 @@
+--20130716
+ALTER TABLE detalle_presupuesto ALTER COLUMN descuento TYPE numeric(12,4);
+ALTER TABLE detalle_presupuesto ALTER COLUMN precio_unitario TYPE numeric(12,4);
 --20130619
 CREATE TABLE dominio (
    id serial NOT NULL, 
