@@ -771,6 +771,10 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
         cbVendedor.setVisible(false);
     }
 
+    public JLabel getLabelVendedor() {
+        return labelVendedor;
+    }
+
     public void hideVendedor() {
         labelVendedor.setVisible(false);
         cbVendedor.setVisible(false);

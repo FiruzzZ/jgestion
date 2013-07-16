@@ -2,6 +2,7 @@ package jgestion;
 
 import controller.*;
 import controller.exceptions.MessageException;
+import entity.Usuario;
 import generics.PropsUtils;
 import gui.JFP;
 import java.awt.EventQueue;
@@ -19,6 +20,7 @@ import java.util.logging.Level;
 import javax.persistence.PersistenceException;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
+import jpa.controller.UsuarioJpaController;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -33,6 +35,7 @@ public class Main {
     private static final Logger LOG = Logger.getLogger(Main.class);
     private static boolean OCURRIO_ERROR = false;
     public static final ResourceBundle resourceBundle = ResourceBundle.getBundle("resources");
+    private static boolean develop;
     private JFP principal;
     private ShutDownListener sdl = new ShutDownListener() {
         @Override
@@ -72,6 +75,14 @@ public class Main {
                 EventQueue.invokeLater(new Runnable() {
                     @Override
                     public void run() {
+                        if (develop) {
+                            try {
+                                Usuario u = new UsuarioJpaController().find(1);
+                                new UsuarioController().checkLoginUser(u.getNick(), u.getPass());
+                            } catch (Exception ex) {
+                                LOG.fatal(ex, ex);
+                            }
+                        }
                         principal = new JFP();
                         principal.addWindowListener(new WindowAdapter() {
                             @Override
@@ -143,20 +154,20 @@ public class Main {
 
     public static void main(String[] args) {
         System.out.println("args" + Arrays.toString(args));
-        if (args.length > 0) {
-            for (String arg : args) {
-                if (arg.equalsIgnoreCase("updateChecked=0")) {
-                    System.exit(0);
-
-                } else if (arg.equalsIgnoreCase("updateChecked=1")) {
-                    Main main = new Main();
-                }
+        for (String login : args) {
+            if (login.equalsIgnoreCase("develop")) {
+                develop = true;
+                break;
             }
-            //<editor-fold defaultstate="collapsed" desc="quitar código cuando JUPAR esté terminado">
-        } else {
-            Main main = new Main();
-            //</editor-fold>
         }
+        for (String arg : args) {
+            if (arg.equalsIgnoreCase("updateChecked=0")) {
+                System.exit(0);
+
+//            } else if (arg.equalsIgnoreCase("updateChecked=1")) {
+            }
+        }
+        Main main = new Main();
     }
 
     private static void threadSafe() {

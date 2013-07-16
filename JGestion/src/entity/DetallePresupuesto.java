@@ -2,6 +2,7 @@
 package entity;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -35,8 +36,8 @@ public class DetallePresupuesto implements Serializable {
    @Column(name = "cantidad", nullable = false)
    private int cantidad;
    @Basic(optional = false)
-   @Column(name = "precio_unitario", nullable = false)
-   private double precioUnitario;
+   @Column(name = "precio_unitario", nullable = false, precision = 12, scale = 4)
+   private BigDecimal precioUnitario;
    @Basic(optional = false)
    @Column(name = "tipo_desc", nullable = false)
    private int tipoDesc;
@@ -53,11 +54,7 @@ public class DetallePresupuesto implements Serializable {
    public DetallePresupuesto() {
    }
 
-   public DetallePresupuesto(Integer id) {
-      this.id = id;
-   }
-
-   public DetallePresupuesto(Integer id, int cantidad, double precioUnitario, int tipoDesc, double descuento) {
+   public DetallePresupuesto(Integer id, int cantidad, BigDecimal precioUnitario, int tipoDesc, double descuento) {
       this.id = id;
       this.cantidad = cantidad;
       this.precioUnitario = precioUnitario;
@@ -81,11 +78,11 @@ public class DetallePresupuesto implements Serializable {
       this.cantidad = cantidad;
    }
 
-   public double getPrecioUnitario() {
+   public BigDecimal getPrecioUnitario() {
       return precioUnitario;
    }
 
-   public void setPrecioUnitario(double precioUnitario) {
+   public void setPrecioUnitario(BigDecimal precioUnitario) {
       this.precioUnitario = precioUnitario;
    }
 

@@ -48,7 +48,7 @@ import utilities.swing.components.NumberRenderer;
  *
  * @author FiruzzZ
  */
-public class FacturaVentaController implements ActionListener, KeyListener {
+public class FacturaVentaController implements KeyListener {
 
     /**
      * contiene los nombres de las columnas de la ventana de facturación
@@ -740,10 +740,6 @@ public class FacturaVentaController implements ActionListener, KeyListener {
     public void keyPressed(KeyEvent e) {
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-    }
-
     private void checkConstraints() throws MessageException {
         if (jdFactura.getDcFechaFactura() == null) {
             throw new MessageException("Fecha de factura no válida");
@@ -897,22 +893,22 @@ public class FacturaVentaController implements ActionListener, KeyListener {
         if (!jdFactura.isEditMode()) {
             newFacturaVenta.setDetallesVentaList(new ArrayList<DetalleVenta>());
             /// carga de detalleVenta
-            DetalleVenta detalleVenta;
+            DetalleVenta detalle;
             ProductoJpaController productoController = new ProductoJpaController();
             for (int i = 0; i < dtm.getRowCount(); i++) {
-                detalleVenta = new DetalleVenta();
-                detalleVenta.setCantidad(Integer.valueOf(dtm.getValueAt(i, 3).toString()));
-                detalleVenta.setPrecioUnitario((BigDecimal) dtm.getValueAt(i, 4));
-                detalleVenta.setDescuento(Double.valueOf(dtm.getValueAt(i, 6).toString()));
-                detalleVenta.setTipoDesc(Integer.valueOf(dtm.getValueAt(i, 8).toString()));
+                detalle = new DetalleVenta();
+                detalle.setCantidad(Integer.valueOf(dtm.getValueAt(i, 3).toString()));
+                detalle.setPrecioUnitario((BigDecimal) dtm.getValueAt(i, 4));
+                detalle.setDescuento(Double.valueOf(dtm.getValueAt(i, 6).toString()));
+                detalle.setTipoDesc(Integer.valueOf(dtm.getValueAt(i, 8).toString()));
                 Producto p = productoController.find((Integer) dtm.getValueAt(i, 9));
-                detalleVenta.setProducto(p);
-                detalleVenta.setCostoCompra(p.getCostoCompra());
-                detalleVenta.setFactura(newFacturaVenta);
+                detalle.setProducto(p);
+                detalle.setCostoCompra(p.getCostoCompra());
+                detalle.setFactura(newFacturaVenta);
                 if (dtm.getValueAt(i, 10) != null) {
-                    detalleVenta.setOferta((HistorialOfertas) dtm.getValueAt(i, 10));
+                    detalle.setOferta((HistorialOfertas) dtm.getValueAt(i, 10));
                 }
-                newFacturaVenta.getDetallesVentaList().add(detalleVenta);
+                newFacturaVenta.getDetallesVentaList().add(detalle);
             }
         }
         return newFacturaVenta;
@@ -1149,12 +1145,9 @@ public class FacturaVentaController implements ActionListener, KeyListener {
             } else {
                 setAndPersist(facturar);
             }
-        } catch (MessageException ex) {
-            jdFactura.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 2);
-        } catch (MissingReportException ex) {
+        } catch (MessageException | JRException ex) {
             jdFactura.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 0);
-        } catch (JRException ex) {
-            jdFactura.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 0);
+            LOG.error(ex, ex);
         } catch (Exception ex) {
             jdFactura.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 0);
             LOG.error(ex, ex);

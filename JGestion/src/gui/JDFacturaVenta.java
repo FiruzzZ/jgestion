@@ -57,7 +57,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
             checkFacturacionElectronica.setVisible(false);
             //Rem no tienen FORMA DE PAGO
             if (factVenta1_Presup2_Remito3 == 2) {
-                this.setTitle("Presupuesto de Venta");
+                this.setTitle("Presupuesto");
                 labelNumMovimiento.setVisible(false);
                 tfNumMovimiento.setVisible(false);
                 labelN_factura.setVisible(false);
@@ -65,8 +65,6 @@ public class JDFacturaVenta extends javax.swing.JDialog {
                 tfFacturaOcteto.setVisible(false);
                 labeFecha.setVisible(false);
                 dcFechaFactura.setVisible(false);
-                btnAceptar.setText("Presupuestar");
-                btnAceptar.setMnemonic('a');
             } else if (factVenta1_Presup2_Remito3 == 3) {
                 this.setTitle("Remito");
                 labelN_factura.setText("Nº Remito");

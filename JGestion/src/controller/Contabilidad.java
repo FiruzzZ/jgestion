@@ -98,7 +98,6 @@ public class Contabilidad {
     private static final int columnWidthsBalanceGeneral[] = {40, 440, 55, 55, 60};
     private static final Class[] columnClassBalanceGeneral = {Object.class, Object.class, String.class, String.class, String.class};
     private PanelBalanceComprasVentas panelBalanceComprasVentas;
-    private SimpleDateFormat yyyyMMdd = new SimpleDateFormat("yyyy/MM/dd");
 //    private static final Class[] columnClassBalanceCompraVenta = {Object.class, Object.class, String.class, String.class, String.class, String.class};
     private static final Logger LOG = Logger.getLogger(Contabilidad.class.getName());
 
@@ -255,12 +254,12 @@ public class Contabilidad {
                 subTotal = subTotal.add(detalleCajaMovimientos.getMonto());
             }
             UTIL.getDtm(jdBalanceUI.getjTable1()).addRow(new Object[]{
-                        dateFormat.format(detalleCajaMovimientos.getFecha()),
-                        detalleCajaMovimientos.getDescripcion(),
-                        detalleCajaMovimientos.getIngreso() ? detalleCajaMovimientos.getMonto() : null,
-                        detalleCajaMovimientos.getIngreso() ? null : detalleCajaMovimientos.getMonto(),
-                        UTIL.PRECIO_CON_PUNTO.format(subTotal)
-                    });
+                dateFormat.format(detalleCajaMovimientos.getFecha()),
+                detalleCajaMovimientos.getDescripcion(),
+                detalleCajaMovimientos.getIngreso() ? detalleCajaMovimientos.getMonto() : null,
+                detalleCajaMovimientos.getIngreso() ? null : detalleCajaMovimientos.getMonto(),
+                UTIL.PRECIO_CON_PUNTO.format(subTotal)
+            });
         }
         jdBalanceUI.getTfEfectivo().setText(UTIL.PRECIO_CON_PUNTO.format(ingresos));
         jdBalanceUI.getTfCtaCte().setText(UTIL.PRECIO_CON_PUNTO.format(egresos));
@@ -490,14 +489,14 @@ public class Contabilidad {
                 cccpc = null;
             }
             data.add(new Object[]{
-                        factura.getFechaCompra(),
-                        JGestionUtils.getNumeracion(factura) + (factura.getAnulada() ? "[ANULADA]" : ""),
-                        null,
-                        factura.getImporte(),
-                        efectivo,// != null ? efectivo : "------",
-                        cccpc,// != null ? cccpc : "------",
-                        totalIngresos
-                    });
+                factura.getFechaCompra(),
+                JGestionUtils.getNumeracion(factura) + (factura.getAnulada() ? "[ANULADA]" : ""),
+                null,
+                factura.getImporte(),
+                efectivo,// != null ? efectivo : "------",
+                cccpc,// != null ? cccpc : "------",
+                totalIngresos
+            });
         }
         if (!errores.isEmpty()) {
             JOptionPane.showMessageDialog(null, errores, "Errores de información", JOptionPane.ERROR_MESSAGE);
@@ -529,14 +528,14 @@ public class Contabilidad {
                 cccpc = null;
             }
             data.add(new Object[]{
-                        factura.getFechaVenta(),
-                        JGestionUtils.getNumeracion(factura) + (factura.getAnulada() ? "[ANULADA]" : ""),
-                        factura.getImporte(),
-                        null,
-                        efectivo,// != null ? efectivo : "------",
-                        cccpc,// != null ? cccpc : "------",
-                        totalIngresos
-                    });
+                factura.getFechaVenta(),
+                JGestionUtils.getNumeracion(factura) + (factura.getAnulada() ? "[ANULADA]" : ""),
+                factura.getImporte(),
+                null,
+                efectivo,// != null ? efectivo : "------",
+                cccpc,// != null ? cccpc : "------",
+                totalIngresos
+            });
         }
         return data;
     }
@@ -795,19 +794,19 @@ public class Contabilidad {
                     dtm.setRowCount(0);
                     for (FacturaVenta facturaVenta : data) {
                         dtm.addRow(new Object[]{
-                                    JGestionUtils.getNumeracion(facturaVenta),
-                                    facturaVenta.getFechaVenta(),
-                                    facturaVenta.getCliente().getNombre(),
-                                    facturaVenta.getCliente().getNumDoc(),
-                                    facturaVenta.getTipo() == 'B' ? BigDecimal.ZERO : new BigDecimal(facturaVenta.getGravado()),
-                                    facturaVenta.getTipo() == 'B' ? BigDecimal.ZERO : new BigDecimal(facturaVenta.getIva10()),
-                                    facturaVenta.getTipo() == 'B' ? BigDecimal.ZERO : new BigDecimal(facturaVenta.getIva21()),
-                                    BigDecimal.ZERO,
-                                    BigDecimal.ZERO,
-                                    facturaVenta.getTipo() == 'B' ? BigDecimal.ZERO : facturaVenta.getNoGravado(),
-                                    facturaVenta.getTipo() == 'B' ? BigDecimal.ZERO : new BigDecimal(facturaVenta.getDescuento()),
-                                    new BigDecimal(facturaVenta.getImporte())
-                                });
+                            JGestionUtils.getNumeracion(facturaVenta),
+                            facturaVenta.getFechaVenta(),
+                            facturaVenta.getCliente().getNombre(),
+                            facturaVenta.getCliente().getNumDoc(),
+                            facturaVenta.getTipo() == 'B' ? BigDecimal.ZERO : new BigDecimal(facturaVenta.getGravado()),
+                            facturaVenta.getTipo() == 'B' ? BigDecimal.ZERO : new BigDecimal(facturaVenta.getIva10()),
+                            facturaVenta.getTipo() == 'B' ? BigDecimal.ZERO : new BigDecimal(facturaVenta.getIva21()),
+                            BigDecimal.ZERO,
+                            BigDecimal.ZERO,
+                            facturaVenta.getTipo() == 'B' ? BigDecimal.ZERO : facturaVenta.getNoGravado(),
+                            facturaVenta.getTipo() == 'B' ? BigDecimal.ZERO : new BigDecimal(facturaVenta.getDescuento()),
+                            new BigDecimal(facturaVenta.getImporte())
+                        });
                     }
                 } catch (MessageException ex) {
                     ex.displayMessage(buscadorReRe);
@@ -900,7 +899,12 @@ public class Contabilidad {
             public void actionPerformed(ActionEvent e) {
                 try {
                     List<?> data = getComprobantesCompra();
-                    cargarTablaBuscador(data);
+                    DefaultTableModel dtm = buscadorReRe.getDtm();
+                    dtm.setRowCount(0);
+                    for (Object o : data) {
+                        dtm.addRow((Object[]) o);
+
+                    }
                 } catch (MessageException ex) {
                     ex.displayMessage(buscadorReRe);
                 } catch (Exception ex) {
@@ -911,15 +915,6 @@ public class Contabilidad {
         });
         buscadorReRe.setLocationRelativeTo(owner);
         buscadorReRe.setVisible(true);
-    }
-
-    private void cargarTablaBuscador(List<?> query) {
-        DefaultTableModel dtm = buscadorReRe.getDtm();
-        dtm.setRowCount(0);
-        for (Object facturaVenta : query) {
-            dtm.addRow((Object[]) facturaVenta);
-
-        }
     }
 
     @SuppressWarnings("unchecked")
@@ -951,20 +946,20 @@ public class Contabilidad {
             }
         }
         if (buscadorReRe.getDcDesde() != null) {
-            queryFactuCompra.append(" AND o.fecha_compra >= '").append(yyyyMMdd.format(buscadorReRe.getDcDesde())).append("'");
-            queryNotaCredito.append(" AND o.fecha_nota_credito >= '").append(yyyyMMdd.format(buscadorReRe.getDcDesde())).append("'");
+            queryFactuCompra.append(" AND o.fecha_compra >= '").append(UTIL.yyyy_MM_dd.format(buscadorReRe.getDcDesde())).append("'");
+            queryNotaCredito.append(" AND o.fecha_nota_credito >= '").append(UTIL.yyyy_MM_dd.format(buscadorReRe.getDcDesde())).append("'");
         }
         if (buscadorReRe.getDcHasta() != null) {
-            queryFactuCompra.append(" AND o.fecha_compra <= '").append(yyyyMMdd.format(buscadorReRe.getDcHasta())).append("'");
-            queryNotaCredito.append(" AND o.fecha_nota_credito <= '").append(yyyyMMdd.format(buscadorReRe.getDcDesde())).append("'");
+            queryFactuCompra.append(" AND o.fecha_compra <= '").append(UTIL.yyyy_MM_dd.format(buscadorReRe.getDcHasta())).append("'");
+            queryNotaCredito.append(" AND o.fecha_nota_credito <= '").append(UTIL.yyyy_MM_dd.format(buscadorReRe.getDcDesde())).append("'");
         }
         if (buscadorReRe.getDcDesdeSistema() != null) {
-            queryFactuCompra.append(" AND o.fechaalta >= '").append(yyyyMMdd.format(buscadorReRe.getDcDesdeSistema())).append("'");
-            queryNotaCredito.append(" AND o.fecha_Carga >= '").append(yyyyMMdd.format(buscadorReRe.getDcDesdeSistema())).append("'");
+            queryFactuCompra.append(" AND o.fechaalta >= '").append(UTIL.yyyy_MM_dd.format(buscadorReRe.getDcDesdeSistema())).append("'");
+            queryNotaCredito.append(" AND o.fecha_Carga >= '").append(UTIL.yyyy_MM_dd.format(buscadorReRe.getDcDesdeSistema())).append("'");
         }
         if (buscadorReRe.getDcHastaSistema() != null) {
-            queryFactuCompra.append(" AND o.fechaalta <= '").append(yyyyMMdd.format(buscadorReRe.getDcHastaSistema())).append("'");
-            queryNotaCredito.append(" AND o.fecha_Carga <= '").append(yyyyMMdd.format(buscadorReRe.getDcHastaSistema())).append("'");
+            queryFactuCompra.append(" AND o.fechaalta <= '").append(UTIL.yyyy_MM_dd.format(buscadorReRe.getDcHastaSistema())).append("'");
+            queryNotaCredito.append(" AND o.fecha_Carga <= '").append(UTIL.yyyy_MM_dd.format(buscadorReRe.getDcHastaSistema())).append("'");
         }
         if (buscadorReRe.getCbFormasDePago().getSelectedIndex() > 0) {
             queryFactuCompra.append(" AND o.tipo = '").append(buscadorReRe.getCbFormasDePago().getSelectedItem()).append("'");
@@ -1063,20 +1058,20 @@ public class Contabilidad {
         }
 
         if (buscadorReRe.getDcDesde() != null) {
-            queryWhereFactuVenta.append(" AND o.fechaVenta >= '").append(yyyyMMdd.format(buscadorReRe.getDcDesde())).append("'");
-            queryWhereNotaCredito.append(" AND o.fechaNotaCredito >= '").append(yyyyMMdd.format(buscadorReRe.getDcDesde())).append("'");
+            queryWhereFactuVenta.append(" AND o.fechaVenta >= '").append(UTIL.yyyy_MM_dd.format(buscadorReRe.getDcDesde())).append("'");
+            queryWhereNotaCredito.append(" AND o.fechaNotaCredito >= '").append(UTIL.yyyy_MM_dd.format(buscadorReRe.getDcDesde())).append("'");
         }
         if (buscadorReRe.getDcHasta() != null) {
-            queryWhereFactuVenta.append(" AND o.fechaVenta <= '").append(yyyyMMdd.format(buscadorReRe.getDcHasta())).append("'");
-            queryWhereNotaCredito.append(" AND o.fechaNotaCredito <= '").append(yyyyMMdd.format(buscadorReRe.getDcDesde())).append("'");
+            queryWhereFactuVenta.append(" AND o.fechaVenta <= '").append(UTIL.yyyy_MM_dd.format(buscadorReRe.getDcHasta())).append("'");
+            queryWhereNotaCredito.append(" AND o.fechaNotaCredito <= '").append(UTIL.yyyy_MM_dd.format(buscadorReRe.getDcDesde())).append("'");
         }
         if (buscadorReRe.getDcDesdeSistema() != null) {
-            queryWhereFactuVenta.append(" AND o.fechaalta >= '").append(yyyyMMdd.format(buscadorReRe.getDcDesdeSistema())).append("'");
-            queryWhereNotaCredito.append(" AND o.fechaCarga >= '").append(yyyyMMdd.format(buscadorReRe.getDcDesdeSistema())).append("'");
+            queryWhereFactuVenta.append(" AND o.fechaalta >= '").append(UTIL.yyyy_MM_dd.format(buscadorReRe.getDcDesdeSistema())).append("'");
+            queryWhereNotaCredito.append(" AND o.fechaCarga >= '").append(UTIL.yyyy_MM_dd.format(buscadorReRe.getDcDesdeSistema())).append("'");
         }
         if (buscadorReRe.getDcHastaSistema() != null) {
-            queryWhereFactuVenta.append(" AND o.fechaalta <= '").append(yyyyMMdd.format(buscadorReRe.getDcHastaSistema())).append("'");
-            queryWhereNotaCredito.append(" AND o.fechaCarga <= '").append(yyyyMMdd.format(buscadorReRe.getDcHastaSistema())).append("'");
+            queryWhereFactuVenta.append(" AND o.fechaalta <= '").append(UTIL.yyyy_MM_dd.format(buscadorReRe.getDcHastaSistema())).append("'");
+            queryWhereNotaCredito.append(" AND o.fechaCarga <= '").append(UTIL.yyyy_MM_dd.format(buscadorReRe.getDcHastaSistema())).append("'");
         }
         UsuarioHelper usuarioHelper = new UsuarioHelper();
         if (buscadorReRe.getCbCaja().getSelectedIndex() > 0) {
@@ -1483,7 +1478,7 @@ public class Contabilidad {
                         String[] xx = o[0].toString().substring(2).split("-");
                         o[0] = o[0].toString().substring(0, 2) + UTIL.AGREGAR_CEROS(xx[0], 4) + "-" + UTIL.AGREGAR_CEROS(xx[1], 8);
                         dtm.addRow(o);
-                        total = total.add((BigDecimal)o[3]);
+                        total = total.add((BigDecimal) o[3]);
                     }
                     buscador.getResumeItems().get("Total").setText(UTIL.DECIMAL_FORMAT.format(total));
                 } catch (Exception ex) {
