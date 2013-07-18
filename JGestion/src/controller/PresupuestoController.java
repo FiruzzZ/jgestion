@@ -29,6 +29,7 @@ import jpa.controller.ProductoJpaController;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Logger;
 import utilities.general.EntityWrapper;
+import utilities.swing.components.ComboBoxWrapper;
 
 /**
  *
@@ -194,7 +195,7 @@ public class PresupuestoController implements ActionListener, KeyListener {
             newPresupuesto = new Presupuesto();
             newPresupuesto.setCliente((Cliente) jdFacturaVenta.getCbCliente().getSelectedItem());
             newPresupuesto.setListaPrecios((ListaPrecios) jdFacturaVenta.getCbListaPrecio().getSelectedItem());
-            newPresupuesto.setSucursal(((EntityWrapper<Sucursal>) jdFacturaVenta.getCbSucursal().getSelectedItem()).getEntity());
+            newPresupuesto.setSucursal(((ComboBoxWrapper<Sucursal>) jdFacturaVenta.getCbSucursal().getSelectedItem()).getEntity());
             newPresupuesto.setUsuario(UsuarioController.getCurrentUser());
             if (((Valores.FormaPago) jdFacturaVenta.getCbFormaPago().getSelectedItem()).equals(Valores.FormaPago.CONTADO)) {
                 newPresupuesto.setFormaPago((short) Valores.FormaPago.CONTADO.getId());

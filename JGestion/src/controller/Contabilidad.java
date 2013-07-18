@@ -1195,6 +1195,8 @@ public class Contabilidad {
         UTIL.loadComboBox(panelito.getCbClientes(), JGestionUtils.getWrappedClientes(new ClienteController().findAll()), true);
         UTIL.loadComboBox(panelito.getCbFormasDePago(), Valores.FormaPago.getFormasDePago(), true);
         buscador = new JDBuscador(owner, "Productos: Costo / Venta", false, panelito);
+        buscador.getBtnImprimir().setEnabled(false);
+        buscador.getBtnToExcel().setEnabled(false);
         buscador.getPanelInferior().setVisible(true);
         buscador.addResumeItem("Costo", new JTextField(8));
         buscador.addResumeItem("Venta", new JTextField(8));
@@ -1227,8 +1229,6 @@ public class Contabilidad {
 
             }
         });
-        buscador.getBtnImprimir().setVisible(false);
-        buscador.getBtnToExcel().setVisible(false);
         buscador.setVisible(true);
     }
 

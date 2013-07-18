@@ -112,23 +112,24 @@ public abstract class DAO implements Runnable {
      */
     public static Connection getJDBCConnection() {
         try {
-            if (connection == null || connection.isClosed()) {
-                instanceOfJDBCCreated++;
-                Logger.getLogger(DAO.class).log(Level.TRACE, "Creating a new JDBC #" + instanceOfJDBCCreated);
-                entityManagerForJDBC = emf.createEntityManager();
-                entityManagerForJDBC.getTransaction().begin();
-
-                //JPA 1.0
-//                UnitOfWorkImpl unitOfWorkImpl = (UnitOfWorkImpl) ((EntityManagerImpl) entityManagerForJDBC.getDelegate()).getActiveSession();
-//                unitOfWorkImpl.beginEarlyTransaction();
-//                connection = unitOfWorkImpl.getAccessor().getConnection();
-
-                //JPA 2.0
-                connection = entityManagerForJDBC.unwrap(java.sql.Connection.class);
+            if (connection != null && !connection.isClosed()) {
+                return connection;
             }
         } catch (SQLException ex) {
             Logger.getLogger(DAO.class).log(Level.ERROR, ex.getMessage(), ex);
         }
+        instanceOfJDBCCreated++;
+        Logger.getLogger(DAO.class).log(Level.TRACE, "Creating a new JDBC #" + instanceOfJDBCCreated);
+        entityManagerForJDBC = emf.createEntityManager();
+        entityManagerForJDBC.getTransaction().begin();
+
+        //JPA 1.0
+//                UnitOfWorkImpl unitOfWorkImpl = (UnitOfWorkImpl) ((EntityManagerImpl) entityManagerForJDBC.getDelegate()).getActiveSession();
+//                unitOfWorkImpl.beginEarlyTransaction();
+//                connection = unitOfWorkImpl.getAccessor().getConnection();
+
+        //JPA 2.0
+        connection = entityManagerForJDBC.unwrap(java.sql.Connection.class);
         return connection;
     }
 
