@@ -18,12 +18,14 @@ import entity.Cliente;
 import entity.CuentaBancaria;
 import entity.Proveedor;
 import entity.enums.ChequeEstado;
+import generics.CustomABMJDialog;
 import generics.GenericBeanCollection;
 import gui.JDABM;
 import gui.JDChequesManager;
 import gui.JDContenedor;
 import gui.PanelABMCheques;
 import gui.PanelChequesColumnsReport;
+import gui.generics.GroupLayoutPanelBuilder;
 import java.awt.Color;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
@@ -39,7 +41,11 @@ import javax.persistence.NoResultException;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import jgestion.JGestionUtils;
 import jpa.controller.ChequePropioJpaController;
@@ -209,12 +215,9 @@ public class ChequePropioController implements ActionListener {
                 } else if (boton.equals(jdChequeManager.getbAnular())) {
                     int row = jdChequeManager.getjTable1().getSelectedRow();
                     if (row > -1) {
-                        ChequePropio cheque = jpaController.find((Integer) jdChequeManager.getjTable1().getModel().getValueAt(row, 0));
+                        final ChequePropio cheque = jpaController.find((Integer) jdChequeManager.getjTable1().getModel().getValueAt(row, 0));
                         if (cheque.getChequeEstado().equals(ChequeEstado.CARTERA)) {
-                            if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(jdChequeManager, "¿Confirma la anulación del Cheque N°" + cheque.getNumero() + "?")) {
-                                cheque.setEstado(ChequeEstado.ANULADO.getId());
-                                jpaController.merge(cheque);
-                            }
+                            showAnulacionDialog(jdChequeManager, cheque);
                         } else {
                             JOptionPane.showMessageDialog(jdChequeManager, "Solo los cheques en " + ChequeEstado.CARTERA + " pueden ser anulados", "Error", JOptionPane.WARNING_MESSAGE);
                         }
@@ -347,12 +350,13 @@ public class ChequePropioController implements ActionListener {
         }
         List<Banco> l = new BancoController().findWithCuentasBancarias(true);
         if (l.isEmpty()) {
-            throw new MessageException("Para emitor cheques propios, primero tiene que crear una Cuenta bancaria relacionado a un Banco."
+            throw new MessageException("Para emitir cheques propios, primero tiene que crear una Cuenta bancaria relacionado a un Banco."
                     + "\nDatos Generales > Bancos/Cuentas > Cuentas Bancarias");
         }
         jdChequeManager = new JDChequesManager(parent, true);
         jdChequeManager.getBtnNuevo().setEnabled(false);
         jdChequeManager.getbACaja().setEnabled(false);
+        jdChequeManager.getbAnular().setEnabled(true);
         jdChequeManager.getbDeposito().setText("Debidar");
         jdChequeManager.getLabelEmisor().setText("Emitido a");
         jdChequeManager.setTitle("Administración de Cheques Propios");
@@ -671,5 +675,37 @@ public class ChequePropioController implements ActionListener {
 
     ChequePropio getChequePropioInstance() {
         return EL_OBJECT;
+    }
+
+    private void showAnulacionDialog(Window owner, final ChequePropio cheque) {
+        final GroupLayoutPanelBuilder glpb = new GroupLayoutPanelBuilder();
+        final JTextArea tfObservacion = new JTextArea(3, 10);
+        tfObservacion.setText(cheque.getObservacion());
+        tfObservacion.setLineWrap(true);
+        tfObservacion.setWrapStyleWord(true);
+        glpb.addFormItem(new JLabel("Observación"), tfObservacion);
+        JPanel panel = glpb.build();
+        final CustomABMJDialog dialog = new CustomABMJDialog(owner, panel, "Baja Afiliado", true,
+                "¿Confirma la anulación del Cheque?"
+                + "\nN°: " + cheque.getNumero() 
+                + "\nImporte: " + UTIL.DECIMAL_FORMAT.format(cheque.getImporte())
+                );
+        dialog.setToolBarVisible(false);
+        dialog.getBtnAceptar().addActionListener(new ActionListener() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public void actionPerformed(ActionEvent e) {
+                cheque.setObservacion(tfObservacion.getText().trim().isEmpty() ? null : tfObservacion.getText().trim());
+                cheque.setEstado(ChequeEstado.ANULADO.getId());
+                jpaController.merge(cheque);
+            }
+        });
+        dialog.getBtnCancelar().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose();
+            }
+        });
+        dialog.setVisible(true);
     }
 }

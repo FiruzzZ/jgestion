@@ -7,7 +7,6 @@ import entity.Sucursal;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import javax.persistence.EntityManager;
 import entity.DetallePresupuesto;
 import entity.Iva;
 import entity.ListaPrecios;
@@ -15,6 +14,7 @@ import entity.Producto;
 import utilities.general.UTIL;
 import gui.JDBuscadorReRe;
 import gui.JDFacturaVenta;
+import java.awt.Window;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
 import java.math.BigDecimal;
@@ -25,10 +25,10 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import jpa.controller.PresupuestoJpaController;
 import jpa.controller.ProductoJpaController;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Logger;
-import utilities.general.EntityWrapper;
 import utilities.swing.components.ComboBoxWrapper;
 
 /**
@@ -44,49 +44,10 @@ public class PresupuestoController implements ActionListener, KeyListener {
     private JDBuscadorReRe buscador;
     private boolean MODO_VISTA = false;
     private Presupuesto selectedPresupuesto;
+    private final PresupuestoJpaController jpaController = new PresupuestoJpaController();
 
     public PresupuestoController() {
         facturaVentaController = new FacturaVentaController();
-    }
-
-    private Presupuesto create(Presupuesto presupuesto) throws PreexistingEntityException, Exception {
-        List<DetallePresupuesto> toAttach = presupuesto.getDetallePresupuestoList();
-        presupuesto.setDetallePresupuestoList(new ArrayList<DetallePresupuesto>());
-        EntityManager em = null;
-        try {
-            em = DAO.getEntityManager();
-            em.getTransaction().begin();
-            em.persist(presupuesto);
-            em.getTransaction().commit();
-            for (DetallePresupuesto detallePresupuestoListDetallePresupuesto : toAttach) {
-                detallePresupuestoListDetallePresupuesto.setPresupuesto(presupuesto);
-                DAO.create(detallePresupuestoListDetallePresupuesto);
-            }
-        } catch (Exception ex) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-
-            if (findPresupuesto(presupuesto.getId()) != null) {
-                throw new PreexistingEntityException("Presupuesto " + presupuesto + " already exists.", ex);
-            }
-            throw ex;
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
-
-        return presupuesto;
-    }
-
-    public Presupuesto findPresupuesto(Integer id) {
-        EntityManager em = DAO.getEntityManager();
-        try {
-            return em.find(Presupuesto.class, id);
-        } finally {
-            em.close();
-        }
     }
 
     /**
@@ -219,9 +180,10 @@ public class PresupuestoController implements ActionListener, KeyListener {
                 detalle.setTipoDesc(Integer.valueOf(dtm.getValueAt(i, 8).toString()));
                 Producto p = productoController.find((Integer) dtm.getValueAt(i, 9));
                 detalle.setProducto(p);
+//                detalle.setPresupuesto(newPresupuesto); //innecesario
                 newPresupuesto.getDetallePresupuestoList().add(detalle);
             }
-            newPresupuesto = create(newPresupuesto);
+            jpaController.create(newPresupuesto);
         }
         return doReport(newPresupuesto);
     }
@@ -246,7 +208,7 @@ public class PresupuestoController implements ActionListener, KeyListener {
         }
     }
 
-    public void initBuscador(JFrame owner) throws MessageException {
+    public void initBuscador(Window owner) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.VENTA);
         buscador = new JDBuscadorReRe(owner, "Buscador - " + CLASS_NAME, true, "Cliente", "Nº " + CLASS_NAME);
         buscador.getjTable1().addMouseListener(new java.awt.event.MouseAdapter() {
