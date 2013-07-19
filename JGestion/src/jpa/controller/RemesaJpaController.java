@@ -83,8 +83,6 @@ public class RemesaJpaController extends AbstractDAO<Remesa, Integer> {
                     ChequePropio pago = (ChequePropio) object;
                     pago.setComprobanteEgreso(getEntityClass().getSimpleName() + " " + JGestionUtils.getNumeracion(remesa, true));
                     entityManager.persist(pago);
-                    CuentabancariaMovimientos cbm = new CuentabancariaMovimientos(pago.getFechaCheque(), pago.getComprobanteEgreso(), null, BigDecimal.ZERO, pago.getImporte(), false, UsuarioController.getCurrentUser(), new OperacionesBancariasController().getOperacion(OperacionesBancariasController.EXTRACCION), pago.getCuentabancaria(), null, pago, false);
-                    entityManager.persist(cbm);
                     pagosPost.add(pago);
                 } else if (object instanceof ChequeTerceros) {
                     ChequeTerceros pago = (ChequeTerceros) object;

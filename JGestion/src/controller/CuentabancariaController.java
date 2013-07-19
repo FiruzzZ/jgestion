@@ -318,9 +318,9 @@ public class CuentabancariaController {
 
     private void setChequePanelDeposito(Cheque cheque) {
         if (cheque instanceof ChequeTerceros) {
-            panelDeposito.getCbEmisor().addItem(((ChequeTerceros)cheque).getCliente().getNombre());
+            panelDeposito.getCbEmisor().addItem(((ChequeTerceros) cheque).getCliente().getNombre());
         } else {
-            ChequePropio cp = (ChequePropio)cheque;
+            ChequePropio cp = (ChequePropio) cheque;
             panelDeposito.getCbEmisor().addItem(cp.getProveedor().getNombre());
             panelDeposito.getCbDepositoBancos().addItem(new EntityWrapper<Banco>(cp.getBanco(), cp.getBanco().getId(), cp.getBanco().getNombre()));
             panelDeposito.getCbDepositoCuentaBancaria().addItem(new EntityWrapper<CuentaBancaria>(cp.getCuentabancaria(), cp.getCuentabancaria().getId(), cp.getCuentabancaria().getNumero()));
@@ -342,19 +342,22 @@ public class CuentabancariaController {
         panelDeposito.getTfDescripcion().setText("Cheque N°" + cheque.getNumero());
     }
 
-    void initDebitoUI(final ChequePropio cheque) {
+    void initDebitoUI(final ChequePropio chequeToDebitar) {
+        CuentabancariaMovimientos cbm = new CuentabancariaMovimientosJpaController().findBy(chequeToDebitar);
+        if (cbm.isConciliado()) {
+        }
         panelDeposito = new PanelDepositoCheque();
         panelDeposito.getLabelEmisor().setText("Proveedor");
         SwingUtil.setComponentsEnabled(panelDeposito.getPanelInfoCheque().getComponents(), false, true, (Class<? extends Component>[]) null);
         panelDeposito.getCbOperacionesBancarias().addItem(new OperacionesBancariasController().getOperacion(OperacionesBancariasController.EXTRACCION).getNombre());
-        setChequePanelDeposito(cheque);
+        setChequePanelDeposito(chequeToDebitar);
         abm = new JDABM(null, "Débito de cheque", true, panelDeposito);
         abm.getbAceptar().addActionListener(new ActionListener() {
             @Override
             @SuppressWarnings("unchecked")
             public void actionPerformed(ActionEvent e) {
                 try {
-                    ChequePropio chequeToDeposit = cheque;
+                    ChequePropio chequeToDeposit = chequeToDebitar;
                     Date fechaOperacion = panelDeposito.getDcFechaOperacion().getDate();
                     Date fechaCreditoDebito = panelDeposito.getDcFechaCreditoDebito().getDate();
                     String descripcion = panelDeposito.getTfDescripcion().getText().trim();
@@ -362,7 +365,7 @@ public class CuentabancariaController {
                         throw new MessageException("Fecha de operación no válida");
                     }
                     if (fechaCreditoDebito == null) {
-                        throw new MessageException("Fecha de operación no válida");
+                        throw new MessageException("Fecha de Débito no válida");
                     }
                     if (fechaCreditoDebito.before(chequeToDeposit.getFechaCobro())) {
                         throw new MessageException("Fecha de débito no válida, no puede ser anterior a la de cobro");
@@ -370,6 +373,7 @@ public class CuentabancariaController {
                     if (descripcion.isEmpty()) {
                         throw new MessageException("Descripción de operación no válida");
                     }
+
                     CuentabancariaMovimientos cbm = new CuentabancariaMovimientos(fechaOperacion, descripcion, fechaCreditoDebito, BigDecimal.ZERO, chequeToDeposit.getImporte(), false, UsuarioController.getCurrentUser(),
                             new OperacionesBancariasController().getOperacion(OperacionesBancariasController.EXTRACCION), chequeToDeposit.getCuentabancaria(), null, chequeToDeposit, false);
                     new CuentabancariaMovimientosJpaController().create(cbm);

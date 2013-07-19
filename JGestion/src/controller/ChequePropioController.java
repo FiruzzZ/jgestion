@@ -226,9 +226,9 @@ public class ChequePropioController implements ActionListener {
                 } else if (boton.equals(jdChequeManager.getbDeposito())) {
                     int row = jdChequeManager.getjTable1().getSelectedRow();
                     if (row > -1) {
-                        ChequePropio cheque = jpaController.find((Integer) jdChequeManager.getjTable1().getModel().getValueAt(row, 0));
-                        if (cheque.getChequeEstado().equals(ChequeEstado.CARTERA)) {
-                            new CuentabancariaController().initDebitoUI(cheque);
+                        ChequePropio chequ = jpaController.find((Integer) jdChequeManager.getjTable1().getModel().getValueAt(row, 0));
+                        if (chequ.getChequeEstado().equals(ChequeEstado.CARTERA)) {
+                            new CuentabancariaController().initDebitoUI(chequ);
                         } else {
                             JOptionPane.showMessageDialog(jdChequeManager, "Solo los cheques en " + ChequeEstado.CARTERA + " pueden ser " + ChequeEstado.DEBITADO, "Error", JOptionPane.WARNING_MESSAGE);
                         }
@@ -685,7 +685,7 @@ public class ChequePropioController implements ActionListener {
         tfObservacion.setWrapStyleWord(true);
         glpb.addFormItem(new JLabel("Observación"), tfObservacion);
         JPanel panel = glpb.build();
-        final CustomABMJDialog dialog = new CustomABMJDialog(owner, panel, "Baja Afiliado", true,
+        final CustomABMJDialog dialog = new CustomABMJDialog(owner, panel, "Anulación de Cheque Propio", true,
                 "¿Confirma la anulación del Cheque?"
                 + "\nN°: " + cheque.getNumero() 
                 + "\nImporte: " + UTIL.DECIMAL_FORMAT.format(cheque.getImporte())

@@ -10,7 +10,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import jgestion.Main;
+import jgestion.JGestion;
 
 /**
  *
@@ -56,14 +56,14 @@ public class JDABM extends javax.swing.JDialog {
         setMinimumSize(new java.awt.Dimension(300, 100));
         setResizable(false);
 
-        bCancelar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px-Crystal_Clear_action_button_cancel.png"))); // NOI18N
+        bCancelar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/24px_cancel.png"))); // NOI18N
         bCancelar.setMnemonic('c');
-        bCancelar.setText(Main.resourceBundle.getString("cancel"));
+        bCancelar.setText(jgestion.JGestion.resourceBundle.getString("cancel"));
         bCancelar.setName("cancelar"); // NOI18N
 
-        bAceptar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px-Crystal_Clear_action_apply.png"))); // NOI18N
+        bAceptar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/24px_ok.png"))); // NOI18N
         bAceptar.setMnemonic('a');
-        bAceptar.setText(Main.resourceBundle.getString("ok"));
+        bAceptar.setText(jgestion.JGestion.resourceBundle.getString("ok"));
         bAceptar.setName("aceptar"); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -71,7 +71,7 @@ public class JDABM extends javax.swing.JDialog {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(31, Short.MAX_VALUE)
+                .addContainerGap(49, Short.MAX_VALUE)
                 .addComponent(bAceptar)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(bCancelar)

@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.swing.*;
-import jgestion.Main;
+import jgestion.JGestion;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -41,10 +41,10 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         Dimension frameSize = getSize();
         setLocation((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
         jMenuItem11.setVisible(false); // Menú -> Datos Generales -> Contribuyente
-        this.setTitle(Main.resourceBundle.getString("softwareTitle")
+        this.setTitle(JGestion.resourceBundle.getString("softwareTitle")
                 + " - "
-                + Main.resourceBundle.getString("softwareDescription")
-                + " V" + Main.resourceBundle.getString("softwareVersion"));
+                + JGestion.resourceBundle.getString("softwareDescription")
+                + " V" + JGestion.resourceBundle.getString("softwareVersion"));
     }
 
     private void loginUser() {
@@ -2167,7 +2167,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
 
     private void setAppIcons() {
         List<Image> iconsList = new ArrayList<Image>(3);
-        iconsList.add(Toolkit.getDefaultToolkit().createImage(getClass().getResource(Main.resourceBundle.getString("softwareIcon"))));
+        iconsList.add(Toolkit.getDefaultToolkit().createImage(getClass().getResource(JGestion.resourceBundle.getString("softwareIcon"))));
         iconsList.add(Toolkit.getDefaultToolkit().createImage(getClass().getResource("/iconos/16px_sum.ico")));
         iconsList.add(Toolkit.getDefaultToolkit().createImage(getClass().getResource("/iconos/24px_sum.ico")));
         iconsList.add(Toolkit.getDefaultToolkit().createImage(getClass().getResource("/iconos/32px_sum.ico")));

@@ -251,12 +251,12 @@ public class CustomABMJDialog extends JDialog {
         btnBuscar.setText("Buscar");
         btnBuscar.setFocusable(false);
 
-        btnAceptar.setIcon(new ImageIcon(getClass().getResource(RESOURCE_FOLDER_PATH + "32px-Crystal_Clear_action_apply.png")));
+        btnAceptar.setIcon(new ImageIcon(getClass().getResource(RESOURCE_FOLDER_PATH + "24px_ok.png")));
         btnAceptar.setMnemonic('a');
         btnAceptar.setText("Aceptar");
         btnAceptar.setMargin(insets);
 
-        btnCancelar.setIcon(new ImageIcon(getClass().getResource(RESOURCE_FOLDER_PATH + "cancelar.png")));
+        btnCancelar.setIcon(new ImageIcon(getClass().getResource(RESOURCE_FOLDER_PATH + "24px_cancel.png")));
         btnCancelar.setMnemonic('c');
         btnCancelar.setText("Cancelar");
         btnCancelar.setMargin(insets);
@@ -316,9 +316,9 @@ public class CustomABMJDialog extends JDialog {
         }
         messageLabel.setText(htmlMessage);
         messageLabel.setVisible(htmlMessage != null);
-        this.pack();
+        pack();
         if (htmlMessage != null) {
-            int i = htmlMessage.split("<BR>").length;
+            int i = htmlMessage.split("<BR>").length - 1;
             System.out.println(this.getClass() + "Cantidada de <BR> = " + i);
             int extraHeight = 0;
             if (i - 2 > 0) {

@@ -16,7 +16,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
-import jgestion.Main;
+import jgestion.JGestion;
 import jpa.controller.*;
 import org.apache.log4j.Logger;
 import utilities.general.UTIL;
@@ -465,7 +465,7 @@ public class SucursalController implements ActionListener {
                     String msg = entity.getId() == null ? "Registrado" : "Modificado";
                     if (entity.getId() == null) {
                         jpaController.create(entity);
-                        abm.showMessage(Main.resourceBundle.getString("info.newsucursal"), CLASS_NAME, 2);
+                        abm.showMessage(JGestion.resourceBundle.getString("info.newsucursal"), CLASS_NAME, 2);
                     } else {
                         jpaController.merge(entity);
                     }

@@ -32,7 +32,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import jgestion.ActionListenerManager;
 import jgestion.JGestionUtils;
-import jgestion.Main;
+import jgestion.JGestion;
 import jgestion.Wrapper;
 import jpa.controller.CajaMovimientosJpaController;
 import jpa.controller.SubCuentaJpaController;
@@ -558,11 +558,11 @@ public class CajaMovimientosController implements ActionListener {
             });
         }
         if (new UnidadDeNegocioJpaController().findAll().isEmpty()) {
-            throw new MessageException(Main.resourceBundle.getString("info.unidaddenegociosempty"));
+            throw new MessageException(JGestion.resourceBundle.getString("info.unidaddenegociosempty"));
         }
         List<ComboBoxWrapper<Caja>> ll = new UsuarioHelper().getWrappedCajas(true);
         if (ll.isEmpty()) {
-            throw new MessageException(Main.resourceBundle.getString("unassigned.caja"));
+            throw new MessageException(JGestion.resourceBundle.getString("unassigned.caja"));
         }
         UTIL.loadComboBox(panelMovVarios.getCbCaja(), ll, false);
         List<ComboBoxWrapper<UnidadDeNegocio>> l = new Wrapper<UnidadDeNegocio>().getWrapped(new UnidadDeNegocioJpaController().findAll());

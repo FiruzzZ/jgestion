@@ -8,7 +8,7 @@ package gui;
 
 import java.awt.Window;
 import java.util.Properties;
-import jgestion.Main;
+import jgestion.JGestion;
 
 /**
  *
@@ -23,8 +23,8 @@ public class JDAbout extends javax.swing.JDialog {
         super(owner, ModalityType.APPLICATION_MODAL);
         initComponents();
         Properties pro = System.getProperties();
-        ta.setText(Main.resourceBundle.getString("softwareTitle")
-                + "\nVersión: " + Main.resourceBundle.getString("softwareVersion")
+        ta.setText(JGestion.resourceBundle.getString("softwareTitle")
+                + "\nVersión: " + JGestion.resourceBundle.getString("softwareVersion")
                 + "\nJVM: " + pro.getProperty("java.version")
                 + "\nOS: " + pro.getProperty("os.name") + " " + pro.getProperty("os.version")
                 + "\nUserDir: " + pro.getProperty("user.dir"));
