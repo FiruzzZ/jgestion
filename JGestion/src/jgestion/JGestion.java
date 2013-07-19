@@ -29,10 +29,10 @@ import org.eclipse.persistence.exceptions.DatabaseException;
  *
  * @author Administrador
  */
-public class Main {
+public class JGestion {
 
     private static final String propertiesFile = System.getProperty("user.dir") + System.getProperty("file.separator") + "cfg.ini";
-    private static final Logger LOG = Logger.getLogger(Main.class);
+    private static final Logger LOG = Logger.getLogger(JGestion.class);
     private static boolean OCURRIO_ERROR = false;
     public static final ResourceBundle resourceBundle = ResourceBundle.getBundle("resources");
     private static boolean develop;
@@ -63,7 +63,7 @@ public class Main {
         //</editor-fold>
     }
 
-    private Main() {
+    private JGestion() {
         PropertyConfigurator.configure("log4j.properties");
         threadSafe();
         try {
@@ -95,15 +95,12 @@ public class Main {
                     }
                 });
             }
-        } catch (IllegalArgumentException ex) {
-            LOG.trace(ex.getLocalizedMessage(), ex);
-            JOptionPane.showMessageDialog(null, ex.getMessage(), "Ojo!", JOptionPane.WARNING_MESSAGE);
         } catch (FileNotFoundException ex) {
             LOG.fatal("No se encontro el archivo cfg.ini", ex);
             JOptionPane.showMessageDialog(null, "No se encontró el archivo de configuración cfg.ini\n" + ex.getLocalizedMessage(), "Error", 0);
         } catch (IOException ex) {
             LOG.fatal("IOExpection con archivo cfg.ini", ex);
-            java.util.logging.Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(JGestion.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(null, "Error intentando acceder al archivo de configuración cfg.ini\n" + ex.getLocalizedMessage(), "Error", 0);
         } catch (MessageException ex) {
             LOG.fatal("MessageException ", ex);
@@ -167,7 +164,7 @@ public class Main {
 //            } else if (arg.equalsIgnoreCase("updateChecked=1")) {
             }
         }
-        Main main = new Main();
+        JGestion main = new JGestion();
     }
 
     private static void threadSafe() {

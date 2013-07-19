@@ -43,7 +43,7 @@ import javax.swing.table.TableModel;
 import javax.swing.text.JTextComponent;
 import jgestion.ActionListenerManager;
 import jgestion.JGestionUtils;
-import jgestion.Main;
+import jgestion.JGestion;
 import jgestion.Wrapper;
 import jpa.controller.CajaMovimientosJpaController;
 import jpa.controller.DominioJpaController;
@@ -91,14 +91,14 @@ public class FacturaCompraController implements ActionListener, KeyListener {
     public void initABMFacturaCompra(JFrame owner, boolean modal) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.COMPRA);
         if (new UnidadDeNegocioJpaController().findAll().isEmpty()) {
-            throw new MessageException(Main.resourceBundle.getString("info.unidaddenegociosempty"));
+            throw new MessageException(JGestion.resourceBundle.getString("info.unidaddenegociosempty"));
         }
         UsuarioHelper uh = new UsuarioHelper();
         if (uh.getSucursales().isEmpty()) {
-            throw new MessageException(Main.resourceBundle.getString("unassigned.sucursal"));
+            throw new MessageException(JGestion.resourceBundle.getString("unassigned.sucursal"));
         }
         if (uh.getCajas(true).isEmpty()) {
-            throw new MessageException(Main.resourceBundle.getString("unassigned.caja"));
+            throw new MessageException(JGestion.resourceBundle.getString("unassigned.caja"));
         }
         initComprobanteUI(owner, modal);
         //set next nº movimiento

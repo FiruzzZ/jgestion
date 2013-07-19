@@ -32,7 +32,7 @@ import javax.swing.table.TableModel;
 import javax.swing.text.JTextComponent;
 import jgestion.ActionListenerManager;
 import jgestion.JGestionUtils;
-import jgestion.Main;
+import jgestion.JGestion;
 import jgestion.Wrapper;
 import jpa.controller.*;
 import net.sf.jasperreports.engine.JRException;
@@ -117,14 +117,14 @@ public class FacturaVentaController implements KeyListener {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.VENTA);
         UsuarioHelper uh = new UsuarioHelper();
         if (uh.getSucursales().isEmpty()) {
-            throw new MessageException(Main.resourceBundle.getString("unassigned.sucursal"));
+            throw new MessageException(JGestion.resourceBundle.getString("unassigned.sucursal"));
         }
         if (factVenta1_PresupNotaCredito2_Remito3 == 1) {
             if (new UnidadDeNegocioJpaController().findAll().isEmpty()) {
-                throw new MessageException(Main.resourceBundle.getString("info.unidaddenegociosempty"));
+                throw new MessageException(JGestion.resourceBundle.getString("info.unidaddenegociosempty"));
             }
             if (uh.getCajas(true).isEmpty()) {
-                throw new MessageException(Main.resourceBundle.getString("unassigned.caja"));
+                throw new MessageException(JGestion.resourceBundle.getString("unassigned.caja"));
             }
         }
         jdFactura = new JDFacturaVenta(owner, modal, factVenta1_PresupNotaCredito2_Remito3);

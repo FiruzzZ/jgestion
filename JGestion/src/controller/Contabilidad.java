@@ -71,7 +71,7 @@ import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import jgestion.JGestionUtils;
-import jgestion.Main;
+import jgestion.JGestion;
 import jpa.controller.ClienteJpaController;
 import jpa.controller.ProveedorJpaController;
 import jpa.controller.VendedorJpaController;
@@ -127,7 +127,7 @@ public class Contabilidad {
         panelBalanceGeneral = new PanelBalanceGeneral();
         List<ComboBoxWrapper<Caja>> cajas = new UsuarioHelper().getWrappedCajas(null);
         if (cajas.isEmpty()) {
-            throw new MessageException(jgestion.Main.resourceBundle.getString("unassigned.caja"));
+            throw new MessageException(jgestion.JGestion.resourceBundle.getString("unassigned.caja"));
         }
         UTIL.loadComboBox(panelBalanceGeneral.getCbCajas(), cajas, true);
         jdBalanceUI = new JDBalance(parent, false, panelBalanceGeneral);
@@ -278,7 +278,7 @@ public class Contabilidad {
         panelBalanceComprasVentas = new PanelBalanceComprasVentas();
         List<ComboBoxWrapper<Sucursal>> s = new UsuarioHelper().getWrappedSucursales();
         if (s.isEmpty()) {
-            throw new MessageException(Main.resourceBundle.getString("unassigned.sucursal"));
+            throw new MessageException(JGestion.resourceBundle.getString("unassigned.sucursal"));
         }
         UTIL.loadComboBox(panelBalanceComprasVentas.getCbSucursal(), s, true);
         jdBalanceUI = new JDBalance(parent, false, panelBalanceComprasVentas);
@@ -365,7 +365,7 @@ public class Contabilidad {
             public void actionPerformed(ActionEvent e) {
                 try {
                     if (jdBalanceUI.getjTable1().getRowCount() < 1) {
-                        throw new MessageException(Main.resourceBundle.getString("warn.emptytable"));
+                        throw new MessageException(JGestion.resourceBundle.getString("warn.emptytable"));
                     }
                     File file = JGestionUtils.showSaveDialogFileChooser(jdBalanceUI, "Archivo Excel (.xls)", new File("balance.xls"), "xls");
                     TableExcelExporter tee = new TableExcelExporter(file, jdBalanceUI.getjTable1());

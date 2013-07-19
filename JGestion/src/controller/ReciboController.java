@@ -19,7 +19,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import jgestion.JGestionUtils;
-import jgestion.Main;
+import jgestion.JGestion;
 import jpa.controller.CajaMovimientosJpaController;
 import jpa.controller.ChequePropioJpaController;
 import jpa.controller.ChequeTercerosJpaController;
@@ -76,10 +76,10 @@ public class ReciboController implements ActionListener, FocusListener {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.VENTA);
         UsuarioHelper uh = new UsuarioHelper();
         if (uh.getSucursales().isEmpty()) {
-            throw new MessageException(Main.resourceBundle.getString("unassigned.sucursal"));
+            throw new MessageException(JGestion.resourceBundle.getString("unassigned.sucursal"));
         }
         if (uh.getCajas(true).isEmpty()) {
-            throw new MessageException(Main.resourceBundle.getString("unassigned.caja"));
+            throw new MessageException(JGestion.resourceBundle.getString("unassigned.caja"));
         }
         jdReRe = new JDReRe(owner, modal);
         jdReRe.setUIForRecibos();
