@@ -460,7 +460,7 @@ public class CuentabancariaMovimientosController {
         final JDConciliacionBancaria jd = new JDConciliacionBancaria(owner, true);
         UTIL.loadComboBox(jd.getCbBancos(), JGestionUtils.getWrappedBancos(new BancoController().findAllWithCuentasBancarias()), false);
         UTIL.getDefaultTableModel(jd.getjTable1(),
-                new String[]{"Object", "Fecha", "Concepto", "Débito", "Crédito", "Salgo", "Consolidado"},
+                new String[]{"Object", "Fecha", "Concepto", "Débito", "Crédito", "Salgo", "Conciliado"},
                 new int[]{1, 60, 300, 100, 100, 100, 30},
                 new Class<?>[]{null, Date.class, null, BigDecimal.class, BigDecimal.class, BigDecimal.class, Boolean.class}, new int[]{6});
         UTIL.hideColumnTable(jd.getjTable1(), 0);
@@ -474,8 +474,8 @@ public class CuentabancariaMovimientosController {
                     } catch (ClassCastException ex) {
                         throw new MessageException("Cuenta bancaria no válida");
                     }
-                    if (jd.getDcDesde() == null || jd.getDcHasta() == null) {
-                        throw new MessageException("Debe especificar una rango de fechas (Desde y Hasta) para recuperar los movimientos bancarios");
+                    if (jd.getDcDesde().getDate() == null || jd.getDcHasta().getDate() == null) {
+                        throw new MessageException("Debe especificar una rango de fechas (Desde y Hasta) para recuperar los movimientos de la cuenta bancaria");
                     }
                     StringBuilder query = new StringBuilder("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o "
                             + "WHERE ");
@@ -492,7 +492,7 @@ public class CuentabancariaMovimientosController {
                     for (CuentabancariaMovimientos cbm : l) {
                         saldo = saldo.add(cbm.getCredito());
                         saldo = saldo.subtract(cbm.getDebito());
-                        dtm.addRow(new Object[]{cbm, cbm.getFechaCreditoDebito(), cbm.getDescripcion(), cbm.getDebito(), cbm.getCredito(), saldo});
+                        dtm.addRow(new Object[]{cbm, cbm.getFechaCreditoDebito(), cbm.getDescripcion(), cbm.getDebito(), cbm.getCredito(), saldo, cbm.isConciliado()});
                     }
                 } catch (MessageException ex) {
                     ex.displayMessage(jd);
