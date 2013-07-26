@@ -16,7 +16,9 @@ import entity.BancoSucursal;
 import entity.ChequePropio;
 import entity.Cliente;
 import entity.CuentaBancaria;
+import entity.CuentabancariaMovimientos;
 import entity.Proveedor;
+import entity.UsuarioAcciones;
 import entity.enums.ChequeEstado;
 import generics.CustomABMJDialog;
 import generics.GenericBeanCollection;
@@ -49,6 +51,7 @@ import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import jgestion.JGestionUtils;
 import jpa.controller.ChequePropioJpaController;
+import jpa.controller.CuentabancariaMovimientosJpaController;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
@@ -216,10 +219,13 @@ public class ChequePropioController implements ActionListener {
                     int row = jdChequeManager.getjTable1().getSelectedRow();
                     if (row > -1) {
                         final ChequePropio cheque = jpaController.find((Integer) jdChequeManager.getjTable1().getModel().getValueAt(row, 0));
-                        if (cheque.getChequeEstado().equals(ChequeEstado.CARTERA)) {
+                        try {
+                            if (cheque.getChequeEstado().equals(ChequeEstado.CARTERA)) {
+                                throw new MessageException("Solo los cheques en " + ChequeEstado.CARTERA + " pueden ser anulados");
+                            }
                             showAnulacionDialog(jdChequeManager, cheque);
-                        } else {
-                            JOptionPane.showMessageDialog(jdChequeManager, "Solo los cheques en " + ChequeEstado.CARTERA + " pueden ser anulados", "Error", JOptionPane.WARNING_MESSAGE);
+                        } catch (MessageException ex) {
+                            ex.displayMessage(jdChequeManager);
                         }
                         armarQuery(false);
                     }
@@ -677,7 +683,11 @@ public class ChequePropioController implements ActionListener {
         return EL_OBJECT;
     }
 
-    private void showAnulacionDialog(Window owner, final ChequePropio cheque) {
+    private void showAnulacionDialog(Window owner, final ChequePropio cheque) throws MessageException {
+        final CuentabancariaMovimientos asiento = new CuentabancariaMovimientosJpaController().findBy(cheque);
+        if (asiento.isConciliado()) {
+            throw new MessageException("El movimiento bancario N° " + asiento.getId() + " relacionado al cheque ya a sido conciliado.");
+        }
         final GroupLayoutPanelBuilder glpb = new GroupLayoutPanelBuilder();
         final JTextArea tfObservacion = new JTextArea(3, 10);
         tfObservacion.setText(cheque.getObservacion());
@@ -687,9 +697,8 @@ public class ChequePropioController implements ActionListener {
         JPanel panel = glpb.build();
         final CustomABMJDialog dialog = new CustomABMJDialog(owner, panel, "Anulación de Cheque Propio", true,
                 "¿Confirma la anulación del Cheque?"
-                + "\nN°: " + cheque.getNumero() 
-                + "\nImporte: " + UTIL.DECIMAL_FORMAT.format(cheque.getImporte())
-                );
+                + "\nN°: " + cheque.getNumero()
+                + "\nImporte: " + UTIL.DECIMAL_FORMAT.format(cheque.getImporte()));
         dialog.setToolBarVisible(false);
         dialog.getBtnAceptar().addActionListener(new ActionListener() {
             @Override
@@ -698,6 +707,10 @@ public class ChequePropioController implements ActionListener {
                 cheque.setObservacion(tfObservacion.getText().trim().isEmpty() ? null : tfObservacion.getText().trim());
                 cheque.setEstado(ChequeEstado.ANULADO.getId());
                 jpaController.merge(cheque);
+                asiento.setAnulada(true);
+                new CuentabancariaMovimientosJpaController().merge(asiento);
+                UsuarioAcciones ua = new UsuarioAcciones('u', "Anulación cheque propio N° " + cheque.getNumero(), null, ChequePropio.class.getSimpleName(), cheque.getId(), UsuarioController.getCurrentUser());
+                new UsuarioAccionesController().create(ua);
             }
         });
         dialog.getBtnCancelar().addActionListener(new ActionListener() {
