@@ -3,15 +3,20 @@ package gui;
 import com.toedter.calendar.JDateChooser;
 import entity.Banco;
 import java.awt.Window;
+import java.io.File;
+import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JRadioButton;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
 import jgestion.JGestionUtils;
 import utilities.general.UTIL;
 import utilities.gui.SwingUtil;
 import utilities.swing.components.ComboBoxWrapper;
+import utilities.swing.components.FormatRenderer;
+import utilities.swing.components.NumberRenderer;
 
 /**
  *
@@ -28,6 +33,10 @@ public class JDConciliacionBancaria extends javax.swing.JDialog {
         buttonGroup1.add(radioDebito);
         buttonGroup1.add(jRadioButton2);
         setLocationRelativeTo(parent);
+        jTable2.getColumnModel().getColumn(0).setCellRenderer(FormatRenderer.getDateRenderer());
+        jTable2.getColumnModel().getColumn(2).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        jTable2.getColumnModel().getColumn(3).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        jTable2.getColumnModel().getColumn(4).setCellRenderer(NumberRenderer.getCurrencyRenderer());
     }
 
     /**
@@ -64,17 +73,7 @@ public class JDConciliacionBancaria extends javax.swing.JDialog {
         btnImprimir1 = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
-        jPanel2 = new javax.swing.JPanel();
-        tfExtractoFilePath = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
-        jLabel5 = new javax.swing.JLabel();
-        cbTipoDeArchivo = new javax.swing.JComboBox();
-        jLabel6 = new javax.swing.JLabel();
-        tfColumnaFecha = new javax.swing.JTextField();
-        tfColumnaConcepto = new javax.swing.JTextField();
-        tfColumnaDebito = new javax.swing.JTextField();
-        tfColumnaCredito = new javax.swing.JTextField();
-        tfColumnaSaldo = new javax.swing.JTextField();
+        btnImprimir2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -204,10 +203,10 @@ public class JDConciliacionBancaria extends javax.swing.JDialog {
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Boolean.class
+                java.lang.Object.class, java.lang.Object.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class, java.lang.Boolean.class
             };
             boolean[] canEdit = new boolean [] {
-                true, true, false, false, false, false
+                false, false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -232,101 +231,24 @@ public class JDConciliacionBancaria extends javax.swing.JDialog {
         jTable2.getColumnModel().getColumn(4).setPreferredWidth(70);
         jTable2.getColumnModel().getColumn(5).setResizable(false);
 
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Importar Extracto Bancario"));
-
-        tfExtractoFilePath.setEditable(false);
-        tfExtractoFilePath.setFont(new java.awt.Font("Tahoma", 2, 11)); // NOI18N
-        tfExtractoFilePath.setText("<Select File>");
-
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/appfinder.png"))); // NOI18N
-        jButton1.setText("Buscar archivo");
-
-        jLabel5.setText("Tipo de Archivo");
-
-        cbTipoDeArchivo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "CSV (separador por comas)", "CSV (separador por punto y comas)", "EXCEL" }));
-
-        jLabel6.setText("Indice de las columnas (fecha, concepto/referencia, débito, crédito, saldo): ");
-
-        tfColumnaFecha.setColumns(2);
-        tfColumnaFecha.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        tfColumnaFecha.setText("1");
-
-        tfColumnaConcepto.setColumns(2);
-        tfColumnaConcepto.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        tfColumnaConcepto.setText("2");
-
-        tfColumnaDebito.setColumns(2);
-        tfColumnaDebito.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        tfColumnaDebito.setText("3");
-
-        tfColumnaCredito.setColumns(2);
-        tfColumnaCredito.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        tfColumnaCredito.setText("4");
-
-        tfColumnaSaldo.setColumns(2);
-        tfColumnaSaldo.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        tfColumnaSaldo.setText("5");
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cbTipoDeArchivo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel6)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(tfColumnaFecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(tfColumnaConcepto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(tfColumnaDebito, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(tfColumnaCredito, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(tfColumnaSaldo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(tfExtractoFilePath, javax.swing.GroupLayout.PREFERRED_SIZE, 318, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton1)))
-                .addContainerGap())
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
-                    .addComponent(cbTipoDeArchivo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6)
-                    .addComponent(tfColumnaFecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(tfColumnaConcepto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(tfColumnaDebito, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(tfColumnaCredito, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(tfColumnaSaldo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 8, Short.MAX_VALUE)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                    .addComponent(jButton1)
-                    .addComponent(tfExtractoFilePath, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-        );
+        btnImprimir2.setText("Importar Extracto Bancario");
+        btnImprimir2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnImprimir2ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane2)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane1)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -351,7 +273,10 @@ public class JDConciliacionBancaria extends javax.swing.JDialog {
                                 .addGap(0, 0, Short.MAX_VALUE)
                                 .addComponent(btnImprimir)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
-                        .addComponent(btnImprimir1)))
+                        .addComponent(btnImprimir1))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnImprimir2)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -377,8 +302,8 @@ public class JDConciliacionBancaria extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(9, 9, 9)
+                .addComponent(btnImprimir2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -403,42 +328,46 @@ public class JDConciliacionBancaria extends javax.swing.JDialog {
     private void tfImporteKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfImporteKeyTyped
         SwingUtil.checkInputDigit(evt, true, 12);
     }//GEN-LAST:event_tfImporteKeyTyped
+
+    private void btnImprimir2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnImprimir2ActionPerformed
+        DlgImportarArchivoExtraBancario dlg = new DlgImportarArchivoExtraBancario(this);
+        dlg.setLocationRelativeTo(this);
+        dlg.setVisible(true);
+        if (dlg.getImportedData() != null) {
+            List<Object[]> data = dlg.getImportedData();
+            DefaultTableModel dtm = (DefaultTableModel) jTable2.getModel();
+            dtm.setRowCount(0);
+            for (Object[] objects : data) {
+                dtm.addRow(objects);
+            }
+        }
+    }//GEN-LAST:event_btnImprimir2ActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAgregar;
     private javax.swing.JButton btnImportar;
     private javax.swing.JButton btnImprimir;
     private javax.swing.JButton btnImprimir1;
+    private javax.swing.JButton btnImprimir2;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JComboBox cbBancos;
     private javax.swing.JComboBox cbCuentabancaria;
-    private javax.swing.JComboBox cbTipoDeArchivo;
     private com.toedter.calendar.JDateChooser dcConceptoFecha;
     private com.toedter.calendar.JDateChooser dcDesde;
     private com.toedter.calendar.JDateChooser dcHasta;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JRadioButton jRadioButton2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTable1;
     private javax.swing.JTable jTable2;
     private javax.swing.JRadioButton radioDebito;
-    private javax.swing.JTextField tfColumnaConcepto;
-    private javax.swing.JTextField tfColumnaCredito;
-    private javax.swing.JTextField tfColumnaDebito;
-    private javax.swing.JTextField tfColumnaFecha;
-    private javax.swing.JTextField tfColumnaSaldo;
     private javax.swing.JTextField tfConcepto;
-    private javax.swing.JTextField tfExtractoFilePath;
     private javax.swing.JTextField tfImporte;
     // End of variables declaration//GEN-END:variables
 
