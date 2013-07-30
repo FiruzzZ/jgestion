@@ -915,7 +915,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
 }//GEN-LAST:event_cbFormaPagoFocusLost
 
     private void tfDiasKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfDiasKeyTyped
-        SwingUtil.checkInputDigit(evt);
+        SwingUtil.checkInputDigit(evt, 3);
 }//GEN-LAST:event_tfDiasKeyTyped
 
     private void tfPrecioUnitarioFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfPrecioUnitarioFocusGained
@@ -1069,17 +1069,6 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
     private javax.swing.JTextField tfTotalNoGravado;
     private javax.swing.JTextField tfTotalOtrosImps;
     // End of variables declaration//GEN-END:variables
-
-    public void addActionAndKeyListener(Object o) {
-        btnAceptar.addActionListener((ActionListener) o);
-        btnCancelar.addActionListener((ActionListener) o);
-        btnFacturar.addActionListener((ActionListener) o);
-        btnCliente.addActionListener((ActionListener) o);
-        cbListaPrecio.addActionListener((ActionListener) o);
-        cbCliente.addActionListener((ActionListener) o);
-        btnBuscarRemito.addActionListener((ActionListener) o);
-        tfProductoCodigo.addKeyListener((KeyListener) o);
-    }
 
     // <editor-fold defaultstate="collapsed" desc="GETTERS">
     public JComboBox getCbProductos() {

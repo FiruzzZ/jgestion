@@ -35,7 +35,7 @@ import utilities.swing.components.ComboBoxWrapper;
  *
  * @author Administrador
  */
-public class PresupuestoController implements ActionListener, KeyListener {
+public class PresupuestoController implements ActionListener {
 
     private static final Logger LOG = Logger.getLogger(PresupuestoController.class.getName());
     public static final String CLASS_NAME = "Presupuesto";
@@ -103,18 +103,6 @@ public class PresupuestoController implements ActionListener, KeyListener {
             if (!MODO_VISTA) {
             }
         }
-    }
-
-    public void keyTyped(KeyEvent e) {
-        facturaVentaController.keyTyped(e);
-    }
-
-    public void keyReleased(KeyEvent e) {
-        facturaVentaController.keyReleased(e);
-    }
-
-    @Deprecated
-    public void keyPressed(KeyEvent e) {
     }
 
     /**

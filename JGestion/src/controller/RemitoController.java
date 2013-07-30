@@ -39,7 +39,7 @@ import utilities.swing.components.ComboBoxWrapper;
  *
  * @author FiruzzZ
  */
-public class RemitoController implements ActionListener, KeyListener {
+public class RemitoController implements ActionListener {
 
     public static final String CLASS_NAME = Remito.class.getSimpleName();
     private final FacturaVentaController facturaVentaController;
@@ -242,18 +242,6 @@ public class RemitoController implements ActionListener, KeyListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         //todo las demás acciones son manejadas (delegadas) -> FacturaVentaJpaController
-    }
-
-    public void keyTyped(KeyEvent e) {
-        facturaVentaController.keyTyped(e);
-    }
-
-    public void keyReleased(KeyEvent e) {
-        facturaVentaController.keyReleased(e);
-    }
-
-    @Deprecated
-    public void keyPressed(KeyEvent e) {
     }
 
     @SuppressWarnings("unchecked")
