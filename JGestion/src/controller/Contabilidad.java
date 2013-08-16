@@ -3,44 +3,11 @@ package controller;
 import controller.exceptions.DatabaseErrorException;
 import controller.exceptions.MessageException;
 import controller.exceptions.MissingReportException;
-import entity.Caja;
-import entity.ChequePropio;
-import entity.ChequeTerceros;
-import entity.Cliente;
-import entity.Cuenta;
-import entity.DetalleCajaMovimientos;
-import entity.DetalleCompra;
-import entity.DetalleListaPrecios;
-import entity.DetalleVenta;
-import entity.FacturaCompra;
-import entity.FacturaCompra_;
-import entity.FacturaVenta;
-import entity.FacturaVenta_;
-import entity.ListaPrecios;
-import entity.Marca;
-import entity.NotaCredito;
-import entity.Producto;
-import entity.Proveedor;
-import entity.Recibo;
-import entity.Rubro;
-import entity.SubCuenta;
-import entity.Sucursal;
-import entity.UnidadDeNegocio;
+import entity.*;
 import generics.GenericBeanCollection;
 import java.text.DecimalFormat;
 import utilities.general.UTIL;
-import gui.JDBalance;
-import gui.JDBuscador;
-import gui.JDBuscadorReRe;
-import gui.JDInformeResultados;
-import gui.JDInformeUnidadesDeNegocios;
-import gui.JDResumenGeneralCtaCte;
-import gui.JFP;
-import gui.PanelBalanceComprasVentas;
-import gui.PanelBalanceGeneral;
-import gui.PanelDetalleFacturacion;
-import gui.PanelInformeFlujoVentas;
-import gui.PanelProductosCostoVenta;
+import gui.*;
 import java.awt.Desktop;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
@@ -78,6 +45,7 @@ import jpa.controller.VendedorJpaController;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import utilities.general.TableExcelExporter;
 import utilities.swing.components.ComboBoxWrapper;
 import utilities.swing.components.FormatRenderer;
 import utilities.swing.components.NumberRenderer;
@@ -388,8 +356,8 @@ public class Contabilidad {
 
     private void cargarTablaBalanceCompraVenta() throws DatabaseErrorException, MessageException {
         int index = panelBalanceComprasVentas.getCbComprasVentas().getSelectedIndex();
-        List<Object[]> dataCompra = new ArrayList<Object[]>(0);
-        List<Object[]> dataVenta = new ArrayList<Object[]>(0);
+        List<Object[]> dataCompra = new ArrayList<>(0);
+        List<Object[]> dataVenta = new ArrayList<>(0);
         if (index == 0 || index == 1) {
             String query = armarQueryBalanceComprasVentas("compra", "proveedor");
             dataCompra = getFacturaCompraList((List<FacturaCompra>) DAO.getNativeQueryResultList(query, FacturaCompra.class));
@@ -463,7 +431,7 @@ public class Contabilidad {
 
     private List<Object[]> getFacturaCompraList(List<FacturaCompra> l) throws MessageException {
         String errores = "";
-        List<Object[]> data = new ArrayList<Object[]>(l.size());
+        List<Object[]> data = new ArrayList<>(l.size());
         Double totalIngresos, efectivo = null, cccpc = null;
         totalIngresos = 0.0;
         Double entregado;
@@ -997,8 +965,8 @@ public class Contabilidad {
             queryFactuCompra.append(" AND o.proveedor = ").append(((ComboBoxWrapper<Proveedor>) buscadorReRe.getCbClieProv().getSelectedItem()).getId());
         }
 
-        String sql =
-                "SELECT com.* FROM ("
+        String sql
+                = "SELECT com.* FROM ("
                 //                + " SELECT "
                 //                + "'F' || o.tipo || to_char(o.numero, '0000-00000000') as comprobante, "
                 //                + " o.fecha_compra as fecha, proveedor.nombre, proveedor.cuit, "
@@ -1033,7 +1001,7 @@ public class Contabilidad {
     }
 
     private List<FacturaVenta> getComprobantesVenta() throws MessageException, DatabaseErrorException {
-        StringBuilder queryWhereFactuVenta = new StringBuilder(300).append(" o.tipo <> 'I'");
+        StringBuilder queryWhereFactuVenta = new StringBuilder(300).append(" o.").append(FacturaVenta_.tipo.getName()).append(" <> 'I'");
         StringBuilder queryWhereNotaCredito = new StringBuilder(300).append(" o.id is not null");
 
         long numero;

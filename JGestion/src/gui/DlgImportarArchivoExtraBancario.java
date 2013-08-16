@@ -2,8 +2,8 @@ package gui;
 
 import controller.exceptions.MessageException;
 import java.awt.Window;
-import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -14,13 +14,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import org.apache.log4j.Logger;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.supercsv.io.CsvListReader;
 import org.supercsv.prefs.CsvPreference;
 
@@ -110,7 +113,7 @@ public class DlgImportarArchivoExtraBancario extends javax.swing.JDialog {
             }
         });
 
-        cbTipoDeArchivo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "CSV (separador por comas)", "CSV (separador por punto y comas)", "Excel" }));
+        cbTipoDeArchivo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "CSV separador por comas \",\"", "CSV separador por punto y comas \";\"", "Excel" }));
 
         jLabel5.setText("Tipo de archivo a importar");
 
@@ -285,8 +288,7 @@ public class DlgImportarArchivoExtraBancario extends javax.swing.JDialog {
             //</editor-fold>
 
             if (cbTipoDeArchivo.getSelectedIndex() == 2) {
-                throw new MessageException("Opción de importación no implementada aún");
-//                leerExcel();
+                leerExcel();
             } else {
                 leerCSV(cbTipoDeArchivo.getSelectedIndex() == 0 ? ',' : ';');
             }
@@ -297,7 +299,7 @@ public class DlgImportarArchivoExtraBancario extends javax.swing.JDialog {
             JOptionPane.showMessageDialog(this, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(this, "Ocurrió un error al intentar acceder al archivo de extracto bancario", "IOException", JOptionPane.ERROR_MESSAGE);
-            Logger.getLogger(DlgImportarArchivoExtraBancario.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DlgImportarArchivoExtraBancario.class.getName()).error(ex, ex);
         }
     }//GEN-LAST:event_btnAceptarActionPerformed
 
@@ -379,36 +381,73 @@ public class DlgImportarArchivoExtraBancario extends javax.swing.JDialog {
         return Collections.unmodifiableList(data);
     }
 
-    private void leerExcel() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private void leerExcel() throws FileNotFoundException, IOException, MessageException {
+        try (FileInputStream fileInputStream = new FileInputStream(file)) {
+            SimpleDateFormat sdf = null;
+            int rowIndex = 0;
+            data = new ArrayList<>(100);
+            XSSFWorkbook workbook = new XSSFWorkbook(fileInputStream);
+            //Get first sheet from the workbook
+            XSSFSheet sheet = workbook.getSheetAt(0);
+            //Get iterator to all the rows in current sheet
+            Iterator<Row> rowIterator = sheet.iterator();
+            boolean noFormatterNeeded = false;
+            while (rowIterator.hasNext()) {
+                Row row = rowIterator.next();
+                //For each row, iterate through each columns
+                Iterator<Cell> cellIterator = row.cellIterator();
+                Date fecha;
+                String concepto;
+                BigDecimal debito, credito, saldo = null;
+                rowIndex++;
+                int columnIndex = 0;
+                while (cellIterator.hasNext()) {
+                    columnIndex++;
+                    Cell cell = cellIterator.next();
+                    if (columnIndex == fechaIndex) {
+                        if (sdf == null && !noFormatterNeeded) {
+                            try {
+                                try {
+                                    cell.getDateCellValue();
+                                    noFormatterNeeded = true;
+                                } catch (IllegalStateException e) {
+                                    String ss = cell.getStringCellValue();
+                                    sdf = determinateDateFormat(ss);
+                                }
+                            } catch (NumberFormatException | ParseException ex) {
+                                throw new MessageException("No fue posible determinar el formato de la columna Fecha (índice " + fechaIndex + ")"
+                                        + "\nSI NO ES un formato de fecha válido de Excel, debe tener alguno de los siguientes formato:"
+                                        + "\n31/09/1999, 31-09-1999, 31 AGO 1999"
+                                        + "\nEl caracter que separa días, meses y años debe ser: barra (/), guión (-) o un espacio");
+                            }
+                        }
+                        try {
+                            fecha = (sdf == null ? cell.getDateCellValue() : sdf.parse(cell.getStringCellValue()));
+                        } catch (ParseException ex) {
+                            throw new MessageException("Error intentando leer la columna fecha:\nFila=" + rowIndex);
+                        }
+                    }
+
+                }
+            }
+        }
     }
 
     private void leerCSV(char separador) throws FileNotFoundException, MessageException, IOException {
-        Scanner scanner = new Scanner(new BufferedReader(new FileReader(file)));
-        CsvListReader csv = new CsvListReader(new FileReader(file), CsvPreference.STANDARD_PREFERENCE);
-        Boolean skip1st = checkSkipFirstRow.isSelected();
+        CsvListReader csv = new CsvListReader(new FileReader(file), separador == ',' ? CsvPreference.STANDARD_PREFERENCE : CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
         SimpleDateFormat sdf = null;
-        int row = 0;
+        int rowIndex = 0;
         data = new ArrayList<>(100);
-        String[] header = csv.getHeader(checkSkipFirstRow.isSelected());
-        System.out.println("Headers: " + Arrays.toString(header));
+        if (checkSkipFirstRow.isSelected()) {
+            String[] header = csv.getHeader(checkSkipFirstRow.isSelected());
+            System.out.println("Headers: " + Arrays.toString(header));
+        }
         List<String> read = csv.read();
-//        while (scanner.hasNext()) {
         while (read != null) {
             Date fecha;
             String concepto;
             BigDecimal debito, credito, saldo = null;
-            row++;
-//            String rowData = scanner.next();
-//            if (skip1st != null && skip1st) {
-//                System.out.println("skipped row: " + rowData);
-//                rowData = scanner.next();
-//                skip1st = null;
-//                row++;
-//            }
-//            String[] split = rowData.split(separador + "");
-//            String[] split =             read.toArray(new String[read.size()] );
-            System.out.println(row + ": " + Arrays.toString(read.toArray()));
+            rowIndex++;
             if (sdf == null) {
                 try {
                     String ss = read.get(fechaIndex - 1).replaceAll(" ", "/").replaceAll("-", "/");
@@ -424,7 +463,7 @@ public class DlgImportarArchivoExtraBancario extends javax.swing.JDialog {
             try {
                 fecha = sdf.parse(read.get(fechaIndex - 1).replaceAll(" ", "/").replaceAll("-", "/"));
             } catch (ParseException ex) {
-                throw new MessageException("Error intentando leer la columna fecha:\nFila=" + row + "\nvalor=" + read.get(fechaIndex - 1));
+                throw new MessageException("Error intentando leer la columna fecha:\nFila=" + rowIndex + "\nvalor=" + read.get(fechaIndex - 1));
             }
             try {
                 concepto = read.get(conceptoIndex - 1);
@@ -433,9 +472,16 @@ public class DlgImportarArchivoExtraBancario extends javax.swing.JDialog {
                 if (saldoIndex != -1) {
                     saldo = new BigDecimal(read.get(saldoIndex - 1).replaceAll(",", ""));
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new MessageException("Error intentando leer valores de la fila=" + row + "\nvalor=" + Arrays.toString(read.toArray()));
+            } catch (IndexOutOfBoundsException ex) {
+                Logger.getLogger(DlgImportarArchivoExtraBancario.class.getName()).error(ex, ex);
+                throw new MessageException("Error intentando leer valores de la fila N° " + rowIndex
+                        + "\nvalor=" + Arrays.toString(read.toArray())
+                        + "\nEsto puede ser causado porque el formato del archivo no coincide con los parámetros especificados."
+                        + "\nEj: Si el archivo tiene los valores separador por comas (,) y se seleccionó la opción punto y comas (;)");
+            } catch (Exception ex) {
+                Logger.getLogger(DlgImportarArchivoExtraBancario.class.getName()).error(ex, ex);
+                throw new MessageException("Error intentando leer valores de la fila N° " + rowIndex
+                        + "\nvalor=" + Arrays.toString(read.toArray()));
             }
             data.add(new Object[]{fecha, concepto, debito, credito, saldo});
             read = csv.read();

@@ -18,6 +18,7 @@ import entity.ChequeTerceros;
 import entity.ChequeTercerosEntrega;
 import entity.ChequeTercerosEntregaDetalle;
 import entity.Cliente;
+import entity.CuentabancariaMovimientos;
 import entity.DetalleCajaMovimientos;
 import entity.Usuario;
 import entity.enums.ChequeEstado;
@@ -49,6 +50,7 @@ import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
 import jgestion.JGestionUtils;
 import jpa.controller.ChequeTercerosJpaController;
+import jpa.controller.CuentabancariaMovimientosJpaController;
 import jpa.controller.UsuarioJpaController;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
@@ -67,12 +69,12 @@ import utilities.swing.components.NumberRenderer;
  */
 public class ChequeTercerosController implements ActionListener {
 
-    private static Logger LOG = Logger.getLogger(ChequePropioController.class);
+    private static final Logger LOG = Logger.getLogger(ChequePropioController.class);
     public final static int MAX_LENGHT_DIGITS_QUANTITY = 20;
     private ChequeTerceros EL_OBJECT;
     private JDABM abm;
     private PanelABMCheques panelABM;
-    private ChequeTercerosJpaController jpaController;
+    private final ChequeTercerosJpaController jpaController = new ChequeTercerosJpaController();
     //exclusively related to the GUI
     private JDChequesManager jdChequeManager;
     //Este se pone en el comboBox
@@ -82,13 +84,11 @@ public class ChequeTercerosController implements ActionListener {
     private PanelEntregaTerceros panelEntregaTerceros;
 
     public ChequeTercerosController() {
-        jpaController = new ChequeTercerosJpaController();
     }
 
     private ChequeTerceros initABMReemplazo(Window owner, ChequeTerceros toReplaced) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.TESORERIA);
         initPanelABM(false, false);
-//        setPanel(toReplaced);
         panelABM.getTfImporte().setText(UTIL.PRECIO_CON_PUNTO.format(toReplaced.getImporte()));
         panelABM.getTaObservacion().setText("Reemplazo de: " + toReplaced.getBanco().getNombre() + ", N°" + toReplaced.getNumero());
         panelABM.setPersistible(true); // <-- OJO ACA!!!
@@ -314,30 +314,44 @@ public class ChequeTercerosController implements ActionListener {
                         if (row > -1) {
                             ChequeTerceros cheque = jpaController.find((Integer) jdChequeManager.getjTable1().getModel().getValueAt(row, 0));
                             if (cheque.getChequeEstado().equals(ChequeEstado.CARTERA)) {
-                                new CuentabancariaController().initDepositoUI(cheque);
-                            } else {
                                 JOptionPane.showMessageDialog(jdChequeManager, "Solo los cheques en " + ChequeEstado.CARTERA + " pueden ser depositados", "Error", JOptionPane.WARNING_MESSAGE);
                             }
+                            new CuentabancariaController().initDepositoUI(cheque);
                             armarQuery(false);
                         }
                     } else if (boton.equals(jdChequeManager.getBtnReemplazar())) {
                         int row = jdChequeManager.getjTable1().getSelectedRow();
                         if (row > -1) {
                             ChequeTerceros toReplace = jpaController.find((Integer) jdChequeManager.getjTable1().getModel().getValueAt(row, 0));
-                            if (toReplace.getChequeEstado().equals(ChequeEstado.CARTERA)) {
-                                ChequeTerceros reemplazo = initABMReemplazo(jdChequeManager, toReplace);
-                                if (reemplazo != null) {
-                                    toReplace.setEstado(ChequeEstado.REEMPLAZADO.getId());
-                                    toReplace.setObservacion(toReplace.getObservacion() + " Reemplazado por: " + reemplazo.getBanco().getNombre() + " N° " + reemplazo.getNumero());
-                                    if (toReplace.getObservacion().length() > 300) {
-                                        toReplace.setObservacion(toReplace.getObservacion().substring(0, 300));
-                                    }
-                                    jpaController.merge(toReplace);
-                                }
-                                armarQuery(false);
-                            } else {
-                                JOptionPane.showMessageDialog(jdChequeManager, "Solo los cheques en cartera pueden ser depositados", "Error", JOptionPane.WARNING_MESSAGE);
+                            if (toReplace.getChequeEstado().equals(ChequeEstado.REEMPLAZADO)) {
+                                throw new MessageException("El cheque ya fue reemplazado, en las observaciones de este se encuentra la información del reemplazo");
                             }
+                            boolean eliminarCBM = false;
+                            if (toReplace.getChequeEstado().equals(ChequeEstado.DEPOSITADO)) {
+                                if (JOptionPane.YES_OPTION != JOptionPane.showConfirmDialog(jdChequeManager,
+                                        "La modificación del estado de un cheque " + ChequeEstado.DEPOSITADO + " implica "
+                                        + "\nla eliminación del registro de movimiento de cuenta bancaria asociado a este."
+                                        + "\nConfirmar para continuar..",
+                                        "Reemplazo de cheque depositado", JOptionPane.YES_NO_OPTION)) {
+                                    return;
+                                }
+                                eliminarCBM = true;
+                            }
+                            ChequeTerceros reemplazo = initABMReemplazo(jdChequeManager, toReplace);
+                            if (reemplazo != null) {
+                                toReplace.setEstado(ChequeEstado.REEMPLAZADO.getId());
+                                toReplace.setObservacion(toReplace.getObservacion() + " Reemplazado por: " + reemplazo.getBanco().getNombre() + " N° " + reemplazo.getNumero());
+                                if (toReplace.getObservacion().length() > 300) {
+                                    toReplace.setObservacion(toReplace.getObservacion().substring(0, 300));
+                                }
+                                jpaController.merge(toReplace);
+                                if (eliminarCBM) {
+                                    CuentabancariaMovimientosJpaController cmjc = new CuentabancariaMovimientosJpaController();
+                                    CuentabancariaMovimientos cbm = cmjc.findBy(toReplace);
+                                    cmjc.remove(cbm);
+                                }
+                            }
+                            armarQuery(false);
                         }
                     } else if (boton.equals(jdChequeManager.getBtnImprimir())) {
                         try {
@@ -349,6 +363,8 @@ public class ChequeTercerosController implements ActionListener {
                 }
                 //</editor-fold>
             }// </editor-fold>
+        } catch (MessageException ex) {
+            ex.displayMessage(null);
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, ex.getLocalizedMessage(), "Error on actionPerformed", JOptionPane.ERROR_MESSAGE);
             LOG.error(ex, ex);

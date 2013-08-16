@@ -204,9 +204,9 @@ public class CtacteClienteController implements ActionListener {
                 + " ORDER BY o.factura.cliente.nombre",
                 CtacteCliente.class).getResultList();
         if (l.isEmpty()) {
-            return new ArrayList<Object[]>(0);
+            return new ArrayList<>(0);
         }
-        List<Object[]> data = new ArrayList<Object[]>();
+        List<Object[]> data = new ArrayList<>();
         BigDecimal importeCCC = BigDecimal.ZERO;
         Cliente c = l.get(0).getFactura().getCliente();
         for (CtacteCliente ccc : l) {
@@ -411,9 +411,9 @@ public class CtacteClienteController implements ActionListener {
      */
     private void cargarComboBoxRecibosDeCtaCte(CtacteCliente ctacteCliente) {
         List<Recibo> recibosList = new ReciboController().findRecibosByFactura(ctacteCliente.getFactura());
-        List<ComboBoxWrapper<Recibo>> wrapped = new ArrayList<ComboBoxWrapper<Recibo>>(recibosList.size());
+        List<ComboBoxWrapper<Recibo>> wrapped = new ArrayList<>(recibosList.size());
         for (Recibo recibo : recibosList) {
-            wrapped.add(new ComboBoxWrapper<Recibo>(recibo, recibo.getId(), JGestionUtils.getNumeracion(recibo, true)));
+            wrapped.add(new ComboBoxWrapper<>(recibo, recibo.getId(), JGestionUtils.getNumeracion(recibo, true)));
         }
         UTIL.loadComboBox(resumenCtaCtes.getCbReRes(), wrapped, false);
         setDatosReciboSelected();
@@ -643,7 +643,7 @@ public class CtacteClienteController implements ActionListener {
     JDialog getResumenCtaCte(Window owner, boolean modal, Cliente cliente) throws MessageException, MissingReportException, JRException {
         getResumenCtaCte(owner, modal);
         if (cliente != null) {
-            UTIL.setSelectedItem(resumenCtaCtes.getCbClieProv(), new ComboBoxWrapper<Cliente>(cliente, cliente.getId(), cliente.getNombre()));
+            UTIL.setSelectedItem(resumenCtaCtes.getCbClieProv(), new ComboBoxWrapper<>(cliente, cliente.getId(), cliente.getNombre()));
             armarQuery(false);
         }
         return resumenCtaCtes;

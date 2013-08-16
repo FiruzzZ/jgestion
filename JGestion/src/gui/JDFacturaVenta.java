@@ -901,7 +901,6 @@ public class JDFacturaVenta extends javax.swing.JDialog {
 
 //        boolean habilitarCaja = (formaPago.equals(Valores.FormaPago.CONTADO)
 //                || formaPago.equals(Valores.FormaPago.CONTADO_CHEQUE));
-
             //deshabilita la selección de caja
             //ya que cuando es CtaCte o Cheque, no hay movimiento de Caja
             cbCaja.setEnabled(!habilitarDias);
@@ -1467,6 +1466,7 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
      */
     public void setViewMode(boolean viewMode) {
         this.viewMode = viewMode;
+        editMode = !viewMode;
     }
 
     /**
@@ -1488,6 +1488,7 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
 
     public void setEditMode(boolean editMode) {
         this.editMode = editMode;
+        viewMode = !editMode;
     }
 
     public void setVisibleListaPrecio(boolean b) {
