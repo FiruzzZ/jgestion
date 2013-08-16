@@ -53,14 +53,13 @@ public class ReciboController implements ActionListener, FocusListener {
     private Date selectedFechaReRe = null;
     private JDBuscadorReRe buscador;
     private Recibo selectedRecibo;
-    private ReciboJpaController jpaController;
+    private final ReciboJpaController jpaController = new ReciboJpaController();
     private boolean unlockedNumeracion = false;
     private boolean viewMode;
     private boolean toConciliar = false;
     private boolean conciliando = false;
 
     public ReciboController() {
-        jpaController = new ReciboJpaController();
     }
 
     /**
@@ -471,11 +470,11 @@ public class ReciboController implements ActionListener, FocusListener {
                 acumulativo = acumulativo.add(notaCredito.getImporte());
             }
             dtm.addRow(new Object[]{
-                        JGestionUtils.getNumeracion(notaCredito, true),
-                        UTIL.DATE_FORMAT.format(notaCredito.getFechaNotaCredito()),
-                        notaCredito.getImporte(),
-                        notaCredito.getRecibo() == null ? "" : JGestionUtils.getNumeracion(notaCredito.getRecibo(), true),
-                        acumulativo});
+                JGestionUtils.getNumeracion(notaCredito, true),
+                UTIL.DATE_FORMAT.format(notaCredito.getFechaNotaCredito()),
+                notaCredito.getImporte(),
+                notaCredito.getRecibo() == null ? "" : JGestionUtils.getNumeracion(notaCredito.getRecibo(), true),
+                acumulativo});
         }
         JDialogTable jd = new JDialogTable(jdReRe, "Detalle de crédito: " + cliente.getNombre(), true, tabla);
         jd.setSize(600, 400);
@@ -684,11 +683,11 @@ public class ReciboController implements ActionListener, FocusListener {
             }
         }
         jdReRe.getDtmAPagar().addRow(new Object[]{
-                    selectedCtaCte != null ? facturaToAddToDetail : selectedNotaDebito,
-                    selectedCtaCte != null ? JGestionUtils.getNumeracion(facturaToAddToDetail) : JGestionUtils.getNumeracion(selectedNotaDebito),
-                    null,
-                    entrega$
-                });
+            selectedCtaCte != null ? facturaToAddToDetail : selectedNotaDebito,
+            selectedCtaCte != null ? JGestionUtils.getNumeracion(facturaToAddToDetail) : JGestionUtils.getNumeracion(selectedNotaDebito),
+            null,
+            entrega$
+        });
         updateTotales();
     }
 
@@ -977,14 +976,14 @@ public class ReciboController implements ActionListener, FocusListener {
         }
         for (Recibo o : l) {
             dtm.addRow(new Object[]{
-                        o.getId(),
-                        JGestionUtils.getNumeracion(o, true),
-                        o.getMonto(),
-                        o.getFechaRecibo(),
-                        o.getCaja().getNombre(),
-                        o.getUsuario().getNick(),
-                        o.getFechaCarga()
-                    });
+                o.getId(),
+                JGestionUtils.getNumeracion(o, true),
+                o.getMonto(),
+                o.getFechaRecibo(),
+                o.getCaja().getNombre(),
+                o.getUsuario().getNick(),
+                o.getFechaCarga()
+            });
         }
     }
 
@@ -994,11 +993,11 @@ public class ReciboController implements ActionListener, FocusListener {
         dtm.setRowCount(0);
         for (DetalleRecibo r : detalleReciboList) {
             dtm.addRow(new Object[]{
-                        r.getFacturaVenta() != null ? r.getFacturaVenta() : r.getNotaDebito(),
-                        r.getFacturaVenta() != null ? JGestionUtils.getNumeracion(r.getFacturaVenta()) : JGestionUtils.getNumeracion(r.getNotaDebito()),
-                        null,
-                        r.getMontoEntrega()
-                    });
+                r.getFacturaVenta() != null ? r.getFacturaVenta() : r.getNotaDebito(),
+                r.getFacturaVenta() != null ? JGestionUtils.getNumeracion(r.getFacturaVenta()) : JGestionUtils.getNumeracion(r.getNotaDebito()),
+                null,
+                r.getMontoEntrega()
+            });
         }
         loadPagos(recibo);
         dtm = jdReRe.getDtmPagos();

@@ -26,7 +26,6 @@ import javax.persistence.NoResultException;
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.text.JTextComponent;
@@ -71,19 +70,17 @@ public class FacturaVentaController {
     private Producto selectedProducto;
     private ListaPrecios selectedListaPrecios;
     private JDBuscadorReRe buscador;
-    private boolean viewMode = false;
     private Remito remitoToFacturar;
     /**
      * Solo usada para reasignación de Caja, cuando se anula una Factura.
      */
     private CajaMovimientos cajaMovToAsentarAnulacion;
     private HistorialOfertas productoEnOferta;
-    private static Logger LOG = Logger.getLogger(FacturaVentaController.class);
+    private static final Logger LOG = Logger.getLogger(FacturaVentaController.class);
     private boolean unlockedNumeracion = false;
-    private FacturaVentaJpaController jpaController;
+    private final FacturaVentaJpaController jpaController = new FacturaVentaJpaController();
 
     public FacturaVentaController() {
-        jpaController = new FacturaVentaJpaController();
     }
 
     public FacturaVenta find(Integer id) {
@@ -613,9 +610,9 @@ public class FacturaVentaController {
     }
 
     /**
-     * Actualiza los campos de montos de
-     * <code>gui.JD.FacturaVenta</code> según los items en el detalle. Gravado
-     * (SubTotal), Iva10, Iva21, Descuentos, Total y Cambio
+     * Actualiza los campos de montos de <code>gui.JD.FacturaVenta</code> según
+     * los items en el detalle. Gravado (SubTotal), Iva10, Iva21, Descuentos,
+     * Total y Cambio
      *
      * @param contenedor
      */
@@ -630,30 +627,30 @@ public class FacturaVentaController {
         BigDecimal subTotal = BigDecimal.ZERO;
         DefaultTableModel dtm = contenedor.getDtm();
         for (int index = 0; index < dtm.getRowCount(); index++) {
-            BigDecimal cantidad = new BigDecimal(dtm.getValueAt(index, 3).toString());
-            BigDecimal precioUnitario = new BigDecimal(dtm.getValueAt(index, 4).toString());
             BigDecimal alicuota = new BigDecimal(dtm.getValueAt(index, 0).toString());
+            BigDecimal cantidad = new BigDecimal(dtm.getValueAt(index, 3).toString());
+            BigDecimal precioUnitarioSinIVA = (BigDecimal) dtm.getValueAt(index, 4);
 
             // Gravado (precioSinIVA + cantidad)
             if (alicuota.intValue() > 0) {
-                gravado = gravado.add(precioUnitario.multiply(cantidad));
-                BigDecimal precioUnitarioConIva = new BigDecimal(dtm.getValueAt(index, 5).toString());
+                gravado = gravado.add(precioUnitarioSinIVA.multiply(cantidad));
+                BigDecimal precioUnitarioConIva = (BigDecimal) dtm.getValueAt(index, 5);
                 redondeoTotal = redondeoTotal.add(precioUnitarioConIva.multiply(cantidad));
             }
             /**
              * Se calcula sin aplicar ningún redondeo (se trabaja posiblemente
              * mas de 2 decimales).
              */
-            BigDecimal sinRedondeo = precioUnitario.multiply(cantidad).multiply(alicuota.divide(new BigDecimal("100")));
+            BigDecimal sinRedondeo = precioUnitarioSinIVA.multiply(cantidad).multiply(alicuota.divide(new BigDecimal("100")));
             if (alicuota.intValue() == 0) {
-                noGravado = noGravado.add(cantidad.multiply(precioUnitario));
+                noGravado = noGravado.add(cantidad.multiply(precioUnitarioSinIVA));
 //                gravado = gravado.subtract(precioUnitario.multiply(cantidad));
             } else if (alicuota.toString().equalsIgnoreCase("10.5")) {
-                iva10 = iva10.add(cantidad.multiply(precioUnitario).multiply((alicuota.divide(new BigDecimal("100")))));
+                iva10 = iva10.add(cantidad.multiply(precioUnitarioSinIVA).multiply((alicuota.divide(new BigDecimal("100")))));
             } else if (alicuota.intValue() == 21) {
-                iva21 = iva21.add(cantidad.multiply(precioUnitario).multiply((alicuota.divide(new BigDecimal("100")))));
+                iva21 = iva21.add(cantidad.multiply(precioUnitarioSinIVA).multiply((alicuota.divide(new BigDecimal("100")))));
             } else if (alicuota.compareTo(BigDecimal.ZERO) > 0) {
-                otrosImps = otrosImps.add(cantidad.multiply(precioUnitario).multiply((alicuota.divide(new BigDecimal("100")))));
+                otrosImps = otrosImps.add(cantidad.multiply(precioUnitarioSinIVA).multiply((alicuota.divide(new BigDecimal("100")))));
             } else {
                 throw new IllegalArgumentException("IVA no determinado");
             }
@@ -674,7 +671,7 @@ public class FacturaVentaController {
         contenedor.setTfTotalOtrosImps(UTIL.DECIMAL_FORMAT.format(otrosImps));
         redondeoTotal = gravado.add(iva10).add(iva21).add(otrosImps).subtract(redondeoTotal);
         contenedor.getTfDiferenciaRedondeo().setText(UTIL.DECIMAL_FORMAT.format(redondeoTotal));
-        contenedor.setTfTotal(UTIL.DECIMAL_FORMAT.format(subTotal));
+        contenedor.setTfTotal(UTIL.DECIMAL_FORMAT.format(subTotal.add(redondeoTotal)));
         LOG.debug("Gravado:" + gravado + ", Desc.:" + desc + ", IVA105:" + iva10 + ", IVA21:" + iva21 + ", OtrosImp.:" + otrosImps + ", Redondeo:" + redondeoTotal);
     }
 
@@ -708,11 +705,14 @@ public class FacturaVentaController {
         return total;
     }
 
-    private void checkConstraints() throws MessageException {
+    private void checkConstraints(boolean conFactura) throws MessageException {
+        if (!conFactura && unlockedNumeracion) {
+            throw new MessageException("Para registrar la carga de una Factura Venta Antigua debe utilizar el botón \"Facturar\"."
+                    + "\nNota: No se pueden generar Movimientos Internos antiguos.");
+        }
         if (jdFactura.getDcFechaFactura() == null) {
             throw new MessageException("Fecha de factura no válida");
         }
-
         try {
             Sucursal s = getSelectedSucursalFromJDFacturaVenta();
         } catch (ClassCastException e) {
@@ -778,7 +778,7 @@ public class FacturaVentaController {
                 if (oldFactura != null) {
                     throw new MessageException("Ya existe un registro de Factura Venta N° " + JGestionUtils.getNumeracion(oldFactura));
                 }
-            } catch (NumberFormatException numberFormatException) {
+            } catch (NumberFormatException ex) {
                 throw new MessageException("Número de factura no válido, ingrese solo dígitos");
             }
         }
@@ -831,7 +831,7 @@ public class FacturaVentaController {
         String ob = jdFactura.getTfObservacion().getText().trim();
         newFacturaVenta.setObservacion(ob.isEmpty() ? null : ob);
         if (facturar) {
-            newFacturaVenta.setMovimientoInterno(0);
+//            newFacturaVenta.setMovimientoInterno(0);
             newFacturaVenta.setTipo(jdFactura.getCbFacturaTipo().getSelectedItem().toString().charAt(0));
             if (unlockedNumeracion) {
                 newFacturaVenta.setNumero(Integer.valueOf(jdFactura.getTfFacturaOcteto()));
@@ -908,9 +908,8 @@ public class FacturaVentaController {
     }
 
     /**
-     * Agrega a
-     * <code>numero</code> tantos 0 (ceros) a la izq hasta completar los 12
-     * dígitos (#### ########) y setea en la GUI {@link JDFacturaVenta}
+     * Agrega a <code>numero</code> tantos 0 (ceros) a la izq hasta completar
+     * los 12 dígitos (#### ########) y setea en la GUI {@link JDFacturaVenta}
      *
      * @param numero
      */
@@ -925,12 +924,12 @@ public class FacturaVentaController {
         UTIL.loadComboBox(jdFactura.getCbProductos(), p.findWrappedProductoToCombo(true), false);
     }
 
-    public void initBuscador(JFrame frame, final boolean modal, final boolean toAnular) throws MessageException {
+    public void initBuscador(Window owner, final boolean modal, final boolean toAnular) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.VENTA);
         if (toAnular) {
             UsuarioController.checkPermiso(PermisosController.PermisoDe.ANULAR_COMPROBANTES);
         }
-        buscador = new JDBuscadorReRe(frame, "Buscador - Facturas venta", modal, "Cliente", "Nº Factura");
+        buscador = new JDBuscadorReRe(owner, "Buscador - Facturas venta", modal, "Cliente", "Nº Factura");
         buscador.setToFacturaVenta();
         ActionListenerManager.setUnidadDeNegocioSucursalActionListener(buscador.getCbUnidadDeNegocio(), true, buscador.getCbSucursal(), true, true);
         ActionListenerManager.setCuentasIngresosSubcuentaActionListener(buscador.getCbCuenta(), true, buscador.getCbSubCuenta(), true, true);
@@ -1059,14 +1058,12 @@ public class FacturaVentaController {
                 }
             }
         });
-        viewMode = true;
-//        buscador.setListeners(this);
-        buscador.setLocationRelativeTo(frame);
+        buscador.setLocationRelativeTo(owner);
         buscador.setVisible(true);
     }
 
     private void doReportFacturas(String excelFilePath) throws MissingReportException, JRException, FileNotFoundException, IOException {
-        List<GenericBeanCollection> data = new ArrayList<GenericBeanCollection>(buscador.getjTable1().getRowCount());
+        List<GenericBeanCollection> data = new ArrayList<>(buscador.getjTable1().getRowCount());
         DefaultTableModel dtm = (DefaultTableModel) buscador.getjTable1().getModel();
         for (int row = 0; row < dtm.getRowCount(); row++) {
 
@@ -1113,9 +1110,8 @@ public class FacturaVentaController {
             } else {
                 setAndPersist(facturar);
             }
-        } catch (MessageException | JRException ex) {
+        } catch (MessageException ex) {
             jdFactura.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 0);
-            LOG.error(ex, ex);
         } catch (Exception ex) {
             jdFactura.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 0);
             LOG.error(ex, ex);
@@ -1152,13 +1148,13 @@ public class FacturaVentaController {
         UTIL.setSelectedItem(jdFactura.getCbCliente(), EL_OBJECT.getCliente());
         Sucursal s = EL_OBJECT.getSucursal();
         UTIL.setSelectedItem(jdFactura.getCbUnidadDeNegocio(), EL_OBJECT.getUnidadDeNegocio().getNombre());
-        UTIL.setSelectedItem(jdFactura.getCbSucursal(), new ComboBoxWrapper<Sucursal>(s, s.getId(), s.getNombre()));
+        UTIL.setSelectedItem(jdFactura.getCbSucursal(), new ComboBoxWrapper<>(s, s.getId(), s.getNombre()));
         JGestionUtils.cargarComboTiposFacturas(jdFactura.getCbFacturaTipo(), EL_OBJECT.getCliente());
         if (EL_OBJECT.getRemito() != null) {
             jdFactura.setTfRemito(JGestionUtils.getNumeracion(EL_OBJECT.getRemito(), false));
         }
         if (EL_OBJECT.getVendedor() != null) {
-            UTIL.setSelectedItem(jdFactura.getCbVendedor(), new ComboBoxWrapper<Vendedor>(EL_OBJECT.getVendedor(), EL_OBJECT.getVendedor().getId(), null));
+            UTIL.setSelectedItem(jdFactura.getCbVendedor(), new ComboBoxWrapper<>(EL_OBJECT.getVendedor(), EL_OBJECT.getVendedor().getId(), null));
         }
         //Los tipos de factura se tienen q cargar antes, sinó modifica el Nº de factura y muestra el siguiente
         //y no el de Factura seleccionada
@@ -1311,9 +1307,8 @@ public class FacturaVentaController {
     }
 
     /**
-     * Setea los datos de
-     * <code>FacturaVenta</code> en la instancia de {@link JDFacturaVenta} del
-     * controlador.
+     * Setea los datos de <code>FacturaVenta</code> en la instancia de
+     * {@link JDFacturaVenta} del controlador.
      *
      * @param facturaVenta
      * @param paraAnular
@@ -1322,7 +1317,6 @@ public class FacturaVentaController {
     void show(FacturaVenta facturaVenta, final boolean paraAnular) throws MessageException {
         initFacturaVenta(null, true, this, 1, false, false);
         jdFactura.modoVista();
-        viewMode = true;
         EL_OBJECT = facturaVenta;
         jdFactura.getBtnAceptar().addActionListener(new ActionListener() {
             @Override
@@ -1343,23 +1337,23 @@ public class FacturaVentaController {
         Cuenta cuenta = facturaVenta.getCuenta();
         SubCuenta subCuenta = facturaVenta.getSubCuenta();
         try {
-            jdFactura.getCbUnidadDeNegocio().addItem(new ComboBoxWrapper<UnidadDeNegocio>(udn, udn.getId(), udn.getNombre()));
+            jdFactura.getCbUnidadDeNegocio().addItem(new ComboBoxWrapper<>(udn, udn.getId(), udn.getNombre()));
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Unidad de Negocios no especificada");
         }
-        jdFactura.getCbSucursal().addItem(new ComboBoxWrapper<Sucursal>(s, s.getId(), s.getNombre()));
+        jdFactura.getCbSucursal().addItem(new ComboBoxWrapper<>(s, s.getId(), s.getNombre()));
         try {
-            jdFactura.getCbCuenta().addItem(new ComboBoxWrapper<Cuenta>(cuenta, cuenta.getId(), cuenta.getNombre()));
+            jdFactura.getCbCuenta().addItem(new ComboBoxWrapper<>(cuenta, cuenta.getId(), cuenta.getNombre()));
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Cuenta no especificada");
         }
         try {
-            jdFactura.getCbSubCuenta().addItem(new ComboBoxWrapper<SubCuenta>(subCuenta, subCuenta.getId(), subCuenta.getNombre()));
+            jdFactura.getCbSubCuenta().addItem(new ComboBoxWrapper<>(subCuenta, subCuenta.getId(), subCuenta.getNombre()));
         } catch (Exception e) {
         }
         if (facturaVenta.getVendedor() != null) {
             Vendedor v = EL_OBJECT.getVendedor();
-            jdFactura.getCbVendedor().addItem(new ComboBoxWrapper<Vendedor>(v, v.getId(), v.getApellido() + " " + v.getNombre()));
+            jdFactura.getCbVendedor().addItem(new ComboBoxWrapper<>(v, v.getId(), v.getApellido() + " " + v.getNombre()));
         }
         jdFactura.getCbListaPrecio().addItem(facturaVenta.getListaPrecios());
 
@@ -1439,7 +1433,7 @@ public class FacturaVentaController {
     }
 
     CajaMovimientos initReAsignacionCajaMovimiento(List<Caja> cajasPermitidasList) {
-        List<CajaMovimientos> l = new ArrayList<CajaMovimientos>();
+        List<CajaMovimientos> l = new ArrayList<>();
         for (Caja caja : cajasPermitidasList) {
             l.add(new CajaMovimientosJpaController().findCajaMovimientoAbierta(caja));
         }
@@ -1458,7 +1452,6 @@ public class FacturaVentaController {
 
     private void imprimirMovimientoInterno(FacturaVenta facturaVenta) throws MissingReportException, JRException {
         Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_FacturaVenta_I.jasper", "Comprobante venta N°" + facturaVenta.getMovimientoInterno());
-        r.addMembreteParameter();
         r.addParameter("FACTURA_ID", facturaVenta.getId());
         r.printReport(false);
     }
@@ -1487,8 +1480,7 @@ public class FacturaVentaController {
         Sucursal s = getSelectedSucursalFromJDFacturaVenta();
         facturaVenta.setTipo(jdFactura.getCbFacturaTipo().getSelectedItem().toString().charAt(0));
         facturaVenta.setNumero(jpaController.getNextNumero(s, facturaVenta.getTipo()));
-        facturaVenta.setMovimientoInterno(0);
-        DAO.merge(facturaVenta);
+        jpaController.merge(facturaVenta);
         if (facturaVenta.getFormaPago() == Valores.FormaPago.CONTADO.getId()) {
             //si NO es al CONTADO no tiene un registro de DetalleCajaMovimiento
             new CajaMovimientosController().actualizarDescripcion(facturaVenta);
@@ -1499,11 +1491,11 @@ public class FacturaVentaController {
     }
 
     private void setAndEdit(boolean facturar) throws MessageException, Exception {
-        checkConstraints();
+        checkConstraints(facturar);
         FacturaVenta editedFacturaVenta = getEntity(facturar);
         editedFacturaVenta.setId(EL_OBJECT.getId());
         editedFacturaVenta.setFechaalta(EL_OBJECT.getFechaalta());
-        List<String> modificaciones = new ArrayList<String>(9);
+        List<String> modificaciones = new ArrayList<>(9);
         boolean cambiaSucursal = false;
         boolean cambiaCaja = false;
         boolean cambiaFormaPago = false;
@@ -1635,9 +1627,9 @@ public class FacturaVentaController {
         return mensajeDeQueMierdaPaso;
     }
 
-    private void setAndPersist(boolean conFactura) throws MessageException, MissingReportException, JRException, Exception {
-        if (viewMode) {
-            if (conFactura) {
+    private void setAndPersist(boolean facturar) throws MessageException, MissingReportException, JRException, Exception {
+        if (jdFactura.isViewMode()) {
+            if (facturar) {
                 if (EL_OBJECT.getTipo() == 'I') {
                     if (JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog(jdFactura,
                             "¿Cambiar factura Movimiento interno Nº" + EL_OBJECT.getMovimientoInterno()
@@ -1647,8 +1639,8 @@ public class FacturaVentaController {
                     }
                 } else {
                     if (JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog(jdFactura,
-                            "La Factura Nº" + EL_OBJECT.getNumero()
-                            + " ya fue impresa.\n¿Volver a imprimir?", jpaController.getEntityClass().getSimpleName(), JOptionPane.OK_CANCEL_OPTION)) {
+                            "La Factura Nº" + JGestionUtils.getNumeracion(EL_OBJECT) + " ya fue impresa."
+                            + "\n¿Volver a imprimir?", jpaController.getEntityClass().getSimpleName(), JOptionPane.OK_CANCEL_OPTION)) {
                         imprimirFactura(EL_OBJECT);
                     }
                 }
@@ -1659,12 +1651,8 @@ public class FacturaVentaController {
                 }
             }
         } else {
-            checkConstraints();
-            if (!conFactura && unlockedNumeracion) {
-                throw new MessageException("Para registrar la carga de una Factura Venta Antigua debe utilizar el botón \"Facturar\"."
-                        + "\nNota: No se pueden generar Movimientos Internos antiguos.");
-            }
-            FacturaVenta newFacturaVenta = getEntity(conFactura);
+            checkConstraints(facturar);
+            FacturaVenta newFacturaVenta = getEntity(facturar);
             jpaController.create(newFacturaVenta);
             //refreshing the entity from DB
             System.out.println("FV.id=" + newFacturaVenta.getId());
@@ -1673,7 +1661,7 @@ public class FacturaVentaController {
             new StockController().updateStock(newFacturaVenta);
             //asiento en caja..
             registrarVentaSegunFormaDePago(newFacturaVenta);
-            if (conFactura) {
+            if (facturar) {
                 if (jdFactura.getCheckFacturacionElectronica().isSelected()) {
                     AFIPWSController afipWS = new AFIPWSController();
                     afipWS.showSetting(newFacturaVenta);
@@ -1757,9 +1745,12 @@ public class FacturaVentaController {
     }
 
     /**
-     * Verifica el precio mínimo de venta de un producto. <p>Si el producto está
-     * en <b>OFERTA</b> NO SE APLICA la regla. <p>Si el producto tiene precio de
-     * venta mínimo seteado se compara este con precioUnitario.
+     * Verifica el precio mínimo de venta de un producto.
+     * <p>
+     * Si el producto está en <b>OFERTA</b> NO SE APLICA la regla.
+     * <p>
+     * Si el producto tiene precio de venta mínimo seteado se compara este con
+     * precioUnitario.
      *
      * @param precioUnitario
      * @return true si
@@ -1959,9 +1950,9 @@ public class FacturaVentaController {
                 facturaVenta.getFechaVenta(),
                 facturaVenta.getSucursal().getNombre(),
                 facturaVenta.getCaja().getNombre(),
-                (facturaVenta.getUnidadDeNegocio() != null ? new ComboBoxWrapper<UnidadDeNegocio>(facturaVenta.getUnidadDeNegocio(), facturaVenta.getUnidadDeNegocio().getId(), facturaVenta.getUnidadDeNegocio().getNombre()) : null),
-                (facturaVenta.getCuenta() != null ? new ComboBoxWrapper<Cuenta>(facturaVenta.getCuenta(), facturaVenta.getCuenta().getId(), facturaVenta.getCuenta().getNombre()) : null),
-                (facturaVenta.getSubCuenta() != null ? new ComboBoxWrapper<SubCuenta>(facturaVenta.getSubCuenta(), facturaVenta.getSubCuenta().getId(), facturaVenta.getSubCuenta().getNombre()) : null)
+                (facturaVenta.getUnidadDeNegocio() != null ? new ComboBoxWrapper<>(facturaVenta.getUnidadDeNegocio(), facturaVenta.getUnidadDeNegocio().getId(), facturaVenta.getUnidadDeNegocio().getNombre()) : null),
+                (facturaVenta.getCuenta() != null ? new ComboBoxWrapper<>(facturaVenta.getCuenta(), facturaVenta.getCuenta().getId(), facturaVenta.getCuenta().getNombre()) : null),
+                (facturaVenta.getSubCuenta() != null ? new ComboBoxWrapper<>(facturaVenta.getSubCuenta(), facturaVenta.getSubCuenta().getId(), facturaVenta.getSubCuenta().getNombre()) : null)
             });
         }
 
