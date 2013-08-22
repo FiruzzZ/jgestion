@@ -1924,7 +1924,11 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     }//GEN-LAST:event_jMenuItem81ActionPerformed
 
     private void jMenuItem91ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem91ActionPerformed
-        new CuentabancariaMovimientosController().getConciliacion(this).setVisible(true);
+        try {
+            new CuentabancariaMovimientosController().getConciliacion(this).setVisible(true);
+        } catch (MessageException ex) {
+            ex.displayMessage(this);
+        }
     }//GEN-LAST:event_jMenuItem91ActionPerformed
 
     private void jMenuItem79ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem79ActionPerformed

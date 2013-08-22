@@ -456,14 +456,31 @@ public class CuentabancariaMovimientosController {
         }
     }
 
-    public JDialog getConciliacion(Window owner) {
+    public JDialog getConciliacion(Window owner) throws MessageException {
+        List<ComboBoxWrapper<Banco>> l = JGestionUtils.getWrappedBancos(new BancoController().findAllWithCuentasBancarias());
+        if (l.isEmpty()) {
+            throw new MessageException("No existen banco con cuenta bancaria asociada");
+        }
         final JDConciliacionBancaria jd = new JDConciliacionBancaria(owner, true);
-        UTIL.loadComboBox(jd.getCbBancos(), JGestionUtils.getWrappedBancos(new BancoController().findAllWithCuentasBancarias()), false);
-        UTIL.getDefaultTableModel(jd.getjTable1(),
+        UTIL.loadComboBox(jd.getCbBancos(), l, false, "<No existen banco con cuenta bancaria asociada>");
+        UTIL.getDefaultTableModel(jd.getjTableMovimientos(),
                 new String[]{"Object", "Fecha", "Concepto", "Débito", "Crédito", "Salgo", "Conciliado"},
                 new int[]{1, 60, 300, 100, 100, 100, 30},
                 new Class<?>[]{null, Date.class, null, BigDecimal.class, BigDecimal.class, BigDecimal.class, Boolean.class}, new int[]{6});
-        UTIL.hideColumnTable(jd.getjTable1(), 0);
+        UTIL.hideColumnTable(jd.getjTableMovimientos(), 0);
+        jd.getCbBancos().addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (jd.getCbBancos().getItemCount() > 0) {
+                    @SuppressWarnings("unchecked")
+                    Banco b = ((ComboBoxWrapper<Banco>) jd.getCbBancos().getSelectedItem()).getEntity();
+                    UTIL.loadComboBox(jd.getCbCuentabancaria(), JGestionUtils.getWrappedCuentasBancarias(b.getCuentasbancaria()), false);
+                } else {
+                    UTIL.loadComboBox(jd.getCbCuentabancaria(), null, true);
+                }
+            }
+        });
         jd.getBtnImportar().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -486,7 +503,7 @@ public class CuentabancariaMovimientosController {
                     query.append(" ORDER BY o.").append(CuentabancariaMovimientos_.fechaCreditoDebito.getName()).append(" DESC");
                     LOG.debug(query.toString());
                     List<CuentabancariaMovimientos> l = jpaController.findByQuery(query.toString());
-                    DefaultTableModel dtm = (DefaultTableModel) jd.getjTable1().getModel();
+                    DefaultTableModel dtm = (DefaultTableModel) jd.getjTableMovimientos().getModel();
                     dtm.setRowCount(0);
                     BigDecimal saldo = BigDecimal.ZERO.setScale(2, RoundingMode.HALF_EVEN);
                     for (CuentabancariaMovimientos cbm : l) {

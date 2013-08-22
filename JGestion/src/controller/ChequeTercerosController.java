@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -315,6 +316,7 @@ public class ChequeTercerosController implements ActionListener {
                             ChequeTerceros cheque = jpaController.find((Integer) jdChequeManager.getjTable1().getModel().getValueAt(row, 0));
                             if (cheque.getChequeEstado().equals(ChequeEstado.CARTERA)) {
                                 JOptionPane.showMessageDialog(jdChequeManager, "Solo los cheques en " + ChequeEstado.CARTERA + " pueden ser depositados", "Error", JOptionPane.WARNING_MESSAGE);
+                                return;
                             }
                             new CuentabancariaController().initDepositoUI(cheque);
                             armarQuery(false);
@@ -327,9 +329,20 @@ public class ChequeTercerosController implements ActionListener {
                                 throw new MessageException("El cheque ya fue reemplazado, en las observaciones de este se encuentra la información del reemplazo");
                             }
                             boolean eliminarCBM = false;
+                            boolean eliminarCajaMovimiento = false;
                             if (toReplace.getChequeEstado().equals(ChequeEstado.DEPOSITADO)) {
                                 if (JOptionPane.YES_OPTION != JOptionPane.showConfirmDialog(jdChequeManager,
-                                        "La modificación del estado de un cheque " + ChequeEstado.DEPOSITADO + " implica "
+                                        "La modificación de un cheque " + ChequeEstado.DEPOSITADO + " implica"
+                                        + "\nla eliminación del registro de movimiento de cuenta bancaria asociado a este."
+                                        + "\nConfirmar para continuar..",
+                                        "Reemplazo de cheque depositado", JOptionPane.YES_NO_OPTION)) {
+                                    return;
+                                }
+                                eliminarCBM = true;
+                            }
+                            if (toReplace.getChequeEstado().equals(ChequeEstado.ENDOSADO)) {
+                                if (JOptionPane.YES_OPTION != JOptionPane.showConfirmDialog(jdChequeManager,
+                                        "La modificación de un cheque " + ChequeEstado.ENDOSADO + " implica"
                                         + "\nla eliminación del registro de movimiento de cuenta bancaria asociado a este."
                                         + "\nConfirmar para continuar..",
                                         "Reemplazo de cheque depositado", JOptionPane.YES_NO_OPTION)) {
@@ -488,8 +501,6 @@ public class ChequeTercerosController implements ActionListener {
                 + " LEFT JOIN cliente ON (c.cliente = cliente.id) "
                 + " JOIN usuario ON (c.usuario = usuario.id) "
                 + " JOIN cheque_estado  ON (c.estado  = cheque_estado.id)"
-                //                + " LEFT JOIN banco_sucursal ON (c.banco_sucursal = banco_sucursal.id) "
-                //                + " LEFT JOIN librado ON (c.librado = librado.id) "
                 + " WHERE c.id > -1");
         if (jdChequeManager.getTfChequeNumero().getText().trim().length() > 0) {
             try {
@@ -560,7 +571,7 @@ public class ChequeTercerosController implements ActionListener {
                     //"Importe", "Estado", "Cruzado", "Endosatario", "F. Endoso", 
                     //"C. Ingreso", "C. Egreso", "Observacion", "Usuario"};
                     DefaultTableModel dtm = (DefaultTableModel) jdChequeManager.getjTable1().getModel();
-                    List<GenericBeanCollection> data = new ArrayList<GenericBeanCollection>(dtm.getRowCount());
+                    List<GenericBeanCollection> data = new ArrayList<>(dtm.getRowCount());
                     for (int row = 0; row < dtm.getRowCount(); row++) {
                         data.add(new GenericBeanCollection(
                                 dtm.getValueAt(row, 1),
@@ -858,7 +869,7 @@ public class ChequeTercerosController implements ActionListener {
             throw new MessageException("No ha agregado ningún cheque a la entrega");
         }
         ChequeTercerosEntrega o = new ChequeTercerosEntrega(emisor, receptor, null);
-        List<ChequeTercerosEntregaDetalle> detalle = new ArrayList<ChequeTercerosEntregaDetalle>(dtm.getRowCount());
+        List<ChequeTercerosEntregaDetalle> detalle = new ArrayList<>(dtm.getRowCount());
         for (int row = 0; row < dtm.getRowCount(); row++) {
             ChequeTerceros c = (ChequeTerceros) dtm.getValueAt(row, 0);
             c.setUsuario(receptor);

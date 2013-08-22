@@ -24,19 +24,16 @@ import utilities.swing.components.NumberRenderer;
  */
 public class JDConciliacionBancaria extends javax.swing.JDialog {
 
-    /**
-     * Creates new form JDConciliacionBancaria
-     */
     public JDConciliacionBancaria(Window parent, boolean modal) {
         super(parent, modal ? DEFAULT_MODALITY_TYPE : ModalityType.MODELESS);
         initComponents();
         buttonGroup1.add(radioDebito);
         buttonGroup1.add(jRadioButton2);
         setLocationRelativeTo(parent);
-        jTable2.getColumnModel().getColumn(0).setCellRenderer(FormatRenderer.getDateRenderer());
-        jTable2.getColumnModel().getColumn(2).setCellRenderer(NumberRenderer.getCurrencyRenderer());
-        jTable2.getColumnModel().getColumn(3).setCellRenderer(NumberRenderer.getCurrencyRenderer());
-        jTable2.getColumnModel().getColumn(4).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        jTableExtracto.getColumnModel().getColumn(0).setCellRenderer(FormatRenderer.getDateRenderer());
+        jTableExtracto.getColumnModel().getColumn(2).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        jTableExtracto.getColumnModel().getColumn(3).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        jTableExtracto.getColumnModel().getColumn(4).setCellRenderer(NumberRenderer.getCurrencyRenderer());
     }
 
     /**
@@ -50,7 +47,7 @@ public class JDConciliacionBancaria extends javax.swing.JDialog {
 
         buttonGroup1 = new javax.swing.ButtonGroup();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        jTableMovimientos = new javax.swing.JTable();
         jLabel4 = new javax.swing.JLabel();
         dcDesde = new com.toedter.calendar.JDateChooser();
         jLabel1 = new javax.swing.JLabel();
@@ -68,16 +65,16 @@ public class JDConciliacionBancaria extends javax.swing.JDialog {
         tfImporte = new javax.swing.JTextField();
         radioDebito = new javax.swing.JRadioButton();
         jRadioButton2 = new javax.swing.JRadioButton();
-        btnAgregar = new javax.swing.JButton();
+        btnAddAjuste = new javax.swing.JButton();
         jLabel7 = new javax.swing.JLabel();
-        btnImprimir1 = new javax.swing.JButton();
+        btnConciliar = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTable2 = new javax.swing.JTable();
-        btnImprimir2 = new javax.swing.JButton();
+        jTableExtracto = new javax.swing.JTable();
+        btnImportarExtractoBancario = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        jTableMovimientos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null, null},
                 {null, null, null, null, null, null, null},
@@ -88,19 +85,19 @@ public class JDConciliacionBancaria extends javax.swing.JDialog {
                 "Object", "Fecha", "Concepto", "Débito", "Crédito", "Saldo", "Conciliado"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
-        jTable1.getColumnModel().getColumn(0).setHeaderValue("Object");
-        jTable1.getColumnModel().getColumn(1).setResizable(false);
-        jTable1.getColumnModel().getColumn(1).setPreferredWidth(40);
-        jTable1.getColumnModel().getColumn(2).setResizable(false);
-        jTable1.getColumnModel().getColumn(2).setPreferredWidth(250);
-        jTable1.getColumnModel().getColumn(3).setResizable(false);
-        jTable1.getColumnModel().getColumn(3).setPreferredWidth(50);
-        jTable1.getColumnModel().getColumn(4).setResizable(false);
-        jTable1.getColumnModel().getColumn(4).setPreferredWidth(50);
-        jTable1.getColumnModel().getColumn(5).setResizable(false);
-        jTable1.getColumnModel().getColumn(5).setPreferredWidth(70);
-        jTable1.getColumnModel().getColumn(6).setResizable(false);
+        jScrollPane1.setViewportView(jTableMovimientos);
+        jTableMovimientos.getColumnModel().getColumn(0).setHeaderValue("Object");
+        jTableMovimientos.getColumnModel().getColumn(1).setResizable(false);
+        jTableMovimientos.getColumnModel().getColumn(1).setPreferredWidth(40);
+        jTableMovimientos.getColumnModel().getColumn(2).setResizable(false);
+        jTableMovimientos.getColumnModel().getColumn(2).setPreferredWidth(250);
+        jTableMovimientos.getColumnModel().getColumn(3).setResizable(false);
+        jTableMovimientos.getColumnModel().getColumn(3).setPreferredWidth(50);
+        jTableMovimientos.getColumnModel().getColumn(4).setResizable(false);
+        jTableMovimientos.getColumnModel().getColumn(4).setPreferredWidth(50);
+        jTableMovimientos.getColumnModel().getColumn(5).setResizable(false);
+        jTableMovimientos.getColumnModel().getColumn(5).setPreferredWidth(70);
+        jTableMovimientos.getColumnModel().getColumn(6).setResizable(false);
 
         jLabel4.setText("Hasta");
 
@@ -108,12 +105,6 @@ public class JDConciliacionBancaria extends javax.swing.JDialog {
         dcDesde.setMinSelectableDate(new java.util.Date(14463000L));
 
         jLabel1.setText("N° Cuenta");
-
-        cbBancos.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cbBancosActionPerformed(evt);
-            }
-        });
 
         jLabel10.setText("Banco");
 
@@ -146,8 +137,8 @@ public class JDConciliacionBancaria extends javax.swing.JDialog {
 
         jRadioButton2.setText("Crédito");
 
-        btnAgregar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/16px_add_circular.png"))); // NOI18N
-        btnAgregar.setText("Agregar");
+        btnAddAjuste.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/16px_add_circular.png"))); // NOI18N
+        btnAddAjuste.setText("Agregar");
 
         jLabel7.setText("Concepto");
 
@@ -170,7 +161,7 @@ public class JDConciliacionBancaria extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jRadioButton2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnAgregar)
+                .addComponent(btnAddAjuste)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -180,7 +171,7 @@ public class JDConciliacionBancaria extends javax.swing.JDialog {
                     .addComponent(dcConceptoFecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(tfConcepto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel7)
-                    .addComponent(btnAgregar)
+                    .addComponent(btnAddAjuste)
                     .addComponent(jLabel2)
                     .addComponent(tfImporte, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jRadioButton2)
@@ -188,10 +179,10 @@ public class JDConciliacionBancaria extends javax.swing.JDialog {
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
-        btnImprimir1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px_change_values.png"))); // NOI18N
-        btnImprimir1.setText("Conciliar");
+        btnConciliar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px_change_values.png"))); // NOI18N
+        btnConciliar.setText("Conciliar");
 
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+        jTableExtracto.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null},
                 {null, null, null, null, null, null},
@@ -217,24 +208,24 @@ public class JDConciliacionBancaria extends javax.swing.JDialog {
                 return canEdit [columnIndex];
             }
         });
-        jTable2.getTableHeader().setReorderingAllowed(false);
-        jScrollPane2.setViewportView(jTable2);
-        jTable2.getColumnModel().getColumn(0).setResizable(false);
-        jTable2.getColumnModel().getColumn(0).setPreferredWidth(40);
-        jTable2.getColumnModel().getColumn(1).setResizable(false);
-        jTable2.getColumnModel().getColumn(1).setPreferredWidth(250);
-        jTable2.getColumnModel().getColumn(2).setResizable(false);
-        jTable2.getColumnModel().getColumn(2).setPreferredWidth(50);
-        jTable2.getColumnModel().getColumn(3).setResizable(false);
-        jTable2.getColumnModel().getColumn(3).setPreferredWidth(50);
-        jTable2.getColumnModel().getColumn(4).setResizable(false);
-        jTable2.getColumnModel().getColumn(4).setPreferredWidth(70);
-        jTable2.getColumnModel().getColumn(5).setResizable(false);
+        jTableExtracto.getTableHeader().setReorderingAllowed(false);
+        jScrollPane2.setViewportView(jTableExtracto);
+        jTableExtracto.getColumnModel().getColumn(0).setResizable(false);
+        jTableExtracto.getColumnModel().getColumn(0).setPreferredWidth(40);
+        jTableExtracto.getColumnModel().getColumn(1).setResizable(false);
+        jTableExtracto.getColumnModel().getColumn(1).setPreferredWidth(250);
+        jTableExtracto.getColumnModel().getColumn(2).setResizable(false);
+        jTableExtracto.getColumnModel().getColumn(2).setPreferredWidth(50);
+        jTableExtracto.getColumnModel().getColumn(3).setResizable(false);
+        jTableExtracto.getColumnModel().getColumn(3).setPreferredWidth(50);
+        jTableExtracto.getColumnModel().getColumn(4).setResizable(false);
+        jTableExtracto.getColumnModel().getColumn(4).setPreferredWidth(70);
+        jTableExtracto.getColumnModel().getColumn(5).setResizable(false);
 
-        btnImprimir2.setText("Importar Extracto Bancario");
-        btnImprimir2.addActionListener(new java.awt.event.ActionListener() {
+        btnImportarExtractoBancario.setText("Importar Extracto Bancario");
+        btnImportarExtractoBancario.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnImprimir2ActionPerformed(evt);
+                btnImportarExtractoBancarioActionPerformed(evt);
             }
         });
 
@@ -273,9 +264,9 @@ public class JDConciliacionBancaria extends javax.swing.JDialog {
                                 .addGap(0, 0, Short.MAX_VALUE)
                                 .addComponent(btnImprimir)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
-                        .addComponent(btnImprimir1))
+                        .addComponent(btnConciliar))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnImprimir2)
+                        .addComponent(btnImportarExtractoBancario)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -302,12 +293,12 @@ public class JDConciliacionBancaria extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnImprimir2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnImportarExtractoBancario, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnImprimir1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnConciliar, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -315,39 +306,29 @@ public class JDConciliacionBancaria extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void cbBancosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbBancosActionPerformed
-        if (cbBancos.getItemCount() > 0) {
-            @SuppressWarnings("unchecked")
-            Banco b = ((ComboBoxWrapper<Banco>) cbBancos.getSelectedItem()).getEntity();
-            UTIL.loadComboBox(cbCuentabancaria, JGestionUtils.getWrappedCuentasBancarias(b.getCuentasbancaria()), false);
-        } else {
-            UTIL.loadComboBox(cbCuentabancaria, null, true);
-        }
-    }//GEN-LAST:event_cbBancosActionPerformed
-
     private void tfImporteKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfImporteKeyTyped
         SwingUtil.checkInputDigit(evt, true, 12);
     }//GEN-LAST:event_tfImporteKeyTyped
 
-    private void btnImprimir2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnImprimir2ActionPerformed
+    private void btnImportarExtractoBancarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnImportarExtractoBancarioActionPerformed
         DlgImportarArchivoExtraBancario dlg = new DlgImportarArchivoExtraBancario(this);
         dlg.setLocationRelativeTo(this);
         dlg.setVisible(true);
         if (dlg.getImportedData() != null) {
             List<Object[]> data = dlg.getImportedData();
-            DefaultTableModel dtm = (DefaultTableModel) jTable2.getModel();
+            DefaultTableModel dtm = (DefaultTableModel) jTableExtracto.getModel();
             dtm.setRowCount(0);
             for (Object[] objects : data) {
                 dtm.addRow(objects);
             }
         }
-    }//GEN-LAST:event_btnImprimir2ActionPerformed
+    }//GEN-LAST:event_btnImportarExtractoBancarioActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnAgregar;
+    private javax.swing.JButton btnAddAjuste;
+    private javax.swing.JButton btnConciliar;
     private javax.swing.JButton btnImportar;
+    private javax.swing.JButton btnImportarExtractoBancario;
     private javax.swing.JButton btnImprimir;
-    private javax.swing.JButton btnImprimir1;
-    private javax.swing.JButton btnImprimir2;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JComboBox cbBancos;
     private javax.swing.JComboBox cbCuentabancaria;
@@ -364,8 +345,8 @@ public class JDConciliacionBancaria extends javax.swing.JDialog {
     private javax.swing.JRadioButton jRadioButton2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTable jTable2;
+    private javax.swing.JTable jTableExtracto;
+    private javax.swing.JTable jTableMovimientos;
     private javax.swing.JRadioButton radioDebito;
     private javax.swing.JTextField tfConcepto;
     private javax.swing.JTextField tfImporte;
@@ -376,7 +357,7 @@ public class JDConciliacionBancaria extends javax.swing.JDialog {
     }
 
     public JButton getBtnAgregar() {
-        return btnAgregar;
+        return btnAddAjuste;
     }
 
     public JComboBox getCbCuentabancaria() {
@@ -391,8 +372,12 @@ public class JDConciliacionBancaria extends javax.swing.JDialog {
         return dcHasta;
     }
 
-    public JTable getjTable1() {
-        return jTable1;
+    public JTable getjTableMovimientos() {
+        return jTableMovimientos;
+    }
+
+    public JTable getjTableExtracto() {
+        return jTableExtracto;
     }
 
     public JComboBox getCbBancos() {

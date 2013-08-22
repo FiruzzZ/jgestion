@@ -28,9 +28,8 @@ public class NotaCreditoJpaController extends AbstractDAO<NotaCredito, Integer> 
     public void create(NotaCredito notaCredito) {
         Collection<DetalleNotaCredito> toAttach = notaCredito.getDetalleNotaCreditoCollection();
         notaCredito.setDetalleNotaCreditoCollection(new ArrayList<DetalleNotaCredito>());
-        EntityManager em;
+        EntityManager em = getEntityManager();
         try {
-            em = getEntityManager();
             em.getTransaction().begin();
             em.persist(notaCredito);
             for (DetalleNotaCredito detalleNotaCredito : toAttach) {
@@ -38,6 +37,9 @@ public class NotaCreditoJpaController extends AbstractDAO<NotaCredito, Integer> 
                 em.persist(detalleNotaCredito);
             }
             em.getTransaction().commit();
+        } catch (Exception ex) {
+            em.getTransaction().rollback();
+            throw ex;
         } finally {
             closeEntityManager();
         }

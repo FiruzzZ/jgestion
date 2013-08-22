@@ -77,7 +77,7 @@ public class RemesaJpaController extends AbstractDAO<Remesa, Integer> {
         boolean todoBien = false;
         try {
             entityManager.getTransaction().begin();
-            List<Object> pagosPost = new ArrayList<Object>(remesa.getPagosEntities().size());
+            List<Object> pagosPost = new ArrayList<>(remesa.getPagosEntities().size());
             for (Object object : remesa.getPagosEntities()) {
                 if (object instanceof ChequePropio) {
                     ChequePropio pago = (ChequePropio) object;
@@ -88,11 +88,11 @@ public class RemesaJpaController extends AbstractDAO<Remesa, Integer> {
                     ChequeTerceros pago = (ChequeTerceros) object;
                     pago.setEstado(ChequeEstado.ENDOSADO.getId());
                     pago.setFechaEndoso(remesa.getFechaRemesa());
-                    Proveedor proveedor = null;
+                    Proveedor proveedor;
                     if (!remesa.getDetalle().isEmpty()) {
                         if (remesa.getDetalle().get(0).getFacturaCompra() != null) {
                             proveedor = remesa.getDetalle().get(0).getFacturaCompra().getProveedor();
-                        } else if (remesa.getDetalle().get(0).getNotaDebitoProveedor() != null) {
+                        } else {
                             proveedor = remesa.getDetalle().get(0).getNotaDebitoProveedor().getProveedor();
                         }
                     } else {
