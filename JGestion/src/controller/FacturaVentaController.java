@@ -1029,7 +1029,7 @@ public class FacturaVentaController {
                         setDatosToEdit();
                         cargarTablaBuscador(armarQuery());
                     } catch (MessageException ex) {
-                        buscador.showMessage(ex.getMessage(), "Error de datos", 0);
+                        buscador.showMessage(ex.getMessage(), null, 0);
                     }
                 } else {
                     buscador.showMessage("Seleccione la fila que corresponde a la Factura que desea editar", null, JOptionPane.WARNING_MESSAGE);
@@ -1124,13 +1124,15 @@ public class FacturaVentaController {
     private void setDatosToEdit() throws MessageException {
         initFacturaVenta(null, true, this, 1, false, true);
         jdFactura.setModoEdicion();
-//        jdFactura.addActionAndKeyListener(this);
         for (ActionListener actionListener : jdFactura.getBtnAceptar().getActionListeners()) {
             jdFactura.getBtnAceptar().removeActionListener(actionListener);
         }
         for (ActionListener actionListener : jdFactura.getBtnFacturar().getActionListeners()) {
             jdFactura.getBtnFacturar().removeActionListener(actionListener);
         }
+
+        jdFactura.getBtnAceptar().setEnabled(EL_OBJECT.getTipo() == 'I');
+        jdFactura.getBtnFacturar().setEnabled(EL_OBJECT.getTipo() != 'I');
         jdFactura.getBtnAceptar().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

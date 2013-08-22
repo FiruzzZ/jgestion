@@ -111,7 +111,7 @@ public class NotaCreditoController {
 
     private NotaCredito setEntity() throws MessageException, Exception {
         if (jdFacturaVenta.getDcFechaFactura() == null) {
-            throw new MessageException("Fecha de factura no válida");
+            throw new MessageException("Fecha de comprobante no válida");
         }
         Date fechaNotaCredito = jdFacturaVenta.getDcFechaFactura();
         Sucursal sucursal;
@@ -310,10 +310,10 @@ public class NotaCreditoController {
         jdFacturaVenta.modoVista();
         // setting info on UI
         String numFactura = UTIL.AGREGAR_CEROS(notaCredito.getNumero(), 12);
+        jdFacturaVenta.getCbCliente().addItem(new ComboBoxWrapper<>(notaCredito.getCliente(), notaCredito.getCliente().getId(), notaCredito.getCliente().getNombre()));
+        jdFacturaVenta.getCbSucursal().addItem(new ComboBoxWrapper<>(notaCredito.getSucursal(), notaCredito.getId(), notaCredito.getSucursal().getNombre()));
         jdFacturaVenta.setTfFacturaCuarto(numFactura.substring(0, 4));
         jdFacturaVenta.setTfFacturaOcteto(numFactura.substring(4));
-        jdFacturaVenta.getCbCliente().addItem(notaCredito.getCliente());
-        jdFacturaVenta.getCbSucursal().addItem(notaCredito.getSucursal());
         jdFacturaVenta.setDcFechaFactura(notaCredito.getFechaNotaCredito());
         jdFacturaVenta.getTfObservacion().setText(notaCredito.getObservacion());
         Collection<DetalleNotaCredito> lista = notaCredito.getDetalleNotaCreditoCollection();

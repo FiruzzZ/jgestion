@@ -434,7 +434,7 @@ public class RemesaController implements FocusListener {
         }
         re.setMontoEntrega(monto.doubleValue());
         dtm = jdReRe.getDtmPagos();
-        List<Object> pagos = new ArrayList<Object>(dtm.getRowCount());
+        List<Object> pagos = new ArrayList<>(dtm.getRowCount());
         BigDecimal importePagado = BigDecimal.ZERO;
         for (int row = 0; row < dtm.getRowCount(); row++) {
             importePagado = importePagado.add((BigDecimal) dtm.getValueAt(row, 3));
@@ -462,8 +462,8 @@ public class RemesaController implements FocusListener {
         } else {
             try {
                 jpaController.create(re);
-            } catch (Exception e) {
-                LOG.error(e.getMessage());
+            } catch (Exception ex) {
+                LOG.error("Error fantástico de doble persistencia de remesa: ", ex);
                 jpaController.create(re);
             }
         }
@@ -544,7 +544,6 @@ public class RemesaController implements FocusListener {
                 throw new MessageException("Monto de entrega no válido (Debe ser mayor a 0)");
             }
 
-
         } catch (NumberFormatException e) {
             throw new MessageException("Monto de entrega no válido, ingrese solo números y utilice el punto como separador decimal.");
         }
@@ -570,11 +569,11 @@ public class RemesaController implements FocusListener {
             }
         }
         jdReRe.getDtmAPagar().addRow(new Object[]{
-                    selectedCtaCte != null ? facturaToAddToDetail : selectedNotaDebito,
-                    selectedCtaCte != null ? JGestionUtils.getNumeracion(facturaToAddToDetail) : JGestionUtils.getNumeracion(selectedNotaDebito),
-                    null,
-                    entrega$
-                });
+            selectedCtaCte != null ? facturaToAddToDetail : selectedNotaDebito,
+            selectedCtaCte != null ? JGestionUtils.getNumeracion(facturaToAddToDetail) : JGestionUtils.getNumeracion(selectedNotaDebito),
+            null,
+            entrega$
+        });
         updateTotales();
     }
 
@@ -666,7 +665,7 @@ public class RemesaController implements FocusListener {
         limpiarDetalle();
         List<CtacteProveedor> ccList = new CtacteProveedorController().findCtacteProveedorByProveedor(proveedor.getId(), Valores.CtaCteEstado.PENDIENTE.getId());
         List<NotaDebitoProveedor> notas = new NotaDebitoProveedorJpaController().findBy(proveedor, false);
-        List<Object> l = new ArrayList<Object>(ccList.size() + notas.size());
+        List<Object> l = new ArrayList<>(ccList.size() + notas.size());
         for (CtacteProveedor o : ccList) {
             l.add(o);
         }
@@ -730,7 +729,7 @@ public class RemesaController implements FocusListener {
         if (buscador.getDcHastaSistema() != null) {
             query.append(" AND o.fecha_carga <= '").append(UTIL.yyyy_MM_dd.format(buscador.getDcHastaSistema())).append("'");
         }
-        
+
         if (buscador.getCbCaja().getSelectedIndex() > 0) {
             query.append(" AND o.caja = ").append(((Caja) buscador.getCbCaja().getSelectedItem()).getId());
         } else {
@@ -796,15 +795,15 @@ public class RemesaController implements FocusListener {
                 p = remesa.getProveedor();
             }
             dtm.addRow(new Object[]{
-                        remesa.getId(),
-                        JGestionUtils.getNumeracion(remesa, true),
-                        remesa.getAnulada() == null ? p.getNombre() : "[ANULADA] " + UTIL.TIMESTAMP_FORMAT.format(remesa.getAnulada()),
-                        remesa.getMonto(),
-                        UTIL.DATE_FORMAT.format(remesa.getFechaRemesa()),
-                        remesa.getCaja().getNombre() + "(" + remesa.getCaja().getId() + ")",
-                        remesa.getUsuario(),
-                        UTIL.TIMESTAMP_FORMAT.format(remesa.getFechaCarga())
-                    });
+                remesa.getId(),
+                JGestionUtils.getNumeracion(remesa, true),
+                remesa.getAnulada() == null ? p.getNombre() : "[ANULADA] " + UTIL.TIMESTAMP_FORMAT.format(remesa.getAnulada()),
+                remesa.getMonto(),
+                UTIL.DATE_FORMAT.format(remesa.getFechaRemesa()),
+                remesa.getCaja().getNombre() + "(" + remesa.getCaja().getId() + ")",
+                remesa.getUsuario(),
+                UTIL.TIMESTAMP_FORMAT.format(remesa.getFechaCarga())
+            });
         }
     }
 
@@ -877,11 +876,11 @@ public class RemesaController implements FocusListener {
         dtm.setRowCount(0);
         for (DetalleRemesa r : detalle) {
             dtm.addRow(new Object[]{
-                        r.getFacturaCompra() != null ? r.getFacturaCompra() : r.getNotaDebitoProveedor(),
-                        r.getFacturaCompra() != null ? JGestionUtils.getNumeracion(r.getFacturaCompra()) : JGestionUtils.getNumeracion(r.getNotaDebitoProveedor()),
-                        null,
-                        r.getMontoEntrega()
-                    });
+                r.getFacturaCompra() != null ? r.getFacturaCompra() : r.getNotaDebitoProveedor(),
+                r.getFacturaCompra() != null ? JGestionUtils.getNumeracion(r.getFacturaCompra()) : JGestionUtils.getNumeracion(r.getNotaDebitoProveedor()),
+                null,
+                r.getMontoEntrega()
+            });
         }
         loadPagos(remesa);
         dtm = jdReRe.getDtmPagos();
@@ -942,7 +941,7 @@ public class RemesaController implements FocusListener {
 
     List<Remesa> findByFactura(FacturaCompra factura) {
         List<DetalleRemesa> detalleRemesaList = jpaController.findDetalleRemesaByFactura(factura);
-        List<Remesa> remesas = new ArrayList<Remesa>(detalleRemesaList.size());
+        List<Remesa> remesas = new ArrayList<>(detalleRemesaList.size());
         for (DetalleRemesa detalleRecibo : detalleRemesaList) {
             remesas.add(detalleRecibo.getRemesa());
         }
@@ -950,7 +949,7 @@ public class RemesaController implements FocusListener {
     }
 
     public List<Object> loadPagos(Remesa remesa) {
-        List<Object> pagos = new ArrayList<Object>(remesa.getPagos().size());
+        List<Object> pagos = new ArrayList<>(remesa.getPagos().size());
         for (RemesaPagos pago : remesa.getPagos()) {
             if (pago.getFormaPago() == 0) {
                 DetalleCajaMovimientos o = new DetalleCajaMovimientosController().findDetalleCajaMovimientos(pago.getComprobanteId());

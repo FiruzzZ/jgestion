@@ -81,6 +81,7 @@ public class ReciboController implements ActionListener, FocusListener {
             throw new MessageException(JGestion.resourceBundle.getString("unassigned.caja"));
         }
         jdReRe = new JDReRe(owner, modal);
+        SwingUtil.setComponentsEnabled(jdReRe.getPanelPagos().getComponents(), false, true);
         jdReRe.setUIForRecibos();
         UTIL.getDefaultTableModel(jdReRe.getTableAPagar(),
                 new String[]{"facturaID", "Factura", "Observación", "Entrega"},
@@ -247,7 +248,7 @@ public class ReciboController implements ActionListener, FocusListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    displayUIPagos(jdReRe.getCbFormasDePago().getSelectedIndex());
+                    showUIPagos(jdReRe.getCbFormasDePago().getSelectedIndex());
                     updateTotales();
                 } catch (MessageException ex) {
                     ex.displayMessage(jdReRe);
@@ -270,9 +271,9 @@ public class ReciboController implements ActionListener, FocusListener {
                     if (e.getClickCount() > 1 && selectedRow > -1) {
                         Object o = jdReRe.getTablePagos().getModel().getValueAt(selectedRow, 0);
                         if (o instanceof DetalleCajaMovimientos) {
-                            displayABMEfectivo((DetalleCajaMovimientos) o);
+                            showABMEfectivo((DetalleCajaMovimientos) o);
                         } else if (o instanceof ComprobanteRetencion) {
-                            displayABMRetencion((ComprobanteRetencion) o);
+                            showABMRetencion((ComprobanteRetencion) o);
                         } else if (o instanceof ChequePropio) {
                             JOptionPane.showMessageDialog(jdReRe, "Los cheques propios no puede ser editados", null, JOptionPane.WARNING_MESSAGE);
                         }
@@ -284,7 +285,7 @@ public class ReciboController implements ActionListener, FocusListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    displayDetalleCredito((Cliente) jdReRe.getCbClienteProveedor().getSelectedItem());
+                    showDetalleCredito((Cliente) jdReRe.getCbClienteProveedor().getSelectedItem());
                 } catch (ClassCastException ex) {
                     JOptionPane.showMessageDialog(jdReRe, "Debe elegir un Cliente", null, JOptionPane.WARNING_MESSAGE);
 
@@ -298,26 +299,26 @@ public class ReciboController implements ActionListener, FocusListener {
     /**
      * Efectivo, Cheque Propio, Cheque Tercero, Nota de Crédito, Retención
      */
-    private void displayUIPagos(int formaPago) throws MessageException {
+    private void showUIPagos(int formaPago) throws MessageException {
 
         if (formaPago == 0) {
-            displayABMEfectivo(null);
+            showABMEfectivo(null);
         } else if (formaPago == 1) {
-            displayABMChequePropio();
+            showABMChequePropio();
         } else if (formaPago == 2) {
-            displayABMChequeTerceros();
+            showABMChequeTerceros();
         } else if (formaPago == 3) {
-            displayABMNotaCredito();
+            showABMNotaCredito();
         } else if (formaPago == 4) {
-            displayABMRetencion(null);
+            showABMRetencion(null);
         } else if (formaPago == 5) {
-            displayABMTransferencia();
+            showABMTransferencia();
         } else if (formaPago == 6) {
-            displayABMEspecie(null);
+            showABMEspecie(null);
         }
     }
 
-    private void displayABMEfectivo(DetalleCajaMovimientos toEdit) {
+    private void showABMEfectivo(DetalleCajaMovimientos toEdit) {
         BigDecimal monto = jdReRe.displayABMEfectivo(toEdit == null ? null : toEdit.getMonto());
         if (monto != null) {
             DefaultTableModel dtm = jdReRe.getDtmPagos();
@@ -342,7 +343,7 @@ public class ReciboController implements ActionListener, FocusListener {
         }
     }
 
-    private void displayABMChequePropio() throws MessageException {
+    private void showABMChequePropio() throws MessageException {
         ChequePropio cheque = new ChequePropioController().initManagerBuscador(jdReRe);
         if (cheque != null) {
             ChequesController.checkUniquenessOnTable(jdReRe.getDtmPagos(), cheque);
@@ -351,7 +352,7 @@ public class ReciboController implements ActionListener, FocusListener {
         }
     }
 
-    private void displayABMChequeTerceros() {
+    private void showABMChequeTerceros() {
         try {
             Cliente c = null;
             try {
@@ -370,7 +371,7 @@ public class ReciboController implements ActionListener, FocusListener {
         }
     }
 
-    private void displayABMNotaCredito() {
+    private void showABMNotaCredito() {
         try {
             NotaCredito notaCredito = new NotaCreditoController().initBuscador(jdReRe, false, (Cliente) jdReRe.getCbClienteProveedor().getSelectedItem(), true);
             if (notaCredito != null) {
@@ -390,7 +391,7 @@ public class ReciboController implements ActionListener, FocusListener {
         }
     }
 
-    private void displayABMEspecie(Especie toEdit) {
+    private void showABMEspecie(Especie toEdit) {
         Especie especie = new EspecieController().displayEspecie(jdReRe, toEdit);
         if (especie != null) {
             DefaultTableModel dtm = jdReRe.getDtmPagos();
@@ -417,7 +418,7 @@ public class ReciboController implements ActionListener, FocusListener {
         }
     }
 
-    private void displayABMRetencion(ComprobanteRetencion toEdit) {
+    private void showABMRetencion(ComprobanteRetencion toEdit) {
         ComprobanteRetencion comprobante = new ComprobanteRetencionController().displayComprobanteRetencion(jdReRe, toEdit);
         if (comprobante != null) {
             DefaultTableModel dtm = jdReRe.getDtmPagos();
@@ -445,7 +446,7 @@ public class ReciboController implements ActionListener, FocusListener {
         }
     }
 
-    private void displayABMTransferencia() {
+    private void showABMTransferencia() {
         Cliente c = (Cliente) jdReRe.getCbClienteProveedor().getSelectedItem();
         CuentabancariaMovimientos comprobante = new CuentabancariaMovimientosController().displayTransferenciaCliente(jdReRe, c.getNombre());
         if (comprobante != null) {
@@ -454,7 +455,7 @@ public class ReciboController implements ActionListener, FocusListener {
         }
     }
 
-    private void displayDetalleCredito(Cliente cliente) {
+    private void showDetalleCredito(Cliente cliente) {
         JTable tabla = UTIL.getDefaultTableModel(null,
                 new String[]{"Nº Nota crédito", "Fecha", "Importe", "Recibo", "Total Acum."},
                 new int[]{50, 50, 50, 50, 100},
@@ -748,9 +749,9 @@ public class ReciboController implements ActionListener, FocusListener {
             } else {
                 viewMode = true;
             }
-            jdReRe.getbAceptar().setVisible(false);
-            jdReRe.getbCancelar().setVisible(false);
-            jdReRe.getbAnular().setVisible(!toAnular);
+            jdReRe.getbAceptar().setEnabled(false);
+            jdReRe.getbCancelar().setEnabled(false);
+            jdReRe.getbAnular().setEnabled(toAnular);
             jdReRe.setLocationRelativeTo(buscador);
             jdReRe.setVisible(true);
         } catch (MessageException ex) {
@@ -947,7 +948,9 @@ public class ReciboController implements ActionListener, FocusListener {
             }
             query.append(")");
         }
-        if (buscador.isCheckAnuladaSelected()) {
+        if (!buscador.getCheckAnulada().isEnabled()) {
+            query.append(" AND o.estado = ").append(!buscador.isCheckAnuladaSelected());
+        } else if (buscador.isCheckAnuladaSelected()) {
             query.append(" AND o.estado = false");
         }
         if (buscador.getCbClieProv().getSelectedIndex() > 0) {
