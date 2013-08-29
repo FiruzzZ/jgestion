@@ -220,7 +220,7 @@ public class ChequePropioController implements ActionListener {
                     if (row > -1) {
                         final ChequePropio cheque = jpaController.find((Integer) jdChequeManager.getjTable1().getModel().getValueAt(row, 0));
                         try {
-                            if (cheque.getChequeEstado().equals(ChequeEstado.CARTERA)) {
+                            if (!cheque.getChequeEstado().equals(ChequeEstado.CARTERA)) {
                                 throw new MessageException("Solo los cheques en " + ChequeEstado.CARTERA + " pueden ser anulados");
                             }
                             showAnulacionDialog(jdChequeManager, cheque);
@@ -685,7 +685,7 @@ public class ChequePropioController implements ActionListener {
 
     private void showAnulacionDialog(Window owner, final ChequePropio cheque) throws MessageException {
         final CuentabancariaMovimientos asiento = new CuentabancariaMovimientosJpaController().findBy(cheque);
-        if (asiento.isConciliado()) {
+        if (asiento != null && asiento.isConciliado()) {
             throw new MessageException("El movimiento bancario N° " + asiento.getId() + " relacionado al cheque ya a sido conciliado.");
         }
         final GroupLayoutPanelBuilder glpb = new GroupLayoutPanelBuilder();
@@ -707,10 +707,13 @@ public class ChequePropioController implements ActionListener {
                 cheque.setObservacion(tfObservacion.getText().trim().isEmpty() ? null : tfObservacion.getText().trim());
                 cheque.setEstado(ChequeEstado.ANULADO.getId());
                 jpaController.merge(cheque);
-                asiento.setAnulada(true);
-                new CuentabancariaMovimientosJpaController().merge(asiento);
+                if (asiento != null) {
+                    asiento.setAnulada(true);
+                    new CuentabancariaMovimientosJpaController().merge(asiento);
+                }
                 UsuarioAcciones ua = new UsuarioAcciones('u', "Anulación cheque propio N° " + cheque.getNumero(), null, ChequePropio.class.getSimpleName(), cheque.getId(), UsuarioController.getCurrentUser());
                 new UsuarioAccionesController().create(ua);
+                dialog.dispose();
             }
         });
         dialog.getBtnCancelar().addActionListener(new ActionListener() {
