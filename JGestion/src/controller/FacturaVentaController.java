@@ -1081,9 +1081,9 @@ public class FacturaVentaController {
         }
         Reportes r = new Reportes("JGestion_ListadoFacturasCompra.jasper", "Listado Facturas Venta");
         r.setDataSource(data);
+        r.addParameter("TITLE_PAGE_HEADER", "Ventas");
         r.addParameter("IS_COMPRA", false);
         r.addParameter("SHOW_TITLE", Boolean.FALSE);
-        r.addMembreteParameter();
         r.addConnection();
         if (excelFilePath != null) {
             File exportToXLS = r.exportToXLS(excelFilePath);
@@ -1455,7 +1455,7 @@ public class FacturaVentaController {
     private void imprimirMovimientoInterno(FacturaVenta facturaVenta) throws MissingReportException, JRException {
         Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_FacturaVenta_I.jasper", "Comprobante venta N°" + facturaVenta.getMovimientoInterno());
         r.addParameter("FACTURA_ID", facturaVenta.getId());
-        r.printReport(false);
+        r.printReport(true);
     }
 
     private void imprimirFactura(FacturaVenta facturaVenta) throws MissingReportException, JRException {

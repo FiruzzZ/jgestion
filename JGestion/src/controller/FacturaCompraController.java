@@ -964,24 +964,24 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         Cuenta cuenta = EL_OBJECT.getCuenta();
         SubCuenta subCuenta = EL_OBJECT.getSubCuenta();
         try {
-            jdFactura.getCbUnidadDeNegocio().addItem(new ComboBoxWrapper<UnidadDeNegocio>(udn, udn.getId(), udn.getNombre()));
+            jdFactura.getCbUnidadDeNegocio().addItem(new ComboBoxWrapper<>(udn, udn.getId(), udn.getNombre()));
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Unidad de Negocios no especificada");
         }
-        jdFactura.getCbSucursal().addItem(new ComboBoxWrapper<Sucursal>(s, s.getId(), s.getNombre()));
+        jdFactura.getCbSucursal().addItem(new ComboBoxWrapper<>(s, s.getId(), s.getNombre()));
         try {
-            jdFactura.getCbCuenta().addItem(new ComboBoxWrapper<Cuenta>(cuenta, cuenta.getId(), cuenta.getNombre()));
+            jdFactura.getCbCuenta().addItem(new ComboBoxWrapper<>(cuenta, cuenta.getId(), cuenta.getNombre()));
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Cuenta no especificada");
         }
         try {
             if (EL_OBJECT.getSubCuenta() != null) {
-                jdFactura.getCbSubCuenta().addItem(new ComboBoxWrapper<SubCuenta>(subCuenta, subCuenta.getId(), subCuenta.getNombre()));
+                jdFactura.getCbSubCuenta().addItem(new ComboBoxWrapper<>(subCuenta, subCuenta.getId(), subCuenta.getNombre()));
             }
         } catch (Exception e) {
         }
         if (EL_OBJECT.getDominio() != null) {
-            jdFactura.getCbDominio().addItem(new ComboBoxWrapper<Dominio>(EL_OBJECT.getDominio(), EL_OBJECT.getDominio().getId(), EL_OBJECT.getDominio().getNombre()));
+            jdFactura.getCbDominio().addItem(new ComboBoxWrapper<>(EL_OBJECT.getDominio(), EL_OBJECT.getDominio().getId(), EL_OBJECT.getDominio().getNombre()));
         }
 
         jdFactura.setDcFechaFactura(EL_OBJECT.getFechaCompra());
@@ -1057,7 +1057,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
     }
 
     private void doReportFacturas() throws MissingReportException, JRException {
-        List<GenericBeanCollection> data = new ArrayList<GenericBeanCollection>(buscador.getjTable1().getRowCount());
+        List<GenericBeanCollection> data = new ArrayList<>(buscador.getjTable1().getRowCount());
         DefaultTableModel dtm = buscador.getDtm();
         for (int row = 0; row < dtm.getRowCount(); row++) {
 
@@ -1075,7 +1075,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         }
         Reportes r = new Reportes("JGestion_ListadoFacturasCompra.jasper", "Listado Facturas Compra");
         r.setDataSource(data);
-        r.addMembreteParameter();
+        r.addParameter("TITLE_PAGE_HEADER", "Compras");
         r.addConnection();
         r.viewReport();
     }
@@ -1200,9 +1200,9 @@ public class FacturaCompraController implements ActionListener, KeyListener {
                 factura.getFechaCompra(),
                 factura.getSucursal().getNombre(),
                 factura.getCaja().getNombre(),
-                (factura.getUnidadDeNegocio() != null ? new ComboBoxWrapper<UnidadDeNegocio>(factura.getUnidadDeNegocio(), factura.getUnidadDeNegocio().getId(), factura.getUnidadDeNegocio().getNombre()) : null),
-                (factura.getCuenta() != null ? new ComboBoxWrapper<Cuenta>(factura.getCuenta(), factura.getCuenta().getId(), factura.getCuenta().getNombre()) : null),
-                (factura.getSubCuenta() != null ? new ComboBoxWrapper<SubCuenta>(factura.getSubCuenta(), factura.getSubCuenta().getId(), factura.getSubCuenta().getNombre()) : null)
+                (factura.getUnidadDeNegocio() != null ? new ComboBoxWrapper<>(factura.getUnidadDeNegocio(), factura.getUnidadDeNegocio().getId(), factura.getUnidadDeNegocio().getNombre()) : null),
+                (factura.getCuenta() != null ? new ComboBoxWrapper<>(factura.getCuenta(), factura.getCuenta().getId(), factura.getCuenta().getNombre()) : null),
+                (factura.getSubCuenta() != null ? new ComboBoxWrapper<>(factura.getSubCuenta(), factura.getSubCuenta().getId(), factura.getSubCuenta().getNombre()) : null)
             });
         }
 

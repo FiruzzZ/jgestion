@@ -73,6 +73,18 @@ public class UsuarioAcciones implements Serializable {
         this.usuario = usuario;
     }
 
+    public UsuarioAcciones(char accion, String descripcion, String detalle, String ip, String hostname, String entidad, Integer entidadId, Usuario usuario) {
+        this.accion = accion;
+        this.descripcion = descripcion;
+        this.detalle = detalle;
+        this.ip = ip;
+        this.hostname = hostname;
+        this.entidad = entidad;
+        this.entidadId = entidadId;
+        this.usuario = usuario;
+    }
+
+    
     public Integer getId() {
         return id;
     }

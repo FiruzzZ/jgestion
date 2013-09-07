@@ -21,6 +21,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseListener;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.NoResultException;
@@ -38,7 +39,7 @@ import org.eclipse.persistence.config.QueryHints;
  */
 public class UsuarioController implements ActionListener, MouseListener, KeyListener {
 
-    private static final Logger LOG  = Logger.getLogger(UsuarioController.class.getName());
+    private static final Logger LOG = Logger.getLogger(UsuarioController.class.getName());
     public static final String ESTADO_ACTIVO = "Activo";
     public static final String ESTADO_BAJA = "Baja";
     /**
@@ -223,6 +224,8 @@ public class UsuarioController implements ActionListener, MouseListener, KeyList
         } catch (NoResultException ex) {
             throw new MessageException("Usuario/Contraseña no válido");
         }
+        InetAddress local = InetAddress.getLocalHost();
+        new UsuarioAccionesController().create(new UsuarioAcciones('u', "login", local.toString(), local.getHostAddress(), local.getHostName(), Usuario.class.getSimpleName(), CURRENT_USER.getId(), CURRENT_USER));
         return CURRENT_USER;
     }
 
@@ -370,11 +373,11 @@ public class UsuarioController implements ActionListener, MouseListener, KeyList
 
         for (Usuario o : l) {
             dtm.addRow(new Object[]{
-                        o.getId(),
-                        o.getNick(),
-                        o.getEstado() == 1 ? "Activo" : "Baja",
-                        UTIL.DATE_FORMAT.format(o.getFechaalta())
-                    });
+                o.getId(),
+                o.getNick(),
+                o.getEstado() == 1 ? "Activo" : "Baja",
+                UTIL.DATE_FORMAT.format(o.getFechaalta())
+            });
         }
     }
 
@@ -515,7 +518,6 @@ public class UsuarioController implements ActionListener, MouseListener, KeyList
         } catch (NoResultException ex) {
             System.out.println("UNIQUE CONSTRAINT Usuario.nick Checked.... OK");
         }// </editor-fold>
-
 
         // 1 activo , 2 baja
         EL_OBJECT.setEstado(panel.getCbEstado().getSelectedIndex() + 1);
@@ -711,10 +713,10 @@ public class UsuarioController implements ActionListener, MouseListener, KeyList
         dtm.setRowCount(0);
         for (Caja caja : cajasList) {
             dtm.addRow(new Object[]{
-                        caja,
-                        caja.getEstado() ? "Activa" : "Baja",
-                        false
-                    });
+                caja,
+                caja.getEstado() ? "Activa" : "Baja",
+                false
+            });
         }
     }
 
@@ -724,10 +726,10 @@ public class UsuarioController implements ActionListener, MouseListener, KeyList
         dtm.setRowCount(0);
         for (Sucursal sucursal : list) {
             dtm.addRow(new Object[]{
-                        sucursal,
-                        sucursal.getNombre() + " (" + UTIL.AGREGAR_CEROS(sucursal.getPuntoVenta(), 4) + ")",
-                        false
-                    });
+                sucursal,
+                sucursal.getNombre() + " (" + UTIL.AGREGAR_CEROS(sucursal.getPuntoVenta(), 4) + ")",
+                false
+            });
         }
     }
 

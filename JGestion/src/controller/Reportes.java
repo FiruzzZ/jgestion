@@ -42,7 +42,7 @@ public class Reportes implements Runnable {
     /**
      * sería algo así "./reportes/"
      */
-    public static String FOLDER_REPORTES = "." + System.getProperty("file.separator") + "reportes" + System.getProperty("file.separator");
+    public static final String FOLDER_REPORTES = "." + System.getProperty("file.separator") + "reportes" + System.getProperty("file.separator");
     private Boolean isViewerReport = null;
     /**
      * Para saber si la ventana de impresión ya sucedió. (No si aceptó o
