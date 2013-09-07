@@ -1581,7 +1581,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
     private void jMenuItem42ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem42ActionPerformed
         try {
-            new CtacteClienteController().initCheckVencimientos((JFrame) this);
+            new CtacteClienteController().initCheckVencimientos(this);
         } catch (MessageException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
         }

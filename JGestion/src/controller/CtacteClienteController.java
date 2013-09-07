@@ -381,16 +381,16 @@ public class CtacteClienteController implements ActionListener {
             }
 
             dtm.addRow(new Object[]{
-                        ctaCte.getId(), // <--------- No es visible desde la GUI
-                        JGestionUtils.getNumeracion(factura),
-                        UTIL.DATE_FORMAT.format(factura.getFechaVenta()),
-                        UTIL.DATE_FORMAT.format(UTIL.customDateByDays(factura.getFechaVenta(), ctaCte.getDias())),
-                        BigDecimal.valueOf(ctaCte.getImporte()),
-                        isAnulada ? "ANULADA" : BigDecimal.valueOf(ctaCte.getEntregado()),
-                        isAnulada ? "ANULADA" : BigDecimal.valueOf(ctaCte.getImporte() - ctaCte.getEntregado()),
-                        isAnulada ? "ANULADA" : saldoAcumulativo,
-                        ctaCte.getEstado()
-                    });
+                ctaCte.getId(), // <--------- No es visible desde la GUI
+                JGestionUtils.getNumeracion(factura),
+                UTIL.DATE_FORMAT.format(factura.getFechaVenta()),
+                UTIL.DATE_FORMAT.format(UTIL.customDateByDays(factura.getFechaVenta(), ctaCte.getDias())),
+                BigDecimal.valueOf(ctaCte.getImporte()),
+                isAnulada ? "ANULADA" : BigDecimal.valueOf(ctaCte.getEntregado()),
+                isAnulada ? "ANULADA" : BigDecimal.valueOf(ctaCte.getImporte() - ctaCte.getEntregado()),
+                isAnulada ? "ANULADA" : saldoAcumulativo,
+                ctaCte.getEstado()
+            });
         }
     }
 
@@ -444,12 +444,12 @@ public class CtacteClienteController implements ActionListener {
         List<DetalleRecibo> detalleReciboList = recibo.getDetalle();
         for (DetalleRecibo detalleRecibo : detalleReciboList) {
             dtm.addRow(new Object[]{
-                        detalleRecibo.getFacturaVenta() != null
-                        ? JGestionUtils.getNumeracion(detalleRecibo.getFacturaVenta())
-                        : JGestionUtils.getNumeracion(detalleRecibo.getNotaDebito()),
-                        detalleRecibo.getObservacion(),
-                        detalleRecibo.getMontoEntrega()
-                    });
+                detalleRecibo.getFacturaVenta() != null
+                ? JGestionUtils.getNumeracion(detalleRecibo.getFacturaVenta())
+                : JGestionUtils.getNumeracion(detalleRecibo.getNotaDebito()),
+                detalleRecibo.getObservacion(),
+                detalleRecibo.getMontoEntrega()
+            });
         }
     }
 
@@ -475,7 +475,7 @@ public class CtacteClienteController implements ActionListener {
      *
      * @param owner el papi de la ventana
      */
-    public void initCheckVencimientos(JFrame owner) throws MessageException {
+    public void initCheckVencimientos(Window owner) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.TESORERIA);
         panelCCCheck = new PanelCtaCteCheckVencimientos();
         panelCCCheck.getCbEntidadElegida().addActionListener(new ActionListener() {
@@ -496,7 +496,7 @@ public class CtacteClienteController implements ActionListener {
                 buscador.getjTable1(),
                 new String[]{"C/P", "Cliente", "Tipo", "Nº factura", "Importe", "Saldo", "Fecha", "Vto."},
                 new int[]{5, 150, 6, 60, 30, 30, 45, 45},
-                new Class[]{Object.class, Object.class, Object.class, Object.class, String.class, String.class, String.class, String.class});
+                new Class<?>[]{null, null, null, String.class, BigDecimal.class, BigDecimal.class, Date.class, Date.class});
         //alineando las columnas Importe y Saldo to RIGHT!!
         DefaultTableCellRenderer defaultTableCellRender = new DefaultTableCellRenderer();
         defaultTableCellRender.setHorizontalAlignment(JLabel.RIGHT);
@@ -542,19 +542,18 @@ public class CtacteClienteController implements ActionListener {
         String query = "SELECT * FROM ";
         String sub_titulo_entidad = null;
         String sub_titulo_fecha = null;
+        final String clientesQuery = "(SELECT 'C' as cp, c.nombre, fv.tipo, trim(to_char(sucursal.puntoventa, '0000')) || trim(to_char(fv.numero,'-00000000')) numero, fv.importe, (ccc.importe - ccc.entregado) as saldo, fv.fecha_venta as fecha, (fv.fecha_venta + fv.dias_cta_cte) as vto"
+                + " FROM ctacte_cliente ccc JOIN factura_venta fv ON ccc.factura = fv.id JOIN cliente c ON fv.cliente = c.id JOIN sucursal ON fv.sucursal = sucursal.id"
+                + " WHERE ccc.estado = 1)";
+        final String proveedoresQuery = "(SELECT 'P' as cp , c.nombre, fv.tipo, to_char(fv.numero, '0000-00000000') numero, fv.importe, (ccc.importe - ccc.entregado) as saldo, fv.fecha_compra as fecha, (fv.fecha_compra + fv.dias_cta_cte) as vto"
+                + " FROM ctacte_proveedor ccc JOIN factura_compra fv ON ccc.factura = fv.id JOIN proveedor c ON fv.proveedor = c.id"
+                + " WHERE ccc.estado = 1)";
         int index = panelCCCheck.getCbEntidadElegida().getSelectedIndex();
         if (index == 0) {
-            query += " ((SELECT 'C' as cp, c.nombre, fv.tipo, fv.numero, fv.importe, (ccc.importe - ccc.entregado) as saldo, fv.fecha_venta as fecha, (fv.fecha_venta + fv.dias_cta_cte) as vto"
-                    + " FROM ctacte_cliente ccc JOIN factura_venta fv ON ccc.factura = fv.id JOIN cliente c ON fv.cliente = c.id"
-                    + " WHERE ccc.estado = 1) "
-                    + " UNION (SELECT 'P' as cp , c.nombre, fv.tipo, fv.numero, fv.importe, (ccc.importe - ccc.entregado) as saldo, fv.fecha_compra as fecha, (fv.fecha_compra + fv.dias_cta_cte) as vto"
-                    + " FROM ctacte_proveedor ccc JOIN factura_compra fv ON ccc.factura = fv.id JOIN proveedor c ON fv.proveedor = c.id"
-                    + " WHERE ccc.estado = 1) ) as c";
+            query += " (" + clientesQuery + " UNION " + proveedoresQuery + " ) as c";
             sub_titulo_entidad = "CLIENTES Y PROVEEDORES";
         } else if (index == 1) {
-            query += " (SELECT 'C' as cp, c.nombre, fv.tipo, fv.numero, fv.importe, (ccc.importe - ccc.entregado) as saldo, fv.fecha_venta as fecha, (fv.fecha_venta + fv.dias_cta_cte) as vto"
-                    + " FROM ctacte_cliente ccc JOIN factura_venta fv ON ccc.factura = fv.id JOIN cliente c ON fv.cliente = c.id"
-                    + " WHERE ccc.estado = 1";
+            query += clientesQuery;
             if (panelCCCheck.getCbClientesProveedores().getSelectedIndex() > 0) {
                 Cliente c = (Cliente) panelCCCheck.getCbClientesProveedores().getSelectedItem();
                 query += " AND c.id= " + c.getId();
@@ -562,9 +561,7 @@ public class CtacteClienteController implements ActionListener {
             }
             query += ") as c";
         } else {
-            query += " (SELECT 'P' as cp , c.nombre, fv.tipo, fv.numero, fv.importe, (ccc.importe - ccc.entregado) as saldo, fv.fecha_compra as fecha, (fv.fecha_compra + fv.dias_cta_cte) as vto"
-                    + " FROM ctacte_proveedor ccc JOIN factura_compra fv ON ccc.factura = fv.id JOIN proveedor c ON fv.proveedor = c.id"
-                    + " WHERE ccc.estado = 1";
+            query += proveedoresQuery;
             if (panelCCCheck.getCbClientesProveedores().getSelectedIndex() > 0) {
                 Proveedor p = (Proveedor) panelCCCheck.getCbClientesProveedores().getSelectedItem();
                 query += " AND c.id= " + p.getId();
@@ -575,12 +572,12 @@ public class CtacteClienteController implements ActionListener {
         }
         query += " WHERE vto IS NOT NULL";
         if (panelCCCheck.getDcDesde().getDate() != null) {
-            query += " AND vto >= '" + panelCCCheck.getDcDesde().getDate() + "'";
+            query += " AND vto >= '" + UTIL.yyyy_MM_dd.format(panelCCCheck.getDcDesde().getDate()) + "'";
             //dato para el reporte
             sub_titulo_fecha = "DESDE: " + UTIL.DATE_FORMAT.format(panelCCCheck.getDcDesde().getDate());
         }
         if (panelCCCheck.getDcHasta().getDate() != null) {
-            query += " AND vto <= '" + panelCCCheck.getDcHasta().getDate() + "'";
+            query += " AND vto <= '" + UTIL.yyyy_MM_dd.format(panelCCCheck.getDcHasta().getDate()) + "'";
             //dato para el reporte
             if (sub_titulo_fecha == null) {
                 sub_titulo_fecha = "HASTA: " + UTIL.DATE_FORMAT.format(panelCCCheck.getDcHasta().getDate());
@@ -598,27 +595,17 @@ public class CtacteClienteController implements ActionListener {
     private void doReporteVencimientosCC(String query, String sub_titulo_entidad, String sub_titulo_fecha) throws MissingReportException, Exception {
         Reportes r = new Reportes("JGestion_VencimientosCC.jasper", "Vencimientos de Ctas. Ctes.");
         r.addCurrent_User();
-        r.addParameter("SUBREPORT_DIR", Reportes.FOLDER_REPORTES);
         r.addParameter("SUB_TITULO_ENTIDAD", sub_titulo_entidad);
         r.addParameter("SUB_TITULO_FECHA", sub_titulo_fecha);
         r.addParameter("QUERY", query);
         r.viewReport();
     }
 
-    private void cargarTablaVencimientosCC(List resultList) {
-        UTIL.limpiarDtm(buscador.getjTable1());
-        for (Object object : resultList) {
-            Object[] o = ((Object[]) object);
-            UTIL.getDtm(buscador.getjTable1()).addRow(new Object[]{
-                        o[0],
-                        o[1],
-                        o[2],
-                        UTIL.AGREGAR_CEROS(((Object) o[3]).toString(), 12),
-                        UTIL.PRECIO_CON_PUNTO.format(o[4]),
-                        UTIL.PRECIO_CON_PUNTO.format(o[5]),
-                        UTIL.DATE_FORMAT.format(((Date) o[6])),
-                        UTIL.DATE_FORMAT.format(((Date) o[7]))
-                    });
+    private void cargarTablaVencimientosCC(List<Object[]> resultList) {
+        DefaultTableModel dtm = (DefaultTableModel) buscador.getjTable1().getModel();
+        dtm.setRowCount(0);
+        for (Object[] o : resultList) {
+            dtm.addRow(o);
         }
     }
 
