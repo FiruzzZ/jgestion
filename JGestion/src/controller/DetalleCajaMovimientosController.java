@@ -110,11 +110,9 @@ public class DetalleCajaMovimientosController {
         em.close();
     }
 
-    void remove(DetalleCajaMovimientos o) {
-        LOG.trace("removing: " + o.getId() + ", desc=" + o.getDescripcion());
+    public void remove(DetalleCajaMovimientos o) {
         EntityManager em = getEntityManager();
         em.getTransaction().begin();
-        o = em.merge(o);
         em.remove(o);
         em.getTransaction().commit();
         em.close();

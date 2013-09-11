@@ -31,7 +31,7 @@ public class EspecieController {
             panelABM.getTfImporte().setText(UTIL.PRECIO_CON_PUNTO.format(toEdit.getImporte()));
             panelABM.getTaDescripcion().setText(toEdit.getDescripcion());
         }
-        final JDABM jd = new JDABM(owner, null, true, panelABM);
+        final JDABM jd = new JDABM(owner, "ABM - Especie", true, panelABM);
         jd.getbAceptar().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

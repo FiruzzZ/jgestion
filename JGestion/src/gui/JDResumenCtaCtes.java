@@ -255,7 +255,6 @@ public class JDResumenCtaCtes extends javax.swing.JDialog {
     public void setListener(Object o) {
         bBuscar.addActionListener((ActionListener) o);
         bImprimir.addActionListener((ActionListener) o);
-        cbReRes.addActionListener((ActionListener) o);
         try {
             jTableResumen.addMouseListener((MouseListener) o);
         } catch (ClassCastException ex) {

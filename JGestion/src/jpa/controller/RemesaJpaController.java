@@ -2,8 +2,7 @@ package jpa.controller;
 
 import controller.CtacteProveedorController;
 import controller.DAO;
-import controller.OperacionesBancariasController;
-import controller.UsuarioController;
+import controller.DetalleCajaMovimientosController;
 import controller.Valores;
 import controller.exceptions.MessageException;
 import entity.*;
@@ -13,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -56,7 +54,7 @@ public class RemesaJpaController extends AbstractDAO<Remesa, Integer> {
     public List<DetalleRemesa> findDetalleRemesaByFactura(FacturaCompra factura) {
         return getEntityManager().
                 createQuery("SELECT o FROM DetalleRemesa o"
-                + " WHERE o.facturaCompra = :facturaCompra", DetalleRemesa.class).
+                        + " WHERE o.facturaCompra = :facturaCompra", DetalleRemesa.class).
                 setParameter("facturaCompra", factura).getResultList();
     }
 
@@ -69,15 +67,15 @@ public class RemesaJpaController extends AbstractDAO<Remesa, Integer> {
         entityManager.persist(remesa);
         for (DetalleRemesa d : remesa.getDetalle()) {
             if (d.getNotaDebitoProveedor() != null) {
-                d.getNotaDebitoProveedor().setRemesa(remesa);       
+                d.getNotaDebitoProveedor().setRemesa(remesa);
                 entityManager.merge(d.getNotaDebitoProveedor());
             }
         }
         entityManager.getTransaction().commit();
         boolean todoBien = false;
+        List<Object> pagosPost = new ArrayList<>(remesa.getPagosEntities().size());
         try {
             entityManager.getTransaction().begin();
-            List<Object> pagosPost = new ArrayList<>(remesa.getPagosEntities().size());
             for (Object object : remesa.getPagosEntities()) {
                 if (object instanceof ChequePropio) {
                     ChequePropio pago = (ChequePropio) object;
@@ -96,6 +94,7 @@ public class RemesaJpaController extends AbstractDAO<Remesa, Integer> {
                             proveedor = remesa.getDetalle().get(0).getNotaDebitoProveedor().getProveedor();
                         }
                     } else {
+                        //cuando es "A conciliar", no tiene detalle de donde sacar el proveedor
                         proveedor = remesa.getProveedor();
                     }
                     pago.setEndosatario(proveedor.getNombre());
@@ -106,7 +105,7 @@ public class RemesaJpaController extends AbstractDAO<Remesa, Integer> {
                     NotaCreditoProveedor pago = (NotaCreditoProveedor) object;
                     pago.setDesacreditado(pago.getImporte());
                     pago.setRemesa(remesa);
-                    entityManager.merge(object);
+                    entityManager.merge(pago);
                     pagosPost.add(pago);
                 } else if (object instanceof ComprobanteRetencion) {
                     ComprobanteRetencion pago = (ComprobanteRetencion) object;
@@ -134,7 +133,6 @@ public class RemesaJpaController extends AbstractDAO<Remesa, Integer> {
             }
             entityManager.getTransaction().commit();
             entityManager.getTransaction().begin();
-//        remesa = entityManager.find(remesa.getClass(), remesa.getId());
             for (Object object : pagosPost) {
                 Integer tipo = null, id = null;
                 if (object instanceof DetalleCajaMovimientos) {
@@ -174,6 +172,36 @@ public class RemesaJpaController extends AbstractDAO<Remesa, Integer> {
         } finally {
             if (!todoBien) {
                 remove(remesa);
+                for (Object object : pagosPost) {
+                    if (object instanceof ChequeTerceros) {
+                        ChequeTerceros pago = (ChequeTerceros) object;
+                        pago.setEstado(ChequeEstado.CARTERA.getId());
+                        pago.setFechaEndoso(null);
+                        pago.setEndosatario(null);
+                        pago.setComprobanteEgreso(null);
+                        new ChequeTercerosJpaController().merge(pago);
+                    } else if (object instanceof ChequePropio) {
+                        ChequePropio pago = (ChequePropio) object;
+                        new ChequePropioJpaController().remove(pago);
+                    } else if (object instanceof DetalleCajaMovimientos) {
+                        DetalleCajaMovimientos pago = (DetalleCajaMovimientos) object;
+                        new DetalleCajaMovimientosController().remove(pago);
+                    } else if (object instanceof NotaCreditoProveedor) {
+                        NotaCreditoProveedor pago = (NotaCreditoProveedor) object;
+                        pago.setDesacreditado(BigDecimal.ZERO);
+                        pago.setRemesa(null);
+                        new NotaCreditoProveedorJpaController().merge(pago);
+                    } else if (object instanceof ComprobanteRetencion) {
+                        ComprobanteRetencion pago = (ComprobanteRetencion) object;
+                        new ComprobanteRetencionJpaController().remove(pago);
+                    } else if (object instanceof CuentabancariaMovimientos) {
+                        CuentabancariaMovimientos pago = (CuentabancariaMovimientos) object;
+                        new CuentabancariaMovimientosJpaController().remove(pago);
+                    } else if (object instanceof Especie) {
+                        Especie pago = (Especie) object;
+                        new EspecieJpaController().remove(pago);
+                    }
+                }
             }
         }
     }
