@@ -538,7 +538,7 @@ public class ChequeTercerosController implements ActionListener {
             query.append(" AND c.banco=").append(((ComboBoxWrapper<Banco>) jdChequeManager.getCbBancos().getSelectedItem()).getId());
         }
         if (jdChequeManager.getCbEmisor().getSelectedIndex() > 0) {
-            query.append(" AND c.cliente=").append(((Cliente) jdChequeManager.getCbEmisor().getSelectedItem()).getId());
+            query.append(" AND c.cliente=").append(((ComboBoxWrapper<Cliente>) jdChequeManager.getCbEmisor().getSelectedItem()).getId());
         }
         if (jdChequeManager.getCbEstados().getSelectedIndex() > 0) {
             query.append(" AND c.estado=").append(((ChequeEstado) jdChequeManager.getCbEstados().getSelectedItem()).getId());

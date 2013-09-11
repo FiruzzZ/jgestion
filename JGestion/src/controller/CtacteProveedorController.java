@@ -240,6 +240,16 @@ public class CtacteProveedorController implements ActionListener {
                 displayDetalleCredito(resumenCtaCtes);
             }
         });
+        resumenCtaCtes.getCbReRes().addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (resumenCtaCtes.getCbReRes().isFocusOwner()) {
+                    setDatosReciboSelected();
+                }
+
+            }
+        });
         resumenCtaCtes.setListener(this);
         return resumenCtaCtes;
     }
@@ -262,10 +272,10 @@ public class CtacteProveedorController implements ActionListener {
                 haber = haber.add(cp.getImporte());
             }
             dtm.addRow(new Object[]{
-                        cp.getConcepto(),
-                        UTIL.TIMESTAMP_FORMAT.format(cp.getFechaCarga()),
-                        cp.getDebe() ? cp.getImporte() : null,
-                        cp.getDebe() ? null : cp.getImporte()});
+                cp.getConcepto(),
+                UTIL.TIMESTAMP_FORMAT.format(cp.getFechaCarga()),
+                cp.getDebe() ? cp.getImporte() : null,
+                cp.getDebe() ? null : cp.getImporte()});
         }
         dtm.addRow(new Object[]{"----------------------", null, debe, haber});
         dtm.addRow(new Object[]{"---------TOTAL--------", null, null, haber.subtract(debe)});
@@ -308,15 +318,6 @@ public class CtacteProveedorController implements ActionListener {
                 } catch (Exception ex) {
                     resumenCtaCtes.showMessage(ex.getMessage(), null, 2);
                     Logger.getLogger(CtacteClienteController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }// </editor-fold>
-        // <editor-fold defaultstate="collapsed" desc="JComboBox">
-        else if (e.getSource().getClass().equals(javax.swing.JComboBox.class)) {
-            javax.swing.JComboBox combo = (javax.swing.JComboBox) e.getSource();
-            if (combo.getName().equalsIgnoreCase("cbReRes")) {
-                if (combo.isFocusOwner()) {
-                    setDatosReciboSelected();
                 }
             }
         }// </editor-fold>
@@ -384,16 +385,16 @@ public class CtacteProveedorController implements ActionListener {
             }
 
             dtm.addRow(new Object[]{
-                        ctaCte.getId(), // <--------- No es visible desde la GUI
-                        factura.getTipo() + UTIL.AGREGAR_CEROS(factura.getNumero(), 12),
-                        factura.getFechaCompra(),
-                        UTIL.customDateByDays(factura.getFechaCompra(), ctaCte.getDias()),
-                        ctaCte.getImporte(),
-                        isAnulada ? "ANULADA" : ctaCte.getEntregado(),
-                        isAnulada ? "ANULADA" : ctaCte.getImporte().subtract(ctaCte.getEntregado()),
-                        isAnulada ? "ANULADA" : saldoAcumulativo,
-                        ctaCte.getEstado()
-                    });
+                ctaCte.getId(), // <--------- No es visible desde la GUI
+                factura.getTipo() + UTIL.AGREGAR_CEROS(factura.getNumero(), 12),
+                factura.getFechaCompra(),
+                UTIL.customDateByDays(factura.getFechaCompra(), ctaCte.getDias()),
+                ctaCte.getImporte(),
+                isAnulada ? "ANULADA" : ctaCte.getEntregado(),
+                isAnulada ? "ANULADA" : ctaCte.getImporte().subtract(ctaCte.getEntregado()),
+                isAnulada ? "ANULADA" : saldoAcumulativo,
+                ctaCte.getEstado()
+            });
         }
     }
 
@@ -434,12 +435,12 @@ public class CtacteProveedorController implements ActionListener {
         List<DetalleRemesa> detalleReList = remesa.getDetalle();
         for (DetalleRemesa detalleRe : detalleReList) {
             dtm.addRow(new Object[]{
-                        detalleRe.getFacturaCompra() != null
-                        ? JGestionUtils.getNumeracion(detalleRe.getFacturaCompra())
-                        : JGestionUtils.getNumeracion(detalleRe.getNotaDebitoProveedor()),
-                        detalleRe.getObservacion(),
-                        UTIL.PRECIO_CON_PUNTO.format(detalleRe.getMontoEntrega())
-                    });
+                detalleRe.getFacturaCompra() != null
+                ? JGestionUtils.getNumeracion(detalleRe.getFacturaCompra())
+                : JGestionUtils.getNumeracion(detalleRe.getNotaDebitoProveedor()),
+                detalleRe.getObservacion(),
+                UTIL.PRECIO_CON_PUNTO.format(detalleRe.getMontoEntrega())
+            });
         }
     }
 

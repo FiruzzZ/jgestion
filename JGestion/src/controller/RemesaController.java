@@ -463,7 +463,7 @@ public class RemesaController implements FocusListener {
             try {
                 jpaController.create(re);
             } catch (Exception ex) {
-                LOG.error("Error fantástico de doble persistencia de remesa: ", ex);
+                LOG.error("Error fantástico de doble persistencia de remesa: " + re, ex);
                 jpaController.create(re);
             }
         }

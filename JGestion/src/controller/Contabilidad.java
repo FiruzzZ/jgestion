@@ -1,5 +1,6 @@
 package controller;
 
+import com.toedter.calendar.JDateChooser;
 import controller.exceptions.DatabaseErrorException;
 import controller.exceptions.MessageException;
 import controller.exceptions.MissingReportException;
@@ -8,6 +9,8 @@ import generics.GenericBeanCollection;
 import java.text.DecimalFormat;
 import utilities.general.UTIL;
 import gui.*;
+import gui.generics.GroupLayoutPanelBuilder;
+import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
@@ -31,15 +34,19 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.NoResultException;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import jgestion.JGestionUtils;
 import jgestion.JGestion;
 import jpa.controller.ClienteJpaController;
+import jpa.controller.ComprobanteRetencionJpaController;
 import jpa.controller.ProveedorJpaController;
 import jpa.controller.VendedorJpaController;
 import net.sf.jasperreports.engine.JRException;
@@ -1559,5 +1566,76 @@ public class Contabilidad {
             }
         });
         return l;
+    }
+
+    public void displayInformeComprobantesRetencion(Window owner) {
+        final JDateChooser dcDesde = new JDateChooser();
+        final JDateChooser dcHasta = new JDateChooser();
+        final JComboBox cbDominios = new JComboBox(new Object[]{"Recibos", "Remesas"});
+        final GroupLayoutPanelBuilder glpb = new GroupLayoutPanelBuilder();
+//        glpb.getInfoLabel().setText("Todos los campos son necesarios");
+        glpb.getInfoLabel().setForeground(Color.BLUE);
+        glpb.addFormItem(new JLabel("Fecha Desde"), dcDesde);
+        glpb.addFormItem(new JLabel("Fecha Hasta"), dcHasta);
+        glpb.addFormItem(new JLabel("Origen"), cbDominios);
+        JPanel panel = glpb.build();
+        final JDABM jdabm = new JDABM(null, "Informe de Facturas Compra por Dominio", true, panel);
+        jdabm.getbAceptar().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    String entityName = (cbDominios.getSelectedIndex() == 0 ? Recibo.class.getSimpleName() : Remesa.class.getSimpleName());
+                    //<editor-fold defaultstate="collapsed" desc="query">
+                    StringBuilder query = new StringBuilder("SELECT o.sucursal.puntoVenta, o.numero,  cr.numero, cr.fecha, cr.importe"
+                            + " FROM " + entityName + " o"
+                            + " JOIN o.pagos d " //+ (cbDominios.getSelectedIndex() == 0 ? ReciboPagos.class.getSimpleName() : RemesaPagos.class.getSimpleName()) + " d"
+                            + " JOIN " + ComprobanteRetencion.class.getSimpleName() + " cr ON d.comprobanteId = cr.id"
+                            + " WHERE d.formaPago=5 ");
+                    SimpleDateFormat yyyyMMdd = new SimpleDateFormat("yyyy/MM/dd");
+                    if (dcDesde.getDate() != null) {
+                        query.append(" AND o.fecha").append(entityName).append(" >= '").append(yyyyMMdd.format(dcDesde.getDate())).append("'");
+                    } else {
+                        throw new MessageException("Fecha Desde no especificada");
+                    }
+                    if (dcHasta.getDate() != null) {
+                        query.append(" AND o.fecha").append(entityName).append(" <= '").append(yyyyMMdd.format(dcHasta.getDate())).append("'");
+                    } else {
+                        throw new MessageException("Fecha Hasta no especificada");
+                    }
+                    query.append(" ORDER BY o.id");
+                    @SuppressWarnings("unchecked")
+                    List<Object[]> l = new ComprobanteRetencionJpaController().findAttributes(query.toString());
+                    DefaultTableModel dtm = new DefaultTableModel(new String[]{"Sucu", "Nº Comprobante Origen...!!!", "N° retencion", "Fecha", "Importe"}, 0);
+                    for (Object[] o : l) {
+                        dtm.addRow(o);
+                    }
+                    List<GenericBeanCollection> data = new ArrayList<>(dtm.getRowCount());
+                    DecimalFormat sucu = new DecimalFormat("0000");
+                    DecimalFormat num = new DecimalFormat("00000000");
+                    for (int row = 0; row < dtm.getRowCount(); row++) {
+                        data.add(new GenericBeanCollection(
+                                sucu.format(dtm.getValueAt(row, 0)) + "-" + num.format(dtm.getValueAt(row, 1)),
+                                dtm.getValueAt(row, 2),
+                                dtm.getValueAt(row, 3),
+                                dtm.getValueAt(row, 4),
+                                null, null, null, null, null, null, null, null));
+                    }
+                    Reportes r = new Reportes("JGestion_ComprobantesRetencion.jasper", "Informe - Comprobantes de retención");
+                    r.setDataSource(data);
+                    r.addParameter("TITLE_PAGE_HEADER", cbDominios.getSelectedItem());
+                    r.addParameter("FECHA_DESDE", dcDesde.getDate());
+                    r.addParameter("FECHA_HASTA", dcHasta.getDate());
+                    r.addConnection();
+                    r.viewReport();
+                } catch (JRException | MissingReportException | MessageException ex) {
+                    JOptionPane.showMessageDialog(null, ex.getMessage());
+                } catch (Exception ex) {
+                    LOG.error(ex, ex);
+                }
+            }
+
+        }
+        );
+        jdabm.setVisible(true);
     }
 }

@@ -197,6 +197,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenuItem67 = new javax.swing.JMenuItem();
         jMenuItem29 = new javax.swing.JMenuItem();
         jMenuItem96 = new javax.swing.JMenuItem();
+        jMenuItem97 = new javax.swing.JMenuItem();
         jMenuItem39 = new javax.swing.JMenuItem();
         jMenuItem72 = new javax.swing.JMenuItem();
         jMenuItem46 = new javax.swing.JMenuItem();
@@ -234,8 +235,8 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         labelConnetionState.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/database_32.png"))); // NOI18N
         labelConnetionState.setToolTipText("Conexión establecida y funcionando");
         labelConnetionState.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        jDesktopPane1.add(labelConnetionState);
         labelConnetionState.setBounds(820, 390, 32, 32);
-        jDesktopPane1.add(labelConnetionState, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         jMenu1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/kf.png"))); // NOI18N
         jMenu1.setMnemonic('a');
@@ -1053,6 +1054,14 @@ public class JFP extends javax.swing.JFrame implements Runnable {
             }
         });
         jMenu24.add(jMenuItem96);
+
+        jMenuItem97.setText("de Retención");
+        jMenuItem97.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem97ActionPerformed(evt);
+            }
+        });
+        jMenu24.add(jMenuItem97);
 
         jMenuReportes.add(jMenu24);
 
@@ -1958,6 +1967,11 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private void jMenuItem96ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem96ActionPerformed
         new DominioController().displayInforme(this);
     }//GEN-LAST:event_jMenuItem96ActionPerformed
+
+    private void jMenuItem97ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem97ActionPerformed
+        new Contabilidad().displayInformeComprobantesRetencion(this);
+    }//GEN-LAST:event_jMenuItem97ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JMenu jMenu1;
@@ -2086,6 +2100,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenuItem jMenuItem94;
     private javax.swing.JMenuItem jMenuItem95;
     private javax.swing.JMenuItem jMenuItem96;
+    private javax.swing.JMenuItem jMenuItem97;
     private javax.swing.JMenuItem jMenuItemCatalogoWeb;
     private javax.swing.JMenuItem jMenuItemCuentasBancarias;
     private javax.swing.JMenuItem jMenuItemOfertas;
