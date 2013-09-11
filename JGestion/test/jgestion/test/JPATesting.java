@@ -20,12 +20,15 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JComboBox;
+import jgestion.JGestionUtils;
 import jpa.controller.*;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.apache.log4j.PropertyConfigurator;
 import utilities.general.UTIL;
+import utilities.swing.components.ComboBoxWrapper;
 
 /**
  *
@@ -40,7 +43,6 @@ public class JPATesting {
             PropertyConfigurator.configure("log4j.properties");
             Properties properties = PropsUtils.load(new File("cfg.ini"));
             DAO.setProperties(properties);
-            new UsuarioController().checkLoginUser("admin", "asdfasdf");
             new JPATesting();
         } catch (Exception ex) {
             LOG.log(Level.SEVERE, null, ex);

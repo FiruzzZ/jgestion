@@ -1149,14 +1149,18 @@ public class FacturaVentaController {
         jdFactura.setDcFechaFactura(EL_OBJECT.getFechaVenta());
         UTIL.setSelectedItem(jdFactura.getCbCliente(), EL_OBJECT.getCliente());
         Sucursal s = EL_OBJECT.getSucursal();
-        UTIL.setSelectedItem(jdFactura.getCbUnidadDeNegocio(), EL_OBJECT.getUnidadDeNegocio().getNombre());
-        UTIL.setSelectedItem(jdFactura.getCbSucursal(), new ComboBoxWrapper<>(s, s.getId(), s.getNombre()));
+        if (EL_OBJECT.getUnidadDeNegocio() != null) {
+            UTIL.setSelectedItem(jdFactura.getCbUnidadDeNegocio(), EL_OBJECT.getUnidadDeNegocio().getNombre());
+        } else {
+            JOptionPane.showMessageDialog(jdFactura, "Unidad de Negocio no válida");
+        }
+        UTIL.setSelectedItem(jdFactura.getCbSucursal(), s);
         JGestionUtils.cargarComboTiposFacturas(jdFactura.getCbFacturaTipo(), EL_OBJECT.getCliente());
         if (EL_OBJECT.getRemito() != null) {
             jdFactura.setTfRemito(JGestionUtils.getNumeracion(EL_OBJECT.getRemito(), false));
         }
         if (EL_OBJECT.getVendedor() != null) {
-            UTIL.setSelectedItem(jdFactura.getCbVendedor(), new ComboBoxWrapper<>(EL_OBJECT.getVendedor(), EL_OBJECT.getVendedor().getId(), null));
+            UTIL.setSelectedItem(jdFactura.getCbVendedor(), EL_OBJECT.getVendedor());
         }
         //Los tipos de factura se tienen q cargar antes, sinó modifica el Nº de factura y muestra el siguiente
         //y no el de Factura seleccionada
