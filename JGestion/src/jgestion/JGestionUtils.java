@@ -55,7 +55,7 @@ public class JGestionUtils {
     }
 
     public static List<ComboBoxWrapper<?>> getWrappedCtacteProveedor(List<?> list) {
-        List<ComboBoxWrapper<?>> l = new ArrayList<ComboBoxWrapper<?>>(list.size());
+        List<ComboBoxWrapper<?>> l = new ArrayList<>(list.size());
         for (Object o : list) {
             if (o instanceof CtacteProveedor) {
                 CtacteProveedor cc = (CtacteProveedor) o;
@@ -70,7 +70,7 @@ public class JGestionUtils {
     }
 
     public static List<ComboBoxWrapper<?>> getWrappedCtacteCliente(List<?> list) {
-        List<ComboBoxWrapper<?>> l = new ArrayList<ComboBoxWrapper<?>>(list.size());
+        List<ComboBoxWrapper<?>> l = new ArrayList<>(list.size());
         for (Object o : list) {
             if (o instanceof CtacteCliente) {
                 CtacteCliente ccc = (CtacteCliente) o;
@@ -84,121 +84,121 @@ public class JGestionUtils {
     }
 
     public static List<ComboBoxWrapper<Cliente>> getWrappedClientes(List<Cliente> list) {
-        List<ComboBoxWrapper<Cliente>> l = new ArrayList<ComboBoxWrapper<Cliente>>(list.size());
+        List<ComboBoxWrapper<Cliente>> l = new ArrayList<>(list.size());
         for (Cliente o : list) {
-            l.add(new ComboBoxWrapper<Cliente>(o, o.getId(), o.getNombre()));
+            l.add(new ComboBoxWrapper<>(o, o.getId(), o.getNombre()));
         }
         return l;
     }
 
     public static List<ComboBoxWrapper<Proveedor>> getWrappedProveedores(List<Proveedor> list) {
-        List<ComboBoxWrapper<Proveedor>> l = new ArrayList<ComboBoxWrapper<Proveedor>>(list.size());
+        List<ComboBoxWrapper<Proveedor>> l = new ArrayList<>(list.size());
         for (Proveedor o : list) {
-            l.add(new ComboBoxWrapper<Proveedor>(o, o.getId(), o.getNombre()));
+            l.add(new ComboBoxWrapper<>(o, o.getId(), o.getNombre()));
         }
         return l;
     }
 
     public static List<ComboBoxWrapper<ListaPrecios>> getWrappedListaPrecios(List<ListaPrecios> list) {
-        List<ComboBoxWrapper<ListaPrecios>> l = new ArrayList<ComboBoxWrapper<ListaPrecios>>(list.size());
+        List<ComboBoxWrapper<ListaPrecios>> l = new ArrayList<>(list.size());
         for (ListaPrecios o : list) {
-            l.add(new ComboBoxWrapper<ListaPrecios>(o, o.getId(), o.getNombre()));
+            l.add(new ComboBoxWrapper<>(o, o.getId(), o.getNombre()));
         }
         return l;
     }
 
     public static List<ComboBoxWrapper<Marca>> getWrappedMarcas(List<Marca> list) {
-        List<ComboBoxWrapper<Marca>> l = new ArrayList<ComboBoxWrapper<Marca>>(list.size());
+        List<ComboBoxWrapper<Marca>> l = new ArrayList<>(list.size());
         for (Marca o : list) {
-            l.add(new ComboBoxWrapper<Marca>(o, o.getId(), o.getNombre()));
+            l.add(new ComboBoxWrapper<>(o, o.getId(), o.getNombre()));
         }
         return l;
     }
 
     public static List<ComboBoxWrapper<Remesa>> getWrappedRemesas(List<Remesa> list) {
-        List<ComboBoxWrapper<Remesa>> l = new ArrayList<ComboBoxWrapper<Remesa>>(list.size());
+        List<ComboBoxWrapper<Remesa>> l = new ArrayList<>(list.size());
         for (Remesa remesa : list) {
-            l.add(new ComboBoxWrapper<Remesa>(remesa, remesa.getId(), JGestionUtils.getNumeracion(remesa, true)));
+            l.add(new ComboBoxWrapper<>(remesa, remesa.getId(), JGestionUtils.getNumeracion(remesa, true)));
         }
         return l;
     }
 
     public static List<ComboBoxWrapper<Rubro>> getWrappedRubros(List<Rubro> list) {
-        List<ComboBoxWrapper<Rubro>> l = new ArrayList<ComboBoxWrapper<Rubro>>(list.size());
+        List<ComboBoxWrapper<Rubro>> l = new ArrayList<>(list.size());
         for (Rubro o : list) {
-            l.add(new ComboBoxWrapper<Rubro>(o, o.getIdrubro(), o.getNombre()));
+            l.add(new ComboBoxWrapper<>(o, o.getIdrubro(), o.getNombre()));
         }
         return l;
     }
 
     public static List<ComboBoxWrapper<SubCuenta>> getWrappedSubCuentas(List<SubCuenta> list) {
-        List<ComboBoxWrapper<SubCuenta>> l = new ArrayList<ComboBoxWrapper<SubCuenta>>(list.size());
+        List<ComboBoxWrapper<SubCuenta>> l = new ArrayList<>(list.size());
         for (SubCuenta o : list) {
-            l.add(new ComboBoxWrapper<SubCuenta>(o, o.getId(), o.getNombre()));
+            l.add(new ComboBoxWrapper<>(o, o.getId(), o.getNombre()));
         }
         return l;
     }
 
     public static List<ComboBoxWrapper<UnidadDeNegocio>> getWrappedUnidadDeNegocios(List<UnidadDeNegocio> list) {
-        List<ComboBoxWrapper<UnidadDeNegocio>> l = new ArrayList<ComboBoxWrapper<UnidadDeNegocio>>(list.size());
+        List<ComboBoxWrapper<UnidadDeNegocio>> l = new ArrayList<>(list.size());
         for (UnidadDeNegocio o : list) {
-            l.add(new ComboBoxWrapper<UnidadDeNegocio>(o, o.getId(), o.getNombre()));
+            l.add(new ComboBoxWrapper<>(o, o.getId(), o.getNombre()));
         }
         return l;
     }
 
     public static List<ComboBoxWrapper<Usuario>> getWrappedUsuarios(List<Usuario> list) {
-        List<ComboBoxWrapper<Usuario>> l = new ArrayList<ComboBoxWrapper<Usuario>>(list.size());
+        List<ComboBoxWrapper<Usuario>> l = new ArrayList<>(list.size());
         for (Usuario usuario : list) {
-            l.add(new ComboBoxWrapper<Usuario>(usuario, usuario.getId(), usuario.getNick()));
+            l.add(new ComboBoxWrapper<>(usuario, usuario.getId(), usuario.getNick()));
         }
         return l;
     }
 
     public static List<ComboBoxWrapper<Sucursal>> getWrappedSucursales(List<Sucursal> list) {
-        List<ComboBoxWrapper<Sucursal>> l = new ArrayList<ComboBoxWrapper<Sucursal>>(list.size());
+        List<ComboBoxWrapper<Sucursal>> l = new ArrayList<>(list.size());
         for (Sucursal o : list) {
-            l.add(new ComboBoxWrapper<Sucursal>(o, o.getId(), o.getNombre()));
+            l.add(new ComboBoxWrapper<>(o, o.getId(), o.getNombre()));
         }
         return l;
     }
 
     public static List<ComboBoxWrapper<Cuenta>> getWrappedCuentas(List<Cuenta> list) {
-        List<ComboBoxWrapper<Cuenta>> l = new ArrayList<ComboBoxWrapper<Cuenta>>(list.size());
+        List<ComboBoxWrapper<Cuenta>> l = new ArrayList<>(list.size());
         for (Cuenta o : list) {
-            l.add(new ComboBoxWrapper<Cuenta>(o, o.getId(), o.getNombre()));
+            l.add(new ComboBoxWrapper<>(o, o.getId(), o.getNombre()));
         }
         return l;
     }
 
     public static List<ComboBoxWrapper<CuentaBancaria>> getWrappedCuentasBancarias(List<CuentaBancaria> list) {
-        List<ComboBoxWrapper<CuentaBancaria>> l = new ArrayList<ComboBoxWrapper<CuentaBancaria>>(list.size());
+        List<ComboBoxWrapper<CuentaBancaria>> l = new ArrayList<>(list.size());
         for (CuentaBancaria o : list) {
-            l.add(new ComboBoxWrapper<CuentaBancaria>(o, o.getId(), o.getNumero().toString()));
+            l.add(new ComboBoxWrapper<>(o, o.getId(), o.getNumero().toString()));
         }
         return l;
     }
 
     public static List<ComboBoxWrapper<Dominio>> getWrappedDominios(List<Dominio> list) {
-        List<ComboBoxWrapper<Dominio>> l = new ArrayList<ComboBoxWrapper<Dominio>>(list.size());
+        List<ComboBoxWrapper<Dominio>> l = new ArrayList<>(list.size());
         for (Dominio o : list) {
-            l.add(new ComboBoxWrapper<Dominio>(o, o.getId(), o.getNombre()));
+            l.add(new ComboBoxWrapper<>(o, o.getId(), o.getNombre()));
         }
         return l;
     }
 
     public static List<ComboBoxWrapper<OperacionesBancarias>> getWrappedOperacionesBancarias(List<OperacionesBancarias> list) {
-        List<ComboBoxWrapper<OperacionesBancarias>> l = new ArrayList<ComboBoxWrapper<OperacionesBancarias>>(list.size());
+        List<ComboBoxWrapper<OperacionesBancarias>> l = new ArrayList<>(list.size());
         for (OperacionesBancarias o : list) {
-            l.add(new ComboBoxWrapper<OperacionesBancarias>(o, o.getId(), o.getNombre()));
+            l.add(new ComboBoxWrapper<>(o, o.getId(), o.getNombre()));
         }
         return l;
     }
 
     public static List<ComboBoxWrapper<Banco>> getWrappedBancos(final List<Banco> list) {
-        List<ComboBoxWrapper<Banco>> l = new ArrayList<ComboBoxWrapper<Banco>>(list.size());
+        List<ComboBoxWrapper<Banco>> l = new ArrayList<>(list.size());
         for (Banco o : list) {
-            l.add(new ComboBoxWrapper<Banco>(o, o.getId(), o.getNombre()));
+            l.add(new ComboBoxWrapper<>(o, o.getId(), o.getNombre()));
         }
         return l;
     }
@@ -304,17 +304,17 @@ public class JGestionUtils {
     }
 
     public static ComboBoxWrapper<Banco> wrap(Banco o) {
-        return new ComboBoxWrapper<Banco>(o, o.getId(), o.getNombre());
+        return new ComboBoxWrapper<>(o, o.getId(), o.getNombre());
     }
 
     public static ComboBoxWrapper<CuentaBancaria> wrap(CuentaBancaria o) {
-        return new ComboBoxWrapper<CuentaBancaria>(o, o.getId(), o.getNumero());
+        return new ComboBoxWrapper<>(o, o.getId(), o.getNumero());
     }
 
     public static List<ComboBoxWrapper<Vendedor>> getWrappedVendedor(List<Vendedor> list) {
-        List<ComboBoxWrapper<Vendedor>> l = new ArrayList<ComboBoxWrapper<Vendedor>>(list.size());
+        List<ComboBoxWrapper<Vendedor>> l = new ArrayList<>(list.size());
         for (Vendedor o : list) {
-            l.add(new ComboBoxWrapper<Vendedor>(o, o.getId(), o.getApellido() + " " + o.getNombre()));
+            l.add(new ComboBoxWrapper<>(o, o.getId(), o.getApellido() + " " + o.getNombre()));
         }
         return l;
     }
@@ -364,9 +364,9 @@ public class JGestionUtils {
     }
 
     public static List<ComboBoxWrapper<Iva>> getWrappedIva(List<Iva> list) {
-        List<ComboBoxWrapper<Iva>> l = new ArrayList<ComboBoxWrapper<Iva>>(list.size());
+        List<ComboBoxWrapper<Iva>> l = new ArrayList<>(list.size());
         for (Iva iva : list) {
-            l.add(new ComboBoxWrapper<Iva>(iva, iva.getId(), iva.getIva().toString() + "%"));
+            l.add(new ComboBoxWrapper<>(iva, iva.getId(), iva.getIva().toString() + "%"));
         }
         return l;
     }

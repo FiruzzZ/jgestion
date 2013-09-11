@@ -630,7 +630,7 @@ public class CtacteClienteController implements ActionListener {
     JDialog getResumenCtaCte(Window owner, boolean modal, Cliente cliente) throws MessageException, MissingReportException, JRException {
         getResumenCtaCte(owner, modal);
         if (cliente != null) {
-            UTIL.setSelectedItem(resumenCtaCtes.getCbClieProv(), new ComboBoxWrapper<>(cliente, cliente.getId(), cliente.getNombre()));
+            UTIL.setSelectedItem(resumenCtaCtes.getCbClieProv(), cliente);
             armarQuery(false);
         }
         return resumenCtaCtes;

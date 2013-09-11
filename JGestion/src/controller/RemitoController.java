@@ -459,9 +459,9 @@ public class RemitoController implements ActionListener {
         if (editing) {
             jdFacturaVenta.setTitle("EDITANDO - " + jdFacturaVenta.getTitle());
             UTIL.setSelectedItem(jdFacturaVenta.getCbCliente(), remito.getCliente());
-            UTIL.setSelectedItem(jdFacturaVenta.getCbSucursal(), new ComboBoxWrapper<Sucursal>(remito.getSucursal(), remito.getSucursal().getId(), remito.getSucursal().getNombre()));
+            UTIL.setSelectedItem(jdFacturaVenta.getCbSucursal(), remito.getSucursal());
             if (remito.getVendedor() != null) {
-                UTIL.setSelectedItem(jdFacturaVenta.getCbVendedor(), new ComboBoxWrapper<Vendedor>(remito.getVendedor(), remito.getVendedor().getId(), null));
+                UTIL.setSelectedItem(jdFacturaVenta.getCbVendedor(), remito.getVendedor());
             }
             jdFacturaVenta.getCbCliente().setEnabled(true);
             jdFacturaVenta.getCbSucursal().setEnabled(true);

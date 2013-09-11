@@ -123,7 +123,7 @@ public class ChequePropioController implements ActionListener {
 
         if (proveedor != null) {
             panelABM.getCbEmisor().setEnabled(false);
-            UTIL.setSelectedItem(panelABM.getCbEmisor(), new ComboBoxWrapper<Proveedor>(proveedor, proveedor.getId(), proveedor.getNombre()));
+            UTIL.setSelectedItem(panelABM.getCbEmisor(), proveedor);
         }
         if (isEditing) {
             panelABM.getCbEmisor().setEnabled(true);
@@ -598,7 +598,7 @@ public class ChequePropioController implements ActionListener {
                     //"Importe", "Estado", "Cruzado", "Endosatario", "F. Endoso", 
                     //"C. Ingreso", "C. Egreso", "Observacion", "Usuario"};
                     DefaultTableModel dtm = (DefaultTableModel) jdChequeManager.getjTable1().getModel();
-                    List<GenericBeanCollection> data = new ArrayList<GenericBeanCollection>(dtm.getRowCount());
+                    List<GenericBeanCollection> data = new ArrayList<>(dtm.getRowCount());
                     for (int row = 0; row < dtm.getRowCount(); row++) {
                         data.add(new GenericBeanCollection(
                                 dtm.getValueAt(row, 1),
