@@ -218,6 +218,7 @@ public class Recibo implements Serializable {
 
     @Override
     public String toString() {
-        return "Recibo{" + "id=" + id + ", numero=" + numero + ", fechaCarga=" + fechaCarga + ", monto=" + monto + ", retencion=" + retencion + ", fechaRecibo=" + fechaRecibo + ", estado=" + estado + ", caja=" + caja + ", sucursal=" + sucursal + ", usuario=" + usuario + ", detalleReciboList=" + detalle.size() + '}';
+        return "Recibo{" + "id=" + id + ", numero=" + numero + ", fechaCarga=" + fechaCarga + ", monto=" + monto + ", retencion=" + retencion + ", fechaRecibo=" + fechaRecibo + ", estado=" + estado + ", caja=" + caja + ", sucursal=" + sucursal + ", usuario=" + usuario + ", detalle=" + detalle + ", pagos=" + pagos + ", pagosEntities=" + pagosEntities + ", porConciliar=" + porConciliar + ", cliente=" + cliente + '}';
     }
+
 }

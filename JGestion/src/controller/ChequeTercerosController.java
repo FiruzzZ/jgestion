@@ -232,14 +232,9 @@ public class ChequeTercerosController implements ActionListener {
                 if (abm != null && panelABM != null) {
                     if (boton.equals(abm.getbAceptar())) {
                         try {
-                            Integer id = null;
-                            if (EL_OBJECT != null) {
-                                id = EL_OBJECT.getId();
-                            }
+                            Integer id = EL_OBJECT != null ? EL_OBJECT.getId() : null;
                             ChequeTerceros cheque = getEntity();
-                            if (id != null) {
-                                cheque.setId(id);
-                            }
+                            cheque.setId(id);
                             checkConstraints(cheque);
                             if (panelABM.persist()) {
                                 String msg = cheque.getId() == null ? "Registrado" : "Modificado";

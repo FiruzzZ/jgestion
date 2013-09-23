@@ -51,6 +51,24 @@ public class JPATesting {
 
     @SuppressWarnings("unchecked")
     public JPATesting() throws Exception {
+        List<Recibo> l = new ReciboJpaController().findAll();
+        for (Recibo recibo : l) {
+            Cliente c;
+            if (recibo.getDetalle().isEmpty()) {
+                System.out.println("EMPTY:" + recibo);
+                continue;
+            }
+            if (recibo.getDetalle().get(0).getFacturaVenta() != null) {
+                c = recibo.getDetalle().get(0).getFacturaVenta().getCliente();
+            } else {
+                c = recibo.getDetalle().get(0).getNotaDebito().getCliente();
+            }
+            if (!c.equals(recibo.getCliente())) {
+                System.out.println("cambiando " + c.getId() + " por " + recibo.getCliente());
+                recibo.setCliente(c);
+                new ReciboJpaController().merge(recibo);
+            }
+        }
     }
 
     private void updateCostoCompraYPrecioVentaSegunDetalleCompra() {
