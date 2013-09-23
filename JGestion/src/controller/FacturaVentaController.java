@@ -549,9 +549,14 @@ public class FacturaVentaController {
             selectedProducto.getNombre() + "(" + selectedProducto.getIva().getIva() + ")",
             cantidad,
             precioUnitarioSinIVA, //columnIndex == 4
-            precioUnitarioSinIVA.multiply((alicuota.divide(new BigDecimal("100")).add(BigDecimal.ONE))).setScale(4, RoundingMode.HALF_EVEN),
+            precioUnitarioSinIVA
+            .multiply((alicuota.divide(new BigDecimal("100")).add(BigDecimal.ONE)))
+            .setScale(4, RoundingMode.HALF_EVEN),
             descuentoUnitario.multiply(BigDecimal.valueOf(cantidad)),
-            precioUnitarioSinIVA.multiply(BigDecimal.valueOf(cantidad)).multiply((alicuota.divide(new BigDecimal("100")).add(BigDecimal.ONE))).setScale(2, RoundingMode.HALF_EVEN), //subTotal
+            precioUnitarioSinIVA
+            .multiply(BigDecimal.valueOf(cantidad))
+            .multiply((alicuota.divide(new BigDecimal("100")).add(BigDecimal.ONE)))
+            .setScale(2, RoundingMode.HALF_EVEN), //subTotal
             (descuentoUnitario.intValue() == 0) ? -1 : (jdFactura.getCbDesc().getSelectedIndex() + 1),//Tipo de descuento
             selectedProducto.getId(),
             productoEnOferta //columnIndex == 10
@@ -671,7 +676,11 @@ public class FacturaVentaController {
         contenedor.setTfTotalOtrosImps(UTIL.DECIMAL_FORMAT.format(otrosImps));
         redondeoTotal = gravado.add(iva10).add(iva21).add(otrosImps).subtract(redondeoTotal);
         contenedor.getTfDiferenciaRedondeo().setText(UTIL.DECIMAL_FORMAT.format(redondeoTotal));
-        contenedor.setTfTotal(UTIL.DECIMAL_FORMAT.format(subTotal.add(redondeoTotal)));
+//        if (contenedor.getCbFacturaTipo().getSelectedItem().toString().equalsIgnoreCase("B")) {
+//            contenedor.setTfTotal(UTIL.DECIMAL_FORMAT.format(subTotal.add(redondeoTotal)));
+//        } else {
+        contenedor.setTfTotal(UTIL.DECIMAL_FORMAT.format(subTotal));
+//        }
         LOG.debug("Gravado:" + gravado + ", Desc.:" + desc + ", IVA105:" + iva10 + ", IVA21:" + iva21 + ", OtrosImp.:" + otrosImps + ", Redondeo:" + redondeoTotal);
     }
 
@@ -1388,7 +1397,7 @@ public class FacturaVentaController {
         refreshResumen(jdFactura);
 
         //viendo si se habilita el botón FACTURAR
-        if ((!facturaVenta.getAnulada())
+        if (!facturaVenta.getAnulada()
                 && facturaVenta.getNumero() == 0
                 && facturaVenta.getTipo() == 'I') {
             //si NO está anulada
@@ -1403,7 +1412,6 @@ public class FacturaVentaController {
             jdFactura.getBtnAnular().setVisible(paraAnular);
             jdFactura.getCheckFacturacionElectronica().setVisible(false);
         }
-//        jdFactura.addActionAndKeyListener(this);
         jdFactura.setLocationRelativeTo(buscador);
         jdFactura.setVisible(true);
     }
@@ -1820,20 +1828,25 @@ public class FacturaVentaController {
                 while (iva == null || iva.getIva() == null) {
                     System.out.print(".");
                     iva = new IvaController().findByProducto(detalle.getProducto().getId());
+                    detalle.getProducto().setIva(iva);
                 }
             }
             try {
-                BigDecimal productoConIVA = detalle.getPrecioUnitario().add(UTIL.getPorcentaje(detalle.getPrecioUnitario(), BigDecimal.valueOf(iva.getIva()))).setScale(4, RoundingMode.HALF_EVEN);
                 //"IVA","Cód. Producto","Producto","Cantidad","P. Unitario","P. final","Desc","Sub total"
                 dtm.addRow(new Object[]{
-                    iva.getIva(),
+                    detalle.getProducto().getIva().getIva(),
                     detalle.getProducto().getCodigo(),
                     detalle.getProducto().getNombre() + "(" + iva.getIva() + ")",
                     detalle.getCantidad(),
                     detalle.getPrecioUnitario(),
-                    productoConIVA,
+                    detalle.getPrecioUnitario()
+                    .multiply(BigDecimal.valueOf(detalle.getProducto().getIva().getIva() / 100).add(BigDecimal.ONE))
+                    .setScale(4, RoundingMode.HALF_EVEN),
                     detalle.getDescuento(),
-                    UTIL.PRECIO_CON_PUNTO.format((detalle.getCantidad() * productoConIVA.doubleValue()) - detalle.getDescuento()),
+                    detalle.getPrecioUnitario()
+                    .multiply(BigDecimal.valueOf(detalle.getCantidad()))
+                    .multiply(BigDecimal.valueOf(detalle.getProducto().getIva().getIva() / 100).add(BigDecimal.ONE))
+                    .setScale(2, RoundingMode.HALF_EVEN),
                     detalle.getTipoDesc(),
                     detalle.getProducto().getId(),
                     null
@@ -1842,7 +1855,7 @@ public class FacturaVentaController {
                 throw new MessageException("Ocurrió un error recuperando el detalle y los datos del Producto:"
                         + "\nCódigo:" + detalle.getProducto().getNombre()
                         + "\nNombre:" + detalle.getProducto().getCodigo()
-                        + "\nIVA:" + detalle.getProducto().getIva()
+                        + "\nIVA:" + iva
                         + "\n\n   Intente nuevamente.");
             }
         }

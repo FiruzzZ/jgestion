@@ -67,8 +67,7 @@ public class Reportes implements Runnable {
      * archivo .JASPER si se encuentra en {@link Reportes#FOLDER_REPORTES} +
      * @pathReport
      * @param title Título de la ventana del reporte
-     * @throws MissingReportException
-     * @throws Exception Si el archivo .jasper no se encuentra
+     * @throws MissingReportException si el archivo .jasper no se encuentra
      */
     public Reportes(String pathReport, String title) throws MissingReportException {
 

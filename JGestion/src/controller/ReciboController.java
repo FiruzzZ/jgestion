@@ -808,11 +808,11 @@ public class ReciboController implements ActionListener, FocusListener {
         UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), true);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
-                new String[]{"Instance", "Nº Recibo", "Monto", "Fecha", "Caja", "Usuario", "Fecha/Hora (Sist)"},
-                new int[]{1, 80, 50, 40, 50, 50, 70});
-        buscador.getjTable1().getColumnModel().getColumn(2).setCellRenderer(NumberRenderer.getCurrencyRenderer());
-        buscador.getjTable1().getColumnModel().getColumn(3).setCellRenderer(FormatRenderer.getDateRenderer());
-        buscador.getjTable1().getColumnModel().getColumn(6).setCellRenderer(FormatRenderer.getDateTimeRenderer());
+                new String[]{"Instance", "Nº Recibo", "Cliente", "Monto", "Fecha", "Caja", "Usuario", "Fecha/Hora (Sist)"},
+                new int[]{1, 80, 200, 50, 40, 50, 50, 70});
+        buscador.getjTable1().getColumnModel().getColumn(3).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        buscador.getjTable1().getColumnModel().getColumn(4).setCellRenderer(FormatRenderer.getDateRenderer());
+        buscador.getjTable1().getColumnModel().getColumn(7).setCellRenderer(FormatRenderer.getDateTimeRenderer());
         UTIL.hideColumnTable(buscador.getjTable1(), 0);
         buscador.getjTable1().addMouseListener(new MouseAdapter() {
             @Override
@@ -981,6 +981,7 @@ public class ReciboController implements ActionListener, FocusListener {
             dtm.addRow(new Object[]{
                 o.getId(),
                 JGestionUtils.getNumeracion(o, true),
+                o.getCliente().getNombre(),
                 o.getMonto(),
                 o.getFechaRecibo(),
                 o.getCaja().getNombre(),
