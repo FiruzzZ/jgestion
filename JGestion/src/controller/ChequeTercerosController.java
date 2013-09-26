@@ -309,11 +309,11 @@ public class ChequeTercerosController implements ActionListener {
                         int row = jdChequeManager.getjTable1().getSelectedRow();
                         if (row > -1) {
                             ChequeTerceros cheque = jpaController.find((Integer) jdChequeManager.getjTable1().getModel().getValueAt(row, 0));
-                            if (cheque.getChequeEstado().equals(ChequeEstado.CARTERA)) {
+                            if (!cheque.getChequeEstado().equals(ChequeEstado.CARTERA)) {
                                 JOptionPane.showMessageDialog(jdChequeManager, "Solo los cheques en " + ChequeEstado.CARTERA + " pueden ser depositados", "Error", JOptionPane.WARNING_MESSAGE);
                                 return;
                             }
-                            new CuentabancariaController().initDepositoUI(cheque);
+                            new CuentabancariaController().initDepositoUI(jdChequeManager, cheque);
                             armarQuery(false);
                         }
                     } else if (boton.equals(jdChequeManager.getBtnReemplazar())) {

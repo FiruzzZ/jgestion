@@ -13,7 +13,9 @@ import org.eclipse.persistence.config.QueryHints;
  * @author Administrador
  */
 @Entity
-@Table(name = "factura_venta" //, uniqueConstraints = {@UniqueConstraint(columnNames = {"numero"})}
+@Table(name = "factura_venta" 
+// cuando arregle el atributo movimiento_interno        
+//, uniqueConstraints = {@UniqueConstraint(columnNames = {"tipo", "sucursal", "numero"})}
 )
 @NamedQueries({
     @NamedQuery(name = "FacturaVenta.findAll", query = "SELECT f FROM FacturaVenta f"),

@@ -898,7 +898,7 @@ public class FacturaVentaController {
                 break;
             }
             case 2: { // CTA CTE CLIENTE (NO HAY NINGÚN MOVIMIENTO DE CAJA)
-                new CtacteClienteController().nuevaCtaCte(facturaVenta);
+                new CtacteClienteController().addToCtaCte(facturaVenta);
                 break;
             }
             case 3: { // CHEQUE Terceros (tampoco HAY NINGÚN MOVIMIENTO DE CAJA)
@@ -1606,7 +1606,7 @@ public class FacturaVentaController {
             }
         } else if (EL_OBJECT.getFormaPagoEnum().equals(Valores.FormaPago.CTA_CTE)) {
             CtacteClienteController cccController = new CtacteClienteController();
-            CtacteCliente oldCCC = cccController.findByFactura(EL_OBJECT.getId());
+            CtacteCliente oldCCC = cccController.findBy(EL_OBJECT);
             /**
              * Si solo cambio el cliente no hay modificar nada mas que la
              * factura, ya que el cliente está ligado a la factura y esta a la

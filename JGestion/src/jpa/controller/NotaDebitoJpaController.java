@@ -71,27 +71,4 @@ public class NotaDebitoJpaController extends AbstractDAO<NotaDebito, Integer> {
             return null;
         }
     }
-
-    /**
-     *
-     * @param cliente
-     * @param recibadas <code>true</code> for {@link NotaDebito#recibo} != null
-     * @return
-     */
-    public List<NotaDebito> findBy(Cliente cliente, Boolean recibadas) {
-        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        CriteriaQuery<NotaDebito> cq = cb.createQuery(getEntityClass());
-        Root<NotaDebito> from = cq.from(getEntityClass());
-        if (recibadas != null) {
-            if (recibadas) {
-                cq.where(cb.equal(from.get(NotaDebito_.cliente), cliente), cb.isNotNull(from.get(NotaDebito_.recibo)));
-            } else {
-                cq.where(cb.equal(from.get(NotaDebito_.cliente), cliente), cb.isNull(from.get(NotaDebito_.recibo)));
-            }
-        } else {
-            cq.where(cb.equal(from.get(NotaDebito_.cliente), cliente));
-        }
-        cq.orderBy(cb.asc(from.get(NotaDebito_.fechaNotaDebito)));
-        return getEntityManager().createQuery(cq).getResultList();
-    }
 }

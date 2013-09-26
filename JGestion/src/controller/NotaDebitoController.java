@@ -3,6 +3,7 @@ package controller;
 import controller.exceptions.MessageException;
 import controller.exceptions.MissingReportException;
 import entity.Cliente;
+import entity.CtacteCliente;
 import entity.DetalleNotaDebito;
 import entity.Iva;
 import entity.NotaDebito;
@@ -17,24 +18,18 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import jgestion.JGestionUtils;
 import jpa.controller.ClienteJpaController;
 import jpa.controller.IvaJpaController;
 import jpa.controller.NotaDebitoJpaController;
-import jpa.controller.SucursalJpaController;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Logger;
-import org.bushe.swing.action.ActionList;
 import utilities.general.UTIL;
 import utilities.gui.SwingUtil;
 import utilities.swing.components.ComboBoxWrapper;
@@ -169,7 +164,9 @@ public class NotaDebitoController {
                         setAndPersist();
                     }
                     EL_OBJECT = null;
-                    resetUI();
+                    if (!viewMode) {
+                        resetUI();
+                    }
                 } catch (MessageException ex) {
                     ex.displayMessage(abm);
                 } catch (Exception ex) {
@@ -192,9 +189,7 @@ public class NotaDebitoController {
                     "¿Re-Imprimir comprobante?", jpaController.getEntityClass().getSimpleName(), JOptionPane.OK_CANCEL_OPTION)) {
                 try {
                     doReport(EL_OBJECT);
-                } catch (MissingReportException ex) {
-                    JOptionPane.showMessageDialog(abm, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                } catch (JRException ex) {
+                } catch (MissingReportException | JRException ex) {
                     JOptionPane.showMessageDialog(abm, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
@@ -204,14 +199,13 @@ public class NotaDebitoController {
             if (EL_OBJECT.getId() == null) {
                 try {
                     jpaController.create(EL_OBJECT);
+                    new CtacteClienteController().addToCtaCte(EL_OBJECT);
                     doReport(EL_OBJECT);
-                } catch (MissingReportException ex) {
-                    JOptionPane.showMessageDialog(abm, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                } catch (JRException ex) {
+                } catch (MissingReportException | JRException ex) {
                     JOptionPane.showMessageDialog(abm, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(abm, ex.getMessage(), "Algo salió mal", JOptionPane.ERROR_MESSAGE);
-                    LOG.error("creando Nota debito > " + EL_OBJECT, ex);
+                    LOG.error("persistiendo " + EL_OBJECT, ex);
                 }
             } else {
             }
@@ -237,9 +231,8 @@ public class NotaDebitoController {
     }
 
     /**
-     * Agrega a
-     * <code>numero</code> tantos 0 (ceros) a la izq hasta completar los 12
-     * dígitos (#### ########) y setea en la GUI
+     * Agrega a <code>numero</code> tantos 0 (ceros) a la izq hasta completar
+     * los 12 dígitos (#### ########) y setea en la GUI
      *
      * @param numero
      */
@@ -381,8 +374,8 @@ public class NotaDebitoController {
         DefaultTableModel dtm = (DefaultTableModel) abm.getjTable1().getModel();
         BigDecimal importe = (detalle.getIva() == null ? detalle.getImporte() : detalle.getImporte().add(UTIL.getPorcentaje(detalle.getImporte(), BigDecimal.valueOf(detalle.getIva().getIva()))));
         dtm.addRow(new Object[]{
-                    detalle, detalle.getConcepto(), importe
-                });
+            detalle, detalle.getConcepto(), importe
+        });
     }
 
     private void cargarTablaBuscador(String query) {
@@ -390,17 +383,18 @@ public class NotaDebitoController {
         dtm.setRowCount(0);
         List<NotaDebito> l = jpaController.findByQuery(query);
         for (NotaDebito notaDebito : l) {
+            CtacteCliente ccc = new CtacteClienteController().findByNotaDebito(notaDebito.getId());
             dtm.addRow(new Object[]{
-                        notaDebito.getId(), // <--- no es visible
-                        JGestionUtils.getNumeracion(notaDebito),
-                        notaDebito.getCliente().getNombre(),
-                        notaDebito.getImporte(),
-                        notaDebito.getFechaNotaDebito(),
-                        notaDebito.getSucursal().getNombre(),
-                        notaDebito.getRecibo() == null ? null : JGestionUtils.getNumeracion(notaDebito.getRecibo(), true),
-                        notaDebito.getUsuario().getNick(),
-                        notaDebito.getFechaCarga()
-                    });
+                notaDebito.getId(), // <--- no es visible
+                JGestionUtils.getNumeracion(notaDebito),
+                notaDebito.getCliente().getNombre(),
+                notaDebito.getImporte(),
+                notaDebito.getFechaNotaDebito(),
+                notaDebito.getSucursal().getNombre(),
+                ccc == null ? null : notaDebito.getImporte().subtract(BigDecimal.valueOf(ccc.getEntregado())),
+                notaDebito.getUsuario().getNick(),
+                notaDebito.getFechaCarga()
+            });
         }
     }
 
@@ -415,11 +409,12 @@ public class NotaDebitoController {
         UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), true);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
-                new String[]{"id", "Nº Nota Débito", "Cliente", "Importe", "Fecha", "Sucursal", "Recibo", "Usuario", "Fecha (Sistema)"},
+                new String[]{"id", "Nº Nota Débito", "Cliente", "Importe", "Fecha", "Sucursal", "Saldo", "Usuario", "Fecha (Sistema)"},
                 new int[]{1, 90, 100, 50, 50, 80, 80, 50, 80},
-                new Class<?>[]{Integer.class, null, null, BigDecimal.class, Date.class, null, null, null, Date.class});
+                new Class<?>[]{Integer.class, null, null, BigDecimal.class, Date.class, null, BigDecimal.class, null, Date.class});
         buscador.getjTable1().getColumnModel().getColumn(3).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         buscador.getjTable1().getColumnModel().getColumn(4).setCellRenderer(FormatRenderer.getDateRenderer());
+        buscador.getjTable1().getColumnModel().getColumn(6).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         buscador.getjTable1().getColumnModel().getColumn(8).setCellRenderer(FormatRenderer.getDateTimeRenderer());
         UTIL.hideColumnTable(buscador.getjTable1(), 0);
         buscador.getjTable1().addMouseListener(new MouseAdapter() {
@@ -528,7 +523,6 @@ public class NotaDebitoController {
             }
         }
 
-
         if (buscador.getDcDesde() != null) {
             query.append(" AND o.fechaNotaDebito >= '").append(UTIL.yyyy_MM_dd.format(buscador.getDcDesde())).append("'");
         }
@@ -564,7 +558,7 @@ public class NotaDebitoController {
         return query.toString();
     }
 
-    private void show(NotaDebito notaDebito, boolean toAnular) throws MessageException {
+    void show(NotaDebito notaDebito, boolean toAnular) throws MessageException {
         initNotaDebitoUI(buscador, true, false);
         SwingUtil.setComponentsEnabled(abm.getPanelDatosFacturacion().getComponents(), false, true, (Class<? extends Component>[]) null);
         SwingUtil.setComponentsEnabled(abm.getPanelDetalle().getComponents(), false, true, (Class<? extends Component>[]) null);
@@ -599,5 +593,10 @@ public class NotaDebitoController {
         r.addParameter("ENTITY_ID", o.getId());
         r.addCurrent_User();
         r.printReport(true);
+    }
+
+    void view(NotaDebito notaDebito) throws MessageException {
+        viewMode = true;
+        show(notaDebito, false);
     }
 }

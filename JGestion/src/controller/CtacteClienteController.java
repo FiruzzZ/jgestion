@@ -6,7 +6,6 @@ import utilities.general.UTIL;
 import gui.JDBuscador;
 import gui.JDResumenCtaCtes;
 import gui.PanelCtaCteCheckVencimientos;
-import gui.generics.JDialogTable;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,23 +17,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.NoResultException;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import jgestion.JGestionUtils;
-import jpa.controller.CreditoProveedorJpaController;
-import jpa.controller.NotaCreditoJpaController;
+import jpa.controller.CtacteClienteJpaController;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Logger;
 import utilities.swing.components.ComboBoxWrapper;
@@ -42,7 +31,7 @@ import utilities.swing.components.NumberRenderer;
 
 /**
  *
- * @author Administrador
+ * @author FiruzzZ
  */
 public class CtacteClienteController implements ActionListener {
 
@@ -52,107 +41,33 @@ public class CtacteClienteController implements ActionListener {
     private double totalHaber; //<----
     private PanelCtaCteCheckVencimientos panelCCCheck;
     private JDBuscador buscador;
-    private static Logger LOG = Logger.getLogger(CtacteClienteController.class);
+    private static final Logger LOG = Logger.getLogger(CtacteClienteController.class);
+    private final CtacteClienteJpaController jpaController = new CtacteClienteJpaController();
 
-    // <editor-fold defaultstate="collapsed" desc="CRUD...">
-    public EntityManager getEntityManager() {
-        return DAO.getEntityManager();
-    }
-
-    public void create(CtacteCliente ctacteCliente) throws PreexistingEntityException, Exception {
-
-        EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            em.persist(ctacteCliente);
-            em.getTransaction().commit();
-        } catch (Exception ex) {
-            throw ex;
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
+    public CtacteClienteController() {
     }
 
     public void edit(CtacteCliente ctacteCliente) {
-        EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            ctacteCliente = em.merge(ctacteCliente);
-            em.getTransaction().commit();
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
+        jpaController.merge(ctacteCliente);
     }
 
     public void destroy(Integer id) throws NonexistentEntityException {
-        EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            CtacteCliente ctacteCliente;
-            try {
-                ctacteCliente = em.getReference(CtacteCliente.class, id);
-                ctacteCliente.getId();
-            } catch (EntityNotFoundException enfe) {
-                throw new NonexistentEntityException("The ctacteCliente with id " + id + " no longer exists.", enfe);
-            }
-            em.remove(ctacteCliente);
-            em.getTransaction().commit();
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
+        jpaController.remove(jpaController.find(id));
     }
 
-    public List<CtacteCliente> findCtacteClienteEntities() {
-        return findCtacteClienteEntities(true, -1, -1);
+    void addToCtaCte(NotaDebito notaDebito) throws Exception {
+        LOG.trace("adding CCC Nº" + notaDebito);
+        CtacteCliente ccp = new CtacteCliente();
+        ccp.setDias((short) 0);
+        ccp.setEntregado(0.0); //monto $$
+        ccp.setEstado((Valores.CtaCteEstado.PENDIENTE.getId()));
+        ccp.setNotaDebito(notaDebito);
+        ccp.setFechaCarga(notaDebito.getFechaNotaDebito());
+        ccp.setImporte(notaDebito.getImporte().doubleValue());
+        jpaController.create(ccp);
     }
 
-    public List<CtacteCliente> findCtacteClienteEntities(int maxResults, int firstResult) {
-        return findCtacteClienteEntities(false, maxResults, firstResult);
-    }
-
-    private List<CtacteCliente> findCtacteClienteEntities(boolean all, int maxResults, int firstResult) {
-        EntityManager em = getEntityManager();
-        try {
-            Query q = em.createQuery("select object(o) from CtacteCliente as o");
-            if (!all) {
-                q.setMaxResults(maxResults);
-                q.setFirstResult(firstResult);
-            }
-            return q.getResultList();
-        } finally {
-            em.close();
-        }
-    }
-
-    public CtacteCliente findCtacteCliente(Integer id) {
-        EntityManager em = getEntityManager();
-        try {
-            return em.find(CtacteCliente.class, id);
-        } finally {
-            em.close();
-        }
-    }
-
-    public int getCtacteClienteCount() {
-        EntityManager em = getEntityManager();
-        try {
-            Query q = em.createQuery("select count(o) from CtacteCliente as o");
-            return ((Long) q.getSingleResult()).intValue();
-        } finally {
-            em.close();
-        }
-    }// </editor-fold>
-
-    void nuevaCtaCte(FacturaVenta facturaVenta) throws Exception {
+    void addToCtaCte(FacturaVenta facturaVenta) throws Exception {
         LOG.trace("adding CCC Nº" + facturaVenta);
         CtacteCliente ccp = new CtacteCliente();
         ccp.setDias((short) facturaVenta.getDiasCtaCte());
@@ -161,27 +76,38 @@ public class CtacteClienteController implements ActionListener {
         ccp.setFactura(facturaVenta);
         ccp.setFechaCarga(facturaVenta.getFechaalta());
         ccp.setImporte(facturaVenta.getImporte());
-        create(ccp);
+        jpaController.create(ccp);
     }
 
     public CtacteCliente find(Integer id) {
-        return DAO.getEntityManager().find(CtacteCliente.class, id);
+        return jpaController.find(id);
     }
 
-    public CtacteCliente findByFactura(Integer id) {
-        return (CtacteCliente) DAO.getEntityManager().createQuery("SELECT o FROM " + CLASS_NAME + " o "
-                + " where o.factura.id = " + id).getSingleResult();
+    public CtacteCliente findByNotaDebito(Integer notaDebitoID) {
+        return jpaController.findByNotaDebito(notaDebitoID);
+    }
+
+    /**
+     * Busca la Cta. Cte. relacionada al comprobante y retorna (si existe).
+     *
+     * @param facturaVenta
+     * @return instance or {@code null} does not exist.
+     */
+    public CtacteCliente findBy(FacturaVenta facturaVenta) {
+        return jpaController.findByFactura(facturaVenta.getId());
     }
 
     List<CtacteCliente> findByCliente(Cliente cliente, short estadoCtaCte) {
-        EntityManager em = getEntityManager();
-        em.getTransaction().begin();
-        List<CtacteCliente> l = em.createQuery(
+        List<CtacteCliente> facturaVentaList = jpaController.findByQuery(
                 "SELECT o FROM " + CtacteCliente.class.getSimpleName() + " o"
                 + " WHERE o.estado = " + estadoCtaCte + " AND o.factura.cliente.id =" + cliente.getId()
-                + " ORDER BY o.factura.sucursal.puntoVenta, o.factura.numero",
-                CtacteCliente.class).getResultList();
-        return l;
+                + " ORDER BY o.factura.sucursal.puntoVenta, o.factura.numero");
+        List<CtacteCliente> notaDebitoList = jpaController.findByQuery(
+                "SELECT o FROM " + CtacteCliente.class.getSimpleName() + " o"
+                + " WHERE o.estado = " + estadoCtaCte + " AND o.notaDebito.cliente.id =" + cliente.getId()
+                + " ORDER BY o.notaDebito.sucursal.puntoVenta, o.notaDebito.numero");
+        facturaVentaList.addAll(notaDebitoList);
+        return facturaVentaList;
     }
 
     /**
@@ -193,16 +119,13 @@ public class CtacteClienteController implements ActionListener {
      * @return
      */
     List<Object[]> findSaldos(Date desde, Date hasta) {
-        EntityManager em = getEntityManager();
-        em.getTransaction().begin();
         List<CtacteCliente> l;
-        l = em.createQuery(
+        l = jpaController.findByQuery(
                 "SELECT o FROM " + CtacteCliente.class.getSimpleName() + " o"
                 + " WHERE o.factura.anulada = FALSE AND o.estado = 1"
                 + (desde != null ? " AND o.factura.fechaVenta >='" + UTIL.DATE_FORMAT.format(desde) + "'" : "")
                 + (hasta != null ? " AND o.factura.fechaVenta <='" + UTIL.DATE_FORMAT.format(hasta) + "'" : "")
-                + " ORDER BY o.factura.cliente.nombre",
-                CtacteCliente.class).getResultList();
+                + " ORDER BY o.factura.cliente.nombre");
         if (l.isEmpty()) {
             return new ArrayList<>(0);
         }
@@ -239,12 +162,21 @@ public class CtacteClienteController implements ActionListener {
                 if (e.getClickCount() == 2) {
                     Integer selectedRow = resumenCtaCtes.getjTableResumen().getSelectedRow();
                     CtacteCliente ccc = find((Integer) (resumenCtaCtes.getDtmResumen().getValueAt(selectedRow, 0)));
-                    FacturaVenta factura = ccc.getFactura();
-                    try {
-                        FacturaVentaController fvc = new FacturaVentaController();
-                        fvc.show(factura, false);
-                    } catch (MessageException ex) {
-                        ex.displayMessage(null);
+                    if (ccc.getFactura() != null) {
+                        FacturaVenta factura = ccc.getFactura();
+                        try {
+                            FacturaVentaController fvc = new FacturaVentaController();
+                            fvc.show(factura, false);
+                        } catch (MessageException ex) {
+                            ex.displayMessage(null);
+                        }
+                    } else {
+                        try {
+                            NotaDebito notaDebito = ccc.getNotaDebito();
+                            new NotaDebitoController().view(notaDebito);
+                        } catch (MessageException ex) {
+                            ex.displayMessage(null);
+                        }
                     }
                 }
             }
@@ -253,12 +185,12 @@ public class CtacteClienteController implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    armarQuery(false);
+                    armarQueryResumenCCC(false);
                 } catch (MessageException ex) {
                     resumenCtaCtes.showMessage(ex.getMessage(), null, 2);
                 } catch (Exception ex) {
                     resumenCtaCtes.showMessage(ex.getMessage(), null, 2);
-                    Logger.getLogger(CtacteClienteController.class.getName()).error(ex);
+                    LOG.error(ex, ex);
                 }
             }
         });
@@ -266,12 +198,12 @@ public class CtacteClienteController implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    armarQuery(true);
+                    armarQueryResumenCCC(true);
                 } catch (MessageException ex) {
                     resumenCtaCtes.showMessage(ex.getMessage(), null, 2);
                 } catch (Exception ex) {
                     resumenCtaCtes.showMessage(ex.getMessage(), null, 2);
-                    Logger.getLogger(CtacteClienteController.class.getName()).error(ex);
+                    LOG.error(ex, ex);
                 }
             }
         });
@@ -328,67 +260,80 @@ public class CtacteClienteController implements ActionListener {
     }
 
     @SuppressWarnings("unchecked")
-    private void armarQuery(boolean imprimirResumen) throws MessageException, MissingReportException, JRException {
+    private void armarQueryResumenCCC(boolean imprimirResumen) throws MessageException, MissingReportException, JRException {
         totalDebe = 0.0;
         totalHaber = 0.0;
 
-        String query = "SELECT ccc.*, sucursal.puntoventa, fv.fecha_venta"
-                + " FROM ctacte_cliente ccc, cliente , factura_venta fv JOIN sucursal ON (fv.sucursal = sucursal.id) "
-                + " WHERE ccc.factura = fv.id AND fv.cliente = cliente.id ";
+        String query
+                = " SELECT ctacte.* FROM (                                      "
+                + " SELECT ccc.*, cliente.id cliente_id, sucursal.id sucursal_id, fv.fecha_venta fecha, "
+                + " (ccc.importe - ccc.entregado) as saldo, ccc.estado,"
+                + " fv.anulada"
+                + " FROM ctacte_cliente ccc"
+                + " JOIN factura_venta fv ON ccc.factura = fv.id"
+                + " JOIN cliente ON fv.cliente = cliente.id"
+                + " JOIN sucursal ON fv.sucursal = sucursal.id"
+                + " UNION"
+                + " SELECT ccc.*, cliente.id cliente_id, sucursal.id sucursal_id, fv.fecha_nota_debito fecha,"
+                + " (ccc.importe - ccc.entregado) as saldo, ccc.estado,"
+                + " fv.anulada"
+                + " FROM ctacte_cliente ccc"
+                + " JOIN nota_debito fv ON ccc.notadebito_id = fv.id"
+                + " JOIN cliente ON fv.cliente_id = cliente.id"
+                + " JOIN sucursal ON fv.sucursal_id = sucursal.id"
+                + " ) ctacte "
+                + " WHERE                        ";
         //solo el filtro se envía al reporte! por eso están separados
         String filters = "";
-        try {
-            filters += " AND cliente.id =" + ((ComboBoxWrapper<Cliente>) resumenCtaCtes.getCbClieProv().getSelectedItem()).getId();
-        } catch (ClassCastException ex) {
-            throw new MessageException("Cliente no válido");
-        }
+        Cliente cliente = ((ComboBoxWrapper<Cliente>) resumenCtaCtes.getCbClieProv().getSelectedItem()).getEntity();
+        filters += " cliente_id =" + cliente.getId();
 
         if (resumenCtaCtes.getDcDesde() != null) {
             //calcula los totales del DEBE / HABER / SALDO ACUMULATIVO de la CtaCte
             // anterior a la fecha desde la cual se eligió en el buscador
-            setResumenHistorial(query + "AND fv.fecha_venta < '" + resumenCtaCtes.getDcDesde() + "'");
+            setResumenHistorial(query + " AND fecha < '" + resumenCtaCtes.getDcDesde() + "'");
 
-            filters += " AND fv.fecha_venta >= '" + resumenCtaCtes.getDcDesde() + "'";
+            filters += " AND fecha >= '" + resumenCtaCtes.getDcDesde() + "'";
         }
         if (resumenCtaCtes.getCheckExcluirPagadas().isSelected()) {
-            filters += " AND (ccc.importe - ccc.entregado) > 0";
+            filters += " AND saldo > 0";
         }
         if (resumenCtaCtes.getCheckExcluirAnuladas().isSelected()) {
-            filters += " AND fv.anulada = FALSE";
+            filters += " AND anulada = FALSE";
         }
-        query += filters + " ORDER BY fv.fecha_venta";
+        query += filters;
         LOG.trace(query);
-        cargarTablaResumen(query);
+        cargarTablaResumen(query + " ORDER BY fecha");
         if (imprimirResumen) {
-            doReportResumenCCC(((ComboBoxWrapper<Cliente>) resumenCtaCtes.getCbClieProv().getSelectedItem()).getEntity(), resumenCtaCtes.getDcDesde(), filters);
+            doReportResumenCCC(cliente, resumenCtaCtes.getDcDesde(), filters);
         }
     }
 
     private void cargarTablaResumen(String query) {
         DefaultTableModel dtm = (DefaultTableModel) resumenCtaCtes.getjTableResumen().getModel();
         dtm.setRowCount(0);
-        List<CtacteCliente> cccList = DAO.getEntityManager().createNativeQuery(query, CtacteCliente.class).getResultList();
-
+        List<CtacteCliente> cccList = jpaController.findByNativeQuery(query);
         //agregar la 1er fila a la tabla
         BigDecimal saldoAcumulativo = BigDecimal.valueOf(totalDebe - totalHaber).setScale(2, RoundingMode.HALF_EVEN);
         dtm.addRow(new Object[]{null, "RESUMEN PREVIO", null, null, BigDecimal.valueOf(totalDebe), BigDecimal.valueOf(totalHaber), null, saldoAcumulativo});
         for (CtacteCliente ctaCte : cccList) {
-            FacturaVenta factura = ctaCte.getFactura();
+            Date fechaComprobante = ctaCte.getFactura() != null ? ctaCte.getFactura().getFechaVenta() : ctaCte.getNotaDebito().getFechaNotaDebito();
+            BigDecimal importeComprobante = ctaCte.getFactura() != null ? BigDecimal.valueOf(ctaCte.getFactura().getImporte()) : ctaCte.getNotaDebito().getImporte();
             //checkea que no esté anulada la ccc
-            boolean isAnulada = (ctaCte.getEstado() == 3);
-            if (!isAnulada) {
-                saldoAcumulativo = saldoAcumulativo.add(BigDecimal.valueOf(ctaCte.getImporte() - ctaCte.getEntregado()));
+            boolean anulada = (ctaCte.getEstado() == Valores.CtaCteEstado.ANULADA.getId());
+            if (!anulada) {
+                saldoAcumulativo = saldoAcumulativo.add(importeComprobante.subtract(BigDecimal.valueOf(ctaCte.getEntregado())));
             }
 
             dtm.addRow(new Object[]{
                 ctaCte.getId(), // <--------- No es visible desde la GUI
-                JGestionUtils.getNumeracion(factura),
-                UTIL.DATE_FORMAT.format(factura.getFechaVenta()),
-                UTIL.DATE_FORMAT.format(UTIL.customDateByDays(factura.getFechaVenta(), ctaCte.getDias())),
-                BigDecimal.valueOf(ctaCte.getImporte()),
-                isAnulada ? "ANULADA" : BigDecimal.valueOf(ctaCte.getEntregado()),
-                isAnulada ? "ANULADA" : BigDecimal.valueOf(ctaCte.getImporte() - ctaCte.getEntregado()),
-                isAnulada ? "ANULADA" : saldoAcumulativo,
+                ctaCte.getFactura() != null ? JGestionUtils.getNumeracion(ctaCte.getFactura()) : JGestionUtils.getNumeracion(ctaCte.getNotaDebito()),
+                UTIL.DATE_FORMAT.format(fechaComprobante),
+                UTIL.DATE_FORMAT.format(UTIL.customDateByDays(fechaComprobante, ctaCte.getDias())),
+                importeComprobante,
+                anulada ? Valores.CtaCteEstado.ANULADA : BigDecimal.valueOf(ctaCte.getEntregado()),
+                anulada ? Valores.CtaCteEstado.ANULADA : importeComprobante.subtract(BigDecimal.valueOf(ctaCte.getEntregado())),
+                anulada ? Valores.CtaCteEstado.ANULADA : saldoAcumulativo,
                 ctaCte.getEstado()
             });
         }
@@ -397,7 +342,7 @@ public class CtacteClienteController implements ActionListener {
     private void doReportResumenCCC(Cliente cliente, Date filterDate, String filters) throws MissingReportException, JRException {
         Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_ResumenCCC.jasper", "Resumen CCC");
         r.addCurrent_User();
-        r.addParameter("CLIENTE_ID", cliente.getId());
+//        r.addParameter("CLIENTE_ID", cliente.getId());
         r.addParameter("SUBREPORT_DIR", Reportes.FOLDER_REPORTES);
         r.addParameter("FILTER_DATE", filterDate);
         r.addParameter("FILTERS", filters == null ? "" : filters);
@@ -410,7 +355,12 @@ public class CtacteClienteController implements ActionListener {
      * @param ctacteCliente
      */
     private void cargarComboBoxRecibosDeCtaCte(CtacteCliente ctacteCliente) {
-        List<Recibo> recibosList = new ReciboController().findRecibosByFactura(ctacteCliente.getFactura());
+        List<Recibo> recibosList;
+        if (ctacteCliente.getFactura() != null) {
+            recibosList = new ReciboController().findByFactura(ctacteCliente.getFactura());
+        } else {
+            recibosList = new ReciboController().findByNotaDebito(ctacteCliente.getNotaDebito());
+        }
         List<ComboBoxWrapper<Recibo>> wrapped = new ArrayList<>(recibosList.size());
         for (Recibo recibo : recibosList) {
             wrapped.add(new ComboBoxWrapper<>(recibo, recibo.getId(), JGestionUtils.getNumeracion(recibo, true)));
@@ -430,7 +380,6 @@ public class CtacteClienteController implements ActionListener {
             cargarTablaDetallesDeCtaCte(recibo);
         } catch (ClassCastException ex) {
             // si el comboBox está vacio
-            System.out.println("Recibo NULL!");
             resumenCtaCtes.setTfReciboFecha("");
             resumenCtaCtes.setTfReciboMonto("");
             resumenCtaCtes.getLabelReciboAnulado().setVisible(false);
@@ -460,7 +409,7 @@ public class CtacteClienteController implements ActionListener {
      * @param query
      */
     private void setResumenHistorial(String query) {
-        List<CtacteCliente> lista = DAO.getEntityManager().createNativeQuery(query, CtacteCliente.class).getResultList();
+        List<CtacteCliente> lista = jpaController.findByNativeQuery(query);
         for (CtacteCliente ccc : lista) {
             if (ccc.getEstado() != 3) { // 3 == anulada
                 totalDebe += ccc.getImporte();
@@ -609,29 +558,11 @@ public class CtacteClienteController implements ActionListener {
         }
     }
 
-    /**
-     * Busca la Cta. Cte. relacionada al comprobante y retorna (si existe).
-     *
-     * @param facturaVenta
-     * @return instance or {@code null} does not exist.
-     */
-    public CtacteCliente findBy(FacturaVenta facturaVenta) {
-        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        CriteriaQuery<CtacteCliente> query = cb.createQuery(CtacteCliente.class);
-        Root<CtacteCliente> from = query.from(CtacteCliente.class);
-        query.select(from).where(cb.equal(from.get(CtacteCliente_.factura), facturaVenta));
-        try {
-            return getEntityManager().createQuery(query).getSingleResult();
-        } catch (NoResultException e) {
-            return null;
-        }
-    }
-
     JDialog getResumenCtaCte(Window owner, boolean modal, Cliente cliente) throws MessageException, MissingReportException, JRException {
         getResumenCtaCte(owner, modal);
         if (cliente != null) {
             UTIL.setSelectedItem(resumenCtaCtes.getCbClieProv(), cliente);
-            armarQuery(false);
+            armarQueryResumenCCC(false);
         }
         return resumenCtaCtes;
     }

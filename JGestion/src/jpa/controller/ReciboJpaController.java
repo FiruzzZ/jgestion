@@ -5,11 +5,15 @@ import controller.DAO;
 import controller.Valores;
 import controller.exceptions.MessageException;
 import entity.*;
+import static entity.DetalleRecibo_.facturaVenta;
 import entity.enums.ChequeEstado;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import jgestion.JGestionUtils;
 
 /**
@@ -48,10 +52,9 @@ public class ReciboJpaController extends AbstractDAO<Recibo, Integer> {
     }
 
     /**
-     * La anulación de una Recibo, resta a
-     * <code>CtaCteCliente.entregado</code> los pagos/entregas
-     * (parciales/totales) realizados de cada DetalleRecibo y cambia
-     * <code>Recibo.estado = false<code>
+     * La anulación de una Recibo, resta a <code>CtaCteCliente.entregado</code>
+     * los pagos/entregas (parciales/totales) realizados de cada DetalleRecibo y
+     * cambia      <code>Recibo.estado = false<code>
      *
      * @param recibo
      * @throws MessageException
@@ -73,18 +76,16 @@ public class ReciboJpaController extends AbstractDAO<Recibo, Integer> {
             for (DetalleRecibo dr : detalleReciboList) {
                 if (dr.getFacturaVenta() != null) {
                     //se resta la entrega ($) que implicaba este detalle con respecto a CADA factura
-                    ctaCteCliente = new CtacteClienteController().findByFactura(dr.getFacturaVenta().getId());
-                    ctaCteCliente.setEntregado(ctaCteCliente.getEntregado() - dr.getMontoEntrega().doubleValue());
-                    // y si había sido pagada en su totalidad..
-                    if (ctaCteCliente.getEstado() == Valores.CtaCteEstado.PAGADA.getId()) {
-                        ctaCteCliente.setEstado(Valores.CtaCteEstado.PENDIENTE.getId());
-                    }
-                    em.merge(ctaCteCliente);
+                    ctaCteCliente = new CtacteClienteController().findBy(dr.getFacturaVenta());
                 } else {
-                    NotaDebito nd = em.find(dr.getNotaDebito().getClass(), dr.getNotaDebito().getId());
-                    nd.setRecibo(null);
-                    em.merge(nd);
+                    ctaCteCliente = new CtacteClienteController().findByNotaDebito(dr.getNotaDebito().getId());
                 }
+                ctaCteCliente.setEntregado(ctaCteCliente.getEntregado() - dr.getMontoEntrega().doubleValue());
+                // y si había sido pagada en su totalidad..
+                if (ctaCteCliente.getEstado() == Valores.CtaCteEstado.PAGADA.getId()) {
+                    ctaCteCliente.setEstado(Valores.CtaCteEstado.PENDIENTE.getId());
+                }
+                em.merge(ctaCteCliente);
             }
             for (Object object : recibo.getPagosEntities()) {
                 if (object instanceof ChequePropio) {
@@ -152,10 +153,20 @@ public class ReciboJpaController extends AbstractDAO<Recibo, Integer> {
     }
 
     @SuppressWarnings("unchecked")
-    public List<DetalleRecibo> findDetalleReciboEntitiesByFactura(FacturaVenta factura) {
+    public List<DetalleRecibo> findDetalleReciboBy(FacturaVenta factura) {
         return getEntityManager().
+                //SELECT d FROM DetalleRecibo d WHERE d.facturaVenta = :facturaVenta
                 createNamedQuery("DetalleRecibo.findByFacturaVenta").
                 setParameter("facturaVenta", factura).getResultList();
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<DetalleRecibo> findDetalleReciboBy(NotaDebito notaDebito) {
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<DetalleRecibo> query = cb.createQuery(DetalleRecibo.class);
+        Root<DetalleRecibo> from = query.from(query.getResultType());
+        query.where(cb.equal(from.get(DetalleRecibo_.notaDebito), notaDebito));
+        return getEntityManager().createQuery(query).getResultList();
     }
 
     @Override
@@ -165,16 +176,10 @@ public class ReciboJpaController extends AbstractDAO<Recibo, Integer> {
             entityManager.getTransaction().begin();
         }
         entityManager.persist(recibo);
-        for (DetalleRecibo d : recibo.getDetalle()) {
-            if (d.getNotaDebito() != null) {
-                d.getNotaDebito().setRecibo(recibo);
-                entityManager.merge(d.getNotaDebito());
-            }
-        }
         entityManager.getTransaction().commit();
 
         entityManager.getTransaction().begin();
-        List<Object> pagosPost = new ArrayList<Object>(recibo.getPagosEntities().size());
+        List<Object> pagosPost = new ArrayList<>(recibo.getPagosEntities().size());
         for (Object object : recibo.getPagosEntities()) {
             if (object instanceof DetalleCajaMovimientos) {
                 DetalleCajaMovimientos pago = (DetalleCajaMovimientos) object;
@@ -265,10 +270,6 @@ public class ReciboJpaController extends AbstractDAO<Recibo, Integer> {
         for (DetalleRecibo d : old.getDetalle()) {
             d.setRecibo(old);
             entityManager.persist(d);
-            if (d.getNotaDebito() != null) {
-                d.getNotaDebito().setRecibo(old);
-                entityManager.merge(d.getNotaDebito());
-            }
         }
         entityManager.merge(old);
         entityManager.getTransaction().commit();
