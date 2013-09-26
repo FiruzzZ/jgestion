@@ -256,7 +256,7 @@ public class CuentabancariaController {
         panelABM.getjCheckBox1().setSelected(o.getActiva());
     }
 
-    void initDepositoUI(final ChequeTerceros cheque) {
+    void initDepositoUI(Window owner, final ChequeTerceros cheque) {
         panelDeposito = new PanelDepositoCheque();
         panelDeposito.getLabelNcuenta().setVisible(false);
         panelDeposito.getCbCuentaBancaria().setVisible(false);
@@ -274,7 +274,7 @@ public class CuentabancariaController {
                 }
             }
         });
-        abm = new JDABM(null, "Deposito de cheque", true, panelDeposito);
+        abm = new JDABM(owner, "Deposito de cheque", true, panelDeposito);
         abm.getbAceptar().addActionListener(new ActionListener() {
             @Override
             @SuppressWarnings("unchecked")

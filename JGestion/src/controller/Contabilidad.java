@@ -491,7 +491,7 @@ public class Contabilidad {
                     cccpc = null;
                     efectivo = factura.getImporte();
                 } else if (Valores.FormaPago.CTA_CTE.getId() == factura.getFormaPago()) {
-                    entregado = new CtacteClienteController().findByFactura(factura.getId()).getEntregado();
+                    entregado = new CtacteClienteController().findBy(factura).getEntregado();
                     double importe = factura.getImporte();
                     cccpc = (importe - entregado);
                     efectivo = entregado > 0 ? entregado : null;

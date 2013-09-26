@@ -67,8 +67,6 @@ public class NotaDebito implements Serializable {
     @JoinColumn(nullable = false)
     @ManyToOne(optional = false)
     private Sucursal sucursal;
-    @ManyToOne
-    private Recibo recibo;
     @JoinColumn(nullable = false)
     @ManyToOne(optional = false)
     private Cliente cliente;
@@ -210,14 +208,6 @@ public class NotaDebito implements Serializable {
         this.usuario = usuario;
     }
 
-    public Recibo getRecibo() {
-        return recibo;
-    }
-
-    public void setRecibo(Recibo recibo) {
-        this.recibo = recibo;
-    }
-
     public Cliente getCliente() {
         return cliente;
     }
@@ -256,6 +246,6 @@ public class NotaDebito implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.NotaDebito[ id=" + id + " ]";
+        return "NotaDebito{" + "id=" + id + ", numero=" + numero + ", fechaNotaDebito=" + fechaNotaDebito + ", fechaCarga=" + fechaCarga + ", importe=" + importe + ", observacion=" + observacion + ", gravado=" + gravado + ", noGravado=" + noGravado + ", iva10=" + iva10 + ", iva21=" + iva21 + ", otrosIvas=" + otrosIvas + ", anulada=" + anulada + ", impuestosRecuperables=" + impuestosRecuperables + ", tipo=" + tipo + ", usuario=" + usuario + ", sucursal=" + sucursal + ", cliente=" + cliente + ", detalle=" + detalle + '}';
     }
 }

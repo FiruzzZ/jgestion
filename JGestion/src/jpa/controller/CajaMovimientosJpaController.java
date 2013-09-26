@@ -96,61 +96,6 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
         }
     }
 
-//    @Deprecated
-//    public void asentarMovimiento(Recibo recibo) throws Exception {
-//        //caja en la q se va asentar
-//        CajaMovimientos cm = findCajaMovimientoAbierta(recibo.getCaja());
-//        EntityManager em = getEntityManager();
-//        try {
-//            em.getTransaction().begin();
-//            CajaMovimientos cajaMovimientoActual = em.find(CajaMovimientos.class, cm.getId());
-//            DetalleCajaMovimientos newDetalleCajaMovimiento = new DetalleCajaMovimientos();
-//            newDetalleCajaMovimiento.setCajaMovimientos(cajaMovimientoActual);
-//            newDetalleCajaMovimiento.setIngreso(true);
-//            newDetalleCajaMovimiento.setMonto(recibo.getMonto() - recibo.getRetencion().doubleValue());
-//            newDetalleCajaMovimiento.setNumero(Long.valueOf(recibo.getId()));
-//            newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.RECIBO);
-//            newDetalleCajaMovimiento.setDescripcion("R" + JGestionUtils.getNumeracion(recibo, true));
-//            newDetalleCajaMovimiento.setUsuario(UsuarioController.getCurrentUser());
-//            new DetalleCajaMovimientosJpaController().create(newDetalleCajaMovimiento);
-//        } catch (Exception e) {
-//            em.getTransaction().rollback();
-//            throw e;
-//        } finally {
-//            if (em != null) {
-//                em.close();
-//            }
-//        }
-//    }
-//    @Deprecated
-//    public void asentarMovimiento(Remesa remesa) throws Exception {
-//        Logger.getLogger(this.getClass()).trace("asentarMovimiento (Remesa)");
-//        for (Object object : remesa.getPagosEntities()) {
-//        }
-//        //caja en la q se va asentar
-//        CajaMovimientos cm = findCajaMovimientoAbierta(remesa.getCaja());
-//        EntityManager em = getEntityManager();
-//        try {
-//            em.getTransaction().begin();
-//            CajaMovimientos cajaMovimientoActual = em.find(CajaMovimientos.class, cm.getId());
-//            DetalleCajaMovimientos newDetalleCajaMovimiento = new DetalleCajaMovimientos();
-//            newDetalleCajaMovimiento.setCajaMovimientos(cajaMovimientoActual);
-//            newDetalleCajaMovimiento.setIngreso(false);
-//            newDetalleCajaMovimiento.setMonto(-remesa.getMonto());
-//            newDetalleCajaMovimiento.setNumero(remesa.getId());
-//            newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosJpaController.REMESA);
-//            newDetalleCajaMovimiento.setDescripcion("RM" + JGestionUtils.getNumeracion(remesa, true));
-//            newDetalleCajaMovimiento.setUsuario(UsuarioController.getCurrentUser());
-//            new DetalleCajaMovimientosJpaController().create(newDetalleCajaMovimiento);
-//        } catch (Exception e) {
-//            em.getTransaction().rollback();
-//            throw e;
-//        } finally {
-//            if (em != null) {
-//                em.close();
-//            }
-//        }
-//    }
     public void asentarMovimiento(ChequeTerceros cheque, Caja caja) throws Exception {
         CajaMovimientos cm = findCajaMovimientoAbierta(caja);
         EntityManager em = getEntityManager();
@@ -322,10 +267,10 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
                 newDetalleCajaMovimiento.setDescripcion(JGestionUtils.getNumeracion(facturaVenta) + " [ANULADA]");
                 new DetalleCajaMovimientosController().create(newDetalleCajaMovimiento);
             } else if (facturaVenta.getFormaPagoEnum().equals(Valores.FormaPago.CTA_CTE)) {
-                CtacteCliente ccc = new CtacteClienteController().findByFactura(facturaVenta.getId());
+                CtacteCliente ccc = new CtacteClienteController().findBy(facturaVenta);
                 if (ccc.getEntregado() > 0) {
                     //find all receipts (Recibo's) that contains a payment of the bill (FacturaVenta)
-                    List<Recibo> recibosList = new ReciboController().findRecibosByFactura(facturaVenta);
+                    List<Recibo> recibosList = new ReciboController().findByFactura(facturaVenta);
                     boolean detalleUnico;
                     for (Recibo reciboQueEnSuDetalleContieneLaFacturaVenta : recibosList) {
                         //if this is setted as TRUE, the entire Recibo must be annulled

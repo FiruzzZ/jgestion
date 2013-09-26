@@ -22,7 +22,8 @@ import javax.persistence.TemporalType;
 
 /**
  * Representa una relación contable OneToOne entre {@link Cliente} y
- * {@link FacturaVenta} resultado de una venta a {@link FormaPago#CTA_CTE}.
+ * {@link FacturaVenta} (resultado de una venta a {@link FormaPago#CTA_CTE}) o
+ * {@link NotaDebito}
  *
  * @author FiruzzZ
  */
@@ -56,9 +57,12 @@ public class CtacteCliente implements Serializable {
     @Column(name = "fecha_carga", nullable = false, updatable = false, columnDefinition = "timestamp with time zone NOT NULL DEFAULT now()")
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaCarga;
-    @JoinColumn(name = "factura", referencedColumnName = "id", nullable = false)
-    @ManyToOne(optional = false)
+    @JoinColumn(name = "factura")
+    @ManyToOne
     private FacturaVenta factura;
+    @JoinColumn(name = "notadebito_id")
+    @ManyToOne
+    private NotaDebito notaDebito;
 
     public CtacteCliente() {
     }
@@ -129,6 +133,14 @@ public class CtacteCliente implements Serializable {
         this.factura = factura;
     }
 
+    public NotaDebito getNotaDebito() {
+        return notaDebito;
+    }
+
+    public void setNotaDebito(NotaDebito notaDebito) {
+        this.notaDebito = notaDebito;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -151,7 +163,7 @@ public class CtacteCliente implements Serializable {
 
     @Override
     public String toString() {
-        return "CtacteCliente{" + "id=" + id + ", dias=" + dias + ", importe=" + importe + ", estado=" + estado + ", entregado=" + entregado + ", fechaCarga=" + fechaCarga + ", factura=" + factura + '}';
+        return "CtacteCliente{" + "id=" + id + ", dias=" + dias + ", importe=" + importe + ", estado=" + estado + ", entregado=" + entregado + ", fechaCarga=" + fechaCarga + ", factura=" + factura + ", notaDebito=" + notaDebito + '}';
     }
 
     public CtaCteEstado getEstadoEnum() {

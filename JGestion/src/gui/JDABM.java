@@ -27,8 +27,8 @@ public class JDABM extends javax.swing.JDialog {
         getContentPane().add(this.panel);
         pack();
         initComponents();
-        setLocationRelativeTo(owner);
         ajustarABMSizeToPanel();
+        setLocationRelativeTo(owner);
     }
 
     public final void ajustarABMSizeToPanel() {

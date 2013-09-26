@@ -1,3 +1,14 @@
+--20130924
+ALTER TABLE ctacte_cliente ALTER COLUMN factura DROP NOT NULL;
+ALTER TABLE ctacte_cliente ADD COLUMN notadebito_id integer;
+ALTER TABLE ctacte_cliente DROP CONSTRAINT fk_ctacte_cliente_factura;
+ALTER TABLE ctacte_cliente ADD CONSTRAINT fk_ctacte_cliente_factura FOREIGN KEY (factura) REFERENCES factura_venta (id);
+ALTER TABLE ctacte_cliente ADD FOREIGN KEY (notadebito_id) REFERENCES nota_debito (id);
+ALTER TABLE ctacte_cliente ADD CHECK ((factura is not null and notadebito_id is null) or (factura is null and notadebito_id is not null));
+--después de cargar todo a la cta cte cliente!!!
+ALTER TABLE nota_debito DROP COLUMN recibo_id;
+ALTER TABLE nota_debito DROP CONSTRAINT fk_nota_debito_recibo;
+
 --20130716
 ALTER TABLE detalle_presupuesto ALTER COLUMN descuento TYPE numeric(12,4);
 ALTER TABLE detalle_presupuesto ALTER COLUMN precio_unitario TYPE numeric(12,4);

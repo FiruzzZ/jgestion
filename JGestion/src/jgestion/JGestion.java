@@ -46,7 +46,9 @@ public class JGestion {
 
         @Override
         public void shutDownAction() {
-            salir();
+            if (!develop) {
+                salir();
+            }
         }
     };
 
