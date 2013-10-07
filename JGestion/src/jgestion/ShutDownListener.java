@@ -71,13 +71,13 @@ public abstract class ShutDownListener {
 
     public boolean hasToShutdown() throws SQLException, InterruptedException {
 //        try {
-        ResultSet rs = getActiveConnection().createStatement().executeQuery("SELECT shutdown from sistema");
+        ResultSet rs = getActiveConnection().createStatement().executeQuery("SELECT shutdown, shutdown_message from sistema");
         rs.next();
         boolean cerrar = rs.getBoolean(1);
-        if (!cerrar) {
-            Thread.sleep(5000);
+        if (cerrar) {
+            message = rs.getString(2).replaceAll(" ", "_");
         } else {
-            message = getShutDownMessage();
+            Thread.sleep(5000);
         }
 //            if (lostConnectionDialog != null && lostConnectionDialog.isVisible()) {
 //                lostConnectionDialog.dispose();
@@ -98,15 +98,6 @@ public abstract class ShutDownListener {
 
     public final String getMessage() {
         return message;
-    }
-
-    public String getShutDownMessage() throws SQLException {
-        ResultSet rs = getActiveConnection().createStatement().executeQuery("SELECT shutdown_message from sistema");
-        if (rs.next()) {
-            return rs.getString(1).replaceAll(" ", "_");
-        } else {
-            return "No_message_from_server";
-        }
     }
 
     private void displayLostConnectionUI(Exception exception) {

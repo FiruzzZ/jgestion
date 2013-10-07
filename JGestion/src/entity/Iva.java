@@ -1,14 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package entity;
 
 import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -34,8 +29,8 @@ public class Iva implements Serializable {
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Basic(fetch = FetchType.EAGER, optional = false)
-    @Column(name = "iva", nullable = false, precision = 10, scale = 4)
+    @Basic(optional = false)
+    @Column(name = "iva", nullable = false, precision = 10, scale = 2)
     private Float iva;
 
     public Iva() {

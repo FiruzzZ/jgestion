@@ -1082,17 +1082,17 @@ public class ReciboController implements ActionListener, FocusListener {
     }
 
     private void doReportRecibo(Recibo recibo) throws Exception {
-        if (recibo == null && recibo.getId() == null) {
+        if (recibo == null || recibo.getId() == null) {
             throw new MessageException("No hay " + CLASS_NAME + " seleccionado");
         }
         DetalleRecibo d = recibo.getDetalle().get(0);
         Cliente cliente = d.getFacturaVenta() != null ? d.getFacturaVenta().getCliente() : d.getNotaDebito().getCliente();
-        List<GenericBeanCollection> cc = new ArrayList<GenericBeanCollection>(recibo.getDetalle().size());
+        List<GenericBeanCollection> cc = new ArrayList<>(recibo.getDetalle().size());
         for (DetalleRecibo dr : recibo.getDetalle()) {
             String comprobanteString = dr.getFacturaVenta() != null ? JGestionUtils.getNumeracion(dr.getFacturaVenta()) : JGestionUtils.getNumeracion(dr.getNotaDebito());
             cc.add(new GenericBeanCollection(comprobanteString, dr.getMontoEntrega()));
         }
-        List<GenericBeanCollection> pp = new ArrayList<GenericBeanCollection>(recibo.getPagos().size());
+        List<GenericBeanCollection> pp = new ArrayList<>(recibo.getPagos().size());
         for (Object object : recibo.getPagosEntities()) {
             if (object instanceof ChequePropio) {
                 ChequePropio pago = (ChequePropio) object;

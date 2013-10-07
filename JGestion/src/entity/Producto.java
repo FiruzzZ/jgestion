@@ -18,14 +18,14 @@ import org.eclipse.persistence.config.QueryHints;
 })
 @NamedQueries({
     @NamedQuery(name = "Producto.findAll", query = "SELECT p FROM Producto p ORDER BY p.nombre",
-    hints =
-    @QueryHint(name = QueryHints.REFRESH, value = "true")),
+            hints
+            = @QueryHint(name = QueryHints.REFRESH, value = "true")),
     @NamedQuery(name = "Producto.findById", query = "SELECT p FROM Producto p WHERE p.id = :id",
-    hints =
-    @QueryHint(name = QueryHints.REFRESH, value = "true")),
+            hints
+            = @QueryHint(name = QueryHints.REFRESH, value = "true")),
     @NamedQuery(name = "Producto.findByCodigo", query = "SELECT p FROM Producto p WHERE p.codigo = :codigo",
-    hints =
-    @QueryHint(name = QueryHints.REFRESH, value = "true")),
+            hints
+            = @QueryHint(name = QueryHints.REFRESH, value = "true")),
     @NamedQuery(name = "Producto.findByNombre", query = "SELECT p FROM Producto p WHERE p.nombre = :nombre")
 })
 @SqlResultSetMappings({
@@ -97,10 +97,10 @@ public class Producto implements Serializable {
     @Column(name = "ultima_compra")
     @Temporal(value = TemporalType.DATE)
     private Date ultimaCompra;
-    @JoinColumn(name = "iva", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "iva", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.EAGER, cascade = {CascadeType.REFRESH, CascadeType.DETACH})
     private Iva iva;
-    @JoinColumn(name = "marca", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "marca", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.EAGER, cascade = {CascadeType.REFRESH})
     private Marca marca;
     @JoinColumn(name = "rubro", referencedColumnName = "idrubro", nullable = false)
@@ -109,9 +109,13 @@ public class Producto implements Serializable {
     @JoinColumn(name = "subrubro", referencedColumnName = "idrubro")
     @ManyToOne
     private Rubro subrubro;
-    @JoinColumn(name = "idunidadmedida", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "idunidadmedida", nullable = false)
     @ManyToOne(optional = false)
     private Unidadmedida idunidadmedida;
+    /**
+     * Los que son comercializados (se venden), lo demás pueden ser compras de
+     * artículos de oficina.
+     */
     @Column(name = "bien_de_cambio", nullable = false)
     private boolean bienDeCambio;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "producto")
