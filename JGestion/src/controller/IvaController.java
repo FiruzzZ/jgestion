@@ -5,7 +5,6 @@ import entity.Iva;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 import entity.Producto;
-import entity.Producto_;
 import utilities.general.UTIL;
 import gui.JDMiniABM;
 import java.awt.event.ActionEvent;
@@ -14,9 +13,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import javax.swing.JFrame;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
@@ -32,12 +28,10 @@ public class IvaController implements ActionListener {
     private JDMiniABM abm;
     private final String[] colsName = {"Nº", "IVA (%)"};
     private final int[] colsWidth = {20, 20};
-    private final static String CLASS_NAME = Iva.class.getSimpleName();
     private Iva EL_OBJECT;
-    private IvaJpaController jpaController;
+    private final IvaJpaController jpaController = new IvaJpaController();
 
     public IvaController() {
-        jpaController = new IvaJpaController();
     }
 
     // <editor-fold defaultstate="collapsed" desc="CRUD....">
@@ -164,14 +158,14 @@ public class IvaController implements ActionListener {
                     destroy(EL_OBJECT.getId());
                     clearPanelFields();
                     cargarTablaIvas(abm.getjTable1(), null);
-                    abm.showMessage("Eliminado..", CLASS_NAME, 1);
+                    abm.showMessage("Eliminado..", jpaController.getEntityClass().getSimpleName(), 1);
                 } catch (MessageException ex) {
-                    abm.showMessage(ex.getMessage(), CLASS_NAME, 0);
+                    abm.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 0);
                 } catch (IllegalOrphanException ex) {
                     abm.showMessage("El IVA " + EL_OBJECT.getIva() + " no puede ser eliminado por estar relacionado a los siguientes Productos\n"
-                            + ex.getMessage(), CLASS_NAME, 0);
+                            + ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 0);
                 } catch (Exception ex) {
-                    abm.showMessage(ex.getMessage(), CLASS_NAME, 0);
+                    abm.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 0);
                     ex.printStackTrace();
                 }
             } else if (boton.getName().equalsIgnoreCase("cancelar")) {
@@ -183,7 +177,7 @@ public class IvaController implements ActionListener {
                     clearPanelFields();
                     cargarTablaIvas(abm.getjTable1(), null);
                 } catch (MessageException ex) {
-                    abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
+                    abm.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 2);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -227,10 +221,6 @@ public class IvaController implements ActionListener {
     }
 
     Iva findByProducto(Integer productoID) {
-        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        CriteriaQuery<Iva> query = cb.createQuery(Iva.class);
-        Root<Producto> from = query.from(Producto.class);
-        query.select(from.get(Producto_.iva)).where(cb.equal(from.get(Producto_.id), productoID));
-        return getEntityManager().createQuery(query).getSingleResult();
+        return jpaController.findByProducto(productoID);
     }
 }

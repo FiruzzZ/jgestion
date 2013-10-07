@@ -1398,7 +1398,7 @@ public class FacturaVentaController {
 
         //viendo si se habilita el botón FACTURAR
         if (!facturaVenta.getAnulada()
-                && facturaVenta.getNumero() == 0
+//                && facturaVenta.getNumero() == 0 // ya no se resetea mas a CERO, para saber si inicialmente se hizo mov. interno
                 && facturaVenta.getTipo() == 'I') {
             //si NO está anulada
             //es decir que es un movimiento interno, y puede ser cambiado a FACTURA VENTA
@@ -1826,7 +1826,6 @@ public class FacturaVentaController {
                 iva = findProducto.getIva();
                 LOG.debug("Producto con Iva NULL!!" + detalle.getProducto());
                 while (iva == null || iva.getIva() == null) {
-                    System.out.print(".");
                     iva = new IvaController().findByProducto(detalle.getProducto().getId());
                     detalle.getProducto().setIva(iva);
                 }
