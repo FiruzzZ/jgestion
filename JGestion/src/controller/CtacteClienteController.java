@@ -138,7 +138,7 @@ public class CtacteClienteController implements ActionListener {
                 importeCCC = BigDecimal.ZERO;
                 c = ccc.getFactura().getCliente();
             }
-            importeCCC = importeCCC.add(BigDecimal.valueOf(ccc.getImporte() - ccc.getEntregado()));
+            importeCCC = importeCCC.add(BigDecimal.valueOf(ccc.getImporte() - ccc.getEntregado())).setScale(2, RoundingMode.HALF_UP);
         }
         data.add(new Object[]{c.getId(), c.getNombre(), importeCCC});
         return data;
@@ -282,11 +282,11 @@ public class CtacteClienteController implements ActionListener {
                 + " JOIN cliente ON fv.cliente_id = cliente.id"
                 + " JOIN sucursal ON fv.sucursal_id = sucursal.id"
                 + " ) ctacte "
-                + " WHERE                        ";
+                + " WHERE ";
         //solo el filtro se envía al reporte! por eso están separados
-        String filters = "";
         Cliente cliente = ((ComboBoxWrapper<Cliente>) resumenCtaCtes.getCbClieProv().getSelectedItem()).getEntity();
-        filters += " cliente_id =" + cliente.getId();
+        query += " cliente_id =" + cliente.getId();
+        String filters = "";
 
         if (resumenCtaCtes.getDcDesde() != null) {
             //calcula los totales del DEBE / HABER / SALDO ACUMULATIVO de la CtaCte

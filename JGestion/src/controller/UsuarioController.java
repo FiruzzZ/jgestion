@@ -29,7 +29,6 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.table.DefaultTableModel;
 import jpa.controller.SucursalJpaController;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.eclipse.persistence.config.QueryHints;
 
@@ -294,7 +293,7 @@ public class UsuarioController implements ActionListener, MouseListener, KeyList
                     jDLogin.getjLabel3().setText(ex.getMessage());
                 } catch (Exception ex) {
                     jDLogin.showMessage(ex.getMessage(), "Error Login usuario", 0);
-                    Logger.getLogger(UsuarioController.class.getName()).log(Level.FATAL, null, ex);
+                    LOG.fatal("Error login usuario", ex);
                 }
             }// </editor-fold>
         } else if (e.getComponent().getClass().equals(javax.swing.JPasswordField.class)) {
@@ -308,12 +307,10 @@ public class UsuarioController implements ActionListener, MouseListener, KeyList
                         jDLogin.dispose();
                     }
                 } catch (MessageException ex) {
-                    System.out.println("Messageexcep.......");
                     jDLogin.getjLabel3().setText(ex.getMessage());
                 } catch (Exception ex) {
-                    System.out.println("Excep.......");
                     jDLogin.showMessage(ex.getMessage(), "Error Login usuario", 0);
-                    Logger.getLogger(UsuarioController.class.getName()).log(Level.FATAL, null, ex);
+                    LOG.fatal("Error login usuario", ex);
                 }
             }// </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="JDCambiarPass">
@@ -412,7 +409,7 @@ public class UsuarioController implements ActionListener, MouseListener, KeyList
             contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
         } catch (Exception ex) {
             contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
-            Logger.getLogger(UsuarioController.class).error(ex.getLocalizedMessage(), ex);
+            LOG.fatal(ex.getLocalizedMessage(), ex);
         }
     }
 
@@ -652,7 +649,7 @@ public class UsuarioController implements ActionListener, MouseListener, KeyList
      * con la base de datos para checkear el permiso.
      */
     public static void checkPermiso(PermisoDe permisoToCheck) throws MessageException {
-        CURRENT_USER = DAO.getEntityManager().find(Usuario.class, CURRENT_USER.getId());
+        CURRENT_USER = (Usuario) DAO.findEntity(Usuario.class, CURRENT_USER.getId());
         if (CURRENT_USER == null) {
             throw new MessageException("Error chequeando los permisos del usuario.\nVerificar conexión con la Base de datos");
         }

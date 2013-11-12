@@ -691,7 +691,7 @@ private void tfEntregaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:even
         cbCtaCtes.addActionListener((ActionListener) o);
     }
 
-    public void limpiarDetalle() {
+    public void limpiarDetalles() {
         DefaultTableModel dtm = (DefaultTableModel) tableAPagar.getModel();
         dtm.setRowCount(0);
         dtm = (DefaultTableModel) tablePagos.getModel();

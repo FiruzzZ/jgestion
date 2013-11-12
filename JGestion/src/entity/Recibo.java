@@ -38,9 +38,6 @@ public class Recibo implements Serializable {
     @Basic(optional = false)
     @Column(name = "monto", nullable = false, precision = 12, scale = 2)
     private BigDecimal monto;
-    @Column(name = "retencion", precision = 10, scale = 2)
-    @Deprecated
-    private BigDecimal retencion;
     @Basic(optional = false)
     @Column(name = "fecha_recibo", nullable = false)
     @Temporal(TemporalType.DATE)
@@ -90,16 +87,6 @@ public class Recibo implements Serializable {
 
     public void setMonto(BigDecimal monto) {
         this.monto = monto;
-    }
-
-    @Deprecated
-    public BigDecimal getRetencion() {
-        return retencion;
-    }
-
-    @Deprecated
-    public void setRetencion(BigDecimal retencion) {
-        this.retencion = retencion;
     }
 
     public Date getFechaRecibo() {
@@ -218,7 +205,7 @@ public class Recibo implements Serializable {
 
     @Override
     public String toString() {
-        return "Recibo{" + "id=" + id + ", numero=" + numero + ", fechaCarga=" + fechaCarga + ", monto=" + monto + ", retencion=" + retencion + ", fechaRecibo=" + fechaRecibo + ", estado=" + estado + ", caja=" + caja + ", sucursal=" + sucursal + ", usuario=" + usuario + ", detalle=" + detalle + ", pagos=" + pagos + ", pagosEntities=" + pagosEntities + ", porConciliar=" + porConciliar + ", cliente=" + cliente + '}';
+        return "Recibo{" + "id=" + id + ", numero=" + numero + ", fechaCarga=" + fechaCarga + ", monto=" + monto + ", fechaRecibo=" + fechaRecibo + ", estado=" + estado + ", caja=" + caja + ", sucursal=" + sucursal + ", usuario=" + usuario + ", detalle=" + detalle + ", pagos=" + pagos + ", pagosEntities=" + pagosEntities + ", porConciliar=" + porConciliar + ", cliente=" + cliente + '}';
     }
 
 }

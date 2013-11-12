@@ -49,7 +49,6 @@ public class ReciboController implements ActionListener, FocusListener {
     private static final String CLASS_NAME = Recibo.class.getSimpleName();
     private JDReRe jdReRe;
     private CtacteCliente selectedCtaCte;
-    private Date selectedFechaReRe = null;
     private JDBuscadorReRe buscador;
     private Recibo selectedRecibo;
     private final ReciboJpaController jpaController = new ReciboJpaController();
@@ -70,7 +69,7 @@ public class ReciboController implements ActionListener, FocusListener {
      * @param setVisible
      * @throws MessageException
      */
-    public void initRecibos(Window owner, boolean modal, boolean setVisible) throws MessageException {
+    public void showABMRecibos(Window owner, boolean modal, boolean setVisible) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.VENTA);
         UsuarioHelper uh = new UsuarioHelper();
         if (uh.getSucursales().isEmpty()) {
@@ -98,7 +97,8 @@ public class ReciboController implements ActionListener, FocusListener {
                 try {
                     if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(jdReRe, "La anulación de un Recibo implica:"
                             + "\n- Deshacer el pago realizado a cada Factura."
-                            + "\n- La eliminación completa de las Formas de Pago de Tipo: Cheques Terceros (si aún está en " + ChequeEstado.CARTERA + "), Retenciones, Transferencias."
+                            + "\n- La eliminación de las Retenciones y Transferencias."
+                            + "\n- La desvinculación de los Cheques Terceros (vuelven a la cartera) y cheques Propios como " + ChequeEstado.ENDOSADO + " nuevamente."
                             + "\n- La desvinculación de las Notas de Crédito con el Recibo."
                             + "\n- La desvinculación de las Notas de Débito con el Recibo."
                             + "\n- El cambio de estado de Cheques Propios a \"Entregados\" y dejando en blanco el concepto \"Comprobante de Ingreso\"."
@@ -145,7 +145,7 @@ public class ReciboController implements ActionListener, FocusListener {
                         Recibo re = setAndPersist();
                         selectedRecibo = re;
                         jdReRe.showMessage(jpaController.getEntityClass().getSimpleName() + " Nº" + JGestionUtils.getNumeracion(re, true) + " registrado.", null, 1);
-                        limpiarDetalle();
+                        jdReRe.limpiarDetalles();
                         resetPanel();
                     }
                 } catch (MessageException ex) {
@@ -166,10 +166,9 @@ public class ReciboController implements ActionListener, FocusListener {
                     } else {
                         //cuando se está creando un recibo y se va imprimir al tokesaun!
                         Recibo recibo = setAndPersist();
-                        selectedRecibo = recibo;
-                        doReportRecibo(selectedRecibo);
-                        limpiarDetalle();
                         resetPanel();
+                        jdReRe.limpiarDetalles();
+                        doReportRecibo(recibo);
                     }
                 } catch (MessageException ex) {
                     jdReRe.showMessage(ex.getMessage(), CLASS_NAME, 2);
@@ -191,7 +190,7 @@ public class ReciboController implements ActionListener, FocusListener {
                 } else {
                     //si no eligió nada.. vacia el combo de cta cte's
                     UTIL.loadComboBox(jdReRe.getCbCtaCtes(), null, false);
-                    limpiarDetalle();
+                    jdReRe.limpiarDetalles();
                     SwingUtil.setComponentsEnabled(jdReRe.getPanelPagos().getComponents(), false, true);
                 }
             }
@@ -210,9 +209,7 @@ public class ReciboController implements ActionListener, FocusListener {
                         jdReRe.setTfEntrega(UTIL.PRECIO_CON_PUNTO.format(selectedCtaCte.getImporte() - selectedCtaCte.getEntregado()));
                         jdReRe.getTfEntrega().setEditable(true);
                     }
-                } catch (ClassCastException ex) {
-                    selectedCtaCte = null;
-                } catch (NullPointerException ex) {
+                } catch (ClassCastException | NullPointerException ex) {
                     selectedCtaCte = null;
                 }
             }
@@ -229,7 +226,7 @@ public class ReciboController implements ActionListener, FocusListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 resetPanel();
-                limpiarDetalle();
+                jdReRe.limpiarDetalles();
             }
         });
         jdReRe.getBtnAddPago().addActionListener(new ActionListener() {
@@ -342,13 +339,24 @@ public class ReciboController implements ActionListener, FocusListener {
 
     private void showABMChequeTerceros() {
         try {
-            Cliente c = null;
-            try {
-                c = (Cliente) jdReRe.getCbClienteProveedor().getSelectedItem();
-            } catch (ClassCastException ex) {
-                throw new MessageException("Debe especificar un cliente para poder agregar un Cheque");
+            String[] options = {"Seleccionar", "Crear"};
+            int opt = JOptionPane.showOptionDialog(null, "* Puede seleccionar Cheque existente o crear uno", "Cheques Terceros", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, null);
+            ChequeTerceros cheque = null;
+            if (opt == 0) {
+                cheque = new ChequeTercerosController().initManagerBuscador(null);
+                if (cheque.getComprobanteIngreso() != null) {
+                    throw new MessageException("El cheque seleccionado ya está asociado a un comprobante de ingreso:"
+                            + "\n" + cheque.getComprobanteIngreso());
+                }
+            } else if (opt == 1) {
+                Cliente c = null;
+                try {
+                    c = (Cliente) jdReRe.getCbClienteProveedor().getSelectedItem();
+                } catch (ClassCastException ex) {
+                    throw new MessageException("Debe especificar un cliente para poder agregar un Cheque");
+                }
+                cheque = new ChequeTercerosController().displayABM(jdReRe, null, c);
             }
-            ChequeTerceros cheque = new ChequeTercerosController().initABM(jdReRe, false, c);
             if (cheque != null) {
                 ChequesController.checkUniquenessOnTable(jdReRe.getDtmPagos(), cheque);
                 DefaultTableModel dtm = jdReRe.getDtmPagos();
@@ -537,9 +545,15 @@ public class ReciboController implements ActionListener, FocusListener {
             DetalleRecibo detalle = new DetalleRecibo();
             if (o instanceof FacturaVenta) {
                 FacturaVenta fv = fcc.find(((FacturaVenta) o).getId());
+                if (UTIL.compararIgnorandoTimeFields(re.getFechaRecibo(), fv.getFechaVenta()) < 0) {
+                    throw new MessageException("La fecha de la factura es posterior a la " + JGestionUtils.getNumeracion(fv));
+                }
                 detalle.setFacturaVenta(fv);
             } else if (o instanceof NotaDebito) {
                 NotaDebito nota = new NotaDebitoJpaController().find(((NotaDebito) o).getId());
+                if (UTIL.compararIgnorandoTimeFields(re.getFechaRecibo(), nota.getFechaNotaDebito()) < 0) {
+                    throw new MessageException("La fecha de la Nota de Débito es posterior a la " + JGestionUtils.getNumeracion(nota));
+                }
                 detalle.setNotaDebito(nota);
             } else {
                 throw new IllegalArgumentException();
@@ -569,7 +583,6 @@ public class ReciboController implements ActionListener, FocusListener {
             }
         }
         re.setPagosEntities(pagos);
-        re.setRetencion(BigDecimal.ZERO);
 
         //persisting.....
         if (conciliando) {
@@ -640,16 +653,6 @@ public class ReciboController implements ActionListener, FocusListener {
                     + UTIL.DATE_FORMAT.format(comprobanteFecha) + ")");
         }
 
-        // si hay cargado al menos un detalle de entrega
-        // ctrla que la fecha de ReRe siga siendo la misma
-        if ((selectedFechaReRe != null) && (jdReRe.getDtmAPagar().getRowCount() > 0)
-                && (!UTIL.DATE_FORMAT.format(selectedFechaReRe).equals(UTIL.DATE_FORMAT.format(jdReRe.getDcFechaReRe())))) {
-            throw new MessageException("La fecha de " + CLASS_NAME + " a sido cambiada"
-                    + "\nAnterior: " + UTIL.DATE_FORMAT.format(selectedFechaReRe)
-                    + "\nActual: " + UTIL.DATE_FORMAT.format(jdReRe.getDcFechaReRe()));
-        } else {
-            selectedFechaReRe = jdReRe.getDcFechaReRe();
-        }
         BigDecimal entrega$;
         try {
             entrega$ = new BigDecimal(jdReRe.getTfEntrega().getText());
@@ -725,7 +728,7 @@ public class ReciboController implements ActionListener, FocusListener {
         if (toAnular) {
             buscador.setTitle(buscador.getTitle() + " para ANULAR");
         }
-        initBuscador(toAnular);
+        showBuscador(toAnular);
     }
 
     public void showBuscadorToConciliar(Window owner) {
@@ -761,7 +764,7 @@ public class ReciboController implements ActionListener, FocusListener {
      */
     private void setComprobanteUI(Recibo recibo) throws MessageException {
         if (jdReRe == null) {
-            initRecibos(null, true, false);
+            showABMRecibos(null, true, false);
         }
 //        bloquearVentana(true);
         //por no redundar en DATOOOOOOOOOSS...!!!
@@ -795,7 +798,7 @@ public class ReciboController implements ActionListener, FocusListener {
         jdReRe.getLabelAnulado().setVisible(!recibo.getEstado());
     }
 
-    private Recibo initBuscador(final boolean toAnular) {
+    private Recibo showBuscador(final boolean toAnular) {
         buscador.setParaRecibos();
         UTIL.loadComboBox(buscador.getCbClieProv(), JGestionUtils.getWrappedClientes(new ClienteController().findAll()), true);
         UTIL.loadComboBox(buscador.getCbCaja(), new UsuarioHelper().getCajas(Boolean.TRUE), true);
@@ -837,14 +840,9 @@ public class ReciboController implements ActionListener, FocusListener {
     }
 
     private void cargarFacturasCtaCtesYNotasDebito(Cliente cliente) {
-        limpiarDetalle();
+        jdReRe.limpiarDetalles();
         List<CtacteCliente> l = new CtacteClienteController().findByCliente(cliente, Valores.CtaCteEstado.PENDIENTE.getId());
         UTIL.loadComboBox(jdReRe.getCbCtaCtes(), JGestionUtils.getWrappedCtacteCliente(l), false);
-    }
-
-    private void limpiarDetalle() {
-        jdReRe.limpiarDetalle();
-        selectedFechaReRe = null;
     }
 
     /**
@@ -1160,16 +1158,16 @@ public class ReciboController implements ActionListener, FocusListener {
         return recibosList;
     }
 
-    public void initRecibosNumeracionManual(Window owner) throws MessageException {
+    public void showABMRecibosNumeracionManual(Window owner) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.VENTA_NUMERACION_MANUAL);
         unlockedNumeracion = true;
-        initRecibos(owner, true, false);
+        showABMRecibos(owner, true, false);
         jdReRe.setTfOctetoEditable(true);
         jdReRe.setVisible(true);
     }
 
-    public void initReciboAConciliar(Window owner) throws MessageException {
-        initRecibos(owner, true, false);
+    public void showABMReciboAConciliar(Window owner) throws MessageException {
+        showABMRecibos(owner, true, false);
         jdReRe.setTitle("Recibo a conciliar");
         toConciliar = true;
         conciliando = false;

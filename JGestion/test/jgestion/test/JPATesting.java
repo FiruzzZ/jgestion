@@ -8,11 +8,9 @@ import ar.com.fdvs.dj.domain.builders.ColumnBuilder;
 import ar.com.fdvs.dj.domain.builders.DynamicReportBuilder;
 import ar.com.fdvs.dj.domain.constants.Font;
 import ar.com.fdvs.dj.domain.constants.HorizontalAlign;
-import controller.CtacteClienteController;
 import controller.DAO;
+import controller.ReciboController;
 import controller.Reportes;
-import controller.UsuarioController;
-import controller.Valores;
 import entity.*;
 import generics.PropsUtils;
 import java.io.File;
@@ -22,7 +20,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 import jgestion.JGestionUtils;
 import jpa.controller.*;
 import net.sf.jasperreports.engine.JRDataSource;
@@ -30,7 +28,6 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.apache.log4j.PropertyConfigurator;
 import utilities.general.UTIL;
-import utilities.swing.components.ComboBoxWrapper;
 
 /**
  *
@@ -53,6 +50,15 @@ public class JPATesting {
 
     @SuppressWarnings("unchecked")
     public JPATesting() throws Exception {
+        List<Recibo> conci = new ReciboJpaController().findByQuery("SELECT o FROM Recibo o where o.porConciliar = true ");
+        for (Recibo r : conci) {
+            System.out.println(JGestionUtils.getNumeracion(r, true));
+//            new ReciboController().loadPagos(r);
+//            for (Object pagos : r.getPagosEntities()) {
+//                ChequeTerceros c = (ChequeTerceros) pagos;
+//                System.out.println(c.toString());
+//            }
+        }
 //<editor-fold defaultstate="collapsed" desc="pasar las notas de débito a CtacteCliente">
 //        List<NotaDebito> notas = new NotaDebitoJpaController().findAll();
 //        CtacteClienteJpaController cccc = new CtacteClienteJpaController();
@@ -75,7 +81,7 @@ public class JPATesting {
 //            }
 //        }
 //</editor-fold>
-        //<editor-fold defaultstate="collapsed" desc="agrega Cliente a todos los Recibos">
+//<editor-fold defaultstate="collapsed" desc="agrega Cliente a todos los Recibos">
 //        List<Recibo> l = new ReciboJpaController().findAll();
 //        for (Recibo recibo : l) {
 //            Cliente c;

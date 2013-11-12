@@ -179,6 +179,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenu29 = new javax.swing.JMenu();
         jMenuItem91 = new javax.swing.JMenuItem();
         jMenuItem92 = new javax.swing.JMenuItem();
+        jMenuItemDocumentosComerciales = new javax.swing.JMenuItem();
         jMenu9 = new javax.swing.JMenu();
         jMenuItem22 = new javax.swing.JMenuItem();
         jMenuItem19 = new javax.swing.JMenuItem();
@@ -927,6 +928,14 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
         menuTesoreria.add(jMenu29);
 
+        jMenuItemDocumentosComerciales.setText("ABM Documentos Comerciales");
+        jMenuItemDocumentosComerciales.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemDocumentosComercialesActionPerformed(evt);
+            }
+        });
+        menuTesoreria.add(jMenuItemDocumentosComerciales);
+
         jMenuBar1.add(menuTesoreria);
 
         jMenu9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/home.png"))); // NOI18N
@@ -1408,7 +1417,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
     private void jMenuItem14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem14ActionPerformed
         try {
-            new ReciboController().initRecibos(this, true, true);
+            new ReciboController().showABMRecibos(this, true, true);
         } catch (MessageException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
         }
@@ -1747,7 +1756,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
 
     private void jMenuItem61ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem61ActionPerformed
         try {
-            new ReciboController().initRecibosNumeracionManual(this);
+            new ReciboController().showABMRecibosNumeracionManual(this);
         } catch (MessageException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
         }
@@ -1922,7 +1931,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
 
     private void jMenuItem80ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem80ActionPerformed
         try {
-            new ReciboController().initReciboAConciliar(this);
+            new ReciboController().showABMReciboAConciliar(this);
         } catch (MessageException ex) {
             ex.displayMessage(this);
         }
@@ -1971,6 +1980,10 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private void jMenuItem97ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem97ActionPerformed
         new Contabilidad().displayInformeComprobantesRetencion(this);
     }//GEN-LAST:event_jMenuItem97ActionPerformed
+
+    private void jMenuItemDocumentosComercialesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemDocumentosComercialesActionPerformed
+            
+    }//GEN-LAST:event_jMenuItemDocumentosComercialesActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktopPane1;
@@ -2103,6 +2116,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenuItem jMenuItem97;
     private javax.swing.JMenuItem jMenuItemCatalogoWeb;
     private javax.swing.JMenuItem jMenuItemCuentasBancarias;
+    private javax.swing.JMenuItem jMenuItemDocumentosComerciales;
     private javax.swing.JMenuItem jMenuItemOfertas;
     private javax.swing.JMenu jMenuReportes;
     private javax.swing.JSeparator jSeparator1;

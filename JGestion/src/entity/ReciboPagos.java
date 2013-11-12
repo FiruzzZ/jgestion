@@ -72,6 +72,11 @@ public class ReciboPagos implements Serializable {
         this.id = id;
     }
 
+    /**
+     * 
+     * @return a value
+     * @see #formaPago
+     */
     public int getFormaPago() {
         return formaPago;
     }

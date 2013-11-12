@@ -1136,11 +1136,7 @@ public class Contabilidad {
                             Proveedor o = new ProveedorController().findProveedor((Integer) resumenGeneralCtaCte.getjXTable1().getModel().getValueAt(selectedRow, 0));
                             new CtacteProveedorController().getResumenCtaCte(resumenGeneralCtaCte, true, o).setVisible(true);
                         }
-                    } catch (MessageException ex) {
-                        JOptionPane.showMessageDialog(null, ex.getMessage(), "", JOptionPane.WARNING_MESSAGE);
-                    } catch (MissingReportException ex) {
-                        JOptionPane.showMessageDialog(null, ex.getMessage(), "", JOptionPane.WARNING_MESSAGE);
-                    } catch (JRException ex) {
+                    } catch (MessageException | MissingReportException | JRException ex) {
                         JOptionPane.showMessageDialog(null, ex.getMessage(), "", JOptionPane.WARNING_MESSAGE);
                     } catch (Exception ex) {
                         JOptionPane.showMessageDialog(null, ex.getMessage(), "", JOptionPane.ERROR_MESSAGE);
@@ -1470,7 +1466,7 @@ public class Contabilidad {
                     if (buscador.getjTable1().getRowCount() < 1) {
                         throw new MessageException("La tabla no tiene ningún dato a exportar");
                     }
-                    File file = JGestionUtils.showSaveDialogFileChooser(buscador, "Exportar Detalle de Facturacion (.xls)", null, "xls");
+                    File file = JGestionUtils.showSaveDialogFileChooser(buscador, "Exportar Flujo de Ventas (.xls)", null, "xls");
                     if (file != null) {
                         TableExcelExporter tee = new TableExcelExporter(file, buscador.getjTable1());
                         tee.setCellStyle(5, "dd/MM/yyyy HH:mm:ss");
