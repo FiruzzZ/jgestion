@@ -41,7 +41,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -87,34 +86,57 @@ public class ChequeTercerosController implements ActionListener {
     public ChequeTercerosController() {
     }
 
-    private ChequeTerceros initABMReemplazo(Window owner, ChequeTerceros toReplaced) throws MessageException {
+    /**
+     *
+     * @param owner
+     * @param toReplace
+     * @return instance of the ChequeTerceros persisted in replacement
+     * @throws MessageException
+     */
+    private ChequeTerceros initABMReemplazo(Window owner, ChequeTerceros toReplace) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.TESORERIA);
-        initPanelABM(false, false);
-        panelABM.getTfImporte().setText(UTIL.PRECIO_CON_PUNTO.format(toReplaced.getImporte()));
-        panelABM.getTaObservacion().setText("Reemplazo de: " + toReplaced.getBanco().getNombre() + ", N°" + toReplaced.getNumero());
-        panelABM.setPersistible(true); // <-- OJO ACA!!!
+        initPanelABM(true, false);
+        panelABM.getTfImporte().setText(UTIL.PRECIO_CON_PUNTO.format(toReplace.getImporte()));
+        panelABM.getTaObservacion().setText("Reemplazo de: " + toReplace.getBanco().getNombre() + ", N°" + toReplace.getNumero());
+//        panelABM.setPersistible(true); // <-- OJO ACA!!!
         abm = new JDABM(owner, null, true, panelABM);
-        abm.setTitle("Reemplazo de Cheque N°" + toReplaced.getNumero());
+        abm.setTitle("Reemplazo de Cheque N°" + toReplace.getNumero());
         abm.setListener(this);
         abm.setVisible(true);
         return EL_OBJECT;
     }
 
-    ChequeTerceros initABM(Window owner, boolean isEditing, Cliente cliente) throws MessageException {
-//        UsuarioController.checkPermiso(PermisosController.PermisoDe.TESORERIA);
-        if (isEditing && EL_OBJECT == null) {
-            throw new MessageException("Debe elegir una fila de la tabla");
+    public ChequeTerceros displayABM(Window owner, ChequeTerceros toEdit, Cliente cliente) throws MessageException {
+        initABM(owner, toEdit, cliente);
+        abm.setVisible(true);
+        return EL_OBJECT;
+    }
+
+    /**
+     * Esta ventana permite la creación de Cheques sin tener permiso
+     * {@link PermisosController#PermisoDe#TESORERIA}.
+     * <i>Para que se puedan cargar desde un Recibo sin tener acceso al todo el
+     * módulo</i>
+     *
+     * @param owner
+     * @param toEdit
+     * @param cliente
+     * @return
+     * @throws MessageException
+     */
+    public void initABM(Window owner, ChequeTerceros toEdit, Cliente cliente) throws MessageException {
+        initPanelABM(toEdit != null, false);
+        if (cliente != null) {
+            UTIL.setSelectedItem(panelABM.getCbEmisor(), cliente);
         }
-        initPanelABM(false, false);
-        UTIL.setSelectedItem(panelABM.getCbEmisor(), cliente);
-        if (isEditing) {
+        if (toEdit != null) {
+            EL_OBJECT = toEdit;
             setPanel(EL_OBJECT);
         }
         abm = new JDABM(owner, null, true, panelABM);
         abm.setTitle("ABM - Cheque Terceros");
         abm.setListener(this);
-        abm.setVisible(true);
-        return EL_OBJECT;
+
     }
 
     private void initPanelABM(boolean persistir, boolean selectableCliente) {
@@ -125,16 +147,35 @@ public class ChequeTercerosController implements ActionListener {
         UTIL.loadComboBox(panelABM.getCbBancos(), new BancoController().findEntities(), true);
 //        UTIL.loadComboBox(panelABM.getCbBancoSucursales(), null, null, "<Seleccionar un Banco>");
         UTIL.loadComboBox(panelABM.getCbEmisor(), new ClienteController().findAll(), selectableCliente);
+        panelABM.getbAddBanco().addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    JDialog initABM = new BancoController().initABM(abm);
+                    initABM.setLocationRelativeTo(abm);
+                    initABM.setVisible(true);
+                } catch (MessageException ex) {
+                    abm.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 2);
+                }
+                UTIL.loadComboBox(panelABM.getCbBancos(), new BancoController().findEntities(), true);
+            }
+        });
+        panelABM.getbAddEmisor().addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JDialog initContenedor = new ClienteController().initContenedor(null, true);
+                initContenedor.setVisible(true);
+                UTIL.loadComboBox(panelABM.getCbEmisor(), new ClienteController().findAll(), true);
+            }
+        });
     }
 
-    private ChequeTerceros initABMSinComprobante(Window owner) throws MessageException {
+    private ChequeTerceros displayABMSinComprobante(Window owner) throws MessageException {
         EL_OBJECT = null;
-        UsuarioController.checkPermiso(PermisosController.PermisoDe.TESORERIA);
-        initPanelABM(true, true);
-        UTIL.loadComboBox(panelABM.getCbEmisor(), new ClienteController().findAll(), true);
-        abm = new JDABM(owner, null, true, panelABM);
-        abm.setTitle("ABM - Cheque Terceros");
-        abm.setListener(this);
+        initABM(owner, null, null);
+        panelABM.setPersistible(true);
         abm.setVisible(true);
         return EL_OBJECT;
     }
@@ -258,18 +299,6 @@ public class ChequeTercerosController implements ActionListener {
                         panelABM = null;
                         abm = null;
                         EL_OBJECT = null;
-                    } else if (boton.equals(panelABM.getbAddBanco())) {
-                        try {
-                            JDialog initABM = new BancoController().initABM(abm);
-                            initABM.setLocationRelativeTo(abm);
-                            initABM.setVisible(true);
-                        } catch (MessageException ex) {
-                            abm.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 2);
-                        }
-                        UTIL.loadComboBox(panelABM.getCbBancos(), new BancoController().findEntities(), true);
-                    } else if (boton.equals(panelABM.getbAddEmisor())) {
-                        JDialog initContenedor = new ClienteController().initContenedor(null, true);
-                        initContenedor.setVisible(true);
                     }
                 } //</editor-fold>
                 //<editor-fold defaultstate="collapsed" desc="jdChequeManager EVENTS">
@@ -281,17 +310,18 @@ public class ChequeTercerosController implements ActionListener {
                             JOptionPane.showMessageDialog(null, ex.getMessage(), "Error ejecutando consulta", JOptionPane.ERROR_MESSAGE);
                         }
                     } else if (boton.equals(jdChequeManager.getBtnNuevo())) {
-                        initABMSinComprobante(jdChequeManager);
-                    } else if (boton.equals(jdChequeManager.getbACaja())) {
+                        displayABMSinComprobante(jdChequeManager);
+                    } else if (boton.equals(jdChequeManager.getBtnModificar())) {
                         int row = jdChequeManager.getjTable1().getSelectedRow();
                         if (row > -1) {
                             ChequeTerceros cheque = jpaController.find((Integer) jdChequeManager.getjTable1().getModel().getValueAt(row, 0));
-                            if (cheque.getChequeEstado().equals(ChequeEstado.CARTERA)) {
-                                initACajaUI(cheque);
-                                armarQuery(false);
-                            } else {
-                                JOptionPane.showMessageDialog(jdChequeManager, "Solo los cheques en " + ChequeEstado.CARTERA + " pueden ser acreditados a una Caja", "Error", JOptionPane.WARNING_MESSAGE);
-                            }
+//                            if (cheque.getChequeEstado().equals(ChequeEstado.CARTERA)) {
+                            initABM(jdChequeManager, cheque, null);
+//                                initACajaUI(cheque);
+                            armarQuery(false);
+//                            } else {
+//                                JOptionPane.showMessageDialog(jdChequeManager, "Solo los cheques en " + ChequeEstado.CARTERA + " pueden ser acreditados a una Caja", "Error", JOptionPane.WARNING_MESSAGE);
+//                            }
                         }
                     } else if (boton.equals(jdChequeManager.getbAnular())) {
 //                        int row = jdChequeManager.getjTable1().getSelectedRow();

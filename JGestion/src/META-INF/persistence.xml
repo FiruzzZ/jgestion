@@ -77,6 +77,9 @@
     <class>entity.DetalleNotaDebitoProveedor</class>
     <class>entity.Especie</class>
     <class>entity.Dominio</class>
+    <class>entity.DocumentoComercial</class>
+    <class>entity.DocumentoComercialCliente</class>
+    <class>entity.DocumentoComercialProveedor</class>
     <properties>
       <!--      <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://jgestion.no-ip.org:5433/jgestionahinco"/>-->
       <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>

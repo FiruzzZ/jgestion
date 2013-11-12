@@ -1,3 +1,42 @@
+--20131111
+CREATE TABLE documento_comercial (
+   id serial NOT NULL, 
+   nombre character varying(100) NOT NULL, 
+   minlength integer NOT NULL DEFAULT 1, 
+   maxlength integer NOT NULL DEFAULT 1, 
+   alphanumeric boolean NOT NULL DEFAULT false, 
+   unicoporempresa boolean NOT NULL DEFAULT false, 
+    PRIMARY KEY (id), 
+    UNIQUE (nombre)
+);
+CREATE TABLE documento_comercial_cliente (
+   id serial NOT NULL, 
+   cliente_id integer NOT NULL, 
+   documento_comercial_id integer NOT NULL, 
+   numero character varying(40) NOT NULL, 
+   importe numeric(12,2) NOT NULL, 
+   fecha date NOT NULL DEFAULT now(), 
+   origen character varying(200) NOT NULL, 
+   anulado boolean NOT NULL DEFAULT false, 
+   observacion character varying(200), 
+    PRIMARY KEY (id), 
+    FOREIGN KEY (cliente_id) REFERENCES cliente (id), 
+    FOREIGN KEY (documento_comercial_id) REFERENCES documento_comercial (id)
+);
+CREATE TABLE documento_comercial_proveedor (
+   id serial NOT NULL, 
+   proveedor_id integer NOT NULL, 
+   documento_comercial_id integer NOT NULL, 
+   numero character varying(40) NOT NULL, 
+   importe numeric(12,2) NOT NULL, 
+   fecha date NOT NULL DEFAULT now(), 
+   origen character varying(200) NOT NULL, 
+   anulado boolean NOT NULL DEFAULT false, 
+   observacion character varying(200), 
+    PRIMARY KEY (id), 
+    FOREIGN KEY (proveedor_id) REFERENCES proveedor (id), 
+    FOREIGN KEY (documento_comercial_id) REFERENCES documento_comercial (id)
+);
 --20130924
 ALTER TABLE ctacte_cliente ALTER COLUMN factura DROP NOT NULL;
 ALTER TABLE ctacte_cliente ADD COLUMN notadebito_id integer;

@@ -471,7 +471,7 @@ public class SucursalController implements ActionListener {
                     }
                     abm.showMessage(msg, CLASS_NAME, 1);
                     entity = null;
-                    cargarDTM(contenedor.getDTM(), "");
+                    cargarDTM(contenedor.getDTM(), null);
                     abm.dispose();
                 } catch (MessageException ex) {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 2);

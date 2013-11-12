@@ -5,7 +5,6 @@ import controller.DAO;
 import controller.Valores;
 import controller.exceptions.MessageException;
 import entity.*;
-import static entity.DetalleRecibo_.facturaVenta;
 import entity.enums.ChequeEstado;
 import java.util.ArrayList;
 import java.util.List;
@@ -92,17 +91,13 @@ public class ReciboJpaController extends AbstractDAO<Recibo, Integer> {
                     ChequePropio pago = (ChequePropio) object;
                     pago = em.find(pago.getClass(), pago.getId());
                     pago.setComprobanteIngreso(null);
-                    pago.setEstado(ChequeEstado.CARTERA.getId());
+                    pago.setEstado(ChequeEstado.ENDOSADO.getId());
                     em.merge(pago);
                 } else if (object instanceof ChequeTerceros) {
                     ChequeTerceros pago = (ChequeTerceros) object;
                     pago = em.find(pago.getClass(), pago.getId());
-                    if (pago.getEstado() != ChequeEstado.CARTERA.getId()) {
-                        throw new MessageException("¡ANULACIÓN CANCELADA!:"
-                                + "\nEl Cheque Tercero " + pago.getBanco().getNombre() + " " + pago.getNumero() + ", Importe $" + pago.getImporte()
-                                + "\nfue utilizado, no se encuentra mas en " + ChequeEstado.CARTERA);
-                    }
-                    em.remove(pago);
+                    pago.setComprobanteIngreso(null);
+                    em.merge(pago);
                 } else if (object instanceof NotaCredito) {
                     NotaCredito pago = (NotaCredito) object;
                     pago = em.find(pago.getClass(), pago.getId());
@@ -197,7 +192,11 @@ public class ReciboJpaController extends AbstractDAO<Recibo, Integer> {
             } else if (object instanceof ChequeTerceros) {
                 ChequeTerceros pago = (ChequeTerceros) object;
                 pago.setComprobanteIngreso(getEntityClass().getSimpleName() + " " + JGestionUtils.getNumeracion(recibo, true));
-                entityManager.persist(pago);
+                if (pago.getId() == null) {
+                    entityManager.persist(pago);
+                } else {
+                    entityManager.merge(pago);
+                }
                 pagosPost.add(pago);
             } else if (object instanceof NotaCredito) {
                 NotaCredito pago = (NotaCredito) object;
@@ -267,6 +266,7 @@ public class ReciboJpaController extends AbstractDAO<Recibo, Integer> {
         old.setDetalle(recibo.getDetalle());
         old.setPorConciliar(false);
         old.setMonto(recibo.getMonto());
+        old.setFechaRecibo(recibo.getFechaRecibo());
         for (DetalleRecibo d : old.getDetalle()) {
             d.setRecibo(old);
             entityManager.persist(d);

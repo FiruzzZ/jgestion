@@ -3,11 +3,10 @@ package controller;
 import controller.exceptions.IllegalOrphanException;
 import controller.exceptions.MessageException;
 import controller.exceptions.NonexistentEntityException;
-import entity.Cuenta;
-import entity.DetalleCajaMovimientos;
+import entity.DocumentoComercial;
 import gui.JDABM;
 import gui.JDContenedor;
-import gui.PanelABMCuenta;
+import gui.PanelABMDocumentoComercial;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,58 +14,30 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
+import javax.persistence.RollbackException;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-import jpa.controller.CuentaJpaController;
+import jpa.controller.DocumentoComercialJpaController;
 import org.apache.log4j.Logger;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.postgresql.util.PSQLException;
 import utilities.general.UTIL;
 
 /**
  *
  * @author FiruzzZ
  */
-public class CuentaController {
+public class DocumentoComercialController {
 
-    private static final Logger LOG = Logger.getLogger(CuentaController.class.getName());
-    private final CuentaJpaController jpaController = new CuentaJpaController();
-    private Cuenta EL_OBJECT;
-    public static final Cuenta SIN_CLASIFICAR; //antes llamado EFECTIVO
+    private final static Logger LOG = Logger.getLogger(DocumentoComercialController.class);
+    private final DocumentoComercialJpaController jpaController = new DocumentoComercialJpaController();
+    private DocumentoComercial EL_OBJECT;
 
-    static {
-        SIN_CLASIFICAR = DAO.getEntityManager().find(Cuenta.class, 1);
-    }
-
-    public void destroy(Integer id) throws NonexistentEntityException, IllegalOrphanException {
-        ArrayList<String> lis;
-        Cuenta cuenta;
-        try {
-            cuenta = jpaController.find(id);
-            cuenta.getId();
-        } catch (EntityNotFoundException enfe) {
-            throw new NonexistentEntityException("No existe el registro.", enfe);
-        }
-        if (!jpaController.findByQuery("SELECT o.id FROM " + DetalleCajaMovimientos.class.getSimpleName() + " o WHERE o.cuenta.id=" + cuenta.getId()).isEmpty()) {
-            lis = new ArrayList<String>(1);
-            lis.add("No se puede eliminar el registro " + jpaController.getEntityClass().getSimpleName() + " porque está relacionado a otro/s registro/s.");
-            throw new IllegalOrphanException(lis);
-        }
-        jpaController.remove(cuenta);
-    }
-
-    public List<Cuenta> findAll() {
-        return jpaController.findAll();
-    }
-
-    public Cuenta findMovimientoConcepto(Integer id) {
-        try {
-            return jpaController.find(id);
-        } finally {
-            jpaController.closeEntityManager();
-        }
+    public DocumentoComercialController() {
     }
 
     public void initContenedor(Window owner) {
-        final JDContenedor contenedor = new JDContenedor(owner, true, "ABM Sub Cuentas");
+        final JDContenedor contenedor = new JDContenedor(owner, true, "ABM Sub DocumentoComercials");
         contenedor.getbImprimir().setVisible(false);
         contenedor.getbNuevo().addActionListener(new ActionListener() {
             @Override
@@ -127,22 +98,11 @@ public class CuentaController {
                 }
             }
         });
-        UTIL.getDefaultTableModel(contenedor.getjTable1(), new String[]{"id", "Cuenta", "Ingreso"}, new int[]{1, 100, 100}, new Class<?>[]{null, null, Boolean.class});
+        UTIL.getDefaultTableModel(contenedor.getjTable1(), new String[]{"id", "DocumentoComercial", "Ingreso"}, new int[]{1, 100, 100}, new Class<?>[]{null, null, Boolean.class});
         UTIL.hideColumnTable(contenedor.getjTable1(), 0);
         cargarContenedor(contenedor.getDTM(), null);
         contenedor.setLocationRelativeTo(owner);
         contenedor.setVisible(true);
-    }
-
-    private void cargarContenedor(DefaultTableModel dtm, String query) {
-        dtm.setRowCount(0);
-        if (query == null || query.isEmpty()) {
-            query = "";
-        }
-        List<Cuenta> l = jpaController.findByQuery("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o WHERE o.id > 1 AND o.nombre LIKE '%" + query + "%' ORDER BY o.nombre");
-        for (Cuenta o : l) {
-            dtm.addRow(new Object[]{o.getId(), o.getNombre(), o.isIngreso()});
-        }
     }
 
     /**
@@ -159,20 +119,18 @@ public class CuentaController {
             }
             EL_OBJECT = jpaController.find(EL_OBJECT.getId());
         }
-        final PanelABMCuenta panelABM = new PanelABMCuenta();
+        final PanelABMDocumentoComercial panelABM = new PanelABMDocumentoComercial();
         if (editing) {
             panelABM.getTfNombre().setText(EL_OBJECT.getNombre());
-            panelABM.getCheckIngresos().setSelected(EL_OBJECT.isIngreso());
         }
-        final JDABM abm = new JDABM(owner, "ABM Cuentas", true, panelABM);
+        final JDABM abm = new JDABM(owner, "ABM DocumentoComercials", true, panelABM);
         abm.getbAceptar().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (EL_OBJECT == null) {
-                    EL_OBJECT = new Cuenta();
+                    EL_OBJECT = new DocumentoComercial();
                 }
                 EL_OBJECT.setNombre(panelABM.getTfNombre().getText().trim().toUpperCase());
-                EL_OBJECT.setIngreso(panelABM.getCheckIngresos().isSelected());
                 try {
                     abm.getbAceptar().setEnabled(false);
                     checkConstraints(EL_OBJECT);
@@ -209,7 +167,7 @@ public class CuentaController {
         abm.setVisible(true);
     }
 
-    private void checkConstraints(Cuenta o) throws MessageException, Exception {
+    private void checkConstraints(DocumentoComercial o) throws MessageException, Exception {
         if (o.getNombre().isEmpty()) {
             throw new MessageException("Nombre no válido.");
         }
@@ -226,7 +184,35 @@ public class CuentaController {
         }
     }
 
-    public List<Cuenta> findByTipo(boolean ingreso) {
-        return jpaController.findByTipo(ingreso);
+    private void cargarContenedor(DefaultTableModel dtm, String query) {
+        dtm.setRowCount(0);
+        if (query == null || query.isEmpty()) {
+            query = "";
+        }
+        List<DocumentoComercial> l = jpaController.findByQuery("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o WHERE o.id > 1 AND o.nombre LIKE '%" + query + "%' ORDER BY o.nombre");
+        for (DocumentoComercial o : l) {
+            dtm.addRow(new Object[]{o.getId(), o.getNombre()});
+        }
+    }
+
+    public void destroy(Integer id) throws NonexistentEntityException, MessageException {
+        DocumentoComercial cuenta;
+        try {
+            cuenta = jpaController.find(id);
+            cuenta.getId();
+            jpaController.remove(cuenta);
+        } catch (EntityNotFoundException enfe) {
+            throw new NonexistentEntityException("No existe el registro.", enfe);
+        } catch (RollbackException ex) {
+            if (ex.getCause() instanceof DatabaseException) {
+                PSQLException ps = (PSQLException) ex.getCause().getCause();
+                if (ps.getMessage().contains("viola la llave foránea") || ps.getMessage().contains("violates foreign key constraint")) {
+                    throw new MessageException("No se puede eliminar porque existen otros registros que están relacionados a este");
+                }
+            }
+            throw ex;
+        } finally {
+            jpaController.closeEntityManager();
+        }
     }
 }

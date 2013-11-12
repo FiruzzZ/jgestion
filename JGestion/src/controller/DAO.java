@@ -127,7 +127,6 @@ public abstract class DAO implements Runnable {
 //                UnitOfWorkImpl unitOfWorkImpl = (UnitOfWorkImpl) ((EntityManagerImpl) entityManagerForJDBC.getDelegate()).getActiveSession();
 //                unitOfWorkImpl.beginEarlyTransaction();
 //                connection = unitOfWorkImpl.getAccessor().getConnection();
-
         //JPA 2.0
         connection = entityManagerForJDBC.unwrap(java.sql.Connection.class);
         return connection;
@@ -275,13 +274,16 @@ public abstract class DAO implements Runnable {
     }
 
     /**
-     * Busca el estado mas actualizado del objeto en la base de datos. El objeto
-     * debe tener un campo llamado id y ser único (UNIQUE CONSTRAINT) (
-     * <code>object.id</code>)
+     * Find by primary key. Search for an entity of the specified class and
+     * primary key.
+     * <br>The entity instance is <b>always retrieved from the database<b>
+     * ensured by the use of {@link QueryHints#REFRESH}.
+     * <br>El objeto debe tener un campo llamado id y ser único (PRIMARY KEY or
+     * UNIQUE CONSTRAINT) ( <code>object.id</code>)
      *
-     * @param object La clase de la cual se buscará la instancia
-     * @param id valor único identificador
-     * @return Una instancia del tipo <code>object</code>
+     * @param object
+     * @param id
+     * @return the found entity instance or null if the entity does not exist
      */
     public static Object findEntity(Class<?> object, Integer id) {
         if (object == null) {

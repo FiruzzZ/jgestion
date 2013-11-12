@@ -18,6 +18,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -456,9 +457,9 @@ public class CtacteProveedorController implements ActionListener {
                 + " ORDER BY o.factura.proveedor.nombre",
                 CtacteProveedor.class).getResultList();
         if (l.isEmpty()) {
-            return new ArrayList<Object[]>(0);
+            return new ArrayList<>(0);
         }
-        List<Object[]> data = new ArrayList<Object[]>();
+        List<Object[]> data = new ArrayList<>();
         BigDecimal importeCCC = BigDecimal.ZERO;
         Proveedor c = l.get(0).getFactura().getProveedor();
         for (CtacteProveedor ccc : l) {
@@ -467,7 +468,7 @@ public class CtacteProveedorController implements ActionListener {
                 importeCCC = BigDecimal.ZERO;
                 c = ccc.getFactura().getProveedor();
             }
-            importeCCC = importeCCC.add(ccc.getImporte().subtract(ccc.getEntregado()));
+            importeCCC = importeCCC.add(ccc.getImporte().subtract(ccc.getEntregado())).setScale(2, RoundingMode.HALF_UP);
         }
         data.add(new Object[]{c.getId(), c.getNombre(), importeCCC});
         return data;

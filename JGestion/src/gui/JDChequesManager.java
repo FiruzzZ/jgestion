@@ -48,7 +48,7 @@ public class JDChequesManager extends javax.swing.JDialog {
         panelBotones = new javax.swing.JPanel();
         btnNuevo = new javax.swing.JButton();
         bBuscar = new javax.swing.JButton();
-        bACaja = new javax.swing.JButton();
+        btnModificar = new javax.swing.JButton();
         bDeposito = new javax.swing.JButton();
         bAnular = new javax.swing.JButton();
         btnReemplazar = new javax.swing.JButton();
@@ -130,26 +130,28 @@ public class JDChequesManager extends javax.swing.JDialog {
             }
         });
         jScrollPane1.setViewportView(jTable1);
-        jTable1.getColumnModel().getColumn(0).setResizable(false);
-        jTable1.getColumnModel().getColumn(0).setPreferredWidth(1);
-        jTable1.getColumnModel().getColumn(1).setResizable(false);
-        jTable1.getColumnModel().getColumn(1).setPreferredWidth(100);
-        jTable1.getColumnModel().getColumn(2).setMinWidth(80);
-        jTable1.getColumnModel().getColumn(2).setPreferredWidth(80);
-        jTable1.getColumnModel().getColumn(3).setResizable(false);
-        jTable1.getColumnModel().getColumn(3).setPreferredWidth(50);
-        jTable1.getColumnModel().getColumn(4).setResizable(false);
-        jTable1.getColumnModel().getColumn(4).setPreferredWidth(50);
-        jTable1.getColumnModel().getColumn(5).setMinWidth(50);
-        jTable1.getColumnModel().getColumn(5).setPreferredWidth(50);
-        jTable1.getColumnModel().getColumn(6).setPreferredWidth(100);
-        jTable1.getColumnModel().getColumn(7).setMinWidth(100);
-        jTable1.getColumnModel().getColumn(7).setPreferredWidth(100);
-        jTable1.getColumnModel().getColumn(8).setMinWidth(50);
-        jTable1.getColumnModel().getColumn(8).setPreferredWidth(50);
-        jTable1.getColumnModel().getColumn(9).setPreferredWidth(50);
-        jTable1.getColumnModel().getColumn(10).setMinWidth(100);
-        jTable1.getColumnModel().getColumn(10).setPreferredWidth(100);
+        if (jTable1.getColumnModel().getColumnCount() > 0) {
+            jTable1.getColumnModel().getColumn(0).setResizable(false);
+            jTable1.getColumnModel().getColumn(0).setPreferredWidth(1);
+            jTable1.getColumnModel().getColumn(1).setResizable(false);
+            jTable1.getColumnModel().getColumn(1).setPreferredWidth(100);
+            jTable1.getColumnModel().getColumn(2).setMinWidth(80);
+            jTable1.getColumnModel().getColumn(2).setPreferredWidth(80);
+            jTable1.getColumnModel().getColumn(3).setResizable(false);
+            jTable1.getColumnModel().getColumn(3).setPreferredWidth(50);
+            jTable1.getColumnModel().getColumn(4).setResizable(false);
+            jTable1.getColumnModel().getColumn(4).setPreferredWidth(50);
+            jTable1.getColumnModel().getColumn(5).setMinWidth(50);
+            jTable1.getColumnModel().getColumn(5).setPreferredWidth(50);
+            jTable1.getColumnModel().getColumn(6).setPreferredWidth(100);
+            jTable1.getColumnModel().getColumn(7).setMinWidth(100);
+            jTable1.getColumnModel().getColumn(7).setPreferredWidth(100);
+            jTable1.getColumnModel().getColumn(8).setMinWidth(50);
+            jTable1.getColumnModel().getColumn(8).setPreferredWidth(50);
+            jTable1.getColumnModel().getColumn(9).setPreferredWidth(50);
+            jTable1.getColumnModel().getColumn(10).setMinWidth(100);
+            jTable1.getColumnModel().getColumn(10).setPreferredWidth(100);
+        }
 
         panelBotones.setMinimumSize(new java.awt.Dimension(143, 143));
 
@@ -161,9 +163,9 @@ public class JDChequesManager extends javax.swing.JDialog {
         bBuscar.setMnemonic('b');
         bBuscar.setText("Buscar");
 
-        bACaja.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px_coins.png"))); // NOI18N
-        bACaja.setMnemonic('a');
-        bACaja.setText("A Caja");
+        btnModificar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px_configure.png"))); // NOI18N
+        btnModificar.setMnemonic('a');
+        btnModificar.setText("Editar");
 
         bDeposito.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px_bank.png"))); // NOI18N
         bDeposito.setMnemonic('d');
@@ -192,7 +194,7 @@ public class JDChequesManager extends javax.swing.JDialog {
                     .addComponent(jSeparator1)
                     .addComponent(bBuscar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnNuevo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(bACaja, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnModificar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(bDeposito, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(bAnular, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnReemplazar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -209,7 +211,7 @@ public class JDChequesManager extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 5, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(bACaja, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnModificar, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(bDeposito, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -503,11 +505,11 @@ private void tfImporteKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_t
 }//GEN-LAST:event_tfImporteKeyTyped
 ///
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton bACaja;
     private javax.swing.JButton bAnular;
     private javax.swing.JButton bBuscar;
     private javax.swing.JButton bDeposito;
     private javax.swing.JButton btnImprimir;
+    private javax.swing.JButton btnModificar;
     private javax.swing.JButton btnNuevo;
     private javax.swing.JButton btnReemplazar;
     private javax.swing.JComboBox cbBancoSucursales;
@@ -555,8 +557,8 @@ private void tfImporteKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_t
     private javax.swing.JTextField tfImporte;
     // End of variables declaration//GEN-END:variables
 
-    public JButton getbACaja() {
-        return bACaja;
+    public JButton getBtnModificar() {
+        return btnModificar;
     }
 
     public JButton getbAnular() {
@@ -652,7 +654,7 @@ private void tfImporteKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_t
     }
 
     public void addButtonListener(ActionListener actionListener) {
-        bACaja.addActionListener(actionListener);
+        btnModificar.addActionListener(actionListener);
         btnNuevo.addActionListener(actionListener);
         bBuscar.addActionListener(actionListener);
         bAnular.addActionListener(actionListener);

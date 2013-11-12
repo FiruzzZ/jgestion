@@ -214,7 +214,7 @@ public class ChequePropioController implements ActionListener {
                         JOptionPane.showMessageDialog(null, ex.getMessage(), "Error ejecutando consulta", JOptionPane.ERROR_MESSAGE);
                     }
                 } else if (boton.equals(jdChequeManager.getBtnNuevo())) {
-                } else if (boton.equals(jdChequeManager.getbACaja())) {
+                } else if (boton.equals(jdChequeManager.getBtnModificar())) {
                 } else if (boton.equals(jdChequeManager.getbAnular())) {
                     int row = jdChequeManager.getjTable1().getSelectedRow();
                     if (row > -1) {
@@ -361,7 +361,7 @@ public class ChequePropioController implements ActionListener {
         }
         jdChequeManager = new JDChequesManager(parent, true);
         jdChequeManager.getBtnNuevo().setEnabled(false);
-        jdChequeManager.getbACaja().setEnabled(false);
+        jdChequeManager.getBtnModificar().setEnabled(false);
         jdChequeManager.getbAnular().setEnabled(true);
         jdChequeManager.getbDeposito().setText("Debidar");
         jdChequeManager.getLabelEmisor().setText("Emitido a");

@@ -10,6 +10,7 @@ import entity.BancoSucursal;
 import gui.JDABM;
 import gui.JDContenedor;
 import gui.PanelABMBancoSucursales;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -295,7 +296,7 @@ public class BancoController {
      * @return
      * @throws MessageException
      */
-    public JDialog initABM(JDialog parent) throws MessageException {
+    public JDialog initABM(Window parent) throws MessageException {
         return initABM(parent, false);
     }
 
@@ -307,7 +308,7 @@ public class BancoController {
      * @return una ventana para la creación de Bancos
      * @throws MessageException
      */
-    private JDialog initABM(JDialog parent, boolean isEditing) throws MessageException {
+    private JDialog initABM(Window parent, boolean isEditing) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.DATOS_GENERAL);
         if (isEditing) {
             EL_OBJECT = getSelectedFromContenedor();
@@ -318,7 +319,7 @@ public class BancoController {
         return settingABM(parent, isEditing);
     }
 
-    private JDialog settingABM(JDialog parent, boolean isEditing) {
+    private JDialog settingABM(Window parent, boolean isEditing) {
         panelABM = new PanelABMBancoSucursales();
         panelABM.hideFieldsSucursal();
         abm = new JDABM(parent, "ABM - " + CLASS_NAME, true, panelABM);

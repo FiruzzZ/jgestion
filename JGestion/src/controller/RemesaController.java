@@ -37,6 +37,7 @@ import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import jgestion.JGestionUtils;
 import jpa.controller.ChequePropioJpaController;
 import jpa.controller.ChequeTercerosJpaController;
@@ -65,17 +66,15 @@ public class RemesaController implements FocusListener {
     private JDReRe jdReRe;
     private CtacteProveedor selectedCtaCte;
     private NotaDebitoProveedor selectedNotaDebito;
-    private Date selectedFechaReRe = null;
     private JDBuscadorReRe buscador;
     private Remesa selectedRemesa;
-    private static Logger LOG = Logger.getLogger(RemesaController.class);
-    private RemesaJpaController jpaController;
+    private static final Logger LOG = Logger.getLogger(RemesaController.class);
+    private final RemesaJpaController jpaController = new RemesaJpaController();
     private boolean unlockedNumeracion = false;
     private boolean toConciliar;
     private boolean conciliando;
 
     public RemesaController() {
-        jpaController = new RemesaJpaController();
     }
 
     public EntityManager getEntityManager() {
@@ -380,6 +379,7 @@ public class RemesaController implements FocusListener {
         if (jdReRe.getDcFechaReRe() == null) {
             throw new MessageException("Fecha de " + jpaController.getEntityClass().getSimpleName() + " no válida");
         }
+        Date fecha = jdReRe.getDcFechaReRe();
         if (unlockedNumeracion) {
             try {
                 Integer numero = Integer.valueOf(jdReRe.getTfOcteto());
@@ -393,6 +393,21 @@ public class RemesaController implements FocusListener {
                 }
             } catch (NumberFormatException numberFormatException) {
                 throw new MessageException("Número de " + jpaController.getEntityClass().getSimpleName() + " no válido, ingrese solo dígitos");
+            }
+        }
+        TableModel dtm = jdReRe.getTableAPagar().getModel();
+        for (int rowIndex = 0; rowIndex < dtm.getRowCount(); rowIndex++) {
+            Object o = dtm.getValueAt(rowIndex, 0);
+            if (o instanceof FacturaCompra) {
+                FacturaCompra fv = new FacturaCompraJpaController().find(((FacturaCompra) o).getId());
+                if (UTIL.compararIgnorandoTimeFields(fecha, fv.getFechaCompra()) < 0) {
+                    throw new MessageException("La fecha de la factura es posterior a la " + JGestionUtils.getNumeracion(fv));
+                }
+            } else if (o instanceof NotaDebitoProveedor) {
+                NotaDebitoProveedor nota = new NotaDebitoProveedorJpaController().find(((NotaDebitoProveedor) o).getId());
+                if (UTIL.compararIgnorandoTimeFields(fecha, nota.getFechaNotaDebito()) < 0) {
+                    throw new MessageException("La fecha de la Nota de Débito es posterior a la " + JGestionUtils.getNumeracion(nota));
+                }
             }
         }
     }
@@ -411,14 +426,13 @@ public class RemesaController implements FocusListener {
         re.setProveedor((Proveedor) jdReRe.getCbClienteProveedor().getSelectedItem());
         re.setUsuario(UsuarioController.getCurrentUser());
 
-        DefaultTableModel dtm = jdReRe.getDtmAPagar();
-        FacturaCompraJpaController fcc = new FacturaCompraJpaController();
+        DefaultTableModel dtm = (DefaultTableModel) jdReRe.getTableAPagar().getModel();
         BigDecimal monto = BigDecimal.ZERO;
         for (int rowIndex = 0; rowIndex < dtm.getRowCount(); rowIndex++) {
             Object o = dtm.getValueAt(rowIndex, 0);
             DetalleRemesa detalle = new DetalleRemesa();
             if (o instanceof FacturaCompra) {
-                FacturaCompra fv = fcc.find(((FacturaCompra) o).getId());
+                FacturaCompra fv = new FacturaCompraJpaController().find(((FacturaCompra) o).getId());
                 detalle.setFacturaCompra(fv);
             } else if (o instanceof NotaDebitoProveedor) {
                 NotaDebitoProveedor nota = new NotaDebitoProveedorJpaController().find(((NotaDebitoProveedor) o).getId());
@@ -502,8 +516,7 @@ public class RemesaController implements FocusListener {
     }
 
     private void limpiarDetalle() {
-        jdReRe.limpiarDetalle();
-        selectedFechaReRe = null;
+        jdReRe.limpiarDetalles();
     }
 
     private void addEntregaToDetalle() throws MessageException {
@@ -526,17 +539,6 @@ public class RemesaController implements FocusListener {
                     + UTIL.DATE_FORMAT.format(comprobanteFecha) + ")");
         }
 
-        // si ya se cargó un detalle de entrega
-        // y sigue habiendo al menos UN detalle agregado (dtm no vacia)
-        // ctrla que la fecha de ReRe siga siendo la misma
-        if ((selectedFechaReRe != null) && (jdReRe.getDtmAPagar().getRowCount() > 0)
-                && (!UTIL.DATE_FORMAT.format(selectedFechaReRe).equals(UTIL.DATE_FORMAT.format(jdReRe.getDcFechaReRe())))) {
-            throw new MessageException("La fecha de " + jpaController.getEntityClass().getSimpleName() + " a sido cambiada"
-                    + "\nAnterior: " + UTIL.DATE_FORMAT.format(selectedFechaReRe)
-                    + "\nActual: " + UTIL.DATE_FORMAT.format(jdReRe.getDcFechaReRe()));
-        } else {
-            selectedFechaReRe = jdReRe.getDcFechaReRe();
-        }
         BigDecimal entrega$;
         try {
             entrega$ = new BigDecimal(jdReRe.getTfEntrega().getText());
@@ -814,7 +816,7 @@ public class RemesaController implements FocusListener {
                 SwingUtil.setComponentsEnabled(jdReRe.getPanelAPagar().getComponents(), true, true, (Class<? extends Component>[]) null);
                 jdReRe.getCbCtaCtes().setSelectedIndex(0);
                 jdReRe.getbAceptar().setEnabled(true);
-//            } else {
+                jdReRe.setDcFechaReRe(new Date());
             }
             jdReRe.setLocationRelativeTo(buscador);
             jdReRe.getbAnular().setVisible(toAnular);
