@@ -504,8 +504,8 @@ public abstract class DAO implements Runnable {
                 sb.append("(").append(OperacionesBancariasController.DEPOSITO).append(",'DEPÓSITO'),");
                 sb.append("(").append(OperacionesBancariasController.EXTRACCION).append(",'EXTRACCIÓN'),");
                 sb.append("(").append(OperacionesBancariasController.TRANSFERENCIA).append(",'TRANSFERENCIA');");
-                sb.append("SELECT SETVAL('operaciones_bancarias_id_seq'::regclass, 3);");
                 em.createNativeQuery(sb.toString()).executeUpdate();
+                em.createNativeQuery("SELECT SETVAL('operaciones_bancarias_id_seq'::regclass, 3);").getResultList();
             }
             em.getTransaction().commit();
         } catch (Exception ex) {

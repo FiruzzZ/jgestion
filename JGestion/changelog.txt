@@ -1,4 +1,6 @@
 --20131111
+ALTER TABLE cliente DROP CONSTRAINT fk_cliente_sucursal;
+ALTER TABLE cliente DROP COLUMN sucursal;
 CREATE TABLE documento_comercial (
    id serial NOT NULL, 
    nombre character varying(100) NOT NULL, 
