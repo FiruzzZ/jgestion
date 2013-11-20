@@ -121,7 +121,6 @@ public class ChequeTercerosController implements ActionListener {
      * @param owner
      * @param toEdit
      * @param cliente
-     * @return
      * @throws MessageException
      */
     public void initABM(Window owner, ChequeTerceros toEdit, Cliente cliente) throws MessageException {
@@ -316,7 +315,7 @@ public class ChequeTercerosController implements ActionListener {
                         if (row > -1) {
                             ChequeTerceros cheque = jpaController.find((Integer) jdChequeManager.getjTable1().getModel().getValueAt(row, 0));
 //                            if (cheque.getChequeEstado().equals(ChequeEstado.CARTERA)) {
-                            initABM(jdChequeManager, cheque, null);
+                            displayABM(jdChequeManager, cheque, null);
 //                                initACajaUI(cheque);
                             armarQuery(false);
 //                            } else {
