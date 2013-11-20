@@ -1,6 +1,7 @@
 package jpa.controller;
 
 import controller.*;
+import controller.exceptions.MessageException;
 import entity.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -334,9 +335,9 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
      *
      * @param facturaCompra
      * @param cajaMovimientoDestino
-     * @throws Exception
+     * @throws controller.exceptions.MessageException
      */
-    public void anular(FacturaCompra facturaCompra, CajaMovimientos cajaMovimientoDestino) throws Exception {
+    public void anular(FacturaCompra facturaCompra, CajaMovimientos cajaMovimientoDestino) throws MessageException{
         EntityManager em = getEntityManager();
         try {
             em.getTransaction().begin();
@@ -362,32 +363,32 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
                     List<Remesa> remesaList = new RemesaJpaController().findByFactura(facturaCompra);
                     boolean detalleUnico; //Therefore, the entire Recibo must be annulled
                     for (Remesa remesaQueEnSuDetalleContieneLaFactura : remesaList) {
-                        detalleUnico = false;
-                        if (remesaQueEnSuDetalleContieneLaFactura.getDetalle().size() == 1) {
-                            detalleUnico = true;
+                        detalleUnico = remesaQueEnSuDetalleContieneLaFactura.getDetalle().size() == 1;
+                        if(!detalleUnico) {
+                            throw new MessageException("No se puede anular la factura porque existen Remesas (" + remesaList.size() + ") que contienen pagos de esta y otras facturas.");
                         }
-                        for (DetalleRemesa detalleRemesa : remesaQueEnSuDetalleContieneLaFactura.getDetalle()) {
-                            if (detalleRemesa.getFacturaCompra().equals(facturaCompra)) {
-                                detalleRemesa.setObservacion("ANULADO - " + detalleRemesa.getObservacion());
-                                detalleRemesa.setAnulado(true);
-                                remesaQueEnSuDetalleContieneLaFactura.setMontoEntrega(remesaQueEnSuDetalleContieneLaFactura.getMonto() - detalleRemesa.getMontoEntrega().doubleValue());
-                                newDetalleCajaMovimiento = new DetalleCajaMovimientos();
-                                newDetalleCajaMovimiento.setCajaMovimientos(cajaMovimientoDestino);
-                                newDetalleCajaMovimiento.setIngreso(true);
-                                newDetalleCajaMovimiento.setMonto(detalleRemesa.getMontoEntrega());
-                                newDetalleCajaMovimiento.setNumero(facturaCompra.getId());
-                                newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosController.ANULACION);
-                                newDetalleCajaMovimiento.setDescripcion(JGestionUtils.getNumeracion(facturaCompra)
-                                        + " -> R" + remesaQueEnSuDetalleContieneLaFactura.getNumero() + " [ANULADA]");
-                                newDetalleCajaMovimiento.setUsuario(UsuarioController.getCurrentUser());
-                                em.persist(newDetalleCajaMovimiento);
-                                em.merge(detalleRemesa);
-                                if (detalleUnico) {
-                                    remesaQueEnSuDetalleContieneLaFactura.setEstado(false);
-                                }
-                                em.merge(remesaQueEnSuDetalleContieneLaFactura);
-                            }
-                        }
+//                        for (DetalleRemesa detalleRemesa : remesaQueEnSuDetalleContieneLaFactura.getDetalle()) {
+//                            if (detalleRemesa.getFacturaCompra().equals(facturaCompra)) {
+//                                detalleRemesa.setObservacion("ANULADO - " + detalleRemesa.getObservacion());
+//                                detalleRemesa.setAnulado(true);
+//                                remesaQueEnSuDetalleContieneLaFactura.setMontoEntrega(remesaQueEnSuDetalleContieneLaFactura.getMonto() - detalleRemesa.getMontoEntrega().doubleValue());
+//                                newDetalleCajaMovimiento = new DetalleCajaMovimientos();
+//                                newDetalleCajaMovimiento.setCajaMovimientos(cajaMovimientoDestino);
+//                                newDetalleCajaMovimiento.setIngreso(true);
+//                                newDetalleCajaMovimiento.setMonto(detalleRemesa.getMontoEntrega());
+//                                newDetalleCajaMovimiento.setNumero(facturaCompra.getId());
+//                                newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosController.ANULACION);
+//                                newDetalleCajaMovimiento.setDescripcion(JGestionUtils.getNumeracion(facturaCompra)
+//                                        + " -> R" + remesaQueEnSuDetalleContieneLaFactura.getNumero() + " [ANULADA]");
+//                                newDetalleCajaMovimiento.setUsuario(UsuarioController.getCurrentUser());
+//                                em.persist(newDetalleCajaMovimiento);
+//                                em.merge(detalleRemesa);
+//                                if (detalleUnico) {
+//                                }
+//                            }
+//                        }
+                        remesaQueEnSuDetalleContieneLaFactura.setEstado(false);
+                        em.merge(remesaQueEnSuDetalleContieneLaFactura);
                     }
                 }
                 ccp.setEstado((short) 3);

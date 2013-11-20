@@ -1,4 +1,4 @@
-<?xml version="1.1" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 
 <Form version="1.3" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
   <AuxValues>
@@ -23,7 +23,7 @@
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="cbCaja" pref="284" max="32767" attributes="1"/>
+                      <Component id="cbCaja" max="32767" attributes="1"/>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
@@ -38,8 +38,8 @@
                   <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="cbCaja" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace max="32767" attributes="0"/>
-              <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="jLabel2" pref="42" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
@@ -63,7 +63,7 @@
         <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
           <Color blue="33" green="33" red="ff" type="rgb"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="&lt;html&gt;La Caja en la cual fue registrada la venta no est&#xe1; habilitada o disponible.&lt;P&gt;Debe elegir una nueva en la cual se registrar&#xe1; la anulaci&#xf3;n de &lt;P&gt;la Factura/Comprobante. &lt;/html&gt;"/>
+        <Property name="text" type="java.lang.String" value="&lt;html&gt;La Caja en la cual fue registrado el movimiento no est&#xe1; habilitada o disponible.&lt;P&gt;Debe elegir una nueva en la cual se registrar&#xe1; la anulaci&#xf3;n del comprobante. &lt;/html&gt;"/>
       </Properties>
     </Component>
   </SubComponents>

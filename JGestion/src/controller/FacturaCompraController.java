@@ -1031,13 +1031,15 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         if (cajaMovimientoActiva.getCaja().isBaja() || (!cajaMovimientoActiva.getCaja().getEstado())) {
             cajaMovimientoActiva = new FacturaVentaController().initReAsignacionCajaMovimiento(cajasPermitidasList);
             if (cajaMovimientoActiva == null) {
-                return;
+                throw new MessageException("Operación cancelada, no ha seleccionado una caja.");
             }
         }
         try {
             cmController.anular(factura, cajaMovimientoActiva);
+        } catch (MessageException ex) {
+            throw ex;
         } catch (Exception ex) {
-            LOG.error(ex, ex);
+            LOG.error("Anulando " + factura.getClass() + ", id=" + factura.getId(), ex);
         }
     }
 
