@@ -169,6 +169,9 @@ public class ReciboController implements ActionListener, FocusListener {
                         resetPanel();
                         jdReRe.limpiarDetalles();
                         doReportRecibo(recibo);
+                        if (conciliando) {
+                            jdReRe.dispose();
+                        }
                     }
                 } catch (MessageException ex) {
                     jdReRe.showMessage(ex.getMessage(), CLASS_NAME, 2);
@@ -483,7 +486,7 @@ public class ReciboController implements ActionListener, FocusListener {
     }
 
     private void checkConstraints() throws MessageException {
-        if (jdReRe.getDcFechaReRe() == null) {
+        if (jdReRe.getDcFechaReRe().getDate() == null) {
             throw new MessageException("Fecha de " + jpaController.getEntityClass().getSimpleName() + " no válida");
         }
         if (jdReRe.getDtmPagos().getRowCount() < 1) {
@@ -532,7 +535,7 @@ public class ReciboController implements ActionListener, FocusListener {
         }
         re.setUsuario(UsuarioController.getCurrentUser());
         re.setEstado(true);
-        re.setFechaRecibo(jdReRe.getDcFechaReRe());
+        re.setFechaRecibo(jdReRe.getDcFechaReRe().getDate());
         re.setDetalle(new ArrayList<DetalleRecibo>(jdReRe.getDtmAPagar().getRowCount()));
         re.setPagos(new ArrayList<ReciboPagos>(jdReRe.getDtmPagos().getRowCount()));
         re.setPorConciliar(toConciliar);
@@ -635,7 +638,7 @@ public class ReciboController implements ActionListener, FocusListener {
 
     private void addEntregaToDetalle() throws MessageException {
         Date comprobanteFecha;
-        if (jdReRe.getDcFechaReRe() == null) {
+        if (jdReRe.getDcFechaReRe().getDate() == null) {
             throw new MessageException("Debe especificar una fecha de " + CLASS_NAME + " antes de agregar comprobantes a pagar.");
         }
         if (selectedCtaCte == null) {
@@ -647,7 +650,7 @@ public class ReciboController implements ActionListener, FocusListener {
             comprobanteFecha = selectedCtaCte.getNotaDebito().getFechaNotaDebito();
         }
         //hay que ignorar las HH:MM:ss:mmmm de las fechas para hacer las comparaciones
-        if (UTIL.getDateYYYYMMDD(jdReRe.getDcFechaReRe()).before(UTIL.getDateYYYYMMDD(comprobanteFecha))) {
+        if (UTIL.getDateYYYYMMDD(jdReRe.getDcFechaReRe().getDate()).before(UTIL.getDateYYYYMMDD(comprobanteFecha))) {
             throw new MessageException("La fecha de " + CLASS_NAME + " no puede ser anterior"
                     + "\n a la fecha del comprobante ("
                     + UTIL.DATE_FORMAT.format(comprobanteFecha) + ")");
@@ -784,13 +787,16 @@ public class ReciboController implements ActionListener, FocusListener {
         UTIL.setSelectedItem(jdReRe.getCbClienteProveedor(), cliente.getNombre());
         jdReRe.setTfCuarto(UTIL.AGREGAR_CEROS(recibo.getSucursal().getPuntoVenta(), 4));
         jdReRe.setTfOcteto(UTIL.AGREGAR_CEROS(recibo.getNumero(), 8));
-        jdReRe.setDcFechaReRe(recibo.getFechaRecibo());
+        jdReRe.getDcFechaReRe().setDate(recibo.getFechaRecibo());
         jdReRe.setDcFechaCarga(recibo.getFechaCarga());
         cargarDetalleReRe(recibo);
         updateTotales();
         SwingUtil.setComponentsEnabled(jdReRe.getPanelDatos().getComponents(), false, true);
         SwingUtil.setComponentsEnabled(jdReRe.getPanelAPagar().getComponents(), false, true);
         SwingUtil.setComponentsEnabled(jdReRe.getPanelPagos().getComponents(), false, true);
+        if (recibo.isPorConciliar()) {
+            jdReRe.getDcFechaReRe().setEnabled(true);
+        }
         jdReRe.setTfImporte(null);
         jdReRe.setTfPagado(null);
         jdReRe.setTfSaldo(null);
@@ -850,7 +856,7 @@ public class ReciboController implements ActionListener, FocusListener {
      * setea el NextNumeroReRe - rereSelected = null;
      */
     private void resetPanel() {
-        jdReRe.setDcFechaReRe(new Date());
+        jdReRe.getDcFechaReRe().setDate(new Date());
         jdReRe.getCbClienteProveedor().setSelectedIndex(0);
         setNextNumeroReRe();
         jdReRe.getTfCreditoDebitoDisponible().setText(null);

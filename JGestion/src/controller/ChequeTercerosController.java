@@ -21,6 +21,7 @@ import entity.Cliente;
 import entity.CuentabancariaMovimientos;
 import entity.DetalleCajaMovimientos;
 import entity.Usuario;
+import entity.UsuarioAcciones;
 import entity.enums.ChequeEstado;
 import generics.GenericBeanCollection;
 import gui.JDABM;
@@ -47,6 +48,8 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import jgestion.JGestionUtils;
 import jpa.controller.ChequeTercerosJpaController;
@@ -323,17 +326,40 @@ public class ChequeTercerosController implements ActionListener {
 //                            }
                         }
                     } else if (boton.equals(jdChequeManager.getbAnular())) {
-//                        int row = jdChequeManager.getjTable1().getSelectedRow();
-//                        if (row > -1) {
-//                            ChequeTerceros cheque = jpaController.find((Integer) jdChequeManager.getjTable1().getModel().getValueAt(row, 0));
-//                            if (cheque.getChequeEstado().equals(ChequeEstado.CARTERA)) {
-//                                cheque.setEstado(ChequeEstado.ANULADO.getId());
-//                                jpaController.merge(cheque);
-//                                armarQuery(false);
-//                            } else {
-//                                JOptionPane.showMessageDialog(jdChequeManager, "Solo los cheques en " + ChequeEstado.CARTERA + " pueden ser " + ChequeEstado.ANULADO, "Error", JOptionPane.WARNING_MESSAGE);
-//                            }
-//                        }
+                        int row = jdChequeManager.getjTable1().getSelectedRow();
+                        if (row > -1) {
+                            ChequeTerceros cheque = jpaController.find((Integer) jdChequeManager.getjTable1().getModel().getValueAt(row, 0));
+                            if (cheque.getChequeEstado().equals(ChequeEstado.ANULADO)) {
+                                //recuperar estado previo a la anulación!!
+                                cheque.setEstado(cheque.getEstadoPrevio());
+                                cheque.setEstadoPrevio(null);
+                                jpaController.merge(cheque);
+                                String desc = "Deshizo Anulación " + ChequeTerceros.class.getSimpleName() + " N° " + cheque.getNumero();
+                                UsuarioAcciones ua = new UsuarioAcciones('u', desc, null, ChequeTerceros.class.getSimpleName(), cheque.getId(), null);
+                                new UsuarioAccionesController().create(ua);
+                                armarQuery(false);
+                            } else {
+                                String motivo = JOptionPane.showInputDialog(jdChequeManager, "Ingrese motivo de la anulación:");
+                                if (motivo != null) {
+                                    motivo.trim();
+                                }
+                                if (motivo == null || motivo.isEmpty()) {
+                                    throw new MessageException("Motivo de anulación no válido");
+                                }
+                                if (motivo.length() > 200) {
+                                    throw new MessageException("No es para escribir una novela, solo una breve descripción de la anulación."
+                                            + "\nMáximo 200 caracteres");
+                                }
+                                cheque.setEstadoPrevio(cheque.getEstado());
+                                cheque.setEstado(ChequeEstado.ANULADO.getId());
+                                cheque.setObservacion(cheque.getObservacion() + "; ANULADO: " + motivo);
+                                jpaController.merge(cheque);
+                                String desc = "Anuló " + ChequeTerceros.class.getSimpleName() + " N° " + cheque.getNumero() + "; motivo: " + motivo;
+                                UsuarioAcciones ua = new UsuarioAcciones('u', desc, null, ChequeTerceros.class.getSimpleName(), cheque.getId(), null);
+                                new UsuarioAccionesController().create(ua);
+                                armarQuery(false);
+                            }
+                        }
                     } else if (boton.equals(jdChequeManager.getbDeposito())) {
                         int row = jdChequeManager.getjTable1().getSelectedRow();
                         if (row > -1) {
@@ -499,6 +525,23 @@ public class ChequeTercerosController implements ActionListener {
         });
         UTIL.hideColumnTable(jdChequeManager.getjTable1(), 0);
         jdChequeManager.addButtonListener(this);
+        jdChequeManager.getjTable1().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                Integer chequeID = (Integer) UTIL.getSelectedValue(jdChequeManager.getjTable1(), 0);
+                if (chequeID != null) {
+                    ChequeTerceros cheque = jpaController.find(chequeID);
+                    if (cheque.getEstado() == ChequeEstado.ANULADO.getId()) {
+                        jdChequeManager.getbAnular().setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/24px_undo_arrow.png")));
+                        jdChequeManager.getbAnular().setText("Des-Anular");
+                    } else {
+                        jdChequeManager.getbAnular().setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/cancelar.png")));
+                        jdChequeManager.getbAnular().setText("Anular");
+                    }
+                }
+            }
+        });
     }
 
     private void cargarTablaChequeManager(String query) throws DatabaseErrorException {
