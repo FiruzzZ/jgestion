@@ -298,7 +298,6 @@
               <Image iconType="3" name="/iconos/cancelar.png"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Anular"/>
-            <Property name="enabled" type="boolean" value="false"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JButton" name="btnReemplazar">

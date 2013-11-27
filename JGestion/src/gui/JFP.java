@@ -291,6 +291,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenu23.add(jMenuItem14);
 
         jMenuItem80.setText("A Conciliar");
+        jMenuItem80.setEnabled(false);
         jMenuItem80.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem80ActionPerformed(evt);

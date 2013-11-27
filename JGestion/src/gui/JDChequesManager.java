@@ -173,7 +173,6 @@ public class JDChequesManager extends javax.swing.JDialog {
 
         bAnular.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/cancelar.png"))); // NOI18N
         bAnular.setText("Anular");
-        bAnular.setEnabled(false);
 
         btnReemplazar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px_change_values.png"))); // NOI18N
         btnReemplazar.setMnemonic('r');

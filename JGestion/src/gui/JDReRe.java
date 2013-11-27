@@ -5,6 +5,7 @@
  */
 package gui;
 
+import com.toedter.calendar.JDateChooser;
 import java.awt.Color;
 import java.awt.Window;
 import java.awt.event.ActionListener;
@@ -754,8 +755,8 @@ private void tfEntregaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:even
         return cbSucursal;
     }
 
-    public Date getDcFechaReRe() {
-        return dcFechaReRe.getDate();
+    public JDateChooser getDcFechaReRe() {
+        return dcFechaReRe;
     }
 
     public Date getDcFechaCarga() {
@@ -836,10 +837,6 @@ private void tfEntregaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:even
 
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="SETTERS">
-    public void setDcFechaReRe(Date dcFecha) {
-        this.dcFechaReRe.setDate(dcFecha);
-    }
-
     public void setTfCuarto(String tfCuarto) {
         this.tfCuarto.setText(tfCuarto);
     }
@@ -868,9 +865,6 @@ private void tfEntregaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:even
         dcFechaCarga.setDate(fechaCarga);
     }
 
-    public void getDcFechaReRe(boolean b) {
-        dcFechaReRe.setEnabled(b);
-    }
     // </editor-fold>
 
     public void setUIForRecibos() {

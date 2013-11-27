@@ -376,10 +376,10 @@ public class RemesaController implements FocusListener {
         if (jdReRe.getDtmPagos().getRowCount() < 1) {
             throw new MessageException("No ha ingresado ningún pago");
         }
-        if (jdReRe.getDcFechaReRe() == null) {
+        if (jdReRe.getDcFechaReRe().getDate() == null) {
             throw new MessageException("Fecha de " + jpaController.getEntityClass().getSimpleName() + " no válida");
         }
-        Date fecha = jdReRe.getDcFechaReRe();
+        Date fecha = jdReRe.getDcFechaReRe().getDate();
         if (unlockedNumeracion) {
             try {
                 Integer numero = Integer.valueOf(jdReRe.getTfOcteto());
@@ -419,7 +419,7 @@ public class RemesaController implements FocusListener {
         re.setCaja((Caja) jdReRe.getCbCaja().getSelectedItem());
         re.setSucursal(((ComboBoxWrapper<Sucursal>) jdReRe.getCbSucursal().getSelectedItem()).getEntity());
         re.setEstado(true);
-        re.setFechaRemesa(jdReRe.getDcFechaReRe());
+        re.setFechaRemesa(jdReRe.getDcFechaReRe().getDate());
         re.setPagos(new ArrayList<RemesaPagos>(jdReRe.getDtmPagos().getRowCount()));
         re.setDetalle(new ArrayList<DetalleRemesa>(jdReRe.getDtmAPagar().getRowCount()));
         re.setPorConciliar(toConciliar);
@@ -521,7 +521,7 @@ public class RemesaController implements FocusListener {
 
     private void addEntregaToDetalle() throws MessageException {
         Date comprobanteFecha;
-        if (jdReRe.getDcFechaReRe() == null) {
+        if (jdReRe.getDcFechaReRe().getDate() == null) {
             throw new MessageException("Debe especificar una fecha de " + jpaController.getEntityClass().getSimpleName() + " antes de agregar comprobaste a pagar.");
         }
         if (selectedCtaCte == null && selectedNotaDebito == null) {
@@ -533,7 +533,7 @@ public class RemesaController implements FocusListener {
             comprobanteFecha = selectedNotaDebito.getFechaNotaDebito();
         }
         //hay que ignorar las HH:MM:ss:mmmm de las fechas para hacer las comparaciones
-        if (UTIL.getDateYYYYMMDD(jdReRe.getDcFechaReRe()).before(UTIL.getDateYYYYMMDD(comprobanteFecha))) {
+        if (UTIL.getDateYYYYMMDD(jdReRe.getDcFechaReRe().getDate()).before(UTIL.getDateYYYYMMDD(comprobanteFecha))) {
             throw new MessageException("La fecha de " + jpaController.getEntityClass().getSimpleName() + " no puede ser anterior"
                     + "\n a la fecha del comprobante ("
                     + UTIL.DATE_FORMAT.format(comprobanteFecha) + ")");
@@ -678,7 +678,7 @@ public class RemesaController implements FocusListener {
     }
 
     private void resetPanel() {
-        jdReRe.setDcFechaReRe(null);
+        jdReRe.getDcFechaReRe().setDate(null);
         jdReRe.getCbClienteProveedor().setSelectedIndex(0);
         SwingUtil.setComponentsEnabled(jdReRe.getComponents(), false, true);
     }
@@ -816,7 +816,7 @@ public class RemesaController implements FocusListener {
                 SwingUtil.setComponentsEnabled(jdReRe.getPanelAPagar().getComponents(), true, true, (Class<? extends Component>[]) null);
                 jdReRe.getCbCtaCtes().setSelectedIndex(0);
                 jdReRe.getbAceptar().setEnabled(true);
-                jdReRe.setDcFechaReRe(new Date());
+                jdReRe.getDcFechaReRe().setDate(new Date());
             }
             jdReRe.setLocationRelativeTo(buscador);
             jdReRe.getbAnular().setVisible(toAnular);
@@ -855,7 +855,7 @@ public class RemesaController implements FocusListener {
         UTIL.setSelectedItem(jdReRe.getCbClienteProveedor(), p.getNombre());
         jdReRe.setTfCuarto(UTIL.AGREGAR_CEROS(remesa.getSucursal().getPuntoVenta(), 4));
         jdReRe.setTfOcteto(UTIL.AGREGAR_CEROS(String.valueOf(remesa.getNumero()), 8));
-        jdReRe.setDcFechaReRe(remesa.getFechaRemesa());
+        jdReRe.getDcFechaReRe().setDate(remesa.getFechaRemesa());
         jdReRe.setDcFechaCarga(remesa.getFechaCarga());
         cargarDetalleReRe(remesa);
         updateTotales();

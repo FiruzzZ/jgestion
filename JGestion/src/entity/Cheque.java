@@ -61,6 +61,8 @@ public abstract class Cheque implements Serializable {
     @Basic(optional = false)
     @Column(name = "estado", nullable = false)
     protected int estado;
+    @Column(name = "estadoprevio")
+    protected Integer estadoPrevio;
     @Transient
     protected transient ChequeEstado chequeEstado;
     @Column(name = "endosatario", length = 200)
@@ -186,6 +188,14 @@ public abstract class Cheque implements Serializable {
 
     public void setEstado(int estado) {
         this.estado = estado;
+    }
+
+    public Integer getEstadoPrevio() {
+        return estadoPrevio;
+    }
+
+    public void setEstadoPrevio(Integer estadoPrevio) {
+        this.estadoPrevio = estadoPrevio;
     }
 
     public ChequeEstado getChequeEstado() {

@@ -1,8 +1,10 @@
 package controller;
 
 import entity.*;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import jpa.controller.*;
-//import org.apache.log4.Logger;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -10,7 +12,7 @@ import jpa.controller.*;
  */
 public class UsuarioAccionesController {
 
-//    private static final Logger LOG = Logger.getLogger(UsuarioAccionesController.class.getName());
+    private static final Logger LOG = Logger.getLogger(UsuarioAccionesController.class);
     private final UsuarioAccionesJpaController jpaController;
 
     public UsuarioAccionesController() {
@@ -18,13 +20,26 @@ public class UsuarioAccionesController {
     }
 
     public void create(UsuarioAcciones o) {
+        if (o.getUsuario() == null) {
+            o.setUsuario(UsuarioController.getCurrentUser());
+        }
+        try {
+            InetAddress local = InetAddress.getLocalHost();
+            if (o.getIp() == null) {
+                o.setIp(local.getHostAddress());
+            }
+            if (o.getHostname() == null) {
+                o.setHostname(local.getHostName());
+            }
+        } catch (UnknownHostException ex) {
+           
+        }
         String descripcion = o.getDescripcion();
         String detalle = o.getDetalle();
         if (o.getDescripcion().length() > 200) {
             descripcion = o.getDescripcion().substring(0, 200);
             detalle = o.getDescripcion().substring(200) + (detalle == null ? "" : detalle);
             if (detalle.length() > 2000) {
-//                LOG.warn(o.getClass().getSimpleName() + ", detalle demasiado largo, se perdió:" + detalle.substring(2000));
                 detalle = detalle.substring(0, 2000);
             }
         }
@@ -54,7 +69,7 @@ public class UsuarioAccionesController {
         if (sb.toString().isEmpty()) {
             return;
         }
-        UsuarioAcciones ua = new UsuarioAcciones('u',sb.toString(), null, old.getClass().getSimpleName(), old.getId(), UsuarioController.getCurrentUser());
+        UsuarioAcciones ua = new UsuarioAcciones('u', sb.toString(), null, old.getClass().getSimpleName(), old.getId(), UsuarioController.getCurrentUser());
         create(ua);
     }
 }

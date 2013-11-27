@@ -1,3 +1,5 @@
+--20131121
+ALTER TABLE cheque_terceros ADD COLUMN estadoprevio INTEGER;
 --20131111
 ALTER TABLE cliente DROP CONSTRAINT fk_cliente_sucursal;
 ALTER TABLE cliente DROP COLUMN sucursal;
