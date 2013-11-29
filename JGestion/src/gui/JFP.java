@@ -199,6 +199,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenuItem29 = new javax.swing.JMenuItem();
         jMenuItem96 = new javax.swing.JMenuItem();
         jMenuItem97 = new javax.swing.JMenuItem();
+        jMenuItem98 = new javax.swing.JMenuItem();
         jMenuItem39 = new javax.swing.JMenuItem();
         jMenuItem72 = new javax.swing.JMenuItem();
         jMenuItem46 = new javax.swing.JMenuItem();
@@ -1073,6 +1074,14 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         });
         jMenu24.add(jMenuItem97);
 
+        jMenuItem98.setText("de Ventas (Mov. Internos)");
+        jMenuItem98.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem98ActionPerformed(evt);
+            }
+        });
+        jMenu24.add(jMenuItem98);
+
         jMenuReportes.add(jMenu24);
 
         jMenuItem39.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/lupa-simple.png"))); // NOI18N
@@ -1828,7 +1837,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
 
     private void jMenuItem29ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem29ActionPerformed
         try {
-            new Contabilidad().displayInformeComprobantesVenta(this);
+            new Contabilidad().displayInformeComprobantesVenta(this, false);
         } catch (MessageException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
         }
@@ -1986,6 +1995,14 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
             
     }//GEN-LAST:event_jMenuItemDocumentosComercialesActionPerformed
 
+    private void jMenuItem98ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem98ActionPerformed
+        try {
+            new Contabilidad().displayInformeComprobantesVenta(this, true);
+        } catch (MessageException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+        }
+    }//GEN-LAST:event_jMenuItem98ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JMenu jMenu1;
@@ -2115,6 +2132,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenuItem jMenuItem95;
     private javax.swing.JMenuItem jMenuItem96;
     private javax.swing.JMenuItem jMenuItem97;
+    private javax.swing.JMenuItem jMenuItem98;
     private javax.swing.JMenuItem jMenuItemCatalogoWeb;
     private javax.swing.JMenuItem jMenuItemCuentasBancarias;
     private javax.swing.JMenuItem jMenuItemDocumentosComerciales;

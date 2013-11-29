@@ -701,7 +701,7 @@ public class Contabilidad {
         return big;
     }
 
-    public void displayInformeComprobantesVenta(Window owner) throws MessageException {
+    public void displayInformeComprobantesVenta(Window owner, final boolean soloMovimientosInternos) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.VENTA);
         buscadorReRe = new JDBuscadorReRe(owner, "Informe - Comprobantes Ventas", false, "Cliente", "Nº Factura");
         buscadorReRe.getjTable1().setAutoCreateRowSorter(true);
@@ -734,9 +734,7 @@ public class Contabilidad {
                 if (buscadorReRe.getjTable1().getRowCount() > 0) {
                     try {
                         doComprobantesVentaReport();
-                    } catch (MissingReportException ex) {
-                        buscadorReRe.showMessage(ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                    } catch (JRException ex) {
+                    } catch (MissingReportException | JRException ex) {
                         buscadorReRe.showMessage(ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 } else {
@@ -760,11 +758,18 @@ public class Contabilidad {
                 r.viewReport();
             }
         });
+        buscadorReRe.getBtnToExcel().addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+        });
         buscadorReRe.getbBuscar().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    List<FacturaVenta> data = getComprobantesVenta();
+                    List<FacturaVenta> data = getComprobantesVenta(soloMovimientosInternos);
                     DefaultTableModel dtm = (DefaultTableModel) buscadorReRe.getjTable1().getModel();
                     dtm.setRowCount(0);
                     for (FacturaVenta facturaVenta : data) {
@@ -1007,8 +1012,13 @@ public class Contabilidad {
         return l;
     }
 
-    private List<FacturaVenta> getComprobantesVenta() throws MessageException, DatabaseErrorException {
-        StringBuilder queryWhereFactuVenta = new StringBuilder(300).append(" o.").append(FacturaVenta_.tipo.getName()).append(" <> 'I'");
+    private List<FacturaVenta> getComprobantesVenta(boolean soloMovimientosInternos) throws MessageException, DatabaseErrorException {
+        StringBuilder queryWhereFactuVenta = new StringBuilder(300).append(" o.");
+        if (soloMovimientosInternos) {
+            queryWhereFactuVenta.append(FacturaVenta_.tipo.getName()).append(" = 'I'");
+        } else {
+            queryWhereFactuVenta.append(FacturaVenta_.tipo.getName()).append(" <> 'I'");
+        }
         StringBuilder queryWhereNotaCredito = new StringBuilder(300).append(" o.id is not null");
 
         long numero;
@@ -1025,7 +1035,11 @@ public class Contabilidad {
         if (buscadorReRe.getTfOcteto().length() > 0) {
             try {
                 numero = Long.parseLong(buscadorReRe.getTfOcteto());
-                queryWhereFactuVenta.append(" AND o.numero = ").append(numero);
+                if (soloMovimientosInternos) {
+                    queryWhereFactuVenta.append(" AND o.").append(FacturaVenta_.movimientoInterno.getName()).append(" = ").append(numero);
+                } else {
+                    queryWhereFactuVenta.append(" AND o.").append(FacturaVenta_.numero.getName()).append(" = ").append(numero);
+                }
                 queryWhereNotaCredito.append(" AND o.numero = ").append(numero);
             } catch (NumberFormatException ex) {
                 throw new MessageException("Número de comprobante no válido");

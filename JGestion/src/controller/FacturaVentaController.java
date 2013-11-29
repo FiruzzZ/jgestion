@@ -527,7 +527,7 @@ public class FacturaVentaController {
             throw new MessageException("Descuento no válido");
         }// </editor-fold>
         //adiciona el descuento
-        descuentoUnitario = descuentoUnitario.setScale(4, RoundingMode.HALF_EVEN);
+        descuentoUnitario = descuentoUnitario.setScale(4, RoundingMode.HALF_UP);
         precioUnitarioSinIVA = precioUnitarioSinIVA.subtract(descuentoUnitario);
 
         if (productoEnOferta == null) {
@@ -540,7 +540,7 @@ public class FacturaVentaController {
             }
         }
         //quitando decimes indeseados..
-        precioUnitarioSinIVA = precioUnitarioSinIVA.setScale(4, RoundingMode.HALF_EVEN);
+        precioUnitarioSinIVA = precioUnitarioSinIVA.setScale(4, RoundingMode.HALF_UP);
         BigDecimal alicuota = BigDecimal.valueOf(selectedProducto.getIva().getIva());
         //carga detallesVenta en tabla
         jdFactura.getDtm().addRow(new Object[]{
@@ -551,12 +551,12 @@ public class FacturaVentaController {
             precioUnitarioSinIVA, //columnIndex == 4
             precioUnitarioSinIVA
             .multiply((alicuota.divide(new BigDecimal("100")).add(BigDecimal.ONE)))
-            .setScale(4, RoundingMode.HALF_EVEN),
+            .setScale(4, RoundingMode.HALF_UP),
             descuentoUnitario.multiply(BigDecimal.valueOf(cantidad)),
             precioUnitarioSinIVA
             .multiply(BigDecimal.valueOf(cantidad))
             .multiply((alicuota.divide(new BigDecimal("100")).add(BigDecimal.ONE)))
-            .setScale(2, RoundingMode.HALF_EVEN), //subTotal
+            .setScale(2, RoundingMode.HALF_UP), //subTotal
             (descuentoUnitario.intValue() == 0) ? -1 : (jdFactura.getCbDesc().getSelectedIndex() + 1),//Tipo de descuento
             selectedProducto.getId(),
             productoEnOferta //columnIndex == 10
@@ -594,7 +594,7 @@ public class FacturaVentaController {
             if (productoEnOferta == null || listaPreciosParaCatalogo == null) {
                 //agrega el margen de ganancia según la ListaPrecio
                 precioUnitario = precioUnitario.add(BigDecimal.valueOf(Contabilidad.GET_MARGEN_SEGUN_LISTAPRECIOS(selectedListaPrecios, selectedProducto, null)));
-                contenedor.setTfPrecioUnitario(precioUnitario.setScale(4, RoundingMode.HALF_EVEN).toString());
+                contenedor.setTfPrecioUnitario(precioUnitario.setScale(4, RoundingMode.HALF_UP).toString());
             } else {
                 LOG.trace("¡¡¡Producto ES OFERTA!!!");
                 if (listaPreciosParaCatalogo.equals(selectedListaPrecios)) {
@@ -1840,12 +1840,12 @@ public class FacturaVentaController {
                     detalle.getPrecioUnitario(),
                     detalle.getPrecioUnitario()
                     .multiply(BigDecimal.valueOf(detalle.getProducto().getIva().getIva() / 100).add(BigDecimal.ONE))
-                    .setScale(4, RoundingMode.HALF_EVEN),
+                    .setScale(4, RoundingMode.HALF_UP),
                     detalle.getDescuento(),
                     detalle.getPrecioUnitario()
                     .multiply(BigDecimal.valueOf(detalle.getCantidad()))
                     .multiply(BigDecimal.valueOf(detalle.getProducto().getIva().getIva() / 100).add(BigDecimal.ONE))
-                    .setScale(2, RoundingMode.HALF_EVEN),
+                    .setScale(2, RoundingMode.HALF_UP),
                     detalle.getTipoDesc(),
                     detalle.getProducto().getId(),
                     null
