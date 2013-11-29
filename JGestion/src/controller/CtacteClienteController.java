@@ -285,13 +285,12 @@ public class CtacteClienteController implements ActionListener {
                 + " WHERE ";
         //solo el filtro se envía al reporte! por eso están separados
         Cliente cliente = ((ComboBoxWrapper<Cliente>) resumenCtaCtes.getCbClieProv().getSelectedItem()).getEntity();
-        query += " cliente_id =" + cliente.getId();
-        String filters = "";
+        String filters = " cliente_id =" + cliente.getId();
 
         if (resumenCtaCtes.getDcDesde() != null) {
             //calcula los totales del DEBE / HABER / SALDO ACUMULATIVO de la CtaCte
             // anterior a la fecha desde la cual se eligió en el buscador
-            setResumenHistorial(query + " AND fecha < '" + resumenCtaCtes.getDcDesde() + "'");
+            setResumenHistorial(query + filters + " AND fecha < '" + resumenCtaCtes.getDcDesde() + "'");
 
             filters += " AND fecha >= '" + resumenCtaCtes.getDcDesde() + "'";
         }
@@ -305,7 +304,7 @@ public class CtacteClienteController implements ActionListener {
         LOG.trace(query);
         cargarTablaResumen(query + " ORDER BY fecha");
         if (imprimirResumen) {
-            doReportResumenCCC(cliente, resumenCtaCtes.getDcDesde(), filters);
+            doReportResumenCCC(resumenCtaCtes.getDcDesde(), " cliente_id =" + cliente.getId() + filters);
         }
     }
 
@@ -339,7 +338,7 @@ public class CtacteClienteController implements ActionListener {
         }
     }
 
-    private void doReportResumenCCC(Cliente cliente, Date filterDate, String filters) throws MissingReportException, JRException {
+    private void doReportResumenCCC(Date filterDate, String filters) throws MissingReportException, JRException {
         Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_ResumenCCC.jasper", "Resumen CCC");
         r.addCurrent_User();
 //        r.addParameter("CLIENTE_ID", cliente.getId());
