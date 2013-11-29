@@ -1056,14 +1056,10 @@ public class FacturaVentaController {
                     if (currentDirectory != null) {
                         doReportFacturas(currentDirectory.getCanonicalPath());
                     }
-                } catch (MissingReportException ex) {
+                } catch (MissingReportException | JRException | IOException | MessageException ex) {
                     JOptionPane.showMessageDialog(buscador, ex.getMessage());
-                } catch (JRException ex) {
-                    JOptionPane.showMessageDialog(buscador, ex.getMessage());
-                } catch (IOException ex) {
-                    JOptionPane.showMessageDialog(buscador, ex.getMessage());
-                } catch (MessageException ex) {
-                    JOptionPane.showMessageDialog(buscador, ex.getMessage());
+                } catch (Exception ex) {
+                    LOG.error(ex, ex);
                 }
             }
         });
@@ -1398,7 +1394,7 @@ public class FacturaVentaController {
 
         //viendo si se habilita el botón FACTURAR
         if (!facturaVenta.getAnulada()
-//                && facturaVenta.getNumero() == 0 // ya no se resetea mas a CERO, para saber si inicialmente se hizo mov. interno
+                //                && facturaVenta.getNumero() == 0 // ya no se resetea mas a CERO, para saber si inicialmente se hizo mov. interno
                 && facturaVenta.getTipo() == 'I') {
             //si NO está anulada
             //es decir que es un movimiento interno, y puede ser cambiado a FACTURA VENTA

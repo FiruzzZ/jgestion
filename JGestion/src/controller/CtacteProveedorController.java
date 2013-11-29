@@ -342,7 +342,7 @@ public class CtacteProveedorController implements ActionListener {
         if (resumenCtaCtes.getDcDesde() != null) {
             //calcula los totales del DEBE / HABER / SALDO ACUMULATIVO de la CtaCte
             // anterior a la fecha desde la cual se eligió en el buscador
-            setResumenHistorial(query + "AND fv.fecha_compra < '" + resumenCtaCtes.getDcDesde() + "'");
+            setResumenHistorial(query + filters + " AND fv.fecha_compra < '" + resumenCtaCtes.getDcDesde() + "'");
 
             filters += "AND fv.fecha_compra >= '" + resumenCtaCtes.getDcDesde() + "'";
         }
