@@ -304,7 +304,7 @@ public class CtacteClienteController implements ActionListener {
         LOG.trace(query);
         cargarTablaResumen(query + " ORDER BY fecha");
         if (imprimirResumen) {
-            doReportResumenCCC(resumenCtaCtes.getDcDesde(), " cliente_id =" + cliente.getId() + filters);
+            doReportResumenCCC(resumenCtaCtes.getDcDesde(), filters);
         }
     }
 
