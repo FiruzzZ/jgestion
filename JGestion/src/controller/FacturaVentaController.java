@@ -953,6 +953,8 @@ public class FacturaVentaController {
                 new int[]{1, 90, 10, 50, 40, 50, 50, 80, 50, 70},
                 new Class<?>[]{Integer.class, null, Integer.class, null, null, String.class, null, null, null, null});
         buscador.getjTable1().getColumnModel().getColumn(4).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        buscador.getjTable1().getColumnModel().getColumn(5).setCellRenderer(FormatRenderer.getDateRenderer());
+        buscador.getjTable1().getColumnModel().getColumn(9).setCellRenderer(FormatRenderer.getDateTimeRenderer());
         UTIL.hideColumnTable(buscador.getjTable1(), 0);
         UTIL.setHorizonalAlignment(buscador.getjTable1(), String.class, SwingConstants.RIGHT);
         buscador.getjTable1().addMouseListener(new MouseAdapter() {
@@ -977,7 +979,7 @@ public class FacturaVentaController {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    cargarTablaBuscador(armarQuery());
+                    cargarTablaBuscador(armarQuerySinSELECT());
                 } catch (MessageException ex) {
                     buscador.showMessage(ex.getMessage(), "Buscador - " + jpaController.getEntityClass().getSimpleName(), 0);
                 }
@@ -988,7 +990,7 @@ public class FacturaVentaController {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    cargarTablaBuscador(armarQuery());
+                    cargarTablaBuscador(armarQuerySinSELECT());
                     doReportFacturas(null);
                 } catch (MissingReportException ex) {
                     JOptionPane.showMessageDialog(null, ex.getMessage());
@@ -1036,7 +1038,7 @@ public class FacturaVentaController {
                             }
                         }
                         setDatosToEdit();
-                        cargarTablaBuscador(armarQuery());
+                        cargarTablaBuscador(armarQuerySinSELECT());
                     } catch (MessageException ex) {
                         buscador.showMessage(ex.getMessage(), null, 0);
                     }
@@ -1191,26 +1193,32 @@ public class FacturaVentaController {
     private void cargarTablaBuscador(String query) {
         DefaultTableModel dtm = (DefaultTableModel) buscador.getjTable1().getModel();
         dtm.setRowCount(0);
-        List<FacturaVenta> l = jpaController.findByNativeQuery(query);
-        for (FacturaVenta facturaVenta : l) {
-            dtm.addRow(new Object[]{
-                facturaVenta.getId(), // <--- no es visible
-                JGestionUtils.getNumeracion(facturaVenta),
-                facturaVenta.getMovimientoInterno(),
-                facturaVenta.getCliente().getNombre(),
-                BigDecimal.valueOf(facturaVenta.getImporte()),
-                UTIL.DATE_FORMAT.format(facturaVenta.getFechaVenta()),
-                facturaVenta.getSucursal().getNombre(),
-                facturaVenta.getCaja().getNombre(),
-                facturaVenta.getUsuario().getNick(),
-                UTIL.TIMESTAMP_FORMAT.format(facturaVenta.getFechaalta())
-            });
+        List<Object[]> l = jpaController.findAttributes("SELECT o.id, CONCAT('F', o.tipo,"
+                + " SUBSTRING(CAST(10000+o.sucursal.puntoVenta AS TEXT), 2),"
+                + " '-',"
+                + " SUBSTRING(CAST(100000000+  CASE WHEN o.tipo = 'I' THEN o.movimientoInterno ELSE o.numero END AS TEXT), 2)),"
+                + " o.movimientoInterno, o.cliente.nombre, o.importe, o.fechaVenta, o.sucursal.nombre, o.caja.nombre, o.usuario.nick, o.fechaalta "
+                + query);
+        for (Object[] facturaVenta : l) {
+            dtm.addRow(facturaVenta);
+            //            dtm.addRow(new Object[]{
+            //                facturaVenta.getId(), // <--- no es visible
+            //                JGestionUtils.getNumeracion(facturaVenta),
+            //                facturaVenta.getMovimientoInterno(),
+            //                facturaVenta.getCliente().getNombre(),
+            //                BigDecimal.valueOf(facturaVenta.getImporte()),
+            //                UTIL.DATE_FORMAT.format(facturaVenta.getFechaVenta()),
+            //                facturaVenta.getSucursal().getNombre(),
+            //                facturaVenta.getCaja().getNombre(),
+            //                facturaVenta.getUsuario().getNick(),
+            //                UTIL.TIMESTAMP_FORMAT.format(facturaVenta.getFechaalta())
+            //        });
         }
     }
 
     @SuppressWarnings("unchecked")
-    private String armarQuery() throws MessageException {
-        StringBuilder query = new StringBuilder("SELECT o.* FROM factura_venta o"
+    private String armarQuerySinSELECT() throws MessageException {
+        StringBuilder query = new StringBuilder(" FROM " + jpaController.getEntityClass().getSimpleName() + " o"
                 + " WHERE o.anulada = " + buscador.isCheckAnuladaSelected());
 
         long numero;
@@ -1235,24 +1243,24 @@ public class FacturaVentaController {
         }
         SimpleDateFormat yyyyMMdd = new SimpleDateFormat("yyyy/MM/dd");
         if (buscador.getDcDesde() != null) {
-            query.append(" AND o.fecha_venta >= '").append(yyyyMMdd.format(buscador.getDcDesde())).append("'");
+            query.append(" AND o.fechaVenta >= '").append(yyyyMMdd.format(buscador.getDcDesde())).append("'");
         }
         if (buscador.getDcHasta() != null) {
-            query.append(" AND o.fecha_venta <= '").append(yyyyMMdd.format(buscador.getDcHasta())).append("'");
+            query.append(" AND o.fechaVenta <= '").append(yyyyMMdd.format(buscador.getDcHasta())).append("'");
         }
         if (buscador.getDcDesdeSistema() != null) {
-            query.append(" AND o.fechaalta >= '").append(yyyyMMdd.format(buscador.getDcDesdeSistema())).append("'");
+            query.append(" AND o.").append(FacturaVenta_.fechaalta.getName()).append(" >= '").append(yyyyMMdd.format(buscador.getDcDesdeSistema())).append("'");
         }
         if (buscador.getDcHastaSistema() != null) {
-            query.append(" AND o.fechaalta <= '").append(yyyyMMdd.format(buscador.getDcHastaSistema())).append("'");
+            query.append(" AND o.").append(FacturaVenta_.fechaalta.getName()).append(" <= '").append(yyyyMMdd.format(buscador.getDcHastaSistema())).append("'");
         }
         if (buscador.getCbCaja().getSelectedIndex() > 0) {
-            query.append(" AND o.caja = ").append(((Caja) buscador.getCbCaja().getSelectedItem()).getId());
+            query.append(" AND o.caja.id = ").append(((Caja) buscador.getCbCaja().getSelectedItem()).getId());
         } else {
             query.append(" AND (");
             for (int i = 1; i < buscador.getCbCaja().getItemCount(); i++) {
                 Caja caja = (Caja) buscador.getCbCaja().getItemAt(i);
-                query.append(" o.caja=").append(caja.getId());
+                query.append(" o.caja.id=").append(caja.getId());
                 if ((i + 1) < buscador.getCbCaja().getItemCount()) {
                     query.append(" OR ");
                 }
@@ -1260,25 +1268,25 @@ public class FacturaVentaController {
             query.append(")");
         }
         if (buscador.getCbUnidadDeNegocio().getSelectedIndex() > 0) {
-            query.append(" AND o.unidad_de_negocio_id = ").append(((ComboBoxWrapper<UnidadDeNegocio>) buscador.getCbUnidadDeNegocio().getSelectedItem()).getId());
+            query.append(" AND o.unidadDeNegocio.id = ").append(((ComboBoxWrapper<UnidadDeNegocio>) buscador.getCbUnidadDeNegocio().getSelectedItem()).getId());
         }
         if (buscador.getCbCuenta().getSelectedIndex() > 0) {
-            query.append(" AND o.cuenta_id = ").append(((ComboBoxWrapper<Cuenta>) buscador.getCbCuenta().getSelectedItem()).getId());
+            query.append(" AND o.cuenta.id = ").append(((ComboBoxWrapper<Cuenta>) buscador.getCbCuenta().getSelectedItem()).getId());
         }
         if (buscador.getCbVendedor().getSelectedIndex() > 0) {
-            query.append(" AND o.vendedor_id = ").append(((ComboBoxWrapper<Vendedor>) buscador.getCbVendedor().getSelectedItem()).getId());
+            query.append(" AND o.vendedor.id = ").append(((ComboBoxWrapper<Vendedor>) buscador.getCbVendedor().getSelectedItem()).getId());
         }
         if (buscador.getCbSubCuenta().getSelectedIndex() > 0) {
-            query.append(" AND o.subcuenta_id = ").append(((ComboBoxWrapper<SubCuenta>) buscador.getCbSubCuenta().getSelectedItem()).getId());
+            query.append(" AND o.subCuenta.id = ").append(((ComboBoxWrapper<SubCuenta>) buscador.getCbSubCuenta().getSelectedItem()).getId());
         }
         if (buscador.getCbSucursal().getSelectedIndex() > 0) {
-            query.append(" AND o.sucursal = ").append(((ComboBoxWrapper<Sucursal>) buscador.getCbSucursal().getSelectedItem()).getId());
+            query.append(" AND o.sucursal.id = ").append(((ComboBoxWrapper<Sucursal>) buscador.getCbSucursal().getSelectedItem()).getId());
         } else {
             if (buscador.getCbUnidadDeNegocio().getSelectedIndex() > 0) {
                 query.append(" AND (");
                 for (int i = 1; i < buscador.getCbSucursal().getItemCount(); i++) {
                     ComboBoxWrapper<Sucursal> cbw = (ComboBoxWrapper<Sucursal>) buscador.getCbSucursal().getItemAt(i);
-                    query.append(" o.sucursal=").append(cbw.getId());
+                    query.append(" o.sucursal.id=").append(cbw.getId());
                     if ((i + 1) < buscador.getCbSucursal().getItemCount()) {
                         query.append(" OR ");
                     }
@@ -1288,7 +1296,7 @@ public class FacturaVentaController {
                 List<Sucursal> sucursales = new UsuarioHelper().getSucursales();
                 query.append(" AND (");
                 for (int i = 0; i < sucursales.size(); i++) {
-                    query.append(" o.sucursal=").append(sucursales.get(i).getId());
+                    query.append(" o.sucursal.id=").append(sucursales.get(i).getId());
                     if ((i + 1) < sucursales.size()) {
                         query.append(" OR ");
                     }
@@ -1298,21 +1306,21 @@ public class FacturaVentaController {
         }
 
         if (buscador.getCbClieProv().getSelectedIndex() > 0) {
-            query.append(" AND o.cliente = ").append(((Cliente) buscador.getCbClieProv().getSelectedItem()).getId());
+            query.append(" AND o.cliente.id = ").append(((Cliente) buscador.getCbClieProv().getSelectedItem()).getId());
         }
 
         if (buscador.getCbFormasDePago().getSelectedIndex() > 0) {
-            query.append(" AND o.forma_pago = ").append(((Valores.FormaPago) buscador.getCbFormasDePago().getSelectedItem()).getId());
+            query.append(" AND o.formaPago = ").append(((Valores.FormaPago) buscador.getCbFormasDePago().getSelectedItem()).getId());
         }
 
         if (buscador.getTfFactu4().trim().length() > 0) {
             try {
-                query.append(" AND o.movimiento_interno = ").append(Integer.valueOf(buscador.getTfFactu4()));
+                query.append(" AND o.movimientoInterno = ").append(Integer.valueOf(buscador.getTfFactu4()));
             } catch (NumberFormatException ex) {
                 throw new MessageException("Número de movimiento no válido");
             }
         }
-        query.append(" ORDER BY o.fecha_venta");
+        query.append(" ORDER BY o.fechaVenta");
         LOG.trace("queryBuscador=" + query);
         return query.toString();
     }
@@ -1438,7 +1446,9 @@ public class FacturaVentaController {
             cmController.anular(factura, cmAbierta);
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(jdFactura, ex.getMessage());
-            Logger.getLogger(FacturaVentaController.class.getName()).log(Level.ERROR, null, ex);
+            Logger
+                    .getLogger(FacturaVentaController.class
+                            .getName()).log(Level.ERROR, null, ex);
         }
     }
 
@@ -1666,9 +1676,11 @@ public class FacturaVentaController {
             jpaController.create(newFacturaVenta);
             //refreshing the entity from DB
             System.out.println("FV.id=" + newFacturaVenta.getId());
-            newFacturaVenta = (FacturaVenta) DAO.findEntity(FacturaVenta.class, newFacturaVenta.getId());
+            newFacturaVenta
+                    = (FacturaVenta) DAO.findEntity(FacturaVenta.class, newFacturaVenta.getId());
             //actualiza Stock
-            new StockController().updateStock(newFacturaVenta);
+            new StockController()
+                    .updateStock(newFacturaVenta);
             //asiento en caja..
             registrarVentaSegunFormaDePago(newFacturaVenta);
             if (facturar) {
@@ -1683,6 +1695,7 @@ public class FacturaVentaController {
                     imprimirMovimientoInterno(newFacturaVenta);
                 }
             }
+
             limpiarPanel();
         }
     }
@@ -1817,11 +1830,16 @@ public class FacturaVentaController {
         dtm.setRowCount(0);
         for (DetalleVenta detalle : factura.getDetallesVentaList()) {
             Iva iva = detalle.getProducto().getIva();
+
             if (iva == null) {
                 Producto findProducto = (Producto) DAO.findEntity(Producto.class, detalle.getProducto().getId());
                 iva = findProducto.getIva();
-                LOG.debug("Producto con Iva NULL!!" + detalle.getProducto());
-                while (iva == null || iva.getIva() == null) {
+
+                LOG.debug(
+                        "Producto con Iva NULL!!" + detalle.getProducto());
+                while (iva
+                        == null || iva.getIva()
+                        == null) {
                     iva = new IvaController().findByProducto(detalle.getProducto().getId());
                     detalle.getProducto().setIva(iva);
                 }
@@ -1856,7 +1874,7 @@ public class FacturaVentaController {
         }
     }
 
-    public void asignador() {
+    public void displayAsignadorUDNyDemas() {
         buscador = new JDBuscadorReRe(null, "Asignación de Unid. de Negocio/Cuenta/SubCuenta - Facturas venta", false, "Cliente", "Nº Factura");
         buscador.setToFacturaVenta();
         UTIL.loadComboBox(buscador.getCbClieProv(), new ClienteController().findAll(), true);
@@ -1864,96 +1882,119 @@ public class FacturaVentaController {
         ActionListenerManager.setUnidadDeNegocioSucursalActionListener(buscador.getCbUnidadDeNegocio(), true, buscador.getCbSucursal(), true, true);
         ActionListenerManager.setCuentasIngresosSubcuentaActionListener(buscador.getCbCuenta(), true, buscador.getCbSubCuenta(), true, true);
         UTIL.loadComboBox(buscador.getCbFormasDePago(), Valores.FormaPago.getFormasDePago(), true);
-        UTIL.getDefaultTableModel(
-                buscador.getjTable1(),
-                new String[]{"facturaID", "Nº factura", "Mov.", "Cliente", "Importe", "Fecha", "Caja", "Sucursal", "Unid. Neg.", "Cuenta", "Sub Cuenta"},
-                new int[]{1, 90, 10, 50, 40, 50, 50, 80, 50, 70, 70},
-                new Class<?>[]{Integer.class, null, Integer.class, null, null, String.class, null, null, null, null, null},
-                new int[]{8, 9, 10});
+        UTIL
+                .getDefaultTableModel(
+                        buscador.getjTable1(),
+                        new String[]{"facturaID", "Nº factura", "Mov.", "Cliente", "Importe", "Fecha", "Caja", "Sucursal", "Unid. Neg.", "Cuenta", "Sub Cuenta"},
+                        new int[]{1, 90, 10, 50, 40, 50, 50, 80, 50, 70, 70},
+                        new Class<?>[]{Integer.class, null, Integer.class, null, null, String.class, null, null, null, null, null},
+                        new int[]{8, 9, 10});
         JComboBox unidades = new JComboBox();
-        UTIL.loadComboBox(unidades, new Wrapper<UnidadDeNegocio>().getWrapped(new UnidadDeNegocioJpaController().findAll()), false);
+
+        UTIL.loadComboBox(unidades,
+                new Wrapper<UnidadDeNegocio>().getWrapped(new UnidadDeNegocioJpaController().findAll()), false);
         JComboBox cuentas = new JComboBox();
-        UTIL.loadComboBox(cuentas, new Wrapper<Cuenta>().getWrapped(new CuentaController().findAll()), false);
+
+        UTIL.loadComboBox(cuentas,
+                new Wrapper<Cuenta>().getWrapped(new CuentaController().findAll()), false);
         JComboBox subCuentas = new JComboBox();
+
         UTIL.loadComboBox(subCuentas, JGestionUtils.getWrappedSubCuentas(new SubCuentaJpaController().findAll()), false);
-        buscador.getjTable1().getColumnModel().getColumn(4).setCellRenderer(NumberRenderer.getCurrencyRenderer());
-        buscador.getjTable1().getColumnModel().getColumn(5).setCellRenderer(FormatRenderer.getDateRenderer());
-        buscador.getjTable1().getColumnModel().getColumn(8).setCellEditor(new DefaultCellEditor(unidades));
-        buscador.getjTable1().getColumnModel().getColumn(9).setCellEditor(new DefaultCellEditor(cuentas));
-        buscador.getjTable1().getColumnModel().getColumn(10).setCellEditor(new DefaultCellEditor(subCuentas));
+        buscador.getjTable1()
+                .getColumnModel().getColumn(4).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        buscador.getjTable1()
+                .getColumnModel().getColumn(5).setCellRenderer(FormatRenderer.getDateRenderer());
+        buscador.getjTable1()
+                .getColumnModel().getColumn(8).setCellEditor(new DefaultCellEditor(unidades));
+        buscador.getjTable1()
+                .getColumnModel().getColumn(9).setCellEditor(new DefaultCellEditor(cuentas));
+        buscador.getjTable1()
+                .getColumnModel().getColumn(10).setCellEditor(new DefaultCellEditor(subCuentas));
         UTIL.hideColumnTable(buscador.getjTable1(), 0);
-        buscador.getbBuscar().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    cargarTablaBuscadorAsignacion(armarQuery());
-                } catch (MessageException ex) {
-                    buscador.showMessage(ex.getMessage(), "Buscador - " + jpaController.getEntityClass().getSimpleName(), 0);
-                }
-            }
-        });
-        buscador.getjTable1().addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() >= 2) {
-                    if (buscador.getjTable1().getSelectedRow() > -1) {
+        buscador.getbBuscar()
+                .addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e
+                    ) {
                         try {
-                            EL_OBJECT = jpaController.find((Integer) buscador.getDtm().getValueAt(buscador.getjTable1().getSelectedRow(), 0));
-                            show(EL_OBJECT, false);
+                            cargarTablaBuscadorAsignacion(armarQuerySinSELECT());
                         } catch (MessageException ex) {
-                            buscador.showMessage(ex.getMessage(), "Error de datos", 0);
+                            buscador.showMessage(ex.getMessage(), "Buscador - " + jpaController.getEntityClass().getSimpleName(), 0);
                         }
                     }
                 }
-            }
-        });
-        buscador.getjTable1().getModel().addTableModelListener(new TableModelListener() {
-            @Override
-            public void tableChanged(TableModelEvent e) {
-                if (e.getType() == TableModelEvent.UPDATE) {
-                    int row = e.getFirstRow();
-                    int column = e.getColumn();
-                    TableModel model = (TableModel) e.getSource();
-                    Object data = model.getValueAt(row, column);
-                    System.out.println(row + "/" + column + " =" + data);
-                    FacturaVenta selected = jpaController.find((Integer) model.getValueAt(row, 0));
-                    if (data != null) {
-                        if (column == 8) {
-                            UnidadDeNegocio unidad = ((ComboBoxWrapper<UnidadDeNegocio>) data).getEntity();
-                            selected.setUnidadDeNegocio(unidad);
-                        } else if (column == 9) {
-                            @SuppressWarnings("unchecked")
-                            Cuenta cuenta = ((ComboBoxWrapper<Cuenta>) data).getEntity();
-                            selected.setCuenta(cuenta);
+                );
+        buscador.getjTable1()
+                .addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e
+                    ) {
+                        if (e.getClickCount() >= 2) {
+                            if (buscador.getjTable1().getSelectedRow() > -1) {
+                                try {
+                                    EL_OBJECT = jpaController.find((Integer) buscador.getDtm().getValueAt(buscador.getjTable1().getSelectedRow(), 0));
+                                    show(EL_OBJECT, false);
+                                } catch (MessageException ex) {
+                                    buscador.showMessage(ex.getMessage(), "Error de datos", 0);
+                                }
+                            }
+                        }
+                    }
+                }
+                );
+        buscador.getjTable1()
+                .getModel().addTableModelListener(new TableModelListener() {
+                    @Override
+                    public void tableChanged(TableModelEvent e
+                    ) {
+                        if (e.getType() == TableModelEvent.UPDATE) {
+                            int row = e.getFirstRow();
+                            int column = e.getColumn();
+                            TableModel model = (TableModel) e.getSource();
+                            Object data = model.getValueAt(row, column);
+                            System.out.println(row + "/" + column + " =" + data);
+                            FacturaVenta selected = jpaController.find((Integer) model.getValueAt(row, 0));
+                            if (data != null) {
+                                if (column == 8) {
+                                    UnidadDeNegocio unidad = ((ComboBoxWrapper<UnidadDeNegocio>) data).getEntity();
+                                    selected.setUnidadDeNegocio(unidad);
+                                } else if (column == 9) {
+                                    @SuppressWarnings("unchecked")
+                                    Cuenta cuenta = ((ComboBoxWrapper<Cuenta>) data).getEntity();
+                                    selected.setCuenta(cuenta);
 
-                            //carga las subCuentas
-                            DefaultCellEditor dce = (DefaultCellEditor) buscador.getjTable1().getColumnModel()
+                                    //carga las subCuentas
+                                    DefaultCellEditor dce = (DefaultCellEditor) buscador.getjTable1().getColumnModel()
                                     //columnIndex is one lesser than its original position because one column was removed from table
                                     .getColumn(9).getCellEditor();
-                            JComboBox cbSubCuentas = (JComboBox) dce.getComponent();
-                            if (cuenta.getSubCuentas().isEmpty()) {
-                                cbSubCuentas.removeAllItems();
-                            } else {
-                                UTIL.loadComboBox(cbSubCuentas, JGestionUtils.getWrappedSubCuentas(cuenta.getSubCuentas()), false);
+                                    JComboBox cbSubCuentas = (JComboBox) dce.getComponent();
+                                    if (cuenta.getSubCuentas().isEmpty()) {
+                                        cbSubCuentas.removeAllItems();
+                                    } else {
+                                        UTIL.loadComboBox(cbSubCuentas, JGestionUtils.getWrappedSubCuentas(cuenta.getSubCuentas()), false);
+                                    }
+                                } else if (column == 10) {
+                                    SubCuenta subCuenta = ((ComboBoxWrapper<SubCuenta>) data).getEntity();
+                                    selected.setSubCuenta(subCuenta);
+                                }
+                                jpaController.merge(selected);
                             }
-                        } else if (column == 10) {
-                            SubCuenta subCuenta = ((ComboBoxWrapper<SubCuenta>) data).getEntity();
-                            selected.setSubCuenta(subCuenta);
                         }
-                        jpaController.merge(selected);
                     }
                 }
-            }
-        });
-        buscador.getbExtra().setVisible(false);
-        buscador.setLocationRelativeTo(null);
-        buscador.setVisible(true);
+                );
+        buscador.getbExtra()
+                .setVisible(false);
+        buscador.setLocationRelativeTo(
+                null);
+        buscador.setVisible(
+                true);
     }
 
     private void cargarTablaBuscadorAsignacion(String query) {
         DefaultTableModel dtm = (DefaultTableModel) buscador.getjTable1().getModel();
         dtm.setRowCount(0);
-        List<FacturaVenta> l = jpaController.findByNativeQuery(query);
+        List<FacturaVenta> l = jpaController.findByQuery("SELECT o " + query);
         for (FacturaVenta facturaVenta : l) {
             dtm.addRow(new Object[]{
                 facturaVenta.getId(), // <--- no es visible

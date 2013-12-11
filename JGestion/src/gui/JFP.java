@@ -1856,7 +1856,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     }//GEN-LAST:event_menuItemSubCuentasActionPerformed
 
     private void jMenuItem50ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem50ActionPerformed
-        new FacturaVentaController().asignador();
+        new FacturaVentaController().displayAsignadorUDNyDemas();
     }//GEN-LAST:event_jMenuItem50ActionPerformed
 
     private void jMenuItem65ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem65ActionPerformed

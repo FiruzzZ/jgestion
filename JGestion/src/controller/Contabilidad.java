@@ -776,13 +776,13 @@ public class Contabilidad {
                             facturaVenta.getFechaVenta(),
                             facturaVenta.getCliente().getNombre(),
                             facturaVenta.getCliente().getNumDoc(),
-                            facturaVenta.getTipo() == 'B' ? BigDecimal.ZERO : new BigDecimal(facturaVenta.getGravado()),
-                            facturaVenta.getTipo() == 'B' ? BigDecimal.ZERO : new BigDecimal(facturaVenta.getIva10()),
-                            facturaVenta.getTipo() == 'B' ? BigDecimal.ZERO : new BigDecimal(facturaVenta.getIva21()),
+                            new BigDecimal(facturaVenta.getGravado()),
+                            new BigDecimal(facturaVenta.getIva10()),
+                            new BigDecimal(facturaVenta.getIva21()),
                             BigDecimal.ZERO,
                             BigDecimal.ZERO,
-                            facturaVenta.getTipo() == 'B' ? BigDecimal.ZERO : facturaVenta.getNoGravado(),
-                            facturaVenta.getTipo() == 'B' ? BigDecimal.ZERO : new BigDecimal(facturaVenta.getDescuento()),
+                            facturaVenta.getNoGravado(),
+                            new BigDecimal(facturaVenta.getDescuento()),
                             new BigDecimal(facturaVenta.getImporte())
                         });
                     }

@@ -206,7 +206,7 @@ public class JGestionUtils {
      * @return
      */
     public static String getNumeracion(FacturaVenta o) {
-        if (o.getNumero() == 0) {
+        if (String.valueOf(o.getTipo()).equalsIgnoreCase("I")) {
             return "FI" + UTIL.AGREGAR_CEROS(o.getSucursal().getPuntoVenta(), 4) + "-" + UTIL.AGREGAR_CEROS(o.getMovimientoInterno(), 8);
         } else {
             return "F" + o.getTipo() + UTIL.AGREGAR_CEROS(o.getSucursal().getPuntoVenta(), 4) + "-" + UTIL.AGREGAR_CEROS(o.getNumero(), 8);
