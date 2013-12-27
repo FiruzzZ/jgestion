@@ -8,8 +8,10 @@ import gui.JDBuscadorReRe;
 import gui.JDReRe;
 import gui.generics.JDialogTable;
 import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.Window;
 import java.awt.event.*;
+import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -33,6 +35,7 @@ import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.apache.log4j.Logger;
 import utilities.general.NumberToLetterConverter;
+import utilities.general.TableExcelExporter;
 import utilities.general.UTIL;
 import utilities.gui.SwingUtil;
 import utilities.swing.components.ComboBoxWrapper;
@@ -835,6 +838,36 @@ public class ReciboController implements ActionListener, FocusListener {
                     armarQuery();
                 } catch (MessageException ex) {
                     buscador.showMessage(ex.getMessage(), CLASS_NAME, 2);
+                }
+            }
+        });
+        buscador.getbImprimir().setVisible(true);
+        buscador.getbImprimir().addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(null, "No implementado aún");
+            }
+        });
+        buscador.getBtnToExcel().addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+             try {
+                    if (buscador.getjTable1().getRowCount() < 1) {
+                        throw new MessageException(JGestion.resourceBundle.getString("warn.emptytable"));
+                    }
+                    File file = JGestionUtils.showSaveDialogFileChooser(buscador, "Archivo Excel (.xls)", new File("recibos.xls"), "xls");
+                    TableExcelExporter tee = new TableExcelExporter(file, buscador.getjTable1());
+                    tee.export();
+                    if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(buscador, "¿Abrir archivo generado?", null, JOptionPane.YES_NO_OPTION)) {
+                        Desktop.getDesktop().open(file);
+                    }
+                } catch (MessageException ex) {
+                    JOptionPane.showMessageDialog(buscador, ex.getMessage(), null, 2);
+                } catch (Exception ex) {
+                    LOG.error(null, ex);
+                    JOptionPane.showMessageDialog(buscador, ex.getMessage(), "ERROR", 0);
                 }
             }
         });
