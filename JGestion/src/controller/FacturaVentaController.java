@@ -1197,7 +1197,7 @@ public class FacturaVentaController {
                 + " SUBSTRING(CAST(10000+o.sucursal.puntoVenta AS TEXT), 2),"
                 + " '-',"
                 + " SUBSTRING(CAST(100000000+  CASE WHEN o.tipo = 'I' THEN o.movimientoInterno ELSE o.numero END AS TEXT), 2)),"
-                + " o.movimientoInterno, o.cliente.nombre, o.importe, o.fechaVenta, o.sucursal.nombre, o.caja.nombre, o.usuario.nick, o.fechaalta "
+                + " o.movimientoInterno, o.cliente.nombre, CAST(o.importe as NUMERIC(12,2)), o.fechaVenta, o.sucursal.nombre, o.caja.nombre, o.usuario.nick, o.fechaalta "
                 + query);
         for (Object[] facturaVenta : l) {
             dtm.addRow(facturaVenta);
