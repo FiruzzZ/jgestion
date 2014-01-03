@@ -118,8 +118,7 @@ public class ChequeTercerosController implements ActionListener {
     /**
      * Esta ventana permite la creación de Cheques sin tener permiso
      * {@link PermisosController#PermisoDe#TESORERIA}.
-     * <i>Para que se puedan cargar desde un Recibo sin tener acceso al todo el
-     * módulo</i>
+     * <i>Para que se puedan cargar desde un Recibo sin tener acceso al todo el módulo</i>
      *
      * @param owner
      * @param toEdit
@@ -131,12 +130,14 @@ public class ChequeTercerosController implements ActionListener {
         if (cliente != null) {
             UTIL.setSelectedItem(panelABM.getCbEmisor(), cliente);
         }
+        String editingText = "";
         if (toEdit != null) {
             EL_OBJECT = toEdit;
             setPanel(EL_OBJECT);
+            editingText = " (editando)";
         }
         abm = new JDABM(owner, null, true, panelABM);
-        abm.setTitle("ABM - Cheque Terceros");
+        abm.setTitle("ABM - Cheque Terceros" + editingText);
         abm.setListener(this);
 
     }
@@ -261,8 +262,24 @@ public class ChequeTercerosController implements ActionListener {
                 throw new MessageException("Debe especificar un Endosatario si há seleccionado la opción de endosado.");
             }
         }
-        ChequeTerceros newCheque = new ChequeTerceros(cliente, numero, banco, null, importe, fechaCheque, fechaCobro, cruzado, observacion, ChequeEstado.CARTERA, endosatario, fechaEndoso, UsuarioController.getCurrentUser());
-        return newCheque;
+        if (EL_OBJECT != null) {
+            //los objetos con herencia no puede ser inicializados con new porque el ORM no reconoce la asociación
+            EL_OBJECT.setCliente(cliente);
+            EL_OBJECT.setNumero(numero);
+            EL_OBJECT.setBanco(banco);
+            EL_OBJECT.setImporte(importe);
+            EL_OBJECT.setFechaCheque(fechaCheque);
+            EL_OBJECT.setFechaCobro(fechaCobro);
+            EL_OBJECT.setObservacion(observacion);
+            EL_OBJECT.setEndosatario(endosatario);
+            EL_OBJECT.setFechaEndoso(fechaEndoso);
+            EL_OBJECT.setCruzado(cruzado);
+        } else {
+            EL_OBJECT = new ChequeTerceros(null, cliente, numero, banco, null, importe, fechaCheque,
+                    fechaCobro, cruzado, observacion, ChequeEstado.CARTERA, endosatario, fechaEndoso,
+                    UsuarioController.getCurrentUser());
+        }
+        return EL_OBJECT;
     }
 
     @Override
@@ -275,20 +292,19 @@ public class ChequeTercerosController implements ActionListener {
                 if (abm != null && panelABM != null) {
                     if (boton.equals(abm.getbAceptar())) {
                         try {
-                            Integer id = EL_OBJECT != null ? EL_OBJECT.getId() : null;
-                            ChequeTerceros cheque = getEntity();
-                            cheque.setId(id);
-                            checkConstraints(cheque);
+//                            Integer id = EL_OBJECT != null ? EL_OBJECT.getId() : null;
+                            getEntity();
+                            checkConstraints(EL_OBJECT);
                             if (panelABM.persist()) {
-                                String msg = cheque.getId() == null ? "Registrado" : "Modificado";
-                                if (cheque.getId() == null) {
-                                    jpaController.create(cheque);
+                                String msg = EL_OBJECT.getId() == null ? "Registrado" : "Modificado";
+                                if (EL_OBJECT.getId() == null) {
+                                    jpaController.create(EL_OBJECT);
                                 } else {
-                                    jpaController.merge(cheque);
+                                    jpaController.merge(EL_OBJECT);
                                 }
                                 abm.showMessage(msg, jpaController.getEntityClass().getSimpleName(), 1);
                             }
-                            EL_OBJECT = cheque;
+//                            EL_OBJECT = cheque;
                             abm.dispose();
                         } catch (MessageException ex) {
                             abm.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 2);
@@ -317,6 +333,7 @@ public class ChequeTercerosController implements ActionListener {
                         int row = jdChequeManager.getjTable1().getSelectedRow();
                         if (row > -1) {
                             ChequeTerceros cheque = jpaController.find((Integer) jdChequeManager.getjTable1().getModel().getValueAt(row, 0));
+                            jpaController.closeEntityManager();
 //                            if (cheque.getChequeEstado().equals(ChequeEstado.CARTERA)) {
                             displayABM(jdChequeManager, cheque, null);
 //                                initACajaUI(cheque);
