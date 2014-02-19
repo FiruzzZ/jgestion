@@ -733,6 +733,13 @@ public class ChequeTercerosController implements ActionListener {
                 }
             }
         });
+        jd.getbCancelar().addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                jd.dispose();
+            }
+        });
         jd.setVisible(true);
     }
 
