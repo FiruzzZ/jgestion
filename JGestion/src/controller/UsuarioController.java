@@ -573,7 +573,7 @@ public class UsuarioController implements ActionListener, MouseListener, KeyList
                     System.out.println("Ya tiene permiso de Caja:" + cajaSelected.getNombre());
                 }
             } else if (cajaList.contains(cajaSelected)) {
-                //si la Caja está DESMARCADA && está caja ESTÁ PRESENTE EN cajaList
+                //si la Caja está DESMARCADA && ESTÁ PRESENTE EN cajaList
                 // es porque se QUITO el permisosCaja de esta.
                 PermisosCaja permisosCajaToDelete = null;
                 // así que busca el permisosCaja que contiene cajaSelected

@@ -712,6 +712,7 @@ public class ProductoController implements ActionListener, KeyListener {
                     r.showWaitingDialog();
                     List<Producto> list = jpaController.findByBienDeCambio(true);
                     DynamicReportBuilder drb = new DynamicReportBuilder();
+                    drb.setRightMargin(20);
                     Style currencyStyle = new Style();
                     currencyStyle.setFont(Font.ARIAL_MEDIUM);
                     currencyStyle.setHorizontalAlign(HorizontalAlign.RIGHT);
