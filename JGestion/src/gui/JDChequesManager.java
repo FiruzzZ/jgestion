@@ -652,7 +652,7 @@ private void tfImporteKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_t
         return labelSucursales;
     }
 
-    public void addButtonListener(ActionListener actionListener) {
+    public void addButtonsListener(ActionListener actionListener) {
         btnModificar.addActionListener(actionListener);
         btnNuevo.addActionListener(actionListener);
         bBuscar.addActionListener(actionListener);
