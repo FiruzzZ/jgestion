@@ -541,7 +541,7 @@ public class ChequeTercerosController implements ActionListener {
             }
         });
         UTIL.hideColumnTable(jdChequeManager.getjTable1(), 0);
-        jdChequeManager.addButtonListener(this);
+        jdChequeManager.addButtonsListener(this);
         jdChequeManager.getjTable1().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
             @Override
