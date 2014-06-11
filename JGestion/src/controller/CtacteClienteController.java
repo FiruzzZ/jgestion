@@ -111,8 +111,8 @@ public class CtacteClienteController implements ActionListener {
     }
 
     /**
-     * Data structure returned: { {@link Cliente#id}, {@link Cliente#nombre},
-     * sumatoria de todos los saldos}
+     * Data structure returned: { {@link Cliente#id}, {@link Cliente#nombre}, sumatoria de todos los
+     * saldos}
      *
      * @param desde optional filter
      * @param hasta optional filter
@@ -318,8 +318,11 @@ public class CtacteClienteController implements ActionListener {
         for (CtacteCliente ctaCte : cccList) {
             Date fechaComprobante = ctaCte.getFactura() != null ? ctaCte.getFactura().getFechaVenta() : ctaCte.getNotaDebito().getFechaNotaDebito();
             BigDecimal importeComprobante = ctaCte.getFactura() != null ? BigDecimal.valueOf(ctaCte.getFactura().getImporte()) : ctaCte.getNotaDebito().getImporte();
+            boolean anulada;
             //checkea que no esté anulada la ccc
-            boolean anulada = (ctaCte.getEstado() == Valores.CtaCteEstado.ANULADA.getId());
+//            anulada = (ctaCte.getEstado() == Valores.CtaCteEstado.ANULADA.getId());
+            //chequear que el DOCUMENTO no esté anulado
+            anulada = ctaCte.getFactura() != null ? ctaCte.getFactura().getAnulada() : ctaCte.getNotaDebito().getAnulada();
             if (!anulada) {
                 saldoAcumulativo = saldoAcumulativo.add(importeComprobante.subtract(BigDecimal.valueOf(ctaCte.getEntregado())));
             }
@@ -402,8 +405,8 @@ public class CtacteClienteController implements ActionListener {
     }
 
     /**
-     * Calcula el total del DEBE, HABER y SALDO ACUMULATIVO de la Cta. cte. del
-     * Cliente anterior a la fecha desde especificada en el Buscador.
+     * Calcula el total del DEBE, HABER y SALDO ACUMULATIVO de la Cta. cte. del Cliente anterior a
+     * la fecha desde especificada en el Buscador.
      *
      * @param query
      */
@@ -418,8 +421,8 @@ public class CtacteClienteController implements ActionListener {
     }
 
     /**
-     * Inicia una UI de busqueda y chequeo de vencimientos de
-     * {@link CtacteCliente} y {@link CtacteProveedor}
+     * Inicia una UI de busqueda y chequeo de vencimientos de {@link CtacteCliente} y
+     * {@link CtacteProveedor}
      *
      * @param owner el papi de la ventana
      */

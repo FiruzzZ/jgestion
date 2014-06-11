@@ -6,8 +6,10 @@ import entity.ChequePropio;
 import entity.CuentaBancaria;
 import entity.CuentabancariaMovimientos;
 import entity.CuentabancariaMovimientos_;
+import entity.enums.ChequeEstado;
 import java.math.BigDecimal;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -41,7 +43,15 @@ public class CuentabancariaMovimientosJpaController extends AbstractDAO<Cuentaba
         } else {
             cq.where(cb.equal(from.get(CuentabancariaMovimientos_.chequeTerceros), cheque));
         }
-        return getEntityManager().createQuery(cq).getSingleResult();
+        CuentabancariaMovimientos o;
+        try {
+            o = getEntityManager().createQuery(cq).getSingleResult();
+        } catch (NoResultException e) {
+            //cuando el cheque no se marcó como ChequeEstado.DEBITADO
+            //no se generó el débito en la cuenta aún
+            o = null;
+        }
+        return o;
     }
 
 //    public CuentabancariaMovimientos findBy(ChequePropio chequePropio) {
@@ -51,7 +61,6 @@ public class CuentabancariaMovimientosJpaController extends AbstractDAO<Cuentaba
 //        cq.where(cb.equal(from.get(CuentabancariaMovimientos_.chequePropio), chequePropio));
 //        return getEntityManager().createQuery(cq).getSingleResult();
 //    }
-
     public BigDecimal getSaldo(CuentaBancaria cb) {
         BigDecimal saldo = (BigDecimal) findAttribute(
                 "SELECT "

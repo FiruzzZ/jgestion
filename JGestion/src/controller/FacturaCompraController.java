@@ -7,6 +7,7 @@ import entity.Cuenta;
 import entity.DetalleCompra;
 import entity.Dominio;
 import entity.FacturaCompra;
+import entity.FacturaCompra_;
 import entity.Iva;
 import entity.Proveedor;
 import entity.Sucursal;
@@ -510,8 +511,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
     }
 
     /**
-     * Asienta en Caja o no .. según la forma de pago
-     * ({@link FacturaCompra#formaPago})
+     * Asienta en Caja o no .. según la forma de pago ({@link FacturaCompra#formaPago})
      *
      * @param facturaCompra
      * @throws Exception
@@ -590,10 +590,11 @@ public class FacturaCompraController implements ActionListener, KeyListener {
                 throw new MessageException("Los primeros 4 números de la factura no válido");
             }
             long numeroFactura = Long.valueOf(jdFactura.getTfFacturaCuarto() + jdFactura.getTfFacturaOcteto());
-            FacturaCompra old = findFacturaCompra(numeroFactura, ((Proveedor) jdFactura.getCbProveedor().getSelectedItem()), false);
+            FacturaCompra old = findFacturaCompra(numeroFactura, jdFactura.getCbFacturaTipo().getSelectedItem().toString(),
+                    (Proveedor) jdFactura.getCbProveedor().getSelectedItem(), false);
             if (old != null) {
-                throw new MessageException("Ya existe la factura Nº: " + numeroFactura
-                        + " con el Proveedor " + (Proveedor) jdFactura.getCbProveedor().getSelectedItem());
+                throw new MessageException("Ya existe la factura " + JGestionUtils.getNumeracion(old)
+                        + " del proveedor " + jdFactura.getCbProveedor().getSelectedItem());
             }
         }
         try {
@@ -699,11 +700,12 @@ public class FacturaCompraController implements ActionListener, KeyListener {
 
     }
 
-    public FacturaCompra findFacturaCompra(long numero, Proveedor p, boolean anulada) {
+    public FacturaCompra findFacturaCompra(long numero, String tipoFactura, Proveedor p, boolean anulada) {
         try {
             return (FacturaCompra) DAO.getEntityManager().createNativeQuery(
                     "SELECT o.* from factura_compra o where o.proveedor =" + p.getId()
                     + " AND o.numero = " + numero
+                    + " AND o." + FacturaCompra_.tipo.getName() + " = '" + tipoFactura + "'"
                     + " AND o.anulada = " + anulada, FacturaCompra.class).getSingleResult();
         } catch (NoResultException ex) {
             return null;
@@ -922,8 +924,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
     }
 
     /**
-     * before call this method, must call
-     * {@link #initComprobanteUI(java.awt.Window, boolean)}
+     * before call this method, must call {@link #initComprobanteUI(java.awt.Window, boolean)}
      *
      * @param fc
      * @param paraAnular
