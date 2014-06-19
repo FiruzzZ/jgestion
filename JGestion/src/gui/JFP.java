@@ -1410,7 +1410,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         try {
-            new RemesaController().initRemesa(this, true, true);
+            new RemesaController().displayABMRemesa(this, true, true);
         } catch (Exception ex) {
             showError(ex.getMessage());
         }

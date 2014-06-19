@@ -9,7 +9,6 @@ import entity.DetalleRemesa;
 import entity.FacturaCompra;
 import entity.Proveedor;
 import entity.Remesa;
-import utilities.general.UTIL;
 import gui.JDResumenCtaCtes;
 import gui.generics.JDialogTable;
 import java.awt.Window;
@@ -25,7 +24,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.*;
-import org.eclipse.persistence.config.QueryHints;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
 import javax.swing.JButton;
@@ -34,8 +32,11 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import jgestion.JGestionUtils;
 import jpa.controller.CreditoProveedorJpaController;
+import jpa.controller.ProveedorJpaController;
 import jpa.controller.RemesaJpaController;
 import net.sf.jasperreports.engine.JRException;
+import org.eclipse.persistence.config.QueryHints;
+import utilities.general.UTIL;
 import utilities.swing.components.ComboBoxWrapper;
 import utilities.swing.components.FormatRenderer;
 import utilities.swing.components.NumberRenderer;
@@ -190,8 +191,7 @@ public class CtacteProveedorController implements ActionListener {
      *
      * @param owner
      * @param modal
-     * @param proveedor if != null, set this Proveedor as selected and do the
-     * search for it Cta. Cte
+     * @param proveedor if != null, set this Proveedor as selected and do the search for it Cta. Cte
      * @return
      * @throws MessageException
      * @throws JRException
@@ -217,7 +217,7 @@ public class CtacteProveedorController implements ActionListener {
                 jTableResumenMouseReleased(e);
             }
         });
-        UTIL.loadComboBox(resumenCtaCtes.getCbClieProv(), new ProveedorController().findEntities(), false);
+        UTIL.loadComboBox(resumenCtaCtes.getCbClieProv(), JGestionUtils.getWrappedProveedores(new ProveedorJpaController().findAll()), false);
         UTIL.loadComboBox(resumenCtaCtes.getCbReRes(), null, true);
         UTIL.getDefaultTableModel(
                 resumenCtaCtes.getjTableResumen(),
@@ -261,7 +261,7 @@ public class CtacteProveedorController implements ActionListener {
                 new int[]{200, 50, 50, 50});
         tabla.getColumnModel().getColumn(2).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         tabla.getColumnModel().getColumn(3).setCellRenderer(NumberRenderer.getCurrencyRenderer());
-        Proveedor p = (Proveedor) resumenCtaCtes.getCbClieProv().getSelectedItem();
+        Proveedor p = ((ComboBoxWrapper<Proveedor>) resumenCtaCtes.getCbClieProv().getSelectedItem()).getEntity();
         List<CreditoProveedor> lista = new CreditoProveedorJpaController().findBy(p);
         DefaultTableModel dtm = (DefaultTableModel) tabla.getModel();
         BigDecimal debe = BigDecimal.ZERO;
@@ -334,7 +334,7 @@ public class CtacteProveedorController implements ActionListener {
                 + " AND fv.proveedor = proveedor.id ";
         String filters = "";
         try {
-            filters += " AND proveedor.id =" + ((Proveedor) resumenCtaCtes.getCbClieProv().getSelectedItem()).getId();
+            filters += " AND proveedor.id =" + ((ComboBoxWrapper<?>) resumenCtaCtes.getCbClieProv().getSelectedItem()).getId();
         } catch (ClassCastException ex) {
             throw new MessageException("Proveedor no válido");
         }

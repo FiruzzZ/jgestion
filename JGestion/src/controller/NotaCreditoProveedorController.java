@@ -33,6 +33,7 @@ import javax.swing.text.JTextComponent;
 import jgestion.JGestionUtils;
 import jpa.controller.CreditoProveedorJpaController;
 import jpa.controller.NotaCreditoProveedorJpaController;
+import jpa.controller.ProveedorJpaController;
 import org.apache.log4j.Logger;
 import utilities.general.UTIL;
 import utilities.swing.components.ComboBoxWrapper;
@@ -219,7 +220,7 @@ public class NotaCreditoProveedorController implements ActionListener {
 
     private void checkConstraints() throws MessageException {
         try {
-            ((Proveedor) jdFactura.getCbProveedor().getSelectedItem()).getId();
+            ((ComboBoxWrapper<Proveedor>) jdFactura.getCbProveedor().getSelectedItem()).getId();
         } catch (ClassCastException ex) {
             throw new MessageException("Proveedor no válido");
         }
@@ -280,7 +281,7 @@ public class NotaCreditoProveedorController implements ActionListener {
         }
 
         long numeroFactura = Long.valueOf(jdFactura.getTfFacturaCuarto() + jdFactura.getTfFacturaOcteto());
-        NotaCreditoProveedor old = jpaController.findBy(numeroFactura, (Proveedor) jdFactura.getCbProveedor().getSelectedItem());
+        NotaCreditoProveedor old = jpaController.findBy(numeroFactura, ((ComboBoxWrapper<Proveedor>) jdFactura.getCbProveedor().getSelectedItem()).getEntity());
         if (old != null) {
             throw new MessageException("Ya existe la Nota de Credito Nº: " + numeroFactura
                     + " del Proveedor " + old.getProveedor().getNombre());
@@ -293,7 +294,7 @@ public class NotaCreditoProveedorController implements ActionListener {
         o.setFechaNotaCredito(jdFactura.getDcFechaFactura());
         o.setAnulada(false);
         //set entities
-        o.setProveedor((Proveedor) jdFactura.getCbProveedor().getSelectedItem());
+        o.setProveedor(new ProveedorJpaController().find(((ComboBoxWrapper<Proveedor>) jdFactura.getCbProveedor().getSelectedItem()).getId()));
         o.setUsuario(UsuarioController.getCurrentUser());
         o.setDesacreditado(BigDecimal.ZERO);
         o.setImporte(new BigDecimal(jdFactura.getTfTotalText()));
@@ -328,7 +329,7 @@ public class NotaCreditoProveedorController implements ActionListener {
         buscador = new JDBuscadorReRe(frame, null, modal, "Proveedor", null);
         buscador.setParaNotaCreditoProveedor();
         buscador.getbImprimir().setVisible(false);
-        UTIL.loadComboBox(buscador.getCbClieProv(), JGestionUtils.getWrappedProveedores(new ProveedorController().findEntities()), true);
+        UTIL.loadComboBox(buscador.getCbClieProv(), JGestionUtils.getWrappedProveedores(new ProveedorJpaController().findAll()), true);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
                 new String[]{"ID", "Nº NotaCredito", "Proveedor", "Importe", "Fecha", "Remesa", "Usuario", "Fecha (Sistema)"},
@@ -389,7 +390,7 @@ public class NotaCreditoProveedorController implements ActionListener {
             });
         }
         // seteando datos de FacturaCompra
-        jdFactura.getCbProveedor().addItem(notaCredito.getProveedor());
+        jdFactura.getCbProveedor().addItem(new ComboBoxWrapper<>(notaCredito.getProveedor(), notaCredito.getProveedor().getId(), notaCredito.getProveedor().getNombre()));
         jdFactura.setDcFechaFactura(notaCredito.getFechaNotaCredito());
         String numFactura = UTIL.AGREGAR_CEROS(notaCredito.getNumero(), 12);
         jdFactura.setTfFacturaCuarto(numFactura.substring(0, 4));
@@ -413,15 +414,15 @@ public class NotaCreditoProveedorController implements ActionListener {
             try {
                 //"IVA", "Cód. Producto", "Producto", "Cantidad", "Precio U.", "Sub total", "Mod", Producto.instance
                 dtm.addRow(new Object[]{
-                            iva.getIva(),
-                            detalle.getProducto().getCodigo(),
-                            detalle.getProducto().getNombre() + " " + detalle.getProducto().getMarca().getNombre(),
-                            detalle.getCantidad(),
-                            detalle.getPrecioUnitario(),
-                            detalle.getPrecioUnitario().multiply(BigDecimal.valueOf(detalle.getCantidad())).setScale(2, RoundingMode.HALF_EVEN),
-                            null,
-                            detalle.getProducto()
-                        });
+                    iva.getIva(),
+                    detalle.getProducto().getCodigo(),
+                    detalle.getProducto().getNombre() + " " + detalle.getProducto().getMarca().getNombre(),
+                    detalle.getCantidad(),
+                    detalle.getPrecioUnitario(),
+                    detalle.getPrecioUnitario().multiply(BigDecimal.valueOf(detalle.getCantidad())).setScale(2, RoundingMode.HALF_EVEN),
+                    null,
+                    detalle.getProducto()
+                });
             } catch (NullPointerException e) {
                 LOG.debug(e, e);
                 throw new MessageException("Ocurrió un error recuperando el detalle y los datos del Producto:"
@@ -447,7 +448,7 @@ public class NotaCreditoProveedorController implements ActionListener {
         jdFactura.getjTable1().getColumnModel().getColumn(4).setCellRenderer(NumberRenderer.getCurrencyRenderer(4));
         jdFactura.getjTable1().getColumnModel().getColumn(5).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         UTIL.hideColumnsTable(jdFactura.getjTable1(), new int[]{0, 6, 7});
-        UTIL.loadComboBox(jdFactura.getCbProveedor(), new ProveedorController().findEntities(), false);
+        UTIL.loadComboBox(jdFactura.getCbProveedor(), JGestionUtils.getWrappedProveedores(new ProveedorJpaController().findAll()), false);
         UTIL.loadComboBox(jdFactura.getCbFacturaTipo(), FacturaCompraController.TIPOS_FACTURA, false);
         UTIL.loadComboBox(jdFactura.getCbProductos(), new ProductoController().findWrappedProductoToCombo(true), false);
     }
@@ -459,15 +460,15 @@ public class NotaCreditoProveedorController implements ActionListener {
         List<NotaCreditoProveedor> l = jpaController.findByQuery(query);
         for (NotaCreditoProveedor facturaCompra : l) {
             dtm.addRow(new Object[]{
-                        facturaCompra.getId(),
-                        JGestionUtils.getNumeracion(facturaCompra, true),
-                        facturaCompra.getProveedor().getNombre(),
-                        facturaCompra.getImporte(),
-                        UTIL.DATE_FORMAT.format(facturaCompra.getFechaNotaCredito()),
-                        (facturaCompra.getRemesa() != null ? JGestionUtils.getNumeracion(facturaCompra.getRemesa(), true) : null),
-                        facturaCompra.getUsuario(),
-                        UTIL.TIMESTAMP_FORMAT.format(facturaCompra.getFechaCarga())
-                    });
+                facturaCompra.getId(),
+                JGestionUtils.getNumeracion(facturaCompra, true),
+                facturaCompra.getProveedor().getNombre(),
+                facturaCompra.getImporte(),
+                UTIL.DATE_FORMAT.format(facturaCompra.getFechaNotaCredito()),
+                (facturaCompra.getRemesa() != null ? JGestionUtils.getNumeracion(facturaCompra.getRemesa(), true) : null),
+                facturaCompra.getUsuario(),
+                UTIL.TIMESTAMP_FORMAT.format(facturaCompra.getFechaCarga())
+            });
         }
     }
 
@@ -487,7 +488,7 @@ public class NotaCreditoProveedorController implements ActionListener {
                 }
             }
         });
-        UTIL.loadComboBox(buscador.getCbClieProv(), JGestionUtils.getWrappedProveedores(new ProveedorController().findEntities()), true);
+        UTIL.loadComboBox(buscador.getCbClieProv(), JGestionUtils.getWrappedProveedores(new ProveedorJpaController().findAll()), true);
         UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), true);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
