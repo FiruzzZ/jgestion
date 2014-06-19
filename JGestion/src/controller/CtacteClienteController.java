@@ -438,7 +438,7 @@ public class CtacteClienteController implements ActionListener {
                 } else if (index == 1) {
                     UTIL.loadComboBox(panelCCCheck.getCbClientesProveedores(), new ClienteController().findAll(), "<Todos>");
                 } else if (index == 2) {
-                    UTIL.loadComboBox(panelCCCheck.getCbClientesProveedores(), new ProveedorController().findEntities(), "<Todos>");
+                    UTIL.loadComboBox(panelCCCheck.getCbClientesProveedores(), JGestionUtils.getWrappedProveedores(new ProveedorController().findAll()), "<Todos>");
                 }
             }
         });
@@ -514,9 +514,9 @@ public class CtacteClienteController implements ActionListener {
         } else {
             query += proveedoresQuery;
             if (panelCCCheck.getCbClientesProveedores().getSelectedIndex() > 0) {
-                Proveedor p = (Proveedor) panelCCCheck.getCbClientesProveedores().getSelectedItem();
+                Proveedor p = ((ComboBoxWrapper<Proveedor>) panelCCCheck.getCbClientesProveedores().getSelectedItem()).getEntity();
                 query += " AND c.id= " + p.getId();
-                sub_titulo_entidad = "Proveedor: (" + p.getCodigo() + ") " + p.getNombre();
+                sub_titulo_entidad = "Proveedor: (" + p.getCuit()+ ") " + p.getNombre();
 
             }
             query += ") as c";

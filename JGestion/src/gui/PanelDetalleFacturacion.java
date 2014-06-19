@@ -230,7 +230,7 @@ public class PanelDetalleFacturacion extends javax.swing.JPanel {
 
     private void cargarProveedores() {
         labelClieProv.setText("Proveedores");
-        UTIL.loadComboBox(cbClieProv, JGestionUtils.getWrappedProveedores(new ProveedorJpaController().findAll()), true);
+        UTIL.loadComboBox(cbClieProv, JGestionUtils.getWrappedProveedores(new ProveedorJpaController().findAllLite()), true);
         ActionListenerManager.setCuentasEgresosSubcuentaActionListener(getCbCuenta(), true, getCbSubCuenta(), true, true);
     }
 

@@ -9,24 +9,22 @@ import entity.CreditoProveedor;
 import entity.CtacteProveedor;
 import entity.CuentabancariaMovimientos;
 import entity.DetalleCajaMovimientos;
-import entity.Remesa;
-import entity.Sucursal;
-import java.awt.event.ActionEvent;
-import java.awt.event.FocusEvent;
-import javax.persistence.EntityManager;
 import entity.DetalleRemesa;
 import entity.Especie;
 import entity.FacturaCompra;
 import entity.NotaCreditoProveedor;
 import entity.NotaDebitoProveedor;
 import entity.Proveedor;
+import entity.Remesa;
 import entity.RemesaPagos;
-import utilities.general.UTIL;
+import entity.Sucursal;
 import gui.JDBuscadorReRe;
 import gui.JDReRe;
 import java.awt.Component;
 import java.awt.Window;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -34,6 +32,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.persistence.EntityManager;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
@@ -48,8 +47,10 @@ import jpa.controller.EspecieJpaController;
 import jpa.controller.FacturaCompraJpaController;
 import jpa.controller.NotaCreditoProveedorJpaController;
 import jpa.controller.NotaDebitoProveedorJpaController;
+import jpa.controller.ProveedorJpaController;
 import jpa.controller.RemesaJpaController;
 import org.apache.log4j.Logger;
+import utilities.general.UTIL;
 import utilities.gui.SwingUtil;
 import utilities.swing.components.ComboBoxWrapper;
 import utilities.swing.components.NumberRenderer;
@@ -82,7 +83,7 @@ public class RemesaController implements FocusListener {
     }
 
     public void initRemesaAConciliar(Window owner) throws MessageException {
-        initRemesa(owner, true, false);
+        displayABMRemesa(owner, true, false);
         jdReRe.setTitle("Recibo a conciliar");
         toConciliar = true;
         conciliando = false;
@@ -91,7 +92,7 @@ public class RemesaController implements FocusListener {
         jdReRe.setVisible(true);
     }
 
-    public void initRemesa(Window owner, boolean modal, boolean visible) throws MessageException {
+    public void displayABMRemesa(Window owner, boolean modal, boolean visible) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.COMPRA);
         jdReRe = new JDReRe(owner, modal);
         jdReRe.setUIForRemesas();
@@ -100,7 +101,7 @@ public class RemesaController implements FocusListener {
         UTIL.hideColumnTable(jdReRe.getTableAPagar(), 0);
         UTIL.loadComboBox(jdReRe.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), false);
         UTIL.loadComboBox(jdReRe.getCbCaja(), new UsuarioHelper().getCajas(true), false);
-        UTIL.loadComboBox(jdReRe.getCbClienteProveedor(), new ProveedorController().findEntities(), true);
+        UTIL.loadComboBox(jdReRe.getCbClienteProveedor(), JGestionUtils.getWrappedProveedores(new ProveedorJpaController().findAll()), true);
         UTIL.loadComboBox(jdReRe.getCbCtaCtes(), null, false);
         jdReRe.getbImprimir().setVisible(false);
         jdReRe.getbAnular().addActionListener(new ActionListener() {
@@ -157,7 +158,7 @@ public class RemesaController implements FocusListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (jdReRe.getCbClienteProveedor().getSelectedIndex() > 0) {
-                    cargarFacturasCtaCtesYNotasDebito((Proveedor) jdReRe.getCbClienteProveedor().getSelectedItem());
+                    cargarFacturasCtaCtesYNotasDebito(((ComboBoxWrapper<Proveedor>) jdReRe.getCbClienteProveedor().getSelectedItem()).getEntity());
                 } else {
                     //si no eligió nada.. vacia el combo de cta cte's
                     UTIL.loadComboBox(jdReRe.getCbCtaCtes(), null, false);
@@ -265,7 +266,7 @@ public class RemesaController implements FocusListener {
 
     private void displayABMChequePropio() {
         try {
-            ChequePropio cheque = new ChequePropioController().initABM(jdReRe, false, (Proveedor) jdReRe.getCbClienteProveedor().getSelectedItem());
+            ChequePropio cheque = new ChequePropioController().initABM(jdReRe, false, ((ComboBoxWrapper<Proveedor>) jdReRe.getCbClienteProveedor().getSelectedItem()).getEntity());
             if (cheque != null) {
                 ChequesController.checkUniquenessOnTable(jdReRe.getDtmPagos(), cheque);
                 DefaultTableModel dtm = jdReRe.getDtmPagos();
@@ -292,7 +293,7 @@ public class RemesaController implements FocusListener {
     private void displayABMNotaCredito() {
         try {
             NotaCreditoProveedor notaCredito = new NotaCreditoProveedorController().
-                    initBuscador(jdReRe, false, (Proveedor) jdReRe.getCbClienteProveedor().getSelectedItem(), true);
+                    initBuscador(jdReRe, false,((ComboBoxWrapper<Proveedor>) jdReRe.getCbClienteProveedor().getSelectedItem()).getEntity(), true);
             if (notaCredito != null) {
                 DefaultTableModel dtm = jdReRe.getDtmPagos();
                 for (int row = 0; row < dtm.getRowCount(); row++) {
@@ -423,7 +424,7 @@ public class RemesaController implements FocusListener {
         re.setPagos(new ArrayList<RemesaPagos>(jdReRe.getDtmPagos().getRowCount()));
         re.setDetalle(new ArrayList<DetalleRemesa>(jdReRe.getDtmAPagar().getRowCount()));
         re.setPorConciliar(toConciliar);
-        re.setProveedor((Proveedor) jdReRe.getCbClienteProveedor().getSelectedItem());
+        re.setProveedor(((ComboBoxWrapper<Proveedor>) jdReRe.getCbClienteProveedor().getSelectedItem()).getEntity());
         re.setUsuario(UsuarioController.getCurrentUser());
 
         DefaultTableModel dtm = (DefaultTableModel) jdReRe.getTableAPagar().getModel();
@@ -621,7 +622,7 @@ public class RemesaController implements FocusListener {
         buscador.hideVendedor();
         buscador.hideUDNCuentaSubCuenta();
         buscador.setLocationRelativeTo(owner);
-        UTIL.loadComboBox(buscador.getCbClieProv(), JGestionUtils.getWrappedProveedores(new ProveedorController().findEntities()), true);
+        UTIL.loadComboBox(buscador.getCbClieProv(), JGestionUtils.getWrappedProveedores(new ProveedorJpaController().findAllLite()), true);
         UTIL.loadComboBox(buscador.getCbCaja(), new UsuarioHelper().getCajas(true), true);
         UTIL.loadComboBox(buscador.getCbSucursal(), JGestionUtils.getWrappedSucursales(new UsuarioHelper().getSucursales()), true);
         UTIL.getDefaultTableModel(
@@ -835,7 +836,7 @@ public class RemesaController implements FocusListener {
      */
     private void setComprobanteUI(Remesa remesa) throws MessageException {
         if (jdReRe == null) {
-            initRemesa(null, true, false);
+            displayABMRemesa(null, true, false);
         }
         //por no redundar en DATOOOOOOOOOSS...!!!
         Proveedor p;
@@ -852,7 +853,7 @@ public class RemesaController implements FocusListener {
         //van a tirar error de ClassCastException
         UTIL.setSelectedItem(jdReRe.getCbSucursal(), remesa.getSucursal().getNombre());
         UTIL.setSelectedItem(jdReRe.getCbCaja(), remesa.getCaja().getNombre());
-        UTIL.setSelectedItem(jdReRe.getCbClienteProveedor(), p.getNombre());
+        UTIL.setSelectedItem(jdReRe.getCbClienteProveedor(), p);
         jdReRe.setTfCuarto(UTIL.AGREGAR_CEROS(remesa.getSucursal().getPuntoVenta(), 4));
         jdReRe.setTfOcteto(UTIL.AGREGAR_CEROS(String.valueOf(remesa.getNumero()), 8));
         jdReRe.getDcFechaReRe().setDate(remesa.getFechaRemesa());

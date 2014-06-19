@@ -172,7 +172,7 @@ public class ChequePropioController implements ActionListener {
                     JDialog jd = c.initContenedor(null, true);
                     jd.setLocationRelativeTo(abm);
                     jd.setVisible(true);
-                    UTIL.loadComboBox(panelABM.getCbEmisor(), c.findEntities(), false);
+                    UTIL.loadComboBox(panelABM.getCbEmisor(), JGestionUtils.getWrappedProveedores(c.findAll()), false);
 
                 }
             }//</editor-fold>
@@ -392,7 +392,7 @@ public class ChequePropioController implements ActionListener {
         });
         UTIL.hideColumnTable(jdChequeManager.getjTable1(), 0);
         UTIL.loadComboBox(jdChequeManager.getCbBancos(), JGestionUtils.getWrappedBancos(l), true);
-        UTIL.loadComboBox(jdChequeManager.getCbEmisor(), JGestionUtils.getWrappedProveedores(new ProveedorController().findEntities()), true);
+        UTIL.loadComboBox(jdChequeManager.getCbEmisor(), JGestionUtils.getWrappedProveedores(new ProveedorController().findAll()), true);
         UTIL.loadComboBox(jdChequeManager.getCbEstados(), Arrays.asList(ChequeEstado.values()), true);
         UTIL.loadComboBox(jdChequeManager.getCbOrderBy(), Arrays.asList(orderByToComboBoxList), false);
         jdChequeManager.getCbOrderBy().setSelectedIndex(2);
@@ -443,7 +443,7 @@ public class ChequePropioController implements ActionListener {
         panelABM.setPersistible(persistir);
         UTIL.loadComboBox(panelABM.getCbBancos(), JGestionUtils.getWrappedBancos(new BancoController().findWithCuentasBancarias(true)), false);
 //        UTIL.loadComboBox(panelABM.getCbBancoSucursales(), null, null, "<Seleccionar un Banco>");
-        UTIL.loadComboBox(panelABM.getCbEmisor(), JGestionUtils.getWrappedProveedores(new ProveedorController().findEntities()), false);
+        UTIL.loadComboBox(panelABM.getCbEmisor(), JGestionUtils.getWrappedProveedores(new ProveedorController().findAll()), false);
         if (proveedor != null) {
             panelABM.getCbEmisor().setEnabled(false);
             UTIL.setSelectedItem(panelABM.getCbEmisor(), proveedor);

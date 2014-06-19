@@ -94,22 +94,10 @@ public class ProveedorController implements ActionListener {
         }
     }
 
-    public List<Proveedor> findEntities() {
-        return findProveedorEntities(true, -1, -1);
-    }
-
-    public List<Proveedor> findProveedorEntities(int maxResults, int firstResult) {
-        return findProveedorEntities(false, maxResults, firstResult);
-    }
-
-    private List<Proveedor> findProveedorEntities(boolean all, int maxResults, int firstResult) {
+    public List<Proveedor> findAll() {
         EntityManager em = getEntityManager();
         try {
             Query q = em.createQuery("select object(o) from Proveedor as o order by o.nombre");
-            if (!all) {
-                q.setMaxResults(maxResults);
-                q.setFirstResult(firstResult);
-            }
             return q.getResultList();
         } finally {
             em.close();
@@ -209,7 +197,7 @@ public class ProveedorController implements ActionListener {
                     if (panelABM.getCbProvincias().getSelectedIndex() > 0) {
                         UTIL.loadComboBox(panelABM.getCbDepartamentos(),
                                 new DepartamentoController().findDeptosFromProvincia(
-                                ((Provincia) panelABM.getCbProvincias().getSelectedItem()).getId()), true);
+                                        ((Provincia) panelABM.getCbProvincias().getSelectedItem()).getId()), true);
                     } else {
                         UTIL.loadComboBox(panelABM.getCbDepartamentos(), null, true);
                     }
@@ -219,7 +207,7 @@ public class ProveedorController implements ActionListener {
                     if (panelABM.getCbDepartamentos().getSelectedIndex() > 0) {
                         UTIL.loadComboBox(panelABM.getCbMunicipios(),
                                 new MunicipioController().findMunicipiosFromDepto(
-                                ((Departamento) panelABM.getCbDepartamentos().getSelectedItem()).getId()), true);
+                                        ((Departamento) panelABM.getCbDepartamentos().getSelectedItem()).getId()), true);
                     } else {
                         UTIL.loadComboBox(panelABM.getCbMunicipios(), null, true);
                     }
@@ -444,8 +432,7 @@ public class ProveedorController implements ActionListener {
     }
 
     /**
-     * Check the constraints related to the Entity like UNIQUE's codigo,
-     * nombre...
+     * Check the constraints related to the Entity like UNIQUE's codigo, nombre...
      *
      * @param object
      * @throws MessageException end-user explanation message.

@@ -80,7 +80,8 @@ public class NotaDebitoProveedorController {
             @SuppressWarnings("unchecked")
             public void actionPerformed(ActionEvent e) {
                 if (abm.getCbCliente().getItemCount() > 0) {
-                    JGestionUtils.cargarComboTiposFacturas(abm.getCbFacturaTipo(), ((ComboBoxWrapper<Proveedor>) abm.getCbCliente().getSelectedItem()).getEntity());
+                    Proveedor p = new ProveedorJpaController().find(((ComboBoxWrapper<Proveedor>) abm.getCbCliente().getSelectedItem()).getId());
+                    JGestionUtils.cargarComboTiposFacturas(abm.getCbFacturaTipo(), p);
                     boolean comprobanteA = abm.getCbFacturaTipo().getSelectedItem().toString().equalsIgnoreCase("A");
                     abm.getCbIVA().setEnabled(comprobanteA);
                 }
@@ -100,7 +101,7 @@ public class NotaDebitoProveedorController {
             }
         });
         if (loadDefaultData) {
-            UTIL.loadComboBox(abm.getCbCliente(), JGestionUtils.getWrappedProveedores(new ProveedorJpaController().findAll()), false);
+            UTIL.loadComboBox(abm.getCbCliente(), JGestionUtils.getWrappedProveedores(new ProveedorJpaController().findAllLite()), false);
             UTIL.loadComboBox(abm.getCbIVA(), JGestionUtils.getWrappedIva(new IvaJpaController().findAll()), false);
         }
         UTIL.getDefaultTableModel(abm.getjTable1(), new String[]{"DetalleNotaDebito.object", "Concepto", "Importe"},
@@ -230,7 +231,7 @@ public class NotaDebitoProveedorController {
         o.setImpuestosRecuperables(BigDecimal.ZERO);
         o.setUsuario(UsuarioController.getCurrentUser());
         DefaultTableModel dtm = (DefaultTableModel) abm.getjTable1().getModel();
-        List<DetalleNotaDebitoProveedor> detalle = new ArrayList<DetalleNotaDebitoProveedor>(dtm.getRowCount());
+        List<DetalleNotaDebitoProveedor> detalle = new ArrayList<>(dtm.getRowCount());
         for (int row = 0; row < dtm.getRowCount(); row++) {
             DetalleNotaDebitoProveedor d = (DetalleNotaDebitoProveedor) dtm.getValueAt(row, 0);
             d.setNotaDebitoProveedor(o);
@@ -298,8 +299,7 @@ public class NotaDebitoProveedorController {
                 gravado = gravado.add(importe.multiply(cantidad));
             }
             /**
-             * Se calcula sin aplicar ningún redondeo (se trabaja posiblemente
-             * mas de 2 decimales).
+             * Se calcula sin aplicar ningún redondeo (se trabaja posiblemente mas de 2 decimales).
              */
 //            BigDecimal sinRedondeo = importe.multiply(cantidad).multiply(alicuota.divide(new BigDecimal("100")));
             if (alicuota == null || alicuota.intValue() == 0) {
@@ -333,8 +333,8 @@ public class NotaDebitoProveedorController {
         DefaultTableModel dtm = (DefaultTableModel) abm.getjTable1().getModel();
         BigDecimal importe = (detalle.getIva() == null ? detalle.getImporte() : detalle.getImporte().add(UTIL.getPorcentaje(detalle.getImporte(), BigDecimal.valueOf(detalle.getIva().getIva()))));
         dtm.addRow(new Object[]{
-                    detalle, detalle.getConcepto(), importe
-                });
+            detalle, detalle.getConcepto(), importe
+        });
     }
 
     private void cargarTablaBuscador(String query) {
@@ -343,26 +343,27 @@ public class NotaDebitoProveedorController {
         List<NotaDebitoProveedor> l = jpaController.findByQuery(query);
         for (NotaDebitoProveedor notaDebito : l) {
             dtm.addRow(new Object[]{
-                        notaDebito.getId(), // <--- no es visible
-                        JGestionUtils.getNumeracion(notaDebito),
-                        notaDebito.getProveedor().getNombre(),
-                        notaDebito.getImporte(),
-                        notaDebito.getFechaNotaDebito(),
-                        notaDebito.getRemesa() == null ? null : JGestionUtils.getNumeracion(notaDebito.getRemesa(), true),
-                        notaDebito.getUsuario().getNick(),
-                        notaDebito.getFechaCarga()
-                    });
+                notaDebito.getId(), // <--- no es visible
+                JGestionUtils.getNumeracion(notaDebito),
+                notaDebito.getProveedor().getNombre(),
+                notaDebito.getImporte(),
+                notaDebito.getFechaNotaDebito(),
+                notaDebito.getRemesa() == null ? null : JGestionUtils.getNumeracion(notaDebito.getRemesa(), true),
+                notaDebito.getUsuario().getNick(),
+                notaDebito.getFechaCarga()
+            });
         }
     }
 
-    public void initBuscador(Window frame, final boolean modal, final boolean toAnular) throws MessageException {
+    public void initBuscador(Window owner, final boolean modal, final boolean toAnular) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.VENTA);
         if (toAnular) {
             UsuarioController.checkPermiso(PermisosController.PermisoDe.ANULAR_COMPROBANTES);
         }
-        buscador = new JDBuscadorReRe(frame, "Buscador - Notas de Débito", modal, "Cliente", "Nº Nota");
+        buscador = new JDBuscadorReRe(owner, "Buscador - Notas de Débito de Proveedores", modal, "Proveedor", "Nº Nota");
         buscador.setParaNotaDebito();
-        UTIL.loadComboBox(buscador.getCbClieProv(), new ClienteController().findAll(), true);
+        List<Proveedor> ll = new ProveedorJpaController().findAllLite();
+        UTIL.loadComboBox(buscador.getCbClieProv(), JGestionUtils.getWrappedProveedores(ll), true);
         UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), true);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
@@ -460,7 +461,7 @@ public class NotaDebitoProveedorController {
         });
         viewMode = true;
 //        buscador.setListeners(this);
-        buscador.setLocationRelativeTo(frame);
+        buscador.setLocationRelativeTo(owner);
         buscador.setVisible(true);
     }
 
@@ -479,7 +480,6 @@ public class NotaDebitoProveedorController {
             }
         }
 
-
         if (buscador.getDcDesde() != null) {
             query.append(" AND o.fechaNotaDebito >= '").append(UTIL.yyyy_MM_dd.format(buscador.getDcDesde())).append("'");
         }
@@ -494,7 +494,7 @@ public class NotaDebitoProveedorController {
         }
 
         if (buscador.getCbClieProv().getSelectedIndex() > 0) {
-            query.append(" AND o.proveedor.id = ").append(((Proveedor) buscador.getCbClieProv().getSelectedItem()).getId());
+            query.append(" AND o.proveedor.id = ").append(((ComboBoxWrapper<?>) buscador.getCbClieProv().getSelectedItem()).getId());
         }
 
         query.append(" ORDER BY o.fechaNotaDebito");
@@ -514,7 +514,7 @@ public class NotaDebitoProveedorController {
     @SuppressWarnings("unchecked")
     private void setPanel(NotaDebitoProveedor o) {
         Proveedor c = o.getProveedor();
-        abm.getCbCliente().addItem(new ComboBoxWrapper<Proveedor>(c, c.getId(), c.getNombre()));
+        abm.getCbCliente().addItem(new ComboBoxWrapper<>(c, c.getId(), c.getNombre()));
         abm.getDcFechaFactura().setDate(o.getFechaNotaDebito());
         abm.getTfObservacion().setText(o.getObservacion());
         UTIL.loadComboBox(abm.getCbFacturaTipo(), FacturaCompraController.TIPOS_FACTURA, false);

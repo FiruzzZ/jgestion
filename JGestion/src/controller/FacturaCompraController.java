@@ -103,7 +103,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         initComprobanteUI(owner, modal);
         //set next nº movimiento
         jdFactura.setTfNumMovimiento("");
-        UTIL.loadComboBox(jdFactura.getCbProveedor(), new ProveedorJpaController().findAll(), false);
+        UTIL.loadComboBox(jdFactura.getCbProveedor(), JGestionUtils.getWrappedProveedores(new ProveedorJpaController().findAllLite()), false);
         ActionListenerManager.setUnidadDeNegocioSucursalActionListener(jdFactura.getCbUnidadDeNegocio(), false, jdFactura.getCbSucursal(), false, true);
         ActionListenerManager.setCuentasEgresosSubcuentaActionListener(jdFactura.getCbCuenta(), false, jdFactura.getCbSubCuenta(), true, true);
         UTIL.loadComboBox(jdFactura.getCbCaja(), uh.getCajas(true), false);
@@ -405,7 +405,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         String ob = jdFactura.getTfObservacion().getText().trim();
         newFacturaCompra.setObservacion(ob.isEmpty() ? null : ob);
         //set entities
-        newFacturaCompra.setProveedor((Proveedor) jdFactura.getCbProveedor().getSelectedItem());
+        newFacturaCompra.setProveedor(new ProveedorJpaController().find(getSelectedProveedorFromABM().getId()));
         newFacturaCompra.setUsuario(UsuarioController.getCurrentUser());
         newFacturaCompra.setCaja((Caja) jdFactura.getCbCaja().getSelectedItem());
         try {
@@ -541,7 +541,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
     @SuppressWarnings("unchecked")
     private void checkConstraints() throws MessageException {
         try {
-            ((Proveedor) jdFactura.getCbProveedor().getSelectedItem()).getId();
+            getSelectedProveedorFromABM();
         } catch (ClassCastException ex) {
             throw new MessageException("Proveedor no válido");
         }
@@ -591,7 +591,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
             }
             long numeroFactura = Long.valueOf(jdFactura.getTfFacturaCuarto() + jdFactura.getTfFacturaOcteto());
             FacturaCompra old = findFacturaCompra(numeroFactura, jdFactura.getCbFacturaTipo().getSelectedItem().toString(),
-                    (Proveedor) jdFactura.getCbProveedor().getSelectedItem(), false);
+                    getSelectedProveedorFromABM(), false);
             if (old != null) {
                 throw new MessageException("Ya existe la factura " + JGestionUtils.getNumeracion(old)
                         + " del proveedor " + jdFactura.getCbProveedor().getSelectedItem());
@@ -712,7 +712,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         }
     }
 
-    public void initBuscador(JFrame frame, final boolean modal, final boolean toAnular) throws MessageException {
+    public void initBuscador(Window frame, final boolean modal, final boolean toAnular) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.COMPRA);
         if (toAnular) {
             UsuarioController.checkPermiso(PermisosController.PermisoDe.ANULAR_COMPROBANTES);
@@ -723,7 +723,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         buscador.getbImprimir().setVisible(true);
         ActionListenerManager.setUnidadDeNegocioSucursalActionListener(buscador.getCbUnidadDeNegocio(), true, buscador.getCbSucursal(), true, true);
         ActionListenerManager.setCuentasEgresosSubcuentaActionListener(buscador.getCbCuenta(), true, buscador.getCbSubCuenta(), true, true);
-        UTIL.loadComboBox(buscador.getCbClieProv(), new ProveedorController().findEntities(), true);
+        UTIL.loadComboBox(buscador.getCbClieProv(),  JGestionUtils.getWrappedProveedores(new ProveedorJpaController().findAllLite()), true);
         UTIL.loadComboBox(buscador.getCbCaja(), new UsuarioHelper().getCajas(true), true);
 //        UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), true);
         UTIL.loadComboBox(buscador.getCbFormasDePago(), Valores.FormaPago.getFormasDePago(), true);
@@ -905,7 +905,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         }
 
         if (buscador.getCbClieProv().getSelectedIndex() > 0) {
-            query.append(" AND o.proveedor = ").append(((Proveedor) buscador.getCbClieProv().getSelectedItem()).getId());
+            query.append(" AND o.proveedor = ").append(((ComboBoxWrapper<Proveedor>) buscador.getCbClieProv().getSelectedItem()).getId());
         }
 
         if (buscador.getCbFormasDePago().getSelectedIndex() > 0) {
@@ -959,7 +959,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         }
         // seteando datos de FacturaCompra
 //        jdFactura.getCbProveedor().removeAllItems();
-        jdFactura.getCbProveedor().addItem(EL_OBJECT.getProveedor());
+        jdFactura.getCbProveedor().addItem(new ComboBoxWrapper<>(EL_OBJECT.getProveedor(), EL_OBJECT.getProveedor().getId(), EL_OBJECT.getProveedor().getNombre()));
         UnidadDeNegocio udn = EL_OBJECT.getUnidadDeNegocio();
         Sucursal s = EL_OBJECT.getSucursal();
         Cuenta cuenta = EL_OBJECT.getCuenta();
@@ -1091,7 +1091,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
     public void asignador() {
         buscador = new JDBuscadorReRe(null, "Asignación de Unid. de Negocio/Cuenta/SubCuenta - Facturas Venta", false, "Proveedor", "Nº Factura");
         buscador.setToFacturaVenta();
-        UTIL.loadComboBox(buscador.getCbClieProv(), new ProveedorController().findEntities(), true);
+        UTIL.loadComboBox(buscador.getCbClieProv(),  JGestionUtils.getWrappedProveedores(new ProveedorJpaController().findAll()), true);
         UTIL.loadComboBox(buscador.getCbCaja(), new CajaController().findCajasPermitidasByUsuario(UsuarioController.getCurrentUser(), true), true);
         UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), true);
         UTIL.loadComboBox(buscador.getCbFormasDePago(), Valores.FormaPago.getFormasDePago(), true);
@@ -1245,5 +1245,9 @@ public class FacturaCompraController implements ActionListener, KeyListener {
                         + "\n\n   Intente nuevamente.");
             }
         }
+    }
+
+    private Proveedor getSelectedProveedorFromABM() {
+        return ((ComboBoxWrapper<Proveedor>) jdFactura.getCbProveedor().getSelectedItem()).getEntity();
     }
 }

@@ -279,6 +279,19 @@ public class ChequeTercerosController implements ActionListener {
                     fechaCobro, cruzado, observacion, ChequeEstado.CARTERA, endosatario, fechaEndoso,
                     UsuarioController.getCurrentUser());
         }
+        ChequeTerceros cheque = jpaController.findBy(EL_OBJECT.getBanco(), EL_OBJECT.getNumero());
+        if (cheque != null && !cheque.equals(EL_OBJECT)) {
+            if (JOptionPane.YES_OPTION != JOptionPane.showConfirmDialog(null, "Ya existe un Cheque del banco " + cheque.getBanco().getNombre() + " con el N° " + cheque.getNumero()
+                    + "\nImporte: " + UTIL.DECIMAL_FORMAT.format(cheque.getImporte())
+                    + "\nFecha emisión:" + UTIL.DATE_FORMAT.format(cheque.getFechaCheque())
+                    + "\nFecha cobro: " + UTIL.DATE_FORMAT.format(cheque.getFechaCobro())
+                    + "\nEstado:" + cheque.getChequeEstado()
+                    + "\nIngreso:" + cheque.getComprobanteIngreso()
+                    + "\nEgreso:" + cheque.getComprobanteEgreso()
+                    + "\n¿Desea continuar?")) {
+                throw new MessageException("Carga sospechosa cancelada.. que suerte!");
+            }
+        }
         return EL_OBJECT;
     }
 

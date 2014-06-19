@@ -806,7 +806,7 @@ public class Contabilidad {
         buscadorReRe.hideFactura();
         buscadorReRe.hideCheckAnulado();
         buscadorReRe.getbImprimir().setVisible(true);
-        UTIL.loadComboBox(buscadorReRe.getCbClieProv(), JGestionUtils.getWrappedProveedores(new ProveedorJpaController().findAll()), true);
+        UTIL.loadComboBox(buscadorReRe.getCbClieProv(), JGestionUtils.getWrappedProveedores(new ProveedorJpaController().findAllLite()), true);
         UTIL.loadComboBox(buscadorReRe.getCbCaja(), new CajaController().findCajasPermitidasByUsuario(UsuarioController.getCurrentUser(), true), true);
         UTIL.loadComboBox(buscadorReRe.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), true);
         buscadorReRe.getLabelFormasDePago().setText("Tipo");
