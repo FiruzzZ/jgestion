@@ -46,55 +46,57 @@
                           <Component id="tfEmail" max="32767" attributes="0"/>
                           <Component id="tfDireccion" alignment="0" max="32767" attributes="0"/>
                           <Component id="tfNombre" max="32767" attributes="0"/>
+                          <Component id="tfEncargado" alignment="0" max="32767" attributes="0"/>
                           <Group type="102" attributes="0">
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="tfInicialFacturaA" max="-2" attributes="0"/>
-                                  <Component id="tfInicialFacturaB" max="-2" attributes="0"/>
-                                  <Component id="tfInicialRemito" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="tfInicialNotaDebitoA" alignment="0" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="jLabel20" alignment="1" min="-2" max="-2" attributes="0"/>
-                                  <Component id="jLabel19" alignment="1" min="-2" max="-2" attributes="0"/>
-                                  <Component id="jLabel23" alignment="1" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="tfInicialNotaCredito" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="tfInicialRecibo" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="tfInicialNotaDebitoB" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Group type="102" attributes="0">
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="tfInicialFacturaA" max="-2" attributes="0"/>
+                                          <Component id="tfInicialFacturaB" max="-2" attributes="0"/>
+                                          <Component id="tfInicialRemito" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          <Component id="tfInicialNotaDebitoA" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="jLabel20" alignment="1" min="-2" max="-2" attributes="0"/>
+                                          <Component id="jLabel19" alignment="1" min="-2" max="-2" attributes="0"/>
+                                          <Component id="jLabel23" alignment="1" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="tfInicialNotaCredito" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          <Component id="tfInicialRecibo" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          <Component id="tfInicialNotaDebitoB" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                  </Group>
+                                  <Group type="102" attributes="0">
+                                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                          <Component id="tfTele2" max="32767" attributes="1"/>
+                                          <Component id="tfTele1" alignment="0" pref="94" max="32767" attributes="1"/>
+                                      </Group>
+                                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Group type="102" alignment="0" attributes="0">
+                                              <Component id="jLabel9" min="-2" max="-2" attributes="0"/>
+                                              <EmptySpace max="-2" attributes="0"/>
+                                              <Component id="tfInterno1" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <Group type="102" alignment="0" attributes="0">
+                                              <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
+                                              <EmptySpace max="-2" attributes="0"/>
+                                              <Component id="tfInterno2" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                      </Group>
+                                  </Group>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="jLabel21" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="btnVerNumeracionActual" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Component id="tfPuntoVenta" alignment="0" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace min="0" pref="51" max="32767" attributes="0"/>
                           </Group>
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Group type="102" attributes="0">
-                                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                      <Component id="tfTele2" max="32767" attributes="1"/>
-                                      <Component id="tfTele1" alignment="0" pref="94" max="32767" attributes="1"/>
-                                  </Group>
-                                  <EmptySpace type="separate" max="-2" attributes="0"/>
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <Group type="102" alignment="0" attributes="0">
-                                          <Component id="jLabel9" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="tfInterno1" min="-2" max="-2" attributes="0"/>
-                                      </Group>
-                                      <Group type="102" alignment="0" attributes="0">
-                                          <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="tfInterno2" min="-2" max="-2" attributes="0"/>
-                                      </Group>
-                                  </Group>
-                              </Group>
-                              <Group type="102" alignment="0" attributes="0">
-                                  <Component id="jLabel21" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="btnVerNumeracionActual" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <Component id="tfPuntoVenta" alignment="0" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <Component id="tfEncargado" alignment="0" max="32767" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
