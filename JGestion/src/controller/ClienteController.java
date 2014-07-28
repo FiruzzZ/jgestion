@@ -4,7 +4,6 @@ import controller.exceptions.*;
 import entity.Cliente;
 import java.awt.event.KeyEvent;
 import java.util.List;
-import javax.persistence.EntityManager;
 import entity.Contribuyente;
 import entity.Departamento;
 import entity.Municipio;
@@ -20,7 +19,6 @@ import java.awt.event.KeyAdapter;
 import java.math.BigDecimal;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.persistence.NoResultException;
 import javax.persistence.RollbackException;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -48,10 +46,6 @@ public class ClienteController implements ActionListener {
 
     public ClienteController() {
         jpaController = new ClienteJpaController();
-    }
-
-    public EntityManager getEntityManager() {
-        return DAO.getEntityManager();
     }
 
     public void destroy(Integer id) throws NonexistentEntityException, MessageException {
@@ -98,23 +92,22 @@ public class ClienteController implements ActionListener {
         UTIL.limpiarDtm(dtm);
         List<Cliente> l;
         if (query == null || query.length() < 1) {
-            l = DAO.getEntityManager().createNamedQuery(CLASS_NAME + ".findAll").getResultList();
-
+            l = jpaController.findAll();
 
         } else {
             // para cuando se usa el Buscador del ABM
-            l = DAO.getEntityManager().createNativeQuery(query, Cliente.class).getResultList();
+            l = jpaController.findByNativeQuery(query);
         }
 
         for (Cliente o : l) {
             dtm.addRow(new Object[]{
-                        o.getId(),
-                        o.getCodigo(),
-                        o.getNombre(),
-                        o.getTipodoc() == 1 ? "DNI" : "CUIT",
-                        o.getNumDoc(),
-                        telefonosToString(o)
-                    });
+                o.getId(),
+                o.getCodigo(),
+                o.getNombre(),
+                o.getTipodoc() == 1 ? "DNI" : "CUIT",
+                o.getNumDoc(),
+                telefonosToString(o)
+            });
         }
     }
 
@@ -363,8 +356,7 @@ public class ClienteController implements ActionListener {
     }
 
     /**
-     * Check the constraints related to the Entity like UNIQUE's codigo,
-     * nombre...
+     * Check the constraints related to the Entity like UNIQUE's codigo, nombre...
      *
      * @param object
      * @throws MessageException end-user explanation message.
@@ -374,30 +366,29 @@ public class ClienteController implements ActionListener {
         String idQuery = "";
 
         if (object.getId() != null) {
-            idQuery = "o.id!=" + object.getId() + " AND ";
+            idQuery = "o.id<>" + object.getId() + " AND ";
 
-
         }
-        try {
-            DAO.getEntityManager().createNativeQuery("SELECT * FROM " + CLASS_NAME + " o "
-                    + " WHERE " + idQuery + " o.codigo='" + object.getCodigo() + "'", Cliente.class).getSingleResult();
+        String l = (String) jpaController.findAttribute("SELECT o.nombre"
+                + " FROM " + jpaController.getEntityClass().getSimpleName() + " o "
+                + " WHERE " + idQuery + " o.codigo='" + object.getCodigo() + "'");
+        if (l != null) {
             throw new MessageException(
-                    "Ya existe otro " + CLASS_NAME + " con este Código.");
-        } catch (NoResultException ex) {
+                    "Ya existe el cliente: " + l + " con este Código.");
         }
-        try {
-            DAO.getEntityManager().createNativeQuery("SELECT * FROM " + CLASS_NAME + " o "
-                    + " WHERE " + idQuery + " o.nombre='" + object.getNombre() + "' ", Cliente.class).getSingleResult();
+        l = (String) jpaController.findAttribute("SELECT o.nombre"
+                + " FROM " + jpaController.getEntityClass().getSimpleName() + " o "
+                + " WHERE " + idQuery + " o.nombre='" + object.getNombre() + "' ");
+        if (l != null) {
             throw new MessageException(
-                    "Ya existe otro " + CLASS_NAME + " con este nombre.");
-        } catch (NoResultException ex) {
+                    "Ya existe un " + CLASS_NAME + " con este nombre.");
         }
-        try {
-            DAO.getEntityManager().createNativeQuery("SELECT * FROM " + CLASS_NAME + " o "
-                    + " WHERE " + idQuery + " o.num_doc=" + object.getNumDoc(), Cliente.class).getSingleResult();
+        l = (String) jpaController.findAttribute("SELECT o.nombre"
+                + " FROM " + jpaController.getEntityClass().getSimpleName() + " o "
+                + " WHERE " + idQuery + " o.numDoc=" + object.getNumDoc());
+        if (l != null) {
             throw new MessageException(
-                    "Ya existe otro " + CLASS_NAME + " con este DNI/CUIT.");
-        } catch (NoResultException ex) {
+                    "Ya existe el cliente: " + l + " con este DNI/CUIT.");
         }
     }
 
@@ -489,7 +480,7 @@ public class ClienteController implements ActionListener {
                 if (panelABM.getCbProvincias().getSelectedIndex() > 0) {
                     UTIL.loadComboBox(panelABM.getCbDepartamentos(),
                             new DepartamentoController().findDeptosFromProvincia(
-                            ((Provincia) panelABM.getCbProvincias().getSelectedItem()).getId()), true);
+                                    ((Provincia) panelABM.getCbProvincias().getSelectedItem()).getId()), true);
                 } else {
                     UTIL.loadComboBox(panelABM.getCbDepartamentos(), null, true);
                 }
@@ -499,7 +490,7 @@ public class ClienteController implements ActionListener {
                 if (panelABM.getCbDepartamentos().getSelectedIndex() > 0) {
                     UTIL.loadComboBox(panelABM.getCbMunicipios(),
                             new MunicipioController().findMunicipiosFromDepto(
-                            ((Departamento) panelABM.getCbDepartamentos().getSelectedItem()).getId()), true);
+                                    ((Departamento) panelABM.getCbDepartamentos().getSelectedItem()).getId()), true);
                 } else {
                     UTIL.loadComboBox(panelABM.getCbMunicipios(), null, true);
                 }
@@ -590,7 +581,7 @@ public class ClienteController implements ActionListener {
                     JOptionPane.showMessageDialog(contenedor, ex.getMessage());
                     Logger
                             .getLogger(ClienteController.class
-                            .getName()).log(Level.SEVERE, null, ex);
+                                    .getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });

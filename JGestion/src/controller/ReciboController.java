@@ -169,9 +169,9 @@ public class ReciboController implements ActionListener, FocusListener {
                     } else {
                         //cuando se está creando un recibo y se va imprimir al tokesaun!
                         Recibo recibo = setAndPersist();
+                        doReportRecibo(recibo);
                         resetPanel();
                         jdReRe.limpiarDetalles();
-                        doReportRecibo(recibo);
                         if (conciliando) {
                             jdReRe.dispose();
                         }

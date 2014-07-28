@@ -5,6 +5,7 @@ import java.lang.reflect.ParameterizedType;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -129,13 +130,12 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
     }
 
     /**
-     * Executing a native SQL query to return instance(s). (algún día será mas
-     * clara esta Javadoc...)
+     * Executing a native SQL query to return instance(s). (algún día será mas clara esta
+     * Javadoc...)
      *
      * @param sqlString a SELECT native SQL statement.
      * @param stringSetMapping
-     * @param hints optional hints elements (REFRESH hint will be added if not
-     * present)
+     * @param hints optional hints elements (REFRESH hint will be added if not present)
      * @return a list...
      */
     @SuppressWarnings("unchecked")
@@ -201,9 +201,18 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
         }
     }
 
+    /**
+     * Convenience method to return a single instance that matches the query, or null if the query
+     * returns no results.
+     *
+     * @param jpql
+     * @return the single result or null
+     */
     public Object findAttribute(String jpql) {
         try {
             return getEntityManager().createQuery(jpql).getSingleResult();
+        } catch (NoResultException ex) {
+            return null;//same behavior than Hibernate
         } finally {
             closeEntityManager();
         }

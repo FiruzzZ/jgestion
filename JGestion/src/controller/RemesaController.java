@@ -18,6 +18,7 @@ import entity.Proveedor;
 import entity.Remesa;
 import entity.RemesaPagos;
 import entity.Sucursal;
+import generics.GenericBeanCollection;
 import gui.JDBuscadorReRe;
 import gui.JDReRe;
 import java.awt.Component;
@@ -32,6 +33,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 import javax.persistence.EntityManager;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -49,7 +51,11 @@ import jpa.controller.NotaCreditoProveedorJpaController;
 import jpa.controller.NotaDebitoProveedorJpaController;
 import jpa.controller.ProveedorJpaController;
 import jpa.controller.RemesaJpaController;
+import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.apache.log4j.Logger;
+import utilities.general.NumberToLetterConverter;
 import utilities.general.UTIL;
 import utilities.gui.SwingUtil;
 import utilities.swing.components.ComboBoxWrapper;
@@ -84,7 +90,7 @@ public class RemesaController implements FocusListener {
 
     public void initRemesaAConciliar(Window owner) throws MessageException {
         displayABMRemesa(owner, true, false);
-        jdReRe.setTitle("Recibo a conciliar");
+        jdReRe.setTitle("Remesa a conciliar");
         toConciliar = true;
         conciliando = false;
         jdReRe.getbImprimir().setEnabled(false);
@@ -103,7 +109,23 @@ public class RemesaController implements FocusListener {
         UTIL.loadComboBox(jdReRe.getCbCaja(), new UsuarioHelper().getCajas(true), false);
         UTIL.loadComboBox(jdReRe.getCbClienteProveedor(), JGestionUtils.getWrappedProveedores(new ProveedorJpaController().findAll()), true);
         UTIL.loadComboBox(jdReRe.getCbCtaCtes(), null, false);
-        jdReRe.getbImprimir().setVisible(false);
+        jdReRe.getbImprimir().addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (selectedRemesa != null && selectedRemesa.getId() != null) {
+                    try {
+                        doReportRemesa(selectedRemesa);
+                    } catch (MissingReportException ex) {
+                        JOptionPane.showMessageDialog(jdReRe, ex);
+                    } catch (Exception ex) {
+                        LOG.error("Error en reporte REMESA: " + selectedRemesa.toString(), ex);
+                        JOptionPane.showMessageDialog(jdReRe, ex);
+                    }
+                }
+            }
+
+        });
         jdReRe.getbAnular().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -125,6 +147,7 @@ public class RemesaController implements FocusListener {
                 try {
                     Remesa re = setAndPersist();
                     jdReRe.showMessage(jpaController.getEntityClass().getSimpleName() + "Nº" + JGestionUtils.getNumeracion(re, true) + " registrada..", null, 1);
+                    doReportRemesa(re);
                     limpiarDetalle();
                     resetPanel();
                 } catch (MessageException ex) {
@@ -214,8 +237,7 @@ public class RemesaController implements FocusListener {
             }
 
             /**
-             * Efectivo, Cheque Propio, Cheque Tercero, Nota de Crédito,
-             * Retención
+             * Efectivo, Cheque Propio, Cheque Tercero, Nota de Crédito, Retención
              */
             private void displayUIPagos(int formaPago) throws MessageException {
 
@@ -245,6 +267,53 @@ public class RemesaController implements FocusListener {
         });
         jdReRe.setLocationRelativeTo(owner);
         jdReRe.setVisible(visible);
+    }
+
+    private void doReportRemesa(Remesa remesa) throws MissingReportException, JRException {
+        DetalleRemesa d = remesa.getDetalle().get(0);
+        Proveedor proveedor = d.getFacturaCompra() != null ? d.getFacturaCompra().getProveedor() : d.getNotaDebitoProveedor().getProveedor();
+        List<GenericBeanCollection> cc = new ArrayList<>(remesa.getDetalle().size());
+        for (DetalleRemesa dr : remesa.getDetalle()) {
+            String comprobanteString = dr.getFacturaCompra() != null ? JGestionUtils.getNumeracion(dr.getFacturaCompra()) : JGestionUtils.getNumeracion(dr.getNotaDebitoProveedor());
+            cc.add(new GenericBeanCollection(comprobanteString, dr.getMontoEntrega()));
+        }
+        List<GenericBeanCollection> pp = new ArrayList<>(remesa.getPagos().size());
+        for (Object object : remesa.getPagosEntities()) {
+            if (object instanceof ChequePropio) {
+                ChequePropio pago = (ChequePropio) object;
+                pp.add(new GenericBeanCollection("CHP " + pago.getBanco().getNombre() + " N°" + pago.getNumero(), pago.getImporte()));
+            } else if (object instanceof ChequeTerceros) {
+                ChequeTerceros pago = (ChequeTerceros) object;
+                pp.add(new GenericBeanCollection("CH " + pago.getBanco().getNombre() + " N°" + pago.getNumero(), pago.getImporte()));
+            } else if (object instanceof NotaCreditoProveedor) {
+                NotaCreditoProveedor pago = (NotaCreditoProveedor) object;
+                pp.add(new GenericBeanCollection("NC " + JGestionUtils.getNumeracion(pago, true), pago.getImporte()));
+            } else if (object instanceof ComprobanteRetencion) {
+                ComprobanteRetencion pago = (ComprobanteRetencion) object;
+                pp.add(new GenericBeanCollection("RE " + pago.getNumero(), pago.getImporte()));
+            } else if (object instanceof Especie) {
+                Especie pago = (Especie) object;
+                pp.add(new GenericBeanCollection("ES " + pago.getDescripcion(), pago.getImporte()));
+            } else if (object instanceof DetalleCajaMovimientos) {
+                DetalleCajaMovimientos pago = (DetalleCajaMovimientos) object;
+                pp.add(new GenericBeanCollection("EF", pago.getMonto()));
+            } else if (object instanceof CuentabancariaMovimientos) {
+                CuentabancariaMovimientos pago = (CuentabancariaMovimientos) object;
+                int indexOf = pago.getDescripcion().indexOf(", ");
+                pp.add(new GenericBeanCollection("TR " + pago.getDescripcion().substring(0, indexOf), pago.getCredito()));
+            }
+        }
+        JRDataSource c = new JRBeanCollectionDataSource(cc);
+        JRDataSource p = new JRBeanCollectionDataSource(pp);
+        Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_Remesa_ctacte.jasper", "Remesa N°" + JGestionUtils.getNumeracion(remesa, true));
+        r.addParameter("REMESA_ID", remesa.getId());
+        r.addParameter("PROVEEDOR_ID", proveedor.getId());
+        r.addCurrent_User();
+        r.addMembreteParameter();
+        r.addParameter("comprobantes", c);
+        r.addParameter("pagos", p);
+        r.addParameter("son_pesos", NumberToLetterConverter.convertNumberToLetter(remesa.getMonto(), false));
+        r.viewReport();
     }
 
     private void displayABMEfectivo() {
@@ -293,7 +362,7 @@ public class RemesaController implements FocusListener {
     private void displayABMNotaCredito() {
         try {
             NotaCreditoProveedor notaCredito = new NotaCreditoProveedorController().
-                    initBuscador(jdReRe, false,((ComboBoxWrapper<Proveedor>) jdReRe.getCbClienteProveedor().getSelectedItem()).getEntity(), true);
+                    initBuscador(jdReRe, false, ((ComboBoxWrapper<Proveedor>) jdReRe.getCbClienteProveedor().getSelectedItem()).getEntity(), true);
             if (notaCredito != null) {
                 DefaultTableModel dtm = jdReRe.getDtmPagos();
                 for (int row = 0; row < dtm.getRowCount(); row++) {
@@ -829,8 +898,8 @@ public class RemesaController implements FocusListener {
     }
 
     /**
-     * Setea la ventana de JDReRe de forma q solo se puedan ver los datos y
-     * detalles de la Remesa, imprimir y ANULAR, pero NO MODIFICAR
+     * Setea la ventana de JDReRe de forma q solo se puedan ver los datos y detalles de la Remesa,
+     * imprimir y ANULAR, pero NO MODIFICAR
      *
      * @param remesa
      */
