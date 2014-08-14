@@ -11,9 +11,9 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "remesa",
-uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"sucursal", "numero"})
-})
+        uniqueConstraints = {
+            @UniqueConstraint(columnNames = {"sucursal", "numero"})
+        })
 @NamedQueries({
     @NamedQuery(name = "Remesa.findAll", query = "SELECT r FROM Remesa r"),
     @NamedQuery(name = "Remesa.findById", query = "SELECT r FROM Remesa r WHERE r.id = :id"),
@@ -64,8 +64,8 @@ public class Remesa implements Serializable {
     private Date anulada;
     @Column(name = "por_conciliar", nullable = false)
     private boolean porConciliar;
-    @JoinColumn(name = "proveedor_id")
-    @ManyToOne
+    @JoinColumn(name = "proveedor_id", nullable = false)
+    @ManyToOne(optional = false)
     private Proveedor proveedor;
 
     public Remesa() {
