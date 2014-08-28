@@ -1673,8 +1673,6 @@ public class FacturaVentaController {
             registrarVentaSegunFormaDePago(newFacturaVenta);
             if (facturar) {
                 if (jdFactura.getCheckFacturacionElectronica().isSelected()) {
-                    AFIPWSController afipWS = new AFIPWSController();
-                    afipWS.showSetting(newFacturaVenta);
                 }
                 imprimirFactura(newFacturaVenta);
             } else {

@@ -76,11 +76,11 @@ public class PanelABMProductos extends javax.swing.JPanel {
         dateUltimaCompra = new com.toedter.calendar.JDateChooser();
         checkBoxSucursalTodas = new javax.swing.JCheckBox();
         bStockGral = new javax.swing.JButton();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jEditorPane1 = new javax.swing.JEditorPane();
         btnAddRubros = new javax.swing.JButton();
         checkUpdatePrecioVenta = new javax.swing.JCheckBox();
         checkBienDeCambio = new javax.swing.JCheckBox();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTextArea1 = new javax.swing.JTextArea();
 
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
@@ -208,11 +208,6 @@ public class PanelABMProductos extends javax.swing.JPanel {
         bStockGral.setToolTipText("Ver stock gral. (Sucursales)");
         bStockGral.setName("bstockGral"); // NOI18N
 
-        jEditorPane1.setEditable(false);
-        jEditorPane1.setContentType("text/html"); // NOI18N
-        jEditorPane1.setText("<html>\r\n  <head>\r\n\r\n  </head>\r\n  <body>\r\n    <p style=\"margin-top: 0\">\r\n      \r<p align=\"center\">\n  <b>[Doble click para editar]</b>\n</p>\n    </p>\r\n  </body>\r\n</html>\r\n");
-        jScrollPane2.setViewportView(jEditorPane1);
-
         btnAddRubros.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/16px_add.png"))); // NOI18N
         btnAddRubros.setName("Marcas"); // NOI18N
 
@@ -223,6 +218,10 @@ public class PanelABMProductos extends javax.swing.JPanel {
         checkBienDeCambio.setSelected(true);
         checkBienDeCambio.setText("Bien de Cambio");
         checkBienDeCambio.setToolTipText("<html>Son aquellos que puede ser <b>vendidos</b>.\n<br>Por los cuales estarán compuestos los comprobantes de Ingresos como <b>Facturas de Venta, Remitos y Nota de Crédito</b>.");
+
+        jTextArea1.setColumns(20);
+        jTextArea1.setRows(5);
+        jScrollPane1.setViewportView(jTextArea1);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -243,14 +242,6 @@ public class PanelABMProductos extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(checkBienDeCambio)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(tfPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel17)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(tfCostoCompra, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(checkUpdatePrecioVenta))
                     .addComponent(dateUltimaCompra, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
@@ -273,7 +264,6 @@ public class PanelABMProductos extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnAddRubros, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(cbSubRubro, javax.swing.GroupLayout.PREFERRED_SIZE, 265, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 430, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(cbMedicion, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -293,8 +283,18 @@ public class PanelABMProductos extends javax.swing.JPanel {
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(cbSucursal, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(checkBoxSucursalTodas)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(checkBoxSucursalTodas))
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel2Layout.createSequentialGroup()
+                            .addComponent(tfPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jLabel17)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(tfCostoCompra, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(checkUpdatePrecioVenta))))
+                .addContainerGap(15, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -346,8 +346,8 @@ public class PanelABMProductos extends javax.swing.JPanel {
                 .addComponent(checkBienDeCambio)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel13))
+                    .addComponent(jLabel13)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(cbSucursal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -411,7 +411,6 @@ public class PanelABMProductos extends javax.swing.JPanel {
     private javax.swing.JCheckBox checkBoxSucursalTodas;
     private javax.swing.JCheckBox checkUpdatePrecioVenta;
     private com.toedter.calendar.JDateChooser dateUltimaCompra;
-    private javax.swing.JEditorPane jEditorPane1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel13;
@@ -430,7 +429,8 @@ public class PanelABMProductos extends javax.swing.JPanel {
     private javax.swing.JLabel jLabelFoto;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextField tfCodigo;
     private javax.swing.JTextField tfCostoCompra;
     private javax.swing.JTextField tfNombre;
@@ -446,7 +446,7 @@ public class PanelABMProductos extends javax.swing.JPanel {
         tfStockActual.setText("0");
         tfStockMax.setText("0");
 //        tfDeposito.setText("");
-        jEditorPane1.setText("<p align=\"center\"><b>[Doble click para editar]</b></p>");
+        jTextArea1.setText(null);
         tfStockActual.setText("0");
         tfPrecio.setText("");
         tfCostoCompra.setText("");
@@ -463,7 +463,7 @@ public class PanelABMProductos extends javax.swing.JPanel {
 
     // <editor-fold defaultstate="collapsed" desc="SETTERS">
     public void setTaDescrip(String taDescrip) {
-        this.jEditorPane1.setText(taDescrip);
+        this.jTextArea1.setText(taDescrip);
     }
 
     public void setTfCodigo(String tfCodigo) {
@@ -513,7 +513,7 @@ public class PanelABMProductos extends javax.swing.JPanel {
     }
 
     public String getTaDescrip() {
-        return jEditorPane1.getText().trim();
+        return jTextArea1.getText().trim();
     }
 
     public String getTfCodigo() {
@@ -603,8 +603,8 @@ public class PanelABMProductos extends javax.swing.JPanel {
         checkBoxSucursalTodas.setVisible(false);
     }
 
-    public JEditorPane getTaDescripcion() {
-        return jEditorPane1;
+    public JTextArea getTaDescripcion() {
+        return jTextArea1;
     }
 
     public void setConDescripcion(boolean b) {
