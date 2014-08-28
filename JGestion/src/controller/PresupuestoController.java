@@ -2,33 +2,37 @@ package controller;
 
 import controller.exceptions.*;
 import entity.Cliente;
-import entity.Presupuesto;
-import entity.Sucursal;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
+import entity.Cuenta;
 import entity.DetallePresupuesto;
 import entity.Iva;
 import entity.ListaPrecios;
+import entity.Presupuesto;
+import entity.Presupuesto_;
 import entity.Producto;
-import utilities.general.UTIL;
+import entity.SubCuenta;
+import entity.Sucursal;
+import entity.UnidadDeNegocio;
+import entity.Vendedor;
 import gui.JDBuscadorReRe;
 import gui.JDFacturaVenta;
 import java.awt.Window;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyListener;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import jgestion.JGestionUtils;
 import jpa.controller.PresupuestoJpaController;
 import jpa.controller.ProductoJpaController;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Logger;
+import utilities.general.UTIL;
 import utilities.swing.components.ComboBoxWrapper;
 
 /**
@@ -51,13 +55,12 @@ public class PresupuestoController implements ActionListener {
     }
 
     /**
-     * Inicializa una {@link gui.JDFacturaVenta} con un Object listener
-     * <code>this</code>. Implementa la actionListener del botón Aceptar
+     * Inicializa una {@link gui.JDFacturaVenta} con un Object listener <code>this</code>.
+     * Implementa la actionListener del botón Aceptar
      *
      * @param frame
      * @param modal to be or not to be...
-     * @param setVisible cuando se va levantar la gui desde el buscador es
-     * <code>false</code>
+     * @param setVisible cuando se va levantar la gui desde el buscador es <code>false</code>
      * @param loadDefaultData
      * @throws MessageException
      */
@@ -69,6 +72,7 @@ public class PresupuestoController implements ActionListener {
                 try {
                     facturaVentaController.getContenedor().getBtnAceptar().setEnabled(false);
                     doPresupuesto();
+                    facturaVentaController.borrarDetalles();
                 } catch (MessageException ex) {
                     ex.displayMessage(null);
                 } catch (Exception ex) {
@@ -93,7 +97,8 @@ public class PresupuestoController implements ActionListener {
                 } catch (MessageException ex) {
                     buscador.showMessage(ex.getMessage(), "Buscador - " + CLASS_NAME, 0);
                 } catch (Exception ex) {
-                    buscador.showMessage(ex.getMessage(), "Buscador - " + CLASS_NAME, 0);
+                    LOG.error(ex, ex);
+                    buscador.showMessage("Ocurrió un error", "Buscador - " + CLASS_NAME, 0);
                 }
             } else {
                 if (!MODO_VISTA) {
@@ -106,11 +111,10 @@ public class PresupuestoController implements ActionListener {
     }
 
     /**
-     * Control que la {@link entity.Presupuesto} esté necesariamente setteada,
-     * persiste y realiza el reporte.
+     * Control que la {@link entity.Presupuesto} esté necesariamente setteada, persiste y realiza el
+     * reporte.
      *
-     * @return <code>true</code> si la creación del reporte finalizó
-     * correctamente.
+     * @return <code>true</code> si la creación del reporte finalizó correctamente.
      * @throws MessageException
      * @throws Exception
      */
@@ -118,11 +122,17 @@ public class PresupuestoController implements ActionListener {
         Presupuesto newPresupuesto = selectedPresupuesto;
         if (!MODO_VISTA) {
             jdFacturaVenta = facturaVentaController.getContenedor();
+            String observacion;
 
             // <editor-fold defaultstate="collapsed" desc="CONTROLES">
-
             if (jdFacturaVenta.getDcFechaFactura() == null) {
                 throw new MessageException("Fecha de factura no válida");
+            }
+            observacion = jdFacturaVenta.getTfObservacion().getText().trim();
+            if (observacion.length() > 100) {
+                throw new MessageException("Observación no puede tener mas de 100 caracteres, NO ES UNA NOVELA!");
+            } else if (observacion.isEmpty()) {
+                observacion = null;
             }
 
             DefaultTableModel dtm = jdFacturaVenta.getDtm();
@@ -152,6 +162,7 @@ public class PresupuestoController implements ActionListener {
                 newPresupuesto.setFormaPago((short) Valores.FormaPago.CTA_CTE.getId());
                 newPresupuesto.setDias(Short.parseShort(jdFacturaVenta.getTfDias()));
             }
+            newPresupuesto.setObservacion(observacion);
             newPresupuesto.setDescuento(UTIL.parseToDouble(jdFacturaVenta.getTfTotalDesc()));
             newPresupuesto.setImporte(UTIL.parseToDouble(jdFacturaVenta.getTfTotal()));
             newPresupuesto.setIva10(UTIL.parseToDouble(jdFacturaVenta.getTfTotalIVA105()));
@@ -189,96 +200,98 @@ public class PresupuestoController implements ActionListener {
         return false;
     }
 
-    private void buscadorPresupuestoMouseClicked(MouseEvent evt) {
-        if (evt.getClickCount() >= 2) {
-            selectedPresupuesto = (Presupuesto) buscador.getDtm().getValueAt(buscador.getjTable1().getSelectedRow(), 0);
-            setDatos(selectedPresupuesto);
-        }
-    }
-
     public void initBuscador(Window owner) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.VENTA);
         buscador = new JDBuscadorReRe(owner, "Buscador - " + CLASS_NAME, true, "Cliente", "Nº " + CLASS_NAME);
         buscador.getjTable1().addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                buscadorPresupuestoMouseClicked(evt);
+                if (evt.getClickCount() >= 2) {
+                    selectedPresupuesto = jpaController.find((Integer) buscador.getDtm().getValueAt(buscador.getjTable1().getSelectedRow(), 0));
+                    setDatos(selectedPresupuesto);
+                }
             }
         });
         //personalizando vista de Buscador
         buscador.hideFactura();
         buscador.hideCaja();
-        buscador.hideFormaPago();
+        buscador.hideUDNCuentaSubCuenta();
+        buscador.hideVendedor();
         buscador.getjTfOcteto().setVisible(false);
         UTIL.loadComboBox(buscador.getCbClieProv(), new ClienteController().findAll(), true);
         UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getSucursales(), true);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
-                new String[]{"Nº " + CLASS_NAME, "Cliente", "Importe", "Fecha", "Sucursal", "Usuario"},
-                new int[]{15, 50, 50, 50, 80, 50});
+                new String[]{"ObjectID", "Nº " + CLASS_NAME, "Cliente", "Importe", "Fecha", "Sucursal", "Usuario"},
+                new int[]{1, 15, 50, 50, 50, 80, 50});
         MODO_VISTA = true;
         buscador.setListeners(this);
         buscador.setVisible(true);
     }
 
     private void armarQuery() throws MessageException {
-        String query = "SELECT o.* FROM " + CLASS_NAME + " o WHERE o.id > -1";
+        StringBuilder query = new StringBuilder("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o WHERE o.id > -1");
 
         //filtro por nº de ReRe
         if (buscador.getTfCuarto().length() > 0) {
             try {
                 Integer presupuestoID = Integer.valueOf(buscador.getTfOcteto());
-                query += " AND o.id = " + presupuestoID;
+                query.append("AND o.id = ").append(presupuestoID);
             } catch (NumberFormatException ex) {
                 throw new MessageException("Número de " + CLASS_NAME + " no válido.\n\n" + ex.getMessage());
             }
         }
 
-        if (buscador.getDcDesde() != null) {
-            query += " AND o.fecha_creacion >= '" + buscador.getDcDesde() + "'";
+        SimpleDateFormat yyyyMMdd = new SimpleDateFormat("yyyy/MM/dd");
+        if (buscador.getDcDesdeSistema() != null) {
+            query.append(" AND o.").append(Presupuesto_.fechaalta.getName()).append(" >= '").append(yyyyMMdd.format(buscador.getDcDesdeSistema())).append("'");
         }
-        if (buscador.getDcHasta() != null) {
-            query += " AND o.fecha_creacion <= '" + buscador.getDcHasta() + "'";
+        if (buscador.getDcHastaSistema() != null) {
+            query.append(" AND o.").append(Presupuesto_.fechaalta.getName()).append(" <= '").append(yyyyMMdd.format(buscador.getDcHastaSistema())).append("'");
         }
         if (buscador.getCbSucursal().getSelectedIndex() > 0) {
-            query += " AND o.sucursal = " + ((Sucursal) buscador.getCbSucursal().getSelectedItem()).getId();
+            query.append(" AND o.sucursal.id = " + ((Sucursal) buscador.getCbSucursal().getSelectedItem()).getId());
         } else {
-            query += " AND (";
+            query.append(" AND (");
             for (int i = 1; i < buscador.getCbSucursal().getItemCount(); i++) {
                 Sucursal sucursal = (Sucursal) buscador.getCbSucursal().getItemAt(i);
-                query += " o.sucursal=" + sucursal.getId();
+                query.append(" o.sucursal.id=" + sucursal.getId());
                 if ((i + 1) < buscador.getCbSucursal().getItemCount()) {
-                    query += " OR ";
+                    query.append(" OR ");
                 }
             }
-            query += ")";
+            query.append(")");
         }
 
         if (buscador.getCbClieProv().getSelectedIndex() > 0) {
-            query += " AND o.cliente = " + ((Cliente) buscador.getCbClieProv().getSelectedItem()).getId();
+            query.append(" AND o.cliente.id = ").append(((Cliente) buscador.getCbClieProv().getSelectedItem()).getId());
         }
-        query += " ORDER BY o.id";
-        cargarDtmBuscador(query);
+
+        if (buscador.getCbFormasDePago().getSelectedIndex() > 0) {
+            query.append(" AND o.formaPago = ").append(((Valores.FormaPago) buscador.getCbFormasDePago().getSelectedItem()).getId());
+        }
+        query.append(" ORDER BY o.id");
+        cargarDtmBuscador(query.toString());
     }
 
     private void cargarDtmBuscador(String query) {
         buscador.dtmRemoveAll();
         DefaultTableModel dtm = buscador.getDtm();
-        List<Presupuesto> l = DAO.getEntityManager().createNativeQuery(query, Presupuesto.class).getResultList();
+        List<Presupuesto> l = jpaController.findByQuery(query);
         for (Presupuesto presupuesto : l) {
             dtm.addRow(new Object[]{
-                presupuesto, // <--- no es visible
-                presupuesto.getCliente(),
+                presupuesto.getId(), // <--- no es visible
+                JGestionUtils.getNumeracion(presupuesto, true),
+                presupuesto.getCliente().getNombre(),
                 presupuesto.getImporte(),
                 UTIL.TIMESTAMP_FORMAT.format(presupuesto.getFechaalta()),
-                presupuesto.getSucursal(),
-                presupuesto.getUsuario()});
+                presupuesto.getSucursal().getNombre(),
+                presupuesto.getUsuario().getNick()});
         }
     }
 
     /**
-     * Cuando se selecciona una Presupuesto desde el Buscador
-     * {@link gui.JDBuscadorReRe}
+     * Cuando se selecciona una Presupuesto desde el Buscador {@link gui.JDBuscadorReRe}
      *
      * @param presupuesto
      */
@@ -292,8 +305,8 @@ public class PresupuestoController implements ActionListener {
         jdFacturaVenta.setLocationRelativeTo(buscador);
         jdFacturaVenta.getCbCliente().addItem(presupuesto.getCliente());
         jdFacturaVenta.getCbSucursal().addItem(presupuesto.getSucursal());
-        jdFacturaVenta.getCbListaPrecio().addItem(presupuesto.getListaPrecios());  //<---
-//      jdFacturaVenta.getCbUsuario().addItem(presupuesto.getUsuario());           //<---
+        jdFacturaVenta.getCbListaPrecio().addItem(presupuesto.getListaPrecios());
+        jdFacturaVenta.getTfObservacion().setText(presupuesto.getObservacion());
         jdFacturaVenta.setDcFechaFactura(presupuesto.getFechaalta());
         for (Valores.FormaPago formaPago : Valores.FormaPago.getFormasDePago()) {
             if (formaPago.getId() == (presupuesto.getFormaPago())) {
@@ -324,7 +337,7 @@ public class PresupuestoController implements ActionListener {
             dtm.addRow(new Object[]{
                 iva.getIva(),
                 detalle.getProducto().getCodigo(),
-                detalle.getProducto(),
+                detalle.getProducto().getNombre(),
                 detalle.getCantidad(),
                 UTIL.PRECIO_CON_PUNTO.format(detalle.getPrecioUnitario()),
                 productoConIVA,

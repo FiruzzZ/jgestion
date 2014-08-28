@@ -1201,18 +1201,6 @@ public class FacturaVentaController {
                 + query);
         for (Object[] facturaVenta : l) {
             dtm.addRow(facturaVenta);
-            //            dtm.addRow(new Object[]{
-            //                facturaVenta.getId(), // <--- no es visible
-            //                JGestionUtils.getNumeracion(facturaVenta),
-            //                facturaVenta.getMovimientoInterno(),
-            //                facturaVenta.getCliente().getNombre(),
-            //                BigDecimal.valueOf(facturaVenta.getImporte()),
-            //                UTIL.DATE_FORMAT.format(facturaVenta.getFechaVenta()),
-            //                facturaVenta.getSucursal().getNombre(),
-            //                facturaVenta.getCaja().getNombre(),
-            //                facturaVenta.getUsuario().getNick(),
-            //                UTIL.TIMESTAMP_FORMAT.format(facturaVenta.getFechaalta())
-            //        });
         }
     }
 
@@ -1723,6 +1711,7 @@ public class FacturaVentaController {
         DefaultTableModel dtm = (DefaultTableModel) jdFactura.getjTable1().getModel();
         dtm.setRowCount(0);
         refreshResumen(jdFactura);
+        jdFactura.getTfObservacion().setText(null);
         selectedProducto = null;
         setInformacionDeProducto(jdFactura, selectedProducto);
         jdFactura.setLabelCodigoNoRegistradoVisible(false);
