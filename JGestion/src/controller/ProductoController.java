@@ -33,7 +33,6 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import jgestion.JGestionUtils;
 import jpa.controller.ProductoJpaController;
-import net.atlanticbb.tantlinger.shef.HTMLEditorPane;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -68,7 +67,6 @@ public class ProductoController implements ActionListener, KeyListener {
     private PanelBuscadorMovimientosPro panelito;
     private JDBuscador buscador;
     private PanelProductoListados panelProductoListados;
-    private HTMLEditorPane editor;
     private boolean permitirFiltroVacio;
     private ProductoJpaController jpaController;
 
@@ -199,17 +197,6 @@ public class ProductoController implements ActionListener, KeyListener {
                 fotoFile = null;
             }
         });
-        panel.getTaDescripcion().addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() >= 2) {
-                    JDialog jdDescripcionHTML = initHTMLEditorPane(
-                            panel.isConDescripcion() ? panel.getTaDescrip() : null);
-                    jdDescripcionHTML.setLocationRelativeTo(abm);
-                    jdDescripcionHTML.setVisible(true);
-                }
-            }
-        });
         panel.getBtnAddRubros().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -250,38 +237,6 @@ public class ProductoController implements ActionListener, KeyListener {
         abm.setLocationRelativeTo(contenedor);
         abm.setListener(this);
         abm.setVisible(true);
-    }
-
-    private JDialog initHTMLEditorPane(String str) {
-        if (editor == null) {
-            editor = new HTMLEditorPane();
-        }
-        editor.setText(str != null ? str : "");
-        final JDialog JDDescripcionHTML = new JDialog(abm, true);
-        JButton bAceptar = new JButton();
-        bAceptar.setIcon(new ImageIcon(getClass().getResource("/iconos/32px-Crystal_Clear_action_apply.png")));
-        bAceptar.setMnemonic('a');
-        bAceptar.setText("Aceptar");
-        bAceptar.setName("Aceptar");
-        JDDescripcionHTML.setTitle("Editor de Descripción del Producto");
-        JDDescripcionHTML.getContentPane().add(editor);
-        JDDescripcionHTML.add(bAceptar, BorderLayout.PAGE_END);
-        bAceptar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String descripcion = editor.getText();
-                if (descripcion.trim().length() != 0) {
-                    panel.getTaDescripcion().setText(descripcion);
-                    panel.setConDescripcion(true);
-                } else {
-                    panel.setConDescripcion(false);
-                    panel.getTaDescripcion().setText("<p style=\"margin-top: 0\"><p align=\"center\"><b>[Doble click para insertar una descripci&oacute;n]</b></p></p>");
-                }
-                JDDescripcionHTML.dispose();
-            }
-        });
-        JDDescripcionHTML.setSize(650, 400);
-        return JDDescripcionHTML;
     }
 
     private void cargarContenedorTabla(String nativeQuery) {
@@ -326,13 +281,7 @@ public class ProductoController implements ActionListener, KeyListener {
         if (producto.getPrecioVenta() != null) {
             panel.setTfPrecio(producto.getPrecioVenta().toString());
         }
-        if (producto.getDescripcion() != null) {
-            panel.setConDescripcion(true);
-            panel.getTaDescripcion().setText(producto.getDescripcion());
-        } else {
-            panel.setConDescripcion(false);
-            panel.getTaDescripcion().setText("<p style=\"margin-top: 0\"><p align=\"center\"><b>[Doble click para insertar una descripci&oacute;n]</b></p></p>");
-        }
+        panel.getTaDescripcion().setText(producto.getDescripcion());
         panel.setTfCostoCompra(producto.getCostoCompra().toString());
         panel.setDateUltimaCompra(producto.getUltimaCompra());
         if (producto.getFoto() != null) {
@@ -436,7 +385,7 @@ public class ProductoController implements ActionListener, KeyListener {
         }
 
         // NULLABLE'sssssssss
-        EL_OBJECT.setDescripcion((panel.isConDescripcion() ? panel.getTaDescrip() : null));
+        EL_OBJECT.setDescripcion((panel.getTaDescrip().trim().isEmpty() ? null : panel.getTaDescrip()));
         if (fotoFile != null) {
             //si se elijió algún archivo imagen ...
             EL_OBJECT.setFoto(UTIL.getBytesFromFile(fotoFile));
@@ -574,8 +523,7 @@ public class ProductoController implements ActionListener, KeyListener {
      * Busca un producto por su código
      *
      * @param codigoProducto
-     * @return a instance of Producto or <code>null</code> if Producto.codigo
-     * does not exist.
+     * @return a instance of Producto or <code>null</code> if Producto.codigo does not exist.
      */
     Producto findProductoByCodigo(String codigoProducto) {
         try {
@@ -595,14 +543,12 @@ public class ProductoController implements ActionListener, KeyListener {
     }
 
     /**
-     * Actualiza el costo de compra del producto, dependiendo de la
-     * valoricacionStock
+     * Actualiza el costo de compra del producto, dependiendo de la valoricacionStock
      *
      * @param producto
      * @param newPrecioUnitario
      * @param cantidad
-     * @param valoracionStock 1 = ULTIMA_COMPRA, 2 = ANTIGUO (o sea no cambia
-     * nada), 3 = PPP
+     * @param valoracionStock 1 = ULTIMA_COMPRA, 2 = ANTIGUO (o sea no cambia nada), 3 = PPP
      */
     void valorizarStock(Producto producto, BigDecimal newPrecioUnitario, int cantidad, int valoracionStock) {
         if (valoracionStock == ULTIMA_COMPRA) {
@@ -633,8 +579,7 @@ public class ProductoController implements ActionListener, KeyListener {
      * Actualiza el atributo stockActual de la entidad Producto según stock.
      *
      * @param producto al cual se le modificará el {@link Producto#stockactual}
-     * @param cantidad si es una Venta, DEBE pasarse un valor NEGATIVO (para
-     * restar);
+     * @param cantidad si es una Venta, DEBE pasarse un valor NEGATIVO (para restar);
      */
     public void updateStockActual(Producto producto, int cantidad) {
         LOG.debug("updateStockActual (General): " + producto.getNombre() + " = " + producto.getStockactual() + " + " + cantidad);
@@ -655,7 +600,6 @@ public class ProductoController implements ActionListener, KeyListener {
                     new String[]{"Sucursal", "Stock", "Último movi.", "Usuario"},
                     new int[]{50, 20, 70, 40});
 
-
         } catch (Exception ex) {
             LOG.error(ex.getLocalizedMessage(), ex);
         }
@@ -663,11 +607,11 @@ public class ProductoController implements ActionListener, KeyListener {
         DefaultTableModel dtm = jdStockGral.getDtm();
         for (Stock stock : stockList) {
             dtm.addRow(new Object[]{
-                        stock.getSucursal().getNombre(),
-                        stock.getStockSucu(),
-                        UTIL.TIMESTAMP_FORMAT.format(stock.getFechaCarga()),
-                        stock.getUsuario().getNick()
-                    });
+                stock.getSucursal().getNombre(),
+                stock.getStockSucu(),
+                UTIL.TIMESTAMP_FORMAT.format(stock.getFechaCarga()),
+                stock.getUsuario().getNick()
+            });
         }
         jdStockGral.setVisible(true);
 
@@ -860,19 +804,19 @@ public class ProductoController implements ActionListener, KeyListener {
             BigDecimal precioUnitario = (BigDecimal) o[5];
             total = total.add(precioUnitario);
             UTIL.getDtm(buscador.getjTable1()).addRow(new Object[]{
-                        o[0],
-                        o[1], //código
-                        o[2],
-                        o[3], //marca
-                        o[4], //cantidad
-                        precioUnitario,
-                        o[7],
-                        o[8].toString().replaceAll(" ", ""),
-                        o[9],
-                        UTIL.TIMESTAMP_FORMAT.format(((Date) o[6])),
-                        o[11],
-                        o[12]
-                    });
+                o[0],
+                o[1], //código
+                o[2],
+                o[3], //marca
+                o[4], //cantidad
+                precioUnitario,
+                o[7],
+                o[8].toString().replaceAll(" ", ""),
+                o[9],
+                UTIL.TIMESTAMP_FORMAT.format(((Date) o[6])),
+                o[11],
+                o[12]
+            });
         }
         buscador.getResumeItems().get("Total").setText(UTIL.DECIMAL_FORMAT.format(total));
     }
@@ -948,8 +892,7 @@ public class ProductoController implements ActionListener, KeyListener {
      * Retrieve a lightweigth List of Product (id, codigo, nombre, remunerativo)
      *
      * @param bienDeCambio
-     * @return a List of {@link Producto} or <tt>null</tt> if something goes
-     * wrong.
+     * @return a List of {@link Producto} or <tt>null</tt> if something goes wrong.
      */
     public List<Producto> findProductoToCombo(Boolean bienDeCambio) {
         try {
@@ -1034,7 +977,6 @@ public class ProductoController implements ActionListener, KeyListener {
         } else {
             query += " ORDER BY p.nombre";
 
-
         }
         cargarTablaProductosListado((List<Producto>) DAO.getNativeQueryResultList(query, Producto.class));
 
@@ -1047,12 +989,12 @@ public class ProductoController implements ActionListener, KeyListener {
         UTIL.limpiarDtm(buscador.getjTable1());
         for (Producto producto : listado) {
             buscador.getDtm().addRow(new Object[]{
-                        producto.getNombre(),
-                        producto.getCodigo(),
-                        producto.getMarca().getNombre(),
-                        producto.getRubro().getNombre(),
-                        (producto.getSubrubro() != null ? producto.getSubrubro() : null)
-                    });
+                producto.getNombre(),
+                producto.getCodigo(),
+                producto.getMarca().getNombre(),
+                producto.getRubro().getNombre(),
+                (producto.getSubrubro() != null ? producto.getSubrubro() : null)
+            });
         }
     }
 

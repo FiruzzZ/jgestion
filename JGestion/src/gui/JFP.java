@@ -215,15 +215,11 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenuItem16 = new javax.swing.JMenuItem();
         jMenuItem24 = new javax.swing.JMenuItem();
         jMenuItem65 = new javax.swing.JMenuItem();
-        jMenu13 = new javax.swing.JMenu();
-        jMenuItem33 = new javax.swing.JMenuItem();
         jMenu10 = new javax.swing.JMenu();
         jMenuItemCatalogoWeb = new javax.swing.JMenuItem();
         jMenuItemOfertas = new javax.swing.JMenuItem();
-        jMenu16 = new javax.swing.JMenu();
-        jMenuItem53 = new javax.swing.JMenuItem();
-        jMenuItem51 = new javax.swing.JMenuItem();
-        jMenuItem52 = new javax.swing.JMenuItem();
+        jMenu13 = new javax.swing.JMenu();
+        jMenuItem33 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -1201,20 +1197,11 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
         jMenuBar1.add(jMenu4);
 
-        jMenu13.setText("Ayuda");
-
-        jMenuItem33.setText("Sobre..");
-        jMenuItem33.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem33ActionPerformed(evt);
-            }
-        });
-        jMenu13.add(jMenuItem33);
-
-        jMenuBar1.add(jMenu13);
-
+        jMenu10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px_shoppingcar.png"))); // NOI18N
         jMenu10.setMnemonic('w');
         jMenu10.setText("WEB");
+        jMenu10.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jMenu10.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 
         jMenuItemCatalogoWeb.setText("Catálogo Web");
         jMenuItemCatalogoWeb.addActionListener(new java.awt.event.ActionListener() {
@@ -1235,31 +1222,17 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
         jMenuBar1.add(jMenu10);
 
-        jMenu16.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/gnome-panel-force-quit.png"))); // NOI18N
-        jMenu16.setText("WS-AFIP");
-        jMenu16.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jMenu16.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jMenu13.setText("Ayuda");
 
-        jMenuItem53.setText("Certificación");
-        jMenuItem53.addActionListener(new java.awt.event.ActionListener() {
+        jMenuItem33.setText("Sobre..");
+        jMenuItem33.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem53ActionPerformed(evt);
+                jMenuItem33ActionPerformed(evt);
             }
         });
-        jMenu16.add(jMenuItem53);
+        jMenu13.add(jMenuItem33);
 
-        jMenuItem51.setText("Facturación Electrónica (FE)");
-        jMenuItem51.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem51ActionPerformed(evt);
-            }
-        });
-        jMenu16.add(jMenuItem51);
-
-        jMenuItem52.setText("Preexistente");
-        jMenu16.add(jMenuItem52);
-
-        jMenuBar1.add(jMenu16);
+        jMenuBar1.add(jMenu13);
 
         setJMenuBar(jMenuBar1);
 
@@ -1271,7 +1244,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jDesktopPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 381, Short.MAX_VALUE)
+            .addComponent(jDesktopPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 436, Short.MAX_VALUE)
         );
 
         pack();
@@ -1675,29 +1648,6 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         new CuentaController().initContenedor((JFrame) this);
     }//GEN-LAST:event_menuIitemCuentasActionPerformed
 
-    private void jMenuItem51ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem51ActionPerformed
-        try {
-            JDialog initFE = new AFIPWSController().initFE((JFrame) this);
-            initFE.setLocationRelativeTo(this);
-            initFE.setVisible(true);
-            //        } catch (ParserConfigurationException ex) {
-            //            java.util.logging.Logger.getLogger(JFP.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-            //        } catch (SAXException ex) {
-            //            java.util.logging.Logger.getLogger(JFP.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-            //        } catch (IOException ex) {
-            //            java.util.logging.Logger.getLogger(JFP.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error de conexión con AFIP Web Service", JOptionPane.ERROR_MESSAGE);
-            Logger.getLogger(JFP.class).error(ex, ex);
-        }
-    }//GEN-LAST:event_jMenuItem51ActionPerformed
-
-    private void jMenuItem53ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem53ActionPerformed
-        JDialog initWSAA = AFIPWSController.initWSAA((JFrame) this);
-        initWSAA.setLocationRelativeTo(this);
-        initWSAA.setVisible(true);
-    }//GEN-LAST:event_jMenuItem53ActionPerformed
-
 private void jMenuItem45ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem45ActionPerformed
     new ClienteController().initClienteToProveedor((JFrame) this).setVisible(true);
 }//GEN-LAST:event_jMenuItem45ActionPerformed
@@ -2012,7 +1962,6 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenu jMenu13;
     private javax.swing.JMenu jMenu14;
     private javax.swing.JMenu jMenu15;
-    private javax.swing.JMenu jMenu16;
     private javax.swing.JMenu jMenu17;
     private javax.swing.JMenu jMenu18;
     private javax.swing.JMenu jMenu19;
@@ -2081,9 +2030,6 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenuItem jMenuItem49;
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem50;
-    private javax.swing.JMenuItem jMenuItem51;
-    private javax.swing.JMenuItem jMenuItem52;
-    private javax.swing.JMenuItem jMenuItem53;
     private javax.swing.JMenuItem jMenuItem54;
     private javax.swing.JMenuItem jMenuItem55;
     private javax.swing.JMenuItem jMenuItem56;
