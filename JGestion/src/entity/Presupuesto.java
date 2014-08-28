@@ -26,8 +26,8 @@ import javax.persistence.UniqueConstraint;
  */
 @Entity
 @Table(name = "presupuesto",
-uniqueConstraints =
-@UniqueConstraint(columnNames = {"numero, sucursal"}))
+        uniqueConstraints
+        = @UniqueConstraint(columnNames = {"numero, sucursal"}))
 @NamedQueries({
     @NamedQuery(name = "Presupuesto.findAll", query = "SELECT p FROM Presupuesto p"),
     @NamedQuery(name = "Presupuesto.findById", query = "SELECT p FROM Presupuesto p WHERE p.id = :id")
@@ -78,6 +78,8 @@ public class Presupuesto implements Serializable {
     private Usuario usuario;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "presupuesto", orphanRemoval = true)
     private List<DetallePresupuesto> detallePresupuestoList;
+    @Column(length = 100)
+    private String observacion;
 
     public Presupuesto() {
     }
@@ -196,6 +198,14 @@ public class Presupuesto implements Serializable {
 
     public void setDetallePresupuestoList(List<DetallePresupuesto> detallePresupuestoList) {
         this.detallePresupuestoList = detallePresupuestoList;
+    }
+
+    public String getObservacion() {
+        return observacion;
+    }
+
+    public void setObservacion(String observacion) {
+        this.observacion = observacion;
     }
 
     @Override

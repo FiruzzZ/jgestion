@@ -1,3 +1,5 @@
+--20140825
+ALTER TABLE presupuesto ADD COLUMN observacion varchar(250);
 --20131127
 ALTER TABLE cheque_propio ADD COLUMN estadoprevio INTEGER;
 --20131121
