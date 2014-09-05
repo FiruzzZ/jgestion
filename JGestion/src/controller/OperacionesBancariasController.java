@@ -157,7 +157,7 @@ public class OperacionesBancariasController {
             idQuery = "o.id <> " + o.getId() + " AND ";
         }
 
-        if (!jpaController.findByQuery("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o "
+        if (!jpaController.findAll("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o "
                 + " WHERE " + idQuery + " o.nombre='" + o.getNombre() + "'").isEmpty()) {
             throw new MessageException("Ya existe un registro con el nombre \"" + o.getNombre() + "\"");
         }

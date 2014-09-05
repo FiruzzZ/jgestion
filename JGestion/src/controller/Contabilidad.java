@@ -171,8 +171,8 @@ public class Contabilidad {
     }
 
     /**
-     * Create Native SQL Statement to retrieve entities
-     * {@link DetalleCajaMovimientos#tipo} != 7 (aperturas de caja)
+     * Create Native SQL Statement to retrieve entities {@link DetalleCajaMovimientos#tipo} != 7
+     * (aperturas de caja)
      *
      * @return a String with SQL
      */
@@ -240,8 +240,7 @@ public class Contabilidad {
     }
 
     /**
-     * UI para ver los registros de venta (Facturas [Contado, Cta. Cte.]), Mov.
-     * internos, etc..
+     * UI para ver los registros de venta (Facturas [Contado, Cta. Cte.]), Mov. internos, etc..
      *
      * @param parent papi frame
      * @throws MessageException end user message information
@@ -530,11 +529,11 @@ public class Contabilidad {
     }
 
     /**
-     * Calcula el precio final del producto con o sin IVA, teniendo en cuenta el
-     * margen segun la lista de precios.
+     * Calcula el precio final del producto con o sin IVA, teniendo en cuenta el margen segun la
+     * lista de precios.
      *
-     * @param producto Del cual se obtendrá el {@code producto.getPrecioVenta()}
-     * y {@linkplain Producto#getIva()}
+     * @param producto Del cual se obtendrá el {@code producto.getPrecioVenta()} y
+     * {@linkplain Producto#getIva()}
      * @param listaPrecios
      * @param incluirIVA
      * @return precioFinal incluido IVA
@@ -601,16 +600,13 @@ public class Contabilidad {
     }
 
     /**
-     * Calcula el margen de ganancia sobre el monto según la
-     * {@link ListaPrecios} seleccionada.
+     * Calcula el margen de ganancia sobre el monto según la {@link ListaPrecios} seleccionada.
      *
      * @param listaPrecios
-     * @param producto {@link Producto} del cual se tomarán los {@link Rubro} y
-     * Sub para determinar el margen de ganancia if
-     * {@link ListaPrecios#margenGeneral} == FALSE.
-     * @param monto sobre el cual se va calcular el margen (suele incluir el
-     * margen individual de ganancia de cada producto). Si es == null, se
-     * utilizará {@link Producto#precioVenta}
+     * @param producto {@link Producto} del cual se tomarán los {@link Rubro} y Sub para determinar
+     * el margen de ganancia if {@link ListaPrecios#margenGeneral} == FALSE.
+     * @param monto sobre el cual se va calcular el margen (suele incluir el margen individual de
+     * ganancia de cada producto). Si es == null, se utilizará {@link Producto#precioVenta}
      * @return margen de ganancia (NO INCLUYE EL MONTO).
      */
     public static Double GET_MARGEN_SEGUN_LISTAPRECIOS(ListaPrecios listaPrecios, Producto producto, Double monto) {
@@ -653,10 +649,10 @@ public class Contabilidad {
     }
 
     /**
-     * Retorna el estado del cheque como String. <br>1 = ENTREGADO (estado
-     * exclusivo de {@link ChequePropio}). <br>2 = CARTERA (estado exclusivo de
-     * {@link ChequeTerceros}). <br>3 = DEPOSTADO. <br>4 = CAJA (cheque que se
-     * convirtió en efectivo y se asentó en alguna caja) <br>5 = RECHAZADO.
+     * Retorna el estado del cheque como String. <br>1 = ENTREGADO (estado exclusivo de
+     * {@link ChequePropio}). <br>2 = CARTERA (estado exclusivo de {@link ChequeTerceros}). <br>3 =
+     * DEPOSTADO. <br>4 = CAJA (cheque que se convirtió en efectivo y se asentó en alguna caja)
+     * <br>5 = RECHAZADO.
      *
      * @param estadoID
      * @return String que representa el estado.
@@ -1215,20 +1211,28 @@ public class Contabilidad {
         buscador.setVisible(true);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "unchecked"})
     private String armarQueryProductosCostoVenta() {
         StringBuilder sb = new StringBuilder(
-                "SELECT fv.id, fv.cliente.nombre, CONCAT(fv.tipo, SUBSTRING(CONCAT(10000+fv.sucursal.puntoVenta,''), 2), '-', SUBSTRING(CONCAT(100000000+fv.numero,''),2)), fv.fechaVenta, CONCAT(v.apellido,' ', v.nombre), p.nombre, p.rubro.nombre, sr.nombre, p.marca.nombre, dv.costoCompra, dv.precioUnitario, dv.precioUnitario - dv.costoCompra, dv.cantidad, (dv.cantidad * (dv.precioUnitario - dv.costoCompra))"
-                + " FROM " + FacturaVenta.class.getSimpleName() + " fv JOIN fv.detallesVentaList dv JOIN dv.producto p LEFT JOIN p.subrubro sr LEFT JOIN fv.vendedor v"
+                "SELECT fv.id, fv.cliente.nombre,"
+                + " CONCAT(fv.tipo, SUBSTRING(CONCAT(10000+fv.sucursal.puntoVenta,''), 2), '-', SUBSTRING(CONCAT(100000000+fv.numero,''),2)), "
+                + "fv.fechaVenta, CONCAT(v.apellido,' ', v.nombre), p.nombre, p.rubro.nombre, sr.nombre,"
+                + " p.marca.nombre, dv.costoCompra, dv.precioUnitario, dv.precioUnitario - dv.costoCompra,"
+                + " dv.cantidad, (dv.cantidad * (dv.precioUnitario - dv.costoCompra))"
+                + " FROM " + FacturaVenta.class.getSimpleName() + " fv"
+                + " JOIN fv.detallesVentaList dv"
+                + " JOIN dv.producto p"
+                + " LEFT JOIN p.subrubro sr"
+                + " LEFT JOIN fv.vendedor v"
                 + " WHERE fv.id IS NOT NULL");
         if (panelito.getCbMarcas().getSelectedIndex() > 0) {
             sb.append(" AND p.marca.id = ").append(((ComboBoxWrapper<Marca>) panelito.getCbMarcas().getSelectedItem()).getId());
         }
         if (panelito.getCbRubros().getSelectedIndex() > 0) {
-            sb.append(" AND p.rubro.id = ").append(((ComboBoxWrapper<Rubro>) panelito.getCbRubros().getSelectedItem()).getId());
+            sb.append(" AND p.").append(Producto_.rubro.getName()).append(".id = ").append(((ComboBoxWrapper<Rubro>) panelito.getCbRubros().getSelectedItem()).getId());
         }
         if (panelito.getCbSubRubros().getSelectedIndex() > 0) {
-            sb.append(" AND p.subrubro.id = ").append(((ComboBoxWrapper<Rubro>) panelito.getCbSubRubros().getSelectedItem()).getId());
+            sb.append(" AND p.").append(Producto_.subrubro.getName()).append(".id = ").append(((ComboBoxWrapper<Rubro>) panelito.getCbSubRubros().getSelectedItem()).getId());
         }
         if (panelito.getCbClientes().getSelectedIndex() > 0) {
             sb.append(" AND fv.cliente.id = ").append(((ComboBoxWrapper<Sucursal>) panelito.getCbClientes().getSelectedItem()).getId());

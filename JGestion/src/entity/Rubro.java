@@ -22,7 +22,7 @@ import javax.persistence.UniqueConstraint;
 })
 @NamedQueries({
     @NamedQuery(name = "Rubro.findAll", query = "SELECT r FROM Rubro r"),
-    @NamedQuery(name = "Rubro.findByIdrubro", query = "SELECT r FROM Rubro r WHERE r.idrubro = :idrubro"),
+    @NamedQuery(name = "Rubro.findById", query = "SELECT r FROM Rubro r WHERE r.id = :id"),
     @NamedQuery(name = "Rubro.findByCodigo", query = "SELECT r FROM Rubro r WHERE r.codigo = :codigo"),
     @NamedQuery(name = "Rubro.findByNombre", query = "SELECT r FROM Rubro r WHERE r.nombre = :nombre"),
     @NamedQuery(name = "Rubro.findByTipo", query = "SELECT r FROM Rubro r WHERE r.tipo = :tipo ORDER BY r.nombre")
@@ -34,7 +34,7 @@ public class Rubro implements Serializable {
     @Basic(optional = false)
     @Column(name = "idrubro", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idrubro;
+    private Integer id;
     @Column(name = "codigo", length = 50)
     private String codigo;
     @Basic(optional = false)
@@ -47,22 +47,22 @@ public class Rubro implements Serializable {
     public Rubro() {
     }
 
-    public Rubro(Integer idrubro) {
-        this.idrubro = idrubro;
+    public Rubro(Integer id) {
+        this.id = id;
     }
 
     public Rubro(Integer idrubro, String nombre, short tipo) {
-        this.idrubro = idrubro;
+        this.id = idrubro;
         this.nombre = nombre;
         this.tipo = tipo;
     }
 
-    public Integer getIdrubro() {
-        return idrubro;
+    public Integer getId() {
+        return id;
     }
 
-    public void setIdrubro(Integer idrubro) {
-        this.idrubro = idrubro;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getCodigo() {
@@ -104,7 +104,7 @@ public class Rubro implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (idrubro != null ? idrubro.hashCode() : 0);
+        hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
@@ -115,7 +115,7 @@ public class Rubro implements Serializable {
             return false;
         }
         Rubro other = (Rubro) object;
-        if ((this.idrubro == null && other.idrubro != null) || (this.idrubro != null && !this.idrubro.equals(other.idrubro))) {
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
         return true;

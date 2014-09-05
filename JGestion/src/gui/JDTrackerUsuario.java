@@ -165,7 +165,7 @@ public class JDTrackerUsuario extends javax.swing.JDialog {
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
         String query = armarQuery();
-        List<UsuarioAcciones> l = new UsuarioAccionesJpaController().findByQuery(query);
+        List<UsuarioAcciones> l = new UsuarioAccionesJpaController().findAll(query);
         cargarTabla(l);
     }//GEN-LAST:event_btnBuscarActionPerformed
 

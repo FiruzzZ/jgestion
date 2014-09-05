@@ -120,7 +120,7 @@ public class JGestionUtils {
     public static List<ComboBoxWrapper<Rubro>> getWrappedRubros(List<Rubro> list) {
         List<ComboBoxWrapper<Rubro>> l = new ArrayList<>(list.size());
         for (Rubro o : list) {
-            l.add(new ComboBoxWrapper<>(o, o.getIdrubro(), o.getNombre()));
+            l.add(new ComboBoxWrapper<>(o, o.getId(), o.getNombre()));
         }
         return l;
     }

@@ -157,7 +157,7 @@ public class DominioController implements ActionListener {
     }
 
     private void save(Dominio o) throws MessageException {
-        if (!jpaController.findByQuery("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o WHERE "
+        if (!jpaController.findAll("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o WHERE "
                 + " o.nombre ='" + o.getNombre() + "'"
                 + (o.getId() != null ? " AND o.id <>" + o.getId() : "")).isEmpty()) {
             throw new MessageException("Ya existe un registro con este nombre");

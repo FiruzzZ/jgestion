@@ -347,7 +347,7 @@ public class ListaPreciosController implements ActionListener, MouseListener, Ke
          }
          for (DetalleListaPrecios detalleListaPrecios : detalleListaPreciosList) {
             dtmRubrosAfectados.addRow(new Object[]{
-                       detalleListaPrecios.getRubro().getIdrubro(),
+                       detalleListaPrecios.getRubro().getId(),
                        detalleListaPrecios.getRubro(),
                        detalleListaPrecios.getMargen(),});
          }
@@ -372,7 +372,7 @@ public class ListaPreciosController implements ActionListener, MouseListener, Ke
          }
          if (cargarRubroATabla) {
             dtmRubros.addRow(new Object[]{
-                       rubro.getIdrubro(),
+                       rubro.getId(),
                        rubro
                     });
          }
@@ -393,7 +393,7 @@ public class ListaPreciosController implements ActionListener, MouseListener, Ke
          DefaultTableModel dtmRubrosAfectados = panel.getDTMAfectados();
          Rubro rubro = (Rubro) panel.getSelectedRubro();
          dtmRubrosAfectados.addRow(new Object[]{
-                    rubro.getIdrubro(),
+                    rubro.getId(),
                     rubro,
                     panel.getTfMargenPorRubro()
                  });

@@ -1981,7 +1981,7 @@ public class FacturaVentaController {
     private void cargarTablaBuscadorAsignacion(String query) {
         DefaultTableModel dtm = (DefaultTableModel) buscador.getjTable1().getModel();
         dtm.setRowCount(0);
-        List<FacturaVenta> l = jpaController.findByQuery("SELECT o " + query);
+        List<FacturaVenta> l = jpaController.findAll("SELECT o " + query);
         for (FacturaVenta facturaVenta : l) {
             dtm.addRow(new Object[]{
                 facturaVenta.getId(), // <--- no es visible

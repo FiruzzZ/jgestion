@@ -109,6 +109,15 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
     }
 
     @Override
+    public T findByQuery(String query) {
+        try {
+            return (T) getEntityManager().createQuery(query).getSingleResult();
+        } finally {
+            closeEntityManager();
+        }
+    }
+
+    @Override
     public List<T> findByNamedQuery(String queryName, Object... params) {
         TypedQuery<T> query = getEntityManager().createNamedQuery(queryName, entityClass);
         for (int i = 0; i < params.length; i++) {
@@ -187,7 +196,7 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
      * @return a list of the results
      */
     @Override
-    public List<T> findByQuery(String qlString) {
+    public List<T> findAll(String qlString) {
         TypedQuery<T> typedQuery = getEntityManager().createQuery(qlString, entityClass);
         typedQuery.setHint(QueryHints.REFRESH, Boolean.TRUE);
         return typedQuery.getResultList();

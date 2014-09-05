@@ -72,7 +72,7 @@ public class VendedorController implements ActionListener {
         if (query == null) {
             l = jpaController.findAll();
         } else {
-            l = jpaController.findByQuery(query);
+            l = jpaController.findAll(query);
         }
 
         for (Vendedor o : l) {
