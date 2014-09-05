@@ -995,7 +995,7 @@ public class ChequeTercerosController implements ActionListener {
                 query += " AND o.id <> " + c.getId();
             }
         }
-        List<ChequeTerceros> l = jpaController.findByQuery(query);
+        List<ChequeTerceros> l = jpaController.findAll(query);
         dtm = (DefaultTableModel) panelEntregaTerceros.getTableDisponibles().getModel();
         dtm.setRowCount(0);
         for (ChequeTerceros c : l) {

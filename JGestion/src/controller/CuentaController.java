@@ -45,7 +45,7 @@ public class CuentaController {
         } catch (EntityNotFoundException enfe) {
             throw new NonexistentEntityException("No existe el registro.", enfe);
         }
-        if (!jpaController.findByQuery("SELECT o.id FROM " + DetalleCajaMovimientos.class.getSimpleName() + " o WHERE o.cuenta.id=" + cuenta.getId()).isEmpty()) {
+        if (!jpaController.findAll("SELECT o.id FROM " + DetalleCajaMovimientos.class.getSimpleName() + " o WHERE o.cuenta.id=" + cuenta.getId()).isEmpty()) {
             lis = new ArrayList<String>(1);
             lis.add("No se puede eliminar el registro " + jpaController.getEntityClass().getSimpleName() + " porque está relacionado a otro/s registro/s.");
             throw new IllegalOrphanException(lis);
@@ -139,7 +139,7 @@ public class CuentaController {
         if (query == null || query.isEmpty()) {
             query = "";
         }
-        List<Cuenta> l = jpaController.findByQuery("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o WHERE o.id > 1 AND o.nombre LIKE '%" + query + "%' ORDER BY o.nombre");
+        List<Cuenta> l = jpaController.findAll("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o WHERE o.id > 1 AND o.nombre LIKE '%" + query + "%' ORDER BY o.nombre");
         for (Cuenta o : l) {
             dtm.addRow(new Object[]{o.getId(), o.getNombre(), o.isIngreso()});
         }

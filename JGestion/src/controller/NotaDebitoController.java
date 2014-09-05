@@ -289,7 +289,7 @@ public class NotaDebitoController {
     }
 
     private void checkConstraints() throws MessageException {
-        if (abm.getDcFechaFactura() == null) {
+        if (abm.getDcFechaFactura().getDate() == null) {
             throw new MessageException("Fecha de comprobante no válida");
         }
         if (abm.getTfObservacion().getText().trim().length() > 100) {
@@ -381,7 +381,7 @@ public class NotaDebitoController {
     private void cargarTablaBuscador(String query) {
         DefaultTableModel dtm = (DefaultTableModel) buscador.getjTable1().getModel();
         dtm.setRowCount(0);
-        List<NotaDebito> l = jpaController.findByQuery(query);
+        List<NotaDebito> l = jpaController.findAll(query);
         for (NotaDebito notaDebito : l) {
             CtacteCliente ccc = new CtacteClienteController().findByNotaDebito(notaDebito.getId());
             dtm.addRow(new Object[]{

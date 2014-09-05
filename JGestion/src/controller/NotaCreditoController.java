@@ -546,7 +546,7 @@ public class NotaCreditoController {
      * @return chocolate..
      */
     List<NotaCredito> findNotaCreditoAcreditables(Cliente cliente) {
-        return jpaController.findByQuery("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o WHERE o.importe <> o.desacreditado AND o.anulada = FALSE AND o.cliente.id=" + cliente.getId());
+        return jpaController.findAll("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o WHERE o.importe <> o.desacreditado AND o.anulada = FALSE AND o.cliente.id=" + cliente.getId());
     }
 
     Integer getNextNumero(Sucursal s) {

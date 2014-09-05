@@ -457,7 +457,7 @@ public class NotaCreditoProveedorController implements ActionListener {
         buscador.dtmRemoveAll();
         DefaultTableModel dtm = buscador.getDtm();
         @SuppressWarnings("unchecked")
-        List<NotaCreditoProveedor> l = jpaController.findByQuery(query);
+        List<NotaCreditoProveedor> l = jpaController.findAll(query);
         for (NotaCreditoProveedor facturaCompra : l) {
             dtm.addRow(new Object[]{
                 facturaCompra.getId(),

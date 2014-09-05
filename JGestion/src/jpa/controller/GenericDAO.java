@@ -4,10 +4,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This class define the most common methods used when you works with JPA (like
- * CRUD's methods, find a particular instance, retriving by a JPA, Native or
- * Named query. Relating all methods to the entity type specified by the
- * generic.
+ * This class define the most common methods used when you works with JPA (like CRUD's methods, find
+ * a particular instance, retriving by a JPA, Native or Named query. Relating all methods to the
+ * entity type specified by the generic.
  *
  * @param <T> the entity type
  * @param <ID> the primary key type
@@ -40,13 +39,21 @@ public interface GenericDAO<T, ID> {
      */
     List<T> findAll();
 
+    /**
+     * Find using a JPA Query
+     *
+     * @param query a Java Persistence query string
+     * @return a list of instances.
+     */
+    List<T> findAll(String query);
+
     List<T> findRange(int first, int max);
 
     int count();
 
     /**
-     * Find using a named query. The parameters are added in order as they was
-     * declared on the namedQuery.
+     * Find using a named query. The parameters are added in order as they was declared on the
+     * namedQuery.
      *
      * @param queryName the name of the query
      * @param params the query parameters
@@ -73,7 +80,7 @@ public interface GenericDAO<T, ID> {
      * Find using a JPA Query
      *
      * @param query a Java Persistence query string
-     * @return a list of instances.
+     * @return a instances.
      */
-    List<T> findByQuery(String query);
+    T findByQuery(String query);
 }

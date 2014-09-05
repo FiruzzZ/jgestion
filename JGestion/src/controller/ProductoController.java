@@ -965,11 +965,11 @@ public class ProductoController implements ActionListener, KeyListener {
         }
 
         if (panelProductoListados.getCbRubros().getSelectedIndex() > 0) {
-            query += " AND p.rubro = " + ((Rubro) panelProductoListados.getCbRubros().getSelectedItem()).getIdrubro();
+            query += " AND p.rubro = " + ((Rubro) panelProductoListados.getCbRubros().getSelectedItem()).getId();
         }
 
         if (panelProductoListados.getCbSubRubros().getSelectedIndex() > 0) {
-            query += " AND p.subrubro = " + ((Rubro) panelProductoListados.getCbSubRubros().getSelectedItem()).getIdrubro();
+            query += " AND p.subrubro = " + ((Rubro) panelProductoListados.getCbSubRubros().getSelectedItem()).getId();
         }
 
         if (panelProductoListados.getCheckOrdenarPorFechaCreacion().isSelected()) {

@@ -212,7 +212,7 @@ public class CuentabancariaController {
 
     private void checkConstraints(CuentaBancaria o) throws MessageException {
         String idquery = o.getId() != null ? "o.id <>" + o.getId() + " AND " : "";
-        if (!jpaController.findByQuery("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o "
+        if (!jpaController.findAll("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o "
                 + "WHERE " + idquery + " o.banco.id=" + o.getBanco().getId() + " AND o.numero='" + o.getNumero() + "'").isEmpty()) {
             throw new MessageException("Ya existe un registro del Banco " + o.getBanco().getNombre() + " con el N° " + o.getNumero());
         }

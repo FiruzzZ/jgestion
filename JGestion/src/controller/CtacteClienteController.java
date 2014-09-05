@@ -98,11 +98,11 @@ public class CtacteClienteController implements ActionListener {
     }
 
     List<CtacteCliente> findByCliente(Cliente cliente, short estadoCtaCte) {
-        List<CtacteCliente> facturaVentaList = jpaController.findByQuery(
+        List<CtacteCliente> facturaVentaList = jpaController.findAll(
                 "SELECT o FROM " + CtacteCliente.class.getSimpleName() + " o"
                 + " WHERE o.estado = " + estadoCtaCte + " AND o.factura.cliente.id =" + cliente.getId()
                 + " ORDER BY o.factura.sucursal.puntoVenta, o.factura.numero");
-        List<CtacteCliente> notaDebitoList = jpaController.findByQuery(
+        List<CtacteCliente> notaDebitoList = jpaController.findAll(
                 "SELECT o FROM " + CtacteCliente.class.getSimpleName() + " o"
                 + " WHERE o.estado = " + estadoCtaCte + " AND o.notaDebito.cliente.id =" + cliente.getId()
                 + " ORDER BY o.notaDebito.sucursal.puntoVenta, o.notaDebito.numero");
@@ -120,7 +120,7 @@ public class CtacteClienteController implements ActionListener {
      */
     List<Object[]> findSaldos(Date desde, Date hasta) {
         List<CtacteCliente> l;
-        l = jpaController.findByQuery(
+        l = jpaController.findAll(
                 "SELECT o FROM " + CtacteCliente.class.getSimpleName() + " o"
                 + " WHERE o.factura.anulada = FALSE AND o.estado = 1"
                 + (desde != null ? " AND o.factura.fechaVenta >='" + UTIL.DATE_FORMAT.format(desde) + "'" : "")

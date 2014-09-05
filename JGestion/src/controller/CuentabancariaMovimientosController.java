@@ -58,7 +58,7 @@ public class CuentabancariaMovimientosController {
                     manager.getTfSaldoTotal().setText(null);
                 }
                 String jpql = armarQuery();
-                List<CuentabancariaMovimientos> l = jpaController.findByQuery(jpql);
+                List<CuentabancariaMovimientos> l = jpaController.findAll(jpql);
                 cargarManagerTable(l);
             }
         });
@@ -502,7 +502,7 @@ public class CuentabancariaMovimientosController {
                             .append("  AND '").append(UTIL.yyyy_MM_dd.format(jd.getDcHasta().getDate())).append("'");
                     query.append(" ORDER BY o.").append(CuentabancariaMovimientos_.fechaCreditoDebito.getName()).append(" DESC");
                     LOG.debug(query.toString());
-                    List<CuentabancariaMovimientos> l = jpaController.findByQuery(query.toString());
+                    List<CuentabancariaMovimientos> l = jpaController.findAll(query.toString());
                     DefaultTableModel dtm = (DefaultTableModel) jd.getjTableMovimientos().getModel();
                     dtm.setRowCount(0);
                     BigDecimal saldo = BigDecimal.ZERO.setScale(2, RoundingMode.HALF_EVEN);

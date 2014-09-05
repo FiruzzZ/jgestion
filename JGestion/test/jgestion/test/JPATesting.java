@@ -50,7 +50,7 @@ public class JPATesting {
 
     @SuppressWarnings("unchecked")
     public JPATesting() throws Exception {
-        List<Recibo> conci = new ReciboJpaController().findByQuery("SELECT o FROM Recibo o where o.porConciliar = true ");
+        List<Recibo> conci = new ReciboJpaController().findAll("SELECT o FROM Recibo o where o.porConciliar = true ");
         for (Recibo r : conci) {
             System.out.println(JGestionUtils.getNumeracion(r, true));
 //            new ReciboController().loadPagos(r);

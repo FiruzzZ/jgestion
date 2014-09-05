@@ -189,7 +189,7 @@ public class DocumentoComercialController {
         if (query == null || query.isEmpty()) {
             query = "";
         }
-        List<DocumentoComercial> l = jpaController.findByQuery("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o WHERE o.id > 1 AND o.nombre LIKE '%" + query + "%' ORDER BY o.nombre");
+        List<DocumentoComercial> l = jpaController.findAll("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o WHERE o.id > 1 AND o.nombre LIKE '%" + query + "%' ORDER BY o.nombre");
         for (DocumentoComercial o : l) {
             dtm.addRow(new Object[]{o.getId(), o.getNombre()});
         }

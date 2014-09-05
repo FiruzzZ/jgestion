@@ -277,7 +277,7 @@ public class PresupuestoController implements ActionListener {
     private void cargarDtmBuscador(String query) {
         buscador.dtmRemoveAll();
         DefaultTableModel dtm = buscador.getDtm();
-        List<Presupuesto> l = jpaController.findByQuery(query);
+        List<Presupuesto> l = jpaController.findAll(query);
         for (Presupuesto presupuesto : l) {
             dtm.addRow(new Object[]{
                 presupuesto.getId(), // <--- no es visible

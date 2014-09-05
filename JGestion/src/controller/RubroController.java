@@ -69,7 +69,7 @@ public class RubroController implements ActionListener, MouseListener {
             //ctrl de Existencia.......
             try {
                 rubro = em.getReference(Rubro.class, id);
-                rubro.getIdrubro();
+                rubro.getId();
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The rubro with id " + id + " no longer exists.", enfe);
             }
@@ -117,8 +117,8 @@ public class RubroController implements ActionListener, MouseListener {
 
     private void checkConstraints(Rubro rubro) throws MessageException, Exception {
         String idQuery = "";
-        if (rubro.getIdrubro() != null) {
-            idQuery = "o.idrubro!=" + rubro.getIdrubro() + " AND ";
+        if (rubro.getId() != null) {
+            idQuery = "o.id!=" + rubro.getId() + " AND ";
         }
         try {
             DAO.getEntityManager().createNativeQuery("SELECT * FROM " + CLASS_NAME + " o "
@@ -136,7 +136,7 @@ public class RubroController implements ActionListener, MouseListener {
         }
 
         //persistiendo......
-        if (rubro.getIdrubro() == null) {
+        if (rubro.getId() == null) {
             create(rubro);
         } else {
             edit(rubro);
@@ -267,7 +267,7 @@ public class RubroController implements ActionListener, MouseListener {
         }
         for (Rubro o : l) {
             dtm.addRow(new Object[]{
-                        o.getIdrubro(),
+                        o.getId(),
                         o.getNombre(),
                         o.getCodigo()
                     });
@@ -287,7 +287,7 @@ public class RubroController implements ActionListener, MouseListener {
         if (rubro == null) {
             throw new MessageException("No hay " + CLASS_NAME + " seleccionado");
         }
-        destroy(rubro.getIdrubro());
+        destroy(rubro.getId());
     }
 
     private int getListDeForeignKeys(int idRubro) {

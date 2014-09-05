@@ -189,7 +189,7 @@ public class SubCuentaController {
         if (query == null || query.isEmpty()) {
             query = "";
         }
-        List<SubCuenta> l = jpaController.findByQuery("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o WHERE o.nombre LIKE '%" + query + "%' ORDER BY o.nombre, o.cuenta.nombre");
+        List<SubCuenta> l = jpaController.findAll("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o WHERE o.nombre LIKE '%" + query + "%' ORDER BY o.nombre, o.cuenta.nombre");
         for (SubCuenta o : l) {
             dtm.addRow(new Object[]{o.getId(), o.getCuenta().getNombre(), o.getNombre()});
         }
@@ -200,7 +200,7 @@ public class SubCuentaController {
         if (o.getId() != null) {
             idQuery = "o.id <> " + o.getId() + " AND ";
         }
-        if (!jpaController.findByQuery("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o "
+        if (!jpaController.findAll("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o "
                 + " WHERE " + idQuery + " UPPER(o.nombre)='" + o.getNombre().toUpperCase() + "' AND o.cuenta.id=" + o.getCuenta().getId()).isEmpty()) {
             throw new MessageException("Ya existe una " + jpaController.getEntityClass().getSimpleName() + " con el nombre \"" + o.getNombre() + "\" en la Cuenta: " + o.getCuenta().getNombre());
         }

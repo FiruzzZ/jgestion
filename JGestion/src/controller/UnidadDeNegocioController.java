@@ -166,7 +166,7 @@ public class UnidadDeNegocioController {
         if (o.getId() != null) {
             idQuery = "o.id <> " + o.getId() + " AND ";
         }
-        if (!jpaController.findByQuery("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o"
+        if (!jpaController.findAll("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o"
                 + " WHERE " + idQuery + " UPPER(o.nombre)='" + o.getNombre().toUpperCase() + "'").isEmpty()) {
             throw new MessageException("Ya existe una Unidad de Negocio con este nombre");
         }
