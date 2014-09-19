@@ -479,7 +479,7 @@ public class ChequeTercerosController implements ActionListener {
     /**
      * Inicializa la vista encargada de administrar cheques (Propios o Terceros)
      *
-     * @param owner JFrame padre.
+     * @param owner papi.
      * @return una instancia de {@link JDChequesManager}.
      * @throws MessageException
      */

@@ -302,7 +302,7 @@ public class RemesaController implements FocusListener {
             } else if (object instanceof CuentabancariaMovimientos) {
                 CuentabancariaMovimientos pago = (CuentabancariaMovimientos) object;
                 int indexOf = pago.getDescripcion().indexOf(", ");
-                pp.add(new GenericBeanCollection("TR " + pago.getDescripcion().substring(0, indexOf), pago.getCredito()));
+                pp.add(new GenericBeanCollection("TR " + pago.getDescripcion().substring(0, indexOf), pago.getDebito()));
             }
         }
         JRDataSource c = new JRBeanCollectionDataSource(cc);
