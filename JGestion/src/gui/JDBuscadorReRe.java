@@ -698,7 +698,6 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
         tfFactu8.setVisible(false);
         labelVendedor.setVisible(false);
         cbVendedor.setVisible(false);
-        checkAnulada.setEnabled(false);
         labelUnidadDeNegocio.setVisible(false);
         cbUnidadDeNegocio.setVisible(false);
         labelCuenta.setVisible(false);

@@ -1,3 +1,5 @@
+--20141029
+ALTER TABLE ctacte_cliente ADD CONSTRAINT ctacte_cliente_entregas_check CHECK (entregado >=0 and entregado <= importe);
 --20140825
 ALTER TABLE presupuesto ADD COLUMN observacion varchar(250);
 --20131127

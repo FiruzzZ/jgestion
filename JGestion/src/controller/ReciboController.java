@@ -67,8 +67,7 @@ public class ReciboController implements ActionListener, FocusListener {
      * Crea la ventana para realizar Recibo's
      *
      * @param owner owner/parent
-     * @param modal debería ser <code>true</code> siempre, no está implementado
-     * para false
+     * @param modal debería ser <code>true</code> siempre, no está implementado para false
      * @param setVisible
      * @throws MessageException
      */
@@ -85,9 +84,9 @@ public class ReciboController implements ActionListener, FocusListener {
         SwingUtil.setComponentsEnabled(jdReRe.getPanelPagos().getComponents(), false, true);
         jdReRe.setUIForRecibos();
         UTIL.getDefaultTableModel(jdReRe.getTableAPagar(),
-                new String[]{"facturaID", "Factura", "Observación", "Entrega"},
-                new int[]{1, 50, 150, 30});
-        jdReRe.getTableAPagar().getColumnModel().getColumn(3).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+                new String[]{"facturaID", "Factura", "Entrega"},
+                new int[]{1, 60, 50});
+        jdReRe.getTableAPagar().getColumnModel().getColumn(2).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         UTIL.hideColumnTable(jdReRe.getTableAPagar(), 0);
         UTIL.loadComboBox(jdReRe.getCbSucursal(), uh.getWrappedSucursales(), false);
         UTIL.loadComboBox(jdReRe.getCbCaja(), uh.getCajas(true), false);
@@ -564,7 +563,7 @@ public class ReciboController implements ActionListener, FocusListener {
             } else {
                 throw new IllegalArgumentException();
             }
-            detalle.setMontoEntrega((BigDecimal) dtm.getValueAt(rowIndex, 3));
+            detalle.setMontoEntrega((BigDecimal) dtm.getValueAt(rowIndex, 2));
             detalle.setRecibo(re);
             re.getDetalle().add(detalle);
             monto = monto.add(detalle.getMontoEntrega());
@@ -620,20 +619,20 @@ public class ReciboController implements ActionListener, FocusListener {
         return re;
     }
 
-    private void actualizarMontoEntrega(NotaDebito notaDebito, BigDecimal monto) {
+    private void actualizarMontoEntrega(NotaDebito notaDebito, BigDecimal entrega) {
         CtacteCliente ctacte = new CtacteClienteController().findByNotaDebito(notaDebito.getId());
-        ctacte.setEntregado(ctacte.getEntregado() + monto.doubleValue());
-        if (notaDebito.getImporte() == BigDecimal.valueOf(ctacte.getEntregado())) {
+        ctacte.setEntregado(ctacte.getEntregado() + entrega.doubleValue());
+        if (notaDebito.getImporte().compareTo(BigDecimal.valueOf(ctacte.getEntregado())) == 0) {
             ctacte.setEstado(Valores.CtaCteEstado.PAGADA.getId());
         }
         new CtacteClienteController().edit(ctacte);
 
     }
 
-    private void actualizarMontoEntrega(FacturaVenta facturaVenta, BigDecimal monto) {
+    private void actualizarMontoEntrega(FacturaVenta facturaVenta, BigDecimal entrega) {
         CtacteCliente ctacte = new CtacteClienteController().findBy(facturaVenta);
-        ctacte.setEntregado(ctacte.getEntregado() + monto.doubleValue());
-        if (facturaVenta.getImporte() == ctacte.getEntregado()) {
+        ctacte.setEntregado(ctacte.getEntregado() + entrega.doubleValue());
+        if (BigDecimal.valueOf(facturaVenta.getImporte()).compareTo(BigDecimal.valueOf(ctacte.getEntregado())) == 0) {
             ctacte.setEstado(Valores.CtaCteEstado.PAGADA.getId());
         }
         new CtacteClienteController().edit(ctacte);
@@ -682,14 +681,13 @@ public class ReciboController implements ActionListener, FocusListener {
                 if (selectedCtaCte.getFactura() != null) {
                     throw new MessageException("La factura " + JGestionUtils.getNumeracion(selectedCtaCte.getFactura()) + " ya se ha agregada al detalle");
                 } else {
-                    throw new MessageException("La NotaDébito " + JGestionUtils.getNumeracion(selectedCtaCte.getNotaDebito()) + " ya se ha agregada al detalle");
+                    throw new MessageException("La Nota de Débito " + JGestionUtils.getNumeracion(selectedCtaCte.getNotaDebito()) + " ya se ha agregada al detalle");
                 }
             }
         }
         jdReRe.getDtmAPagar().addRow(new Object[]{
             selectedCtaCte.getFactura() != null ? selectedCtaCte.getFactura() : selectedCtaCte.getNotaDebito(),
             selectedCtaCte.getFactura() != null ? JGestionUtils.getNumeracion(selectedCtaCte.getFactura()) : JGestionUtils.getNumeracion(selectedCtaCte.getNotaDebito()),
-            null,
             entrega$
         });
         updateTotales();
@@ -700,7 +698,7 @@ public class ReciboController implements ActionListener, FocusListener {
         BigDecimal totalPagado = BigDecimal.ZERO;
         DefaultTableModel dtm = (DefaultTableModel) jdReRe.getTableAPagar().getModel();
         for (int row = 0; row < dtm.getRowCount(); row++) {
-            BigDecimal monto = (BigDecimal) dtm.getValueAt(row, 3);
+            BigDecimal monto = (BigDecimal) dtm.getValueAt(row, 2);
             totalAPagar = totalAPagar.add(monto);
         }
         dtm = (DefaultTableModel) jdReRe.getTablePagos().getModel();
@@ -733,6 +731,8 @@ public class ReciboController implements ActionListener, FocusListener {
         buscador = new JDBuscadorReRe(owner, "Buscador - " + CLASS_NAME, modal, "Cliente", "Nº " + CLASS_NAME);
         if (toAnular) {
             buscador.setTitle(buscador.getTitle() + " para ANULAR");
+            buscador.getCheckAnulada().setEnabled(false);
+            buscador.getCheckAnulada().setSelected(true);
         }
         showBuscador(toAnular);
     }
@@ -763,8 +763,8 @@ public class ReciboController implements ActionListener, FocusListener {
     }
 
     /**
-     * Setea la ventana de JDReRe de forma q solo se puedan ver los datos y
-     * detalles de la Recibo, imprimir y ANULAR, pero NO MODIFICAR
+     * Setea la ventana de JDReRe de forma q solo se puedan ver los datos y detalles de la Recibo,
+     * imprimir y ANULAR, pero NO MODIFICAR
      *
      * @param recibo
      */
@@ -853,7 +853,7 @@ public class ReciboController implements ActionListener, FocusListener {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-             try {
+                try {
                     if (buscador.getjTable1().getRowCount() < 1) {
                         throw new MessageException(JGestion.resourceBundle.getString("warn.emptytable"));
                     }
@@ -885,11 +885,11 @@ public class ReciboController implements ActionListener, FocusListener {
     }
 
     /**
-     * Resetea la ventana; - pone la fecha actual - clienteProveedor.index(0) -
-     * setea el NextNumeroReRe - rereSelected = null;
+     * Resetea la ventana; - pone la fecha actual - clienteProveedor.index(0) - setea el
+     * NextNumeroReRe - rereSelected = null;
      */
     private void resetPanel() {
-        jdReRe.getDcFechaReRe().setDate(new Date());
+        jdReRe.getDcFechaReRe().setDate(null);
         jdReRe.getCbClienteProveedor().setSelectedIndex(0);
         setNextNumeroReRe();
         jdReRe.getTfCreditoDebitoDisponible().setText(null);
@@ -972,9 +972,10 @@ public class ReciboController implements ActionListener, FocusListener {
             query.append(")");
         }
         if (!buscador.getCheckAnulada().isEnabled()) {
+            //buscador PARA ANULAR
             query.append(" AND o.estado = ").append(!buscador.isCheckAnuladaSelected());
-        } else if (buscador.isCheckAnuladaSelected()) {
-            query.append(" AND o.estado = false");
+        } else {
+            query.append(" AND o.estado = ").append(!buscador.isCheckAnuladaSelected());
         }
         if (buscador.getCbClieProv().getSelectedIndex() > 0) {
             query.append(" AND (")
@@ -1022,7 +1023,6 @@ public class ReciboController implements ActionListener, FocusListener {
             dtm.addRow(new Object[]{
                 r.getFacturaVenta() != null ? r.getFacturaVenta() : r.getNotaDebito(),
                 r.getFacturaVenta() != null ? JGestionUtils.getNumeracion(r.getFacturaVenta()) : JGestionUtils.getNumeracion(r.getNotaDebito()),
-                null,
                 r.getMontoEntrega()
             });
         }
@@ -1056,7 +1056,7 @@ public class ReciboController implements ActionListener, FocusListener {
     }
 
     public void loadPagos(Recibo recibo) {
-        List<Object> pagos = new ArrayList<Object>(recibo.getPagos().size());
+        List<Object> pagos = new ArrayList<>(recibo.getPagos().size());
         for (ReciboPagos pago : recibo.getPagos()) {
             if (pago.getFormaPago() == 0) {
                 DetalleCajaMovimientos o = new DetalleCajaMovimientosController().findDetalleCajaMovimientos(pago.getComprobanteId());
@@ -1094,8 +1094,8 @@ public class ReciboController implements ActionListener, FocusListener {
     @Override
     public void focusLost(FocusEvent e) {
         if (buscador != null) {
-            if (e.getSource().getClass().equals(javax.swing.JTextField.class)) {
-                javax.swing.JTextField tf = (javax.swing.JTextField) e.getSource();
+            if (e.getSource().getClass().equals(JTextField.class)) {
+                JTextField tf = (JTextField) e.getSource();
                 if (tf.getName().equalsIgnoreCase("tfocteto")) {
                     if (buscador.getTfOcteto().length() > 0) {
                         buscador.setTfOcteto(UTIL.AGREGAR_CEROS(buscador.getTfOcteto(), 8));
@@ -1108,8 +1108,7 @@ public class ReciboController implements ActionListener, FocusListener {
     }
 
     /**
-     * Carga el POSIBLE siguiente N°, en caso de multiples instancias no pincha
-     * ni corta.
+     * Carga el POSIBLE siguiente N°, en caso de multiples instancias no pincha ni corta.
      */
     private void setNextNumeroReRe() {
         Sucursal sucursal = getSelectedSucursalFromJD();
@@ -1169,8 +1168,7 @@ public class ReciboController implements ActionListener, FocusListener {
     }
 
     /**
-     * Retorna todos los {@link Recibo} que contengan en su
-     * {@link DetalleRecibo} a factura.
+     * Retorna todos los {@link Recibo} que contengan en su {@link DetalleRecibo} a factura.
      *
      * @param factura que deben contenedor los Recibos en su detalle
      * @return una lista de Recibo's
