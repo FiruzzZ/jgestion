@@ -34,6 +34,7 @@ import jpa.controller.ReciboJpaController;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.apache.log4j.Logger;
+import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 import utilities.general.NumberToLetterConverter;
 import utilities.general.TableExcelExporter;
 import utilities.general.UTIL;
@@ -71,7 +72,7 @@ public class ReciboController implements ActionListener, FocusListener {
      * @param setVisible
      * @throws MessageException
      */
-    public void showABMRecibos(Window owner, boolean modal, boolean setVisible) throws MessageException {
+    public void displayABMRecibos(Window owner, boolean modal, boolean setVisible) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.VENTA);
         UsuarioHelper uh = new UsuarioHelper();
         if (uh.getSucursales().isEmpty()) {
@@ -91,6 +92,7 @@ public class ReciboController implements ActionListener, FocusListener {
         UTIL.loadComboBox(jdReRe.getCbSucursal(), uh.getWrappedSucursales(), false);
         UTIL.loadComboBox(jdReRe.getCbCaja(), uh.getCajas(true), false);
         UTIL.loadComboBox(jdReRe.getCbClienteProveedor(), new ClienteController().findAll(), true);
+        AutoCompleteDecorator.decorate(jdReRe.getCbClienteProveedor());
         UTIL.loadComboBox(jdReRe.getCbCtaCtes(), null, false);
         setNextNumeroReRe();
         jdReRe.getbAnular().addActionListener(new ActionListener() {
@@ -770,7 +772,7 @@ public class ReciboController implements ActionListener, FocusListener {
      */
     private void setComprobanteUI(Recibo recibo) throws MessageException {
         if (jdReRe == null) {
-            showABMRecibos(null, true, false);
+            displayABMRecibos(null, true, false);
         }
 //        bloquearVentana(true);
         //por no redundar en DATOOOOOOOOOSS...!!!
@@ -1198,13 +1200,13 @@ public class ReciboController implements ActionListener, FocusListener {
     public void showABMRecibosNumeracionManual(Window owner) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.VENTA_NUMERACION_MANUAL);
         unlockedNumeracion = true;
-        showABMRecibos(owner, true, false);
+        displayABMRecibos(owner, true, false);
         jdReRe.setTfOctetoEditable(true);
         jdReRe.setVisible(true);
     }
 
     public void showABMReciboAConciliar(Window owner) throws MessageException {
-        showABMRecibos(owner, true, false);
+        displayABMRecibos(owner, true, false);
         jdReRe.setTitle("Recibo a conciliar");
         toConciliar = true;
         conciliando = false;

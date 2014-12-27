@@ -56,6 +56,8 @@ import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.apache.log4j.Logger;
+import org.jdesktop.swingx.SwingXUtilities;
+import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 import utilities.general.NumberToLetterConverter;
 import utilities.general.UTIL;
 import utilities.gui.SwingUtil;
@@ -110,6 +112,7 @@ public class RemesaController implements FocusListener {
         UTIL.loadComboBox(jdReRe.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), false);
         UTIL.loadComboBox(jdReRe.getCbCaja(), new UsuarioHelper().getCajas(true), false);
         UTIL.loadComboBox(jdReRe.getCbClienteProveedor(), JGestionUtils.getWrappedProveedores(new ProveedorJpaController().findAll()), true);
+        AutoCompleteDecorator.decorate(jdReRe.getCbClienteProveedor());
         UTIL.loadComboBox(jdReRe.getCbCtaCtes(), null, false);
         jdReRe.getbImprimir().addActionListener(new ActionListener() {
 
@@ -487,16 +490,16 @@ public class RemesaController implements FocusListener {
     @SuppressWarnings("unchecked")
     private Remesa setAndPersist() throws MessageException, Exception {
         checkConstraints();
-        Remesa re = new Remesa();
-        re.setCaja((Caja) jdReRe.getCbCaja().getSelectedItem());
-        re.setSucursal(((ComboBoxWrapper<Sucursal>) jdReRe.getCbSucursal().getSelectedItem()).getEntity());
-        re.setEstado(true);
-        re.setFechaRemesa(jdReRe.getDcFechaReRe().getDate());
-        re.setPagos(new ArrayList<RemesaPagos>(jdReRe.getDtmPagos().getRowCount()));
-        re.setDetalle(new ArrayList<DetalleRemesa>(jdReRe.getDtmAPagar().getRowCount()));
-        re.setPorConciliar(toConciliar);
-        re.setProveedor(((ComboBoxWrapper<Proveedor>) jdReRe.getCbClienteProveedor().getSelectedItem()).getEntity());
-        re.setUsuario(UsuarioController.getCurrentUser());
+        Remesa remesa = new Remesa();
+        remesa.setCaja((Caja) jdReRe.getCbCaja().getSelectedItem());
+        remesa.setSucursal(((ComboBoxWrapper<Sucursal>) jdReRe.getCbSucursal().getSelectedItem()).getEntity());
+        remesa.setEstado(true);
+        remesa.setFechaRemesa(jdReRe.getDcFechaReRe().getDate());
+        remesa.setPagos(new ArrayList<RemesaPagos>(jdReRe.getDtmPagos().getRowCount()));
+        remesa.setDetalle(new ArrayList<DetalleRemesa>(jdReRe.getDtmAPagar().getRowCount()));
+        remesa.setPorConciliar(toConciliar);
+        remesa.setProveedor(((ComboBoxWrapper<Proveedor>) jdReRe.getCbClienteProveedor().getSelectedItem()).getEntity());
+        remesa.setUsuario(UsuarioController.getCurrentUser());
 
         DefaultTableModel dtm = (DefaultTableModel) jdReRe.getTableAPagar().getModel();
         BigDecimal monto = BigDecimal.ZERO;
@@ -508,17 +511,17 @@ public class RemesaController implements FocusListener {
                 detalle.setFacturaCompra(fv);
             } else if (o instanceof NotaDebitoProveedor) {
                 NotaDebitoProveedor nota = new NotaDebitoProveedorJpaController().find(((NotaDebitoProveedor) o).getId());
-                nota.setRemesa(re);
+                nota.setRemesa(remesa);
                 detalle.setNotaDebitoProveedor(nota);
             } else {
                 throw new IllegalArgumentException();
             }
             detalle.setMontoEntrega((BigDecimal) dtm.getValueAt(rowIndex, 3));
-            detalle.setRemesa(re);
-            re.getDetalle().add(detalle);
+            detalle.setRemesa(remesa);
+            remesa.getDetalle().add(detalle);
             monto = monto.add(detalle.getMontoEntrega());
         }
-        re.setMontoEntrega(monto.doubleValue());
+        remesa.setMontoEntrega(monto.doubleValue());
         dtm = jdReRe.getDtmPagos();
         List<Object> pagos = new ArrayList<>(dtm.getRowCount());
         BigDecimal importePagado = BigDecimal.ZERO;
@@ -526,12 +529,12 @@ public class RemesaController implements FocusListener {
             importePagado = importePagado.add((BigDecimal) dtm.getValueAt(row, 3));
             pagos.add(dtm.getValueAt(row, 0));
         }
-        re.setPagosEntities(pagos);
+        remesa.setPagosEntities(pagos);
         boolean asentarDiferenciaEnCaja = false;
-        if (!re.isPorConciliar() || conciliando) {
+        if (!remesa.isPorConciliar() || conciliando) {
             if (0 != jdReRe.getTfTotalAPagar().getText().compareTo(jdReRe.getTfTotalPagado().getText())) {
                 if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(jdReRe, "El importe a pagar no coincide con el detalle de pagos."
-                        + "\n¿Confirma que la diferencia ($" + UTIL.DECIMAL_FORMAT.format(re.getMonto() - importePagado.doubleValue()) + ") sea acreditada?", "Confirmación de diferencia", JOptionPane.YES_NO_OPTION)) {
+                        + "\n¿Confirma que la diferencia ($" + UTIL.DECIMAL_FORMAT.format(remesa.getMonto() - importePagado.doubleValue()) + ") sea asentada en Caja?", "Confirmación de diferencia", JOptionPane.YES_NO_OPTION)) {
                     asentarDiferenciaEnCaja = true;
                 } else {
                     throw new MessageException("Operación cancelada");
@@ -539,43 +542,43 @@ public class RemesaController implements FocusListener {
             }
         }
         if (unlockedNumeracion || conciliando) {
-            re.setNumero(Integer.valueOf(jdReRe.getTfOcteto()));
+            remesa.setNumero(Integer.valueOf(jdReRe.getTfOcteto()));
         } else {
-            re.setNumero(jpaController.getNextNumero(re.getSucursal()));
+            remesa.setNumero(jpaController.getNextNumero(remesa.getSucursal()));
         }
         if (conciliando) {
-            jpaController.conciliar(re);
+            jpaController.conciliar(remesa);
         } else {
             try {
-                jpaController.create(re);
+                jpaController.create(remesa);
             } catch (Exception ex) {
-                LOG.error("Error fantástico de doble persistencia de remesa: " + re, ex);
-                jpaController.create(re);
+                LOG.error("Error fantástico de doble persistencia de remesa: " + remesa, ex);
+                jpaController.create(remesa);
             }
         }
-        for (DetalleRemesa detalle : re.getDetalle()) {
+        for (DetalleRemesa detalle : remesa.getDetalle()) {
             if (detalle.getFacturaCompra() != null) {
                 actualizarMontoEntrega(detalle.getFacturaCompra(), detalle.getMontoEntrega());
             }
         }
         if (asentarDiferenciaEnCaja) {
-            BigDecimal diferencia = BigDecimal.valueOf(re.getMonto() - importePagado.doubleValue());
+            BigDecimal diferencia = BigDecimal.valueOf(remesa.getMonto() - importePagado.doubleValue());
             boolean debe = false;
             if (diferencia.doubleValue() < 0) {
                 diferencia = diferencia.negate();
                 debe = true;
             }
-            DetalleRemesa d = re.getDetalle().get(0);
+            DetalleRemesa d = remesa.getDetalle().get(0);
             Proveedor proveedor;
             if (d.getFacturaCompra() != null) {
                 proveedor = d.getFacturaCompra().getProveedor();
             } else {
                 proveedor = d.getNotaDebitoProveedor().getProveedor();
             }
-            CreditoProveedor cp = new CreditoProveedor(null, debe, diferencia, "Remesa N° " + JGestionUtils.getNumeracion(re, true), proveedor);
+            CreditoProveedor cp = new CreditoProveedor(null, debe, diferencia, "Remesa N° " + JGestionUtils.getNumeracion(remesa, true), proveedor);
             new CreditoProveedorJpaController().create(cp);
         }
-        return re;
+        return remesa;
     }
 
     private void actualizarMontoEntrega(FacturaCompra factu, BigDecimal monto) {
@@ -907,7 +910,6 @@ public class RemesaController implements FocusListener {
         if (jdReRe == null) {
             displayABMRemesa(null, true, false);
         }
-        //por no redundar en DATOOOOOOOOOSS...!!!
         Proveedor p;
         if (remesa.getProveedor() != null) {
             p = remesa.getProveedor();

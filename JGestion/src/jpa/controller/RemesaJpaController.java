@@ -171,6 +171,7 @@ public class RemesaJpaController extends AbstractDAO<Remesa, Integer> {
             todoBien = true;
         } finally {
             if (!todoBien) {
+                closeEntityManager();
                 remove(remesa);
                 for (Object object : pagosPost) {
                     if (object instanceof ChequeTerceros) {
@@ -257,13 +258,14 @@ public class RemesaJpaController extends AbstractDAO<Remesa, Integer> {
                     ChequePropio pago = (ChequePropio) object;
                     pago = em.find(pago.getClass(), pago.getId());
                     if (pago.getEstado() != ChequeEstado.CARTERA.getId()) {
+    //                    CuentabancariaMovimientos cbm = new CuentabancariaMovimientosJpaController().findBy(pago);
+    //                    cbm = em.find(cbm.getClass(), cbm.getId());
+    //                    em.remove(cbm);
                         throw new MessageException("¡ANULACIÓN CANCELADA!:"
-                                + "\nEl Cheque Propio " + pago.getBanco().getNombre() + " " + pago.getNumero() + ", Importe $" + pago.getImporte()
+                                + "\nEl Cheque Propio " + pago.getBanco().getNombre() + " " + pago.getNumero() 
+                                + ", Importe $" + pago.getImporte()
                                 + "\nfue COBRADO/DEBITADO, no se encuentra mas en " + ChequeEstado.CARTERA);
                     }
-                    CuentabancariaMovimientos cbm = new CuentabancariaMovimientosJpaController().findBy(pago);
-                    cbm = em.find(cbm.getClass(), cbm.getId());
-                    em.remove(cbm);
                     em.remove(pago);
                 } else if (object instanceof ChequeTerceros) {
                     ChequeTerceros pago = (ChequeTerceros) object;

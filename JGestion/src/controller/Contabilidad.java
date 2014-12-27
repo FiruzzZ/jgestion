@@ -78,12 +78,6 @@ public class Contabilidad {
         DecimalFormatSymbols simbolos = new DecimalFormatSymbols();
         simbolos.setDecimalSeparator('.');
         PU_FORMAT = new DecimalFormat("#0.0000", simbolos);
-//        PRECIO_CON_PUNTO = UTIL.PRECIO_CON_PUNTO;
-//        DecimalFormatSymbols simbolos = new DecimalFormatSymbols();
-//        simbolos.setDecimalSeparator('.');
-//        PRECIO_CON_PUNTO = new DecimalFormat("#0.00", simbolos);
-//        PRECIO_CON_PUNTO.setRoundingMode(RoundingMode.HALF_DOWN);
-//        UTIL.setPRECIO_CON_PUNTO("#0.00", RoundingMode.HALF_DOWN);
     }
     private JDBuscadorReRe buscadorReRe;
     private JDBuscador buscador;
@@ -705,7 +699,11 @@ public class Contabilidad {
         buscadorReRe.getbImprimir().setVisible(true);
         UTIL.loadComboBox(buscadorReRe.getCbClieProv(), JGestionUtils.getWrappedClientes(new ClienteController().findAll()), true);
         UTIL.loadComboBox(buscadorReRe.getCbCaja(), new CajaController().findCajasPermitidasByUsuario(UsuarioController.getCurrentUser(), true), true);
-        UTIL.loadComboBox(buscadorReRe.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), true);
+        List<ComboBoxWrapper<Sucursal>> sucus = new UsuarioHelper().getWrappedSucursales();
+        if (sucus.isEmpty()) {
+            throw new MessageException(JGestion.resourceBundle.getString("unassigned.sucursal"));
+        }
+        UTIL.loadComboBox(buscadorReRe.getCbSucursal(), sucus, true);
         UTIL.loadComboBox(buscadorReRe.getCbFormasDePago(), Valores.FormaPago.getFormasDePago(), true);
         UTIL.getDefaultTableModel(
                 buscadorReRe.getjTable1(),
@@ -804,7 +802,11 @@ public class Contabilidad {
         buscadorReRe.getbImprimir().setVisible(true);
         UTIL.loadComboBox(buscadorReRe.getCbClieProv(), JGestionUtils.getWrappedProveedores(new ProveedorJpaController().findAllLite()), true);
         UTIL.loadComboBox(buscadorReRe.getCbCaja(), new CajaController().findCajasPermitidasByUsuario(UsuarioController.getCurrentUser(), true), true);
-        UTIL.loadComboBox(buscadorReRe.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), true);
+        List<ComboBoxWrapper<Sucursal>> sucus = new UsuarioHelper().getWrappedSucursales();
+        if (sucus.isEmpty()) {
+            throw new MessageException(JGestion.resourceBundle.getString("unassigned.sucursal"));
+        }
+        UTIL.loadComboBox(buscadorReRe.getCbSucursal(), sucus, true);
         buscadorReRe.getLabelFormasDePago().setText("Tipo");
         UTIL.loadComboBox(buscadorReRe.getCbFormasDePago(), FacturaCompraController.TIPOS_FACTURA, true);
         UTIL.getDefaultTableModel(
@@ -925,7 +927,7 @@ public class Contabilidad {
         }
         if (buscadorReRe.getDcHasta() != null) {
             queryFactuCompra.append(" AND o.fecha_compra <= '").append(UTIL.yyyy_MM_dd.format(buscadorReRe.getDcHasta())).append("'");
-            queryNotaCredito.append(" AND o.fecha_nota_credito <= '").append(UTIL.yyyy_MM_dd.format(buscadorReRe.getDcDesde())).append("'");
+            queryNotaCredito.append(" AND o.fecha_nota_credito <= '").append(UTIL.yyyy_MM_dd.format(buscadorReRe.getDcHasta())).append("'");
         }
         if (buscadorReRe.getDcDesdeSistema() != null) {
             queryFactuCompra.append(" AND o.fechaalta >= '").append(UTIL.yyyy_MM_dd.format(buscadorReRe.getDcDesdeSistema())).append("'");
@@ -973,12 +975,6 @@ public class Contabilidad {
 
         String sql
                 = "SELECT com.* FROM ("
-                //                + " SELECT "
-                //                + "'F' || o.tipo || to_char(o.numero, '0000-00000000') as comprobante, "
-                //                + " o.fecha_compra as fecha, proveedor.nombre, proveedor.cuit, "
-                //                //la mentirita del GRAVADO :O jejejej
-                //                + " case when o.gravado <=0 then (o.importe-o.iva10-o.iva21-o.perc_iva-o.impuestos_recuperables) else o.gravado end,"
-                //                + " o.iva10, o.iva21, o.perc_iva, o.impuestos_recuperables, o.impuestos_norecuperables, o.no_gravado, o.descuento, o.importe"
                 + " SELECT 'F' || o.tipo || to_char(o.numero, '0000-00000000') as comprobante,	o.fecha_compra as fecha, proveedor.nombre, proveedor.cuit,"
                 + " cast(case when o.gravado <=0 then (o.importe-o.iva10-o.iva21-o.perc_iva-o.impuestos_recuperables) else o.gravado end as numeric(12,2)),	cast(o.iva10 as numeric(12,2)),	cast(o.iva21 as numeric(12,2)), o.otros_ivas, "
                 + "	cast(o.perc_dgr as numeric(12,2)), cast(o.perc_iva as numeric(12,2)), cast( o.impuestos_recuperables as numeric(12,2)), cast( o.impuestos_norecuperables as numeric(12,2)), cast( o.no_gravado as numeric(12,2)), cast( o.descuento as numeric(12,2)), cast( o.importe as numeric(12,2))"
@@ -988,10 +984,6 @@ public class Contabilidad {
                 + " ORDER BY"
                 + " o.fecha_compra ASC) com"
                 + " UNION ("
-                //                + " SELECT "
-                //                + " 'NC' || to_char(sucursal.puntoventa, '0000') || to_char(o.numero,'-00000000'),"
-                //                + " o.fecha_nota_credito as fecha, cliente.nombre, cliente.num_doc,"
-                //                + " o.gravado, o.iva10, o.iva21, 0, o.impuestos_recuperables, 0, o.no_gravado, 0 as descuento, o.importe"
                 + " SELECT 'NC' || to_char(sucursal.puntoventa, '0000') || to_char(o.numero,'-00000000'), o.fecha_nota_credito as fecha, cliente.nombre, cliente.num_doc,"
                 + " cast(o.gravado as numeric(12,2)), cast(o.iva10 as numeric(12,2)), cast(o.iva21 as numeric(12,2)), cast(o.impuestos_recuperables as numeric(12,2)),"
                 + " cast(0 as numeric(12,2)), cast(0 as numeric(12,2)), cast(0 as numeric(12,2)), cast(0 as numeric(12,2)), cast(o.no_gravado as numeric(12,2)), cast(0 as numeric(12,2)) as descuento, cast(o.importe as numeric(12,2))"

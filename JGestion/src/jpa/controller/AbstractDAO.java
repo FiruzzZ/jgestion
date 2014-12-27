@@ -206,7 +206,7 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
         if (!getEntityManager().isOpen()) {
             getEntityManager().close();
         } else {
-            System.out.println("EntityManager en: " + entityClass + " ya estaba cerrado");
+            System.out.println("EntityManager en: " + this + " ya estaba cerrado");
         }
     }
 
