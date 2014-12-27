@@ -50,15 +50,6 @@ public class JPATesting {
 
     @SuppressWarnings("unchecked")
     public JPATesting() throws Exception {
-        List<Recibo> conci = new ReciboJpaController().findAll("SELECT o FROM Recibo o where o.porConciliar = true ");
-        for (Recibo r : conci) {
-            System.out.println(JGestionUtils.getNumeracion(r, true));
-//            new ReciboController().loadPagos(r);
-//            for (Object pagos : r.getPagosEntities()) {
-//                ChequeTerceros c = (ChequeTerceros) pagos;
-//                System.out.println(c.toString());
-//            }
-        }
 //<editor-fold defaultstate="collapsed" desc="pasar las notas de débito a CtacteCliente">
 //        List<NotaDebito> notas = new NotaDebitoJpaController().findAll();
 //        CtacteClienteJpaController cccc = new CtacteClienteJpaController();

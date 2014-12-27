@@ -16,6 +16,7 @@ import entity.*;
 import generics.GenericBeanCollection;
 import gui.*;
 import java.awt.BorderLayout;
+import java.awt.Window;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
@@ -68,13 +69,13 @@ public class ProductoController implements ActionListener, KeyListener {
     private JDBuscador buscador;
     private PanelProductoListados panelProductoListados;
     private boolean permitirFiltroVacio;
-    private ProductoJpaController jpaController;
+    private final ProductoJpaController jpaController;
 
     public ProductoController() {
         jpaController = new ProductoJpaController();
     }
 
-    public void initContenedor(JFrame owner, boolean modal, boolean modoBuscador) throws DatabaseErrorException {
+    public void initContenedor(Window owner, boolean modal, boolean modoBuscador) throws DatabaseErrorException {
         contenedor = new JDContenedor(owner, modal, "ABM - " + CLASS_NAME);
         contenedor.setSize(contenedor.getWidth() + 200, contenedor.getHeight());
         contenedor.getTfFiltro().setToolTipText("Filtra por nombre del " + CLASS_NAME);
@@ -239,26 +240,13 @@ public class ProductoController implements ActionListener, KeyListener {
         abm.setVisible(true);
     }
 
-    private void cargarContenedorTabla(String nativeQuery) {
+    private void cargarContenedorTabla(String jpql) {
         if (contenedor != null) {
             DefaultTableModel dtm = contenedor.getDTM();
             dtm.setRowCount(0);
-//            List<Producto> l = jpaController.findByNativeQuery(nativeQuery);
-            @SuppressWarnings("unchecked")
-            List<Object[]> l = DAO.getEntityManager().createNativeQuery(nativeQuery).getResultList();
+            List<Object[]> l = jpaController.findAttributes(jpql);
             for (Object[] o : l) {
-//                if (o.getMarca() == null) {
-//                    o.setMarca((Marca) entityManager.createQuery("SELECT o from Marca o, Producto p where o.id = p.marca.id AND p.id=" + o.getId()).getSingleResult());
-//                    Logger.getLogger(this.getClass()).trace("Recuperado la Marca del producto: Producto.id=" + o.getId() + " Marca.id" + o.getMarca().getId());
-//                }
                 dtm.addRow(o);
-//                dtm.addRow(new Object[]{
-//                            o.getId(),
-//                            o.getCodigo(),
-//                            o.getNombre(),
-//                            o.getMarca().getNombre(),
-//                            o.getStockactual()
-//                        });
             }
         }
     }
@@ -418,9 +406,11 @@ public class ProductoController implements ActionListener, KeyListener {
      * @param filtro
      */
     private void armarQueryContenedor(String filtro) {
-        String query = "SELECT p.id, p.codigo, p.nombre, marca.nombre, stockactual, costo_compra, precio_venta FROM producto p JOIN marca ON p.marca = marca.id";
+        String query = "SELECT p.id, p.codigo, p.nombre, p.marca.nombre, p.stockactual, p.costoCompra, p.precioVenta"
+                + " FROM " + jpaController.getEntityClass().getSimpleName() + " p ";
         if (filtro != null && filtro.length() > 0) {
-            query += " WHERE p.nombre ILIKE '%" + filtro + "%'";
+            query += " WHERE UPPER(p.nombre) LIKE '%" + filtro.toUpperCase() + "%' "
+                    + "OR UPPER(p.codigo) LIKE '%" + filtro.toUpperCase() + "%'";
         }
         query += " ORDER BY p.nombre";
         cargarContenedorTabla(query);
@@ -645,7 +635,7 @@ public class ProductoController implements ActionListener, KeyListener {
             throw new MessageException("No existen " + CLASS_NAME + "s para imprimir un listado.");
         }
         final PanelProductoReporteOptions p = new PanelProductoReporteOptions();
-        UTIL.loadComboBox(p.getCbListaPrecio(), JGestionUtils.getWrappedListaPrecios(new ListaPreciosController().findAll()), permitirFiltroVacio);
+        UTIL.loadComboBox(p.getCbListaPrecio(), JGestionUtils.getWrappedListaPrecios(new ListaPreciosController().findAll()), false);
         final JDABM jd = new JDABM(contenedor, "Reporte de Productos", true, p);
         jd.getbAceptar().addActionListener(new ActionListener() {
             @Override
@@ -654,7 +644,8 @@ public class ProductoController implements ActionListener, KeyListener {
                 try {
                     Reportes r = new Reportes(null, true);
                     r.showWaitingDialog();
-                    List<Producto> list = jpaController.findByBienDeCambio(true);
+                    // QUE HIJO DE MIL PUTA!! .. list de mierda,, no se limpia
+                    List<Producto> list = new ProductoJpaController().findByBienDeCambio(true);
                     DynamicReportBuilder drb = new DynamicReportBuilder();
                     drb.setRightMargin(20);
                     Style currencyStyle = new Style();
@@ -670,7 +661,7 @@ public class ProductoController implements ActionListener, KeyListener {
                         drb.addColumn(ColumnBuilder.getNew().setColumnProperty("stockactual", Integer.class.getName()).setTitle("Stock").setWidth(40).setStyle(currencyStyle).setFixedWidth(true).build());
                     }
                     if (p.getCheckCostoCompra().isSelected()) {
-                        drb.addColumn(ColumnBuilder.getNew().setColumnProperty("costoCompra", BigDecimal.class.getName()).setTitle("Costo U.").setWidth(60)
+                        drb.addColumn(ColumnBuilder.getNew().setColumnProperty("costoCompra", BigDecimal.class.getName()).setTitle("Costo U.").setWidth(80)
                                 .setStyle(currencyStyle)
                                 .setPattern("¤ #,##0.0000")
                                 .setFixedWidth(true).build());
@@ -678,7 +669,7 @@ public class ProductoController implements ActionListener, KeyListener {
                     ListaPrecios lp = null;
                     if (p.getCheckPrecioVenta().isSelected()) {
                         drb.addColumn(ColumnBuilder.getNew()
-                                .setColumnProperty("precioVenta", BigDecimal.class.getName()).setTitle("Precio U.").setWidth(60)
+                                .setColumnProperty("precioVenta", BigDecimal.class.getName()).setTitle("Precio U.").setWidth(80)
                                 .setStyle(currencyStyle)
                                 .setPattern("¤ #,##0.0000")
                                 .setFixedWidth(true).build());
@@ -689,16 +680,10 @@ public class ProductoController implements ActionListener, KeyListener {
                             producto.setPrecioVenta(precioVenta.multiply(BigDecimal.valueOf(margen)));
                         }
                     }
-
                     drb.setTitle("Listado de Productos")
                             .setSubtitle(lp == null ? "" : "Según Lista Precios: " + lp.getNombre() + ", " + UTIL.TIMESTAMP_FORMAT.format(new Date()))
                             .setPrintBackgroundOnOddRows(true)
                             .setUseFullPageWidth(true);
-//                    SubReportBuilder srb = new SubReportBuilder();
-//                    srb.setPathToReport(Reportes.FOLDER_REPORTES + "JGestion_membrete.jasper");
-//                    srb.setDataSource("");
-//                    Subreport sr = srb.build();
-//                    drb.addSubreportInGroupHeader(0, sr);
                     DynamicReport dr = drb.build();
                     JRDataSource ds = new JRBeanCollectionDataSource(list);
                     JasperPrint jp = DynamicJasperHelper.generateJasperPrint(dr, new ClassicLayoutManager(), ds);
@@ -708,7 +693,6 @@ public class ProductoController implements ActionListener, KeyListener {
                     JOptionPane.showMessageDialog(null, "algo salió mal");
                     LOG.error("Creando reporte producto", ex);
                 }
-
             }
         });
         jd.getbAceptar().addActionListener(new ActionListener() {

@@ -1400,7 +1400,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
     private void jMenuItem14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem14ActionPerformed
         try {
-            new ReciboController().showABMRecibos(this, true, true);
+            new ReciboController().displayABMRecibos(this, true, true);
         } catch (MessageException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
         }
