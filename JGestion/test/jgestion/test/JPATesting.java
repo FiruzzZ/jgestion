@@ -11,6 +11,7 @@ import ar.com.fdvs.dj.domain.constants.HorizontalAlign;
 import controller.DAO;
 import controller.ReciboController;
 import controller.Reportes;
+import controller.VentaSimpleController;
 import entity.*;
 import generics.PropsUtils;
 import java.io.File;
@@ -50,48 +51,6 @@ public class JPATesting {
 
     @SuppressWarnings("unchecked")
     public JPATesting() throws Exception {
-//<editor-fold defaultstate="collapsed" desc="pasar las notas de débito a CtacteCliente">
-//        List<NotaDebito> notas = new NotaDebitoJpaController().findAll();
-//        CtacteClienteJpaController cccc = new CtacteClienteJpaController();
-//        for (NotaDebito notaDebito : notas) {
-//            CtacteCliente ccc = cccc.findByNotaDebito(notaDebito.getId());
-//            if (ccc == null) {
-//                CtacteCliente ccp = new CtacteCliente();
-//                ccp.setDias((short) 1);
-//                ccp.setEstado((Valores.CtaCteEstado.PENDIENTE.getId()));
-//                if (notaDebito.getRecibo() != null) {
-//                    ccp.setEntregado(notaDebito.getImporte().doubleValue()); //monto $$
-//                    ccp.setEstado((Valores.CtaCteEstado.PAGADA.getId()));
-//                }
-//                ccp.setNotaDebito(notaDebito);
-//                ccp.setFechaCarga(notaDebito.getFechaNotaDebito());
-//                ccp.setImporte(notaDebito.getImporte().doubleValue());
-//                cccc.create(ccp);
-//            } else {
-//                System.out.println("Existe ccc (" + ccc.getId() + ") de " + notaDebito);
-//            }
-//        }
-//</editor-fold>
-//<editor-fold defaultstate="collapsed" desc="agrega Cliente a todos los Recibos">
-//        List<Recibo> l = new ReciboJpaController().findAll();
-//        for (Recibo recibo : l) {
-//            Cliente c;
-//            if (recibo.getDetalle().isEmpty()) {
-//                System.out.println("EMPTY:" + recibo);
-//                continue;
-//            }
-//            if (recibo.getDetalle().get(0).getFacturaVenta() != null) {
-//                c = recibo.getDetalle().get(0).getFacturaVenta().getCliente();
-//            } else {
-//                c = recibo.getDetalle().get(0).getNotaDebito().getCliente();
-//            }
-//            if (!c.equals(recibo.getCliente())) {
-//                System.out.println("cambiando " + c.getId() + " por " + recibo.getCliente());
-//                recibo.setCliente(c);
-//                new ReciboJpaController().merge(recibo);
-//            }
-//        }
-//</editor-fold>
     }
 
     private void updateCostoCompraYPrecioVentaSegunDetalleCompra() {

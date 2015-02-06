@@ -456,7 +456,7 @@ public class ClienteController implements ActionListener {
                     String msg = EL_OBJECT.getId() == null ? "Registrado" : "Modificado";
                     //persistiendo......
                     if (EL_OBJECT.getId() == null) {
-                        jpaController.create(EL_OBJECT);
+                        jpaController.persist(EL_OBJECT);
                     } else {
                         jpaController.merge(EL_OBJECT);
                     }
@@ -614,7 +614,7 @@ public class ClienteController implements ActionListener {
         p.setWebpage(proveedor.getWebpage());
         p.setEstado(1);
         checkConstraints(p);
-        jpaController.create(p);
+        jpaController.persist(p);
         return p;
     }
 }

@@ -22,7 +22,7 @@ public interface GenericDAO<T, ID> {
      */
     Class<T> getEntityClass();
 
-    void create(T person);
+    void persist(T person);
 
     T merge(T person);
 

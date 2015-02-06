@@ -36,7 +36,7 @@ public class FacturaCompraJpaController extends AbstractDAO<FacturaCompra, Integ
     }
 
     @Override
-    public void create(FacturaCompra o) {
+    public void persist(FacturaCompra o) {
         EntityManager em = null;
         try {
             em = getEntityManager();

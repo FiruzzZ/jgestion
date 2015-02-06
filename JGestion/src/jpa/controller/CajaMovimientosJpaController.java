@@ -477,7 +477,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
             dcm.setCuenta(CuentaController.SIN_CLASIFICAR);
         }
         cm.getDetalleCajaMovimientosList().add(dcm);
-        create(cm);
+        persist(cm);
     }
 
     public Integer findLastCajaMovimientoIDCerrada(Caja caja) {

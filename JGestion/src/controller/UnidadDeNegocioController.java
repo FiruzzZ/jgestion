@@ -153,7 +153,7 @@ public class UnidadDeNegocioController {
         EL_OBJECT.setSucursales(selected);
         checkConstraints(EL_OBJECT);
         if (EL_OBJECT.getId() == null) {
-            jpaController.create(EL_OBJECT);
+            jpaController.persist(EL_OBJECT);
         } else {
             EL_OBJECT.setId(EL_OBJECT.getId());
             jpaController.merge(EL_OBJECT);

@@ -430,9 +430,9 @@ public class ProductoController implements ActionListener, KeyListener {
             throw new MessageException("Ya existe un " + CLASS_NAME + " con este nombre.");
         }
         if (object.getId() == null) {
-            jpaController.create(object);
+            jpaController.persist(object);
         } else {
-            new UsuarioAccionesController().log(object);
+            new UsuarioAccionesController().createLog(object);
             jpaController.merge(object);
         }
     }

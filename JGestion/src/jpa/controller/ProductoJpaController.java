@@ -3,6 +3,7 @@ package jpa.controller;
 import controller.DAO;
 import entity.Producto;
 import entity.Producto_;
+import entity.Rubro;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -67,6 +68,17 @@ public class ProductoJpaController extends AbstractDAO<Producto, Integer> {
         Root<Producto> from = cq.from(getEntityClass());
         cq.select(from);
         cq.where(cb.equal(from.get(Producto_.bienDeCambio), bienDeCambio));
+        cq.orderBy(cb.asc(from.get(Producto_.nombre)));
+        return getEntityManager().createQuery(cq).getResultList();
+    }
+
+    public List<Producto> findBy(Rubro rubro) {
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Producto> cq = cb.createQuery(getEntityClass());
+        Root<Producto> from = cq.from(getEntityClass());
+        cq.select(from);
+        cq.where(cb.equal(from.get(Producto_.bienDeCambio), true));
+        cq.where(cb.equal(from.get(Producto_.rubro), rubro));
         cq.orderBy(cb.asc(from.get(Producto_.nombre)));
         return getEntityManager().createQuery(cq).getResultList();
     }

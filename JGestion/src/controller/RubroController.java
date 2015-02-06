@@ -102,10 +102,6 @@ public class RubroController implements ActionListener, MouseListener {
         return DAO.getEntityManager().createNamedQuery("Rubro.findByTipo").setParameter("tipo", TIPO).getResultList();
     }
 
-    public List<Rubro> findRubros(int rubro_de) {
-        return DAO.getEntityManager().createNamedQuery("Rubro.findByTipo").setParameter("tipo", rubro_de).getResultList();
-    }
-
     public Rubro findRubro(Integer id) {
         EntityManager em = getEntityManager();
         try {

@@ -1661,7 +1661,7 @@ public class FacturaVentaController {
         } else {
             checkConstraints(facturar);
             FacturaVenta newFacturaVenta = getEntity(facturar);
-            jpaController.create(newFacturaVenta);
+            jpaController.persist(newFacturaVenta);
             //refreshing the entity from DB
             System.out.println("FV.id=" + newFacturaVenta.getId());
             newFacturaVenta

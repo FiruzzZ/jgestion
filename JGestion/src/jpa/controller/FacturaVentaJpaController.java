@@ -93,7 +93,7 @@ public class FacturaVentaJpaController extends AbstractDAO<FacturaVenta, Integer
     }
 
     @Override
-    public void create(FacturaVenta fv) {
+    public void persist(FacturaVenta fv) {
         getEntityManager().getTransaction().begin();
         getEntityManager().persist(fv);
         if (fv.getRemito() != null) {

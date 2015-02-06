@@ -64,7 +64,7 @@ public class CtacteClienteController implements ActionListener {
         ccp.setNotaDebito(notaDebito);
         ccp.setFechaCarga(notaDebito.getFechaNotaDebito());
         ccp.setImporte(notaDebito.getImporte().doubleValue());
-        jpaController.create(ccp);
+        jpaController.persist(ccp);
     }
 
     void addToCtaCte(FacturaVenta facturaVenta) throws Exception {
@@ -76,7 +76,7 @@ public class CtacteClienteController implements ActionListener {
         ccp.setFactura(facturaVenta);
         ccp.setFechaCarga(facturaVenta.getFechaalta());
         ccp.setImporte(facturaVenta.getImporte());
-        jpaController.create(ccp);
+        jpaController.persist(ccp);
     }
 
     public CtacteCliente find(Integer id) {

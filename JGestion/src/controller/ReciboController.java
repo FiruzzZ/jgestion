@@ -595,7 +595,7 @@ public class ReciboController implements ActionListener, FocusListener {
         if (conciliando) {
             jpaController.conciliar(re);
         } else {
-            jpaController.create(re);
+            jpaController.persist(re);
         }
         for (DetalleRecibo detalle : re.getDetalle()) {
             if (detalle.getFacturaVenta() != null) {

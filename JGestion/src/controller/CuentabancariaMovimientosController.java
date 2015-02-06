@@ -110,7 +110,7 @@ public class CuentabancariaMovimientosController {
                     Date fechaCre = panelDeposito.getDcFechaCreditoDebito().getDate();
                     OperacionesBancarias op = ((ComboBoxWrapper<OperacionesBancarias>) manager.getCbOperacionesBancarias().getSelectedItem()).getEntity();
                     CuentabancariaMovimientos cbm = new CuentabancariaMovimientos(fechaOP, descrip, fechaCre, monto, BigDecimal.ZERO, false, UsuarioController.getCurrentUser(), op, cb, null, null, false);
-                    new CuentabancariaMovimientosJpaController().create(cbm);
+                    new CuentabancariaMovimientosJpaController().persist(cbm);
                     abm.showMessage("operación n° " + cbm.getId() + " realizada", null, 1);
                     abm.dispose();
 
@@ -160,7 +160,7 @@ public class CuentabancariaMovimientosController {
                     Date fechaCre = panelDeposito.getDcFechaCreditoDebito().getDate();
                     OperacionesBancarias op = ((ComboBoxWrapper<OperacionesBancarias>) manager.getCbOperacionesBancarias().getSelectedItem()).getEntity();
                     CuentabancariaMovimientos cbm = new CuentabancariaMovimientos(fechaOP, descrip, fechaCre, BigDecimal.ZERO, monto, false, UsuarioController.getCurrentUser(), op, cb, null, null, false);
-                    new CuentabancariaMovimientosJpaController().create(cbm);
+                    new CuentabancariaMovimientosJpaController().persist(cbm);
                     abm.showMessage("operación n° " + cbm.getId() + " realizada", null, 1);
                     abm.dispose();
                 } catch (MessageException ex) {
@@ -227,10 +227,10 @@ public class CuentabancariaMovimientosController {
                         descripDestino = origen.getBanco().getNombre() + " N° " + origen.getNumero();
                         cbmDestino = new CuentabancariaMovimientos(fechaOP, descripDestino, null, monto, BigDecimal.ZERO, false, UsuarioController.getCurrentUser(), op, destino, null, null, false);
                     }
-                    new CuentabancariaMovimientosJpaController().create(cbmOrigen);
+                    new CuentabancariaMovimientosJpaController().persist(cbmOrigen);
                     String x = "Operación de Transferencia n° " + cbmOrigen.getId() + " realizada";
                     if (cbmDestino != null) {
-                        new CuentabancariaMovimientosJpaController().create(cbmDestino);
+                        new CuentabancariaMovimientosJpaController().persist(cbmDestino);
                         x = "\nOperación de Transferencia (depósito) n° " + cbmDestino.getId() + " realizada";
                     }
                     JOptionPane.showMessageDialog(abm, x);

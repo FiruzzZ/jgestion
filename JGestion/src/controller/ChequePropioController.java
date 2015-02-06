@@ -129,7 +129,7 @@ public class ChequePropioController implements ActionListener {
                         if (panelABM.persist()) {
                             String msg = EL_OBJECT.getId() == null ? "Registrado" : "Modificado";
                             if (EL_OBJECT.getId() == null) {
-                                jpaController.create(EL_OBJECT);
+                                jpaController.persist(EL_OBJECT);
                             } else {
                                 jpaController.merge(EL_OBJECT);
                             }
@@ -208,7 +208,7 @@ public class ChequePropioController implements ActionListener {
                         }
                         cargarTablaChequeManager(armarQuery(), false);
                     }
-                } else if (boton.equals(jdChequeManager.getbDeposito())) {
+                } else if (boton.equals(jdChequeManager.getbDepositar())) {
                     int row = jdChequeManager.getjTable1().getSelectedRow();
                     if (row > -1) {
                         ChequePropio chequ = jpaController.find((Integer) jdChequeManager.getjTable1().getModel().getValueAt(row, 0));
@@ -362,7 +362,7 @@ public class ChequePropioController implements ActionListener {
         jdChequeManager.getBtnNuevo().setEnabled(false);
 //        jdChequeManager.getBtnModificar().setEnabled(false);
         jdChequeManager.getbAnular().setEnabled(true);
-        jdChequeManager.getbDeposito().setText("Debidar");
+        jdChequeManager.getbDepositar().setText("Debidar");
         jdChequeManager.getLabelEmisor().setText("Emitido a");
         jdChequeManager.setTitle("Administración de Cheques Propios");
         jdChequeManager.getCbBancoSucursales().setVisible(false);

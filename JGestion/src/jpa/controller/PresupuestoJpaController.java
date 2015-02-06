@@ -26,7 +26,7 @@ public class PresupuestoJpaController extends AbstractDAO<Presupuesto, Integer> 
     }
 
     @Override
-    public void create(Presupuesto presupuesto) {
+    public void persist(Presupuesto presupuesto) {
         Integer nextNumero = getNextNumero(presupuesto.getSucursal());
         presupuesto.setNumero(nextNumero);
         List<DetallePresupuesto> toAttach = presupuesto.getDetallePresupuestoList();

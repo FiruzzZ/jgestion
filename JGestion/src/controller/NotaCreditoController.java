@@ -76,7 +76,7 @@ public class NotaCreditoController {
                     facturaVentaController.getContenedor().getBtnAceptar().setEnabled(false);
                     if (!facturaVentaController.getContenedor().isViewMode()) {
                         NotaCredito notaCreditoToPersist = setEntity();
-                        jpaController.create(notaCreditoToPersist);
+                        jpaController.persist(notaCreditoToPersist);
                         reporte(notaCreditoToPersist);
                         facturaVentaController.setNumeroFactura(notaCreditoToPersist.getSucursal(), jpaController.getNextNumero(notaCreditoToPersist.getSucursal()));
                         facturaVentaController.borrarDetalles();

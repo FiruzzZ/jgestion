@@ -25,7 +25,7 @@ public class NotaCreditoJpaController extends AbstractDAO<NotaCredito, Integer> 
     }
 
     @Override
-    public void create(NotaCredito notaCredito) {
+    public void persist(NotaCredito notaCredito) {
         Collection<DetalleNotaCredito> toAttach = notaCredito.getDetalleNotaCreditoCollection();
         notaCredito.setDetalleNotaCreditoCollection(new ArrayList<DetalleNotaCredito>());
         EntityManager em = getEntityManager();

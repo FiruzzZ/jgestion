@@ -1,3 +1,31 @@
+--20150206
+INSERT INTO cheque_estado VALUES(9,'RECHAZADO');
+ALTER TABLE cheque_terceros ADD CONSTRAINT fk_cheque_terceros_cheque_estado FOREIGN KEY (estado) REFERENCES cheque_estado (id);
+--20150129
+CREATE TABLE ventasimpleconfig (
+   id serial NOT NULL, 
+   cliente_id integer NOT NULL, 
+   caja_id integer NOT NULL, 
+   sucursal_id integer NOT NULL, 
+   lista_precios_id integer NOT NULL, 
+   unidad_de_negocio_id integer, 
+   cuenta_id integer, 
+   subcuenta_id integer, 
+    PRIMARY KEY (id), 
+    FOREIGN KEY (cliente_id) REFERENCES cliente (id),
+    FOREIGN KEY (caja_id) REFERENCES caja (id),
+    FOREIGN KEY (sucursal_id) REFERENCES sucursal (id),
+    FOREIGN KEY (cuenta_id) REFERENCES movimiento_concepto (id),
+    FOREIGN KEY (subcuenta_id) REFERENCES subcuenta (id),
+    FOREIGN KEY (lista_precios_id) REFERENCES lista_precios (id)
+);
+CREATE TABLE ventasimpleconfig_rubro (
+  ventasimpleconfig_id integer NOT NULL,
+  rubro_id integer NOT NULL,
+  CONSTRAINT ventasimpleconfig_rubro_pkey PRIMARY KEY (ventasimpleconfig_id, rubro_id),
+  CONSTRAINT ventasimpleconfig_rubro_rubro_id_fkey FOREIGN KEY (rubro_id) REFERENCES rubro (idrubro),
+  CONSTRAINT ventasimpleconfig_rubro_ventasimpleconfig_id_fkey FOREIGN KEY (ventasimpleconfig_id) REFERENCES ventasimpleconfig (id)
+);
 --20141029
 ALTER TABLE ctacte_cliente ADD CONSTRAINT ctacte_cliente_entregas_check CHECK (entregado >=0 and entregado <= importe);
 --20140825

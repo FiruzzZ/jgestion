@@ -160,7 +160,7 @@ public class CuentabancariaController {
                     checkConstraints(EL_OBJECT);
                     String msg;
                     if (EL_OBJECT.getId() == null) {
-                        jpaController.create(EL_OBJECT);
+                        jpaController.persist(EL_OBJECT);
                         msg = "Creado..";
                     } else {
                         jpaController.merge(EL_OBJECT);
@@ -297,7 +297,7 @@ public class CuentabancariaController {
                     }
                     CuentabancariaMovimientos cbm = new CuentabancariaMovimientos(fechaOperacion, descripcion, fechaCreditoDebito, chequeToDeposit.getImporte(), BigDecimal.ZERO, false, UsuarioController.getCurrentUser(),
                             new OperacionesBancariasController().getOperacion(OperacionesBancariasController.DEPOSITO), cb, chequeToDeposit, null, false);
-                    new CuentabancariaMovimientosJpaController().create(cbm);
+                    new CuentabancariaMovimientosJpaController().persist(cbm);
                     chequeToDeposit.setEstado(ChequeEstado.DEPOSITADO.getId());
                     new ChequeTercerosJpaController().merge(chequeToDeposit);
                     JOptionPane.showMessageDialog(abm, "Movimiento de cuenta N° " + cbm.getId() + " creado.", null, JOptionPane.INFORMATION_MESSAGE);
@@ -376,7 +376,7 @@ public class CuentabancariaController {
 
                     CuentabancariaMovimientos cbm = new CuentabancariaMovimientos(fechaOperacion, descripcion, fechaCreditoDebito, BigDecimal.ZERO, chequeToDeposit.getImporte(), false, UsuarioController.getCurrentUser(),
                             new OperacionesBancariasController().getOperacion(OperacionesBancariasController.EXTRACCION), chequeToDeposit.getCuentabancaria(), null, chequeToDeposit, false);
-                    new CuentabancariaMovimientosJpaController().create(cbm);
+                    new CuentabancariaMovimientosJpaController().persist(cbm);
                     chequeToDeposit.setEstado(ChequeEstado.DEBITADO.getId());
                     new ChequePropioJpaController().merge(chequeToDeposit);
                     JOptionPane.showMessageDialog(abm, "Movimiento de cuenta N° " + cbm.getId() + " creado.", null, JOptionPane.INFORMATION_MESSAGE);

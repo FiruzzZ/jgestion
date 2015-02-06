@@ -71,7 +71,7 @@ public class SubCuentaController {
                     //persistiendo......
                     String msg;
                     if (EL_OBJECT.getId() == null) {
-                        jpaController.create(EL_OBJECT);
+                        jpaController.persist(EL_OBJECT);
                         msg = " creada";
                     } else {
                         jpaController.merge(EL_OBJECT);

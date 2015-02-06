@@ -114,7 +114,7 @@ public class CajaMovimientosController implements ActionListener {
         dcm.setCuenta(CuentaController.SIN_CLASIFICAR);
         dcm.setCajaMovimientos(cm);
         cm.getDetalleCajaMovimientosList().add(dcm);
-        jpaController.create(cm);
+        jpaController.persist(cm);
     }
 
     /**
@@ -147,7 +147,7 @@ public class CajaMovimientosController implements ActionListener {
             dcm.setCuenta(CuentaController.SIN_CLASIFICAR);
         }
         nextCaja.getDetalleCajaMovimientosList().add(dcm);
-        jpaController.create(nextCaja);
+        jpaController.persist(nextCaja);
     }
 
     public void initCierreCaja(JFrame frame, boolean modal) {

@@ -79,7 +79,7 @@ public class OperacionesBancariasController {
                     //persistiendo......
                     String msg;
                     if (selectedEntity.getId() == null) {
-                        jpaController.create(selectedEntity);
+                        jpaController.persist(selectedEntity);
                         msg = " creado";
                     } else {
                         jpaController.merge(selectedEntity);

@@ -316,10 +316,10 @@ public class NotaCreditoProveedorController implements ActionListener {
             detalle.setNotaCreditoProveedor(o);
             o.getDetalleNotaCreditoProveedorList().add(detalle);
         }
-        jpaController.create(o);
+        jpaController.persist(o);
         if (jdFactura.getCheckActualizaStock().isSelected()) {
             CreditoProveedor cp = new CreditoProveedor(null, true, o.getImporte(), "NC N°" + JGestionUtils.getNumeracion(o, true), o.getProveedor());
-            new CreditoProveedorJpaController().create(cp);
+            new CreditoProveedorJpaController().persist(cp);
         }
     }
 
