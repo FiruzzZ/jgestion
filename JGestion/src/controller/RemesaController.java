@@ -550,10 +550,10 @@ public class RemesaController implements FocusListener {
             jpaController.conciliar(remesa);
         } else {
             try {
-                jpaController.create(remesa);
+                jpaController.persist(remesa);
             } catch (Exception ex) {
                 LOG.error("Error fantástico de doble persistencia de remesa: " + remesa, ex);
-                jpaController.create(remesa);
+                jpaController.persist(remesa);
             }
         }
         for (DetalleRemesa detalle : remesa.getDetalle()) {
@@ -576,7 +576,7 @@ public class RemesaController implements FocusListener {
                 proveedor = d.getNotaDebitoProveedor().getProveedor();
             }
             CreditoProveedor cp = new CreditoProveedor(null, debe, diferencia, "Remesa N° " + JGestionUtils.getNumeracion(remesa, true), proveedor);
-            new CreditoProveedorJpaController().create(cp);
+            new CreditoProveedorJpaController().persist(cp);
         }
         return remesa;
     }

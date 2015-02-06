@@ -165,7 +165,7 @@ public class ReciboJpaController extends AbstractDAO<Recibo, Integer> {
     }
 
     @Override
-    public void create(Recibo recibo) {
+    public void persist(Recibo recibo) {
         entityManager = getEntityManager();
         if (!entityManager.getTransaction().isActive()) {
             entityManager.getTransaction().begin();

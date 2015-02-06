@@ -198,7 +198,7 @@ public class NotaDebitoController {
             String msg = EL_OBJECT.getId() == null ? " registrada" : " modificada";
             if (EL_OBJECT.getId() == null) {
                 try {
-                    jpaController.create(EL_OBJECT);
+                    jpaController.persist(EL_OBJECT);
                     new CtacteClienteController().addToCtaCte(EL_OBJECT);
                     doReport(EL_OBJECT);
                 } catch (MissingReportException | JRException ex) {

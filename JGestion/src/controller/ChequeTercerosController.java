@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -54,6 +55,7 @@ import javax.swing.table.DefaultTableModel;
 import jgestion.JGestionUtils;
 import jpa.controller.ChequeTercerosJpaController;
 import jpa.controller.CuentabancariaMovimientosJpaController;
+import jpa.controller.UsuarioAccionesJpaController;
 import jpa.controller.UsuarioJpaController;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
@@ -87,6 +89,7 @@ public class ChequeTercerosController implements ActionListener {
     private PanelEntregaTerceros panelEntregaTerceros;
 
     public ChequeTercerosController() {
+
     }
 
     /**
@@ -311,7 +314,7 @@ public class ChequeTercerosController implements ActionListener {
                             if (panelABM.persist()) {
                                 String msg = EL_OBJECT.getId() == null ? "Registrado" : "Modificado";
                                 if (EL_OBJECT.getId() == null) {
-                                    jpaController.create(EL_OBJECT);
+                                    jpaController.persist(EL_OBJECT);
                                 } else {
                                     jpaController.merge(EL_OBJECT);
                                 }
@@ -370,11 +373,11 @@ public class ChequeTercerosController implements ActionListener {
                                 armarQuery(false);
                             } else {
                                 String motivo = JOptionPane.showInputDialog(jdChequeManager, "Ingrese motivo de la anulación:");
-                                if (motivo != null) {
-                                    motivo.trim();
-                                }
                                 if (motivo == null || motivo.isEmpty()) {
                                     throw new MessageException("Motivo de anulación no válido");
+                                }
+                                if (motivo != null) {
+                                    motivo = motivo.trim();
                                 }
                                 if (motivo.length() > 200) {
                                     throw new MessageException("No es para escribir una novela, solo una breve descripción de la anulación."
@@ -382,7 +385,7 @@ public class ChequeTercerosController implements ActionListener {
                                 }
                                 cheque.setEstadoPrevio(cheque.getEstado());
                                 cheque.setEstado(ChequeEstado.ANULADO.getId());
-                                cheque.setObservacion(cheque.getObservacion() + "; ANULADO: " + motivo);
+                                cheque.setObservacion(Objects.toString(cheque.getObservacion(), "") + "; ANULADO: " + motivo);
                                 jpaController.merge(cheque);
                                 String desc = "Anuló " + ChequeTerceros.class.getSimpleName() + " N° " + cheque.getNumero() + "; motivo: " + motivo;
                                 UsuarioAcciones ua = new UsuarioAcciones('u', desc, null, ChequeTerceros.class.getSimpleName(), cheque.getId(), null);
@@ -390,7 +393,7 @@ public class ChequeTercerosController implements ActionListener {
                                 armarQuery(false);
                             }
                         }
-                    } else if (boton.equals(jdChequeManager.getbDeposito())) {
+                    } else if (boton.equals(jdChequeManager.getbDepositar())) {
                         int row = jdChequeManager.getjTable1().getSelectedRow();
                         if (row > -1) {
                             ChequeTerceros cheque = jpaController.find((Integer) jdChequeManager.getjTable1().getModel().getValueAt(row, 0));
@@ -409,23 +412,13 @@ public class ChequeTercerosController implements ActionListener {
                                 throw new MessageException("El cheque ya fue reemplazado, en las observaciones de este se encuentra la información del reemplazo");
                             }
                             boolean eliminarCBM = false;
-                            boolean eliminarCajaMovimiento = false;
-                            if (toReplace.getChequeEstado().equals(ChequeEstado.DEPOSITADO)) {
+                            if (toReplace.getChequeEstado().equals(ChequeEstado.DEPOSITADO)
+                                    || toReplace.getChequeEstado().equals(ChequeEstado.ENDOSADO)) {
                                 if (JOptionPane.YES_OPTION != JOptionPane.showConfirmDialog(jdChequeManager,
-                                        "La modificación de un cheque " + ChequeEstado.DEPOSITADO + " implica"
+                                        "La modificación de un cheque " + ChequeEstado.DEPOSITADO + " o " + ChequeEstado.ENDOSADO + " implica"
                                         + "\nla eliminación del registro de movimiento de cuenta bancaria asociado a este."
                                         + "\nConfirmar para continuar..",
-                                        "Reemplazo de cheque depositado", JOptionPane.YES_NO_OPTION)) {
-                                    return;
-                                }
-                                eliminarCBM = true;
-                            }
-                            if (toReplace.getChequeEstado().equals(ChequeEstado.ENDOSADO)) {
-                                if (JOptionPane.YES_OPTION != JOptionPane.showConfirmDialog(jdChequeManager,
-                                        "La modificación de un cheque " + ChequeEstado.ENDOSADO + " implica"
-                                        + "\nla eliminación del registro de movimiento de cuenta bancaria asociado a este."
-                                        + "\nConfirmar para continuar..",
-                                        "Reemplazo de cheque depositado", JOptionPane.YES_NO_OPTION)) {
+                                        "Reemplazo de cheque", JOptionPane.YES_NO_OPTION)) {
                                     return;
                                 }
                                 eliminarCBM = true;
@@ -433,7 +426,7 @@ public class ChequeTercerosController implements ActionListener {
                             ChequeTerceros reemplazo = initABMReemplazo(jdChequeManager, toReplace);
                             if (reemplazo != null) {
                                 toReplace.setEstado(ChequeEstado.REEMPLAZADO.getId());
-                                toReplace.setObservacion(toReplace.getObservacion() + " Reemplazado por: " + reemplazo.getBanco().getNombre() + " N° " + reemplazo.getNumero());
+                                toReplace.setObservacion(Objects.toString(toReplace.getObservacion(), "") + " Reemplazado por: " + reemplazo.getBanco().getNombre() + " N° " + reemplazo.getNumero());
                                 if (toReplace.getObservacion().length() > 300) {
                                     toReplace.setObservacion(toReplace.getObservacion().substring(0, 300));
                                 }
@@ -441,6 +434,44 @@ public class ChequeTercerosController implements ActionListener {
                                 if (eliminarCBM) {
                                     CuentabancariaMovimientosJpaController cmjc = new CuentabancariaMovimientosJpaController();
                                     CuentabancariaMovimientos cbm = cmjc.findBy(toReplace);
+                                    cmjc.remove(cbm);
+                                }
+                            }
+                            armarQuery(false);
+                        }
+                    } else if (boton.equals(jdChequeManager.getBtnRechazar())) {
+                        int row = jdChequeManager.getjTable1().getSelectedRow();
+                        if (row > -1) {
+                            ChequeTerceros toReject = jpaController.find((Integer) jdChequeManager.getjTable1().getModel().getValueAt(row, 0));
+                            if (toReject.getChequeEstado().equals(ChequeEstado.RECHAZADO)) {
+                                throw new MessageException("El cheque ya está rechazado");
+                            }
+                            if (toReject.getChequeEstado().equals(ChequeEstado.DEPOSITADO)
+                                    || toReject.getChequeEstado().equals(ChequeEstado.CARTERA)) {
+                                throw new MessageException("Solo un cheque " + ChequeEstado.DEPOSITADO + " o en " + ChequeEstado.CARTERA
+                                        + " puede ser marcado como " + ChequeEstado.RECHAZADO);
+                            }
+                            boolean eliminarCBM = false;
+                            if (toReject.getChequeEstado().equals(ChequeEstado.DEPOSITADO)
+                                    || toReject.getChequeEstado().equals(ChequeEstado.ENDOSADO)) {
+                                if (JOptionPane.YES_OPTION != JOptionPane.showConfirmDialog(jdChequeManager,
+                                        "La modificación de un cheque " + ChequeEstado.DEPOSITADO + " o " + ChequeEstado.ENDOSADO + " implica"
+                                        + "\nla eliminación del registro de movimiento de cuenta bancaria asociado a este."
+                                        + "\nConfirmar para continuar..",
+                                        "Reemplazo de cheque", JOptionPane.YES_NO_OPTION)) {
+                                    return;
+                                }
+                                eliminarCBM = true;
+                            }
+                            toReject.setEstado(ChequeEstado.RECHAZADO.getId());
+                            UsuarioAcciones ua = UsuarioAccionesController.createUA(toReject, toReject.getId(), "Rechazó cheque " + toReject.toString(), 'u');
+                            new UsuarioAccionesController().create(ua);
+                            jpaController.merge(toReject);
+                            if (eliminarCBM) {
+                                CuentabancariaMovimientosJpaController cmjc = new CuentabancariaMovimientosJpaController();
+                                CuentabancariaMovimientos cbm = cmjc.findBy(toReject);
+                                if (cbm != null) {
+                                    //cuando está en cartera el cheque no tiene movimiento
                                     cmjc.remove(cbm);
                                 }
                             }

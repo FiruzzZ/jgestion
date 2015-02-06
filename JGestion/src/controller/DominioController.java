@@ -163,7 +163,7 @@ public class DominioController implements ActionListener {
             throw new MessageException("Ya existe un registro con este nombre");
         }
         if (o.getId() == null) {
-            jpaController.create(o);
+            jpaController.persist(o);
         } else {
             jpaController.merge(o);
         }

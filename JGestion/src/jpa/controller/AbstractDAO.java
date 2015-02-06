@@ -40,7 +40,7 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
     }
 
     @Override
-    public void create(T entity) {
+    public void persist(T entity) {
         getEntityManager().getTransaction().begin();
         getEntityManager().persist(entity);
         getEntityManager().getTransaction().commit();

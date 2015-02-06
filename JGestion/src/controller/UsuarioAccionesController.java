@@ -3,6 +3,7 @@ package controller;
 import entity.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Objects;
 import jpa.controller.*;
 import org.apache.log4j.Logger;
 
@@ -13,6 +14,24 @@ import org.apache.log4j.Logger;
 public class UsuarioAccionesController {
 
     private static final Logger LOG = Logger.getLogger(UsuarioAccionesController.class);
+
+    static UsuarioAcciones createUA(Object entity, Object id, String description, char accion) {
+        Objects.requireNonNull(entity);
+        Objects.requireNonNull(id);
+        Objects.requireNonNull(description);
+        String detalle = null;
+        String descripcion = description;
+        if (descripcion.length() > 200) {
+            descripcion = description.substring(0, 200);
+            detalle = description.substring(200);
+            if (detalle.length() > 2000) {
+                LOG.info(entity.getClass().getSimpleName() + ", detalle demasiado largo, se perdió:" + detalle.substring(2000));
+                detalle = detalle.substring(0, 2000);
+            }
+        }
+        UsuarioAcciones ua = new UsuarioAcciones(accion, descripcion, detalle, entity.getClass().getSimpleName(), (Integer) id, UsuarioController.getCurrentUser());
+        return ua;
+    }
     private final UsuarioAccionesJpaController jpaController;
 
     public UsuarioAccionesController() {
@@ -32,7 +51,7 @@ public class UsuarioAccionesController {
                 o.setHostname(local.getHostName());
             }
         } catch (UnknownHostException ex) {
-           
+            LOG.error(ex, ex);
         }
         String descripcion = o.getDescripcion();
         String detalle = o.getDetalle();
@@ -45,10 +64,10 @@ public class UsuarioAccionesController {
         }
         o.setDescripcion(descripcion);
         o.setDetalle(detalle);
-        jpaController.create(o);
+        jpaController.persist(o);
     }
 
-    public void log(Producto edited) {
+    public void createLog(Producto edited) {
         Producto old = new ProductoJpaController().find(edited.getId());
         StringBuilder sb = new StringBuilder(100);
         if (!old.getCodigo().equalsIgnoreCase(edited.getCodigo())) {

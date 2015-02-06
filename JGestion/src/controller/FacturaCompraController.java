@@ -485,7 +485,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         // 1- PERSIST, 2- UPDATE STOCK, 3- UPDATE CAJA, 4- update costo 
         try {
             //persistiendo
-            jpaController.create(newFacturaCompra);
+            jpaController.persist(newFacturaCompra);
             ProductoController productoCtrl = new ProductoController();
             for (DetalleCompra detalleCompra : newFacturaCompra.getDetalleCompraList()) {
                 for (int row = 0; row < dtm.getRowCount(); row++) {

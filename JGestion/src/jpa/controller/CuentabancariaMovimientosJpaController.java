@@ -6,7 +6,6 @@ import entity.ChequePropio;
 import entity.CuentaBancaria;
 import entity.CuentabancariaMovimientos;
 import entity.CuentabancariaMovimientos_;
-import entity.enums.ChequeEstado;
 import java.math.BigDecimal;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;

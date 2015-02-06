@@ -59,7 +59,7 @@ public class RemesaJpaController extends AbstractDAO<Remesa, Integer> {
     }
 
     @Override
-    public void create(Remesa remesa) {
+    public void persist(Remesa remesa) {
         entityManager = getEntityManager();
         if (!entityManager.getTransaction().isActive()) {
             entityManager.getTransaction().begin();

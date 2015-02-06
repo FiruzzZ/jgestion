@@ -179,7 +179,7 @@ public class CuentaController {
                     //persistiendo......
                     String msg;
                     if (EL_OBJECT.getId() == null) {
-                        jpaController.create(EL_OBJECT);
+                        jpaController.persist(EL_OBJECT);
                         msg = " creado";
                     } else {
                         jpaController.merge(EL_OBJECT);

@@ -214,7 +214,7 @@ public class IvaController implements ActionListener {
 
         //persistiendo......
         if (iva.getId() == null) {
-            jpaController.create(iva);
+            jpaController.persist(iva);
         } else {
             jpaController.merge(iva);
         }

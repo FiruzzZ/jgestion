@@ -101,6 +101,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenuItem48 = new javax.swing.JMenuItem();
         jMenuItem84 = new javax.swing.JMenuItem();
         jMenuItem36 = new javax.swing.JMenuItem();
+        jMenuItem51 = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
         jMenuItem4 = new javax.swing.JMenuItem();
         jMenu26 = new javax.swing.JMenu();
@@ -193,6 +194,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenuItem58 = new javax.swing.JMenuItem();
         jMenuItem59 = new javax.swing.JMenuItem();
         jMenuItemCuentasBancarias = new javax.swing.JMenuItem();
+        jMenuItem52 = new javax.swing.JMenuItem();
         jMenuReportes = new javax.swing.JMenu();
         jMenu24 = new javax.swing.JMenu();
         jMenuItem67 = new javax.swing.JMenuItem();
@@ -390,6 +392,14 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenu11.add(jMenuItem36);
 
         jMenu2.add(jMenu11);
+
+        jMenuItem51.setText("Ventas Simples");
+        jMenuItem51.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem51ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem51);
 
         jMenuBar1.add(jMenu2);
 
@@ -1027,6 +1037,14 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenu18.add(jMenuItemCuentasBancarias);
 
         jMenu9.add(jMenu18);
+
+        jMenuItem52.setText("Configuración de Venta Simple");
+        jMenuItem52.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem52ActionPerformed(evt);
+            }
+        });
+        jMenu9.add(jMenuItem52);
 
         jMenuBar1.add(jMenu9);
 
@@ -1953,6 +1971,22 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         }
     }//GEN-LAST:event_jMenuItem98ActionPerformed
 
+    private void jMenuItem51ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem51ActionPerformed
+        try {
+            new VentaSimpleController().displayVentaSimple(this);
+        } catch (MessageException ex) {
+            ex.displayMessage(this);
+        }
+    }//GEN-LAST:event_jMenuItem51ActionPerformed
+
+    private void jMenuItem52ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem52ActionPerformed
+        try {
+            new VentaSimpleController().displayConfiguracion(this);
+        } catch (MessageException ex) {
+            ex.displayMessage(this);
+        }
+    }//GEN-LAST:event_jMenuItem52ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JMenu jMenu1;
@@ -2030,6 +2064,8 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenuItem jMenuItem49;
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem50;
+    private javax.swing.JMenuItem jMenuItem51;
+    private javax.swing.JMenuItem jMenuItem52;
     private javax.swing.JMenuItem jMenuItem54;
     private javax.swing.JMenuItem jMenuItem55;
     private javax.swing.JMenuItem jMenuItem56;

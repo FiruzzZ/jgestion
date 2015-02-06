@@ -464,7 +464,7 @@ public class SucursalController implements ActionListener {
                     checkConstraints(entity);
                     String msg = entity.getId() == null ? "Registrado" : "Modificado";
                     if (entity.getId() == null) {
-                        jpaController.create(entity);
+                        jpaController.persist(entity);
                         abm.showMessage(JGestion.resourceBundle.getString("info.newsucursal"), CLASS_NAME, 2);
                     } else {
                         jpaController.merge(entity);

@@ -43,7 +43,12 @@ public enum ChequeEstado {
      * Estado exclusivo de {@link ChequePropio}, e indica que fue utilizado como
      * medio de pago.
      */
-    ENDOSADO(8);
+    ENDOSADO(8),
+    /**
+     * Exclusivo de {@link ChequeTerceros}, pendiente de ser recuperado, de este estado pueden
+     * derivar 2: {@link #REEMPLAZADO} y {@link #ANULADO}
+     */
+    RECHAZADO(9);
     private final int id;
 
     private ChequeEstado(int id) {

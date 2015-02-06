@@ -182,7 +182,7 @@ public class PresupuestoController implements ActionListener {
 //                detalle.setPresupuesto(newPresupuesto); //innecesario
                 newPresupuesto.getDetallePresupuestoList().add(detalle);
             }
-            jpaController.create(newPresupuesto);
+            jpaController.persist(newPresupuesto);
         }
         return doReport(newPresupuesto);
     }

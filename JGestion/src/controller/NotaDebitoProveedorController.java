@@ -189,7 +189,7 @@ public class NotaDebitoProveedorController {
             String msg = EL_OBJECT.getId() == null ? " registrada" : " modificada";
             if (EL_OBJECT.getId() == null) {
                 try {
-                    jpaController.create(EL_OBJECT);
+                    jpaController.persist(EL_OBJECT);
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(abm, ex.getMessage(), "Algo salió mal", JOptionPane.ERROR_MESSAGE);
                     LOG.error("creando Nota debito > " + EL_OBJECT, ex);
