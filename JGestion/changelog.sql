@@ -1,6 +1,7 @@
 --20150206
 INSERT INTO cheque_estado VALUES(9,'RECHAZADO');
 ALTER TABLE cheque_terceros ADD CONSTRAINT fk_cheque_terceros_cheque_estado FOREIGN KEY (estado) REFERENCES cheque_estado (id);
+ALTER TABLE cheque_propio ADD CONSTRAINT fk_cheque_propio_cheque_estado FOREIGN KEY (estado) REFERENCES cheque_estado (id);
 --20150129
 CREATE TABLE ventasimpleconfig (
    id serial NOT NULL, 

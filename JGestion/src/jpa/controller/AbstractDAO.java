@@ -39,6 +39,53 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
         return entityClass;
     }
 
+    /**
+     * Returns the entity's name alias o
+     *
+     * @return example {@code MyEntityClassSimpleName o}
+     */
+    public String getAlias() {
+        return getAlias("o");
+    }
+
+    /**
+     *
+     * @param alias specify an alias for the entity
+     * @return a string such {@code MyEntityClassSimpleName} + {@code alias}
+     * @see #getAlias()
+     */
+    public String getAlias(String alias) {
+        if (alias == null) {
+            throw new IllegalArgumentException("alias can't be null");
+        }
+        return getEntityClass().getSimpleName() + " " + alias + " ";
+    }
+
+    /**
+     * The initial JPQL statement.
+     * <br>Example: {@code SELECT o FROM MyEntityClassSimpleName o }
+     * <br><b>No se agrega el <code>WHERE</code> al final por si hay que hacer algún JOIN</b>
+     *
+     * @return a string such {@code SELECT o FROM MyEntityClassSimpleName o }
+     */
+    public String getSelectFrom() {
+        return getSelectFrom("o");
+    }
+
+    /**
+     * The initial JPQL statement.
+     * <br>Example: {@code SELECT o FROM MyEntityClassSimpleName o }
+     *
+     * @param alias specify an alias for the entity
+     * @return a string such {@code SELECT o FROM MyEntityClassSimpleName} + {@code alias}
+     */
+    public String getSelectFrom(String alias) {
+        if (alias == null) {
+            throw new IllegalArgumentException("alias can't be null");
+        }
+        return "SELECT " + alias + " FROM " + getAlias(alias);
+    }
+
     @Override
     public void persist(T entity) {
         getEntityManager().getTransaction().begin();

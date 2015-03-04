@@ -6,6 +6,7 @@
 package generics;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -36,7 +37,27 @@ public class CustomABMJDialog extends JDialog {
     private String messageToHTML;
     private Color topButtonForegroundColor = null;
     private Color topButtonBackgroundColor = null;
+    /**
+     * Panel contenedor de {@link #jToolBar}
+     */
+    private JPanel toolBarPanel;
+    /**
+     * Para guardar temporalmente algo.
+     * <br>Cuando la instancia de este diálogo es local y no tener que estar creando variables de
+     * clase para almacenar temporalmente
+     */
+    private Object object;
+    private int permiso;
 
+    /**
+     * Some default sets: resizable = false
+     *
+     * @param owner
+     * @param panel
+     * @param title
+     * @param modal
+     * @param messageText
+     */
     public CustomABMJDialog(Window owner, JPanel panel, String title, boolean modal, String messageText) {
         super(owner, title, modal ? ModalityType.APPLICATION_MODAL : ModalityType.MODELESS);
         if (panel == null) {
@@ -46,6 +67,23 @@ public class CustomABMJDialog extends JDialog {
         this.messageToHTML = messageText;
         initComponents();
         setLocationRelativeTo(owner);
+    }
+
+    /**
+     * {@link #object}
+     *
+     * @param object
+     */
+    public void setObject(Object object) {
+        this.object = object;
+    }
+
+    /**
+     *
+     * @return {@link #object}
+     */
+    public Object getObject() {
+        return object;
     }
 
     public void setToolBarVisible(boolean visible) {
@@ -58,8 +96,7 @@ public class CustomABMJDialog extends JDialog {
     }
 
     /**
-     * Set a actionListener for the 4 buttons in the tool bar. Commonly used it
-     * as: Add, Remove, Edit, Search.
+     * Add an actionListener for every button in the tool bar.
      *
      * @param o
      */
@@ -73,8 +110,7 @@ public class CustomABMJDialog extends JDialog {
     }
 
     /**
-     * Add an
-     * <code>ActionListener</code> to all buttons in {@link #bottomButtonPane}
+     * Add an <code>ActionListener</code> to all buttons in {@link #bottomButtonPane}
      *
      * @param o the ActionListener to be added
      */
@@ -92,7 +128,7 @@ public class CustomABMJDialog extends JDialog {
      *
      * @param enable
      */
-    public void setEnabledBottomButtons(boolean enable) {
+    public void setBottomButtonsEnabled(boolean enable) {
         for (Component component : bottomButtonPane.getComponents()) {
             if (component instanceof JButton) {
                 component.setEnabled(enable);
@@ -100,7 +136,7 @@ public class CustomABMJDialog extends JDialog {
         }
     }
 
-    public void setEnabledToolBarButtons(boolean enable) {
+    public void setToolBarButtonsEnabled(boolean enable) {
         for (Component component : jToolBar.getComponents()) {
             if (component instanceof JButton) {
                 component.setEnabled(enable);
@@ -109,9 +145,8 @@ public class CustomABMJDialog extends JDialog {
     }
 
     /**
-     * Set enable to FALSE to all componenets in the panel. For visibility
-     * reasons, this methond doesn't affect to
-     * {@link JScrollPane}, {@link JLabel} and {@link JSeparator}
+     * Set enable to FALSE to all componenets in the panel. For visibility reasons, this methond
+     * doesn't affect to {@link JScrollPane}, {@link JLabel} and {@link JSeparator}
      *
      * @param enable
      * @see #setComponentsEnabled(java.awt.Component[], boolean)
@@ -141,11 +176,16 @@ public class CustomABMJDialog extends JDialog {
     }
 
     public void setPermisos(int uno_o_dos) {
+        this.permiso = uno_o_dos;
         if (uno_o_dos == 1) {
-            setEnabledToolBarButtons(false);
-            setEnabledBottomButtons(false);
+            setToolBarButtonsEnabled(false);
+            setBottomButtonsEnabled(false);
             btnBuscar.setEnabled(true);
         }
+    }
+
+    public int getPermiso() {
+        return permiso;
     }
 
     //<editor-fold defaultstate="collapsed" desc="getters components">
@@ -184,6 +224,15 @@ public class CustomABMJDialog extends JDialog {
     public JPanel getPanel() {
         return panel;
     }
+
+    /**
+     * Panel contenedor de {@link #jToolBar}
+     *
+     * @return
+     */
+    public JPanel getToolBarPanel() {
+        return toolBarPanel;
+    }
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="init componentes......que loco!">
@@ -210,7 +259,7 @@ public class CustomABMJDialog extends JDialog {
         messagePanel.setLayout(new GridLayout(1, 1));
         messagePanel.add(messageLabel);
 
-        JPanel toolBarPanel = new JPanel();
+        toolBarPanel = new JPanel();
         toolBarPanel.setBackground(topButtonBackgroundColor);
         toolBarPanel.setLayout(new GridLayout(1, 1));
         toolBarPanel.add(jToolBar);
@@ -302,8 +351,8 @@ public class CustomABMJDialog extends JDialog {
     }
 
     /**
-     * Set a message at the top of the GUI. This will be formatted with HTML
-     * TAG's like: Enclosed by &lt HTML> .. &lt/HTML>, "\n" replaced by &lt br>
+     * Set a message at the top of the GUI. This will be formatted with HTML TAG's like: Enclosed by
+     * &lt HTML> .. &lt/HTML>, "\n" replaced by &lt br>
      *
      * @param messageText
      */
@@ -318,11 +367,14 @@ public class CustomABMJDialog extends JDialog {
         messageLabel.setVisible(htmlMessage != null);
         pack();
         if (htmlMessage != null) {
-            int i = htmlMessage.split("<BR>").length - 1;
-            System.out.println(this.getClass() + "Cantidada de <BR> = " + i);
+            String insentiveCaseRegEx = "(?ui)";
+            int i = htmlMessage.split(insentiveCaseRegEx + "<BR>").length - 2;
+//            System.out.println(this.getClass() + "Cantidad de <BR> = " + i);
+            //por cada cropped se incrementa el ancho
+            i += Double.valueOf(messageLabel.getPreferredSize().width / panel.getPreferredSize().width).intValue();
             int extraHeight = 0;
-            if (i - 2 > 0) {
-                extraHeight = 30 * (i - 2);
+            if (i - 1 > 0) {
+                extraHeight = 20 * (i - 1);
             }
             //setea el ancho del mensaje igual al ancho del panel, así no se estiiiiiiiiiiiiiiira el mensaje 
             messageLabel.setPreferredSize(new Dimension(panel.getPreferredSize().width, messageLabel.getPreferredSize().height + extraHeight));
@@ -342,5 +394,15 @@ public class CustomABMJDialog extends JDialog {
             return "<HTML><BR>" + htmlFormatted + "</HTML>";
         }
         return null;
+    }
+
+    public void addBtnDisposeWindowCancelAction() {
+        btnCancelar.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+            }
+        });
     }
 }
