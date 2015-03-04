@@ -1,9 +1,9 @@
 package jgestion.test;
 
-import controller.DAO;
-import controller.exceptions.MissingReportException;
-import entity.DetalleVenta;
-import entity.FacturaVenta;
+import jgestion.controller.DAO;
+import jgestion.controller.exceptions.MissingReportException;
+import jgestion.entity.DetalleVenta;
+import jgestion.entity.FacturaVenta;
 import generics.PropsUtils;
 import java.awt.Dialog;
 import java.io.File;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import jpa.controller.FacturaVentaJpaController;
+import jgestion.jpa.controller.FacturaVentaJpaController;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperFillManager;

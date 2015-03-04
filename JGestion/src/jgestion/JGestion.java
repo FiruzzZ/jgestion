@@ -1,10 +1,11 @@
 package jgestion;
 
-import controller.*;
-import controller.exceptions.MessageException;
-import entity.Usuario;
+import jgestion.controller.DAO;
+import jgestion.controller.UsuarioController;
+import jgestion.controller.exceptions.MessageException;
+import jgestion.entity.Usuario;
 import generics.PropsUtils;
-import gui.JFP;
+import jgestion.gui.JFP;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.event.WindowAdapter;
@@ -21,7 +22,7 @@ import java.util.logging.Level;
 import javax.persistence.PersistenceException;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
-import jpa.controller.UsuarioJpaController;
+import jgestion.jpa.controller.UsuarioJpaController;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.eclipse.persistence.exceptions.DatabaseException;

@@ -4,16 +4,16 @@
  */
 package jgestion.test;
 
-import controller.DAO;
-import entity.Cliente;
-import entity.Contribuyente;
-import entity.Departamento;
-import entity.ListaPrecios;
-import entity.Marca;
-import entity.Municipio;
-import entity.Provincia;
-import entity.Rubro;
-import entity.Sucursal;
+import jgestion.controller.DAO;
+import jgestion.entity.Cliente;
+import jgestion.entity.Contribuyente;
+import jgestion.entity.Departamento;
+import jgestion.entity.ListaPrecios;
+import jgestion.entity.Marca;
+import jgestion.entity.Municipio;
+import jgestion.entity.Provincia;
+import jgestion.entity.Rubro;
+import jgestion.entity.Sucursal;
 import generics.PropsUtils;
 import java.io.File;
 import java.math.BigInteger;
