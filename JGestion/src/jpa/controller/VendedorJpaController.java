@@ -1,8 +1,6 @@
 package jpa.controller;
 
 import controller.DAO;
-import entity.Cliente;
-import entity.Cliente_;
 import entity.Vendedor;
 import entity.Vendedor_;
 import java.util.List;
