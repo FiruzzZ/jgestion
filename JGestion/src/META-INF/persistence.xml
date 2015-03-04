@@ -1,95 +1,95 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence version="1.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd">
-    <persistence-unit name="JGestionPU" transaction-type="RESOURCE_LOCAL">
-        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <class>entity.Caja</class>
-        <class>entity.CajaMovimientos</class>
-        <class>entity.Cliente</class>
-        <class>entity.Configuracion</class>
-        <class>entity.Contribuyente</class>
-        <class>entity.CtacteCliente</class>
-        <class>entity.CtacteProveedor</class>
-        <class>entity.DatosEmpresa</class>
-        <class>entity.Departamento</class>
-        <class>entity.DetalleAcreditacion</class>
-        <class>entity.DetalleCajaMovimientos</class>
-        <class>entity.DetalleCompra</class>
-        <class>entity.DetalleListaPrecios</class>
-        <class>entity.DetalleNotaCredito</class>
-        <class>entity.DetalleOrden</class>
-        <class>entity.DetallePresupuesto</class>
-        <class>entity.DetalleRecibo</class>
-        <class>entity.DetalleRemesa</class>
-        <class>entity.DetalleRemito</class>
-        <class>entity.DetalleVenta</class>
-        <class>entity.FacturaCompra</class>
-        <class>entity.FacturaVenta</class>
-        <class>entity.HistorialOfertas</class>
-        <class>entity.Iva</class>
-        <class>entity.ListaPrecios</class>
-        <class>entity.Marca</class>
-        <class>entity.MsjInformativos</class>
-        <class>entity.Municipio</class>
-        <class>entity.NotaCredito</class>
-        <class>entity.Orden</class>
-        <class>entity.Permisos</class>
-        <class>entity.PermisosCaja</class>
-        <class>entity.Presupuesto</class>
-        <class>entity.Producto</class>
-        <class>entity.ProductosWeb</class>
-        <class>entity.Proveedor</class>
-        <class>entity.Provincia</class>
-        <class>entity.Recibo</class>
-        <class>entity.Remesa</class>
-        <class>entity.Remito</class>
-        <class>entity.Rubro</class>
-        <class>entity.Stock</class>
-        <class>entity.Sucursal</class>
-        <class>entity.Unidadmedida</class>
-        <class>entity.Usuario</class>
-        <class>entity.Banco</class>
-        <class>entity.BancoSucursal</class>
-        <class>entity.ChequePropio</class>
-        <class>entity.ChequeTerceros</class>
-        <class>entity.Librado</class>
-        <class>entity.FacturaElectronica</class>
-        <class>entity.PermisosSucursal</class>
-        <class>entity.ComprobanteRetencion</class>
-        <class>entity.ReciboPagos</class>
-        <class>entity.CuentabancariaMovimientos</class>
-        <class>entity.OperacionesBancarias</class>
-        <class>entity.RemesaPagos</class>
-        <class>entity.NotaCreditoProveedor</class>
-        <class>entity.DetalleNotaCreditoProveedor</class>
-        <class>entity.CuentaBancaria</class>
-        <class>entity.UnidadDeNegocio</class>
-        <class>entity.UnidadDeNegocioSucursal</class>
-        <class>entity.SubCuenta</class>
-        <class>entity.Cuenta</class>
-        <class>entity.UsuarioAcciones</class>
-        <class>entity.CreditoProveedor</class>
-        <class>entity.Vendedor</class>
-        <class>entity.DetalleNotaDebito</class>
-        <class>entity.NotaDebito</class>
-        <class>entity.ChequeTercerosEntregaDetalle</class>
-        <class>entity.ChequeTercerosEntrega</class>
-        <class>entity.NotaDebitoProveedor</class>
-        <class>entity.DetalleNotaDebitoProveedor</class>
-        <class>entity.Especie</class>
-        <class>entity.Dominio</class>
-        <class>entity.DocumentoComercial</class>
-        <class>entity.DocumentoComercialCliente</class>
-        <class>entity.DocumentoComercialProveedor</class>
-        <class>entity.VentaSimpleConfig</class>
-        <properties>
-            <!--      <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://jgestion.no-ip.org:5433/jgestionahinco"/>-->
-            <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
-            <property name="javax.persistence.jdbc.user" value="jgestion"/>
-            <property name="javax.persistence.jdbc.password" value="jgestion"/>
-            <property name="eclipselink.logging.level" value="INFO"/>
-            <!--<property name="eclipselink.logging.level.sql" value="FINER"/>-->
-            <property name="eclipselink.create-ddl-jdbc-file-name" value="createDDL.jdbc"/>
-            <property name="eclipselink.ddl-generation.output-mode" value="both"/>
-        </properties>
-    </persistence-unit>
+  <persistence-unit name="JGestionPU" transaction-type="RESOURCE_LOCAL">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <class>entity.UnidadDeNegocioSucursal</class>
+    <class>jgestion.entity.DetallePresupuesto</class>
+    <class>jgestion.entity.CuentaBancaria</class>
+    <class>jgestion.entity.Configuracion</class>
+    <class>jgestion.entity.Rubro</class>
+    <class>jgestion.entity.Banco</class>
+    <class>jgestion.entity.DocumentoComercialCliente</class>
+    <class>jgestion.entity.ComprobanteRetencion</class>
+    <class>jgestion.entity.Provincia</class>
+    <class>jgestion.entity.Usuario</class>
+    <class>jgestion.entity.DocumentoComercial</class>
+    <class>jgestion.entity.Cliente</class>
+    <class>jgestion.entity.DetalleNotaCreditoProveedor</class>
+    <class>jgestion.entity.PermisosSucursal</class>
+    <class>jgestion.entity.DetalleListaPrecios</class>
+    <class>jgestion.entity.OperacionesBancarias</class>
+    <class>jgestion.entity.DocumentoComercialProveedor</class>
+    <class>jgestion.entity.Remito</class>
+    <class>jgestion.entity.CuentabancariaMovimientos</class>
+    <class>jgestion.entity.DatosEmpresa</class>
+    <class>jgestion.entity.Especie</class>
+    <class>jgestion.entity.DetalleRemesa</class>
+    <class>jgestion.entity.DetalleRecibo</class>
+    <class>jgestion.entity.ChequePropio</class>
+    <class>jgestion.entity.Contribuyente</class>
+    <class>jgestion.entity.FacturaElectronica</class>
+    <class>jgestion.entity.Stock</class>
+    <class>jgestion.entity.Presupuesto</class>
+    <class>jgestion.entity.CtacteProveedor</class>
+    <class>jgestion.entity.Unidadmedida</class>
+    <class>jgestion.entity.Cuenta</class>
+    <class>jgestion.entity.DetalleOrden</class>
+    <class>jgestion.entity.ListaPrecios</class>
+    <class>jgestion.entity.Municipio</class>
+    <class>jgestion.entity.Librado</class>
+    <class>jgestion.entity.VentaSimpleConfig</class>
+    <class>jgestion.entity.CtacteCliente</class>
+    <class>jgestion.entity.DetalleCajaMovimientos</class>
+    <class>jgestion.entity.CajaMovimientos</class>
+    <class>jgestion.entity.NotaDebito</class>
+    <class>jgestion.entity.UnidadDeNegocio</class>
+    <class>jgestion.entity.UsuarioAcciones</class>
+    <class>jgestion.entity.BancoSucursal</class>
+    <class>jgestion.entity.ChequeTercerosEntrega</class>
+    <class>jgestion.entity.DetalleNotaDebito</class>
+    <class>jgestion.entity.Sucursal</class>
+    <class>jgestion.entity.NotaCredito</class>
+    <class>jgestion.entity.RemesaPagos</class>
+    <class>jgestion.entity.DetalleRemito</class>
+    <class>jgestion.entity.Proveedor</class>
+    <class>jgestion.entity.CreditoProveedor</class>
+    <class>jgestion.entity.DetalleVenta</class>
+    <class>jgestion.entity.Producto</class>
+    <class>jgestion.entity.ChequeTercerosEntregaDetalle</class>
+    <class>jgestion.entity.DetalleNotaCredito</class>
+    <class>jgestion.entity.Recibo</class>
+    <class>jgestion.entity.ChequeTerceros</class>
+    <class>jgestion.entity.ProductosWeb</class>
+    <class>jgestion.entity.Vendedor</class>
+    <class>jgestion.entity.DetalleAcreditacion</class>
+    <class>jgestion.entity.Remesa</class>
+    <class>jgestion.entity.DetalleNotaDebitoProveedor</class>
+    <class>jgestion.entity.MsjInformativos</class>
+    <class>jgestion.entity.FacturaCompra</class>
+    <class>jgestion.entity.Dominio</class>
+    <class>jgestion.entity.Caja</class>
+    <class>jgestion.entity.Departamento</class>
+    <class>jgestion.entity.HistorialOfertas</class>
+    <class>jgestion.entity.DetalleCompra</class>
+    <class>jgestion.entity.Iva</class>
+    <class>jgestion.entity.SubCuenta</class>
+    <class>jgestion.entity.FacturaVenta</class>
+    <class>jgestion.entity.NotaDebitoProveedor</class>
+    <class>jgestion.entity.ReciboPagos</class>
+    <class>jgestion.entity.Permisos</class>
+    <class>jgestion.entity.NotaCreditoProveedor</class>
+    <class>jgestion.entity.Orden</class>
+    <class>jgestion.entity.Marca</class>
+    <class>jgestion.entity.PermisosCaja</class>
+    <properties>
+      <!--      <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://jgestion.no-ip.org:5433/jgestionahinco"/>-->
+      <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
+      <property name="javax.persistence.jdbc.user" value="jgestion"/>
+      <property name="javax.persistence.jdbc.password" value="jgestion"/>
+      <property name="eclipselink.logging.level" value="INFO"/>
+      <!--<property name="eclipselink.logging.level.sql" value="FINER"/>-->
+      <property name="eclipselink.create-ddl-jdbc-file-name" value="createDDL.jdbc"/>
+      <property name="eclipselink.ddl-generation.output-mode" value="both"/>
+    </properties>
+  </persistence-unit>
 </persistence>

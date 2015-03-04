@@ -4,19 +4,19 @@
  */
 package jgestion;
 
-import controller.CuentaController;
-import controller.UsuarioHelper;
-import entity.Cuenta;
-import entity.SubCuenta;
-import entity.Sucursal;
-import entity.UnidadDeNegocio;
+import jgestion.controller.CuentaController;
+import jgestion.controller.UsuarioHelper;
+import jgestion.entity.Cuenta;
+import jgestion.entity.SubCuenta;
+import jgestion.entity.Sucursal;
+import jgestion.entity.UnidadDeNegocio;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import javax.swing.JComboBox;
-import jpa.controller.UnidadDeNegocioJpaController;
+import jgestion.jpa.controller.UnidadDeNegocioJpaController;
 import utilities.general.UTIL;
 import utilities.swing.components.ComboBoxWrapper;
 
