@@ -31,7 +31,6 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="jPasswordField1" alignment="0" min="-2" pref="120" max="-2" attributes="0"/>
                           <Component id="tfNick" alignment="0" min="-2" pref="153" max="-2" attributes="1"/>
-                          <Component id="cbEstado" alignment="0" min="-2" pref="110" max="-2" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="jPasswordField2" min="-2" pref="120" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
@@ -39,8 +38,9 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="bResetPass" min="-2" max="-2" attributes="0"/>
                           </Group>
+                          <Component id="checkActivo" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace min="0" pref="325" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
@@ -74,7 +74,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="jLabel11" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="cbEstado" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="checkActivo" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
@@ -102,8 +102,8 @@
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane1" pref="106" max="32767" attributes="0"/>
-                  <Component id="jScrollPane2" pref="106" max="32767" attributes="0"/>
+                  <Component id="jScrollPane1" pref="111" max="32767" attributes="0"/>
+                  <Component id="jScrollPane2" pref="111" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -115,11 +115,6 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Estado:"/>
       </Properties>
-    </Component>
-    <Component class="javax.swing.JComboBox" name="cbEstado">
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cbEstadoActionPerformed"/>
-      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="bResetPass">
       <Properties>
@@ -204,7 +199,7 @@
                       <Component id="checkABMOfertas" min="-2" max="-2" attributes="0"/>
                       <Component id="checkVenta" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace max="32767" attributes="0"/>
+                  <EmptySpace pref="11" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -423,5 +418,10 @@
         </Component>
       </SubComponents>
     </Container>
+    <Component class="javax.swing.JCheckBox" name="checkActivo">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Activo"/>
+      </Properties>
+    </Component>
   </SubComponents>
 </Form>

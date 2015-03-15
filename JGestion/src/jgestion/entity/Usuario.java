@@ -34,8 +34,8 @@ public class Usuario implements Serializable {
     @Column(name = "pass", nullable = false, length = 50)
     private String pass;
     @Basic(optional = false)
-    @Column(name = "estado", nullable = false)
-    private int estado;
+    @Column(name = "activo", nullable = false)
+    private boolean activo;
     @Basic(optional = false)
     @Column(name = "fechaalta", nullable = false, insertable = false, updatable = false, columnDefinition = "timestamp with time zone NOT NULL DEFAULT now()")
     @Temporal(TemporalType.TIMESTAMP)
@@ -54,16 +54,6 @@ public class Usuario implements Serializable {
     private List<UsuarioAcciones> usuarioAccionesList;
 
     public Usuario() {
-    }
-
-    public Usuario(String nick, String pass, int estado, Permisos permisos, List<Stock> stockList, List<PermisosCaja> permisosCajaList, List<PermisosSucursal> sucursales) {
-        this.nick = nick;
-        this.pass = pass;
-        this.estado = estado;
-        this.permisos = permisos;
-        this.stockList = stockList;
-        this.permisosCajaList = permisosCajaList;
-        this.sucursales = sucursales;
     }
 
     public Usuario(Integer id) {
@@ -94,12 +84,12 @@ public class Usuario implements Serializable {
         this.pass = pass;
     }
 
-    public int getEstado() {
-        return estado;
+    public boolean getActivo() {
+        return activo;
     }
 
-    public void setEstado(int estado) {
-        this.estado = estado;
+    public void setActivo(boolean activo) {
+        this.activo = activo;
     }
 
     public Date getFechaalta() {

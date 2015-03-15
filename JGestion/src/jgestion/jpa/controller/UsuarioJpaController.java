@@ -28,10 +28,10 @@ public class UsuarioJpaController extends AbstractDAO<Usuario, Integer> {
         return entityManager;
     }
 
-    public List<Usuario> findByEstado(int estado) {
+    public List<Usuario> findByEstado(boolean activo) {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<Usuario> cq = cb.createQuery(getEntityClass());
-        cq.where(cb.equal(cq.from(getEntityClass()).get(Usuario_.estado), estado));
+        cq.where(cb.equal(cq.from(getEntityClass()).get(Usuario_.activo), activo));
         return getEntityManager().createQuery(cq).getResultList();
     }
 
