@@ -1,3 +1,7 @@
+--20150315
+alter table usuario rename column estado to activo;
+alter table usuario alter column activo drop default;
+alter table usuario alter column activo set data type boolean using activo=1;
 --20150206
 INSERT INTO cheque_estado VALUES(9,'RECHAZADO');
 ALTER TABLE cheque_terceros ADD CONSTRAINT fk_cheque_terceros_cheque_estado FOREIGN KEY (estado) REFERENCES cheque_estado (id);

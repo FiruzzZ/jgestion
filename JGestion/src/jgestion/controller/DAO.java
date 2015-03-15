@@ -1,14 +1,14 @@
 package jgestion.controller;
 
-import jgestion.entity.Usuario;
-import jgestion.entity.Banco;
-import jgestion.entity.Cuenta;
-import jgestion.entity.Contribuyente;
-import jgestion.entity.Permisos;
-import jgestion.entity.Unidadmedida;
 import jgestion.entity.PermisosCaja;
+import jgestion.entity.Cuenta;
 import jgestion.entity.DatosEmpresa;
+import jgestion.entity.Contribuyente;
+import jgestion.entity.Usuario;
+import jgestion.entity.Unidadmedida;
 import jgestion.entity.Iva;
+import jgestion.entity.Permisos;
+import jgestion.entity.Banco;
 import jgestion.controller.exceptions.DatabaseErrorException;
 import jgestion.entity.enums.ChequeEstado;
 import jgestion.gui.JDSystemMessages;
@@ -376,7 +376,7 @@ public abstract class DAO implements Runnable {
                 ventanaSystemMessage.agregar("Ceando usuario por defecto: admin contraseña: adminadmin");
                 Usuario u = new Usuario();
                 u.setId(1);
-                u.setEstado(1);
+                u.setActivo(true);
                 u.setNick("admin");
                 u.setPass("adminadmin");
                 u.setPermisosCajaList(new ArrayList<PermisosCaja>());

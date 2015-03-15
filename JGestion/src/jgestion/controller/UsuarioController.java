@@ -1,16 +1,16 @@
 package jgestion.controller;
 
-import jgestion.controller.exceptions.PreexistingEntityException;
-import jgestion.controller.exceptions.IllegalOrphanException;
-import jgestion.controller.exceptions.NonexistentEntityException;
-import jgestion.controller.exceptions.MessageException;
-import jgestion.entity.Usuario;
-import jgestion.entity.Permisos;
+import jgestion.entity.UsuarioAcciones;
 import jgestion.entity.Caja;
 import jgestion.entity.PermisosCaja;
 import jgestion.entity.Sucursal;
-import jgestion.entity.UsuarioAcciones;
+import jgestion.entity.Usuario;
 import jgestion.entity.PermisosSucursal;
+import jgestion.entity.Permisos;
+import jgestion.controller.exceptions.MessageException;
+import jgestion.controller.exceptions.IllegalOrphanException;
+import jgestion.controller.exceptions.NonexistentEntityException;
+import jgestion.controller.exceptions.PreexistingEntityException;
 import jgestion.controller.PermisosController.PermisoDe;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -164,7 +164,6 @@ public class UsuarioController implements ActionListener, MouseListener, KeyList
             int cantPermisos = em.createQuery(createQuery).executeUpdate();
             System.out.println("Permisos borrados:" + cantPermisos);
 
-            usuario.setEstado(2);
             em.remove(usuario);
             em.getTransaction().commit();
         } finally {
@@ -225,7 +224,7 @@ public class UsuarioController implements ActionListener, MouseListener, KeyList
     public Usuario checkLoginUser(String nick, String pwd) throws MessageException, Exception {
         try {
             CURRENT_USER = (Usuario) getEntityManager().createQuery("SELECT u FROM Usuario u WHERE u.nick ='" + nick + "' AND u.pass = '" + pwd + "' ").getSingleResult();
-            if (CURRENT_USER != null && CURRENT_USER.getEstado() != 1) {
+            if (CURRENT_USER != null && !CURRENT_USER.getActivo()) {
                 CURRENT_USER = null;
                 throw new MessageException("Usuario deshabilitado");
             }
@@ -381,7 +380,7 @@ public class UsuarioController implements ActionListener, MouseListener, KeyList
             dtm.addRow(new Object[]{
                 o.getId(),
                 o.getNick(),
-                o.getEstado() == 1 ? "Activo" : "Baja",
+                o.getActivo() ? "Activo" : "Baja",
                 UTIL.DATE_FORMAT.format(o.getFechaalta())
             });
         }
@@ -444,8 +443,6 @@ public class UsuarioController implements ActionListener, MouseListener, KeyList
         cargarTablaCajas();
         cargarTablaSucursales();
         panel.setListener(this);
-        panel.getCbEstado().addItem(ESTADO_ACTIVO);
-        panel.getCbEstado().addItem(ESTADO_BAJA);
 
         abm = new JDABM(contenedor, "ABM - " + CLASS_NAME + "s", true, panel);
         if (isEditing) {
@@ -460,7 +457,7 @@ public class UsuarioController implements ActionListener, MouseListener, KeyList
         panel.setEnableTfNick(false);
         panel.setTfNick(u.getNick());
         Permisos p = u.getPermisos();
-        panel.getCbEstado().setSelectedIndex(u.getEstado() - 1);
+        panel.getCheckActivo().setSelected(u.getActivo());
         panel.getCheckCajas().setSelected(p.getAbmCajas());
         panel.getCheckClientes().setSelected(p.getAbmClientes());
         panel.getCheckCompra().setSelected(p.getCompra());
@@ -526,7 +523,7 @@ public class UsuarioController implements ActionListener, MouseListener, KeyList
         }// </editor-fold>
 
         // 1 activo , 2 baja
-        EL_OBJECT.setEstado(panel.getCbEstado().getSelectedIndex() + 1);
+        EL_OBJECT.setActivo(panel.getCheckActivo().isSelected());
         EL_OBJECT.setPermisosCajaList(getPermisosCaja(EL_OBJECT.getPermisosCajaList()));
         EL_OBJECT.setSucursales(getPermisosSucurales(EL_OBJECT.getSucursales()));
 
@@ -650,12 +647,11 @@ public class UsuarioController implements ActionListener, MouseListener, KeyList
     }
 
     /**
-     * Verifica si el Usuario (actualmente logeado) tiene permiso para realizar
-     * la acción.
+     * Verifica si el Usuario (actualmente logeado) tiene permiso para realizar la acción.
      *
      * @param permisoToCheck Permiso a checkear.
-     * @throws MessageException Si no tiene permiso o si no se pudo conectarse
-     * con la base de datos para checkear el permiso.
+     * @throws MessageException Si no tiene permiso o si no se pudo conectarse con la base de datos
+     * para checkear el permiso.
      */
     public static void checkPermiso(PermisoDe permisoToCheck) throws MessageException {
         CURRENT_USER = (Usuario) DAO.findEntity(Usuario.class, CURRENT_USER.getId());

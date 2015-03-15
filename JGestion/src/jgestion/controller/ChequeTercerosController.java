@@ -905,7 +905,7 @@ public class ChequeTercerosController implements ActionListener {
     public void showEntregas(Window owner) {
         panelEntregaTerceros = new PanelEntregaTerceros();
 //        UTIL.loadComboBox(panelEntregaTerceros.getCbUsuarioEmisor(), JGestionUtils.getWrappedUsuarios(new UsuarioJpaController().findWithCheques()), true);
-        UTIL.loadComboBox(panelEntregaTerceros.getCbUsuarioReceptor(), JGestionUtils.getWrappedUsuarios(new UsuarioJpaController().findByEstado(1)), false);
+        UTIL.loadComboBox(panelEntregaTerceros.getCbUsuarioReceptor(), JGestionUtils.getWrappedUsuarios(new UsuarioJpaController().findByEstado(true)), false);
         UTIL.getDefaultTableModel(panelEntregaTerceros.getTableDisponibles(),
                 new String[]{"ChequeTercero.object", "Número", "Banco", "Importe"}, new int[]{1, 100, 100, 100});
         panelEntregaTerceros.getTableDisponibles().getColumnModel().getColumn(3).setCellRenderer(NumberRenderer.getCurrencyRenderer());
