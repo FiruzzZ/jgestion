@@ -2,6 +2,7 @@ package jgestion.jpa.controller;
 
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.EntityManager;
@@ -297,5 +298,9 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
         } finally {
             closeEntityManager();
         }
+    }
+
+    public final Date getServerDate() {
+        return (Date) getEntityManager().createNativeQuery("SELECT CURRENT_TIMESTAMP").getSingleResult();
     }
 }

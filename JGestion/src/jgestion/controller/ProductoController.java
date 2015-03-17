@@ -1,21 +1,21 @@
 package jgestion.controller;
 
-import jgestion.gui.PanelBuscadorMovimientosPro;
-import jgestion.gui.PanelABMProductos;
-import jgestion.gui.PanelProductoListados;
-import jgestion.gui.JDContenedor;
-import jgestion.gui.PanelProductoReporteOptions;
-import jgestion.gui.JDBuscador;
-import jgestion.gui.JDABM;
-import jgestion.gui.JDStockGral;
+import jgestion.entity.Rubro;
+import jgestion.entity.Stock;
+import jgestion.entity.Sucursal;
+import jgestion.entity.Unidadmedida;
+import jgestion.entity.Iva;
+import jgestion.entity.Producto;
 import jgestion.entity.ListaPrecios;
 import jgestion.entity.Marca;
-import jgestion.entity.Rubro;
-import jgestion.entity.Unidadmedida;
-import jgestion.entity.Sucursal;
-import jgestion.entity.Producto;
-import jgestion.entity.Stock;
-import jgestion.entity.Iva;
+import jgestion.gui.JDContenedor;
+import jgestion.gui.PanelProductoReporteOptions;
+import jgestion.gui.JDABM;
+import jgestion.gui.PanelProductoListados;
+import jgestion.gui.PanelABMProductos;
+import jgestion.gui.JDBuscador;
+import jgestion.gui.PanelBuscadorMovimientosPro;
+import jgestion.gui.JDStockGral;
 import ar.com.fdvs.dj.core.DynamicJasperHelper;
 import ar.com.fdvs.dj.core.layout.ClassicLayoutManager;
 import ar.com.fdvs.dj.domain.DynamicReport;
@@ -591,13 +591,13 @@ public class ProductoController implements ActionListener, KeyListener {
         jpaController.merge(producto);
     }
 
-    private void initStockGral(Producto p) throws MessageException {
+    void initStockGral(Producto p) throws MessageException {
         if (p == null) {
             return;
         }
 
-        JDStockGral jdStockGral = new JDStockGral(abm);
-        jdStockGral.setLocationRelativeTo(abm);
+        JDStockGral jdStockGral = new JDStockGral(null);
+        jdStockGral.setLocationRelativeTo(null);
         try {
             UTIL.getDefaultTableModel(
                     jdStockGral.getjTable1(),
@@ -618,7 +618,6 @@ public class ProductoController implements ActionListener, KeyListener {
             });
         }
         jdStockGral.setVisible(true);
-
     }
 
     private void eliminarProducto() throws MessageException, NonexistentEntityException, DatabaseErrorException {

@@ -37,7 +37,6 @@
     <class>jgestion.entity.ListaPrecios</class>
     <class>jgestion.entity.Municipio</class>
     <class>jgestion.entity.Librado</class>
-    <class>jgestion.entity.VentaSimpleConfig</class>
     <class>jgestion.entity.CtacteCliente</class>
     <class>jgestion.entity.DetalleCajaMovimientos</class>
     <class>jgestion.entity.CajaMovimientos</class>
