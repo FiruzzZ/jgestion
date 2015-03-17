@@ -5,51 +5,50 @@
  */
 package jgestion.gui;
 
-import jgestion.controller.ChequePropioController;
-import jgestion.controller.Contabilidad;
-import jgestion.controller.VentaSimpleController;
-import jgestion.controller.BancoController;
-import jgestion.controller.PresupuestoController;
-import jgestion.controller.IvaController;
-import jgestion.controller.FacturaVentaController;
-import jgestion.controller.MarcaController;
-import jgestion.controller.NotaDebitoProveedorController;
-import jgestion.controller.OperacionesBancariasController;
-import jgestion.controller.CuentabancariaMovimientosController;
-import jgestion.controller.MunicipioController;
-import jgestion.controller.UsuarioController;
-import jgestion.controller.OrdenJpaController;
-import jgestion.controller.ProveedorController;
+import jgestion.controller.DatosEmpresaJpaController;
 import jgestion.controller.RemesaController;
+import jgestion.controller.CajaController;
+import jgestion.controller.ProveedorController;
+import jgestion.controller.PresupuestoController;
 import jgestion.controller.ContribuyenteController;
 import jgestion.controller.SucursalController;
-import jgestion.controller.CtacteProveedorController;
+import jgestion.controller.MarcaController;
 import jgestion.controller.SubCuentaController;
-import jgestion.controller.CuentaController;
-import jgestion.controller.ReciboController;
-import jgestion.controller.UnidadmedidaJpaController;
-import jgestion.controller.NotaCreditoController;
 import jgestion.controller.CajaMovimientosController;
-import jgestion.controller.DatosEmpresaJpaController;
-import jgestion.controller.FacturaCompraController;
-import jgestion.controller.ClienteController;
+import jgestion.controller.BancoController;
+import jgestion.controller.CuentaController;
+import jgestion.controller.MunicipioController;
+import jgestion.controller.UsuarioController;
 import jgestion.controller.ProductoController;
-import jgestion.controller.DepartamentoController;
-import jgestion.controller.DominioController;
 import jgestion.controller.UnidadDeNegocioController;
-import jgestion.controller.NotaDebitoController;
-import jgestion.controller.ProductosWebJpaController;
-import jgestion.controller.ListaPreciosController;
-import jgestion.controller.DAO;
+import jgestion.controller.CtacteProveedorController;
+import jgestion.controller.FacturaVentaController;
+import jgestion.controller.DominioController;
+import jgestion.controller.IvaController;
 import jgestion.controller.VendedorController;
-import jgestion.controller.NotaCreditoProveedorController;
-import jgestion.controller.CuentabancariaController;
-import jgestion.controller.RemitoController;
+import jgestion.controller.NotaDebitoController;
 import jgestion.controller.CtacteClienteController;
-import jgestion.controller.RubroController;
-import jgestion.controller.ChequeTercerosController;
+import jgestion.controller.FacturaCompraController;
+import jgestion.controller.DepartamentoController;
+import jgestion.controller.CuentabancariaMovimientosController;
+import jgestion.controller.NotaCreditoController;
 import jgestion.controller.BancoSucursalController;
-import jgestion.controller.CajaController;
+import jgestion.controller.ChequePropioController;
+import jgestion.controller.RemitoController;
+import jgestion.controller.DAO;
+import jgestion.controller.NotaDebitoProveedorController;
+import jgestion.controller.ChequeTercerosController;
+import jgestion.controller.OrdenJpaController;
+import jgestion.controller.OperacionesBancariasController;
+import jgestion.controller.ListaPreciosController;
+import jgestion.controller.ClienteController;
+import jgestion.controller.NotaCreditoProveedorController;
+import jgestion.controller.ProductosWebJpaController;
+import jgestion.controller.UnidadmedidaJpaController;
+import jgestion.controller.ReciboController;
+import jgestion.controller.RubroController;
+import jgestion.controller.CuentabancariaController;
+import jgestion.controller.Contabilidad;
 import jgestion.controller.exceptions.DatabaseErrorException;
 import jgestion.controller.exceptions.MessageException;
 import java.awt.Color;
@@ -145,7 +144,6 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenuItem48 = new javax.swing.JMenuItem();
         jMenuItem84 = new javax.swing.JMenuItem();
         jMenuItem36 = new javax.swing.JMenuItem();
-        jMenuItem51 = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
         jMenuItem4 = new javax.swing.JMenuItem();
         jMenu26 = new javax.swing.JMenu();
@@ -227,7 +225,10 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenuItemDocumentosComerciales = new javax.swing.JMenuItem();
         jMenu9 = new javax.swing.JMenu();
         jMenuItem22 = new javax.swing.JMenuItem();
+        jMenu16 = new javax.swing.JMenu();
         jMenuItem19 = new javax.swing.JMenuItem();
+        jMenuItem53 = new javax.swing.JMenuItem();
+        jMenuItem99 = new javax.swing.JMenuItem();
         jMenuItem73 = new javax.swing.JMenuItem();
         jMenuItem64 = new javax.swing.JMenuItem();
         jMenuItem11 = new javax.swing.JMenuItem();
@@ -238,7 +239,6 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenuItem58 = new javax.swing.JMenuItem();
         jMenuItem59 = new javax.swing.JMenuItem();
         jMenuItemCuentasBancarias = new javax.swing.JMenuItem();
-        jMenuItem52 = new javax.swing.JMenuItem();
         jMenuReportes = new javax.swing.JMenu();
         jMenu24 = new javax.swing.JMenu();
         jMenuItem67 = new javax.swing.JMenuItem();
@@ -436,14 +436,6 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenu11.add(jMenuItem36);
 
         jMenu2.add(jMenu11);
-
-        jMenuItem51.setText("Ventas Simples");
-        jMenuItem51.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem51ActionPerformed(evt);
-            }
-        });
-        jMenu2.add(jMenuItem51);
 
         jMenuBar1.add(jMenu2);
 
@@ -1004,13 +996,34 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         });
         jMenu9.add(jMenuItem22);
 
-        jMenuItem19.setText("Sucursales (Puntos de Venta)");
+        jMenu16.setText("Sucursales (Puntos de Venta)");
+
+        jMenuItem19.setText("ABM");
         jMenuItem19.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem19ActionPerformed(evt);
             }
         });
-        jMenu9.add(jMenuItem19);
+        jMenu16.add(jMenuItem19);
+
+        jMenuItem53.setText("Distribución de Stock");
+        jMenuItem53.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem53ActionPerformed(evt);
+            }
+        });
+        jMenu16.add(jMenuItem53);
+
+        jMenuItem99.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/view_detail_16x.png"))); // NOI18N
+        jMenuItem99.setText("Informe de Stock");
+        jMenuItem99.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem99ActionPerformed(evt);
+            }
+        });
+        jMenu16.add(jMenuItem99);
+
+        jMenu9.add(jMenu16);
 
         jMenuItem73.setText("Unidades de Negocio");
         jMenuItem73.addActionListener(new java.awt.event.ActionListener() {
@@ -1081,14 +1094,6 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenu18.add(jMenuItemCuentasBancarias);
 
         jMenu9.add(jMenu18);
-
-        jMenuItem52.setText("Configuración de Venta Simple");
-        jMenuItem52.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem52ActionPerformed(evt);
-            }
-        });
-        jMenu9.add(jMenuItem52);
 
         jMenuBar1.add(jMenu9);
 
@@ -2015,21 +2020,21 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         }
     }//GEN-LAST:event_jMenuItem98ActionPerformed
 
-    private void jMenuItem51ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem51ActionPerformed
+    private void jMenuItem53ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem53ActionPerformed
         try {
-            new VentaSimpleController().displayVentaSimple(this);
+            new SucursalController().initDistribucionStock(this);
         } catch (MessageException ex) {
             ex.displayMessage(this);
         }
-    }//GEN-LAST:event_jMenuItem51ActionPerformed
+    }//GEN-LAST:event_jMenuItem53ActionPerformed
 
-    private void jMenuItem52ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem52ActionPerformed
+    private void jMenuItem99ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem99ActionPerformed
         try {
-            new VentaSimpleController().displayConfiguracion(this);
+            new SucursalController().displayInformeStock(this);
         } catch (MessageException ex) {
             ex.displayMessage(this);
         }
-    }//GEN-LAST:event_jMenuItem52ActionPerformed
+    }//GEN-LAST:event_jMenuItem99ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktopPane1;
@@ -2040,6 +2045,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenu jMenu13;
     private javax.swing.JMenu jMenu14;
     private javax.swing.JMenu jMenu15;
+    private javax.swing.JMenu jMenu16;
     private javax.swing.JMenu jMenu17;
     private javax.swing.JMenu jMenu18;
     private javax.swing.JMenu jMenu19;
@@ -2108,8 +2114,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenuItem jMenuItem49;
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem50;
-    private javax.swing.JMenuItem jMenuItem51;
-    private javax.swing.JMenuItem jMenuItem52;
+    private javax.swing.JMenuItem jMenuItem53;
     private javax.swing.JMenuItem jMenuItem54;
     private javax.swing.JMenuItem jMenuItem55;
     private javax.swing.JMenuItem jMenuItem56;
@@ -2159,6 +2164,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenuItem jMenuItem96;
     private javax.swing.JMenuItem jMenuItem97;
     private javax.swing.JMenuItem jMenuItem98;
+    private javax.swing.JMenuItem jMenuItem99;
     private javax.swing.JMenuItem jMenuItemCatalogoWeb;
     private javax.swing.JMenuItem jMenuItemCuentasBancarias;
     private javax.swing.JMenuItem jMenuItemDocumentosComerciales;

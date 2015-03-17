@@ -1,10 +1,10 @@
 package jgestion.controller;
 
-import jgestion.controller.exceptions.DatabaseErrorException;
+import jgestion.controller.exceptions.MessageException;
 import jgestion.controller.exceptions.IllegalOrphanException;
 import jgestion.controller.exceptions.NonexistentEntityException;
 import jgestion.controller.exceptions.MissingReportException;
-import jgestion.controller.exceptions.MessageException;
+import jgestion.controller.exceptions.DatabaseErrorException;
 import jgestion.entity.Orden;
 import java.awt.event.MouseEvent;
 import java.util.logging.Level;
@@ -359,7 +359,7 @@ public class OrdenJpaController {
                 stock.setUsuario(orden.getUsuario());
                 stock.setStockSucu(0);
                 stock.setFechaCarga(orden.getFecha() != null ? orden.getFecha() : new Date());
-                stockController.create(stock);
+                stockController.persist(stock);
                 stockController.modificarStockBySucursal(detalleOrden.getProducto(), orden.getSucursal(), detalleOrden.getCantidad());
             }
             Producto p = em.find(Producto.class, detalleOrden.getProducto().getId());

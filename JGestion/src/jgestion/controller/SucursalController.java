@@ -1,11 +1,13 @@
 package jgestion.controller;
 
-import jgestion.jpa.controller.RemitoJpaController;
+import java.awt.GridLayout;
+import java.awt.Window;
 import jgestion.jpa.controller.NotaCreditoJpaController;
-import jgestion.jpa.controller.FacturaVentaJpaController;
-import jgestion.jpa.controller.ReciboJpaController;
 import jgestion.jpa.controller.SucursalJpaController;
 import jgestion.jpa.controller.NotaDebitoJpaController;
+import jgestion.jpa.controller.ReciboJpaController;
+import jgestion.jpa.controller.FacturaVentaJpaController;
+import jgestion.jpa.controller.RemitoJpaController;
 import jgestion.controller.exceptions.MessageException;
 import jgestion.entity.Departamento;
 import jgestion.entity.Municipio;
@@ -18,13 +20,35 @@ import jgestion.gui.PanelNumeracionActual;
 import java.awt.event.*;
 import java.math.BigInteger;
 import java.util.List;
+import java.util.logging.Level;
+import javax.persistence.NoResultException;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.JTextComponent;
 import jgestion.JGestion;
+import jgestion.controller.exceptions.MissingReportException;
+import jgestion.entity.Producto;
+import jgestion.entity.Stock;
+import jgestion.entity.UsuarioAcciones;
+import jgestion.gui.JFP;
+import jgestion.gui.PanelDistribucionStock;
+import jgestion.jpa.controller.ProductoJpaController;
+import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Logger;
+import org.jdesktop.swingx.SwingXUtilities;
+import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
+import utilities.general.EntityWrapper;
 import utilities.general.UTIL;
+import utilities.swing.components.AutoCompleteComboBox;
+import utilities.swing.components.ComboBoxWrapper;
 
 /**
  *
@@ -41,10 +65,11 @@ public class SucursalController implements ActionListener {
     private PanelABMSucursal panel;
     private SucursalJpaController jpaController;
     /**
-     * Variable global interna, se una para el alta y modificación de una
-     * entidad Sucursal. Uso exclusivo dentro de la class.
+     * Variable global interna, se una para el alta y modificación de una entidad Sucursal. Uso
+     * exclusivo dentro de la class.
      */
     private Sucursal entity;
+    private PanelDistribucionStock panelDis;
 
     public SucursalController() {
         jpaController = new SucursalJpaController();
@@ -82,9 +107,9 @@ public class SucursalController implements ActionListener {
         cargarDTM(contenedor.getDTM(), query);
     }
 
-    public void initContenedor(java.awt.Frame frame, boolean modal) {
+    public void initContenedor(Window owner, boolean modal) {
         //init contenedor
-        contenedor = new JDContenedor(frame, modal, "ABM - " + CLASS_NAME);
+        contenedor = new JDContenedor(owner, modal, "ABM - " + CLASS_NAME);
         contenedor.setSize(contenedor.getWidth() + 200, contenedor.getHeight());
 //        contenedor.hideBtmEliminar();
         contenedor.hideBtmImprimir();
@@ -117,16 +142,16 @@ public class SucursalController implements ActionListener {
 
         for (Sucursal o : l) {
             dtm.addRow(new Object[]{
-                        o.getId(),
-                        o.getNombre(),
-                        UTIL.AGREGAR_CEROS(o.getPuntoVenta(), 4),
-                        o.getEncargado() != null ? o.getEncargado() : "",
-                        o.getDireccion(),
-                        getTele1ToString(o) + " / " + getTele2ToString(o),
-                        o.getProvincia().getNombre(),
-                        o.getDepartamento().getNombre(),
-                        o.getMunicipio().getNombre(),
-                        o.getEmail() != null ? o.getEmail() : ""});
+                o.getId(),
+                o.getNombre(),
+                UTIL.AGREGAR_CEROS(o.getPuntoVenta(), 4),
+                o.getEncargado() != null ? o.getEncargado() : "",
+                o.getDireccion(),
+                getTele1ToString(o) + " / " + getTele2ToString(o),
+                o.getProvincia().getNombre(),
+                o.getDepartamento().getNombre(),
+                o.getMunicipio().getNombre(),
+                o.getEmail() != null ? o.getEmail() : ""});
         }
     }
 
@@ -552,7 +577,7 @@ public class SucursalController implements ActionListener {
         actual = new NotaDebitoJpaController().getNextNumero(sucursal, "B");
         actual = actual.equals(sucursal.getNotaDebitoB()) ? actual : actual - 1;
         paneln.setTfInicialNotaDebitoB(UTIL.AGREGAR_CEROS(actual, 8));
-        
+
         jd.add(paneln);
         jd.pack();
         jd.setLocationRelativeTo(abm);
@@ -567,5 +592,170 @@ public class SucursalController implements ActionListener {
         } else {
             return null;
         }
+    }
+
+    public void initDistribucionStock(Window owner) throws MessageException {
+        UsuarioHelper uh = new UsuarioHelper();
+        if (uh.getSucursales().isEmpty()) {
+            throw new MessageException(JGestion.resourceBundle.getString("unassigned.sucursal"));
+        }
+        panelDis = new PanelDistribucionStock();
+        UTIL.loadComboBox(panelDis.getCbProductos(), new ProductoController().findWrappedProductoToCombo(true), false);
+        AutoCompleteDecorator.decorate(panelDis.getCbProductos());
+        UTIL.loadComboBox(panelDis.getCbSucursalOrigen(), uh.getWrappedSucursales(), false);
+        UTIL.loadComboBox(panelDis.getCbSucursalDestino(), uh.getWrappedSucursales(), false);
+        ActionListener aa = new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    setStockDistribucion();
+                } catch (MessageException ex) {
+                    ex.displayMessage(null);
+                }
+            }
+        };
+        panelDis.getCbProductos().addActionListener(aa);
+        panelDis.getCbSucursalOrigen().addActionListener(aa);
+        panelDis.getCbSucursalDestino().addActionListener(aa);
+        panelDis.getBtnStockGral().addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    ComboBoxWrapper<Producto> cbw = (ComboBoxWrapper<Producto>) panelDis.getCbProductos().getSelectedItem();
+                    if (cbw == null) {
+                        throw new MessageException("Producto no válido");
+                    }
+                    Producto producto = cbw.getEntity();
+                    new ProductoController().initStockGral(producto);
+                } catch (MessageException ex) {
+                    ex.displayMessage(null);
+                }
+            }
+        });
+
+        JDABM abm1 = new JDABM(owner, "Distribución de Stock entre Sucursales", true, panelDis);
+        abm1.getbAceptar().addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    ComboBoxWrapper<Producto> cbw = (ComboBoxWrapper<Producto>) panelDis.getCbProductos().getSelectedItem();
+                    Producto producto = cbw.getEntity();
+                    producto = new ProductoJpaController().find(producto.getId());
+                    int toDist;
+                    try {
+                        toDist = Integer.valueOf(panelDis.getTfCantidad().getText());
+                        if (toDist < 1) {
+                            throw new MessageException("Cantidad a distribuir no válida");
+                        }
+                    } catch (NumberFormatException ex) {
+                        throw new MessageException("Cantidad a distribuir no válida");
+                    }
+                    Sucursal origen = ((ComboBoxWrapper<Sucursal>) panelDis.getCbSucursalOrigen().getSelectedItem()).getEntity();
+                    Sucursal destino = ((ComboBoxWrapper<Sucursal>) panelDis.getCbSucursalDestino().getSelectedItem()).getEntity();
+                    if (origen.equals(destino)) {
+                        throw new MessageException("Sucursal Origen y Destino deben ser diferentes");
+                    }
+                    Stock stockO = new StockController().findStock(producto, origen);
+                    if (stockO.getStockSucu() < toDist) {
+                        throw new MessageException("La cantidad a distribuir no puede ser superior al stock actual");
+                    }
+                    Stock stockD = new StockController().findStock(producto, destino);
+                    stockO.setStockSucu(stockO.getStockSucu() - toDist);
+                    stockD.setStockSucu(stockD.getStockSucu() + toDist);
+                    new StockController().merge(stockO);
+                    new StockController().merge(stockD);
+                    UsuarioAcciones ua = UsuarioAccionesController.createUA(producto, producto.getId(), "DistribuciónStock: Origen=" + origen.getNombre() + ", Destino=" + destino.getNombre() + ", Producto=" + producto.getNombre() + ", cantidad=" + toDist, 'u');
+                    new UsuarioAccionesController().create(ua);
+                } catch (MessageException ex1) {
+                    ex1.displayMessage(null);
+                }
+            }
+        });
+        abm1.setLocationRelativeTo(owner);
+        abm1.setVisible(true);
+    }
+
+    private void setStockDistribucion() throws MessageException {
+        ComboBoxWrapper<Producto> cbw = (ComboBoxWrapper<Producto>) panelDis.getCbProductos().getSelectedItem();
+        if (cbw == null) {
+            throw new MessageException("Producto no válido");
+        }
+        Producto producto = cbw.getEntity();
+        producto = new ProductoJpaController().find(producto.getId());
+        Sucursal origen = ((ComboBoxWrapper<Sucursal>) panelDis.getCbSucursalOrigen().getSelectedItem()).getEntity();
+        Stock stockO;
+        try {
+            stockO = new StockController().findStock(producto, origen);
+        } catch (NoResultException e) {
+            Stock ss = new Stock();
+            ss.setProducto(producto);
+            ss.setSucursal(origen);
+            ss.setUsuario(UsuarioController.getCurrentUser());
+            ss.setStockSucu(0);
+            ss.setFechaCarga(jpaController.getServerDate());
+            new StockController().persist(ss);
+            stockO = ss;
+        }
+        Sucursal destino = ((ComboBoxWrapper<Sucursal>) panelDis.getCbSucursalDestino().getSelectedItem()).getEntity();
+        panelDis.getTfStockOrigen().setText(stockO.getStockSucu() + "");
+        Stock stockD;
+        try {
+            stockD = new StockController().findStock(producto, destino);
+        } catch (NoResultException e) {
+            Stock ss = new Stock();
+            ss.setProducto(producto);
+            ss.setSucursal(destino);
+            ss.setUsuario(UsuarioController.getCurrentUser());
+            ss.setStockSucu(0);
+            ss.setFechaCarga(jpaController.getServerDate());
+            new StockController().persist(ss);
+            stockD = ss;
+        }
+        panelDis.getTfStockDestino().setText(stockD.getStockSucu() + "");
+        panelDis.getTfStockActual().setText(new StockController().getStockGlobal(producto.getId()) + "");
+        panelDis.setProductoFields(producto);
+    }
+
+    public void displayInformeStock(Window owner) throws MessageException {
+        UsuarioHelper uh = new UsuarioHelper();
+        if (uh.getSucursales().isEmpty()) {
+            throw new MessageException(JGestion.resourceBundle.getString("unassigned.sucursal"));
+        }
+        JPanel pp = new JPanel();
+        pp.setBorder(BorderFactory.createEmptyBorder(5, 5, 0, 0));
+        pp.setLayout(new GridLayout(2, 0));
+        final JComboBox<Object> cbSucursal = new JComboBox<>();
+        UTIL.loadComboBox(cbSucursal, uh.getWrappedSucursales(), false);
+        pp.add(new JLabel("Sucursal"));
+        pp.add(cbSucursal);
+        final JCheckBox checkStockCero = new JCheckBox("Incluir productos sin stock");
+        pp.add(checkStockCero);
+        final JDABM jd = new JDABM(owner, "Sucursales - Informe de stock", false, pp);
+        jd.getbCancelar().setEnabled(false);
+        jd.getbAceptar().addActionListener(new ActionListener() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    Integer id = ((ComboBoxWrapper<Sucursal>) cbSucursal.getSelectedItem()).getId();
+                    doReportSucursalStock(id, checkStockCero.isSelected());
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(jd, ex.getMessage(), "Error generando reporte", JOptionPane.ERROR_MESSAGE);
+                    LOG.error("reporteando", ex);
+                }
+            }
+
+        });
+        jd.setVisible(true);
+    }
+
+    private void doReportSucursalStock(Integer sucursalID, boolean incluirStockCero) throws MissingReportException, JRException {
+        Reportes r = new Reportes("SucursalStock.jasper", "Sucursal - Stock");
+        r.addParameter("SUCURSAL_ID", sucursalID);
+        r.addParameter("INCLUIR_STOCK_CERO", incluirStockCero);
+        r.viewReport();
     }
 }
