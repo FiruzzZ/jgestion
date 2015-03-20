@@ -67,7 +67,7 @@ public class NotaCreditoController {
     // </editor-fold>
     public void initComprobanteUI(JFrame owner, boolean modal, boolean setVisible, boolean loadDefaultData) throws MessageException {
         facturaVentaController = new FacturaVentaController();
-        facturaVentaController.initFacturaVenta(owner, modal, this, 2, false, loadDefaultData);
+        facturaVentaController.displayABM(owner, modal, this, 2, false, loadDefaultData);
         facturaVentaController.getContenedor().getBtnAceptar().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

@@ -165,7 +165,7 @@ public class RemitoController implements ActionListener {
     }
 
     public void initRemito(Window owner, boolean modal, boolean setVisible, boolean loadDefaultData) throws MessageException {
-        facturaVentaController.initFacturaVenta(owner, modal, this, 3, setVisible, loadDefaultData);
+        facturaVentaController.displayABM(owner, modal, this, 3, setVisible, loadDefaultData);
         //implementación del boton Aceptar
         facturaVentaController.getContenedor().getBtnAceptar().addActionListener(new ActionListener() {
             @Override

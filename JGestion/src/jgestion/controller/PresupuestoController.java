@@ -62,7 +62,7 @@ public class PresupuestoController implements ActionListener {
      * @throws MessageException
      */
     public void initPresupuesto(JFrame frame, boolean modal, boolean setVisible, boolean loadDefaultData) throws MessageException {
-        facturaVentaController.initFacturaVenta(frame, modal, this, 2, setVisible, loadDefaultData);
+        facturaVentaController.displayABM(frame, modal, this, 2, setVisible, loadDefaultData);
         facturaVentaController.getContenedor().getBtnAceptar().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
