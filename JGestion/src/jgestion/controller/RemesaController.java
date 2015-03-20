@@ -1,7 +1,7 @@
 package jgestion.controller;
 
-import jgestion.controller.exceptions.MissingReportException;
 import jgestion.controller.exceptions.MessageException;
+import jgestion.controller.exceptions.MissingReportException;
 import jgestion.entity.Caja;
 import jgestion.entity.ChequePropio;
 import jgestion.entity.ChequeTerceros;
@@ -35,7 +35,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
 import javax.persistence.EntityManager;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -57,12 +56,11 @@ import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.apache.log4j.Logger;
-import org.jdesktop.swingx.SwingXUtilities;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 import utilities.general.NumberToLetterConverter;
 import utilities.general.UTIL;
 import utilities.gui.SwingUtil;
-import utilities.swing.components.ComboBoxWrapper;
+import utilities.general.EntityWrapper;
 import utilities.swing.components.FormatRenderer;
 import utilities.swing.components.NumberRenderer;
 
@@ -187,7 +185,7 @@ public class RemesaController implements FocusListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (jdReRe.getCbClienteProveedor().getSelectedIndex() > 0) {
-                    cargarFacturasCtaCtesYNotasDebito(((ComboBoxWrapper<Proveedor>) jdReRe.getCbClienteProveedor().getSelectedItem()).getEntity());
+                    cargarFacturasCtaCtesYNotasDebito(((EntityWrapper<Proveedor>) jdReRe.getCbClienteProveedor().getSelectedItem()).getEntity());
                 } else {
                     //si no eligió nada.. vacia el combo de cta cte's
                     UTIL.loadComboBox(jdReRe.getCbCtaCtes(), null, false);
@@ -200,7 +198,7 @@ public class RemesaController implements FocusListener {
             public void actionPerformed(ActionEvent e) {
                 try {
                     @SuppressWarnings("unchecked")
-                    ComboBoxWrapper<?> cbw = (ComboBoxWrapper<?>) jdReRe.getCbCtaCtes().getSelectedItem();
+                    EntityWrapper<?> cbw = (EntityWrapper<?>) jdReRe.getCbCtaCtes().getSelectedItem();
                     if (cbw.getEntity() instanceof CtacteProveedor) {
                         selectedCtaCte = (CtacteProveedor) cbw.getEntity();
                         selectedNotaDebito = null;
@@ -341,7 +339,7 @@ public class RemesaController implements FocusListener {
 
     private void displayABMChequePropio() {
         try {
-            ChequePropio cheque = new ChequePropioController().initABM(jdReRe, false, ((ComboBoxWrapper<Proveedor>) jdReRe.getCbClienteProveedor().getSelectedItem()).getEntity());
+            ChequePropio cheque = new ChequePropioController().initABM(jdReRe, false, ((EntityWrapper<Proveedor>) jdReRe.getCbClienteProveedor().getSelectedItem()).getEntity());
             if (cheque != null) {
                 ChequesController.checkUniquenessOnTable(jdReRe.getDtmPagos(), cheque);
                 DefaultTableModel dtm = jdReRe.getDtmPagos();
@@ -368,7 +366,7 @@ public class RemesaController implements FocusListener {
     private void displayABMNotaCredito() {
         try {
             NotaCreditoProveedor notaCredito = new NotaCreditoProveedorController().
-                    initBuscador(jdReRe, false, ((ComboBoxWrapper<Proveedor>) jdReRe.getCbClienteProveedor().getSelectedItem()).getEntity(), true);
+                    initBuscador(jdReRe, false, ((EntityWrapper<Proveedor>) jdReRe.getCbClienteProveedor().getSelectedItem()).getEntity(), true);
             if (notaCredito != null) {
                 DefaultTableModel dtm = jdReRe.getDtmPagos();
                 for (int row = 0; row < dtm.getRowCount(); row++) {
@@ -463,7 +461,7 @@ public class RemesaController implements FocusListener {
                     throw new MessageException("Número de " + jpaController.getEntityClass().getSimpleName() + " no válido, debe ser mayor a 0 y menor o igual a 99999999");
                 }
                 @SuppressWarnings("unchecked")
-                Remesa old = jpaController.find(((ComboBoxWrapper<Sucursal>) jdReRe.getCbSucursal().getSelectedItem()).getEntity(), numero);
+                Remesa old = jpaController.find(((EntityWrapper<Sucursal>) jdReRe.getCbSucursal().getSelectedItem()).getEntity(), numero);
                 if (old != null) {
                     throw new MessageException("Ya existe un registro de " + jpaController.getEntityClass().getSimpleName() + " N° " + JGestionUtils.getNumeracion(old, true));
                 }
@@ -493,13 +491,13 @@ public class RemesaController implements FocusListener {
         checkConstraints();
         Remesa remesa = new Remesa();
         remesa.setCaja((Caja) jdReRe.getCbCaja().getSelectedItem());
-        remesa.setSucursal(((ComboBoxWrapper<Sucursal>) jdReRe.getCbSucursal().getSelectedItem()).getEntity());
+        remesa.setSucursal(((EntityWrapper<Sucursal>) jdReRe.getCbSucursal().getSelectedItem()).getEntity());
         remesa.setEstado(true);
         remesa.setFechaRemesa(jdReRe.getDcFechaReRe().getDate());
         remesa.setPagos(new ArrayList<RemesaPagos>(jdReRe.getDtmPagos().getRowCount()));
         remesa.setDetalle(new ArrayList<DetalleRemesa>(jdReRe.getDtmAPagar().getRowCount()));
         remesa.setPorConciliar(toConciliar);
-        remesa.setProveedor(((ComboBoxWrapper<Proveedor>) jdReRe.getCbClienteProveedor().getSelectedItem()).getEntity());
+        remesa.setProveedor(((EntityWrapper<Proveedor>) jdReRe.getCbClienteProveedor().getSelectedItem()).getEntity());
         remesa.setUsuario(UsuarioController.getCurrentUser());
 
         DefaultTableModel dtm = (DefaultTableModel) jdReRe.getTableAPagar().getModel();
@@ -814,11 +812,11 @@ public class RemesaController implements FocusListener {
             query.append(")");
         }
         if (buscador.getCbSucursal().getSelectedIndex() > 0) {
-            query.append(" AND o.sucursal.id = ").append(((ComboBoxWrapper<Sucursal>) buscador.getCbSucursal().getSelectedItem()).getId());
+            query.append(" AND o.sucursal.id = ").append(((EntityWrapper<Sucursal>) buscador.getCbSucursal().getSelectedItem()).getId());
         } else {
             query.append(" AND (");
             for (int i = 1; i < buscador.getCbSucursal().getItemCount(); i++) {
-                ComboBoxWrapper<Sucursal> cbw = (ComboBoxWrapper<Sucursal>) buscador.getCbSucursal().getItemAt(i);
+                EntityWrapper<Sucursal> cbw = (EntityWrapper<Sucursal>) buscador.getCbSucursal().getItemAt(i);
                 query.append(" o.sucursal.id=").append(cbw.getId());
                 if ((i + 1) < buscador.getCbSucursal().getItemCount()) {
                     query.append(" OR ");
@@ -831,7 +829,7 @@ public class RemesaController implements FocusListener {
         }
         if (buscador.getCbClieProv().getSelectedIndex() > 0) {
             query.append(" AND o.proveedor.id = "
-            ).append(((ComboBoxWrapper<Proveedor>) buscador.getCbClieProv().getSelectedItem()).getId());
+            ).append(((EntityWrapper<Proveedor>) buscador.getCbClieProv().getSelectedItem()).getId());
 
         }
 //        query.append(" GROUP BY o.id");

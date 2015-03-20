@@ -64,7 +64,7 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.apache.log4j.Logger;
 import utilities.general.UTIL;
 import utilities.swing.RowColorRender;
-import utilities.swing.components.ComboBoxWrapper;
+import utilities.general.EntityWrapper;
 import utilities.swing.components.FormatRenderer;
 import utilities.swing.components.NumberRenderer;
 
@@ -663,10 +663,10 @@ public class ChequeTercerosController implements ActionListener {
             }
         }
         if (jdChequeManager.getCbBancos().getSelectedIndex() > 0) {
-            query.append(" AND c.banco=").append(((ComboBoxWrapper<Banco>) jdChequeManager.getCbBancos().getSelectedItem()).getId());
+            query.append(" AND c.banco=").append(((EntityWrapper<Banco>) jdChequeManager.getCbBancos().getSelectedItem()).getId());
         }
         if (jdChequeManager.getCbEmisor().getSelectedIndex() > 0) {
-            query.append(" AND c.cliente=").append(((ComboBoxWrapper<Cliente>) jdChequeManager.getCbEmisor().getSelectedItem()).getId());
+            query.append(" AND c.cliente=").append(((EntityWrapper<Cliente>) jdChequeManager.getCbEmisor().getSelectedItem()).getId());
         }
         if (jdChequeManager.getCbEstados().getSelectedIndex() > 0) {
             query.append(" AND c.estado=").append(((ChequeEstado) jdChequeManager.getCbEstados().getSelectedItem()).getId());
@@ -993,9 +993,9 @@ public class ChequeTercerosController implements ActionListener {
 //        if (panelEntregaTerceros.getCbUsuarioEmisor().getSelectedIndex() < 1) {
 //            throw new MessageException("Usuario emisor no válido");
 //        }
-//        Usuario emisor = ((ComboBoxWrapper<Usuario>) panelEntregaTerceros.getCbUsuarioEmisor().getSelectedItem()).getEntity();
+//        Usuario emisor = ((EntityWrapper<Usuario>) panelEntregaTerceros.getCbUsuarioEmisor().getSelectedItem()).getEntity();
         Usuario emisor = UsuarioController.getCurrentUser();
-        Usuario receptor = ((ComboBoxWrapper<Usuario>) panelEntregaTerceros.getCbUsuarioReceptor().getSelectedItem()).getEntity();
+        Usuario receptor = ((EntityWrapper<Usuario>) panelEntregaTerceros.getCbUsuarioReceptor().getSelectedItem()).getEntity();
         if (emisor.equals(receptor)) {
             throw new MessageException("Emisor y Receptor no puede ser iguales, ¿no te parece?");
         }

@@ -1,33 +1,33 @@
 package jgestion;
 
-import jgestion.entity.Usuario;
-import jgestion.entity.NotaCredito;
-import jgestion.entity.Marca;
-import jgestion.entity.Recibo;
-import jgestion.entity.Rubro;
-import jgestion.entity.Proveedor;
-import jgestion.entity.Vendedor;
-import jgestion.entity.OperacionesBancarias;
-import jgestion.entity.CtacteCliente;
-import jgestion.entity.NotaDebito;
-import jgestion.entity.Sucursal;
-import jgestion.entity.UnidadDeNegocio;
-import jgestion.entity.FacturaVenta;
 import jgestion.entity.NotaDebitoProveedor;
+import jgestion.entity.Vendedor;
+import jgestion.entity.Presupuesto;
+import jgestion.entity.Sucursal;
+import jgestion.entity.NotaCredito;
+import jgestion.entity.SubCuenta;
+import jgestion.entity.Recibo;
+import jgestion.entity.OperacionesBancarias;
+import jgestion.entity.CuentaBancaria;
+import jgestion.entity.FacturaCompra;
+import jgestion.entity.ListaPrecios;
+import jgestion.entity.Rubro;
+import jgestion.entity.Cliente;
+import jgestion.entity.CtacteProveedor;
+import jgestion.entity.NotaCreditoProveedor;
+import jgestion.entity.NotaDebito;
+import jgestion.entity.Cuenta;
+import jgestion.entity.Remesa;
+import jgestion.entity.FacturaVenta;
+import jgestion.entity.Proveedor;
+import jgestion.entity.Usuario;
+import jgestion.entity.UnidadDeNegocio;
+import jgestion.entity.Iva;
+import jgestion.entity.Marca;
+import jgestion.entity.CtacteCliente;
+import jgestion.entity.Remito;
 import jgestion.entity.Dominio;
 import jgestion.entity.Banco;
-import jgestion.entity.Cliente;
-import jgestion.entity.Cuenta;
-import jgestion.entity.Remito;
-import jgestion.entity.Presupuesto;
-import jgestion.entity.SubCuenta;
-import jgestion.entity.FacturaCompra;
-import jgestion.entity.Iva;
-import jgestion.entity.Remesa;
-import jgestion.entity.ListaPrecios;
-import jgestion.entity.NotaCreditoProveedor;
-import jgestion.entity.CtacteProveedor;
-import jgestion.entity.CuentaBancaria;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.FocusEvent;
@@ -42,14 +42,20 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import jgestion.entity.Caja;
+import utilities.general.EntityWrapper;
 import utilities.general.UTIL;
-import utilities.swing.components.ComboBoxWrapper;
 
 /**
  *
  * @author FiruzzZ
  */
 public class JGestionUtils {
+
+    /**
+     * Conserva el path del directorio del último archivo seleccionado
+     */
+    public volatile static String LAST_DIRECTORY_PATH;
 
     public JGestionUtils() {
     }
@@ -81,153 +87,161 @@ public class JGestionUtils {
         throw new CloneNotSupportedException();
     }
 
-    public static List<ComboBoxWrapper<?>> getWrappedCtacteProveedor(List<?> list) {
-        List<ComboBoxWrapper<?>> l = new ArrayList<>(list.size());
+    public static List<EntityWrapper<?>> getWrappedCtacteProveedor(List<?> list) {
+        List<EntityWrapper<?>> l = new ArrayList<>(list.size());
         for (Object o : list) {
             if (o instanceof CtacteProveedor) {
                 CtacteProveedor cc = (CtacteProveedor) o;
-                l.add(new ComboBoxWrapper<Object>(cc, cc.getId(), getNumeracion(cc.getFactura())));
+                l.add(new EntityWrapper<Object>(cc, cc.getId(), getNumeracion(cc.getFactura())));
             } else {
                 NotaDebitoProveedor nota = (NotaDebitoProveedor) o;
-                l.add(new ComboBoxWrapper<Object>(nota, nota.getId(), getNumeracion(nota)));
+                l.add(new EntityWrapper<Object>(nota, nota.getId(), getNumeracion(nota)));
 
             }
         }
         return l;
     }
 
-    public static List<ComboBoxWrapper<?>> getWrappedCtacteCliente(List<CtacteCliente> list) {
-        List<ComboBoxWrapper<?>> l = new ArrayList<>(list.size());
+    public static List<EntityWrapper<?>> getWrappedCtacteCliente(List<CtacteCliente> list) {
+        List<EntityWrapper<?>> l = new ArrayList<>(list.size());
         for (CtacteCliente ccc : list) {
-            l.add(new ComboBoxWrapper<Object>(ccc, ccc.getId(), ccc.getFactura() != null ? getNumeracion(ccc.getFactura()) : getNumeracion(ccc.getNotaDebito())));
+            l.add(new EntityWrapper<Object>(ccc, ccc.getId(), ccc.getFactura() != null ? getNumeracion(ccc.getFactura()) : getNumeracion(ccc.getNotaDebito())));
         }
         return l;
     }
 
-    public static List<ComboBoxWrapper<Cliente>> getWrappedClientes(List<Cliente> list) {
-        List<ComboBoxWrapper<Cliente>> l = new ArrayList<>(list.size());
+    public static List<EntityWrapper<Cliente>> getWrappedClientes(List<Cliente> list) {
+        List<EntityWrapper<Cliente>> l = new ArrayList<>(list.size());
         for (Cliente o : list) {
-            l.add(new ComboBoxWrapper<>(o, o.getId(), o.getNombre()));
+            l.add(new EntityWrapper<>(o, o.getId(), o.getNombre()));
         }
         return l;
     }
 
-    public static List<ComboBoxWrapper<Proveedor>> getWrappedProveedores(List<Proveedor> list) {
-        List<ComboBoxWrapper<Proveedor>> l = new ArrayList<>(list.size());
+    public static List<EntityWrapper<Proveedor>> getWrappedProveedores(List<Proveedor> list) {
+        List<EntityWrapper<Proveedor>> l = new ArrayList<>(list.size());
         for (Proveedor o : list) {
-            l.add(new ComboBoxWrapper<>(o, o.getId(), o.getNombre()));
+            l.add(new EntityWrapper<>(o, o.getId(), o.getNombre()));
         }
         return l;
     }
 
-    public static List<ComboBoxWrapper<ListaPrecios>> getWrappedListaPrecios(List<ListaPrecios> list) {
-        List<ComboBoxWrapper<ListaPrecios>> l = new ArrayList<>(list.size());
+    public static List<EntityWrapper<ListaPrecios>> getWrappedListaPrecios(List<ListaPrecios> list) {
+        List<EntityWrapper<ListaPrecios>> l = new ArrayList<>(list.size());
         for (ListaPrecios o : list) {
-            l.add(new ComboBoxWrapper<>(o, o.getId(), o.getNombre()));
+            l.add(new EntityWrapper<>(o, o.getId(), o.getNombre()));
         }
         return l;
     }
 
-    public static List<ComboBoxWrapper<Marca>> getWrappedMarcas(List<Marca> list) {
-        List<ComboBoxWrapper<Marca>> l = new ArrayList<>(list.size());
+    public static List<EntityWrapper<Marca>> getWrappedMarcas(List<Marca> list) {
+        List<EntityWrapper<Marca>> l = new ArrayList<>(list.size());
         for (Marca o : list) {
-            l.add(new ComboBoxWrapper<>(o, o.getId(), o.getNombre()));
+            l.add(new EntityWrapper<>(o, o.getId(), o.getNombre()));
         }
         return l;
     }
 
-    public static List<ComboBoxWrapper<Remesa>> getWrappedRemesas(List<Remesa> list) {
-        List<ComboBoxWrapper<Remesa>> l = new ArrayList<>(list.size());
+    public static List<EntityWrapper<Remesa>> getWrappedRemesas(List<Remesa> list) {
+        List<EntityWrapper<Remesa>> l = new ArrayList<>(list.size());
         for (Remesa remesa : list) {
-            l.add(new ComboBoxWrapper<>(remesa, remesa.getId(), JGestionUtils.getNumeracion(remesa, true)));
+            l.add(new EntityWrapper<>(remesa, remesa.getId(), JGestionUtils.getNumeracion(remesa, true)));
         }
         return l;
     }
 
-    public static List<ComboBoxWrapper<Rubro>> getWrappedRubros(List<Rubro> list) {
-        List<ComboBoxWrapper<Rubro>> l = new ArrayList<>(list.size());
+    public static List<EntityWrapper<Rubro>> getWrappedRubros(List<Rubro> list) {
+        List<EntityWrapper<Rubro>> l = new ArrayList<>(list.size());
         for (Rubro o : list) {
-            l.add(new ComboBoxWrapper<>(o, o.getId(), o.getNombre()));
+            l.add(new EntityWrapper<>(o, o.getId(), o.getNombre()));
         }
         return l;
     }
 
-    public static List<ComboBoxWrapper<SubCuenta>> getWrappedSubCuentas(List<SubCuenta> list) {
-        List<ComboBoxWrapper<SubCuenta>> l = new ArrayList<>(list.size());
+    public static List<EntityWrapper<SubCuenta>> getWrappedSubCuentas(List<SubCuenta> list) {
+        List<EntityWrapper<SubCuenta>> l = new ArrayList<>(list.size());
         for (SubCuenta o : list) {
-            l.add(new ComboBoxWrapper<>(o, o.getId(), o.getNombre()));
+            l.add(new EntityWrapper<>(o, o.getId(), o.getNombre()));
         }
         return l;
     }
 
-    public static List<ComboBoxWrapper<UnidadDeNegocio>> getWrappedUnidadDeNegocios(List<UnidadDeNegocio> list) {
-        List<ComboBoxWrapper<UnidadDeNegocio>> l = new ArrayList<>(list.size());
+    public static List<EntityWrapper<UnidadDeNegocio>> getWrappedUnidadDeNegocios(List<UnidadDeNegocio> list) {
+        List<EntityWrapper<UnidadDeNegocio>> l = new ArrayList<>(list.size());
         for (UnidadDeNegocio o : list) {
-            l.add(new ComboBoxWrapper<>(o, o.getId(), o.getNombre()));
+            l.add(new EntityWrapper<>(o, o.getId(), o.getNombre()));
         }
         return l;
     }
 
-    public static List<ComboBoxWrapper<Usuario>> getWrappedUsuarios(List<Usuario> list) {
-        List<ComboBoxWrapper<Usuario>> l = new ArrayList<>(list.size());
+    public static List<EntityWrapper<Usuario>> getWrappedUsuarios(List<Usuario> list) {
+        List<EntityWrapper<Usuario>> l = new ArrayList<>(list.size());
         for (Usuario usuario : list) {
-            l.add(new ComboBoxWrapper<>(usuario, usuario.getId(), usuario.getNick()));
+            l.add(new EntityWrapper<>(usuario, usuario.getId(), usuario.getNick()));
         }
         return l;
     }
 
-    public static List<ComboBoxWrapper<Sucursal>> getWrappedSucursales(List<Sucursal> list) {
-        List<ComboBoxWrapper<Sucursal>> l = new ArrayList<>(list.size());
+    public static List<EntityWrapper<Sucursal>> getWrappedSucursales(List<Sucursal> list) {
+        List<EntityWrapper<Sucursal>> l = new ArrayList<>(list.size());
         for (Sucursal o : list) {
-            l.add(new ComboBoxWrapper<>(o, o.getId(), o.getNombre()));
+            l.add(new EntityWrapper<>(o, o.getId(), o.getNombre()));
         }
         return l;
     }
 
-    public static List<ComboBoxWrapper<Cuenta>> getWrappedCuentas(List<Cuenta> list) {
-        List<ComboBoxWrapper<Cuenta>> l = new ArrayList<>(list.size());
+    public static List<EntityWrapper<Cuenta>> getWrappedCuentas(List<Cuenta> list) {
+        List<EntityWrapper<Cuenta>> l = new ArrayList<>(list.size());
         for (Cuenta o : list) {
-            l.add(new ComboBoxWrapper<>(o, o.getId(), o.getNombre()));
+            l.add(new EntityWrapper<>(o, o.getId(), o.getNombre()));
         }
         return l;
     }
 
-    public static List<ComboBoxWrapper<CuentaBancaria>> getWrappedCuentasBancarias(List<CuentaBancaria> list) {
-        List<ComboBoxWrapper<CuentaBancaria>> l = new ArrayList<>(list.size());
+    public static List<EntityWrapper<CuentaBancaria>> getWrappedCuentasBancarias(List<CuentaBancaria> list) {
+        List<EntityWrapper<CuentaBancaria>> l = new ArrayList<>(list.size());
         for (CuentaBancaria o : list) {
-            l.add(new ComboBoxWrapper<>(o, o.getId(), o.getNumero().toString()));
+            l.add(new EntityWrapper<>(o, o.getId(), o.getNumero().toString()));
         }
         return l;
     }
 
-    public static List<ComboBoxWrapper<Dominio>> getWrappedDominios(List<Dominio> list) {
-        List<ComboBoxWrapper<Dominio>> l = new ArrayList<>(list.size());
+    public static List<EntityWrapper<Dominio>> getWrappedDominios(List<Dominio> list) {
+        List<EntityWrapper<Dominio>> l = new ArrayList<>(list.size());
         for (Dominio o : list) {
-            l.add(new ComboBoxWrapper<>(o, o.getId(), o.getNombre()));
+            l.add(new EntityWrapper<>(o, o.getId(), o.getNombre()));
         }
         return l;
     }
 
-    public static List<ComboBoxWrapper<OperacionesBancarias>> getWrappedOperacionesBancarias(List<OperacionesBancarias> list) {
-        List<ComboBoxWrapper<OperacionesBancarias>> l = new ArrayList<>(list.size());
+    public static List<EntityWrapper<OperacionesBancarias>> getWrappedOperacionesBancarias(List<OperacionesBancarias> list) {
+        List<EntityWrapper<OperacionesBancarias>> l = new ArrayList<>(list.size());
         for (OperacionesBancarias o : list) {
-            l.add(new ComboBoxWrapper<>(o, o.getId(), o.getNombre()));
+            l.add(new EntityWrapper<>(o, o.getId(), o.getNombre()));
         }
         return l;
     }
 
-    public static List<ComboBoxWrapper<Banco>> getWrappedBancos(final List<Banco> list) {
-        List<ComboBoxWrapper<Banco>> l = new ArrayList<>(list.size());
+    public static List<EntityWrapper<Banco>> getWrappedBancos(final List<Banco> list) {
+        List<EntityWrapper<Banco>> l = new ArrayList<>(list.size());
         for (Banco o : list) {
-            l.add(new ComboBoxWrapper<>(o, o.getId(), o.getNombre()));
+            l.add(new EntityWrapper<>(o, o.getId(), o.getNombre()));
+        }
+        return l;
+    }
+
+    public static List<EntityWrapper<Caja>> getWrappedCajas(List<Caja> list) {
+        List<EntityWrapper<Caja>> l = new ArrayList<>(list.size());
+        for (Caja o : list) {
+            l.add(new EntityWrapper<>(o, o.getId(), o.getNombre()));
         }
         return l;
     }
 
     /**
-     * Si es Factura: <br> "F" + TipoFactura + #### (punto de venta) + ########
-     * (número). <br>EJ: FA0001-00001234 <br>Si es Interno: <br>"FI" + ####
-     * (punto de venta) + ######## (N° Movimiento interno)
+     * Si es Factura: <br> "F" + TipoFactura + #### (punto de venta) + ######## (número). <br>EJ:
+     * FA0001-00001234 <br>Si es Interno: <br>"FI" + #### (punto de venta) + ######## (N° Movimiento
+     * interno)
      *
      * @param o
      * @return
@@ -250,10 +264,9 @@ public class JGestionUtils {
     }
 
     /**
-     * Si es Factura: <br> "F"+ TipoFactura + #### (punto de venta) + ########
-     * (número). <br>EJ: FA0001-00001234 <br>Si es Interno: <br>"FI" + ####
-     * (punto de venta DONDE SER REALIZO LA CARGA) + ######## (N° Movimiento
-     * interno)
+     * Si es Factura: <br> "F"+ TipoFactura + #### (punto de venta) + ######## (número). <br>EJ:
+     * FA0001-00001234 <br>Si es Interno: <br>"FI" + #### (punto de venta DONDE SER REALIZO LA
+     * CARGA) + ######## (N° Movimiento interno)
      *
      * @param o
      * @return
@@ -324,18 +337,18 @@ public class JGestionUtils {
                 });
     }
 
-    public static ComboBoxWrapper<Banco> wrap(Banco o) {
-        return new ComboBoxWrapper<>(o, o.getId(), o.getNombre());
+    public static EntityWrapper<Banco> wrap(Banco o) {
+        return new EntityWrapper<>(o, o.getId(), o.getNombre());
     }
 
-    public static ComboBoxWrapper<CuentaBancaria> wrap(CuentaBancaria o) {
-        return new ComboBoxWrapper<>(o, o.getId(), o.getNumero());
+    public static EntityWrapper<CuentaBancaria> wrap(CuentaBancaria o) {
+        return new EntityWrapper<>(o, o.getId(), o.getNumero());
     }
 
-    public static List<ComboBoxWrapper<Vendedor>> getWrappedVendedor(List<Vendedor> list) {
-        List<ComboBoxWrapper<Vendedor>> l = new ArrayList<>(list.size());
+    public static List<EntityWrapper<Vendedor>> getWrappedVendedor(List<Vendedor> list) {
+        List<EntityWrapper<Vendedor>> l = new ArrayList<>(list.size());
         for (Vendedor o : list) {
-            l.add(new ComboBoxWrapper<>(o, o.getId(), o.getApellido() + " " + o.getNombre()));
+            l.add(new EntityWrapper<>(o, o.getId(), o.getApellido() + " " + o.getNombre()));
         }
         return l;
     }
@@ -384,10 +397,10 @@ public class JGestionUtils {
         }
     }
 
-    public static List<ComboBoxWrapper<Iva>> getWrappedIva(List<Iva> list) {
-        List<ComboBoxWrapper<Iva>> l = new ArrayList<>(list.size());
+    public static List<EntityWrapper<Iva>> getWrappedIva(List<Iva> list) {
+        List<EntityWrapper<Iva>> l = new ArrayList<>(list.size());
         for (Iva iva : list) {
-            l.add(new ComboBoxWrapper<>(iva, iva.getId(), iva.getIva().toString() + "%"));
+            l.add(new EntityWrapper<>(iva, iva.getId(), iva.getIva().toString() + "%"));
         }
         return l;
     }

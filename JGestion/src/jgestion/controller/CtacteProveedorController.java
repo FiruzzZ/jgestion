@@ -37,7 +37,7 @@ import jgestion.jpa.controller.RemesaJpaController;
 import net.sf.jasperreports.engine.JRException;
 import org.eclipse.persistence.config.QueryHints;
 import utilities.general.UTIL;
-import utilities.swing.components.ComboBoxWrapper;
+import utilities.general.EntityWrapper;
 import utilities.swing.components.FormatRenderer;
 import utilities.swing.components.NumberRenderer;
 
@@ -261,7 +261,7 @@ public class CtacteProveedorController implements ActionListener {
                 new int[]{200, 50, 50, 50});
         tabla.getColumnModel().getColumn(2).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         tabla.getColumnModel().getColumn(3).setCellRenderer(NumberRenderer.getCurrencyRenderer());
-        Proveedor p = ((ComboBoxWrapper<Proveedor>) resumenCtaCtes.getCbClieProv().getSelectedItem()).getEntity();
+        Proveedor p = ((EntityWrapper<Proveedor>) resumenCtaCtes.getCbClieProv().getSelectedItem()).getEntity();
         List<CreditoProveedor> lista = new CreditoProveedorJpaController().findBy(p);
         DefaultTableModel dtm = (DefaultTableModel) tabla.getModel();
         BigDecimal debe = BigDecimal.ZERO;
@@ -334,7 +334,7 @@ public class CtacteProveedorController implements ActionListener {
                 + " AND fv.proveedor = proveedor.id ";
         String filters = "";
         try {
-            filters += " AND proveedor.id =" + ((ComboBoxWrapper<?>) resumenCtaCtes.getCbClieProv().getSelectedItem()).getId();
+            filters += " AND proveedor.id =" + ((EntityWrapper<?>) resumenCtaCtes.getCbClieProv().getSelectedItem()).getId();
         } catch (ClassCastException ex) {
             throw new MessageException("Proveedor no válido");
         }
@@ -417,7 +417,7 @@ public class CtacteProveedorController implements ActionListener {
     private void setDatosReciboSelected() {
         try {
             @SuppressWarnings("unchecked")
-            Remesa remesa = ((ComboBoxWrapper<Remesa>) resumenCtaCtes.getCbReRes().getSelectedItem()).getEntity();
+            Remesa remesa = ((EntityWrapper<Remesa>) resumenCtaCtes.getCbReRes().getSelectedItem()).getEntity();
             resumenCtaCtes.setTfReciboFecha(UTIL.DATE_FORMAT.format(remesa.getFechaRemesa()));
             resumenCtaCtes.setTfReciboMonto(UTIL.DECIMAL_FORMAT.format(remesa.getMonto()));
             cargarDtmDetallesDeCtaCte(remesa);

@@ -21,7 +21,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.postgresql.util.PSQLException;
 import utilities.general.UTIL;
-import utilities.swing.components.ComboBoxWrapper;
+import utilities.general.EntityWrapper;
 
 /**
  *
@@ -64,7 +64,7 @@ public class SubCuentaController {
                     EL_OBJECT = new SubCuenta();
                 }
                 EL_OBJECT.setNombre(panelABMSubCuenta.getTfNombre().getText().trim());
-                EL_OBJECT.setCuenta(((ComboBoxWrapper<Cuenta>) panelABMSubCuenta.getCbCuenta().getSelectedItem()).getEntity());
+                EL_OBJECT.setCuenta(((EntityWrapper<Cuenta>) panelABMSubCuenta.getCbCuenta().getSelectedItem()).getEntity());
                 try {
                     abm.getbAceptar().setEnabled(false);
                     checkConstraints(EL_OBJECT);

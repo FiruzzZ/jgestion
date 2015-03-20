@@ -4,6 +4,7 @@ import jgestion.entity.CuentaBancaria;
 import jgestion.controller.exceptions.MessageException;
 import jgestion.entity.Banco;
 import jgestion.entity.CuentabancariaMovimientos;
+import jgestion.entity.CuentabancariaMovimientos_;
 import jgestion.entity.OperacionesBancarias;
 import jgestion.gui.JDABM;
 import jgestion.gui.JDConciliacionBancaria;
@@ -21,12 +22,11 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import jgestion.JGestionUtils;
-import jgestion.entity.CuentabancariaMovimientos_;
 import jgestion.jpa.controller.CuentabancariaMovimientosJpaController;
 import org.apache.log4j.Logger;
 import utilities.general.UTIL;
 import utilities.gui.SwingUtil;
-import utilities.swing.components.ComboBoxWrapper;
+import utilities.general.EntityWrapper;
 
 /**
  *
@@ -51,7 +51,7 @@ public class CuentabancariaMovimientosController {
             public void actionPerformed(ActionEvent e) {
                 if (manager.getCbCuentabancaria().getSelectedIndex() > 0) {
                     CuentaBancaria cb = new CuentaBancaria();
-                    cb.setId(((ComboBoxWrapper<?>) manager.getCbCuentabancaria().getSelectedItem()).getId());
+                    cb.setId((Integer) ((EntityWrapper<?>) manager.getCbCuentabancaria().getSelectedItem()).getId());
                     BigDecimal saldo = jpaController.getSaldo(cb);
                     manager.getTfSaldoTotal().setText(UTIL.DECIMAL_FORMAT.format(saldo));
                 } else {
@@ -66,7 +66,7 @@ public class CuentabancariaMovimientosController {
             @Override
             public void actionPerformed(ActionEvent e) {
                 @SuppressWarnings("unchecked")
-                OperacionesBancarias op = ((ComboBoxWrapper<OperacionesBancarias>) manager.getCbOperacionesBancarias().getSelectedItem()).getEntity();
+                OperacionesBancarias op = ((EntityWrapper<OperacionesBancarias>) manager.getCbOperacionesBancarias().getSelectedItem()).getEntity();
                 if (op.getNombre().equalsIgnoreCase("DEPÓSITO")) {
                     displayDepositoGUI();
                 } else if (op.getNombre().equalsIgnoreCase("EXTRACCIÓN")) {
@@ -90,7 +90,7 @@ public class CuentabancariaMovimientosController {
                     CuentaBancaria cb;
                     BigDecimal monto;
                     try {
-                        cb = ((ComboBoxWrapper<CuentaBancaria>) panelDeposito.getCbCuentabancaria().getSelectedItem()).getEntity();
+                        cb = ((EntityWrapper<CuentaBancaria>) panelDeposito.getCbCuentabancaria().getSelectedItem()).getEntity();
                     } catch (ClassCastException ex) {
                         throw new MessageException("Cuenta bancanria no válida");
                     }
@@ -108,7 +108,7 @@ public class CuentabancariaMovimientosController {
                     }
                     Date fechaOP = panelDeposito.getDcFechaOperacion().getDate();
                     Date fechaCre = panelDeposito.getDcFechaCreditoDebito().getDate();
-                    OperacionesBancarias op = ((ComboBoxWrapper<OperacionesBancarias>) manager.getCbOperacionesBancarias().getSelectedItem()).getEntity();
+                    OperacionesBancarias op = ((EntityWrapper<OperacionesBancarias>) manager.getCbOperacionesBancarias().getSelectedItem()).getEntity();
                     CuentabancariaMovimientos cbm = new CuentabancariaMovimientos(fechaOP, descrip, fechaCre, monto, BigDecimal.ZERO, false, UsuarioController.getCurrentUser(), op, cb, null, null, false);
                     new CuentabancariaMovimientosJpaController().persist(cbm);
                     abm.showMessage("operación n° " + cbm.getId() + " realizada", null, 1);
@@ -140,7 +140,7 @@ public class CuentabancariaMovimientosController {
                     CuentaBancaria cb;
                     BigDecimal monto;
                     try {
-                        cb = ((ComboBoxWrapper<CuentaBancaria>) panelDeposito.getCbCuentabancaria().getSelectedItem()).getEntity();
+                        cb = ((EntityWrapper<CuentaBancaria>) panelDeposito.getCbCuentabancaria().getSelectedItem()).getEntity();
                     } catch (ClassCastException ex) {
                         throw new MessageException("Cuenta bancanria no válida");
                     }
@@ -158,7 +158,7 @@ public class CuentabancariaMovimientosController {
                     }
                     Date fechaOP = panelDeposito.getDcFechaOperacion().getDate();
                     Date fechaCre = panelDeposito.getDcFechaCreditoDebito().getDate();
-                    OperacionesBancarias op = ((ComboBoxWrapper<OperacionesBancarias>) manager.getCbOperacionesBancarias().getSelectedItem()).getEntity();
+                    OperacionesBancarias op = ((EntityWrapper<OperacionesBancarias>) manager.getCbOperacionesBancarias().getSelectedItem()).getEntity();
                     CuentabancariaMovimientos cbm = new CuentabancariaMovimientos(fechaOP, descrip, fechaCre, BigDecimal.ZERO, monto, false, UsuarioController.getCurrentUser(), op, cb, null, null, false);
                     new CuentabancariaMovimientosJpaController().persist(cbm);
                     abm.showMessage("operación n° " + cbm.getId() + " realizada", null, 1);
@@ -193,7 +193,7 @@ public class CuentabancariaMovimientosController {
                     String descripDestino;
                     BigDecimal monto;
                     try {
-                        origen = ((ComboBoxWrapper<CuentaBancaria>) panelTransf.getCbCuentabancaria().getSelectedItem()).getEntity();
+                        origen = ((EntityWrapper<CuentaBancaria>) panelTransf.getCbCuentabancaria().getSelectedItem()).getEntity();
                     } catch (ClassCastException ex) {
                         throw new MessageException("Cuenta bancaria origen no válida");
                     }
@@ -211,11 +211,11 @@ public class CuentabancariaMovimientosController {
                         throw new MessageException("Si la transferencia es Externa, debe ingresar una descripción de la misma");
                     }
                     Date fechaOP = panelTransf.getDcFechaOperacion().getDate();
-                    OperacionesBancarias op = ((ComboBoxWrapper<OperacionesBancarias>) manager.getCbOperacionesBancarias().getSelectedItem()).getEntity();
+                    OperacionesBancarias op = ((EntityWrapper<OperacionesBancarias>) manager.getCbOperacionesBancarias().getSelectedItem()).getEntity();
                     CuentabancariaMovimientos cbmOrigen = new CuentabancariaMovimientos(fechaOP, descripOrigen, null, BigDecimal.ZERO, monto, false, UsuarioController.getCurrentUser(), op, origen, null, null, false);
                     if (panelTransf.getRbPropia().isSelected()) {
                         try {
-                            destino = ((ComboBoxWrapper<CuentaBancaria>) panelTransf.getCbCuentabancariaDestino().getSelectedItem()).getEntity();
+                            destino = ((EntityWrapper<CuentaBancaria>) panelTransf.getCbCuentabancariaDestino().getSelectedItem()).getEntity();
                             if (origen.equals(destino)) {
                                 throw new MessageException("Las Cuentas bancarias Origen y Destino no pueden ser la misma.");
                             }
@@ -272,7 +272,7 @@ public class CuentabancariaMovimientosController {
                     CuentaBancaria origen;
                     BigDecimal importe;
                     try {
-                        origen = ((ComboBoxWrapper<CuentaBancaria>) panelTransf.getCbCuentabancaria().getSelectedItem()).getEntity();
+                        origen = ((EntityWrapper<CuentaBancaria>) panelTransf.getCbCuentabancaria().getSelectedItem()).getEntity();
                     } catch (ClassCastException ex) {
                         throw new MessageException("Cuenta bancaria origen no válida");
                     }
@@ -289,7 +289,7 @@ public class CuentabancariaMovimientosController {
                     if (cuenta.isEmpty() || cuenta.length() > 22) {
                         throw new MessageException("Número de cuenta no válido, ingrese solo números (hasta 22 dígitos)");
                     }
-                    Banco banco = ((ComboBoxWrapper<Banco>) panelTransf.getCbDestinoBancosExternos().getSelectedItem()).getEntity();
+                    Banco banco = ((EntityWrapper<Banco>) panelTransf.getCbDestinoBancosExternos().getSelectedItem()).getEntity();
                     String d = panelTransf.getTfDescripcionMov().getText().trim();
                     String descrip = banco.getNombre() + " N° " + cuenta + (d.isEmpty() ? "" : ", " + d);
                     if (descrip.isEmpty()) {
@@ -339,7 +339,7 @@ public class CuentabancariaMovimientosController {
                     CuentaBancaria destino;
                     BigDecimal importe;
                     try {
-                        destino = ((ComboBoxWrapper<CuentaBancaria>) panelTransf.getCbCuentabancaria().getSelectedItem()).getEntity();
+                        destino = ((EntityWrapper<CuentaBancaria>) panelTransf.getCbCuentabancaria().getSelectedItem()).getEntity();
                     } catch (ClassCastException ex) {
                         throw new MessageException("Cuenta bancaria origen no válida");
                     }
@@ -356,7 +356,7 @@ public class CuentabancariaMovimientosController {
                     if (cuenta.isEmpty() || cuenta.length() > 22) {
                         throw new MessageException("Número de cuenta no válido, ingrese solo números (hasta 22 dígitos)");
                     }
-                    Banco banco = ((ComboBoxWrapper<Banco>) panelTransf.getCbDestinoBancosExternos().getSelectedItem()).getEntity();
+                    Banco banco = ((EntityWrapper<Banco>) panelTransf.getCbDestinoBancosExternos().getSelectedItem()).getEntity();
                     String descrip = banco.getNombre() + " N°" + cuenta + ", " + panelTransf.getTfDescripcionMov().getText().trim();
 
 //                    if (descrip.isEmpty()) {
@@ -388,11 +388,11 @@ public class CuentabancariaMovimientosController {
         StringBuilder query = new StringBuilder("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o "
                 + "WHERE o.id is not null ");
         if (manager.getCbBancos().getSelectedIndex() > 0) {
-            query.append(" AND o.cuentaBancaria.banco.id=").append(((ComboBoxWrapper<?>) manager.getCbBancos().getSelectedItem()).getId());
+            query.append(" AND o.cuentaBancaria.banco.id=").append(((EntityWrapper<?>) manager.getCbBancos().getSelectedItem()).getId());
         } else {
             query.append(" AND (");
             for (int i = 1; i < manager.getCbBancos().getItemCount(); i++) {
-                query.append(" o.cuentaBancaria.banco.id=").append(((ComboBoxWrapper<?>) manager.getCbBancos().getItemAt(i)).getId());
+                query.append(" o.cuentaBancaria.banco.id=").append(((EntityWrapper<?>) manager.getCbBancos().getItemAt(i)).getId());
                 if ((i + 1) < manager.getCbBancos().getItemCount()) {
                     query.append(" OR ");
                 }
@@ -400,13 +400,13 @@ public class CuentabancariaMovimientosController {
             query.append(")");
         }
         if (manager.getCbCuentabancaria().getSelectedIndex() > 0) {
-            query.append(" AND o.cuentaBancaria.id=").append(((ComboBoxWrapper<?>) manager.getCbCuentabancaria().getSelectedItem()).getId());
+            query.append(" AND o.cuentaBancaria.id=").append(((EntityWrapper<?>) manager.getCbCuentabancaria().getSelectedItem()).getId());
         } else {
             //if (no seleccionó banco) => cuentas bancarias está vacía
             if (manager.getCbBancos().getSelectedIndex() > 0) {
                 query.append(" AND (");
                 for (int i = 1; i < manager.getCbCuentabancaria().getItemCount(); i++) {
-                    query.append(" o.cuentaBancaria.id=").append(((ComboBoxWrapper<?>) manager.getCbCuentabancaria().getItemAt(i)).getId());
+                    query.append(" o.cuentaBancaria.id=").append(((EntityWrapper<?>) manager.getCbCuentabancaria().getItemAt(i)).getId());
                     if ((i + 1) < manager.getCbCuentabancaria().getItemCount()) {
                         query.append(" OR ");
                     }
@@ -415,7 +415,7 @@ public class CuentabancariaMovimientosController {
             }
         }
         if (manager.getCbOperacionesBancariasFiltro().getSelectedIndex() > 0) {
-            query.append(" AND o.operacionesBancarias.id=").append(((ComboBoxWrapper<?>) manager.getCbOperacionesBancariasFiltro().getSelectedItem()).getId());
+            query.append(" AND o.operacionesBancarias.id=").append(((EntityWrapper<?>) manager.getCbOperacionesBancariasFiltro().getSelectedItem()).getId());
         }
         if (manager.getDcDesde() != null || manager.getDcHasta() != null) {
             if (manager.getRbOperacion()) {
@@ -457,7 +457,7 @@ public class CuentabancariaMovimientosController {
     }
 
     public JDialog getConciliacion(Window owner) throws MessageException {
-        List<ComboBoxWrapper<Banco>> l = JGestionUtils.getWrappedBancos(new BancoController().findAllWithCuentasBancarias());
+        List<EntityWrapper<Banco>> l = JGestionUtils.getWrappedBancos(new BancoController().findAllWithCuentasBancarias());
         if (l.isEmpty()) {
             throw new MessageException("No existen banco con cuenta bancaria asociada");
         }
@@ -474,7 +474,7 @@ public class CuentabancariaMovimientosController {
             public void actionPerformed(ActionEvent e) {
                 if (jd.getCbBancos().getItemCount() > 0) {
                     @SuppressWarnings("unchecked")
-                    Banco b = ((ComboBoxWrapper<Banco>) jd.getCbBancos().getSelectedItem()).getEntity();
+                    Banco b = ((EntityWrapper<Banco>) jd.getCbBancos().getSelectedItem()).getEntity();
                     UTIL.loadComboBox(jd.getCbCuentabancaria(), JGestionUtils.getWrappedCuentasBancarias(b.getCuentasbancaria()), false);
                 } else {
                     UTIL.loadComboBox(jd.getCbCuentabancaria(), null, true);
@@ -487,7 +487,7 @@ public class CuentabancariaMovimientosController {
                 try {
                     CuentaBancaria cuentaBancaria;
                     try {
-                        cuentaBancaria = ((ComboBoxWrapper<CuentaBancaria>) jd.getCbCuentabancaria().getSelectedItem()).getEntity();
+                        cuentaBancaria = ((EntityWrapper<CuentaBancaria>) jd.getCbCuentabancaria().getSelectedItem()).getEntity();
                     } catch (ClassCastException ex) {
                         throw new MessageException("Cuenta bancaria no válida");
                     }
@@ -524,7 +524,7 @@ public class CuentabancariaMovimientosController {
                 try {
                     CuentaBancaria cuentaBancaria;
                     try {
-                        cuentaBancaria = ((ComboBoxWrapper<CuentaBancaria>) jd.getCbCuentabancaria().getSelectedItem()).getEntity();
+                        cuentaBancaria = ((EntityWrapper<CuentaBancaria>) jd.getCbCuentabancaria().getSelectedItem()).getEntity();
                     } catch (ClassCastException ex) {
                         throw new MessageException("Cuenta bancaria no válida");
                     }

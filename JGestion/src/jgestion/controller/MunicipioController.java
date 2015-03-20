@@ -1,9 +1,9 @@
 package jgestion.controller;
 
-import jgestion.controller.exceptions.PreexistingEntityException;
+import jgestion.controller.exceptions.MessageException;
 import jgestion.controller.exceptions.IllegalOrphanException;
 import jgestion.controller.exceptions.NonexistentEntityException;
-import jgestion.controller.exceptions.MessageException;
+import jgestion.controller.exceptions.PreexistingEntityException;
 import jgestion.entity.Municipio;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;

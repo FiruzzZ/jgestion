@@ -1,20 +1,20 @@
 package jgestion.controller;
 
+import jgestion.entity.SubCuenta;
+import jgestion.entity.Caja;
+import jgestion.entity.Cuenta;
+import jgestion.entity.DetalleCajaMovimientos;
+import jgestion.entity.FacturaVenta;
+import jgestion.entity.UnidadDeNegocio;
+import jgestion.entity.CajaMovimientos;
+import jgestion.gui.PanelBuscadorCajaToCaja;
+import jgestion.gui.PanelMovimientosVarios;
+import jgestion.gui.JDCajaToCaja;
+import jgestion.gui.JDABM;
+import jgestion.gui.JDCierreCaja;
 import jgestion.gui.PanelBuscadorCajasCerradas;
 import jgestion.gui.PanelBuscadorMovimientosVarios;
 import jgestion.gui.JDBuscador;
-import jgestion.gui.JDCajaToCaja;
-import jgestion.gui.JDABM;
-import jgestion.gui.PanelBuscadorCajaToCaja;
-import jgestion.gui.JDCierreCaja;
-import jgestion.gui.PanelMovimientosVarios;
-import jgestion.entity.CajaMovimientos;
-import jgestion.entity.Cuenta;
-import jgestion.entity.DetalleCajaMovimientos;
-import jgestion.entity.Caja;
-import jgestion.entity.FacturaVenta;
-import jgestion.entity.SubCuenta;
-import jgestion.entity.UnidadDeNegocio;
 import jgestion.controller.exceptions.MessageException;
 import jgestion.controller.exceptions.MissingReportException;
 import generics.GenericBeanCollection;
@@ -54,7 +54,7 @@ import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import utilities.general.UTIL;
-import utilities.swing.components.ComboBoxWrapper;
+import utilities.general.EntityWrapper;
 import utilities.swing.components.FormatRenderer;
 import utilities.swing.components.NumberRenderer;
 
@@ -83,9 +83,8 @@ public class CajaMovimientosController implements ActionListener {
     }
 
     /**
-     * Arma la descripción del detalleCajaMovimiento. Si se imprime factura ej:
-     * F + [letra de factura] + [número de factura] Si es interno ej: I +
-     * [número de movimento interno]
+     * Arma la descripción del detalleCajaMovimiento. Si se imprime factura ej: F + [letra de
+     * factura] + [número de factura] Si es interno ej: I + [número de movimento interno]
      *
      * @param factura
      * @return Un String con la descripción.
@@ -102,10 +101,8 @@ public class CajaMovimientosController implements ActionListener {
     }
 
     /**
-     * Crea (abre) una
-     * <code>CajaMovimientos</code> implicitamente con la creación de una
-     * <code>Caja</code>, así como el 1er
-     * <code>DetalleCajaMovimientos</code> con monto inicial $0.
+     * Crea (abre) una <code>CajaMovimientos</code> implicitamente con la creación de una
+     * <code>Caja</code>, así como el 1er <code>DetalleCajaMovimientos</code> con monto inicial $0.
      *
      * @param caja a la cual se van a vincular la <code>CajaMovimientos</code> y
      * <code>DetalleCajaMovimientos</code>.
@@ -131,11 +128,9 @@ public class CajaMovimientosController implements ActionListener {
     }
 
     /**
-     * Crea (abre) LA SIGUIENTE
-     * <code>CajaMovimientos</code> implicita POST cierre de la actual. El
-     * montoApertura de la nueva
-     * <code>CajaMovimientos</code> es == al montoCierre de la anterior. La
-     * fechaApertura de la nueva es == a un día después de la anterior.
+     * Crea (abre) LA SIGUIENTE <code>CajaMovimientos</code> implicita POST cierre de la actual. El
+     * montoApertura de la nueva <code>CajaMovimientos</code> es == al montoCierre de la anterior.
+     * La fechaApertura de la nueva es == a un día después de la anterior.
      *
      * @param cajaMovimiento la que precede a la que se va abrir.
      */
@@ -292,11 +287,11 @@ public class CajaMovimientosController implements ActionListener {
 
             //carga de tabla..............
             dtm.addRow(new Object[]{
-                        detalleCajaMovimientos.getDescripcion(),
-                        UTIL.PRECIO_CON_PUNTO.format(detalleCajaMovimientos.getMonto()),
-                        UTIL.DATE_FORMAT.format(detalleCajaMovimientos.getFecha()) + " (" + UTIL.TIME_FORMAT.format(detalleCajaMovimientos.getFecha()) + ")",
-                        detalleCajaMovimientos.getUsuario()
-                    });
+                detalleCajaMovimientos.getDescripcion(),
+                UTIL.PRECIO_CON_PUNTO.format(detalleCajaMovimientos.getMonto()),
+                UTIL.DATE_FORMAT.format(detalleCajaMovimientos.getFecha()) + " (" + UTIL.TIME_FORMAT.format(detalleCajaMovimientos.getFecha()) + ")",
+                detalleCajaMovimientos.getUsuario()
+            });
         }
         dtm.addRow(new Object[]{"Total Ingresos", UTIL.PRECIO_CON_PUNTO.format(totalIngresos)});
         dtm.addRow(new Object[]{"Total Egresos", UTIL.PRECIO_CON_PUNTO.format(totalEgresos)});
@@ -350,9 +345,8 @@ public class CajaMovimientosController implements ActionListener {
     }
 
     /**
-     * Busca las Cajas ACTIVAS a las cuales tiene permisos el "Usuario
-     * actualmente loggeado", después busca las CajaMovimientos correspondientes
-     * a cada Caja
+     * Busca las Cajas ACTIVAS a las cuales tiene permisos el "Usuario actualmente loggeado",
+     * después busca las CajaMovimientos correspondientes a cada Caja
      *
      * @return eso que tanto buscó!..
      */
@@ -573,12 +567,12 @@ public class CajaMovimientosController implements ActionListener {
         if (new UnidadDeNegocioJpaController().findAll().isEmpty()) {
             throw new MessageException(JGestion.resourceBundle.getString("info.unidaddenegociosempty"));
         }
-        List<ComboBoxWrapper<Caja>> ll = new UsuarioHelper().getWrappedCajas(true);
+        List<EntityWrapper<Caja>> ll = JGestionUtils.getWrappedCajas(new UsuarioHelper().getCajas(true));
         if (ll.isEmpty()) {
             throw new MessageException(JGestion.resourceBundle.getString("unassigned.caja"));
         }
         UTIL.loadComboBox(panelMovVarios.getCbCaja(), ll, false);
-        List<ComboBoxWrapper<UnidadDeNegocio>> l = new Wrapper<UnidadDeNegocio>().getWrapped(new UnidadDeNegocioJpaController().findAll());
+        List<EntityWrapper<UnidadDeNegocio>> l = new Wrapper<UnidadDeNegocio>().getWrapped(new UnidadDeNegocioJpaController().findAll());
         UTIL.loadComboBox(panelMovVarios.getCbUnidadDeNegocio(), l, false);
         ActionListenerManager.setCuentasIESubcuentaActionListener(panelMovVarios.getCbCuenta(), false, panelMovVarios.getCbSubCuenta(), true, true);
         abm = new JDABM(owner, "Movimientos Varios", modal, panelMovVarios);
@@ -636,22 +630,22 @@ public class CajaMovimientosController implements ActionListener {
         Cuenta cuenta;
         SubCuenta subCuenta;
         try {
-            caja = ((ComboBoxWrapper<Caja>) panelMovVarios.getCbCaja().getSelectedItem()).getEntity();
+            caja = ((EntityWrapper<Caja>) panelMovVarios.getCbCaja().getSelectedItem()).getEntity();
         } catch (ClassCastException ex) {
             throw new MessageException("No tiene acceso a ninguna Caja");
         }
         try {
-            unidadDeNegocio = ((ComboBoxWrapper<UnidadDeNegocio>) panelMovVarios.getCbUnidadDeNegocio().getSelectedItem()).getEntity();
+            unidadDeNegocio = ((EntityWrapper<UnidadDeNegocio>) panelMovVarios.getCbUnidadDeNegocio().getSelectedItem()).getEntity();
         } catch (ClassCastException ex) {
             throw new MessageException("Unidad de Negocios no válida");
         }
         try {
-            cuenta = ((ComboBoxWrapper<Cuenta>) panelMovVarios.getCbCuenta().getSelectedItem()).getEntity();
+            cuenta = ((EntityWrapper<Cuenta>) panelMovVarios.getCbCuenta().getSelectedItem()).getEntity();
         } catch (ClassCastException e) {
             throw new MessageException("Cuenta no válida");
         }
         try {
-            subCuenta = ((ComboBoxWrapper<SubCuenta>) panelMovVarios.getCbSubCuenta().getSelectedItem()).getEntity();
+            subCuenta = ((EntityWrapper<SubCuenta>) panelMovVarios.getCbSubCuenta().getSelectedItem()).getEntity();
         } catch (ClassCastException ex) {
             subCuenta = null;
         }
@@ -686,7 +680,7 @@ public class CajaMovimientosController implements ActionListener {
 
     private void initBuscadorMovimientosVarios(Window owner) {
         panelBuscadorMovimientosVarios = new PanelBuscadorMovimientosVarios();
-        UTIL.loadComboBox(panelBuscadorMovimientosVarios.getCbCaja(), new UsuarioHelper().getWrappedCajas(true), true);
+        UTIL.loadComboBox(panelBuscadorMovimientosVarios.getCbCaja(), JGestionUtils.getWrappedCajas(new UsuarioHelper().getCajas(true)), true);
         UTIL.loadComboBox(panelBuscadorMovimientosVarios.getCbUnidadDeNegocio(), JGestionUtils.getWrappedUnidadDeNegocios(new UnidadDeNegocioJpaController().findAll()), true);
         ActionListenerManager.setCuentasIngresosSubcuentaActionListener(panelBuscadorMovimientosVarios.getCbCuenta(), true, panelBuscadorMovimientosVarios.getCbSubCuenta(), true, true);
         buscador = new JDBuscador(owner, "Buscardor - Movimientos varios", false, panelBuscadorMovimientosVarios);
@@ -752,7 +746,7 @@ public class CajaMovimientosController implements ActionListener {
                 + " o.descripcion, o.unidadDeNegocio, o.cuenta, o.subCuenta, o.fechaMovimiento, o.monto, o.fecha, o.usuario.nick FROM " + DetalleCajaMovimientos.class.getSimpleName() + " o "
                 + " WHERE o.tipo=" + DetalleCajaMovimientosController.MOVIMIENTO_VARIOS;
         if (panelBuscadorMovimientosVarios.getCbCaja().getSelectedIndex() > 0) {
-            query += " AND o.cajaMovimientos.caja.id=" + ((ComboBoxWrapper<Caja>) panelBuscadorMovimientosVarios.getCbCaja().getSelectedItem()).getId();
+            query += " AND o.cajaMovimientos.caja.id=" + ((EntityWrapper<Caja>) panelBuscadorMovimientosVarios.getCbCaja().getSelectedItem()).getId();
         } else {
             // carga todas las Cajas que tiene permitidas..
             query += " AND (";
@@ -760,7 +754,7 @@ public class CajaMovimientosController implements ActionListener {
                 if (i > 1) {
                     query += " OR ";
                 }
-                query += " o.cajaMovimientos.caja.id =" + ((ComboBoxWrapper<Caja>) panelBuscadorMovimientosVarios.getCbCaja().getItemAt(i)).getId();
+                query += " o.cajaMovimientos.caja.id =" + ((EntityWrapper<Caja>) panelBuscadorMovimientosVarios.getCbCaja().getItemAt(i)).getId();
             }
             query += ")";
         }
@@ -785,13 +779,13 @@ public class CajaMovimientosController implements ActionListener {
             query += " AND o.fechaMovimiento <='" + UTIL.yyyy_MM_dd.format(panelBuscadorMovimientosVarios.getDcHasta()) + "'";
         }
         if (panelBuscadorMovimientosVarios.getCbUnidadDeNegocio().getSelectedIndex() > 0) {
-            query += " AND o.unidadDeNegocio.id = " + ((ComboBoxWrapper<UnidadDeNegocio>) panelBuscadorMovimientosVarios.getCbUnidadDeNegocio().getSelectedItem()).getId();
+            query += " AND o.unidadDeNegocio.id = " + ((EntityWrapper<UnidadDeNegocio>) panelBuscadorMovimientosVarios.getCbUnidadDeNegocio().getSelectedItem()).getId();
         }
         if (panelBuscadorMovimientosVarios.getCbCuenta().getSelectedIndex() > 0) {
-            query += " AND o.cuenta.id = " + ((ComboBoxWrapper<Cuenta>) panelBuscadorMovimientosVarios.getCbCuenta().getSelectedItem()).getId();
+            query += " AND o.cuenta.id = " + ((EntityWrapper<Cuenta>) panelBuscadorMovimientosVarios.getCbCuenta().getSelectedItem()).getId();
         }
         if (panelBuscadorMovimientosVarios.getCbSubCuenta().getSelectedIndex() > 0) {
-            query += " AND o.subCuenta.id = " + ((ComboBoxWrapper<SubCuenta>) panelBuscadorMovimientosVarios.getCbSubCuenta().getSelectedItem()).getId();
+            query += " AND o.subCuenta.id = " + ((EntityWrapper<SubCuenta>) panelBuscadorMovimientosVarios.getCbSubCuenta().getSelectedItem()).getId();
         }
         Logger.getLogger(this.getClass()).debug(query);
         return query;
@@ -806,9 +800,9 @@ public class CajaMovimientosController implements ActionListener {
             UnidadDeNegocio u = (UnidadDeNegocio) object[3];
             Cuenta c = (Cuenta) object[4];
             SubCuenta s = (SubCuenta) object[5];
-            ComboBoxWrapper<UnidadDeNegocio> cu = (u != null ? new ComboBoxWrapper<UnidadDeNegocio>(u, u.getId(), u.getNombre()) : null);
-            ComboBoxWrapper<Cuenta> cc = (c != null ? new ComboBoxWrapper<Cuenta>(c, c.getId(), c.getNombre()) : null);
-            ComboBoxWrapper<SubCuenta> cs = (s != null ? new ComboBoxWrapper<SubCuenta>(s, s.getId(), s.getNombre()) : null);
+            EntityWrapper<UnidadDeNegocio> cu = (u != null ? new EntityWrapper<UnidadDeNegocio>(u, u.getId(), u.getNombre()) : null);
+            EntityWrapper<Cuenta> cc = (c != null ? new EntityWrapper<Cuenta>(c, c.getId(), c.getNombre()) : null);
+            EntityWrapper<SubCuenta> cs = (s != null ? new EntityWrapper<SubCuenta>(s, s.getId(), s.getNombre()) : null);
             object[3] = cu;
             object[4] = cc;
             object[5] = cs;
@@ -883,11 +877,11 @@ public class CajaMovimientosController implements ActionListener {
         List<DetalleCajaMovimientos> lista = DAO.createNativeQuery(query, DetalleCajaMovimientos.class, true).getResultList();
         for (DetalleCajaMovimientos dcm : lista) {
             dtm.addRow(new Object[]{
-                        dcm.getDescripcion(),
-                        UTIL.PRECIO_CON_PUNTO.format(dcm.getMonto()),
-                        UTIL.DATE_FORMAT.format(dcm.getFecha()) + "(" + UTIL.TIME_FORMAT.format(dcm.getFecha()) + ")",
-                        dcm.getUsuario()
-                    });
+                dcm.getDescripcion(),
+                UTIL.PRECIO_CON_PUNTO.format(dcm.getMonto()),
+                UTIL.DATE_FORMAT.format(dcm.getFecha()) + "(" + UTIL.TIME_FORMAT.format(dcm.getFecha()) + ")",
+                dcm.getUsuario()
+            });
         }
     }
 
@@ -981,12 +975,12 @@ public class CajaMovimientosController implements ActionListener {
         List<CajaMovimientos> cajaMovimientosList = DAO.getEntityManager().createNativeQuery(query, CajaMovimientos.class).getResultList();
         for (CajaMovimientos cajaMovimientos : cajaMovimientosList) {
             dtm.addRow(new Object[]{
-                        cajaMovimientos,
-                        UTIL.DATE_FORMAT.format(cajaMovimientos.getFechaApertura()),
-                        UTIL.DATE_FORMAT.format(cajaMovimientos.getFechaCierre()),
-                        UTIL.PRECIO_CON_PUNTO.format(cajaMovimientos.getMontoCierre()),
-                        cajaMovimientos.getUsuarioCierre()
-                    });
+                cajaMovimientos,
+                UTIL.DATE_FORMAT.format(cajaMovimientos.getFechaApertura()),
+                UTIL.DATE_FORMAT.format(cajaMovimientos.getFechaCierre()),
+                UTIL.PRECIO_CON_PUNTO.format(cajaMovimientos.getMontoCierre()),
+                cajaMovimientos.getUsuarioCierre()
+            });
         }
     }
 
@@ -1020,8 +1014,8 @@ public class CajaMovimientosController implements ActionListener {
     }
 
     private void armarQueryMovimientosCajaToCaja(boolean doReport) throws Exception {
-        String query =
-                "SELECT b.*, u.nick"
+        String query
+                = "SELECT b.*, u.nick"
                 + " FROM (SELECT oo.*"
                 + " FROM detalle_caja_movimientos oo, caja_movimientos cm, caja"
                 + " WHERE oo.ingreso = true AND oo.caja_movimientos = cm.id  AND cm.caja = caja.id AND oo.tipo = " + DetalleCajaMovimientosController.MOVIMIENTO_CAJA;
@@ -1082,12 +1076,10 @@ public class CajaMovimientosController implements ActionListener {
     }
 
     /**
-     * Abre una {@link CajaMovimientos} que ya debería haberse abierto.. pero
-     * por alguna razón fantástica, esto a veces no pasa Note: solo a Ruben le
-     * pasa esto
+     * Abre una {@link CajaMovimientos} que ya debería haberse abierto.. pero por alguna razón
+     * fantástica, esto a veces no pasa Note: solo a Ruben le pasa esto
      *
-     * @param caja la cual corresponde a la {@link CajaMovimientos} que debería
-     * estar abierta.
+     * @param caja la cual corresponde a la {@link CajaMovimientos} que debería estar abierta.
      */
     private void fixCajaMalAbierta(Caja caja) {
         Integer lastIDCajaMovimientoCerrada = jpaController.findLastCajaMovimientoIDCerrada(caja);
@@ -1104,7 +1096,7 @@ public class CajaMovimientosController implements ActionListener {
 
     public void asignador() {
         panelBuscadorMovimientosVarios = new PanelBuscadorMovimientosVarios();
-        UTIL.loadComboBox(panelBuscadorMovimientosVarios.getCbCaja(), new UsuarioHelper().getWrappedCajas(true), true);
+        UTIL.loadComboBox(panelBuscadorMovimientosVarios.getCbCaja(), JGestionUtils.getWrappedCajas(new UsuarioHelper().getCajas(true)), true);
         UTIL.loadComboBox(panelBuscadorMovimientosVarios.getCbUnidadDeNegocio(), JGestionUtils.getWrappedUnidadDeNegocios(new UnidadDeNegocioJpaController().findAll()), false);
         ActionListenerManager.setCuentasIngresosSubcuentaActionListener(panelBuscadorMovimientosVarios.getCbCuenta(), true, panelBuscadorMovimientosVarios.getCbSubCuenta(), true, true);
         buscador = new JDBuscador(null, "Buscardor - Movimientos varios", false, panelBuscadorMovimientosVarios);
@@ -1151,13 +1143,13 @@ public class CajaMovimientosController implements ActionListener {
                     if (data != null) {
                         DetalleCajaMovimientos selected = jpaDcm.find((Integer) model.getValueAt(row, 0));
                         if (column == 8) {
-                            UnidadDeNegocio unidad = ((ComboBoxWrapper<UnidadDeNegocio>) data).getEntity();
+                            UnidadDeNegocio unidad = ((EntityWrapper<UnidadDeNegocio>) data).getEntity();
                             selected.setUnidadDeNegocio(unidad);
                         } else if (column == 9) {
-                            Cuenta unidad = ((ComboBoxWrapper<Cuenta>) data).getEntity();
+                            Cuenta unidad = ((EntityWrapper<Cuenta>) data).getEntity();
                             selected.setCuenta(unidad);
                         } else if (column == 10) {
-                            SubCuenta unidad = ((ComboBoxWrapper<SubCuenta>) data).getEntity();
+                            SubCuenta unidad = ((EntityWrapper<SubCuenta>) data).getEntity();
                             selected.setSubCuenta(unidad);
                         }
                         jpaDcm.merge(selected);
@@ -1180,9 +1172,9 @@ public class CajaMovimientosController implements ActionListener {
             UnidadDeNegocio u = (UnidadDeNegocio) object[3];
             Cuenta c = (Cuenta) object[4];
             SubCuenta s = (SubCuenta) object[5];
-            ComboBoxWrapper<UnidadDeNegocio> cu = (u != null ? new ComboBoxWrapper<UnidadDeNegocio>(u, u.getId(), u.getNombre()) : null);
-            ComboBoxWrapper<Cuenta> cc = (c != null ? new ComboBoxWrapper<Cuenta>(c, c.getId(), c.getNombre()) : null);
-            ComboBoxWrapper<SubCuenta> cs = (s != null ? new ComboBoxWrapper<SubCuenta>(s, s.getId(), s.getNombre()) : null);
+            EntityWrapper<UnidadDeNegocio> cu = (u != null ? new EntityWrapper<UnidadDeNegocio>(u, u.getId(), u.getNombre()) : null);
+            EntityWrapper<Cuenta> cc = (c != null ? new EntityWrapper<Cuenta>(c, c.getId(), c.getNombre()) : null);
+            EntityWrapper<SubCuenta> cs = (s != null ? new EntityWrapper<SubCuenta>(s, s.getId(), s.getNombre()) : null);
             object[3] = cu;
             object[4] = cc;
             object[5] = cs;

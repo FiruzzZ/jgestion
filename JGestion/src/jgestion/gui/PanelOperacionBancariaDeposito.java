@@ -8,7 +8,7 @@ import javax.swing.JTextField;
 import jgestion.JGestionUtils;
 import utilities.general.UTIL;
 import utilities.gui.SwingUtil;
-import utilities.swing.components.ComboBoxWrapper;
+import utilities.general.EntityWrapper;
 
 /**
  *
@@ -132,7 +132,7 @@ public class PanelOperacionBancariaDeposito extends javax.swing.JPanel {
 
     private void cbBancosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbBancosActionPerformed
         if (cbBancos.getItemCount() > 0) {
-            Banco b = ((ComboBoxWrapper<Banco>) cbBancos.getSelectedItem()).getEntity();
+            Banco b = ((EntityWrapper<Banco>) cbBancos.getSelectedItem()).getEntity();
             UTIL.loadComboBox(cbCuentabancaria, JGestionUtils.getWrappedCuentasBancarias(b.getCuentasbancaria()), false);
         } 
     }//GEN-LAST:event_cbBancosActionPerformed

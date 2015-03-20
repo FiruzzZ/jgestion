@@ -18,7 +18,7 @@ import java.util.Set;
 import javax.swing.JComboBox;
 import jgestion.jpa.controller.UnidadDeNegocioJpaController;
 import utilities.general.UTIL;
-import utilities.swing.components.ComboBoxWrapper;
+import utilities.general.EntityWrapper;
 
 /**
  *
@@ -32,9 +32,9 @@ public class ActionListenerManager {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Object o = cuenta.getSelectedItem();
-                if (o instanceof ComboBoxWrapper) {
+                if (o instanceof EntityWrapper) {
                     @SuppressWarnings("unchecked")
-                    ComboBoxWrapper<Cuenta> c = (ComboBoxWrapper<Cuenta>) o;
+                    EntityWrapper<Cuenta> c = (EntityWrapper<Cuenta>) o;
                     List<SubCuenta> l = c.getEntity().getSubCuentas();
                     UTIL.loadComboBox(subCuenta, JGestionUtils.getWrappedSubCuentas(l), subCuentaElegible);
                 } else {
@@ -44,9 +44,9 @@ public class ActionListenerManager {
         });
         if (loadSubCuenta) {
             Object o = cuenta.getSelectedItem();
-            if (o instanceof ComboBoxWrapper) {
+            if (o instanceof EntityWrapper) {
                 @SuppressWarnings("unchecked")
-                ComboBoxWrapper<Cuenta> c = (ComboBoxWrapper<Cuenta>) o;
+                EntityWrapper<Cuenta> c = (EntityWrapper<Cuenta>) o;
                 List<SubCuenta> l = c.getEntity().getSubCuentas();
                 UTIL.loadComboBox(subCuenta, JGestionUtils.getWrappedSubCuentas(l), subCuentaElegible);
             } else {
@@ -61,9 +61,9 @@ public class ActionListenerManager {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Object o = cuentasIngreso.getSelectedItem();
-                if (o instanceof ComboBoxWrapper) {
+                if (o instanceof EntityWrapper) {
                     @SuppressWarnings("unchecked")
-                    ComboBoxWrapper<Cuenta> c = (ComboBoxWrapper<Cuenta>) o;
+                    EntityWrapper<Cuenta> c = (EntityWrapper<Cuenta>) o;
                     List<SubCuenta> l = c.getEntity().getSubCuentas();
                     UTIL.loadComboBox(subCuenta, JGestionUtils.getWrappedSubCuentas(l), subCuentaElegible);
                 } else {
@@ -73,9 +73,9 @@ public class ActionListenerManager {
         });
         if (loadSubCuenta) {
             Object o = cuentasIngreso.getSelectedItem();
-            if (o instanceof ComboBoxWrapper) {
+            if (o instanceof EntityWrapper) {
                 @SuppressWarnings("unchecked")
-                ComboBoxWrapper<Cuenta> c = (ComboBoxWrapper<Cuenta>) o;
+                EntityWrapper<Cuenta> c = (EntityWrapper<Cuenta>) o;
                 List<SubCuenta> l = c.getEntity().getSubCuentas();
                 UTIL.loadComboBox(subCuenta, JGestionUtils.getWrappedSubCuentas(l), subCuentaElegible);
             } else {
@@ -90,9 +90,9 @@ public class ActionListenerManager {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Object o = cuentasEgresos.getSelectedItem();
-                if (o instanceof ComboBoxWrapper) {
+                if (o instanceof EntityWrapper) {
                     @SuppressWarnings("unchecked")
-                    ComboBoxWrapper<Cuenta> c = (ComboBoxWrapper<Cuenta>) o;
+                    EntityWrapper<Cuenta> c = (EntityWrapper<Cuenta>) o;
                     List<SubCuenta> l = c.getEntity().getSubCuentas();
                     UTIL.loadComboBox(subCuenta, JGestionUtils.getWrappedSubCuentas(l), subCuentaElegible);
                 } else {
@@ -102,9 +102,9 @@ public class ActionListenerManager {
         });
         if (loadSubCuenta) {
             Object o = cuentasEgresos.getSelectedItem();
-            if (o instanceof ComboBoxWrapper) {
+            if (o instanceof EntityWrapper) {
                 @SuppressWarnings("unchecked")
-                ComboBoxWrapper<Cuenta> c = (ComboBoxWrapper<Cuenta>) o;
+                EntityWrapper<Cuenta> c = (EntityWrapper<Cuenta>) o;
                 List<SubCuenta> l = c.getEntity().getSubCuentas();
                 UTIL.loadComboBox(subCuenta, JGestionUtils.getWrappedSubCuentas(l), subCuentaElegible);
             } else {
@@ -133,9 +133,9 @@ public class ActionListenerManager {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Object o = cbUnidadDeNegocio.getSelectedItem();
-                if (o instanceof ComboBoxWrapper) {
+                if (o instanceof EntityWrapper) {
                     @SuppressWarnings("unchecked")
-                    ComboBoxWrapper<UnidadDeNegocio> c = (ComboBoxWrapper<UnidadDeNegocio>) o;
+                    EntityWrapper<UnidadDeNegocio> c = (EntityWrapper<UnidadDeNegocio>) o;
                     Set<Sucursal> uni = c.getEntity().getSucursales();
                     List<Sucursal> permitidas = new UsuarioHelper().getSucursales();
                     List<Sucursal> x = new ArrayList<Sucursal>();
@@ -153,9 +153,9 @@ public class ActionListenerManager {
         });
         if (loadSucursal) {
             Object o = cbUnidadDeNegocio.getSelectedItem();
-            if (o instanceof ComboBoxWrapper) {
+            if (o instanceof EntityWrapper) {
                 @SuppressWarnings("unchecked")
-                ComboBoxWrapper<UnidadDeNegocio> c = (ComboBoxWrapper<UnidadDeNegocio>) o;
+                EntityWrapper<UnidadDeNegocio> c = (EntityWrapper<UnidadDeNegocio>) o;
                 Set<Sucursal> uni = c.getEntity().getSucursales();
                 List<Sucursal> permitidas = new UsuarioHelper().getSucursales();
                 List<Sucursal> x = new ArrayList<Sucursal>();

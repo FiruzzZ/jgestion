@@ -20,7 +20,6 @@ import jgestion.gui.PanelNumeracionActual;
 import java.awt.event.*;
 import java.math.BigInteger;
 import java.util.List;
-import java.util.logging.Level;
 import javax.persistence.NoResultException;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -32,23 +31,18 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.text.JTextComponent;
 import jgestion.JGestion;
 import jgestion.controller.exceptions.MissingReportException;
 import jgestion.entity.Producto;
 import jgestion.entity.Stock;
 import jgestion.entity.UsuarioAcciones;
-import jgestion.gui.JFP;
 import jgestion.gui.PanelDistribucionStock;
 import jgestion.jpa.controller.ProductoJpaController;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Logger;
-import org.jdesktop.swingx.SwingXUtilities;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
-import utilities.general.EntityWrapper;
 import utilities.general.UTIL;
-import utilities.swing.components.AutoCompleteComboBox;
-import utilities.swing.components.ComboBoxWrapper;
+import utilities.general.EntityWrapper;
 
 /**
  *
@@ -623,7 +617,7 @@ public class SucursalController implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    ComboBoxWrapper<Producto> cbw = (ComboBoxWrapper<Producto>) panelDis.getCbProductos().getSelectedItem();
+                    EntityWrapper<Producto> cbw = (EntityWrapper<Producto>) panelDis.getCbProductos().getSelectedItem();
                     if (cbw == null) {
                         throw new MessageException("Producto no válido");
                     }
@@ -641,7 +635,7 @@ public class SucursalController implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    ComboBoxWrapper<Producto> cbw = (ComboBoxWrapper<Producto>) panelDis.getCbProductos().getSelectedItem();
+                    EntityWrapper<Producto> cbw = (EntityWrapper<Producto>) panelDis.getCbProductos().getSelectedItem();
                     Producto producto = cbw.getEntity();
                     producto = new ProductoJpaController().find(producto.getId());
                     int toDist;
@@ -653,8 +647,8 @@ public class SucursalController implements ActionListener {
                     } catch (NumberFormatException ex) {
                         throw new MessageException("Cantidad a distribuir no válida");
                     }
-                    Sucursal origen = ((ComboBoxWrapper<Sucursal>) panelDis.getCbSucursalOrigen().getSelectedItem()).getEntity();
-                    Sucursal destino = ((ComboBoxWrapper<Sucursal>) panelDis.getCbSucursalDestino().getSelectedItem()).getEntity();
+                    Sucursal origen = ((EntityWrapper<Sucursal>) panelDis.getCbSucursalOrigen().getSelectedItem()).getEntity();
+                    Sucursal destino = ((EntityWrapper<Sucursal>) panelDis.getCbSucursalDestino().getSelectedItem()).getEntity();
                     if (origen.equals(destino)) {
                         throw new MessageException("Sucursal Origen y Destino deben ser diferentes");
                     }
@@ -669,9 +663,17 @@ public class SucursalController implements ActionListener {
                     new StockController().merge(stockD);
                     UsuarioAcciones ua = UsuarioAccionesController.createUA(producto, producto.getId(), "DistribuciónStock: Origen=" + origen.getNombre() + ", Destino=" + destino.getNombre() + ", Producto=" + producto.getNombre() + ", cantidad=" + toDist, 'u');
                     new UsuarioAccionesController().create(ua);
+                    panelDis.getTfCantidad().setText(null);
                 } catch (MessageException ex1) {
                     ex1.displayMessage(null);
                 }
+            }
+        });
+        abm1.getbCancelar().addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }
         });
         abm1.setLocationRelativeTo(owner);
@@ -679,13 +681,13 @@ public class SucursalController implements ActionListener {
     }
 
     private void setStockDistribucion() throws MessageException {
-        ComboBoxWrapper<Producto> cbw = (ComboBoxWrapper<Producto>) panelDis.getCbProductos().getSelectedItem();
+        EntityWrapper<Producto> cbw = (EntityWrapper<Producto>) panelDis.getCbProductos().getSelectedItem();
         if (cbw == null) {
             throw new MessageException("Producto no válido");
         }
         Producto producto = cbw.getEntity();
         producto = new ProductoJpaController().find(producto.getId());
-        Sucursal origen = ((ComboBoxWrapper<Sucursal>) panelDis.getCbSucursalOrigen().getSelectedItem()).getEntity();
+        Sucursal origen = ((EntityWrapper<Sucursal>) panelDis.getCbSucursalOrigen().getSelectedItem()).getEntity();
         Stock stockO;
         try {
             stockO = new StockController().findStock(producto, origen);
@@ -699,7 +701,7 @@ public class SucursalController implements ActionListener {
             new StockController().persist(ss);
             stockO = ss;
         }
-        Sucursal destino = ((ComboBoxWrapper<Sucursal>) panelDis.getCbSucursalDestino().getSelectedItem()).getEntity();
+        Sucursal destino = ((EntityWrapper<Sucursal>) panelDis.getCbSucursalDestino().getSelectedItem()).getEntity();
         panelDis.getTfStockOrigen().setText(stockO.getStockSucu() + "");
         Stock stockD;
         try {
@@ -740,7 +742,7 @@ public class SucursalController implements ActionListener {
             @SuppressWarnings("unchecked")
             public void actionPerformed(ActionEvent e) {
                 try {
-                    Integer id = ((ComboBoxWrapper<Sucursal>) cbSucursal.getSelectedItem()).getId();
+                    Integer id = (Integer) ((EntityWrapper<Sucursal>) cbSucursal.getSelectedItem()).getId();
                     doReportSucursalStock(id, checkStockCero.isSelected());
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(jd, ex.getMessage(), "Error generando reporte", JOptionPane.ERROR_MESSAGE);

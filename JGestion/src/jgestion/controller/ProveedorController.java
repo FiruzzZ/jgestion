@@ -1,7 +1,7 @@
 package jgestion.controller;
 
-import jgestion.controller.exceptions.NonexistentEntityException;
 import jgestion.controller.exceptions.MessageException;
+import jgestion.controller.exceptions.NonexistentEntityException;
 import jgestion.entity.Cliente;
 import jgestion.entity.Proveedor;
 import java.awt.event.KeyEvent;

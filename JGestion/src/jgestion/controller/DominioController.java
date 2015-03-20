@@ -1,15 +1,7 @@
 package jgestion.controller;
 
 import com.toedter.calendar.JDateChooser;
-import jgestion.controller.exceptions.MessageException;
-import jgestion.controller.exceptions.MissingReportException;
-import jgestion.entity.Caja;
-import jgestion.entity.Dominio;
-import jgestion.entity.FacturaCompra;
-import jgestion.entity.Sucursal;
 import generics.GenericBeanCollection;
-import jgestion.gui.JDABM;
-import jgestion.gui.JDMiniABM;
 import gui.generics.GroupLayoutPanelBuilder;
 import java.awt.Color;
 import java.awt.Window;
@@ -30,13 +22,21 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
 import jgestion.JGestionUtils;
+import jgestion.controller.exceptions.MessageException;
+import jgestion.controller.exceptions.MissingReportException;
+import jgestion.entity.Caja;
+import jgestion.entity.Dominio;
+import jgestion.entity.FacturaCompra;
+import jgestion.entity.Sucursal;
+import jgestion.gui.JDABM;
+import jgestion.gui.JDMiniABM;
 import jgestion.jpa.controller.DominioJpaController;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Logger;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.postgresql.util.PSQLException;
 import utilities.general.UTIL;
-import utilities.swing.components.ComboBoxWrapper;
+import utilities.general.EntityWrapper;
 
 /**
  *
@@ -206,7 +206,7 @@ public class DominioController implements ActionListener {
                     StringBuilder query = new StringBuilder("SELECT o.* FROM factura_compra o"
                             + " WHERE o.anulada = FALSE");
                     if (cbDominios.getSelectedIndex() > 0) {
-                        query.append(" AND o.dominio_id=" + ((ComboBoxWrapper<Dominio>) (cbDominios.getSelectedItem())).getId());
+                        query.append(" AND o.dominio_id=" + ((EntityWrapper<Dominio>) (cbDominios.getSelectedItem())).getId());
                     } else {
                         query.append(" AND o.dominio_id is not null");
                     }

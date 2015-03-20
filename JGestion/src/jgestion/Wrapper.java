@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import utilities.swing.components.ComboBoxWrapper;
+import utilities.general.EntityWrapper;
 
 /**
  *
@@ -21,14 +21,14 @@ public final class Wrapper<T> {
     public Wrapper() {
     }
 
-    public List<ComboBoxWrapper<T>> getWrapped(List<T> list) {
-        List<ComboBoxWrapper<T>> l = new ArrayList<ComboBoxWrapper<T>>(list.size());
+    public List<EntityWrapper<T>> getWrapped(List<T> list) {
+        List<EntityWrapper<T>> l = new ArrayList<EntityWrapper<T>>(list.size());
         for (T t : list) {
             try {
                 Object c = t;
                 Integer id = (Integer) c.getClass().getMethod("getId").invoke(c, new Object[]{});
                 String nombre = (String) c.getClass().getMethod("getNombre").invoke(c, new Object[]{});
-                l.add(new ComboBoxWrapper<T>(t, id, nombre));
+                l.add(new EntityWrapper<T>(t, id, nombre));
             } catch (IllegalAccessException ex) {
                 Logger.getLogger(Wrapper.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IllegalArgumentException ex) {

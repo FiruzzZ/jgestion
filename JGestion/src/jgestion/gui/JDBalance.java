@@ -7,6 +7,7 @@ package jgestion.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Window;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -20,8 +21,8 @@ import javax.swing.JTextField;
 public class JDBalance extends javax.swing.JDialog {
 
    /** Creates new form JDBalance */
-   public JDBalance(java.awt.Frame parent, boolean modal, JPanel panel) {
-      super(parent, modal);
+   public JDBalance(Window parent, boolean modal, JPanel panel) {
+      super(parent, modal ? DEFAULT_MODALITY_TYPE : ModalityType.MODELESS);
       this.getContentPane().add(panel, BorderLayout.NORTH, 0);
       pack();
       initComponents();

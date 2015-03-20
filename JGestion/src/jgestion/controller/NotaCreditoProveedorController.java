@@ -36,7 +36,7 @@ import jgestion.jpa.controller.NotaCreditoProveedorJpaController;
 import jgestion.jpa.controller.ProveedorJpaController;
 import org.apache.log4j.Logger;
 import utilities.general.UTIL;
-import utilities.swing.components.ComboBoxWrapper;
+import utilities.general.EntityWrapper;
 import utilities.swing.components.NumberRenderer;
 
 /**
@@ -81,7 +81,7 @@ public class NotaCreditoProveedorController implements ActionListener {
             public void focusLost(FocusEvent e) {
                 try {
                     @SuppressWarnings("unchecked")
-                    ComboBoxWrapper<Producto> wrap = (ComboBoxWrapper<Producto>) jdFactura.getCbProductos().getSelectedItem();
+                    EntityWrapper<Producto> wrap = (EntityWrapper<Producto>) jdFactura.getCbProductos().getSelectedItem();
                     facturaCompraController.buscarProducto(wrap.getEntity().getCodigo());
                 } catch (ClassCastException ex) {
                     //cuando no seleccionó ningún Producto del combo
@@ -97,7 +97,7 @@ public class NotaCreditoProveedorController implements ActionListener {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     try {
                         @SuppressWarnings("unchecked")
-                        ComboBoxWrapper<Producto> wrap = (ComboBoxWrapper<Producto>) jdFactura.getCbProductos().getSelectedItem();
+                        EntityWrapper<Producto> wrap = (EntityWrapper<Producto>) jdFactura.getCbProductos().getSelectedItem();
                         facturaCompraController.buscarProducto(wrap.getEntity().getCodigo());
                     } catch (ClassCastException ex) {
                         jdFactura.setTfProductoPrecioActual("");
@@ -204,7 +204,7 @@ public class NotaCreditoProveedorController implements ActionListener {
         }
 
         if (buscador.getCbClieProv().getSelectedIndex() > 0) {
-            query.append(" AND o.proveedor.id = ").append(((ComboBoxWrapper<Proveedor>) buscador.getCbClieProv().getSelectedItem()).getId());
+            query.append(" AND o.proveedor.id = ").append(((EntityWrapper<Proveedor>) buscador.getCbClieProv().getSelectedItem()).getId());
         }
 
         //acreditada?... 
@@ -220,7 +220,7 @@ public class NotaCreditoProveedorController implements ActionListener {
 
     private void checkConstraints() throws MessageException {
         try {
-            ((ComboBoxWrapper<Proveedor>) jdFactura.getCbProveedor().getSelectedItem()).getId();
+            ((EntityWrapper<Proveedor>) jdFactura.getCbProveedor().getSelectedItem()).getId();
         } catch (ClassCastException ex) {
             throw new MessageException("Proveedor no válido");
         }
@@ -281,7 +281,7 @@ public class NotaCreditoProveedorController implements ActionListener {
         }
 
         long numeroFactura = Long.valueOf(jdFactura.getTfFacturaCuarto() + jdFactura.getTfFacturaOcteto());
-        NotaCreditoProveedor old = jpaController.findBy(numeroFactura, ((ComboBoxWrapper<Proveedor>) jdFactura.getCbProveedor().getSelectedItem()).getEntity());
+        NotaCreditoProveedor old = jpaController.findBy(numeroFactura, ((EntityWrapper<Proveedor>) jdFactura.getCbProveedor().getSelectedItem()).getEntity());
         if (old != null) {
             throw new MessageException("Ya existe la Nota de Credito Nº: " + numeroFactura
                     + " del Proveedor " + old.getProveedor().getNombre());
@@ -294,7 +294,7 @@ public class NotaCreditoProveedorController implements ActionListener {
         o.setFechaNotaCredito(jdFactura.getDcFechaFactura());
         o.setAnulada(false);
         //set entities
-        o.setProveedor(new ProveedorJpaController().find(((ComboBoxWrapper<Proveedor>) jdFactura.getCbProveedor().getSelectedItem()).getId()));
+        o.setProveedor(new ProveedorJpaController().find((Integer)((EntityWrapper<Proveedor>) jdFactura.getCbProveedor().getSelectedItem()).getId()));
         o.setUsuario(UsuarioController.getCurrentUser());
         o.setDesacreditado(BigDecimal.ZERO);
         o.setImporte(new BigDecimal(jdFactura.getTfTotalText()));
@@ -390,7 +390,7 @@ public class NotaCreditoProveedorController implements ActionListener {
             });
         }
         // seteando datos de FacturaCompra
-        jdFactura.getCbProveedor().addItem(new ComboBoxWrapper<>(notaCredito.getProveedor(), notaCredito.getProveedor().getId(), notaCredito.getProveedor().getNombre()));
+        jdFactura.getCbProveedor().addItem(new EntityWrapper<>(notaCredito.getProveedor(), notaCredito.getProveedor().getId(), notaCredito.getProveedor().getNombre()));
         jdFactura.setDcFechaFactura(notaCredito.getFechaNotaCredito());
         String numFactura = UTIL.AGREGAR_CEROS(notaCredito.getNumero(), 12);
         jdFactura.setTfFacturaCuarto(numFactura.substring(0, 4));

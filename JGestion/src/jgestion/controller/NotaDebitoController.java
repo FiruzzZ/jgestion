@@ -32,7 +32,7 @@ import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Logger;
 import utilities.general.UTIL;
 import utilities.gui.SwingUtil;
-import utilities.swing.components.ComboBoxWrapper;
+import utilities.general.EntityWrapper;
 import utilities.swing.components.FormatRenderer;
 import utilities.swing.components.NumberRenderer;
 
@@ -67,7 +67,7 @@ public class NotaDebitoController {
             BigDecimal subTotal = new BigDecimal(abm.getTfImporte().getText());
             if (abm.getCbIVA().isEnabled()) {
                 @SuppressWarnings("unchecked")
-                Iva iva = abm.getCbIVA().isEnabled() ? ((ComboBoxWrapper<Iva>) abm.getCbIVA().getSelectedItem()).getEntity() : null;
+                Iva iva = abm.getCbIVA().isEnabled() ? ((EntityWrapper<Iva>) abm.getCbIVA().getSelectedItem()).getEntity() : null;
                 BigDecimal porcentaje = UTIL.getPorcentaje(subTotal, BigDecimal.valueOf(iva.getIva()));
                 subTotal = subTotal.add(porcentaje);
             }
@@ -84,7 +84,7 @@ public class NotaDebitoController {
             @SuppressWarnings("unchecked")
             public void actionPerformed(ActionEvent e) {
                 if (abm.getCbCliente().getItemCount() > 0) {
-                    JGestionUtils.cargarComboTiposFacturas(abm.getCbFacturaTipo(), ((ComboBoxWrapper<Cliente>) abm.getCbCliente().getSelectedItem()).getEntity());
+                    JGestionUtils.cargarComboTiposFacturas(abm.getCbFacturaTipo(), ((EntityWrapper<Cliente>) abm.getCbCliente().getSelectedItem()).getEntity());
                     boolean comprobanteA = abm.getCbFacturaTipo().getSelectedItem().toString().equalsIgnoreCase("A");
                     abm.getCbIVA().setEnabled(comprobanteA);
                 }
@@ -137,7 +137,7 @@ public class NotaDebitoController {
                         throw new MessageException("Importe no válido");
                     }
                     @SuppressWarnings("unchecked")
-                    Iva iva = abm.getCbIVA().isEnabled() ? ((ComboBoxWrapper<Iva>) abm.getCbIVA().getSelectedItem()).getEntity() : null;
+                    Iva iva = abm.getCbIVA().isEnabled() ? ((EntityWrapper<Iva>) abm.getCbIVA().getSelectedItem()).getEntity() : null;
                     DetalleNotaDebito d = new DetalleNotaDebito(null, concepto, importe, iva);
                     addDetalle(d);
                     refreshResumen();
@@ -218,7 +218,7 @@ public class NotaDebitoController {
             return;
         }
         @SuppressWarnings("unchecked")
-        Sucursal s = ((ComboBoxWrapper<Sucursal>) abm.getCbSucursal().getSelectedItem()).getEntity();
+        Sucursal s = ((EntityWrapper<Sucursal>) abm.getCbSucursal().getSelectedItem()).getEntity();
         if (editMode) {
             if (EL_OBJECT.getSucursal().equals(s)) {
                 setNumeroComprobante(s, EL_OBJECT.getNumero());
@@ -254,8 +254,8 @@ public class NotaDebitoController {
     private NotaDebito getEntity() throws MessageException {
         checkConstraints();
         NotaDebito o = new NotaDebito();
-        o.setCliente(((ComboBoxWrapper<Cliente>) abm.getCbCliente().getSelectedItem()).getEntity());
-        o.setSucursal(((ComboBoxWrapper<Sucursal>) abm.getCbSucursal().getSelectedItem()).getEntity());
+        o.setCliente(((EntityWrapper<Cliente>) abm.getCbCliente().getSelectedItem()).getEntity());
+        o.setSucursal(((EntityWrapper<Sucursal>) abm.getCbSucursal().getSelectedItem()).getEntity());
         o.setFechaNotaDebito(abm.getDcFechaFactura().getDate());
         o.setTipo(abm.getCbFacturaTipo().getSelectedItem().toString().charAt(0));
         if (unlockedNumeracion) {
@@ -307,7 +307,7 @@ public class NotaDebitoController {
                     throw new MessageException("Número de comprobante no válido, debe ser mayor a 0 y menor o igual a 99999999");
                 }
                 char letra = abm.getCbFacturaTipo().getSelectedItem().toString().charAt(0);
-                Sucursal s = ((ComboBoxWrapper<Sucursal>) abm.getCbSucursal().getSelectedItem()).getEntity();
+                Sucursal s = ((EntityWrapper<Sucursal>) abm.getCbSucursal().getSelectedItem()).getEntity();
                 NotaDebito old = jpaController.findBy(s, letra, octeto);
                 if (old != null) {
                     throw new MessageException("Ya existe un registro del comprobante N° " + JGestionUtils.getNumeracion(old));
@@ -536,11 +536,11 @@ public class NotaDebitoController {
             query.append(" AND o.fechaCarga <= '").append(UTIL.yyyy_MM_dd.format(buscador.getDcHastaSistema())).append("'");
         }
         if (buscador.getCbSucursal().getSelectedIndex() > 0) {
-            query.append(" AND o.sucursal.id = ").append(((ComboBoxWrapper<Sucursal>) buscador.getCbSucursal().getSelectedItem()).getId());
+            query.append(" AND o.sucursal.id = ").append(((EntityWrapper<Sucursal>) buscador.getCbSucursal().getSelectedItem()).getId());
         } else {
             query.append(" AND (");
             for (int i = 1; i < buscador.getCbSucursal().getItemCount(); i++) {
-                ComboBoxWrapper<Sucursal> cbw = (ComboBoxWrapper<Sucursal>) buscador.getCbSucursal().getItemAt(i);
+                EntityWrapper<Sucursal> cbw = (EntityWrapper<Sucursal>) buscador.getCbSucursal().getItemAt(i);
                 query.append(" o.sucursal.id=").append(cbw.getId());
                 if ((i + 1) < buscador.getCbSucursal().getItemCount()) {
                     query.append(" OR ");
@@ -571,8 +571,8 @@ public class NotaDebitoController {
     private void setPanel(NotaDebito notaDebito) {
         Sucursal s = notaDebito.getSucursal();
         Cliente c = notaDebito.getCliente();
-        abm.getCbCliente().addItem(new ComboBoxWrapper<Cliente>(c, c.getId(), c.getNombre()));
-        abm.getCbSucursal().addItem(new ComboBoxWrapper<Sucursal>(s, s.getId(), s.getNombre()));
+        abm.getCbCliente().addItem(new EntityWrapper<Cliente>(c, c.getId(), c.getNombre()));
+        abm.getCbSucursal().addItem(new EntityWrapper<Sucursal>(s, s.getId(), s.getNombre()));
         abm.getDcFechaFactura().setDate(notaDebito.getFechaNotaDebito());
         abm.getTfObservacion().setText(notaDebito.getObservacion());
         //Los tipos de factura se tienen q cargar antes, sinó modifica el Nº de factura y muestra el siguiente

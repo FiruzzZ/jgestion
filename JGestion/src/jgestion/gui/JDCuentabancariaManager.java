@@ -15,7 +15,7 @@ import javax.swing.table.DefaultTableModel;
 import jgestion.JGestionUtils;
 import jgestion.jpa.controller.OperacionesBancariasJpaController;
 import utilities.general.UTIL;
-import utilities.swing.components.ComboBoxWrapper;
+import utilities.general.EntityWrapper;
 import utilities.swing.components.NumberRenderer;
 
 /**
@@ -38,7 +38,7 @@ public class JDCuentabancariaManager extends javax.swing.JDialog {
 
     private void otroInit() {
         UTIL.loadComboBox(cbBancos, JGestionUtils.getWrappedBancos(new BancoController().findWithCuentasBancarias(true)), true, "<No existen banco con cuenta bancaria asociada>");
-        List<ComboBoxWrapper<OperacionesBancarias>> l = JGestionUtils.getWrappedOperacionesBancarias(new OperacionesBancariasJpaController().findAll());
+        List<EntityWrapper<OperacionesBancarias>> l = JGestionUtils.getWrappedOperacionesBancarias(new OperacionesBancariasJpaController().findAll());
         UTIL.loadComboBox(cbOperacionesBancariasFiltro, l, true);
         UTIL.loadComboBox(cbOperacionesBancarias, l, false);
     }
@@ -274,7 +274,7 @@ public class JDCuentabancariaManager extends javax.swing.JDialog {
     private void cbBancosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbBancosActionPerformed
         if (cbBancos.getItemCount() > 0) {
             if (cbBancos.getSelectedIndex() > 0) {
-                Banco b = ((ComboBoxWrapper<Banco>) cbBancos.getSelectedItem()).getEntity();
+                Banco b = ((EntityWrapper<Banco>) cbBancos.getSelectedItem()).getEntity();
                 UTIL.loadComboBox(cbCuentabancaria, JGestionUtils.getWrappedCuentasBancarias(b.getCuentasbancaria()), true);
             } else {
                 UTIL.loadComboBox(cbCuentabancaria, null, true, "<Todas las cuentas bancarias de todos los bancos>");

@@ -54,7 +54,7 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.apache.log4j.Logger;
 import utilities.general.UTIL;
-import utilities.swing.components.ComboBoxWrapper;
+import utilities.general.EntityWrapper;
 import utilities.swing.components.NumberRenderer;
 
 /**
@@ -98,8 +98,8 @@ public class ProductoController implements ActionListener, KeyListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    EL_OBJECT = null;
-                    initABM(false);
+                    UsuarioController.checkPermiso(PermisosController.PermisoDe.ABM_PRODUCTOS);
+                    displayABM(null);
                 } catch (IOException ex) {
                     LOG.error(ex.getLocalizedMessage(), ex);
                 } catch (MessageException ex) {
@@ -111,7 +111,12 @@ public class ProductoController implements ActionListener, KeyListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    initABM(true);
+                    UsuarioController.checkPermiso(PermisosController.PermisoDe.ABM_PRODUCTOS);
+                    Integer productoID = (Integer) UTIL.getSelectedValueFromModel(contenedor.getjTable1(), 0);
+                    if (productoID == null) {
+                        throw new MessageException("Seleccione el producto que desea modificar");
+                    }
+                    displayABM(jpaController.find(productoID));
                 } catch (MessageException ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
@@ -183,27 +188,35 @@ public class ProductoController implements ActionListener, KeyListener {
         contenedor.setVisible(true);
     }
 
-    private void initABM(boolean isEditing) throws MessageException, IOException {
-        UsuarioController.checkPermiso(PermisosController.PermisoDe.ABM_PRODUCTOS);
-        if (isEditing) {
-            EL_OBJECT = getSelectedFromContenedor();
-            if (EL_OBJECT == null) {
-                throw new MessageException("Debe elegir una fila");
-            }
-            EL_OBJECT = jpaController.find(EL_OBJECT.getId());
+    public void displayABM(Producto toEdit) throws IOException {
+        EL_OBJECT = toEdit;
+        fotoFile = null;
+        initPanelABM();
+        if (toEdit != null) {
+            setPanelABM(EL_OBJECT);
         }
-        initABMProductosGUI(isEditing);
+        abm = new JDABM(contenedor, "ABM - " + CLASS_NAME + "s", true, panel);
+        abm.setLocationRelativeTo(contenedor);
+        abm.setListener(this);
+        abm.setVisible(true);
     }
 
-    public void initABM(Producto producto) throws IOException, Exception {
-        EL_OBJECT = producto;
-        initABMProductosGUI(true);
-    }
-
-    private void initABMProductosGUI(boolean isEditing) throws IOException {
+    private void initPanelABM() {
         panel = new PanelABMProductos();
         panel.hideSucursal();
         panel.setListeners(this);
+        panel.getbBuscarFoto().addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    cargarImagen();
+                } catch (Exception ex) {
+                    abm.showMessage(ex.getMessage(), CLASS_NAME, 0);
+                    LOG.error(ex.getLocalizedMessage(), ex);
+                }
+            }
+        });
         panel.getbQuitarFoto().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -242,16 +255,6 @@ public class ProductoController implements ActionListener, KeyListener {
         UTIL.loadComboBox(panel.getCbMedicion(), new UnidadmedidaJpaController().findUnidadmedidaEntities(), false);
         UTIL.loadComboBox(panel.getCbRubro(), new RubroController().findRubros(), false);
         UTIL.loadComboBox(panel.getCbSubRubro(), new RubroController().findRubros(), true);
-
-        abm = new JDABM(contenedor, "ABM - " + CLASS_NAME + "s", true, panel);
-        if (isEditing) {
-            setPanelABM(EL_OBJECT);
-        } else {
-            fotoFile = null;
-        }
-        abm.setLocationRelativeTo(contenedor);
-        abm.setListener(this);
-        abm.setVisible(true);
     }
 
     private void cargarContenedorTabla(String jpql) {
@@ -288,7 +291,8 @@ public class ProductoController implements ActionListener, KeyListener {
         panel.setDateUltimaCompra(producto.getUltimaCompra());
         if (producto.getFoto() != null) {
             if (producto.getFoto().length > 0) {
-                UTIL.setImageAsIconLabel(panel.getjLabelFoto(), UTIL.imageToFile(producto.getFoto(), null));
+                fotoFile = UTIL.imageToFile(producto.getFoto(), null);
+                UTIL.setImageAsIconLabel(panel.getjLabelFoto(), fotoFile);
             }
         }
     }
@@ -337,7 +341,7 @@ public class ProductoController implements ActionListener, KeyListener {
             throw new MessageException("monto de Precio no válido");
         }
         try {
-            EL_OBJECT.setMarca(((ComboBoxWrapper<Marca>) panel.getCbMarcas().getSelectedItem()).getEntity());
+            EL_OBJECT.setMarca(((EntityWrapper<Marca>) panel.getCbMarcas().getSelectedItem()).getEntity());
         } catch (ClassCastException ex) {
             throw new MessageException("Debe especificar una Marca");
         }
@@ -452,13 +456,14 @@ public class ProductoController implements ActionListener, KeyListener {
     }
 
     private void cargarImagen() throws IOException, Exception {
-        JFileChooser filec = new javax.swing.JFileChooser();
+        JFileChooser filec = new JFileChooser(JGestionUtils.LAST_DIRECTORY_PATH);
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Imagenes", "jpg", "bmp", "jpeg", "png");
         filec.setFileFilter(filter);
         filec.addChoosableFileFilter(filter);
         int val = filec.showOpenDialog(null);
         if (val == JFileChooser.APPROVE_OPTION) {
             fotoFile = filec.getSelectedFile();
+            JGestionUtils.LAST_DIRECTORY_PATH = fotoFile.getCanonicalPath();
             if (UTIL.isImagenExtension(fotoFile)) {
                 panel.getjLabelFoto().setText(null);
                 panel.setjLabelFoto(UTIL.setImageAsIconLabel(panel.getjLabelFoto(), fotoFile));
@@ -502,16 +507,6 @@ public class ProductoController implements ActionListener, KeyListener {
                 panel = null;
                 abm = null;
                 EL_OBJECT = null;
-            } else if (boton.getName().equalsIgnoreCase("buscarFoto")) {
-                try {
-                    cargarImagen();
-                } catch (IOException ex) {
-                    abm.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    LOG.error(ex.getLocalizedMessage(), ex);
-                } catch (Exception ex) {
-                    abm.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    LOG.error(ex.getLocalizedMessage(), ex);
-                }
             } else if (boton.getName().equalsIgnoreCase("marcas")) {
                 try {
                     new MarcaController().getABM(abm, true);
@@ -686,7 +681,7 @@ public class ProductoController implements ActionListener, KeyListener {
                                 .setStyle(currencyStyle)
                                 .setPattern("¤ #,##0.0000")
                                 .setFixedWidth(true).build());
-                        lp = ((ComboBoxWrapper<ListaPrecios>) p.getCbListaPrecio().getSelectedItem()).getEntity();
+                        lp = ((EntityWrapper<ListaPrecios>) p.getCbListaPrecio().getSelectedItem()).getEntity();
                         Double margen = (lp.getMargen() / 100) + 1;
                         for (Producto producto : list) {
                             BigDecimal precioVenta = producto.getPrecioVenta();
@@ -708,7 +703,7 @@ public class ProductoController implements ActionListener, KeyListener {
                 }
             }
         });
-        jd.getbAceptar().addActionListener(new ActionListener() {
+        jd.getbCancelar().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 jd.dispose();
@@ -865,16 +860,16 @@ public class ProductoController implements ActionListener, KeyListener {
             sb.append(" AND p.nombre ILIKE '").append(panelito.getTfNombre().getText().trim()).append("%'");
         }
         if (panelito.getCbMarcas().getSelectedIndex() > 0) {
-            sb.append(" AND p.marca = ").append(((ComboBoxWrapper<Marca>) panelito.getCbMarcas().getSelectedItem()).getId());
+            sb.append(" AND p.marca = ").append(((EntityWrapper<Marca>) panelito.getCbMarcas().getSelectedItem()).getId());
         }
         if (panelito.getCbRubros().getSelectedIndex() > 0) {
-            sb.append(" AND p.rubro = ").append(((ComboBoxWrapper<Rubro>) panelito.getCbRubros().getSelectedItem()).getId());
+            sb.append(" AND p.rubro = ").append(((EntityWrapper<Rubro>) panelito.getCbRubros().getSelectedItem()).getId());
         }
         if (panelito.getCbSubRubros().getSelectedIndex() > 0) {
-            sb.append(" AND p.subrubro = ").append(((ComboBoxWrapper<Rubro>) panelito.getCbSubRubros().getSelectedItem()).getId());
+            sb.append(" AND p.subrubro = ").append(((EntityWrapper<Rubro>) panelito.getCbSubRubros().getSelectedItem()).getId());
         }
         if (panelito.getCbSucursales().getSelectedIndex() > 0) {
-            sb.append(" AND sucursal.id = ").append(((ComboBoxWrapper<Sucursal>) panelito.getCbSucursales().getSelectedItem()).getId());
+            sb.append(" AND sucursal.id = ").append(((EntityWrapper<Sucursal>) panelito.getCbSucursales().getSelectedItem()).getId());
         }
         if (panelito.getDcDesde().getDate() != null) {
             sb.append(" AND f.fechaalta >= '").append(panelito.getDcDesde().getDate()).append("'");
@@ -905,11 +900,11 @@ public class ProductoController implements ActionListener, KeyListener {
         return null;
     }
 
-    public List<ComboBoxWrapper<Producto>> findWrappedProductoToCombo(Boolean bienDeCambio) {
+    public List<EntityWrapper<Producto>> findWrappedProductoToCombo(Boolean bienDeCambio) {
         List<Producto> ff = findProductoToCombo(bienDeCambio);
-        List<ComboBoxWrapper<Producto>> l = new ArrayList<ComboBoxWrapper<Producto>>(ff.size());
+        List<EntityWrapper<Producto>> l = new ArrayList<EntityWrapper<Producto>>(ff.size());
         for (Producto producto : ff) {
-            l.add(new ComboBoxWrapper<Producto>(producto, producto.getId(), producto.getNombre()));
+            l.add(new EntityWrapper<Producto>(producto, producto.getId(), producto.getNombre()));
         }
         return l;
     }
@@ -958,7 +953,7 @@ public class ProductoController implements ActionListener, KeyListener {
                 + " WHERE p.id IS NOT NULL";
 
         if (panelProductoListados.getCbMarcas().getSelectedIndex() > 0) {
-            query += " AND p.marca = " + ((ComboBoxWrapper<?>) panelProductoListados.getCbMarcas().getSelectedItem()).getId();
+            query += " AND p.marca = " + ((EntityWrapper<?>) panelProductoListados.getCbMarcas().getSelectedItem()).getId();
         }
 
         if (panelProductoListados.getCbRubros().getSelectedIndex() > 0) {

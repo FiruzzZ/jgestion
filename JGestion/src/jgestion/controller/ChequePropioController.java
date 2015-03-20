@@ -59,7 +59,7 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.apache.log4j.Logger;
 import utilities.general.UTIL;
 import utilities.swing.RowColorRender;
-import utilities.swing.components.ComboBoxWrapper;
+import utilities.general.EntityWrapper;
 import utilities.swing.components.FormatRenderer;
 import utilities.swing.components.NumberRenderer;
 
@@ -262,7 +262,7 @@ public class ChequePropioController implements ActionListener {
         BigDecimal importe = null;
         Banco banco;
         BancoSucursal sucursal = null;
-        Proveedor proveedor = ((ComboBoxWrapper<Proveedor>) panelABM.getCbEmisor().getSelectedItem()).getEntity();
+        Proveedor proveedor = ((EntityWrapper<Proveedor>) panelABM.getCbEmisor().getSelectedItem()).getEntity();
         boolean cruzado;
         String endosatario = null, observacion = null;
         CuentaBancaria cuentaBancaria;
@@ -290,7 +290,7 @@ public class ChequePropioController implements ActionListener {
             throw new MessageException("Importe no válido (ingrese solo números y utilice el punto como separador decimal");
         }
         banco = getSelectedBancoFromPanel();
-        cuentaBancaria = ((ComboBoxWrapper<CuentaBancaria>) panelABM.getCbCuentaBancaria().getSelectedItem()).getEntity();
+        cuentaBancaria = ((EntityWrapper<CuentaBancaria>) panelABM.getCbCuentaBancaria().getSelectedItem()).getEntity();
         try {
             sucursal = (BancoSucursal) panelABM.getCbBancoSucursales().getSelectedItem();
         } catch (ClassCastException e) {
@@ -419,7 +419,7 @@ public class ChequePropioController implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (jdChequeManager.getCbBancos().getSelectedIndex() > 0) {
-                    Banco banco = ((ComboBoxWrapper<Banco>) jdChequeManager.getCbBancos().getSelectedItem()).getEntity();
+                    Banco banco = ((EntityWrapper<Banco>) jdChequeManager.getCbBancos().getSelectedItem()).getEntity();
                     List<CuentaBancaria> cuentasbancaria = banco.getCuentasbancaria();
                     UTIL.loadComboBox(jdChequeManager.getCbCuentaBancaria(), JGestionUtils.getWrappedCuentasBancarias(cuentasbancaria), true);
 //                    UTIL.loadComboBox(jdChequeManager.getCbBancoSucursales(), new BancoSucursalController().findBy(banco), true);
@@ -434,7 +434,7 @@ public class ChequePropioController implements ActionListener {
 
     @SuppressWarnings("unchecked")
     private Banco getSelectedBancoFromPanel() {
-        return ((ComboBoxWrapper<Banco>) panelABM.getCbBancos().getSelectedItem()).getEntity();
+        return ((EntityWrapper<Banco>) panelABM.getCbBancos().getSelectedItem()).getEntity();
     }
 
     private void initPanelABM(boolean persistir, Proveedor proveedor) {
@@ -513,10 +513,10 @@ public class ChequePropioController implements ActionListener {
             }
         }
         if (jdChequeManager.getCbBancos().getSelectedIndex() > 0) {
-            query.append(" AND c.banco=").append(((ComboBoxWrapper<Banco>) jdChequeManager.getCbBancos().getSelectedItem()).getId());
+            query.append(" AND c.banco=").append(((EntityWrapper<Banco>) jdChequeManager.getCbBancos().getSelectedItem()).getId());
         }
         if (jdChequeManager.getCbEmisor().getSelectedIndex() > 0) {
-            query.append(" AND c.proveedor=").append(((ComboBoxWrapper<Proveedor>) jdChequeManager.getCbEmisor().getSelectedItem()).getId());
+            query.append(" AND c.proveedor=").append(((EntityWrapper<Proveedor>) jdChequeManager.getCbEmisor().getSelectedItem()).getId());
         }
         if (jdChequeManager.getCbEstados().getSelectedIndex() > 0) {
             query.append(" AND c.estado=").append(((ChequeEstado) jdChequeManager.getCbEstados().getSelectedItem()).getId());

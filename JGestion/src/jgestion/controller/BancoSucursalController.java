@@ -1,9 +1,9 @@
 package jgestion.controller;
 
-import jgestion.controller.exceptions.DatabaseErrorException;
+import jgestion.controller.exceptions.MessageException;
 import jgestion.controller.exceptions.IllegalOrphanException;
 import jgestion.controller.exceptions.NonexistentEntityException;
-import jgestion.controller.exceptions.MessageException;
+import jgestion.controller.exceptions.DatabaseErrorException;
 import jgestion.entity.Banco;
 import jgestion.entity.BancoSucursal;
 import jgestion.entity.ChequePropio;

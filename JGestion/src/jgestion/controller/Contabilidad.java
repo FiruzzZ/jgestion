@@ -1,25 +1,7 @@
 package jgestion.controller;
 
-import jgestion.gui.JDBuscadorReRe;
-import jgestion.gui.PanelBalanceGeneral;
-import jgestion.gui.JDResumenGeneralCtaCte;
-import jgestion.gui.PanelProductosCostoVenta;
-import jgestion.gui.PanelBalanceComprasVentas;
-import jgestion.gui.JDInformeResultados;
-import jgestion.gui.JDBalance;
-import jgestion.gui.JDBuscador;
-import jgestion.gui.JDABM;
-import jgestion.gui.PanelInformeFlujoVentas;
-import jgestion.gui.PanelDetalleFacturacion;
-import jgestion.gui.JDInformeUnidadesDeNegocios;
-import jgestion.entity.*;
 import com.toedter.calendar.JDateChooser;
-import jgestion.controller.exceptions.DatabaseErrorException;
-import jgestion.controller.exceptions.MessageException;
-import jgestion.controller.exceptions.MissingReportException;
 import generics.GenericBeanCollection;
-import java.text.DecimalFormat;
-import utilities.general.UTIL;
 import gui.generics.GroupLayoutPanelBuilder;
 import java.awt.Color;
 import java.awt.Desktop;
@@ -33,6 +15,7 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -52,8 +35,46 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
-import jgestion.JGestionUtils;
 import jgestion.JGestion;
+import jgestion.JGestionUtils;
+import jgestion.controller.exceptions.DatabaseErrorException;
+import jgestion.controller.exceptions.MessageException;
+import jgestion.controller.exceptions.MissingReportException;
+import jgestion.entity.Caja;
+import jgestion.entity.ChequePropio;
+import jgestion.entity.ChequeTerceros;
+import jgestion.entity.Cliente;
+import jgestion.entity.ComprobanteRetencion;
+import jgestion.entity.DetalleCajaMovimientos;
+import jgestion.entity.DetalleCompra;
+import jgestion.entity.DetalleListaPrecios;
+import jgestion.entity.DetalleVenta;
+import jgestion.entity.FacturaCompra;
+import jgestion.entity.FacturaCompra_;
+import jgestion.entity.FacturaVenta;
+import jgestion.entity.FacturaVenta_;
+import jgestion.entity.ListaPrecios;
+import jgestion.entity.Marca;
+import jgestion.entity.NotaCredito;
+import jgestion.entity.Producto;
+import jgestion.entity.Producto_;
+import jgestion.entity.Proveedor;
+import jgestion.entity.Recibo;
+import jgestion.entity.Remesa;
+import jgestion.entity.Rubro;
+import jgestion.entity.Sucursal;
+import jgestion.gui.JDABM;
+import jgestion.gui.JDBalance;
+import jgestion.gui.JDBuscador;
+import jgestion.gui.JDBuscadorReRe;
+import jgestion.gui.JDInformeResultados;
+import jgestion.gui.JDInformeUnidadesDeNegocios;
+import jgestion.gui.JDResumenGeneralCtaCte;
+import jgestion.gui.PanelBalanceComprasVentas;
+import jgestion.gui.PanelBalanceGeneral;
+import jgestion.gui.PanelDetalleFacturacion;
+import jgestion.gui.PanelInformeFlujoVentas;
+import jgestion.gui.PanelProductosCostoVenta;
 import jgestion.jpa.controller.ClienteJpaController;
 import jgestion.jpa.controller.ComprobanteRetencionJpaController;
 import jgestion.jpa.controller.ProveedorJpaController;
@@ -62,7 +83,8 @@ import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import utilities.general.TableExcelExporter;
-import utilities.swing.components.ComboBoxWrapper;
+import utilities.general.UTIL;
+import utilities.general.EntityWrapper;
 import utilities.swing.components.FormatRenderer;
 import utilities.swing.components.NumberRenderer;
 
@@ -100,10 +122,10 @@ public class Contabilidad {
      * @param parent
      * @throws MessageException
      */
-    public void initMovimientosCajasUI(JFrame parent) throws MessageException {
+    public void initMovimientosCajasUI(Window parent) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.TESORERIA);
         panelBalanceGeneral = new PanelBalanceGeneral();
-        List<ComboBoxWrapper<Caja>> cajas = new UsuarioHelper().getWrappedCajas(null);
+        List<EntityWrapper<Caja>> cajas = JGestionUtils.getWrappedCajas(new UsuarioHelper().getCajas(null));
         if (cajas.isEmpty()) {
             throw new MessageException(jgestion.JGestion.resourceBundle.getString("unassigned.caja"));
         }
@@ -185,11 +207,11 @@ public class Contabilidad {
         StringBuilder query = new StringBuilder("SELECT o.* FROM detalle_caja_movimientos o JOIN caja_movimientos cm ON (o.caja_movimientos = cm.id)"
                 + " WHERE o.tipo <> " + DetalleCajaMovimientosController.APERTURA_CAJA);
         if (panelBalanceGeneral.getCbCajas().getSelectedIndex() > 0) {
-            query.append(" AND cm.caja=").append(((ComboBoxWrapper<?>) panelBalanceGeneral.getCbCajas().getSelectedItem()).getId());
+            query.append(" AND cm.caja=").append(((EntityWrapper<?>) panelBalanceGeneral.getCbCajas().getSelectedItem()).getId());
         } else {
             query.append(" AND (");
             for (int i = 1; i < panelBalanceGeneral.getCbCajas().getItemCount(); i++) {
-                ComboBoxWrapper<?> caja = (ComboBoxWrapper<?>) panelBalanceGeneral.getCbCajas().getItemAt(i);
+                EntityWrapper<?> caja = (EntityWrapper<?>) panelBalanceGeneral.getCbCajas().getItemAt(i);
                 query.append(" cm.caja=").append(caja.getId());
                 if ((i + 1) < panelBalanceGeneral.getCbCajas().getItemCount()) {
                     query.append(" OR ");
@@ -253,7 +275,7 @@ public class Contabilidad {
     public void initBalanceCompraVentaUI(JFrame parent) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.TESORERIA);
         panelBalanceComprasVentas = new PanelBalanceComprasVentas();
-        List<ComboBoxWrapper<Sucursal>> s = new UsuarioHelper().getWrappedSucursales();
+        List<EntityWrapper<Sucursal>> s = new UsuarioHelper().getWrappedSucursales();
         if (s.isEmpty()) {
             throw new MessageException(JGestion.resourceBundle.getString("unassigned.sucursal"));
         }
@@ -412,11 +434,11 @@ public class Contabilidad {
             query.append(" AND o.anulada = false");
         }
         if (panelBalanceComprasVentas.getCbSucursal().getSelectedIndex() > 0) {
-            query.append(" AND o.sucursal=").append(((ComboBoxWrapper<?>) panelBalanceComprasVentas.getCbSucursal().getSelectedItem()).getId());
+            query.append(" AND o.sucursal=").append(((EntityWrapper<?>) panelBalanceComprasVentas.getCbSucursal().getSelectedItem()).getId());
         } else {
             query.append(" AND (");
             for (int i = 1; i < panelBalanceComprasVentas.getCbSucursal().getItemCount(); i++) {
-                ComboBoxWrapper<?> sucursal = (ComboBoxWrapper<?>) panelBalanceComprasVentas.getCbSucursal().getItemAt(i);
+                EntityWrapper<?> sucursal = (EntityWrapper<?>) panelBalanceComprasVentas.getCbSucursal().getItemAt(i);
                 query.append(" o.sucursal=").append(sucursal.getId());
                 if ((i + 1) < panelBalanceComprasVentas.getCbSucursal().getItemCount()) {
                     query.append(" OR ");
@@ -710,7 +732,7 @@ public class Contabilidad {
         buscadorReRe.getbImprimir().setVisible(true);
         UTIL.loadComboBox(buscadorReRe.getCbClieProv(), JGestionUtils.getWrappedClientes(new ClienteController().findAll()), true);
         UTIL.loadComboBox(buscadorReRe.getCbCaja(), new CajaController().findCajasPermitidasByUsuario(UsuarioController.getCurrentUser(), true), true);
-        List<ComboBoxWrapper<Sucursal>> sucus = new UsuarioHelper().getWrappedSucursales();
+        List<EntityWrapper<Sucursal>> sucus = new UsuarioHelper().getWrappedSucursales();
         if (sucus.isEmpty()) {
             throw new MessageException(JGestion.resourceBundle.getString("unassigned.sucursal"));
         }
@@ -813,7 +835,7 @@ public class Contabilidad {
         buscadorReRe.getbImprimir().setVisible(true);
         UTIL.loadComboBox(buscadorReRe.getCbClieProv(), JGestionUtils.getWrappedProveedores(new ProveedorJpaController().findAllLite()), true);
         UTIL.loadComboBox(buscadorReRe.getCbCaja(), new CajaController().findCajasPermitidasByUsuario(UsuarioController.getCurrentUser(), true), true);
-        List<ComboBoxWrapper<Sucursal>> sucus = new UsuarioHelper().getWrappedSucursales();
+        List<EntityWrapper<Sucursal>> sucus = new UsuarioHelper().getWrappedSucursales();
         if (sucus.isEmpty()) {
             throw new MessageException(JGestion.resourceBundle.getString("unassigned.sucursal"));
         }
@@ -967,11 +989,11 @@ public class Contabilidad {
             queryFactuCompra.append(")");
         }
         if (buscadorReRe.getCbSucursal().getSelectedIndex() > 0) {
-            queryFactuCompra.append(" AND o.sucursal = ").append(((ComboBoxWrapper<?>) buscadorReRe.getCbSucursal().getSelectedItem()).getId());
+            queryFactuCompra.append(" AND o.sucursal = ").append(((EntityWrapper<?>) buscadorReRe.getCbSucursal().getSelectedItem()).getId());
         } else {
             queryFactuCompra.append(" AND (");
             for (int i = 1; i < buscadorReRe.getCbSucursal().getItemCount(); i++) {
-                ComboBoxWrapper<Sucursal> cbw = (ComboBoxWrapper<Sucursal>) buscadorReRe.getCbSucursal().getItemAt(i);
+                EntityWrapper<Sucursal> cbw = (EntityWrapper<Sucursal>) buscadorReRe.getCbSucursal().getItemAt(i);
                 queryFactuCompra.append(" o.sucursal=").append(cbw.getId());
                 if ((i + 1) < buscadorReRe.getCbSucursal().getItemCount()) {
                     queryFactuCompra.append(" OR ");
@@ -981,7 +1003,7 @@ public class Contabilidad {
         }
 
         if (buscadorReRe.getCbClieProv().getSelectedIndex() > 0) {
-            queryFactuCompra.append(" AND o.proveedor = ").append(((ComboBoxWrapper<Proveedor>) buscadorReRe.getCbClieProv().getSelectedItem()).getId());
+            queryFactuCompra.append(" AND o.proveedor = ").append(((EntityWrapper<Proveedor>) buscadorReRe.getCbClieProv().getSelectedItem()).getId());
         }
 
         String sql
@@ -1075,11 +1097,11 @@ public class Contabilidad {
             queryWhereFactuVenta.append(")");
         }
         if (buscadorReRe.getCbSucursal().getSelectedIndex() > 0) {
-            queryWhereFactuVenta.append(" AND o.sucursal.id = ").append(((ComboBoxWrapper<?>) buscadorReRe.getCbSucursal().getSelectedItem()).getId());
+            queryWhereFactuVenta.append(" AND o.sucursal.id = ").append(((EntityWrapper<?>) buscadorReRe.getCbSucursal().getSelectedItem()).getId());
         } else {
             queryWhereFactuVenta.append(" AND (");
             for (int i = 1; i < buscadorReRe.getCbSucursal().getItemCount(); i++) {
-                ComboBoxWrapper<Sucursal> cbw = (ComboBoxWrapper<Sucursal>) buscadorReRe.getCbSucursal().getItemAt(i);
+                EntityWrapper<Sucursal> cbw = (EntityWrapper<Sucursal>) buscadorReRe.getCbSucursal().getItemAt(i);
                 queryWhereFactuVenta.append(" o.sucursal.id=").append(cbw.getId());
                 if ((i + 1) < buscadorReRe.getCbSucursal().getItemCount()) {
                     queryWhereFactuVenta.append(" OR ");
@@ -1089,7 +1111,7 @@ public class Contabilidad {
         }
 
         if (buscadorReRe.getCbClieProv().getSelectedIndex() > 0) {
-            queryWhereFactuVenta.append(" AND o.cliente.id = ").append(((ComboBoxWrapper<Cliente>) buscadorReRe.getCbClieProv().getSelectedItem()).getId());
+            queryWhereFactuVenta.append(" AND o.cliente.id = ").append(((EntityWrapper<Cliente>) buscadorReRe.getCbClieProv().getSelectedItem()).getId());
         }
 
         queryWhereFactuVenta.append(" AND o.anulada = ").append(buscadorReRe.getCheckAnulada().isSelected());
@@ -1229,19 +1251,19 @@ public class Contabilidad {
                 + " LEFT JOIN fv.vendedor v"
                 + " WHERE fv.id IS NOT NULL");
         if (panelito.getCbMarcas().getSelectedIndex() > 0) {
-            sb.append(" AND p.marca.id = ").append(((ComboBoxWrapper<Marca>) panelito.getCbMarcas().getSelectedItem()).getId());
+            sb.append(" AND p.marca.id = ").append(((EntityWrapper<Marca>) panelito.getCbMarcas().getSelectedItem()).getId());
         }
         if (panelito.getCbRubros().getSelectedIndex() > 0) {
-            sb.append(" AND p.").append(Producto_.rubro.getName()).append(".id = ").append(((ComboBoxWrapper<Rubro>) panelito.getCbRubros().getSelectedItem()).getId());
+            sb.append(" AND p.").append(Producto_.rubro.getName()).append(".id = ").append(((EntityWrapper<Rubro>) panelito.getCbRubros().getSelectedItem()).getId());
         }
         if (panelito.getCbSubRubros().getSelectedIndex() > 0) {
-            sb.append(" AND p.").append(Producto_.subrubro.getName()).append(".id = ").append(((ComboBoxWrapper<Rubro>) panelito.getCbSubRubros().getSelectedItem()).getId());
+            sb.append(" AND p.").append(Producto_.subrubro.getName()).append(".id = ").append(((EntityWrapper<Rubro>) panelito.getCbSubRubros().getSelectedItem()).getId());
         }
         if (panelito.getCbClientes().getSelectedIndex() > 0) {
-            sb.append(" AND fv.cliente.id = ").append(((ComboBoxWrapper<Sucursal>) panelito.getCbClientes().getSelectedItem()).getId());
+            sb.append(" AND fv.cliente.id = ").append(((EntityWrapper<Sucursal>) panelito.getCbClientes().getSelectedItem()).getId());
         }
         if (panelito.getCbVendedores().getSelectedIndex() > 0) {
-            sb.append(" AND fv.vendedor.id = ").append(((ComboBoxWrapper<?>) panelito.getCbVendedores().getSelectedItem()).getId());
+            sb.append(" AND fv.vendedor.id = ").append(((EntityWrapper<?>) panelito.getCbVendedores().getSelectedItem()).getId());
         }
         if (panelito.getCbFormasDePago().getSelectedIndex() > 0) {
             sb.append(" AND fv.formaPago = ").append(((Valores.FormaPago) panelito.getCbFormasDePago().getSelectedItem()).getId());
@@ -1383,20 +1405,20 @@ public class Contabilidad {
         queryEgresos.append(" AND fv.anulada=").append(p.isCheckAnuladas());
 
         if (p.getCbClieProv().getSelectedIndex() > 0) {
-            queryIngresos.append(" AND fv.cliente.id=").append(((ComboBoxWrapper<?>) p.getCbClieProv().getSelectedItem()).getId());
-            queryEgresos.append(" AND fv.proveedor.id=").append(((ComboBoxWrapper<?>) p.getCbClieProv().getSelectedItem()).getId());
+            queryIngresos.append(" AND fv.cliente.id=").append(((EntityWrapper<?>) p.getCbClieProv().getSelectedItem()).getId());
+            queryEgresos.append(" AND fv.proveedor.id=").append(((EntityWrapper<?>) p.getCbClieProv().getSelectedItem()).getId());
         }
         if (p.getCbSucursal().getSelectedIndex() > 0) {
-            queryIngresos.append(" AND fv.sucursal.id=").append(((ComboBoxWrapper<?>) p.getCbSucursal().getSelectedItem()).getId());
-            queryEgresos.append(" AND fv.sucursal.id=").append(((ComboBoxWrapper<?>) p.getCbSucursal().getSelectedItem()).getId());
+            queryIngresos.append(" AND fv.sucursal.id=").append(((EntityWrapper<?>) p.getCbSucursal().getSelectedItem()).getId());
+            queryEgresos.append(" AND fv.sucursal.id=").append(((EntityWrapper<?>) p.getCbSucursal().getSelectedItem()).getId());
         }
         if (p.getCbCuenta().getSelectedIndex() > 0) {
-            queryIngresos.append(" AND fv.cuenta.id=").append(((ComboBoxWrapper<?>) p.getCbCuenta().getSelectedItem()).getId());
-            queryEgresos.append(" AND fv.cuenta.id=").append(((ComboBoxWrapper<?>) p.getCbCuenta().getSelectedItem()).getId());
+            queryIngresos.append(" AND fv.cuenta.id=").append(((EntityWrapper<?>) p.getCbCuenta().getSelectedItem()).getId());
+            queryEgresos.append(" AND fv.cuenta.id=").append(((EntityWrapper<?>) p.getCbCuenta().getSelectedItem()).getId());
         }
         if (p.getCbSubCuenta().getSelectedIndex() > 0) {
-            queryIngresos.append(" AND fv.subCuenta.id=").append(((ComboBoxWrapper<?>) p.getCbSubCuenta().getSelectedItem()).getId());
-            queryEgresos.append(" AND fv.subCuenta.id=").append(((ComboBoxWrapper<?>) p.getCbSubCuenta().getSelectedItem()).getId());
+            queryIngresos.append(" AND fv.subCuenta.id=").append(((EntityWrapper<?>) p.getCbSubCuenta().getSelectedItem()).getId());
+            queryEgresos.append(" AND fv.subCuenta.id=").append(((EntityWrapper<?>) p.getCbSubCuenta().getSelectedItem()).getId());
         }
         if (p.getDcDesde() != null) {
             queryIngresos.append(" AND fv.fechaVenta >='").append(UTIL.yyyy_MM_dd.format(p.getDcDesde())).append("'");
