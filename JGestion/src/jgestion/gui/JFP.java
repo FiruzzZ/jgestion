@@ -1416,7 +1416,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
         try {
-            new FacturaVentaController().initFacturaVenta(this, true, null, 1, true, true);
+            new FacturaVentaController().displayABM(this, true, null, 1, true, true);
         } catch (MessageException ex) {
             showError(ex.getMessage());
         }
@@ -1564,7 +1564,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
     private void jMenuItem18ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem18ActionPerformed
         try {
-            new FacturaVentaController().initBuscador(this, false, false);
+            new FacturaVentaController().displayBuscador(this, false, false);
         } catch (Exception ex) {
             showError(ex.getMessage());
         }
@@ -1605,7 +1605,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
         try {
-            new FacturaVentaController().initBuscador(this, false, true);
+            new FacturaVentaController().displayBuscador(this, false, true);
         } catch (MessageException ex) {
             ex.displayMessage(this);
         }
@@ -1766,7 +1766,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
 
     private void jMenuItem57ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem57ActionPerformed
         try {
-            new FacturaVentaController().unlockedABM(this);
+            new FacturaVentaController().displayABMUnlocked(this);
         } catch (MessageException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
         }

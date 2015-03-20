@@ -129,7 +129,7 @@ public class FacturaVentaController {
      * productos, sucursales) y si se le asignan los {@link ActionListener} a los botones.
      * @throws MessageException Mensajes personalizados de alerta y/o información para el usuario.
      */
-    public void initFacturaVenta(Window owner, boolean modal, final Object listener,
+    public void displayABM(Window owner, boolean modal, final Object listener,
             final int factVenta1_PresupNotaCredito2_Remito3, boolean setVisible, boolean loadDefaultData)
             throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.VENTA);
@@ -160,7 +160,7 @@ public class FacturaVentaController {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    initBuscarProducto();
+                    displayBuscadorProducto();
                 } catch (DatabaseErrorException ex) {
                     jdFactura.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 0);
                 }
@@ -341,7 +341,7 @@ public class FacturaVentaController {
                             if (clienteSeleccionado == null) {
                                 JOptionPane.showMessageDialog(jdFactura, "Debe seleccionar un Cliente, del cual se buscará el Remito.", "Error", JOptionPane.WARNING_MESSAGE, null);
                             }
-                            initBuscadorRemito(clienteSeleccionado);
+                            displayBuscadorRemito(clienteSeleccionado);
                         } catch (ClassCastException ex) {
                             JOptionPane.showMessageDialog(jdFactura, "Debe seleccionar un Cliente, del cual se buscará el Remito.", "Error (No existe cliente)", JOptionPane.WARNING_MESSAGE, null);
                         }
@@ -683,7 +683,7 @@ public class FacturaVentaController {
             if (new BigDecimal(dtm.getValueAt(index, 7).toString()).intValue() >= 0) {
                 desc = desc.add(new BigDecimal(dtm.getValueAt(index, 6).toString()));
             }
-            LOG.debug("alicuota=" + alicuota + ", redondeo=" + sinRedondeo);
+            LOG.debug("alicuota=" + alicuota.toPlainString() + ", redondeo=" + sinRedondeo.toPlainString());
 
             subTotal = subTotal.add(new BigDecimal(dtm.getValueAt(index, 7).toString()));
         }
@@ -695,12 +695,12 @@ public class FacturaVentaController {
         contenedor.setTfTotalOtrosImps(UTIL.DECIMAL_FORMAT.format(otrosImps));
         redondeoTotal = gravado.add(iva10).add(iva21).add(otrosImps).subtract(redondeoTotal);
         contenedor.getTfDiferenciaRedondeo().setText(UTIL.DECIMAL_FORMAT.format(redondeoTotal));
-//        if (contenedor.getCbFacturaTipo().getSelectedItem().toString().equalsIgnoreCase("B")) {
-//            contenedor.setTfTotal(UTIL.DECIMAL_FORMAT.format(subTotal.add(redondeoTotal)));
-//        } else {
         contenedor.setTfTotal(UTIL.DECIMAL_FORMAT.format(subTotal));
-//        }
-        LOG.debug("Gravado:" + gravado + ", Desc.:" + desc + ", IVA105:" + iva10 + ", IVA21:" + iva21 + ", OtrosImp.:" + otrosImps + ", Redondeo:" + redondeoTotal);
+        LOG.debug("Gravado=" + gravado + ", Desc.=" + desc
+                + ", IVA105=" + iva10.toPlainString()
+                + ", IVA21=" + iva21.toPlainString()
+                + ", OtrosImp=" + otrosImps.toPlainString()
+                + ", Redondeo=" + redondeoTotal.toPlainString());
     }
 
     /**
@@ -946,13 +946,13 @@ public class FacturaVentaController {
         jdFactura.setTfFacturaOcteto(UTIL.AGREGAR_CEROS(numero, 8));
     }
 
-    private void initBuscarProducto() throws DatabaseErrorException {
+    private void displayBuscadorProducto() throws DatabaseErrorException {
         ProductoController p = new ProductoController();
         p.initContenedor(null, true, false);
         UTIL.loadComboBox(jdFactura.getCbProductos(), p.findWrappedProductoToCombo(true), false);
     }
 
-    public void initBuscador(Window owner, final boolean modal, final boolean toAnular) throws MessageException {
+    public void displayBuscador(Window owner, final boolean modal, final boolean toAnular) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.VENTA);
         if (toAnular) {
             UsuarioController.checkPermiso(PermisosController.PermisoDe.ANULAR_COMPROBANTES);
@@ -1148,7 +1148,7 @@ public class FacturaVentaController {
     }
 
     private void setDatosToEdit() throws MessageException {
-        initFacturaVenta(null, true, this, 1, false, true);
+        displayABM(null, true, this, 1, false, true);
         jdFactura.setModoEdicion();
         for (ActionListener actionListener : jdFactura.getBtnAceptar().getActionListeners()) {
             jdFactura.getBtnAceptar().removeActionListener(actionListener);
@@ -1341,7 +1341,7 @@ public class FacturaVentaController {
      */
     @SuppressWarnings("unchecked")
     void show(FacturaVenta facturaVenta, final boolean paraAnular) throws MessageException {
-        initFacturaVenta(null, true, this, 1, false, false);
+        displayABM(null, true, this, 1, false, false);
         jdFactura.modoVista();
         EL_OBJECT = facturaVenta;
         jdFactura.getBtnAceptar().addActionListener(new ActionListener() {
@@ -1738,7 +1738,7 @@ public class FacturaVentaController {
         return jdFactura;
     }
 
-    private void initBuscadorRemito(Cliente clienteSeleccionado) {
+    private void displayBuscadorRemito(Cliente clienteSeleccionado) {
         RemitoController remitoController = new RemitoController();
         remitoController.initBuscadorToFacturar(jdFactura, clienteSeleccionado);
         remitoToFacturar = remitoController.getSelectedRemito();
@@ -1815,12 +1815,12 @@ public class FacturaVentaController {
      *
      * @param owner
      * @throws MessageException
-     * @see #initFacturaVenta(javax.swing.JFrame, boolean, java.lang.Object, int, boolean, boolean)
+     * @see #displayABM(java.awt.Window, boolean, java.lang.Object, int, boolean, boolean)
      */
-    public void unlockedABM(JFrame owner) throws MessageException {
+    public void displayABMUnlocked(Window owner) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.VENTA_NUMERACION_MANUAL);
         unlockedNumeracion = true;
-        initFacturaVenta(owner, true, this, 1, false, true);
+        displayABM(owner, true, this, 1, false, true);
         jdFactura.setTfFacturaOcteto(null);
         jdFactura.getBtnAceptar().setEnabled(false);
         jdFactura.setNumeroFacturaEditable(true);
