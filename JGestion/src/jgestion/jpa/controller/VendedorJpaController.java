@@ -1,6 +1,8 @@
 package jgestion.jpa.controller;
 
 import jgestion.controller.DAO;
+import jgestion.entity.Cliente;
+import jgestion.entity.Cliente_;
 import jgestion.entity.Vendedor;
 import jgestion.entity.Vendedor_;
 import java.util.List;

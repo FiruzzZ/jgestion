@@ -28,7 +28,7 @@ import jgestion.jpa.controller.ProveedorJpaController;
 import org.apache.log4j.Logger;
 import utilities.general.UTIL;
 import utilities.gui.SwingUtil;
-import utilities.swing.components.ComboBoxWrapper;
+import utilities.general.EntityWrapper;
 import utilities.swing.components.FormatRenderer;
 import utilities.swing.components.NumberRenderer;
 
@@ -62,7 +62,7 @@ public class NotaDebitoProveedorController {
             BigDecimal subTotal = new BigDecimal(abm.getTfImporte().getText());
             if (abm.getCbIVA().isEnabled()) {
                 @SuppressWarnings("unchecked")
-                Iva iva = abm.getCbIVA().isEnabled() ? ((ComboBoxWrapper<Iva>) abm.getCbIVA().getSelectedItem()).getEntity() : null;
+                Iva iva = abm.getCbIVA().isEnabled() ? ((EntityWrapper<Iva>) abm.getCbIVA().getSelectedItem()).getEntity() : null;
                 BigDecimal porcentaje = UTIL.getPorcentaje(subTotal, BigDecimal.valueOf(iva.getIva()));
                 subTotal = subTotal.add(porcentaje);
             }
@@ -80,7 +80,7 @@ public class NotaDebitoProveedorController {
             @SuppressWarnings("unchecked")
             public void actionPerformed(ActionEvent e) {
                 if (abm.getCbCliente().getItemCount() > 0) {
-                    Proveedor p = new ProveedorJpaController().find(((ComboBoxWrapper<Proveedor>) abm.getCbCliente().getSelectedItem()).getId());
+                    Proveedor p = new ProveedorJpaController().find((Integer) ((EntityWrapper<Proveedor>) abm.getCbCliente().getSelectedItem()).getId());
                     JGestionUtils.cargarComboTiposFacturas(abm.getCbFacturaTipo(), p);
                     boolean comprobanteA = abm.getCbFacturaTipo().getSelectedItem().toString().equalsIgnoreCase("A");
                     abm.getCbIVA().setEnabled(comprobanteA);
@@ -128,7 +128,7 @@ public class NotaDebitoProveedorController {
                         throw new MessageException("Importe no válido");
                     }
                     @SuppressWarnings("unchecked")
-                    Iva iva = abm.getCbIVA().isEnabled() ? ((ComboBoxWrapper<Iva>) abm.getCbIVA().getSelectedItem()).getEntity() : null;
+                    Iva iva = abm.getCbIVA().isEnabled() ? ((EntityWrapper<Iva>) abm.getCbIVA().getSelectedItem()).getEntity() : null;
                     DetalleNotaDebitoProveedor d = new DetalleNotaDebitoProveedor(null, concepto, importe, iva);
                     addDetalle(d);
                     refreshResumen();
@@ -212,7 +212,7 @@ public class NotaDebitoProveedorController {
     private NotaDebitoProveedor getEntity() throws MessageException {
         checkConstraints();
         NotaDebitoProveedor o = new NotaDebitoProveedor();
-        o.setProveedor(((ComboBoxWrapper<Proveedor>) abm.getCbCliente().getSelectedItem()).getEntity());
+        o.setProveedor(((EntityWrapper<Proveedor>) abm.getCbCliente().getSelectedItem()).getEntity());
         o.setFechaNotaDebito(abm.getDcFechaFactura().getDate());
         o.setTipo(abm.getCbFacturaTipo().getSelectedItem().toString().charAt(0));
         o.setNumero(Long.valueOf(abm.getTfFacturaCuarto().getText() + UTIL.AGREGAR_CEROS(abm.getTfFacturaOcteto().getText(), 8)));
@@ -494,7 +494,7 @@ public class NotaDebitoProveedorController {
         }
 
         if (buscador.getCbClieProv().getSelectedIndex() > 0) {
-            query.append(" AND o.proveedor.id = ").append(((ComboBoxWrapper<?>) buscador.getCbClieProv().getSelectedItem()).getId());
+            query.append(" AND o.proveedor.id = ").append(((EntityWrapper<?>) buscador.getCbClieProv().getSelectedItem()).getId());
         }
 
         query.append(" ORDER BY o.fechaNotaDebito");
@@ -514,7 +514,7 @@ public class NotaDebitoProveedorController {
     @SuppressWarnings("unchecked")
     private void setPanel(NotaDebitoProveedor o) {
         Proveedor c = o.getProveedor();
-        abm.getCbCliente().addItem(new ComboBoxWrapper<>(c, c.getId(), c.getNombre()));
+        abm.getCbCliente().addItem(new EntityWrapper<>(c, c.getId(), c.getNombre()));
         abm.getDcFechaFactura().setDate(o.getFechaNotaDebito());
         abm.getTfObservacion().setText(o.getObservacion());
         UTIL.loadComboBox(abm.getCbFacturaTipo(), FacturaCompraController.TIPOS_FACTURA, false);

@@ -8,7 +8,7 @@ import jgestion.JGestionUtils;
 import jgestion.jpa.controller.UsuarioAccionesJpaController;
 import jgestion.jpa.controller.UsuarioJpaController;
 import utilities.general.UTIL;
-import utilities.swing.components.ComboBoxWrapper;
+import utilities.general.EntityWrapper;
 
 /**
  *
@@ -196,7 +196,7 @@ public class JDTrackerUsuario extends javax.swing.JDialog {
         StringBuilder sb = new StringBuilder("SELECT o FROM " + UsuarioAcciones.class.getSimpleName() + " o "
                 + " WHERE o.id is not null ");
         @SuppressWarnings("unchecked")
-        Usuario u = ((ComboBoxWrapper<Usuario>) cbUsuarios.getSelectedItem()).getEntity();
+        Usuario u = ((EntityWrapper<Usuario>) cbUsuarios.getSelectedItem()).getEntity();
         sb.append(" AND o.usuario.id = ").append(u.getId());
         if (dcDesde.getDate() != null) {
             sb.append(" AND o.fechasistema >='").append(UTIL.yyyy_MM_dd.format(dcDesde.getDate())).append("'");

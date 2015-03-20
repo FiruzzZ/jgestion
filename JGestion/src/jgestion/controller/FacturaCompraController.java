@@ -1,14 +1,15 @@
 package jgestion.controller;
 
-import jgestion.controller.exceptions.DatabaseErrorException;
-import jgestion.controller.exceptions.MissingReportException;
 import jgestion.controller.exceptions.MessageException;
+import jgestion.controller.exceptions.MissingReportException;
+import jgestion.controller.exceptions.DatabaseErrorException;
 import jgestion.entity.Caja;
 import jgestion.entity.CajaMovimientos;
 import jgestion.entity.Cuenta;
 import jgestion.entity.DetalleCompra;
 import jgestion.entity.Dominio;
 import jgestion.entity.FacturaCompra;
+import jgestion.entity.FacturaCompra_;
 import jgestion.entity.Iva;
 import jgestion.entity.Proveedor;
 import jgestion.entity.Sucursal;
@@ -47,7 +48,6 @@ import jgestion.ActionListenerManager;
 import jgestion.JGestionUtils;
 import jgestion.JGestion;
 import jgestion.Wrapper;
-import jgestion.entity.FacturaCompra_;
 import jgestion.jpa.controller.CajaMovimientosJpaController;
 import jgestion.jpa.controller.DominioJpaController;
 import jgestion.jpa.controller.FacturaCompraJpaController;
@@ -58,7 +58,7 @@ import jgestion.jpa.controller.UnidadDeNegocioJpaController;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Logger;
 import utilities.gui.SwingUtil;
-import utilities.swing.components.ComboBoxWrapper;
+import utilities.general.EntityWrapper;
 import utilities.swing.components.FormatRenderer;
 import utilities.swing.components.NumberRenderer;
 
@@ -146,7 +146,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
             public void focusLost(FocusEvent e) {
                 try {
                     @SuppressWarnings("unchecked")
-                    ComboBoxWrapper<Producto> wrap = (ComboBoxWrapper<Producto>) jdFactura.getCbProductos().getSelectedItem();
+                    EntityWrapper<Producto> wrap = (EntityWrapper<Producto>) jdFactura.getCbProductos().getSelectedItem();
                     buscarProducto(wrap.getEntity().getCodigo());
                 } catch (ClassCastException ex) {
                     //cuando no seleccionó ningún Producto del combo
@@ -161,7 +161,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     try {
                         @SuppressWarnings("unchecked")
-                        ComboBoxWrapper<Producto> wrap = (ComboBoxWrapper<Producto>) jdFactura.getCbProductos().getSelectedItem();
+                        EntityWrapper<Producto> wrap = (EntityWrapper<Producto>) jdFactura.getCbProductos().getSelectedItem();
                         buscarProducto(wrap.getEntity().getCodigo());
                     } catch (ClassCastException ex) {
                         jdFactura.setTfProductoPrecioActual("");
@@ -411,26 +411,26 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         newFacturaCompra.setUsuario(UsuarioController.getCurrentUser());
         newFacturaCompra.setCaja((Caja) jdFactura.getCbCaja().getSelectedItem());
         try {
-            newFacturaCompra.setUnidadDeNegocio(((ComboBoxWrapper<UnidadDeNegocio>) jdFactura.getCbUnidadDeNegocio().getSelectedItem()).getEntity());
+            newFacturaCompra.setUnidadDeNegocio(((EntityWrapper<UnidadDeNegocio>) jdFactura.getCbUnidadDeNegocio().getSelectedItem()).getEntity());
         } catch (Exception e) {
             JOptionPane.showMessageDialog(jdFactura, "Unidad de Negocio no válida");
         }
         newFacturaCompra.setSucursal(getSelectedSucursalFromJD());
         try {
-            newFacturaCompra.setCuenta(((ComboBoxWrapper<Cuenta>) jdFactura.getCbCuenta().getSelectedItem()).getEntity());
+            newFacturaCompra.setCuenta(((EntityWrapper<Cuenta>) jdFactura.getCbCuenta().getSelectedItem()).getEntity());
         } catch (Exception e) {
             JOptionPane.showMessageDialog(jdFactura, "Cuenta no válida");
         }
         if (jdFactura.getCbSubCuenta().getSelectedIndex() > 0) {
             try {
-                newFacturaCompra.setSubCuenta(((ComboBoxWrapper<SubCuenta>) jdFactura.getCbSubCuenta().getSelectedItem()).getEntity());
+                newFacturaCompra.setSubCuenta(((EntityWrapper<SubCuenta>) jdFactura.getCbSubCuenta().getSelectedItem()).getEntity());
             } catch (Exception e) {
                 newFacturaCompra.setSubCuenta(null);
             }
         }
         if (jdFactura.getCbDominio().getSelectedIndex() > 0) {
             try {
-                newFacturaCompra.setDominio(((ComboBoxWrapper<Dominio>) jdFactura.getCbDominio().getSelectedItem()).getEntity());
+                newFacturaCompra.setDominio(((EntityWrapper<Dominio>) jdFactura.getCbDominio().getSelectedItem()).getEntity());
             } catch (Exception e) {
                 newFacturaCompra.setDominio(null);
             }
@@ -548,7 +548,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
             throw new MessageException("Proveedor no válido");
         }
         try {
-            ((ComboBoxWrapper<UnidadDeNegocio>) jdFactura.getCbUnidadDeNegocio().getSelectedItem()).getEntity();
+            ((EntityWrapper<UnidadDeNegocio>) jdFactura.getCbUnidadDeNegocio().getSelectedItem()).getEntity();
         } catch (Exception e) {
             throw new MessageException("Unidad de Negocio no válida");
         }
@@ -558,7 +558,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
             throw new MessageException("Sucursal no válido");
         }
         try {
-            ((ComboBoxWrapper<Cuenta>) jdFactura.getCbCuenta().getSelectedItem()).getEntity();
+            ((EntityWrapper<Cuenta>) jdFactura.getCbCuenta().getSelectedItem()).getEntity();
         } catch (Exception e) {
             throw new MessageException("Cuenta no válida");
         }
@@ -872,21 +872,21 @@ public class FacturaCompraController implements ActionListener, KeyListener {
             query.append(")");
         }
         if (buscador.getCbUnidadDeNegocio().getSelectedIndex() > 0) {
-            query.append(" AND o.unidad_de_negocio_id = ").append(((ComboBoxWrapper<UnidadDeNegocio>) buscador.getCbUnidadDeNegocio().getSelectedItem()).getId());
+            query.append(" AND o.unidad_de_negocio_id = ").append(((EntityWrapper<UnidadDeNegocio>) buscador.getCbUnidadDeNegocio().getSelectedItem()).getId());
         }
         if (buscador.getCbCuenta().getSelectedIndex() > 0) {
-            query.append(" AND o.cuenta_id = ").append(((ComboBoxWrapper<Cuenta>) buscador.getCbCuenta().getSelectedItem()).getId());
+            query.append(" AND o.cuenta_id = ").append(((EntityWrapper<Cuenta>) buscador.getCbCuenta().getSelectedItem()).getId());
         }
         if (buscador.getCbSubCuenta().getSelectedIndex() > 0) {
-            query.append(" AND o.subcuenta_id = ").append(((ComboBoxWrapper<SubCuenta>) buscador.getCbSubCuenta().getSelectedItem()).getId());
+            query.append(" AND o.subcuenta_id = ").append(((EntityWrapper<SubCuenta>) buscador.getCbSubCuenta().getSelectedItem()).getId());
         }
         if (buscador.getCbSucursal().getSelectedIndex() > 0) {
-            query.append(" AND o.sucursal = ").append(((ComboBoxWrapper<Sucursal>) buscador.getCbSucursal().getSelectedItem()).getId());
+            query.append(" AND o.sucursal = ").append(((EntityWrapper<Sucursal>) buscador.getCbSucursal().getSelectedItem()).getId());
         } else {
             if (buscador.getCbUnidadDeNegocio().getSelectedIndex() > 0) {
                 query.append(" AND (");
                 for (int i = 1; i < buscador.getCbSucursal().getItemCount(); i++) {
-                    ComboBoxWrapper<Sucursal> cbw = (ComboBoxWrapper<Sucursal>) buscador.getCbSucursal().getItemAt(i);
+                    EntityWrapper<Sucursal> cbw = (EntityWrapper<Sucursal>) buscador.getCbSucursal().getItemAt(i);
                     query.append(" o.sucursal=").append(cbw.getId());
                     if ((i + 1) < buscador.getCbSucursal().getItemCount()) {
                         query.append(" OR ");
@@ -907,7 +907,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         }
 
         if (buscador.getCbClieProv().getSelectedIndex() > 0) {
-            query.append(" AND o.proveedor = ").append(((ComboBoxWrapper<Proveedor>) buscador.getCbClieProv().getSelectedItem()).getId());
+            query.append(" AND o.proveedor = ").append(((EntityWrapper<Proveedor>) buscador.getCbClieProv().getSelectedItem()).getId());
         }
 
         if (buscador.getCbFormasDePago().getSelectedIndex() > 0) {
@@ -961,31 +961,31 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         }
         // seteando datos de FacturaCompra
 //        jdFactura.getCbProveedor().removeAllItems();
-        jdFactura.getCbProveedor().addItem(new ComboBoxWrapper<>(EL_OBJECT.getProveedor(), EL_OBJECT.getProveedor().getId(), EL_OBJECT.getProveedor().getNombre()));
+        jdFactura.getCbProveedor().addItem(new EntityWrapper<>(EL_OBJECT.getProveedor(), EL_OBJECT.getProveedor().getId(), EL_OBJECT.getProveedor().getNombre()));
         UnidadDeNegocio udn = EL_OBJECT.getUnidadDeNegocio();
         Sucursal s = EL_OBJECT.getSucursal();
         Cuenta cuenta = EL_OBJECT.getCuenta();
         SubCuenta subCuenta = EL_OBJECT.getSubCuenta();
-        jdFactura.getCbSucursal().addItem(new ComboBoxWrapper<>(s, s.getId(), s.getNombre()));
+        jdFactura.getCbSucursal().addItem(new EntityWrapper<>(s, s.getId(), s.getNombre()));
         try {
-            jdFactura.getCbUnidadDeNegocio().addItem(new ComboBoxWrapper<>(udn, udn.getId(), udn.getNombre()));
+            jdFactura.getCbUnidadDeNegocio().addItem(new EntityWrapper<>(udn, udn.getId(), udn.getNombre()));
         } catch (Exception e) {
             jdFactura.getCbUnidadDeNegocio().addItem("<Unidad de Negocios no especificada>");
         }
         try {
-            jdFactura.getCbCuenta().addItem(new ComboBoxWrapper<>(cuenta, cuenta.getId(), cuenta.getNombre()));
+            jdFactura.getCbCuenta().addItem(new EntityWrapper<>(cuenta, cuenta.getId(), cuenta.getNombre()));
         } catch (Exception e) {
             jdFactura.getCbCuenta().addItem("<Cuenta no especificada>");
         }
         try {
             if (EL_OBJECT.getSubCuenta() != null) {
-                jdFactura.getCbSubCuenta().addItem(new ComboBoxWrapper<>(subCuenta, subCuenta.getId(), subCuenta.getNombre()));
+                jdFactura.getCbSubCuenta().addItem(new EntityWrapper<>(subCuenta, subCuenta.getId(), subCuenta.getNombre()));
             }
         } catch (Exception e) {
             jdFactura.getCbCuenta().addItem("<SubCuenta no especificada>");
         }
         if (EL_OBJECT.getDominio() != null) {
-            jdFactura.getCbDominio().addItem(new ComboBoxWrapper<>(EL_OBJECT.getDominio(), EL_OBJECT.getDominio().getId(), EL_OBJECT.getDominio().getNombre()));
+            jdFactura.getCbDominio().addItem(new EntityWrapper<>(EL_OBJECT.getDominio(), EL_OBJECT.getDominio().getId(), EL_OBJECT.getDominio().getNombre()));
         }
 
         jdFactura.setDcFechaFactura(EL_OBJECT.getFechaCompra());
@@ -1058,7 +1058,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
 
     private Sucursal getSelectedSucursalFromJD() {
         @SuppressWarnings("unchecked")
-        ComboBoxWrapper<Sucursal> cbw = (ComboBoxWrapper<Sucursal>) jdFactura.getCbSucursal().getSelectedItem();
+        EntityWrapper<Sucursal> cbw = (EntityWrapper<Sucursal>) jdFactura.getCbSucursal().getSelectedItem();
         return cbw.getEntity();
     }
 
@@ -1160,11 +1160,11 @@ public class FacturaCompraController implements ActionListener, KeyListener {
                     if (data != null) {
                         if (column == 8) {
                             @SuppressWarnings("unchecked")
-                            UnidadDeNegocio unidad = ((ComboBoxWrapper<UnidadDeNegocio>) data).getEntity();
+                            UnidadDeNegocio unidad = ((EntityWrapper<UnidadDeNegocio>) data).getEntity();
                             selected.setUnidadDeNegocio(unidad);
                         } else if (column == 9) {
                             @SuppressWarnings("unchecked")
-                            Cuenta cuenta = ((ComboBoxWrapper<Cuenta>) data).getEntity();
+                            Cuenta cuenta = ((EntityWrapper<Cuenta>) data).getEntity();
                             selected.setCuenta(cuenta);
 
                             //carga las subCuentas
@@ -1179,7 +1179,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
                             }
                         } else if (column == 10) {
                             @SuppressWarnings("unchecked")
-                            SubCuenta subCuenta = ((ComboBoxWrapper<SubCuenta>) data).getEntity();
+                            SubCuenta subCuenta = ((EntityWrapper<SubCuenta>) data).getEntity();
                             selected.setSubCuenta(subCuenta);
                         }
                         jpaController.merge(selected);
@@ -1206,9 +1206,9 @@ public class FacturaCompraController implements ActionListener, KeyListener {
                 factura.getFechaCompra(),
                 factura.getSucursal().getNombre(),
                 factura.getCaja().getNombre(),
-                (factura.getUnidadDeNegocio() != null ? new ComboBoxWrapper<>(factura.getUnidadDeNegocio(), factura.getUnidadDeNegocio().getId(), factura.getUnidadDeNegocio().getNombre()) : null),
-                (factura.getCuenta() != null ? new ComboBoxWrapper<>(factura.getCuenta(), factura.getCuenta().getId(), factura.getCuenta().getNombre()) : null),
-                (factura.getSubCuenta() != null ? new ComboBoxWrapper<>(factura.getSubCuenta(), factura.getSubCuenta().getId(), factura.getSubCuenta().getNombre()) : null)
+                (factura.getUnidadDeNegocio() != null ? new EntityWrapper<>(factura.getUnidadDeNegocio(), factura.getUnidadDeNegocio().getId(), factura.getUnidadDeNegocio().getNombre()) : null),
+                (factura.getCuenta() != null ? new EntityWrapper<>(factura.getCuenta(), factura.getCuenta().getId(), factura.getCuenta().getNombre()) : null),
+                (factura.getSubCuenta() != null ? new EntityWrapper<>(factura.getSubCuenta(), factura.getSubCuenta().getId(), factura.getSubCuenta().getNombre()) : null)
             });
         }
 
@@ -1250,6 +1250,6 @@ public class FacturaCompraController implements ActionListener, KeyListener {
     }
 
     private Proveedor getSelectedProveedorFromABM() {
-        return ((ComboBoxWrapper<Proveedor>) jdFactura.getCbProveedor().getSelectedItem()).getEntity();
+        return ((EntityWrapper<Proveedor>) jdFactura.getCbProveedor().getSelectedItem()).getEntity();
     }
 }

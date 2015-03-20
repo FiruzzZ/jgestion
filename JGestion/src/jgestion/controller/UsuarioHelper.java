@@ -5,7 +5,7 @@ import jgestion.entity.Sucursal;
 import jgestion.entity.Usuario;
 import java.util.ArrayList;
 import java.util.List;
-import utilities.swing.components.ComboBoxWrapper;
+import utilities.general.EntityWrapper;
 
 /**
  *
@@ -35,9 +35,6 @@ public class UsuarioHelper {
 
     public List<Sucursal> getSucursales() {
         List<Sucursal> l = new UsuarioController().getSucursalesOrderedByNombre(usuario);
-//        for (PermisosSucursal permisosSucursal : usuario.getSucursales()) {
-//            l.add(permisosSucursal.getSucursal());
-//        }
         return l;
     }
 
@@ -52,30 +49,15 @@ public class UsuarioHelper {
     }
 
     /**
-     * Envuelve las cajas recperadas por {@link #getCajas(java.lang.Boolean) }
-     *
-     * @param estado
-     * @return
-     */
-    public List<ComboBoxWrapper<Caja>> getWrappedCajas(Boolean estado) {
-        List<Caja> list = getCajas(estado);
-        List<ComboBoxWrapper<Caja>> l = new ArrayList<ComboBoxWrapper<Caja>>(list.size());
-        for (Caja o : list) {
-            l.add(new ComboBoxWrapper<Caja>(o, o.getId(), o.getNombre()));
-        }
-        return l;
-    }
-
-    /**
      * Recupera las sucursales a las cuales el usuario actual tiene acceso
      *
      * @return
      */
-    public List<ComboBoxWrapper<Sucursal>> getWrappedSucursales() {
+    public List<EntityWrapper<Sucursal>> getWrappedSucursales() {
         List<Sucursal> list = getSucursales();
-        List<ComboBoxWrapper<Sucursal>> l = new ArrayList<ComboBoxWrapper<Sucursal>>(list.size());
+        List<EntityWrapper<Sucursal>> l = new ArrayList<>(list.size());
         for (Sucursal o : list) {
-            l.add(new ComboBoxWrapper<Sucursal>(o, o.getId(), o.getNombre()));
+            l.add(new EntityWrapper<>(o, o.getId(), o.getNombre()));
         }
         return l;
     }

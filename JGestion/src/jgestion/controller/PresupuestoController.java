@@ -1,19 +1,15 @@
 package jgestion.controller;
 
-import jgestion.controller.exceptions.MissingReportException;
 import jgestion.controller.exceptions.MessageException;
+import jgestion.controller.exceptions.MissingReportException;
 import jgestion.entity.Cliente;
-import jgestion.entity.Cuenta;
 import jgestion.entity.DetallePresupuesto;
 import jgestion.entity.Iva;
 import jgestion.entity.ListaPrecios;
 import jgestion.entity.Presupuesto;
 import jgestion.entity.Presupuesto_;
 import jgestion.entity.Producto;
-import jgestion.entity.SubCuenta;
 import jgestion.entity.Sucursal;
-import jgestion.entity.UnidadDeNegocio;
-import jgestion.entity.Vendedor;
 import jgestion.gui.JDBuscadorReRe;
 import jgestion.gui.JDFacturaVenta;
 import java.awt.Window;
@@ -34,7 +30,7 @@ import jgestion.jpa.controller.ProductoJpaController;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Logger;
 import utilities.general.UTIL;
-import utilities.swing.components.ComboBoxWrapper;
+import utilities.general.EntityWrapper;
 
 /**
  *
@@ -155,7 +151,7 @@ public class PresupuestoController implements ActionListener {
             newPresupuesto = new Presupuesto();
             newPresupuesto.setCliente((Cliente) jdFacturaVenta.getCbCliente().getSelectedItem());
             newPresupuesto.setListaPrecios((ListaPrecios) jdFacturaVenta.getCbListaPrecio().getSelectedItem());
-            newPresupuesto.setSucursal(((ComboBoxWrapper<Sucursal>) jdFacturaVenta.getCbSucursal().getSelectedItem()).getEntity());
+            newPresupuesto.setSucursal(((EntityWrapper<Sucursal>) jdFacturaVenta.getCbSucursal().getSelectedItem()).getEntity());
             newPresupuesto.setUsuario(UsuarioController.getCurrentUser());
             if (((Valores.FormaPago) jdFacturaVenta.getCbFormaPago().getSelectedItem()).equals(Valores.FormaPago.CONTADO)) {
                 newPresupuesto.setFormaPago((short) Valores.FormaPago.CONTADO.getId());

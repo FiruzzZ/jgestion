@@ -1,15 +1,15 @@
 package jgestion.controller;
 
-import jgestion.controller.exceptions.NonexistentEntityException;
-import jgestion.controller.exceptions.MissingReportException;
-import jgestion.controller.exceptions.MessageException;
 import jgestion.entity.Cliente;
+import jgestion.entity.DetalleRecibo;
 import jgestion.entity.Recibo;
+import jgestion.entity.NotaDebito;
 import jgestion.entity.Proveedor;
 import jgestion.entity.FacturaVenta;
 import jgestion.entity.CtacteCliente;
-import jgestion.entity.NotaDebito;
-import jgestion.entity.DetalleRecibo;
+import jgestion.controller.exceptions.MessageException;
+import jgestion.controller.exceptions.NonexistentEntityException;
+import jgestion.controller.exceptions.MissingReportException;
 import utilities.general.UTIL;
 import jgestion.gui.JDBuscador;
 import jgestion.gui.JDResumenCtaCtes;
@@ -34,7 +34,7 @@ import jgestion.JGestionUtils;
 import jgestion.jpa.controller.CtacteClienteJpaController;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Logger;
-import utilities.swing.components.ComboBoxWrapper;
+import utilities.general.EntityWrapper;
 import utilities.swing.components.NumberRenderer;
 
 /**
@@ -228,7 +228,7 @@ public class CtacteClienteController implements ActionListener {
             public void actionPerformed(ActionEvent e) {
                 try {
                     @SuppressWarnings("unchecked")
-                    Cliente c = ((ComboBoxWrapper<Cliente>) resumenCtaCtes.getCbClieProv().getSelectedItem()).getEntity();
+                    Cliente c = ((EntityWrapper<Cliente>) resumenCtaCtes.getCbClieProv().getSelectedItem()).getEntity();
                     initBuscadorNotaCredito(c);
                 } catch (MessageException ex) {
                     ex.displayMessage(resumenCtaCtes);
@@ -292,7 +292,7 @@ public class CtacteClienteController implements ActionListener {
                 + " ) ctacte "
                 + " WHERE ";
         //solo el filtro se envía al reporte! por eso están separados
-        Cliente cliente = ((ComboBoxWrapper<Cliente>) resumenCtaCtes.getCbClieProv().getSelectedItem()).getEntity();
+        Cliente cliente = ((EntityWrapper<Cliente>) resumenCtaCtes.getCbClieProv().getSelectedItem()).getEntity();
         String filters = " cliente_id =" + cliente.getId();
 
         if (resumenCtaCtes.getDcDesde() != null) {
@@ -371,9 +371,9 @@ public class CtacteClienteController implements ActionListener {
         } else {
             recibosList = new ReciboController().findByNotaDebito(ctacteCliente.getNotaDebito());
         }
-        List<ComboBoxWrapper<Recibo>> wrapped = new ArrayList<>(recibosList.size());
+        List<EntityWrapper<Recibo>> wrapped = new ArrayList<>(recibosList.size());
         for (Recibo recibo : recibosList) {
-            wrapped.add(new ComboBoxWrapper<>(recibo, recibo.getId(), JGestionUtils.getNumeracion(recibo, true)));
+            wrapped.add(new EntityWrapper<>(recibo, recibo.getId(), JGestionUtils.getNumeracion(recibo, true)));
         }
         UTIL.loadComboBox(resumenCtaCtes.getCbReRes(), wrapped, false);
         setDatosReciboSelected();
@@ -382,7 +382,7 @@ public class CtacteClienteController implements ActionListener {
     private void setDatosReciboSelected() {
         try {
             @SuppressWarnings("unchecked")
-            ComboBoxWrapper<Recibo> cbw = (ComboBoxWrapper<Recibo>) resumenCtaCtes.getCbReRes().getSelectedItem();
+            EntityWrapper<Recibo> cbw = (EntityWrapper<Recibo>) resumenCtaCtes.getCbReRes().getSelectedItem();
             Recibo recibo = cbw.getEntity();
             resumenCtaCtes.setTfReciboFecha(UTIL.DATE_FORMAT.format(recibo.getFechaRecibo()));
             resumenCtaCtes.setTfReciboMonto(UTIL.DECIMAL_FORMAT.format(recibo.getMonto()));
@@ -522,7 +522,7 @@ public class CtacteClienteController implements ActionListener {
         } else {
             query += proveedoresQuery;
             if (panelCCCheck.getCbClientesProveedores().getSelectedIndex() > 0) {
-                Proveedor p = ((ComboBoxWrapper<Proveedor>) panelCCCheck.getCbClientesProveedores().getSelectedItem()).getEntity();
+                Proveedor p = ((EntityWrapper<Proveedor>) panelCCCheck.getCbClientesProveedores().getSelectedItem()).getEntity();
                 query += " AND c.id= " + p.getId();
                 sub_titulo_entidad = "Proveedor: (" + p.getCuit()+ ") " + p.getNombre();
 

@@ -70,7 +70,7 @@ public class PanelDepositoCheque extends javax.swing.JPanel {
         jScrollPane1 = new javax.swing.JScrollPane();
         taObservacion = new javax.swing.JTextArea();
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Datos de depósito", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 11), new java.awt.Color(0, 0, 255))); // NOI18N
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Datos de depósito", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 13), new java.awt.Color(0, 0, 255))); // NOI18N
 
         jLabel2.setText("Banco");
 
@@ -144,7 +144,7 @@ public class PanelDepositoCheque extends javax.swing.JPanel {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        panelInfoCheque.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Datos de cheque", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 11), new java.awt.Color(0, 0, 255))); // NOI18N
+        panelInfoCheque.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Datos de cheque", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 13), new java.awt.Color(0, 0, 255))); // NOI18N
 
         labelEstado.setText("Estado");
 

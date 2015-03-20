@@ -648,7 +648,7 @@ public class JDOfertas extends javax.swing.JDialog {
 
     private void btnModificarProductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarProductoActionPerformed
         try {
-            productoCtrller.initABM(selectedProducto);
+            productoCtrller.displayABM(selectedProducto);
             UTIL.loadComboBox(cbProductos, productoCtrller.findProductoToCombo(true), false);
             setProducto(selectedProducto);
             UTIL.setSelectedItem(cbProductos, selectedProducto);

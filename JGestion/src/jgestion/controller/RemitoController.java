@@ -1,9 +1,9 @@
 package jgestion.controller;
 
-import jgestion.controller.exceptions.PreexistingEntityException;
+import jgestion.controller.exceptions.MessageException;
 import jgestion.controller.exceptions.IllegalOrphanException;
 import jgestion.controller.exceptions.NonexistentEntityException;
-import jgestion.controller.exceptions.MessageException;
+import jgestion.controller.exceptions.PreexistingEntityException;
 import jgestion.entity.Cliente;
 import jgestion.entity.Remito;
 import jgestion.entity.DetalleRemito;
@@ -36,7 +36,7 @@ import jgestion.jpa.controller.RemitoJpaController;
 import jgestion.jpa.controller.VendedorJpaController;
 import org.apache.log4j.Logger;
 import utilities.gui.SwingUtil;
-import utilities.swing.components.ComboBoxWrapper;
+import utilities.general.EntityWrapper;
 
 /**
  *
@@ -223,7 +223,7 @@ public class RemitoController implements ActionListener {
         r.setSucursal(em.find(Sucursal.class, sucursal.getId()));
         r.setFechaRemito(facturaVentaUI.getDcFechaFactura());
         if (facturaVentaUI.getCbVendedor().getSelectedIndex() > 0) {
-            Vendedor v = (Vendedor) ((ComboBoxWrapper<?>) facturaVentaUI.getCbVendedor().getSelectedItem()).getEntity();
+            Vendedor v = (Vendedor) ((EntityWrapper<?>) facturaVentaUI.getCbVendedor().getSelectedItem()).getEntity();
             r.setVendedor(em.find(v.getClass(), v.getId()));
         } else {
             r.setVendedor(null);
@@ -303,7 +303,7 @@ public class RemitoController implements ActionListener {
             newRemito.setFechaRemito(facturaVentaUI.getDcFechaFactura());
             newRemito.setUsuario(UsuarioController.getCurrentUser());
             if (facturaVentaUI.getCbVendedor().getSelectedIndex() > 0) {
-                newRemito.setVendedor(((ComboBoxWrapper<Vendedor>) facturaVentaUI.getCbVendedor().getSelectedItem()).getEntity());
+                newRemito.setVendedor(((EntityWrapper<Vendedor>) facturaVentaUI.getCbVendedor().getSelectedItem()).getEntity());
             }
             newRemito.setDetalleRemitoList(new ArrayList<DetalleRemito>(dtm.getRowCount()));
             // carga de detalleVenta
@@ -477,7 +477,7 @@ public class RemitoController implements ActionListener {
             jdFacturaVenta.getCbCliente().removeAllItems();
             jdFacturaVenta.getCbCliente().addItem(remito.getCliente());
             jdFacturaVenta.getCbSucursal().removeAllItems();
-            jdFacturaVenta.getCbSucursal().addItem(new ComboBoxWrapper<Sucursal>(remito.getSucursal(), remito.getSucursal().getId(), remito.getSucursal().getNombre()));
+            jdFacturaVenta.getCbSucursal().addItem(new EntityWrapper<Sucursal>(remito.getSucursal(), remito.getSucursal().getId(), remito.getSucursal().getNombre()));
             if (anulando) {
                 jdFacturaVenta.setTitle("ANULANDO - " + jdFacturaVenta.getTitle());
                 jdFacturaVenta.getBtnAceptar().setVisible(false);
@@ -554,11 +554,11 @@ public class RemitoController implements ActionListener {
             query.append(" AND o.fecha_remito <='").append(buscador.getDcHasta()).append("'");
         }
         if (buscador.getCbSucursal().getSelectedIndex() > 0) {
-            query.append(" AND o.sucursal= ").append(((ComboBoxWrapper<Sucursal>) buscador.getCbSucursal().getSelectedItem()).getEntity().getId());
+            query.append(" AND o.sucursal= ").append(((EntityWrapper<Sucursal>) buscador.getCbSucursal().getSelectedItem()).getEntity().getId());
         } else {
             query.append(" AND (");
             for (int i = 1; i < buscador.getCbSucursal().getItemCount(); i++) {
-                Sucursal s = ((ComboBoxWrapper<Sucursal>) buscador.getCbSucursal().getItemAt(i)).getEntity();
+                Sucursal s = ((EntityWrapper<Sucursal>) buscador.getCbSucursal().getItemAt(i)).getEntity();
                 query.append(" o.sucursal=").append(s.getId());
                 if ((i + 1) < buscador.getCbSucursal().getItemCount()) {
                     query.append(" OR ");
@@ -571,7 +571,7 @@ public class RemitoController implements ActionListener {
             query.append(" AND o.cliente =").append(((Cliente) buscador.getCbClieProv().getSelectedItem()).getId());
         }
         if (buscador.getCbVendedor().getSelectedIndex() > 0) {
-            query.append(" AND o.vendedor_id = ").append(((ComboBoxWrapper<Vendedor>) buscador.getCbVendedor().getSelectedItem()).getId());
+            query.append(" AND o.vendedor_id = ").append(((EntityWrapper<Vendedor>) buscador.getCbVendedor().getSelectedItem()).getId());
         }
         if (buscador.getCbFormasDePago().getSelectedIndex() > 0) {
             if (buscador.getCbFormasDePago().getSelectedIndex() == 1) {

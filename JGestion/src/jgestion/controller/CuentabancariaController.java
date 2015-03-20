@@ -31,7 +31,7 @@ import org.apache.log4j.Logger;
 import utilities.general.EntityWrapper;
 import utilities.general.UTIL;
 import utilities.gui.SwingUtil;
-import utilities.swing.components.ComboBoxWrapper;
+import utilities.general.EntityWrapper;
 
 /**
  *
@@ -188,7 +188,7 @@ public class CuentabancariaController {
     }
 
     private void setEntity(CuentaBancaria o) throws MessageException {
-        o.setBanco(((ComboBoxWrapper<Banco>) panelABM.getCbBancos().getSelectedItem()).getEntity());
+        o.setBanco(((EntityWrapper<Banco>) panelABM.getCbBancos().getSelectedItem()).getEntity());
         String numeroCuenta = panelABM.getTfNumero().getText().trim();
         if (numeroCuenta == null || numeroCuenta.length() < 1) {
             throw new MessageException("Número de cuenta no válido, ingrese solo números enteros (hasta 22 dígitos).");
@@ -269,7 +269,7 @@ public class CuentabancariaController {
             public void actionPerformed(ActionEvent e) {
                 if (panelDeposito.getCbDepositoBancos().getSelectedIndex() > 0) {
                     @SuppressWarnings("unchecked")
-                    Banco b = ((ComboBoxWrapper<Banco>) panelDeposito.getCbDepositoBancos().getSelectedItem()).getEntity();
+                    Banco b = ((EntityWrapper<Banco>) panelDeposito.getCbDepositoBancos().getSelectedItem()).getEntity();
                     UTIL.loadComboBox(panelDeposito.getCbDepositoCuentaBancaria(), JGestionUtils.getWrappedCuentasBancarias(b.getCuentasbancaria()), false);
                 }
             }
@@ -288,7 +288,7 @@ public class CuentabancariaController {
                     if (panelDeposito.getCbDepositoBancos().getSelectedIndex() <= 0) {
                         throw new MessageException("Banco no válido");
                     }
-                    cb = ((ComboBoxWrapper<CuentaBancaria>) panelDeposito.getCbDepositoCuentaBancaria().getSelectedItem()).getEntity();
+                    cb = ((EntityWrapper<CuentaBancaria>) panelDeposito.getCbDepositoCuentaBancaria().getSelectedItem()).getEntity();
                     if (fechaOperacion == null) {
                         throw new MessageException("Fecha de operación no válida");
                     }

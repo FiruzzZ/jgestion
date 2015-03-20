@@ -1,22 +1,22 @@
 package jgestion.controller;
 
+import jgestion.entity.Cliente;
+import jgestion.entity.ComprobanteRetencion;
+import jgestion.entity.ReciboPagos;
+import jgestion.entity.ChequeTerceros;
+import jgestion.entity.NotaDebito;
+import jgestion.entity.Caja;
+import jgestion.entity.Sucursal;
+import jgestion.entity.DetalleCajaMovimientos;
+import jgestion.entity.FacturaVenta;
+import jgestion.entity.NotaCredito;
 import jgestion.entity.ChequePropio;
 import jgestion.entity.CajaMovimientos;
-import jgestion.entity.NotaCredito;
-import jgestion.entity.ReciboPagos;
-import jgestion.entity.Cliente;
+import jgestion.entity.DetalleRecibo;
 import jgestion.entity.Recibo;
-import jgestion.entity.DetalleCajaMovimientos;
+import jgestion.entity.Especie;
 import jgestion.entity.CuentabancariaMovimientos;
 import jgestion.entity.CtacteCliente;
-import jgestion.entity.ComprobanteRetencion;
-import jgestion.entity.NotaDebito;
-import jgestion.entity.Sucursal;
-import jgestion.entity.DetalleRecibo;
-import jgestion.entity.Especie;
-import jgestion.entity.Caja;
-import jgestion.entity.FacturaVenta;
-import jgestion.entity.ChequeTerceros;
 import jgestion.controller.exceptions.MessageException;
 import jgestion.entity.enums.ChequeEstado;
 import generics.GenericBeanCollection;
@@ -55,7 +55,7 @@ import utilities.general.NumberToLetterConverter;
 import utilities.general.TableExcelExporter;
 import utilities.general.UTIL;
 import utilities.gui.SwingUtil;
-import utilities.swing.components.ComboBoxWrapper;
+import utilities.general.EntityWrapper;
 import utilities.swing.components.FormatRenderer;
 import utilities.swing.components.NumberRenderer;
 
@@ -223,7 +223,7 @@ public class ReciboController implements ActionListener, FocusListener {
             public void actionPerformed(ActionEvent e) {
                 try {
                     @SuppressWarnings("unchecked")
-                    ComboBoxWrapper<?> cbw = (ComboBoxWrapper<?>) jdReRe.getCbCtaCtes().getSelectedItem();
+                    EntityWrapper<?> cbw = (EntityWrapper<?>) jdReRe.getCbCtaCtes().getSelectedItem();
                     if (cbw.getEntity() instanceof CtacteCliente) {
                         selectedCtaCte = (CtacteCliente) cbw.getEntity();
                         jdReRe.setTfImporte(UTIL.PRECIO_CON_PUNTO.format(selectedCtaCte.getImporte()));
@@ -535,7 +535,7 @@ public class ReciboController implements ActionListener, FocusListener {
 
     private Sucursal getSelectedSucursalFromJD() {
         @SuppressWarnings("unchecked")
-        ComboBoxWrapper<Sucursal> cbw = (ComboBoxWrapper<Sucursal>) jdReRe.getCbSucursal().getSelectedItem();
+        EntityWrapper<Sucursal> cbw = (EntityWrapper<Sucursal>) jdReRe.getCbSucursal().getSelectedItem();
         return cbw.getEntity();
     }
 
@@ -977,11 +977,11 @@ public class ReciboController implements ActionListener, FocusListener {
             query.append(")");
         }
         if (buscador.getCbSucursal().getSelectedIndex() > 0) {
-            query.append(" AND o.sucursal = ").append(((ComboBoxWrapper<Sucursal>) buscador.getCbSucursal().getSelectedItem()).getId());
+            query.append(" AND o.sucursal = ").append(((EntityWrapper<Sucursal>) buscador.getCbSucursal().getSelectedItem()).getId());
         } else {
             query.append(" AND (");
             for (int i = 1; i < buscador.getCbSucursal().getItemCount(); i++) {
-                ComboBoxWrapper<Sucursal> cbw = (ComboBoxWrapper<Sucursal>) buscador.getCbSucursal().getItemAt(i);
+                EntityWrapper<Sucursal> cbw = (EntityWrapper<Sucursal>) buscador.getCbSucursal().getItemAt(i);
                 query.append(" o.sucursal=").append(cbw.getId());
                 if ((i + 1) < buscador.getCbSucursal().getItemCount()) {
                     query.append(" OR ");
@@ -997,9 +997,9 @@ public class ReciboController implements ActionListener, FocusListener {
         }
         if (buscador.getCbClieProv().getSelectedIndex() > 0) {
             query.append(" AND (")
-                    .append(" p.id = ").append(((ComboBoxWrapper<Cliente>) buscador.getCbClieProv().getSelectedItem()).getId())
-                    .append(" OR pp.id = ").append(((ComboBoxWrapper<Cliente>) buscador.getCbClieProv().getSelectedItem()).getId())
-                    .append(" OR o.cliente_id = ").append(((ComboBoxWrapper<Cliente>) buscador.getCbClieProv().getSelectedItem()).getId())
+                    .append(" p.id = ").append(((EntityWrapper<Cliente>) buscador.getCbClieProv().getSelectedItem()).getId())
+                    .append(" OR pp.id = ").append(((EntityWrapper<Cliente>) buscador.getCbClieProv().getSelectedItem()).getId())
+                    .append(" OR o.cliente_id = ").append(((EntityWrapper<Cliente>) buscador.getCbClieProv().getSelectedItem()).getId())
                     .append(")");
         }
 

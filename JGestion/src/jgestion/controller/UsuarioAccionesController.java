@@ -1,9 +1,9 @@
 package jgestion.controller;
 
-import jgestion.jpa.controller.ProductoJpaController;
-import jgestion.jpa.controller.UsuarioAccionesJpaController;
 import jgestion.entity.UsuarioAcciones;
 import jgestion.entity.Producto;
+import jgestion.jpa.controller.UsuarioAccionesJpaController;
+import jgestion.jpa.controller.ProductoJpaController;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Objects;

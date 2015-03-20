@@ -1,8 +1,8 @@
 package jgestion.controller;
 
+import jgestion.controller.exceptions.MessageException;
 import jgestion.controller.exceptions.IllegalOrphanException;
 import jgestion.controller.exceptions.NonexistentEntityException;
-import jgestion.controller.exceptions.MessageException;
 import jgestion.entity.Cliente;
 import jgestion.entity.Departamento;
 import java.awt.event.ActionEvent;

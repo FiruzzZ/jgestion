@@ -11,7 +11,7 @@ import javax.swing.border.TitledBorder;
 import jgestion.JGestionUtils;
 import utilities.general.UTIL;
 import utilities.gui.SwingUtil;
-import utilities.swing.components.ComboBoxWrapper;
+import utilities.general.EntityWrapper;
 
 /**
  *
@@ -24,7 +24,7 @@ public class PanelOperacionBancariaTransferencia extends javax.swing.JPanel {
      */
     public PanelOperacionBancariaTransferencia() {
         initComponents();
-        List<ComboBoxWrapper<Banco>> l = JGestionUtils.getWrappedBancos(new BancoController().findWithCuentasBancarias(true));
+        List<EntityWrapper<Banco>> l = JGestionUtils.getWrappedBancos(new BancoController().findWithCuentasBancarias(true));
         UTIL.loadComboBox(cbBancos, l, false);
         UTIL.loadComboBox(cbDestinoBancosCuentaPropia, l, false);
         UTIL.loadComboBox(cbDestinoBancosExternos, JGestionUtils.getWrappedBancos(new BancoController().findEntities()), false);
@@ -67,7 +67,7 @@ public class PanelOperacionBancariaTransferencia extends javax.swing.JPanel {
         bgDestino.add(rbPropia);
         bgDestino.add(rbExterna);
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Origen", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 11), new java.awt.Color(0, 0, 255))); // NOI18N
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Origen", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 13), new java.awt.Color(0, 0, 255))); // NOI18N
 
         jLabel1.setText("N° Cuenta");
 
@@ -129,7 +129,7 @@ public class PanelOperacionBancariaTransferencia extends javax.swing.JPanel {
                     .addComponent(labelMonto)))
         );
 
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Destino", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 11), new java.awt.Color(0, 0, 255))); // NOI18N
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Destino", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 13), new java.awt.Color(0, 0, 255))); // NOI18N
 
         jLabel11.setText("Banco");
 
@@ -270,7 +270,7 @@ public class PanelOperacionBancariaTransferencia extends javax.swing.JPanel {
 
     private void cbBancosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbBancosActionPerformed
         if (cbBancos.getItemCount() > 0) {
-            Banco b = ((ComboBoxWrapper<Banco>) cbBancos.getSelectedItem()).getEntity();
+            Banco b = ((EntityWrapper<Banco>) cbBancos.getSelectedItem()).getEntity();
             UTIL.loadComboBox(cbCuentabancaria, JGestionUtils.getWrappedCuentasBancarias(b.getCuentasbancaria()), false);
         }
     }//GEN-LAST:event_cbBancosActionPerformed
@@ -281,7 +281,7 @@ public class PanelOperacionBancariaTransferencia extends javax.swing.JPanel {
 
     private void cbDestinoBancosCuentaPropiaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbDestinoBancosCuentaPropiaActionPerformed
         if (cbDestinoBancosCuentaPropia.getItemCount() > 0) {
-            Banco b = ((ComboBoxWrapper<Banco>) cbDestinoBancosCuentaPropia.getSelectedItem()).getEntity();
+            Banco b = ((EntityWrapper<Banco>) cbDestinoBancosCuentaPropia.getSelectedItem()).getEntity();
             UTIL.loadComboBox(cbCuentabancariaDestino, JGestionUtils.getWrappedCuentasBancarias(b.getCuentasbancaria()), false);
         }
     }//GEN-LAST:event_cbDestinoBancosCuentaPropiaActionPerformed

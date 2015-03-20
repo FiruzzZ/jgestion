@@ -37,7 +37,7 @@ import javax.swing.JOptionPane;
 import javax.swing.text.JTextComponent;
 import jgestion.jpa.controller.ProductoJpaController;
 import net.sf.jasperreports.engine.JRException;
-import utilities.swing.components.ComboBoxWrapper;
+import utilities.general.EntityWrapper;
 
 /**
  *
@@ -208,8 +208,8 @@ public class OrdenJpaController {
                 public void focusLost(FocusEvent e) {
                     try {
                         @SuppressWarnings("unchecked")
-                        ComboBoxWrapper<Producto> wrapper = (ComboBoxWrapper<Producto>) jdFactura.getCbProductos().getSelectedItem();
-                        producto_selected = new ProductoJpaController().find(wrapper.getId());
+                        EntityWrapper<Producto> wrapper = (EntityWrapper<Producto>) jdFactura.getCbProductos().getSelectedItem();
+                        producto_selected = new ProductoJpaController().find((Integer) wrapper.getId());
                         setProducto(producto_selected);
                         //problemas de GUI design, sino el foco se va a la mierda..
                         if (producto_selected != null) {
@@ -229,8 +229,8 @@ public class OrdenJpaController {
                     if (e.getKeyCode() == 10) {
                         try {
                             @SuppressWarnings("unchecked")
-                            ComboBoxWrapper<Producto> wrapper = (ComboBoxWrapper<Producto>) jdFactura.getCbProductos().getSelectedItem();
-                            producto_selected = new ProductoJpaController().find(wrapper.getId());
+                            EntityWrapper<Producto> wrapper = (EntityWrapper<Producto>) jdFactura.getCbProductos().getSelectedItem();
+                            producto_selected = new ProductoJpaController().find((Integer)wrapper.getId());
                             setProducto(producto_selected);
                             if (producto_selected != null) {
                                 jdFactura.setTfProductoPrecioActual(new StockController().getStockGlobal(producto_selected.getId()).toString());
@@ -251,11 +251,11 @@ public class OrdenJpaController {
                         int cantidad = Integer.valueOf(jdFactura.getTfCantidad().getText());
                         if (producto_selected != null) {
                             UTIL.getDtm(jdFactura.getjTable1()).addRow(new Object[]{
-                                        producto_selected,
-                                        producto_selected.getCodigo(),
-                                        producto_selected.getNombre(),
-                                        cantidad
-                                    });
+                                producto_selected,
+                                producto_selected.getCodigo(),
+                                producto_selected.getNombre(),
+                                cantidad
+                            });
                         }
                     } catch (NumberFormatException ex) {
                         jdFactura.showMessage("Cantidad no válida", null, 2);
@@ -329,7 +329,7 @@ public class OrdenJpaController {
         Orden orden = new Orden();
         try {
             @SuppressWarnings("unchecked")
-            ComboBoxWrapper<Sucursal> wrapper = (ComboBoxWrapper<Sucursal>) jdFactura.getCbSucursal().getSelectedItem();
+            EntityWrapper<Sucursal> wrapper = (EntityWrapper<Sucursal>) jdFactura.getCbSucursal().getSelectedItem();
             orden.setSucursal(wrapper.getEntity());
         } catch (ClassCastException ex) {
             throw new MessageException("Sucursal no válida");
@@ -412,12 +412,12 @@ public class OrdenJpaController {
         StringBuilder query = new StringBuilder("SELECT * FROM orden o WHERE o.id IS NOT NULL");
 
         if (panel.getCbSucursales().getSelectedIndex() > 0) {
-            ComboBoxWrapper<Sucursal> cbw = (ComboBoxWrapper<Sucursal>) panel.getCbSucursales().getSelectedItem();
+            EntityWrapper<Sucursal> cbw = (EntityWrapper<Sucursal>) panel.getCbSucursales().getSelectedItem();
             query.append(" AND o.sucursal= ").append(cbw.getId());
         } else {
             query.append(" AND (");
             for (int i = 1; i < panel.getCbSucursales().getItemCount(); i++) {
-                ComboBoxWrapper<Sucursal> cbw = (ComboBoxWrapper<Sucursal>) panel.getCbSucursales().getItemAt(i);
+                EntityWrapper<Sucursal> cbw = (EntityWrapper<Sucursal>) panel.getCbSucursales().getItemAt(i);
                 query.append(" o.sucursal=").append(cbw.getId());
                 if ((i + 1) < panel.getCbSucursales().getItemCount()) {
                     query.append(" OR ");
@@ -443,12 +443,12 @@ public class OrdenJpaController {
             l = (List<Orden>) DAO.getNativeQueryResultList(query, Orden.class);
             for (Orden orden : l) {
                 buscador.getDtm().addRow(new Object[]{
-                            orden,
-                            orden.getNumero(),
-                            orden.getSucursal().getNombre(),
-                            UTIL.DATE_FORMAT.format(orden.getFecha()) + "(" + UTIL.TIME_FORMAT.format(orden.getFecha()) + ")",
-                            orden.getUsuario()
-                        });
+                    orden,
+                    orden.getNumero(),
+                    orden.getSucursal().getNombre(),
+                    UTIL.DATE_FORMAT.format(orden.getFecha()) + "(" + UTIL.TIME_FORMAT.format(orden.getFecha()) + ")",
+                    orden.getUsuario()
+                });
             }
         } catch (DatabaseErrorException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
@@ -472,14 +472,14 @@ public class OrdenJpaController {
         }
         jdFactura.getTfNumMovimiento().setText(orden.getNumero() + "");
         jdFactura.getCbSucursal().removeAllItems();
-        jdFactura.getCbSucursal().addItem(new ComboBoxWrapper<Sucursal>(orden.getSucursal(), orden.getId(), orden.getSucursal().getNombre()));
+        jdFactura.getCbSucursal().addItem(new EntityWrapper<Sucursal>(orden.getSucursal(), orden.getId(), orden.getSucursal().getNombre()));
         for (DetalleOrden detalleOrden : orden.getDetalleOrdenList()) {
             UTIL.getDtm(jdFactura.getjTable1()).addRow(new Object[]{
-                        detalleOrden.getProducto(),
-                        detalleOrden.getProducto().getCodigo(),
-                        detalleOrden.getProducto().getNombre() + " " + detalleOrden.getProducto().getMarca().getNombre(),
-                        detalleOrden.getCantidad()
-                    });
+                detalleOrden.getProducto(),
+                detalleOrden.getProducto().getCodigo(),
+                detalleOrden.getProducto().getNombre() + " " + detalleOrden.getProducto().getMarca().getNombre(),
+                detalleOrden.getCantidad()
+            });
         }
         jdFactura.setVisible(true);
     }

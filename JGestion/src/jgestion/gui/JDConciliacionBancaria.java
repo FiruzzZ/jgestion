@@ -14,7 +14,7 @@ import javax.swing.table.DefaultTableModel;
 import jgestion.JGestionUtils;
 import utilities.general.UTIL;
 import utilities.gui.SwingUtil;
-import utilities.swing.components.ComboBoxWrapper;
+import utilities.general.EntityWrapper;
 import utilities.swing.components.FormatRenderer;
 import utilities.swing.components.NumberRenderer;
 

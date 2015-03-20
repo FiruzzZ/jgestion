@@ -16,7 +16,7 @@ import java.util.Map;
 public interface GenericDAO<T, ID> {
 
     /**
-     * Get the Class of the jgestion.entity.
+     * Get the Class of the entity.
      *
      * @return the class
      */

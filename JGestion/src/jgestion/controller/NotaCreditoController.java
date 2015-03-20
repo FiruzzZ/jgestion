@@ -38,7 +38,7 @@ import jgestion.jpa.controller.NotaCreditoJpaController;
 import jgestion.jpa.controller.ProductoJpaController;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Logger;
-import utilities.swing.components.ComboBoxWrapper;
+import utilities.general.EntityWrapper;
 import utilities.swing.components.NumberRenderer;
 
 /**
@@ -98,7 +98,7 @@ public class NotaCreditoController {
         if (loadDefaultData) {
             try {
                 @SuppressWarnings("unchecked")
-                Sucursal s = ((ComboBoxWrapper<Sucursal>) facturaVentaController.getContenedor().getCbSucursal().getSelectedItem()).getEntity();
+                Sucursal s = ((EntityWrapper<Sucursal>) facturaVentaController.getContenedor().getCbSucursal().getSelectedItem()).getEntity();
                 facturaVentaController.setNumeroFactura(s, jpaController.getNextNumero(s));
             } catch (Exception e) {
                 throw new MessageException("Para realizar una Nota de Crédito debe tener habilitada al menos una Sucursal");
@@ -266,11 +266,11 @@ public class NotaCreditoController {
             query.append(" AND o.fecha_nota_credito <= '").append(buscador.getDcHasta()).append("'");
         }
         if (buscador.getCbSucursal().getSelectedIndex() > 0) {
-            query.append(" AND o.sucursal = ").append(((ComboBoxWrapper<Sucursal>) buscador.getCbSucursal().getSelectedItem()).getId());
+            query.append(" AND o.sucursal = ").append(((EntityWrapper<Sucursal>) buscador.getCbSucursal().getSelectedItem()).getId());
         } else {
             query.append(" AND (");
             for (int i = 1; i < buscador.getCbSucursal().getItemCount(); i++) {
-                ComboBoxWrapper<Sucursal> cbw = (ComboBoxWrapper<Sucursal>) buscador.getCbSucursal().getItemAt(i);
+                EntityWrapper<Sucursal> cbw = (EntityWrapper<Sucursal>) buscador.getCbSucursal().getItemAt(i);
                 query.append(" o.sucursal=").append(cbw.getId());
                 if ((i + 1) < buscador.getCbSucursal().getItemCount()) {
                     query.append(" OR ");
@@ -310,8 +310,8 @@ public class NotaCreditoController {
         jdFacturaVenta.modoVista();
         // setting info on UI
         String numFactura = UTIL.AGREGAR_CEROS(notaCredito.getNumero(), 12);
-        jdFacturaVenta.getCbCliente().addItem(new ComboBoxWrapper<>(notaCredito.getCliente(), notaCredito.getCliente().getId(), notaCredito.getCliente().getNombre()));
-        jdFacturaVenta.getCbSucursal().addItem(new ComboBoxWrapper<>(notaCredito.getSucursal(), notaCredito.getId(), notaCredito.getSucursal().getNombre()));
+        jdFacturaVenta.getCbCliente().addItem(new EntityWrapper<>(notaCredito.getCliente(), notaCredito.getCliente().getId(), notaCredito.getCliente().getNombre()));
+        jdFacturaVenta.getCbSucursal().addItem(new EntityWrapper<>(notaCredito.getSucursal(), notaCredito.getId(), notaCredito.getSucursal().getNombre()));
         jdFacturaVenta.setTfFacturaCuarto(numFactura.substring(0, 4));
         jdFacturaVenta.setTfFacturaOcteto(numFactura.substring(4));
         jdFacturaVenta.setDcFechaFactura(notaCredito.getFechaNotaCredito());
