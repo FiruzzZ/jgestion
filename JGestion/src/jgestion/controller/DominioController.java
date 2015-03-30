@@ -202,6 +202,9 @@ public class DominioController implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
+                    if (dcDesde.getDate() == null || dcHasta.getDate() == null) {
+                        throw new MessageException("Especificar fecha Desde y Hasta");
+                    }
                     //<editor-fold defaultstate="collapsed" desc="query">
                     StringBuilder query = new StringBuilder("SELECT o.* FROM factura_compra o"
                             + " WHERE o.anulada = FALSE");
@@ -211,16 +214,8 @@ public class DominioController implements ActionListener {
                         query.append(" AND o.dominio_id is not null");
                     }
                     SimpleDateFormat yyyyMMdd = new SimpleDateFormat("yyyy/MM/dd");
-                    if (dcDesde.getDate() != null) {
-                        query.append(" AND o.fecha_compra >= '").append(yyyyMMdd.format(dcDesde.getDate())).append("'");
-                    } else {
-                        throw new MessageException("Fecha Desde no especificada");
-                    }
-                    if (dcHasta.getDate() != null) {
-                        query.append(" AND o.fecha_compra <= '").append(yyyyMMdd.format(dcHasta.getDate())).append("'");
-                    } else {
-                        throw new MessageException("Fecha Hasta no especificada");
-                    }
+                    query.append(" AND o.fecha_compra >= '").append(yyyyMMdd.format(dcDesde.getDate())).append("'");
+                    query.append(" AND o.fecha_compra <= '").append(yyyyMMdd.format(dcHasta.getDate())).append("'");
                     UsuarioHelper usuarioHelper = new UsuarioHelper();
                     query.append(" AND (");
                     Iterator<Caja> iterator = usuarioHelper.getCajas(Boolean.TRUE).iterator();
@@ -259,7 +254,7 @@ public class DominioController implements ActionListener {
                             UTIL.DATE_FORMAT.format(facturaCompra.getFechaalta()) + " (" + UTIL.TIME_FORMAT.format(facturaCompra.getFechaalta()) + ")"
                         });
                     }
-//</editor-fold>
+                    //</editor-fold>
                     doReportFacturasPorDominio(dtm);
                 } catch (JRException | MissingReportException | MessageException ex) {
                     JOptionPane.showMessageDialog(null, ex.getMessage());
@@ -269,7 +264,7 @@ public class DominioController implements ActionListener {
             }
 
         }
-                );
+        );
         jdabm.setVisible(true);
     }
 
