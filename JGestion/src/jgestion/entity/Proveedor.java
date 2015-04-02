@@ -79,9 +79,6 @@ public class Proveedor implements Serializable {
     @JoinColumn(name = "provincia", referencedColumnName = "idprovincia", nullable = false)
     @ManyToOne(optional = false)
     private Provincia provincia;
-    @JoinColumn(name = "rubro", referencedColumnName = "idrubro")
-    @ManyToOne
-    private Rubro rubro;
     @Column(name = "webpage", length = 50)
     private String webpage;
     @Basic(optional = false)
@@ -277,14 +274,6 @@ public class Proveedor implements Serializable {
 
     public void setProvincia(Provincia provincia) {
         this.provincia = provincia;
-    }
-
-    public Rubro getRubro() {
-        return rubro;
-    }
-
-    public void setRubro(Rubro rubro) {
-        this.rubro = rubro;
     }
 
     public BigDecimal getLimiteCtaCte() {
