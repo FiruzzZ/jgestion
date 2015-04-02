@@ -991,7 +991,7 @@ public class ReciboController implements ActionListener, FocusListener {
         }
         if (!buscador.getCheckAnulada().isEnabled()) {
             //buscador PARA ANULAR
-            query.append(" AND o.estado = ").append(!buscador.isCheckAnuladaSelected());
+            query.append(" AND o.estado = ").append(buscador.isCheckAnuladaSelected());
         } else {
             query.append(" AND o.estado = ").append(!buscador.isCheckAnuladaSelected());
         }

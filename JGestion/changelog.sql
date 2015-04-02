@@ -1,3 +1,6 @@
+--20150401
+alter table cliente drop column rubro;
+alter table proveedor drop column rubro;
 --20150315
 alter table usuario rename column estado to activo;
 alter table usuario alter column activo drop default;

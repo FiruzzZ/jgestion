@@ -83,9 +83,6 @@ public class Cliente implements Serializable {
     @JoinColumn(name = "municipio", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
     private Municipio municipio;
-    @JoinColumn(name = "rubro", referencedColumnName = "idrubro")
-    @ManyToOne
-    private Rubro rubro;
     @Basic(optional = false)
     @Column(name = "limite_ctacte", precision = 12, nullable = false)
     private BigDecimal limiteCtaCte;
@@ -239,14 +236,6 @@ public class Cliente implements Serializable {
 
     public void setMunicipio(Municipio municipio) {
         this.municipio = municipio;
-    }
-
-    public Rubro getRubro() {
-        return rubro;
-    }
-
-    public void setRubro(Rubro rubro) {
-        this.rubro = rubro;
     }
 
     public Integer getInterno1() {
