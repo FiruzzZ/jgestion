@@ -399,7 +399,6 @@ public class FacturaCompraController implements ActionListener, KeyListener {
     public void keyPressed(KeyEvent e) {
     }
 
-    @SuppressWarnings("unchecked")
     private FacturaCompra setAndPersist() throws Exception {
         FacturaCompra newFacturaCompra = new FacturaCompra();
         newFacturaCompra.setFechaCompra(jdFactura.getDcFechaFactura());
@@ -592,8 +591,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
                 throw new MessageException("Los primeros 4 números de la factura no válido");
             }
             long numeroFactura = Long.valueOf(jdFactura.getTfFacturaCuarto() + jdFactura.getTfFacturaOcteto());
-            FacturaCompra old = findFacturaCompra(numeroFactura, jdFactura.getCbFacturaTipo().getSelectedItem().toString(),
-                    getSelectedProveedorFromABM(), false);
+            FacturaCompra old = jpaController.findBy(getSelectedProveedorFromABM(), jdFactura.getCbFacturaTipo().getSelectedItem().toString(), numeroFactura, false);
             if (old != null) {
                 throw new MessageException("Ya existe la factura " + JGestionUtils.getNumeracion(old)
                         + " del proveedor " + jdFactura.getCbProveedor().getSelectedItem());
@@ -702,18 +700,6 @@ public class FacturaCompraController implements ActionListener, KeyListener {
 
     }
 
-    public FacturaCompra findFacturaCompra(long numero, String tipoFactura, Proveedor p, boolean anulada) {
-        try {
-            return (FacturaCompra) DAO.getEntityManager().createNativeQuery(
-                    "SELECT o.* from factura_compra o where o.proveedor =" + p.getId()
-                    + " AND o.numero = " + numero
-                    + " AND o." + FacturaCompra_.tipo.getName() + " = '" + tipoFactura + "'"
-                    + " AND o.anulada = " + anulada, FacturaCompra.class).getSingleResult();
-        } catch (NoResultException ex) {
-            return null;
-        }
-    }
-
     public void initBuscador(Window frame, final boolean modal, final boolean toAnular) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.COMPRA);
         if (toAnular) {
@@ -725,7 +711,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
         buscador.getbImprimir().setVisible(true);
         ActionListenerManager.setUnidadDeNegocioSucursalActionListener(buscador.getCbUnidadDeNegocio(), true, buscador.getCbSucursal(), true, true);
         ActionListenerManager.setCuentasEgresosSubcuentaActionListener(buscador.getCbCuenta(), true, buscador.getCbSubCuenta(), true, true);
-        UTIL.loadComboBox(buscador.getCbClieProv(),  JGestionUtils.getWrappedProveedores(new ProveedorJpaController().findAllLite()), true);
+        UTIL.loadComboBox(buscador.getCbClieProv(), JGestionUtils.getWrappedProveedores(new ProveedorJpaController().findAllLite()), true);
         UTIL.loadComboBox(buscador.getCbCaja(), new UsuarioHelper().getCajas(true), true);
 //        UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), true);
         UTIL.loadComboBox(buscador.getCbFormasDePago(), Valores.FormaPago.getFormasDePago(), true);
@@ -1093,7 +1079,7 @@ public class FacturaCompraController implements ActionListener, KeyListener {
     public void asignador() {
         buscador = new JDBuscadorReRe(null, "Asignación de Unid. de Negocio/Cuenta/SubCuenta - Facturas Venta", false, "Proveedor", "Nº Factura");
         buscador.setToFacturaVenta();
-        UTIL.loadComboBox(buscador.getCbClieProv(),  JGestionUtils.getWrappedProveedores(new ProveedorJpaController().findAll()), true);
+        UTIL.loadComboBox(buscador.getCbClieProv(), JGestionUtils.getWrappedProveedores(new ProveedorJpaController().findAll()), true);
         UTIL.loadComboBox(buscador.getCbCaja(), new CajaController().findCajasPermitidasByUsuario(UsuarioController.getCurrentUser(), true), true);
         UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), true);
         UTIL.loadComboBox(buscador.getCbFormasDePago(), Valores.FormaPago.getFormasDePago(), true);

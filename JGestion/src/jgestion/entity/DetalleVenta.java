@@ -38,8 +38,8 @@ public class DetalleVenta implements Serializable {
      * Descuento ya está multiplicado por {@link DetalleVenta#cantidad}
      */
     @Basic(optional = false)
-    @Column(name = "descuento", nullable = false, precision = 9, scale = 2)
-    private Double descuento;
+    @Column(name = "descuento", nullable = false, precision = 12, scale = 4)
+    private BigDecimal descuento;
     @JoinColumn(name = "factura", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private FacturaVenta factura;
@@ -89,11 +89,11 @@ public class DetalleVenta implements Serializable {
         this.tipoDesc = tipoDesc;
     }
 
-    public Double getDescuento() {
+    public BigDecimal getDescuento() {
         return descuento;
     }
 
-    public void setDescuento(Double descuento) {
+    public void setDescuento(BigDecimal descuento) {
         this.descuento = descuento;
     }
 

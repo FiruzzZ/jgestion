@@ -6,7 +6,24 @@ import javax.persistence.EntityManager;
 
 public abstract class JGestionJpaImpl<T, ID extends Serializable> extends AbstractDAO<T, ID> {
 
+    public JGestionJpaImpl() {
+    }
+
     protected EntityManager entityManager;
+    /**
+     * Para cuando se necesita mantener la session abierta.
+     * <br>Ej: recuperar objectos en LAZY load; manipular varios JPAControllers simultaneamente;
+     * Asegurar atomicidad en procesos largos
+     */
+    private boolean keepEntityManagerOpen = false;
+
+    public final boolean isKeepEntityManagerOpen() {
+        return keepEntityManagerOpen;
+    }
+
+    public final void setKeepEntityManagerOpen(boolean keepEntityManagerOpen) {
+        this.keepEntityManagerOpen = keepEntityManagerOpen;
+    }
 
     @Override
     protected EntityManager getEntityManager() {
@@ -14,6 +31,13 @@ public abstract class JGestionJpaImpl<T, ID extends Serializable> extends Abstra
             entityManager = DAO.getEntityManager();
         }
         return entityManager;
+    }
+
+    @Override
+    public final void closeEntityManager() {
+        if (!isKeepEntityManagerOpen()) {
+            super.closeEntityManager();
+        }
     }
 
 }

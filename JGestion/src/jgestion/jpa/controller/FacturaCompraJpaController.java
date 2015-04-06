@@ -9,9 +9,11 @@ import jgestion.entity.Sucursal;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import jgestion.entity.Proveedor;
 import org.apache.log4j.Logger;
 import utilities.general.UTIL;
 
@@ -84,6 +86,22 @@ public class FacturaCompraJpaController extends AbstractDAO<FacturaCompra, Integ
             }
         } finally {
             getEntityManager().close();
+        }
+    }
+
+    public FacturaCompra findBy(Proveedor proveedor, String tipo, long numero, boolean anulada) {
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<FacturaCompra> cq = cb.createQuery(getEntityClass());
+        Root<FacturaCompra> from = cq.from(getEntityClass());
+        cq.where(cb.equal(from.get(FacturaCompra_.tipo), tipo),
+                cb.equal(from.get(FacturaCompra_.proveedor), proveedor),
+                cb.equal(from.get(FacturaCompra_.numero), numero),
+                cb.equal(from.get(FacturaCompra_.anulada), anulada)
+        );
+        try {
+            return getEntityManager().createQuery(cq).getSingleResult();
+        } catch (NoResultException e) {
+            return null;
         }
     }
 }

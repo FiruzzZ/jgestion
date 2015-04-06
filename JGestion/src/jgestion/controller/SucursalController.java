@@ -30,6 +30,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import jgestion.JGestion;
 import jgestion.controller.exceptions.MissingReportException;
@@ -38,6 +39,7 @@ import jgestion.entity.Stock;
 import jgestion.entity.UsuarioAcciones;
 import jgestion.gui.PanelDistribucionStock;
 import jgestion.jpa.controller.ProductoJpaController;
+import jgestion.jpa.controller.StockJpaController;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Logger;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
@@ -622,7 +624,7 @@ public class SucursalController implements ActionListener {
                         throw new MessageException("Producto no válido");
                     }
                     Producto producto = cbw.getEntity();
-                    new ProductoController().initStockGral(producto);
+                    new ProductoController().initStockGral(SwingUtilities.getWindowAncestor(panelDis), producto);
                 } catch (MessageException ex) {
                     ex.displayMessage(null);
                 }
@@ -652,16 +654,17 @@ public class SucursalController implements ActionListener {
                     if (origen.equals(destino)) {
                         throw new MessageException("Sucursal Origen y Destino deben ser diferentes");
                     }
-                    Stock stockO = new StockController().findStock(producto, origen);
+                    StockJpaController stockJpa = new StockJpaController();
+                    Stock stockO = stockJpa.findBy(producto, origen);
                     if (stockO.getStockSucu() < toDist) {
                         throw new MessageException("La cantidad a distribuir no puede ser superior al stock actual");
                     }
-                    Stock stockD = new StockController().findStock(producto, destino);
+                    Stock stockD = stockJpa.findBy(producto, destino);
                     stockO.setStockSucu(stockO.getStockSucu() - toDist);
                     stockD.setStockSucu(stockD.getStockSucu() + toDist);
-                    new StockController().merge(stockO);
-                    new StockController().merge(stockD);
-                    UsuarioAcciones ua = UsuarioAccionesController.createUA(producto, producto.getId(), "DistribuciónStock: Origen=" + origen.getNombre() + ", Destino=" + destino.getNombre() + ", Producto=" + producto.getNombre() + ", cantidad=" + toDist, 'u');
+                    stockJpa.merge(stockO);
+                    stockJpa.merge(stockD);
+                    UsuarioAcciones ua = UsuarioAccionesController.build(producto, producto.getId(), "DistribuciónStock: Origen=" + origen.getNombre() + ", Destino=" + destino.getNombre() + ", Producto=" + producto.getNombre() + ", cantidad=" + toDist, null, 'u');
                     new UsuarioAccionesController().create(ua);
                     panelDis.getTfCantidad().setText(null);
                 } catch (MessageException ex1) {
@@ -690,7 +693,7 @@ public class SucursalController implements ActionListener {
         Sucursal origen = ((EntityWrapper<Sucursal>) panelDis.getCbSucursalOrigen().getSelectedItem()).getEntity();
         Stock stockO;
         try {
-            stockO = new StockController().findStock(producto, origen);
+            stockO = new StockJpaController().findBy(producto, origen);
         } catch (NoResultException e) {
             Stock ss = new Stock();
             ss.setProducto(producto);
@@ -698,14 +701,14 @@ public class SucursalController implements ActionListener {
             ss.setUsuario(UsuarioController.getCurrentUser());
             ss.setStockSucu(0);
             ss.setFechaCarga(jpaController.getServerDate());
-            new StockController().persist(ss);
+            new StockJpaController().persist(ss);
             stockO = ss;
         }
         Sucursal destino = ((EntityWrapper<Sucursal>) panelDis.getCbSucursalDestino().getSelectedItem()).getEntity();
         panelDis.getTfStockOrigen().setText(stockO.getStockSucu() + "");
         Stock stockD;
         try {
-            stockD = new StockController().findStock(producto, destino);
+            stockD = new StockJpaController().findBy(producto, destino);
         } catch (NoResultException e) {
             Stock ss = new Stock();
             ss.setProducto(producto);
@@ -713,7 +716,7 @@ public class SucursalController implements ActionListener {
             ss.setUsuario(UsuarioController.getCurrentUser());
             ss.setStockSucu(0);
             ss.setFechaCarga(jpaController.getServerDate());
-            new StockController().persist(ss);
+            new StockJpaController().persist(ss);
             stockD = ss;
         }
         panelDis.getTfStockDestino().setText(stockD.getStockSucu() + "");

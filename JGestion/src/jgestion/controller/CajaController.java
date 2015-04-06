@@ -1,5 +1,6 @@
 package jgestion.controller;
 
+import java.awt.Window;
 import jgestion.controller.exceptions.IllegalOrphanException;
 import jgestion.controller.exceptions.MessageException;
 import jgestion.controller.exceptions.NonexistentEntityException;
@@ -18,9 +19,9 @@ import javax.persistence.NoResultException;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import jgestion.entity.CajaMovimientos;
 import jgestion.jpa.controller.CajaMovimientosJpaController;
 import org.apache.log4j.Logger;
 
@@ -192,7 +193,7 @@ public class CajaController implements ActionListener {
         }// </editor-fold>
     }
 
-    public JDialog initABM(JFrame frame, boolean modal) throws MessageException {
+    public JDialog getABM(Window frame, boolean modal) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.ABM_CAJAS);
         abm = new JDMiniABM(frame, modal);
         abm.getTaInformacion().setText("Las Cajas sirve para agrupar registros de los diferentes comprobantes de Venta y Compras que se ingresen al sistema.");
@@ -241,12 +242,18 @@ public class CajaController implements ActionListener {
 
         CajaMovimientosJpaController cmController = new CajaMovimientosJpaController();
         for (Caja o : cajasList) {
+            CajaMovimientos cm = cmController.findCajaMovimientoAbierta(o);
+            String apertura = null;
+            if (cm != null) {
+                apertura = UTIL.DATE_FORMAT.format(cm.getFechaApertura());
+            }
             dtm.addRow(new Object[]{
-                        o.getId(),
-                        o.getNombre(),
-                        o.getEstado() ? "Si" : "No",
-                        UTIL.DATE_FORMAT.format(cmController.findCajaMovimientoAbierta(o).getFechaApertura()), o.isBaja() ? "Si" : "No" // <--- eliminadas
-                    });
+                o.getId(),
+                o.getNombre(),
+                o.getEstado() ? "Si" : "No",
+                apertura,
+                o.isBaja() ? "Si" : "No" // <--- eliminadas
+            });
         }
     }
 
@@ -284,6 +291,7 @@ public class CajaController implements ActionListener {
 
     /**
      * Devuelve una lista de Caja permitidas a este usuario
+     *
      * @param usuario que solicita la Lista de Cajas
      * @param estado estado de la Caja (si está activa o no). Si es null, bring both
      * @return <code>List<Caja>, o null si no tiene permisos de Caja

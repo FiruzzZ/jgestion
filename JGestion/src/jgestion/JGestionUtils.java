@@ -43,6 +43,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import jgestion.entity.Caja;
+import jgestion.entity.RemitoCompra;
 import utilities.general.EntityWrapper;
 import utilities.general.UTIL;
 
@@ -286,6 +287,11 @@ public class JGestionUtils {
     }
 
     public static String getNumeracion(Remito o, boolean conGuion) {
+        String guion = conGuion ? "-" : "";
+        return UTIL.AGREGAR_CEROS(o.getSucursal().getPuntoVenta(), 4) + guion + UTIL.AGREGAR_CEROS(o.getNumero(), 8);
+    }
+
+    public static String getNumeracion(RemitoCompra o, boolean conGuion) {
         String guion = conGuion ? "-" : "";
         return UTIL.AGREGAR_CEROS(o.getSucursal().getPuntoVenta(), 4) + guion + UTIL.AGREGAR_CEROS(o.getNumero(), 8);
     }

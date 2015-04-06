@@ -1,6 +1,50 @@
+--20150404
+alter table factura_venta add column venta_simple boolean default false not null;
+-- alter table factura_compra add column producto_acuenta boolean default false not null;
+--20150403
+alter table usuario_acciones add column owner_entity varchar(100);
+alter table usuario_acciones add column owner_id varchar(50);
+alter table usuario_acciones add CONSTRAINT usuario_acciones_check_owner_integrity CHECK (owner_entity IS NULL AND owner_id IS NULL OR owner_entity IS NOT NULL AND owner_id IS NOT NULL);
+--20150402
+CREATE TABLE remito_compra(
+  id serial NOT NULL,
+  numero numeric(12,0) NOT NULL,
+  proveedor_id integer NOT NULL,
+  sucursal_id integer NOT NULL,
+  fecha_remito date NOT NULL,
+  anulada boolean not null,
+  actualiza_stock boolean not null,
+  acuenta boolean not null,
+  observacion varchar(100),
+  CONSTRAINT remito_compra_pk PRIMARY KEY (id ),
+  CONSTRAINT remito_proveedor_fk FOREIGN KEY (proveedor_id) REFERENCES proveedor (id),
+  CONSTRAINT remito_compra_sucursal_fk FOREIGN KEY (sucursal_id) REFERENCES sucursal (id),
+  CONSTRAINT remito_numero_unique_numero_proveedor_id UNIQUE (numero ,proveedor_id )
+);
+CREATE TABLE remito_compra_detalle(
+  id serial NOT NULL,
+  cantidad integer NOT NULL,
+  producto_id integer NOT NULL,
+  remito_compra_id integer NOT NULL,
+  bonificado boolean default false not null,
+  CONSTRAINT remito_compra__detalle_pkey PRIMARY KEY (id ),
+  CONSTRAINT remito_compra_detalle_producto_id_fk FOREIGN KEY (producto_id) REFERENCES producto (id),
+  CONSTRAINT remito_compra__detalle_remito_compra_id_fk FOREIGN KEY (remito_compra_id) REFERENCES remito_compra (id)
+);
+create table producto_acuenta_proveedor (
+	id serial not null,
+	proveedor_id integer not null,
+	producto_id integer not null,
+	cantidad integer not null,
+	constraint producto_acuenta_proveedor_pk primary key (id),
+	constraint producto_acuenta_proveedor_proveedor_id_fk foreign key (proveedor_id) references proveedor (id),
+	constraint producto_acuenta_proveedor_producto_id_fk foreign key (producto_id) references producto(id),
+	constraint producto_acuenta_proveedor_unique_proveedor_producto unique (proveedor_id, producto_id)
+);
 --20150401
 alter table cliente drop column rubro;
 alter table proveedor drop column rubro;
+drop table msj_informativos;
 --20150315
 alter table usuario rename column estado to activo;
 alter table usuario alter column activo drop default;
@@ -9,31 +53,6 @@ alter table usuario alter column activo set data type boolean using activo=1;
 INSERT INTO cheque_estado VALUES(9,'RECHAZADO');
 ALTER TABLE cheque_terceros ADD CONSTRAINT fk_cheque_terceros_cheque_estado FOREIGN KEY (estado) REFERENCES cheque_estado (id);
 ALTER TABLE cheque_propio ADD CONSTRAINT fk_cheque_propio_cheque_estado FOREIGN KEY (estado) REFERENCES cheque_estado (id);
---20150129
-CREATE TABLE ventasimpleconfig (
-   id serial NOT NULL, 
-   cliente_id integer NOT NULL, 
-   caja_id integer NOT NULL, 
-   sucursal_id integer NOT NULL, 
-   lista_precios_id integer NOT NULL, 
-   unidad_de_negocio_id integer, 
-   cuenta_id integer, 
-   subcuenta_id integer, 
-    PRIMARY KEY (id), 
-    FOREIGN KEY (cliente_id) REFERENCES cliente (id),
-    FOREIGN KEY (caja_id) REFERENCES caja (id),
-    FOREIGN KEY (sucursal_id) REFERENCES sucursal (id),
-    FOREIGN KEY (cuenta_id) REFERENCES movimiento_concepto (id),
-    FOREIGN KEY (subcuenta_id) REFERENCES subcuenta (id),
-    FOREIGN KEY (lista_precios_id) REFERENCES lista_precios (id)
-);
-CREATE TABLE ventasimpleconfig_rubro (
-  ventasimpleconfig_id integer NOT NULL,
-  rubro_id integer NOT NULL,
-  CONSTRAINT ventasimpleconfig_rubro_pkey PRIMARY KEY (ventasimpleconfig_id, rubro_id),
-  CONSTRAINT ventasimpleconfig_rubro_rubro_id_fkey FOREIGN KEY (rubro_id) REFERENCES rubro (idrubro),
-  CONSTRAINT ventasimpleconfig_rubro_ventasimpleconfig_id_fkey FOREIGN KEY (ventasimpleconfig_id) REFERENCES ventasimpleconfig (id)
-);
 --20141029
 ALTER TABLE ctacte_cliente ADD CONSTRAINT ctacte_cliente_entregas_check CHECK (entregado >=0 and entregado <= importe);
 --20140825

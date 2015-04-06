@@ -464,7 +464,7 @@ public class ChequeTercerosController implements ActionListener {
                                 eliminarCBM = true;
                             }
                             toReject.setEstado(ChequeEstado.RECHAZADO.getId());
-                            UsuarioAcciones ua = UsuarioAccionesController.createUA(toReject, toReject.getId(), "Rechazó cheque " + toReject.toString(), 'u');
+                            UsuarioAcciones ua = UsuarioAccionesController.build(toReject, toReject.getId(), "Rechazó cheque " + toReject.toString(), null, 'u');
                             new UsuarioAccionesController().create(ua);
                             jpaController.merge(toReject);
                             if (eliminarCBM) {

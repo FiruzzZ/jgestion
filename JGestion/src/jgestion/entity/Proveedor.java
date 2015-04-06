@@ -12,7 +12,6 @@ import javax.persistence.*;
 @Entity
 @Table(name = "proveedor", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"cuit"}),
-    @UniqueConstraint(columnNames = {"nombre"}),
     @UniqueConstraint(columnNames = {"codigo"})
 })
 @NamedQueries({

@@ -6,6 +6,7 @@ import jgestion.jpa.controller.UsuarioAccionesJpaController;
 import jgestion.jpa.controller.ProductoJpaController;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.HashMap;
 import java.util.Objects;
 import org.apache.log4j.Logger;
 
@@ -16,28 +17,57 @@ import org.apache.log4j.Logger;
 public class UsuarioAccionesController {
 
     private static final Logger LOG = Logger.getLogger(UsuarioAccionesController.class);
+    private final UsuarioAccionesJpaController jpaController = new UsuarioAccionesJpaController();
+    /**
+     * Map para establecer las relaciones de propiedad entre las entidades. Una entidad no puede
+     * tener mas de un Owner, pero puede no tener ninguno
+     */
+    public static final HashMap<String, String> ownership = new HashMap<>(50);
 
-    static UsuarioAcciones createUA(Object entity, Object id, String description, char accion) {
+    static {
+//        LOG.info("inicializando ownership map");
+//        addOwnership(DisTrasladoPresupuesto.class, DisTraslado.class);
+    }
+
+    private static void addOwnership(Class<?> child, Class<?> owner) {
+        String strChild = child.getSimpleName();
+        String strOwner = owner.getSimpleName();
+        if (ownership.containsKey(strChild)) {
+            throw new IllegalArgumentException("Ya existe owner para " + strChild + ": " + ownership.get(strChild)
+                    + ", no se puede agregar " + strOwner);
+        }
+        ownership.put(strChild, strOwner);
+    }
+
+    public static UsuarioAcciones build(Object entity, Integer id, String description, String detalle, char accion) {
+        return build(entity, id, description, detalle, accion, null, null);
+    }
+
+    public static UsuarioAcciones build(Object entity, Integer id, String descripcion, String detalle, char accion, Object owner, Object ownerID) {
         Objects.requireNonNull(entity);
         Objects.requireNonNull(id);
-        Objects.requireNonNull(description);
-        String detalle = null;
-        String descripcion = description;
-        if (descripcion.length() > 200) {
-            descripcion = description.substring(0, 200);
-            detalle = description.substring(200);
-            if (detalle.length() > 2000) {
-                LOG.info(entity.getClass().getSimpleName() + ", detalle demasiado largo, se perdió:" + detalle.substring(2000));
-                detalle = detalle.substring(0, 2000);
-            }
+        Objects.requireNonNull(descripcion);
+        String detalleD;
+        String descripcionD = descripcion;
+        if (descripcionD.length() > 200) {
+            descripcionD = descripcion.substring(0, 200);
+            detalleD = descripcion.substring(200) + "]";
+            detalleD += detalle;
+        } else {
+            detalleD = detalle;
         }
-        UsuarioAcciones ua = new UsuarioAcciones(accion, descripcion, detalle, entity.getClass().getSimpleName(), (Integer) id, UsuarioController.getCurrentUser());
+        if (detalleD != null && detalleD.length() > 2000) {
+            LOG.warn(entity.getClass().getSimpleName() + ", detalle demasiado largo, se perdió:" + detalleD.substring(2000));
+            detalleD = detalleD.substring(0, 2000);
+        }
+        UsuarioAcciones ua = new UsuarioAcciones(accion, descripcionD, detalleD, entity.getClass().getSimpleName(), id, UsuarioController.getCurrentUser(),
+                (owner != null ? owner.getClass().getSimpleName() : null),
+                (ownerID != null ? ownerID.toString() : null));
         return ua;
     }
-    private final UsuarioAccionesJpaController jpaController;
 
     public UsuarioAccionesController() {
-        jpaController = new UsuarioAccionesJpaController();
+
     }
 
     public void create(UsuarioAcciones o) {

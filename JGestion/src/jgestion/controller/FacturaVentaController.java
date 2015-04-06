@@ -683,7 +683,7 @@ public class FacturaVentaController {
             if (new BigDecimal(dtm.getValueAt(index, 7).toString()).intValue() >= 0) {
                 desc = desc.add(new BigDecimal(dtm.getValueAt(index, 6).toString()));
             }
-            LOG.debug("alicuota=" + alicuota.toPlainString() + ", redondeo=" + sinRedondeo.toPlainString());
+            LOG.debug("alicuota=" + alicuota + ", redondeo=" + sinRedondeo);
 
             subTotal = subTotal.add(new BigDecimal(dtm.getValueAt(index, 7).toString()));
         }
@@ -895,7 +895,7 @@ public class FacturaVentaController {
                 detalle = new DetalleVenta();
                 detalle.setCantidad(Integer.valueOf(dtm.getValueAt(i, 3).toString()));
                 detalle.setPrecioUnitario((BigDecimal) dtm.getValueAt(i, 4));
-                detalle.setDescuento(Double.valueOf(dtm.getValueAt(i, 6).toString()));
+                detalle.setDescuento((BigDecimal) dtm.getValueAt(i, 6));
                 detalle.setTipoDesc(Integer.valueOf(dtm.getValueAt(i, 8).toString()));
                 Producto p = productoController.find((Integer) dtm.getValueAt(i, 9));
                 detalle.setProducto(p);
@@ -910,7 +910,7 @@ public class FacturaVentaController {
         return newFacturaVenta;
     }
 
-    private void registrarVentaSegunFormaDePago(FacturaVenta facturaVenta) throws Exception {
+    void registrarVentaSegunFormaDePago(FacturaVenta facturaVenta) throws Exception {
         switch (facturaVenta.getFormaPago()) {
             case 1: { // CONTADO
                 new CajaMovimientosJpaController().asentarMovimiento(facturaVenta);
@@ -1477,13 +1477,13 @@ public class FacturaVentaController {
         return cajaMovToAsentarAnulacion;
     }
 
-    private void imprimirMovimientoInterno(FacturaVenta facturaVenta) throws MissingReportException, JRException {
+    void imprimirMovimientoInterno(FacturaVenta facturaVenta) throws MissingReportException, JRException {
         Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_FacturaVenta_I.jasper", "Comprobante venta N°" + facturaVenta.getMovimientoInterno());
         r.addParameter("FACTURA_ID", facturaVenta.getId());
         r.printReport(true);
     }
 
-    private void imprimirFactura(FacturaVenta facturaVenta) throws MissingReportException, JRException {
+    void imprimirFactura(FacturaVenta facturaVenta) throws MissingReportException, JRException {
         Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_FacturaVenta_" + facturaVenta.getTipo() + ".jasper", "Factura Venta");
         r.addParameter("FACTURA_ID", facturaVenta.getId());
         if (facturaVenta.getRemito() != null) {
