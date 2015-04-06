@@ -1,5 +1,6 @@
 package jgestion.controller;
 
+import java.math.BigDecimal;
 import jgestion.entity.Cuenta;
 import jgestion.entity.DetalleCajaMovimientos;
 import jgestion.entity.CajaMovimientos;
@@ -10,6 +11,8 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import jgestion.entity.DetalleCajaMovimientos_;
+import jgestion.entity.FacturaVenta;
+import jgestion.entity.Producto;
 import org.apache.log4j.Logger;
 
 /**
@@ -36,8 +39,8 @@ public class DetalleCajaMovimientosController {
      */
     public final static short RECIBO = 4;
     /**
-     * nº 5, son los movimientos monetarios entre Cajas (tipo de mov. interno).
-     * No son un INGRESO o EGRESO real
+     * nº 5, son los movimientos monetarios entre Cajas (tipo de mov. interno). No son un INGRESO o
+     * EGRESO real
      */
     public final static short MOVIMIENTO_CAJA = 5;
     /**
@@ -170,8 +173,7 @@ public class DetalleCajaMovimientosController {
     /**
      *
      * @param cajaMovimientosID
-     * @return List de DetalleCajaMovimientos ordenado por
-     * DetalleCajaMovimientos.id
+     * @return List de DetalleCajaMovimientos ordenado por DetalleCajaMovimientos.id
      */
     List<DetalleCajaMovimientos> getDetalleCajaMovimientosByCajaMovimiento(int cajaMovimientosID) {
         return (List<DetalleCajaMovimientos>) DAO.createQuery("SELECT o FROM " + CLASS_NAME + " o"
@@ -188,13 +190,11 @@ public class DetalleCajaMovimientosController {
     }
 
     /**
-     * Busca en los {@link DetalleCajaMovimientos}, el comprobante por número y
-     * tipo; y retorna.
+     * Busca en los {@link DetalleCajaMovimientos}, el comprobante por número y tipo; y retorna.
      *
      * @param numero
      * @param tipo
-     * @return instance of {@code DetalleCajaMovimientos} if exist, else
-     * {@code null}
+     * @return instance of {@code DetalleCajaMovimientos} if exist, else {@code null}
      */
     public DetalleCajaMovimientos findBy(long numero, short tipo) {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
@@ -202,11 +202,28 @@ public class DetalleCajaMovimientosController {
         Root<DetalleCajaMovimientos> from = query.from(DetalleCajaMovimientos.class);
         query.select(from).
                 where(cb.equal(from.get(DetalleCajaMovimientos_.numero), numero),
-                cb.equal(from.get(DetalleCajaMovimientos_.tipo), tipo));
+                        cb.equal(from.get(DetalleCajaMovimientos_.tipo), tipo));
         try {
             return getEntityManager().createQuery(query).getSingleResult();
         } catch (NoResultException e) {
             return null;
         }
+    }
+/**
+ * Recupera el importa de ventas (solo los generados por {@link FacturaVenta})generado por el Producto
+ * @param cm
+ * @param p
+ * @return {@code BigDecimal.ZERO} si no existe ninguna venta
+ */
+    public BigDecimal getTotalVentas(CajaMovimientos cm, Producto p) {
+        return (BigDecimal) getEntityManager().createQuery("SELECT COALESCE(SUM(p.precioVenta * detalleVenta.cantidad), 0)"
+                + " FROM " + DetalleCajaMovimientos.class.getSimpleName() + " detalle"
+                + ", " + FacturaVenta.class.getSimpleName() + " fv JOIN fv.detallesVentaList detalleVenta JOIN detalleVenta.producto p "
+                + " WHERE fv.anulada = false"
+                + " AND detalle.cajaMovimientos.id = " + cm.getId() + " "
+                + " AND detalle.tipo = " + FACTU_VENTA
+                + " AND detalle.numero = fv.id"
+                + " AND p.id=" + p.getId()
+                + "").getSingleResult();
     }
 }

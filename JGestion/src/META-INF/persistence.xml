@@ -40,7 +40,6 @@
     <class>jgestion.entity.ChequeTerceros</class>
     <class>jgestion.entity.DetalleVenta</class>
     <class>jgestion.entity.Usuario</class>
-    <class>jgestion.entity.MsjInformativos</class>
     <class>jgestion.entity.Presupuesto</class>
     <class>jgestion.entity.DetalleNotaCreditoProveedor</class>
     <class>jgestion.entity.ChequePropio</class>
@@ -79,6 +78,9 @@
     <class>jgestion.entity.DetallePresupuesto</class>
     <class>jgestion.entity.DetalleRecibo</class>
     <class>jgestion.entity.DetalleListaPrecios</class>
+    <class>jgestion.entity.RemitoCompra</class>
+    <class>jgestion.entity.RemitoCompraDetalle</class>
+    <class>jgestion.entity.ProductoAcuentaProveedor</class>
     <properties>
       <!--      <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://jgestion.no-ip.org:5433/jgestionahinco"/>-->
       <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>

@@ -192,10 +192,10 @@ public class ProductoController implements ActionListener, KeyListener {
         EL_OBJECT = toEdit;
         fotoFile = null;
         initPanelABM();
+        abm = new JDABM(contenedor, "ABM - " + CLASS_NAME + "s", true, panel);
         if (toEdit != null) {
             setPanelABM(EL_OBJECT);
         }
-        abm = new JDABM(contenedor, "ABM - " + CLASS_NAME + "s", true, panel);
         abm.setLocationRelativeTo(contenedor);
         abm.setListener(this);
         abm.setVisible(true);
@@ -244,7 +244,7 @@ public class ProductoController implements ActionListener, KeyListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    initStockGral(EL_OBJECT);
+                    initStockGral(abm, EL_OBJECT);
                 } catch (MessageException ex) {
                     LOG.error(ex.getLocalizedMessage(), ex);
                 }
@@ -292,7 +292,12 @@ public class ProductoController implements ActionListener, KeyListener {
         if (producto.getFoto() != null) {
             if (producto.getFoto().length > 0) {
                 fotoFile = UTIL.imageToFile(producto.getFoto(), null);
-                UTIL.setImageAsIconLabel(panel.getjLabelFoto(), fotoFile);
+                try {
+                    UTIL.setImageAsIconLabel(panel.getjLabelFoto(), fotoFile);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Error recuperando imagen: " + ex.getMessage());
+                    ex.printStackTrace();
+                }
             }
         }
     }
@@ -465,8 +470,7 @@ public class ProductoController implements ActionListener, KeyListener {
             fotoFile = filec.getSelectedFile();
             JGestionUtils.LAST_DIRECTORY_PATH = fotoFile.getCanonicalPath();
             if (UTIL.isImagenExtension(fotoFile)) {
-                panel.getjLabelFoto().setText(null);
-                panel.setjLabelFoto(UTIL.setImageAsIconLabel(panel.getjLabelFoto(), fotoFile));
+                UTIL.setImageAsIconLabel(panel.getjLabelFoto(), fotoFile);
             } else {
                 abm.showMessage("El archivo debe ser una imagen (bmp, jpg, jpeg, png, tif)", "Extensión de archivo", 0);
             }
@@ -586,12 +590,12 @@ public class ProductoController implements ActionListener, KeyListener {
         jpaController.merge(producto);
     }
 
-    void initStockGral(Producto p) throws MessageException {
+    void initStockGral(Window owner, Producto p) throws MessageException {
         if (p == null) {
             return;
         }
 
-        JDStockGral jdStockGral = new JDStockGral(null);
+        JDStockGral jdStockGral = new JDStockGral(owner, true);
         jdStockGral.setLocationRelativeTo(null);
         try {
             UTIL.getDefaultTableModel(

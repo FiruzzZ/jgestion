@@ -45,8 +45,7 @@ public class Reportes implements Runnable {
     public static final String FOLDER_REPORTES = "." + System.getProperty("file.separator") + "reportes" + System.getProperty("file.separator");
     private Boolean isViewerReport = null;
     /**
-     * Para saber si la ventana de impresión ya sucedió. (No si aceptó o
-     * canceló)
+     * Para saber si la ventana de impresión ya sucedió. (No si aceptó o canceló)
      */
     private boolean reporteFinalizado;
     /**
@@ -63,8 +62,8 @@ public class Reportes implements Runnable {
 
     /**
      *
-     * @param pathReport ruta absoluta del archivo .JASPER o solo el nombre del
-     * archivo .JASPER si se encuentra en {@link Reportes#FOLDER_REPORTES} +
+     * @param pathReport ruta absoluta del archivo .JASPER o solo el nombre del archivo .JASPER si
+     * se encuentra en {@link Reportes#FOLDER_REPORTES} +
      * @pathReport
      * @param title Título de la ventana del reporte
      * @throws MissingReportException si el archivo .jasper no se encuentra
@@ -77,6 +76,7 @@ public class Reportes implements Runnable {
 
         if (!new File(pathReport).exists()) {
             if (!new File(FOLDER_REPORTES + pathReport).exists()) {
+                LOG.error("No sé encontro reporte " + pathReport + " ni " + FOLDER_REPORTES + pathReport);
                 throw new MissingReportException("No se encontró el archivo del reporte: " + pathReport
                         + "\n" + FOLDER_REPORTES + pathReport);
             }

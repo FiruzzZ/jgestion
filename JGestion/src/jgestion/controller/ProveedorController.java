@@ -1,5 +1,6 @@
 package jgestion.controller;
 
+import java.awt.Window;
 import jgestion.controller.exceptions.MessageException;
 import jgestion.controller.exceptions.NonexistentEntityException;
 import jgestion.entity.Cliente;
@@ -29,6 +30,7 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import jgestion.gui.JFP;
 import jgestion.jpa.controller.ProveedorJpaController;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -535,5 +537,9 @@ public class ProveedorController implements ActionListener {
         Cliente cliente;
         cliente = new ClienteController().createFromProveedor(proveedor);
         return cliente;
+    }
+
+    public void displayPAP(Window owner) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

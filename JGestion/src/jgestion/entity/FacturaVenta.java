@@ -13,15 +13,15 @@ import org.eclipse.persistence.config.QueryHints;
  * @author Administrador
  */
 @Entity
-@Table(name = "factura_venta" 
+@Table(name = "factura_venta"
 // cuando arregle el atributo movimiento_interno        
 //, uniqueConstraints = {@UniqueConstraint(columnNames = {"tipo", "sucursal", "numero"})}
 )
 @NamedQueries({
     @NamedQuery(name = "FacturaVenta.findAll", query = "SELECT f FROM FacturaVenta f"),
     @NamedQuery(name = "FacturaVenta.findById", query = "SELECT f FROM FacturaVenta f WHERE f.id = :id",
-    hints =
-    @QueryHint(name = QueryHints.REFRESH, value = "true")),
+            hints
+            = @QueryHint(name = QueryHints.REFRESH, value = "true")),
     @NamedQuery(name = "FacturaVenta.findByNumero", query = "SELECT f FROM FacturaVenta f WHERE f.numero = :numero")
 })
 public class FacturaVenta implements Serializable {
@@ -114,6 +114,8 @@ public class FacturaVenta implements Serializable {
     @JoinColumn(name = "vendedor_id")
     @ManyToOne
     private Vendedor vendedor;
+    @Column(name = "venta_simple")
+    private boolean ventaSimple;
 
     public FacturaVenta() {
     }
@@ -295,26 +297,6 @@ public class FacturaVenta implements Serializable {
         this.remito = remito;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof FacturaVenta)) {
-            return false;
-        }
-        FacturaVenta other = (FacturaVenta) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
-    }
-
     public void setAnulada(boolean anulada) {
         this.anulada = anulada;
     }
@@ -379,6 +361,34 @@ public class FacturaVenta implements Serializable {
         this.vendedor = vendedor;
     }
 
+    public boolean isVentaSimple() {
+        return ventaSimple;
+    }
+
+    public void setVentaSimple(boolean ventaSimple) {
+        this.ventaSimple = ventaSimple;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof FacturaVenta)) {
+            return false;
+        }
+        FacturaVenta other = (FacturaVenta) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
+    }
+
     @Override
     public String toString() {
         return "FacturaVenta{" + "id=" + id + ", tipo=" + tipo + ", fechaVenta="
@@ -394,8 +404,9 @@ public class FacturaVenta implements Serializable {
                 + ", formaPago=" + formaPago
                 + ", diasCtaCte=" + diasCtaCte + ", anulada=" + anulada
                 + ", remito=" + remito + ", cheque=" + cheque
+                + ", ventaSimple=" + ventaSimple
                 + "\n\tDetalle:" + (detallesVentaList != null
-                ? detallesVentaList.toString() : null)
+                        ? detallesVentaList.toString() : null)
                 + '}';
     }
 }

@@ -118,6 +118,8 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         tfDescuento = new javax.swing.JTextField();
         jLabel20 = new javax.swing.JLabel();
         tfPercIVA = new javax.swing.JTextField();
+        checkProductosAcuenta = new javax.swing.JCheckBox();
+        btnVerPAP = new javax.swing.JButton();
         panelProducto = new javax.swing.JPanel();
         jLabel7 = new javax.swing.JLabel();
         tfProductoCodigo = new javax.swing.JTextField();
@@ -529,7 +531,7 @@ public class JDFacturaCompra extends javax.swing.JDialog {
                         .addComponent(tfTotalPercIIBB, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(tfTotalPercIVA, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 136, Short.MAX_VALUE)
                 .addGroup(panelResumenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(panelResumenLayout.createSequentialGroup()
                         .addComponent(tfTotal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -675,6 +677,10 @@ public class JDFacturaCompra extends javax.swing.JDialog {
             }
         });
 
+        checkProductosAcuenta.setText("Productos A Cuenta");
+
+        btnVerPAP.setText("Ver");
+
         javax.swing.GroupLayout panelOpcionesCompraLayout = new javax.swing.GroupLayout(panelOpcionesCompra);
         panelOpcionesCompra.setLayout(panelOpcionesCompraLayout);
         panelOpcionesCompraLayout.setHorizontalGroup(
@@ -682,6 +688,10 @@ public class JDFacturaCompra extends javax.swing.JDialog {
             .addGroup(panelOpcionesCompraLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panelOpcionesCompraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelOpcionesCompraLayout.createSequentialGroup()
+                        .addComponent(checkProductosAcuenta)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnVerPAP))
                     .addComponent(checkActualizaStock)
                     .addComponent(jLabel18)
                     .addComponent(jLabel17)
@@ -699,13 +709,17 @@ public class JDFacturaCompra extends javax.swing.JDialog {
                     .addComponent(tfDescuento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel20)
                     .addComponent(tfPercIVA, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(0, 12, Short.MAX_VALUE))
         );
         panelOpcionesCompraLayout.setVerticalGroup(
             panelOpcionesCompraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelOpcionesCompraLayout.createSequentialGroup()
                 .addComponent(checkActualizaStock)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panelOpcionesCompraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(checkProductosAcuenta)
+                    .addComponent(btnVerPAP))
+                .addGap(9, 9, 9)
                 .addComponent(jLabel17)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(tfPercIIBB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -893,7 +907,7 @@ public class JDFacturaCompra extends javax.swing.JDialog {
                                 .addComponent(tfProductoPrecioActual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(labelCodigoNoRegistrado)))
-                        .addGap(0, 1, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         panelProductoLayout.setVerticalGroup(
@@ -952,12 +966,11 @@ public class JDFacturaCompra extends javax.swing.JDialog {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnCancelar))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(panelProducto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(panelDatosCompra, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(panelProducto, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(panelDatosCompra, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(panelOpcionesCompra, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 4, Short.MAX_VALUE)))
+                        .addComponent(panelOpcionesCompra, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -1114,6 +1127,7 @@ public class JDFacturaCompra extends javax.swing.JDialog {
     private javax.swing.JButton btnAnular;
     private javax.swing.JButton btnCancelar;
     private javax.swing.JButton btnDEL;
+    private javax.swing.JButton btnVerPAP;
     private javax.swing.JComboBox cbCaja;
     private javax.swing.JComboBox cbCambioPrecio;
     private javax.swing.JComboBox cbCuenta;
@@ -1127,6 +1141,7 @@ public class JDFacturaCompra extends javax.swing.JDialog {
     private javax.swing.JComboBox cbSucursal;
     private javax.swing.JComboBox cbUnidadDeNegocio;
     private javax.swing.JCheckBox checkActualizaStock;
+    private javax.swing.JCheckBox checkProductosAcuenta;
     private com.toedter.calendar.JDateChooser dcFechaFactura;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel12;

@@ -40,6 +40,7 @@ import javax.swing.table.DefaultTableModel;
 import jgestion.jpa.controller.SucursalJpaController;
 import jgestion.jpa.controller.UsuarioJpaController;
 import org.apache.log4j.Logger;
+import org.eclipse.persistence.config.QueryHints;
 
 /**
  *
@@ -64,10 +65,6 @@ public class UsuarioController implements ActionListener, MouseListener, KeyList
     private PanelABMUsuarios panel;
     private Usuario EL_OBJECT;
     private boolean resetPwds = false;
-    private final UsuarioJpaController jpaController = new UsuarioJpaController();
-
-    public UsuarioController() {
-    }
 
     // <editor-fold defaultstate="collapsed" desc="CRUD...">
     public EntityManager getEntityManager() {
@@ -236,7 +233,7 @@ public class UsuarioController implements ActionListener, MouseListener, KeyList
             throw new MessageException("Usuario/Contraseña no válido");
         }
         InetAddress local = InetAddress.getLocalHost();
-        new UsuarioAccionesController().create(new UsuarioAcciones('u', "login", local.toString(), local.getHostAddress(), local.getHostName(), Usuario.class.getSimpleName(), CURRENT_USER.getId(), CURRENT_USER));
+        new UsuarioAccionesController().create(new UsuarioAcciones('u', "login", local.toString(), Usuario.class.getSimpleName(), CURRENT_USER.getId(), CURRENT_USER));
         return CURRENT_USER;
     }
 
@@ -374,7 +371,11 @@ public class UsuarioController implements ActionListener, MouseListener, KeyList
     private void cargarDTM(DefaultTableModel dtm, String query) {
         UTIL.limpiarDtm(dtm);
         List<Usuario> l;
-        l = jpaController.findAll();
+        if (query == null) {
+            l = new UsuarioJpaController().findAll();
+        } else { // para cuando se usa el Buscador del ABM
+            l = new UsuarioJpaController().findAll();
+        }
 
         for (Usuario o : l) {
             dtm.addRow(new Object[]{

@@ -576,6 +576,13 @@ public class Contabilidad {
         return precioFinal + iva;
     }
 
+    /**
+     * 
+     * @param monto
+     * @param tipoDeMargen 1 = %, 2 = $
+     * @param margen
+     * @return 
+     */
     public static BigDecimal GET_MARGEN(BigDecimal monto, int tipoDeMargen, BigDecimal margen) {
         if (margen.compareTo(BigDecimal.ZERO) == 0) {
             return BigDecimal.ZERO;

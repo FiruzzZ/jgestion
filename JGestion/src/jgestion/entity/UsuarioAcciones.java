@@ -32,7 +32,7 @@ public class UsuarioAcciones implements Serializable {
     /**
      * i = insert, u = update, d =....
      */
-    @Basic( optional = false)
+    @Basic(optional = false)
     @Column(nullable = false, updatable = false)
     private char accion;
     @Basic(optional = false)
@@ -56,35 +56,29 @@ public class UsuarioAcciones implements Serializable {
     private Integer entidadId;
     @ManyToOne(optional = false)
     private Usuario usuario;
+    @Column(name = "owner_entity", length = 100)
+    private String owner;
+    @Column(name = "owner_id", length = 50)
+    private String ownerID;
 
     public UsuarioAcciones() {
     }
 
-    public UsuarioAcciones(Integer id) {
-        this.id = id;
+    public UsuarioAcciones(char accion, String descripcion, String detalle, String entidad, Integer entidadId, Usuario usuario) {
+        this(accion, descripcion, detalle, entidad, entidadId, usuario, null, null);
     }
 
-    public UsuarioAcciones(char accion, String descripcion, String detalle, String entidad, int entidadId, Usuario usuario) {
+    public UsuarioAcciones(char accion, String descripcion, String detalle, String entidad, Integer entidadId, Usuario usuario, String owner, String ownerID) {
         this.accion = accion;
         this.descripcion = descripcion;
         this.detalle = detalle;
         this.entidad = entidad;
         this.entidadId = entidadId;
         this.usuario = usuario;
+        this.owner = owner;
+        this.ownerID = ownerID;
     }
 
-    public UsuarioAcciones(char accion, String descripcion, String detalle, String ip, String hostname, String entidad, Integer entidadId, Usuario usuario) {
-        this.accion = accion;
-        this.descripcion = descripcion;
-        this.detalle = detalle;
-        this.ip = ip;
-        this.hostname = hostname;
-        this.entidad = entidad;
-        this.entidadId = entidadId;
-        this.usuario = usuario;
-    }
-
-    
     public Integer getId() {
         return id;
     }
@@ -165,6 +159,22 @@ public class UsuarioAcciones implements Serializable {
         this.usuario = usuario;
     }
 
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
+    public String getOwnerID() {
+        return ownerID;
+    }
+
+    public void setOwnerID(String ownerID) {
+        this.ownerID = ownerID;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -187,6 +197,7 @@ public class UsuarioAcciones implements Serializable {
 
     @Override
     public String toString() {
-        return "UsuarioAcciones{" + "id=" + id + ", accion=" + accion + ", descripcion=" + descripcion + ", detalle=" + detalle + ", fechasistema=" + fechasistema + ", ip=" + ip + ", hostname=" + hostname + ", entidad=" + entidad + ", entidadId=" + entidadId + '}';
+        return "UsuarioAcciones{" + "id=" + id + ", accion=" + accion + ", descripcion=" + descripcion + ", detalle=" + detalle + ", fechasistema=" + fechasistema + ", ip=" + ip + ", hostname=" + hostname + ", entidad=" + entidad + ", entidadId=" + entidadId + ", usuario=" + usuario + ", owner=" + owner + ", ownerID=" + ownerID + '}';
     }
+
 }

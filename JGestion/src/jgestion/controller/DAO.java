@@ -32,10 +32,9 @@ public abstract class DAO implements Runnable {
 
     private static EntityManagerFactory emf;
     /**
-     * Este EntityManager, es una Transaction iniciada.
-     * <code>em.getTransaction().begin())</code> NO SE COMMITEA NUNCA! Es usado
-     * exclusivamente para conexiones JDBC, no se limpia (.clear()) ni se cierra
-     * (.close())
+     * Este EntityManager, es una Transaction iniciada. <code>em.getTransaction().begin())</code> NO
+     * SE COMMITEA NUNCA! Es usado exclusivamente para conexiones JDBC, no se limpia (.clear()) ni
+     * se cierra (.close())
      */
     private static EntityManager entityManagerForJDBC;
     private static Connection connection;
@@ -113,8 +112,8 @@ public abstract class DAO implements Runnable {
     /**
      * Devuelve un {@link java.sql.Connection} Este método leave a
      * EntityManager.getTransaction.begin() opened! Which must be closed with
-     * {@code closeEntityManager()} manually when the returned Connection
-     * oebject will no longer be used
+     * {@code closeEntityManager()} manually when the returned Connection oebject will no longer be
+     * used
      *
      * @return
      */
@@ -188,13 +187,12 @@ public abstract class DAO implements Runnable {
     }
 
     /**
-     * Merge the state of the given entity into the current persistence context.
-     * If any exception occurs, a rollback action on the current transaction is
-     * launched.
+     * Merge the state of the given entity into the current persistence context. If any exception
+     * occurs, a rollback action on the current transaction is launched.
      *
      * @param o entity instance
-     * @return the managed instance that the state was merged to or
-     * <code>null</code> if a exception occurs
+     * @return the managed instance that the state was merged to or <code>null</code> if a exception
+     * occurs
      */
     static <T extends Object> T merge(T o) {
         EntityManager em = null;
@@ -233,8 +231,7 @@ public abstract class DAO implements Runnable {
      * Obtiene una collection de objetos
      *
      * @param sqlString a native SQL statement.
-     * @param resultClass the class of the returning List. If is NULL, will be a
-     * untyped List.
+     * @param resultClass the class of the returning List. If is NULL, will be a untyped List.
      * @return a list...
      * @throws DatabaseErrorException
      */
@@ -282,12 +279,11 @@ public abstract class DAO implements Runnable {
     }
 
     /**
-     * Find by primary key. Search for an entity of the specified class and
-     * primary key.
+     * Find by primary key. Search for an entity of the specified class and primary key.
      * <br>The entity instance is <b>always retrieved from the database<b>
      * ensured by the use of {@link QueryHints#REFRESH}.
-     * <br>El objeto debe tener un campo llamado id y ser único (PRIMARY KEY or
-     * UNIQUE CONSTRAINT) ( <code>object.id</code>)
+     * <br>El objeto debe tener un campo llamado id y ser único (PRIMARY KEY or UNIQUE CONSTRAINT) (
+     * <code>object.id</code>)
      *
      * @param object
      * @param id
@@ -314,11 +310,9 @@ public abstract class DAO implements Runnable {
      * <code> SELECT o FROM object o</code>).
      *
      * @param object Class type of the object to find and return.
-     * @param conditions a String with filters to obtain the collections
-     * entities. Example
-     * <code>conditions = "o.id > 777 AND o.aField != null"</code>, and this
-     * will be contated to <code>"WHERE " + conditions</code>. Must be null is
-     * there is no conditions.
+     * @param conditions a String with filters to obtain the collections entities. Example
+     * <code>conditions = "o.id > 777 AND o.aField != null"</code>, and this will be contated to
+     * <code>"WHERE " + conditions</code>. Must be null is there is no conditions.
      * @return a List of object
      */
     static List<?> findEntities(Class<?> object, String conditions) {
@@ -348,25 +342,9 @@ public abstract class DAO implements Runnable {
             em = getEntityManager();
             em.getTransaction().begin();
             //<editor-fold defaultstate="collapsed" desc="Creación tablas (que no son entities!): sistema, cheque_estado">
-            try {
-                em.createNativeQuery("CREATE TABLE sistema ( "
-                        + "id integer NOT NULL DEFAULT 1,"
-                        + "shutdown boolean NOT NULL DEFAULT false,"
-                        + "shutdown_message text NOT NULL DEFAULT 'Sistema en mantenimiento'::text,"
-                        + "shutdown_time timestamp with time zone,"
-                        + "PRIMARY KEY (id)"
-                        + ") WITH (OIDS=FALSE);"
-                        + "INSERT INTO sistema VALUES (DEFAULT, DEFAULT, DEFAULT, NULL);"
-                        + "CREATE TABLE cheque_estado ("
-                        + "id integer NOT NULL,"
-                        + "nombre character varying(20) NOT NULL,"
-                        + "CONSTRAINT cheque_estado_pkey PRIMARY KEY (id),"
-                        + "CONSTRAINT unq_cheque_estado_nombre UNIQUE (nombre)"
-                        + ") WITH ( OIDS=FALSE);").executeUpdate();
-            } catch (Exception ex) {
-                Logger.getLogger(DAO.class).trace("Error creando tabla sistema:" + ex.getLocalizedMessage());
-                em.getTransaction().rollback();
-                em.getTransaction().begin();
+            if (em.createNativeQuery("select id from sistema").getResultList().isEmpty()) {
+                em.createNativeQuery("INSERT INTO sistema VALUES (DEFAULT, DEFAULT, DEFAULT, NULL);"
+                ).executeUpdate();
             }
             //</editor-fold>
 
@@ -379,7 +357,7 @@ public abstract class DAO implements Runnable {
                 u.setActivo(true);
                 u.setNick("admin");
                 u.setPass("adminadmin");
-                u.setPermisosCajaList(new ArrayList<PermisosCaja>());
+                u.setPermisosCajaList(new ArrayList<>());
                 Permisos permisos = new Permisos();
                 permisos.setAbmUsuarios(true);
                 em.persist(permisos);
@@ -406,14 +384,13 @@ public abstract class DAO implements Runnable {
                 System.out.println("CREANDO Iva..");
                 em.persist(new Iva(1, 21.0f));
                 em.persist(new Iva(2, 10.5f));
-//            em.persist(new Iva(3, 0.0));
             }// </editor-fold>
 
             // <editor-fold defaultstate="collapsed" desc="Creación DatosEmpresa">
             if (em.createQuery("SELECT COUNT(o) FROM DatosEmpresa o").getSingleResult().toString().equalsIgnoreCase("0")) {
                 ventanaSystemMessage.agregar("Creando DatosEmpresa..");
                 System.out.println("Creando DatosEmpresa..");
-                DatosEmpresa d = new DatosEmpresa(1, "JGestion", 30000000001l, "Dirección", 540000000, new java.util.Date());
+                DatosEmpresa d = new DatosEmpresa(1, "JGestion", 30000000001l, "Dirección", 540000000, new Date());
                 d.setLogo(null);
                 em.persist(d);
             }// </editor-fold>
@@ -440,7 +417,7 @@ public abstract class DAO implements Runnable {
                         + "('Banco Santa Cruz','www.bancosantacruz.com.ar'),('Banco Santander Río','www.santanderrio.com.ar'),('Banco Supervielle','www.supervielle.com.ar'),('Bank of America','www.bankofamerica.com'),('Bank of Tokyo-Mitsubishi UFJ','www.bk.mufg.jp/english/'),"
                         + "('BBVA Banco Francés','www.bancofrances.com.ar'),('BICE','www.bice.com.ar'),('BNP Paribas','www.bnpparibas.com.ar'),('Citibank','www.citibank.com/argentina'),('Deutsche Bank','www.db.com'),('HSBC Bank','www.hsbc.com.ar'),"
                         + "('JPMorgan','www.jpmorgan.com'),('MBA Lazard Banco De Inversiones','www.mba-lazard.com'),('Nuevo Banco de Entre Ríos','www.nuevobersa.com.ar'),('Nuevo Banco de La Rioja','www.nblr.com.ar'),('Nuevo Banco de Santa Fe','www.bancobsf.com.ar'),"
-                        + "('Nuevo Banco del Chaco','www.nbch.com.ar'),('RCI Banque','www.rcibanque.com'),('Standard Bank','www.standardbank.com.ar');").executeUpdate();
+                        + "('Nuevo Banco del Chaco','www.nbch.com.ar'),('RCI Banque','www.rcibanque.com'),('Standard Bank','www.standardbank.com.ar'), ('ICBC', 'www.icbc.com.ar');").executeUpdate();
             }
             //</editor-fold>
 
