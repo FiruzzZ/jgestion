@@ -38,8 +38,7 @@ public class StockController {
     }
 
     void updateStock(FacturaCompra facturaCompra) {
-        List<DetalleCompra> detalle = new DetalleCompraJpaController().findByFactura(facturaCompra);
-        for (DetalleCompra item : detalle) {
+        for (DetalleCompra item : facturaCompra.getDetalleCompraList()) {
             Producto producto = item.getProducto();
             modificarStockBySucursal(producto, facturaCompra.getSucursal(), item.getCantidad());
 
@@ -47,16 +46,14 @@ public class StockController {
     }
 
     void updateStock(RemitoCompra remito) {
-        List<RemitoCompraDetalle> detalle = remito.getDetalle();
-        for (RemitoCompraDetalle item : detalle) {
+        for (RemitoCompraDetalle item : remito.getDetalle()) {
             Producto producto = item.getProducto();
             modificarStockBySucursal(producto, remito.getSucursal(), item.getCantidad());
         }
     }
 
     void updateStock(FacturaVenta facturaVenta) throws Exception {
-        List<DetalleVenta> detalle = new DetalleVentaJpaController().findByFactura(facturaVenta.getId());
-        for (DetalleVenta item : detalle) {
+        for (DetalleVenta item : facturaVenta.getDetallesVentaList()) {
             Producto producto = item.getProducto();
             modificarStockBySucursal(producto, facturaVenta.getSucursal(), -item.getCantidad());
         }

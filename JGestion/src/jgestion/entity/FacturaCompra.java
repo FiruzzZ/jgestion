@@ -120,6 +120,8 @@ public class FacturaCompra implements Serializable {
     @JoinColumn(name = "dominio_id")
     @ManyToOne
     private Dominio dominio;
+    @Column(nullable = false)
+    private boolean acuenta;
 
     public FacturaCompra() {
     }
@@ -389,6 +391,14 @@ public class FacturaCompra implements Serializable {
         this.dominio = dominio;
     }
 
+    public boolean isAcuenta() {
+        return acuenta;
+    }
+
+    public void setAcuenta(boolean acuenta) {
+        this.acuenta = acuenta;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -413,7 +423,8 @@ public class FacturaCompra implements Serializable {
     public String toString() {
         return "FacturaCompra{" + "id=" + id + ", numero=" + numero + ", tipo=" + tipo + ", importe=" + importe
                 + ", fechaCompra=" + fechaCompra + ", fechaalta=" + fechaalta + ", formaPago=" + formaPago + ", remito=" + remito
-                + ", actualizaStock=" + actualizaStock + ", gravado=" + gravado + ", noGravado=" + noGravado
+                + ", actualizaStock=" + actualizaStock
+                + ", acuenta=" + acuenta + ", gravado=" + gravado + ", noGravado=" + noGravado
                 + ", descuento=" + descuento
                 + ", percIva=" + percIva + ", percDgr=" + percDgr + ", iva10=" + iva10 + ", iva21=" + iva21 + ", imp. Recuperable=" + impuestosRecuperables
                 + ", detalle.size=" + (detalleCompraList != null ? detalleCompraList.size() : null)

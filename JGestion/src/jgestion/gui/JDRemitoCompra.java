@@ -253,6 +253,11 @@ public class JDRemitoCompra extends javax.swing.JDialog {
         btnDEL.setToolTipText("Quitar producto");
         btnDEL.setName("del"); // NOI18N
         btnDEL.setRequestFocusEnabled(false);
+        btnDEL.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                btnDELFocusLost(evt);
+            }
+        });
         btnDEL.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnDELActionPerformed(evt);
@@ -493,6 +498,10 @@ public class JDRemitoCompra extends javax.swing.JDialog {
             checkAnulada.setForeground(null);
         }
     }//GEN-LAST:event_checkAnuladaActionPerformed
+
+    private void btnDELFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_btnDELFocusLost
+        tfProductoCodigo.requestFocusInWindow();
+    }//GEN-LAST:event_btnDELFocusLost
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

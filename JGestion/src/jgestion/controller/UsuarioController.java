@@ -40,7 +40,6 @@ import javax.swing.table.DefaultTableModel;
 import jgestion.jpa.controller.SucursalJpaController;
 import jgestion.jpa.controller.UsuarioJpaController;
 import org.apache.log4j.Logger;
-import org.eclipse.persistence.config.QueryHints;
 
 /**
  *
@@ -65,6 +64,10 @@ public class UsuarioController implements ActionListener, MouseListener, KeyList
     private PanelABMUsuarios panel;
     private Usuario EL_OBJECT;
     private boolean resetPwds = false;
+    private final UsuarioJpaController jpaController = new UsuarioJpaController();
+
+    public UsuarioController() {
+    }
 
     // <editor-fold defaultstate="collapsed" desc="CRUD...">
     public EntityManager getEntityManager() {
@@ -371,11 +374,7 @@ public class UsuarioController implements ActionListener, MouseListener, KeyList
     private void cargarDTM(DefaultTableModel dtm, String query) {
         UTIL.limpiarDtm(dtm);
         List<Usuario> l;
-        if (query == null) {
-            l = new UsuarioJpaController().findAll();
-        } else { // para cuando se usa el Buscador del ABM
-            l = new UsuarioJpaController().findAll();
-        }
+        l = jpaController.findAll();
 
         for (Usuario o : l) {
             dtm.addRow(new Object[]{

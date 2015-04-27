@@ -96,7 +96,16 @@ public class RemitoCompraController {
                 }
             }
         });
-
+        editor.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                try {
+                    Producto p = (Producto) UTIL.getEntityWrapped(jd.getCbProductos()).getEntity();
+                    jd.setProducto(p);
+                } catch (ClassCastException ex) {
+                }
+            }
+        });
         jd.getTfProductoCodigo().addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {

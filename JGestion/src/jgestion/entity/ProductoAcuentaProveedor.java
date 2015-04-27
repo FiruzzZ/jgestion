@@ -11,6 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -34,6 +35,7 @@ public class ProductoAcuentaProveedor implements Serializable {
     private int cantidad;
     @JoinColumn(name = "producto_id", nullable = false)
     @ManyToOne(optional = false)
+    @OrderBy(value = "nombre")
     private Producto producto;
     @JoinColumn(name = "proveedor_id", nullable = false)
     @ManyToOne(optional = false)

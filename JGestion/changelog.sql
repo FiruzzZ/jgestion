@@ -1,3 +1,7 @@
+--20150420
+drop table librado;
+--20150406
+alter table factura_compra add column acuenta boolean not null default false;
 --20150404
 alter table factura_venta add column venta_simple boolean default false not null;
 -- alter table factura_compra add column producto_acuenta boolean default false not null;
@@ -12,6 +16,7 @@ CREATE TABLE remito_compra(
   proveedor_id integer NOT NULL,
   sucursal_id integer NOT NULL,
   fecha_remito date NOT NULL,
+  fechaalta timestamp without time zone NOT NULL DEFAULT now(),
   anulada boolean not null,
   actualiza_stock boolean not null,
   acuenta boolean not null,

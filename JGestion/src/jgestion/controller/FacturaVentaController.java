@@ -1225,7 +1225,7 @@ public class FacturaVentaController {
 
     @SuppressWarnings("unchecked")
     private String armarQuerySinSELECT() throws MessageException {
-        StringBuilder query = new StringBuilder(" FROM " + jpaController.getEntityClass().getSimpleName() + " o"
+        StringBuilder query = new StringBuilder(" FROM " + jpaController.getAlias()
                 + " WHERE o.anulada = " + buscador.isCheckAnuladaSelected());
 
         long numero;
@@ -1259,7 +1259,7 @@ public class FacturaVentaController {
             query.append(" AND o.").append(FacturaVenta_.fechaalta.getName()).append(" >= '").append(yyyyMMdd.format(buscador.getDcDesdeSistema())).append("'");
         }
         if (buscador.getDcHastaSistema() != null) {
-            query.append(" AND o.").append(FacturaVenta_.fechaalta.getName()).append(" <= '").append(yyyyMMdd.format(buscador.getDcHastaSistema())).append("'");
+            query.append(" AND o.").append(FacturaVenta_.fechaalta.getName()).append(" < '").append(yyyyMMdd.format(UTIL.customDateByDays(buscador.getDcHastaSistema(), 1))).append("'");
         }
         if (buscador.getCbCaja().getSelectedIndex() > 0) {
             query.append(" AND o.caja.id = ").append(((Caja) buscador.getCbCaja().getSelectedItem()).getId());

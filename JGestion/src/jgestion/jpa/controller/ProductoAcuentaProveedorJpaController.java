@@ -1,5 +1,6 @@
 package jgestion.jpa.controller;
 
+import java.util.List;
 import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -50,6 +51,38 @@ public class ProductoAcuentaProveedorJpaController extends JGestionJpaImpl<Produ
         } catch (NoResultException e) {
             return null;
         }
+    }
+
+    /**
+     * No incluye Cuentas de productos en CERO
+     *
+     * @param proveedor
+     * @return
+     */
+    public List<ProductoAcuentaProveedor> findAcuenta(Proveedor proveedor) {
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<ProductoAcuentaProveedor> cq = cb.createQuery(getEntityClass());
+        Root<ProductoAcuentaProveedor> from = cq.from(getEntityClass());
+        cq.where(cb.equal(from.get(ProductoAcuentaProveedor_.proveedor), proveedor),
+                cb.greaterThan(from.get(ProductoAcuentaProveedor_.cantidad), 0)
+        );
+        return getEntityManager().createQuery(cq).getResultList();
+    }
+
+    /**
+     *
+     * @param proveedor
+     * @param producto
+     * @return
+     */
+    public ProductoAcuentaProveedor findAcuenta(Proveedor proveedor, Producto producto) throws NoResultException {
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<ProductoAcuentaProveedor> cq = cb.createQuery(getEntityClass());
+        Root<ProductoAcuentaProveedor> from = cq.from(getEntityClass());
+        cq.where(cb.equal(from.get(ProductoAcuentaProveedor_.proveedor), proveedor),
+                cb.equal(from.get(ProductoAcuentaProveedor_.producto), producto)
+        );
+        return getEntityManager().createQuery(cq).getSingleResult();
     }
 
 }
