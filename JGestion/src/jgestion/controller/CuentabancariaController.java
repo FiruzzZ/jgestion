@@ -23,6 +23,7 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import jgestion.JGestionUtils;
+import jgestion.entity.OperacionesBancarias;
 import jgestion.jpa.controller.ChequePropioJpaController;
 import jgestion.jpa.controller.ChequeTercerosJpaController;
 import jgestion.jpa.controller.CuentabancariaJpaController;
@@ -342,14 +343,18 @@ public class CuentabancariaController {
         panelDeposito.getTfDescripcion().setText("Cheque N°" + cheque.getNumero());
     }
 
-    void initDebitoUI(final ChequePropio chequeToDebitar) {
+    void initDebitoUI(final ChequePropio chequeToDebitar) throws MessageException {
         CuentabancariaMovimientos cbm = new CuentabancariaMovimientosJpaController().findBy(chequeToDebitar);
-        if (cbm.isConciliado()) {
+        if (cbm != null) {
+            throw new MessageException("El movimiento de débito correspondiente al Cheque Propio N°" + chequeToDebitar.getNumero()
+                    + "\nya fue registrado."
+                    + "\nN° de movimiento de CuentaBancaria: " + cbm.getId());
         }
         panelDeposito = new PanelDepositoCheque();
         panelDeposito.getLabelEmisor().setText("Proveedor");
+        OperacionesBancarias extraccion = new OperacionesBancariasController().getOperacion(OperacionesBancariasController.EXTRACCION);
         SwingUtil.setComponentsEnabled(panelDeposito.getPanelInfoCheque().getComponents(), false, true, (Class<? extends Component>[]) null);
-        panelDeposito.getCbOperacionesBancarias().addItem(new OperacionesBancariasController().getOperacion(OperacionesBancariasController.EXTRACCION).getNombre());
+        panelDeposito.getCbOperacionesBancarias().addItem(extraccion.getNombre());
         setChequePanelDeposito(chequeToDebitar);
         abm = new JDABM(null, "Débito de cheque", true, panelDeposito);
         abm.getbAceptar().addActionListener(new ActionListener() {
@@ -374,24 +379,20 @@ public class CuentabancariaController {
                         throw new MessageException("Descripción de operación no válida");
                     }
 
-                    CuentabancariaMovimientos cbm = new CuentabancariaMovimientos(fechaOperacion, descripcion, fechaCreditoDebito, BigDecimal.ZERO, chequeToDeposit.getImporte(), false, UsuarioController.getCurrentUser(),
-                            new OperacionesBancariasController().getOperacion(OperacionesBancariasController.EXTRACCION), chequeToDeposit.getCuentabancaria(), null, chequeToDeposit, false);
+                    CuentabancariaMovimientos cbm = new CuentabancariaMovimientos(fechaOperacion, descripcion,
+                            fechaCreditoDebito, BigDecimal.ZERO, chequeToDeposit.getImporte(), false, UsuarioController.getCurrentUser(),
+                            extraccion, chequeToDeposit.getCuentabancaria(), null, chequeToDeposit, false);
                     new CuentabancariaMovimientosJpaController().persist(cbm);
                     chequeToDeposit.setEstado(ChequeEstado.DEBITADO.getId());
                     new ChequePropioJpaController().merge(chequeToDeposit);
-                    JOptionPane.showMessageDialog(abm, "Movimiento de cuenta N° " + cbm.getId() + " creado.", null, JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(abm, "Movimiento de cuenta bancaria N° " + cbm.getId() + " creado.", null, JOptionPane.INFORMATION_MESSAGE);
                     abm.dispose();
                 } catch (MessageException ex) {
                     ex.displayMessage(abm);
                 }
             }
         });
-        abm.getbCancelar().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                abm.dispose();
-            }
-        });
+        abm.getbCancelar().addActionListener((ActionEvent e) -> abm.dispose());
         abm.setVisible(true);
     }
 }

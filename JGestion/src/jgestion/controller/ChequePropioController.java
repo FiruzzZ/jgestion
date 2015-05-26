@@ -187,7 +187,7 @@ public class ChequePropioController implements ActionListener {
                 } else if (boton.equals(jdChequeManager.getBtnNuevo())) {
                 } else if (boton.equals(jdChequeManager.getBtnModificar())) {
                     try {
-                        EL_OBJECT = jpaController.find((Integer) UTIL.getSelectedValueFromModel(jdChequeManager.getjTable1(), 0));
+                        EL_OBJECT = jpaController.find(getSelectedChequeID());
                         initABM(jdChequeManager, true, EL_OBJECT.getProveedor());
                         EL_OBJECT = null;
                         cargarTablaChequeManager(armarQuery(), false);
@@ -195,29 +195,27 @@ public class ChequePropioController implements ActionListener {
                         ex.displayMessage(jdChequeManager);
                     }
                 } else if (boton.equals(jdChequeManager.getbAnular())) {
-                    int row = jdChequeManager.getjTable1().getSelectedRow();
-                    if (row > -1) {
-                        final ChequePropio cheque = jpaController.find((Integer) jdChequeManager.getjTable1().getModel().getValueAt(row, 0));
-                        try {
-                            if (!cheque.getChequeEstado().equals(ChequeEstado.CARTERA)) {
-                                throw new MessageException("Solo los cheques en " + ChequeEstado.CARTERA + " pueden ser anulados");
-                            }
-                            showAnulacionDialog(jdChequeManager, cheque);
-                        } catch (MessageException ex) {
-                            ex.displayMessage(jdChequeManager);
+                    try {
+                        ChequePropio cheque = jpaController.find(getSelectedChequeID());
+                        if (!cheque.getChequeEstado().equals(ChequeEstado.CARTERA)) {
+                            throw new MessageException("Solo los cheques en " + ChequeEstado.CARTERA + " pueden ser anulados");
                         }
-                        cargarTablaChequeManager(armarQuery(), false);
+                        showAnulacionDialog(jdChequeManager, cheque);
+                    } catch (MessageException ex) {
+                        ex.displayMessage(jdChequeManager);
                     }
+                    cargarTablaChequeManager(armarQuery(), false);
                 } else if (boton.equals(jdChequeManager.getbDepositar())) {
-                    int row = jdChequeManager.getjTable1().getSelectedRow();
-                    if (row > -1) {
-                        ChequePropio chequ = jpaController.find((Integer) jdChequeManager.getjTable1().getModel().getValueAt(row, 0));
-                        if (chequ.getChequeEstado().equals(ChequeEstado.CARTERA)) {
-                            new CuentabancariaController().initDebitoUI(chequ);
+                    try {
+                        ChequePropio cheque = jpaController.find(getSelectedChequeID());
+                        if (cheque.getChequeEstado().equals(ChequeEstado.CARTERA)) {
+                            new CuentabancariaController().initDebitoUI(cheque);
                         } else {
-                            JOptionPane.showMessageDialog(jdChequeManager, "Solo los cheques en " + ChequeEstado.CARTERA + " pueden ser " + ChequeEstado.DEBITADO, "Error", JOptionPane.WARNING_MESSAGE);
+                            throw new MessageException("Solo los cheques en " + ChequeEstado.CARTERA + " pueden ser " + ChequeEstado.DEBITADO);
                         }
                         cargarTablaChequeManager(armarQuery(), false);
+                    } catch (MessageException ex) {
+                        ex.displayMessage(jdChequeManager);
                     }
                 } else if (boton.equals(jdChequeManager.getBtnImprimir())) {
                     try {
@@ -725,5 +723,13 @@ public class ChequePropioController implements ActionListener {
             }
         });
         dialog.setVisible(true);
+    }
+
+    private Integer getSelectedChequeID() throws MessageException {
+        Integer chequeID = (Integer) UTIL.getSelectedValueFromModel(jdChequeManager.getjTable1(), 0);
+        if (chequeID == null) {
+            throw new MessageException("Debe seleccionar un registro de la tabla");
+        }
+        return chequeID;
     }
 }

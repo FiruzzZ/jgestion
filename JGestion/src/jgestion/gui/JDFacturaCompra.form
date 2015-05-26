@@ -522,7 +522,7 @@
                           <Component id="tfTotalPercIVA" min="-2" pref="58" max="-2" attributes="0"/>
                       </Group>
                   </Group>
-                  <EmptySpace pref="136" max="32767" attributes="0"/>
+                  <EmptySpace pref="55" max="32767" attributes="0"/>
                   <Group type="103" groupAlignment="1" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
                           <Component id="tfTotal" min="-2" max="-2" attributes="0"/>
@@ -1181,9 +1181,6 @@
               </StringArray>
             </Property>
             <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;Fijaci&#xf3;n de costo compra:&#xa;&lt;br&gt;&#xda;ltima compra&#xa;&lt;br&gt;Compra Anterior&#xa;&lt;br&gt;PPP (Precio Ponderado Promedio)&#xa;&lt;/html&gt;"/>
-            <Property name="nextFocusableComponent" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
-              <ComponentRef name="btnADD"/>
-            </Property>
           </Properties>
           <Events>
             <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="cbCambioPrecioKeyReleased"/>
@@ -1196,11 +1193,11 @@
             </Property>
             <Property name="toolTipText" type="java.lang.String" value="Quitar producto"/>
             <Property name="name" type="java.lang.String" value="del" noResource="true"/>
-            <Property name="nextFocusableComponent" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
-              <ComponentRef name="tfProductoCodigo"/>
-            </Property>
             <Property name="requestFocusEnabled" type="boolean" value="false"/>
           </Properties>
+          <Events>
+            <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="btnDELFocusLost"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="labelPrecioActual">
           <Properties>

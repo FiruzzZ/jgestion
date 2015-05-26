@@ -34,7 +34,6 @@ public class JDFacturaCompra extends javax.swing.JDialog {
     public JDFacturaCompra(Window parent, boolean modal) {
         super(parent, modal ? DEFAULT_MODALITY_TYPE : ModalityType.MODELESS);
         initComponents();
-//        setLocation(this.getOwner().getX() + 100, this.getOwner().getY() + 50);
         labelCodigoNoRegistrado.setVisible(false);
         labelDescuento.setVisible(false);
         cbDesc.setVisible(false);
@@ -530,7 +529,7 @@ public class JDFacturaCompra extends javax.swing.JDialog {
                         .addComponent(tfTotalPercIIBB, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(tfTotalPercIVA, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 136, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 55, Short.MAX_VALUE)
                 .addGroup(panelResumenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(panelResumenLayout.createSequentialGroup()
                         .addComponent(tfTotal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -808,7 +807,6 @@ public class JDFacturaCompra extends javax.swing.JDialog {
 
         cbCambioPrecio.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Última", "Anterior", "PPP" }));
         cbCambioPrecio.setToolTipText("<html>Fijación de costo compra:\n<br>Última compra\n<br>Compra Anterior\n<br>PPP (Precio Ponderado Promedio)\n</html>");
-        cbCambioPrecio.setNextFocusableComponent(btnADD);
         cbCambioPrecio.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 cbCambioPrecioKeyReleased(evt);
@@ -818,8 +816,12 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         btnDEL.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/delete.png"))); // NOI18N
         btnDEL.setToolTipText("Quitar producto");
         btnDEL.setName("del"); // NOI18N
-        btnDEL.setNextFocusableComponent(tfProductoCodigo);
         btnDEL.setRequestFocusEnabled(false);
+        btnDEL.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                btnDELFocusLost(evt);
+            }
+        });
 
         labelPrecioActual.setText("Precio Ac.");
         labelPrecioActual.setToolTipText("Precio Actual");
@@ -1119,6 +1121,10 @@ public class JDFacturaCompra extends javax.swing.JDialog {
     private void tfPercIVAKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfPercIVAKeyTyped
         SwingUtil.checkInputDigit(evt, true, 13);
     }//GEN-LAST:event_tfPercIVAKeyTyped
+
+    private void btnDELFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_btnDELFocusLost
+        tfProductoCodigo.requestFocusInWindow();
+    }//GEN-LAST:event_btnDELFocusLost
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton bBuscarProducto;

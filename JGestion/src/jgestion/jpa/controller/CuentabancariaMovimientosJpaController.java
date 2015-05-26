@@ -53,13 +53,6 @@ public class CuentabancariaMovimientosJpaController extends AbstractDAO<Cuentaba
         return o;
     }
 
-//    public CuentabancariaMovimientos findBy(ChequePropio chequePropio) {
-//        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-//        CriteriaQuery<CuentabancariaMovimientos> cq = cb.createQuery(getEntityClass());
-//        Root<CuentabancariaMovimientos> from = cq.from(getEntityClass());
-//        cq.where(cb.equal(from.get(CuentabancariaMovimientos_.chequePropio), chequePropio));
-//        return getEntityManager().createQuery(cq).getSingleResult();
-//    }
     public BigDecimal getSaldo(CuentaBancaria cb) {
         BigDecimal saldo = (BigDecimal) findAttribute(
                 "SELECT "
