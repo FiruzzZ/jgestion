@@ -1,0 +1,61 @@
+Básicamente, necesita usar el utilitario OpenSSL.
+Si tiene acceso a un servidor Unix/Linux, seguramente, ya lo tiene instalado.
+Si sólo tiene acceso a equipos Windows, puede bajar openSSL de:
+http://www.slproweb.com/products/Win32OpenSSL.html
+
+Los pasos a seguir son los siguientes:
+
+
+- Genere su clave privada (private key) ejecutando desde la línea de comando:
+
+  openssl genrsa -out privada 1024
+
+  Haga un backup de su clave privada para evitar futuros inconvenientes. Tenga
+  en cuenta que la va a necesitar una vez que obtenga su certificado X.509, el
+  cual no le va a servir de mucho si Ud. no dispone de la clave privada que le
+  corresponde.
+
+
+- Genere su CSR (Certificate Signing Request) ejecutando desde la línea de 
+  comando:
+  
+  openssl req -new -key privada -subj "/C=AR/O=subj_o/CN=subj_cn/serialNumber=CUIT subj_cuit" -out pedido
+  
+  Reemplace:
+    subj_o por el nombre de su empresa.
+    subj_cn por su nombre o server hostname.
+    subj_cuit por la CUIT sin guiones de la empresa o programador.
+
+
+- Una vez que haya generado correctamente su CSR, puede usarlo para obtener su
+  certificado digital X.509. 
+  Para el caso del entorno de Producción, Ud. podrá obtener su certificado
+  interactivamente usando el servicio "Adminitración de Certificados Digitales"
+  del menú de trámites con Clave Fiscal en nuestro portal www.afip.gob.ar.
+  Además deberá asociar el certificado al Web Service de Negocio en el cuál está 
+  interesado, usando el servicio "Administrador de Relaciones de Clave Fiscal".
+  Para más datos, ver los siguientes documentos:
+
+  http://wswhomo.afip.gov.ar/fiscaldocs/WSAA/wsaa_obtener_certificado_produccion_20100507.pdf
+
+  http://wswhomo.afip.gov.ar/fiscaldocs/WSAA/wsaa_asociar_certificado_a_wsn_produccion_20100507.pdf
+
+
+- Necesitará el certificado en formato pkcs12 (certificado x509 + clave privada).
+  Para generarlo debe ejecutar desde la línea de comando:
+
+     openssl pkcs12 -export -inkey privada -in certificado.crt -out alias.p12
+
+	Nota: el archivo pkcs12 debe tener una contraseña, la cual será solicitada por JGestion.
+	
+- En algunos equipos Windows al invocar al WSAA para obtener su ticket de acceso
+  puede llegar a obtener el siguiente mensaje de error:
+
+     "La contraseña de red especificada no es válida".
+
+  Este error tiene que ver con el problema de que Windows parece no entender
+  que el pkcs#12 generado con openssl no tiene password.
+  La solución es importar el certificado al repositorio de Windows (Control 
+  panel/Internet Options/Contents/Certificates).
+  Luego volver a exportarlo (hasta la versión 7 de Internet Explorer no es obligatorio ponerle password).
+  Tener en cuenta que debe tildar la opción "Marcar esta clave como exportable".
