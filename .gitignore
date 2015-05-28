@@ -1,4 +1,6 @@
 /nbproject/private/
+/nbproject/genfiles.properties
+/nbproject/*~
 /build/
 /dist/
 /app.log
