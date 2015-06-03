@@ -204,7 +204,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
             DetalleCajaMovimientos newDetalleCajaMovimiento = new DetalleCajaMovimientos();
             newDetalleCajaMovimiento.setCajaMovimientos(cajaMovimientoActual);
             newDetalleCajaMovimiento.setIngreso(true);
-            newDetalleCajaMovimiento.setMonto(dcm.getMonto());
+            newDetalleCajaMovimiento.setMonto(dcm.getMonto().negate());
             newDetalleCajaMovimiento.setNumero(remesa.getId());
             newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosController.REMESA);
             newDetalleCajaMovimiento.setDescripcion("R" + JGestionUtils.getNumeracion(remesa, true) + " [ANULADO]");
@@ -492,7 +492,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
         cm.setFechaApertura(UTIL.customDateByDays(cajaMovimiento.getFechaCierre(), +1));
         cm.setMontoApertura(cajaMovimiento.getMontoCierre());
         cm.setSistemaFechaApertura(new Date());
-        cm.setDetalleCajaMovimientosList(new ArrayList<DetalleCajaMovimientos>());
+        cm.setDetalleCajaMovimientosList(new ArrayList<>());
         //creando el 1er detalleCajaMovimiento..
         DetalleCajaMovimientos dcm = new DetalleCajaMovimientos();
         dcm.setDescripcion("Apertura de caja");

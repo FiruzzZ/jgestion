@@ -56,15 +56,18 @@ import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.Window;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.swing.*;
 import jgestion.JGestion;
+import jgestion.controller.AFIPWSController;
 import jgestion.controller.RemitoCompraController;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.eclipse.persistence.exceptions.DatabaseException;
+import org.xml.sax.SAXException;
 
 /**
  *
@@ -242,6 +245,8 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenuItem58 = new javax.swing.JMenuItem();
         jMenuItem59 = new javax.swing.JMenuItem();
         jMenuItemCuentasBancarias = new javax.swing.JMenuItem();
+        jMenuWSAFIP = new javax.swing.JMenu();
+        jMenuItemAutAccess = new javax.swing.JMenuItem();
         jMenuReportes = new javax.swing.JMenu();
         jMenu24 = new javax.swing.JMenu();
         jMenuItem67 = new javax.swing.JMenuItem();
@@ -1123,6 +1128,18 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenu18.add(jMenuItemCuentasBancarias);
 
         jMenu9.add(jMenu18);
+
+        jMenuWSAFIP.setText("WS AFIP");
+
+        jMenuItemAutAccess.setText("Autorización de Acceso");
+        jMenuItemAutAccess.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemAutAccessActionPerformed(evt);
+            }
+        });
+        jMenuWSAFIP.add(jMenuItemAutAccess);
+
+        jMenu9.add(jMenuWSAFIP);
 
         jMenuBar1.add(jMenu9);
 
@@ -2085,6 +2102,14 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         }
     }//GEN-LAST:event_jMenuItem102ActionPerformed
 
+    private void jMenuItemAutAccessActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemAutAccessActionPerformed
+        try {
+            new AFIPWSController().initWSAA(this);
+        } catch (Exception ex) {
+            java.util.logging.Logger.getLogger(JFP.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jMenuItemAutAccessActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JMenu jMenu1;
@@ -2217,11 +2242,13 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenuItem jMenuItem97;
     private javax.swing.JMenuItem jMenuItem98;
     private javax.swing.JMenuItem jMenuItem99;
+    private javax.swing.JMenuItem jMenuItemAutAccess;
     private javax.swing.JMenuItem jMenuItemCatalogoWeb;
     private javax.swing.JMenuItem jMenuItemCuentasBancarias;
     private javax.swing.JMenuItem jMenuItemDocumentosComerciales;
     private javax.swing.JMenuItem jMenuItemOfertas;
     private javax.swing.JMenu jMenuReportes;
+    private javax.swing.JMenu jMenuWSAFIP;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JPopupMenu.Separator jSeparator3;
