@@ -7,14 +7,10 @@ import javax.persistence.*;
 
 /**
  *
- * @author Administrador
+ * @author FiruzzZ
  */
 @Entity
 @Table(name = "detalle_caja_movimientos")
-@NamedQueries({
-    @NamedQuery(name = "DetalleCajaMovimientos.findAll", query = "SELECT d FROM DetalleCajaMovimientos d"),
-    @NamedQuery(name = "DetalleCajaMovimientos.findById", query = "SELECT d FROM DetalleCajaMovimientos d WHERE d.id = :id")
-})
 @SqlResultSetMappings({
     @SqlResultSetMapping(name = "DetalleCajaMovimientos.BalanceGeneral", entities = {
         @EntityResult(entityClass = DetalleCajaMovimientos.class, fields = {

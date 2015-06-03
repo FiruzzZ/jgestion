@@ -283,8 +283,6 @@ public class RemesaJpaController extends AbstractDAO<Remesa, Integer> {
                     pago = em.find(pago.getClass(), pago.getId());
                     em.remove(pago);
                 } else if (object instanceof DetalleCajaMovimientos) {
-//                    DetalleCajaMovimientos dcm = (DetalleCajaMovimientos) object;
-//                    rp = em.find(RemesaPagos.class, dcm.getId());
                     new CajaMovimientosJpaController().anular(remesa);
                 } else if (object instanceof CuentabancariaMovimientos) {
                     CuentabancariaMovimientos pago = (CuentabancariaMovimientos) object;
