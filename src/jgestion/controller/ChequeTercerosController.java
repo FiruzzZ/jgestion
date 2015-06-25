@@ -120,7 +120,7 @@ public class ChequeTercerosController implements ActionListener {
 
     /**
      * Esta ventana permite la creación de Cheques sin tener permiso
-     * {@link PermisosController#PermisoDe#TESORERIA}.
+     * {@link PermisosController.PermisoDe#TESORERIA}
      * <i>Para que se puedan cargar desde un Recibo sin tener acceso al todo el módulo</i>
      *
      * @param owner

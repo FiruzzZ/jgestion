@@ -28,6 +28,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.JTextComponent;
+import jgestion.JGestionUtils;
 import jgestion.jpa.controller.JGestionJpaImpl;
 import jgestion.jpa.controller.ProductoJpaController;
 import net.sf.jasperreports.engine.JRException;
@@ -67,7 +68,7 @@ public class OrdenController {
                 new int[]{1, 80, 150, 20});
         UTIL.hideColumnTable(jdFactura.getjTable1(), 0);
         if (visible) {
-            UTIL.loadComboBox(jdFactura.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), false);
+            UTIL.loadComboBox(jdFactura.getCbSucursal(), JGestionUtils.getWrappedSucursales(new UsuarioHelper().getSucursales()), false);
             UTIL.loadComboBox(jdFactura.getCbProductos(), new ProductoController().findWrappedProductoToCombo(true), false);
             // <editor-fold defaultstate="collapsed" desc="ajuste de foco, problemas de GUI">
             jdFactura.getTfCantidad().addFocusListener(new FocusAdapter() {
@@ -238,7 +239,7 @@ public class OrdenController {
     public void displayBuscador(Window owner) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.ORDENES_IO);
         panel = new PanelBuscadorOrdenes();
-        UTIL.loadComboBox(panel.getCbSucursales(), new UsuarioHelper().getWrappedSucursales(), "<Todas>");
+        UTIL.loadComboBox(panel.getCbSucursales(), JGestionUtils.getWrappedSucursales(new UsuarioHelper().getSucursales()), "<Todas>");
         buscador = new JDBuscador(owner, "Buscador de " + CLASS_NAME, true, panel);
         UTIL.getDefaultTableModel(buscador.getjTable1(),
                 new String[]{"entity", "Nº", "Sucursal", "Usuario", "Fecha"},

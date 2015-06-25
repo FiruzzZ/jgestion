@@ -489,7 +489,7 @@ public class NotaCreditoProveedorController implements ActionListener {
             }
         });
         UTIL.loadComboBox(buscador.getCbClieProv(), JGestionUtils.getWrappedProveedores(new ProveedorJpaController().findAll()), true);
-        UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), true);
+        UTIL.loadComboBox(buscador.getCbSucursal(), JGestionUtils.getWrappedSucursales(new UsuarioHelper().getSucursales()), true);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
                 new String[]{"NotaCreditoID", "Nº Nota de Crédito", "Proveedor", "Importe", "Acreditado", "Fecha", "Usuario", "Fecha (Sistema)"},

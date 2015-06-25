@@ -59,12 +59,6 @@ public class NotaCreditoController {
         jpaController = new NotaCreditoJpaController();
     }
 
-    // <editor-fold defaultstate="collapsed" desc="CRUD">
-    public EntityManager getEntityManager() {
-        return DAO.getEntityManager();
-    }
-
-    // </editor-fold>
     public void initComprobanteUI(JFrame owner, boolean modal, boolean setVisible, boolean loadDefaultData) throws MessageException {
         facturaVentaController = new FacturaVentaController();
         facturaVentaController.displayABM(owner, modal, this, 2, false, loadDefaultData);
@@ -163,13 +157,13 @@ public class NotaCreditoController {
     }
 
     /**
-     * 
+     *
      * @param owner
      * @param toAnular
      * @param cliente
      * @param soloAcreditables no están ligadas a un Recibo aún.
      * @return
-     * @throws MessageException 
+     * @throws MessageException
      */
     NotaCredito initBuscador(Window owner, final boolean toAnular, Cliente cliente, final boolean soloAcreditables) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.VENTA);
@@ -179,7 +173,7 @@ public class NotaCreditoController {
         buscador = new JDBuscadorReRe(owner, "Buscador - Notas de crédito", true, "Cliente", "Nº");
         buscador.setParaNotaCreditoCliente();
         UTIL.loadComboBox(buscador.getCbClieProv(), new ClienteController().findAll(), true);
-        UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), true);
+        UTIL.loadComboBox(buscador.getCbSucursal(), JGestionUtils.getWrappedSucursales(new UsuarioHelper().getSucursales()), true);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
                 new String[]{"NotaCreditoID", "Nº Nota de Crédito", "Cliente", "Importe", "Recibo", "Fecha", "Usuario", "Fecha (Sistema)"},
@@ -292,15 +286,15 @@ public class NotaCreditoController {
         List<NotaCredito> l = jpaController.findByNativeQuery(query);
         for (NotaCredito o : l) {
             dtm.addRow(new Object[]{
-                        o.getId(), // <--- no es visible
-                        JGestionUtils.getNumeracion(o, true),
-                        o.getCliente().getNombre(),
-                        o.getImporte(),
-                        o.getRecibo() != null ? JGestionUtils.getNumeracion(o.getRecibo(), true) : null,
-                        UTIL.DATE_FORMAT.format(o.getFechaNotaCredito()),
-                        o.getUsuario().getNick(),
-                        UTIL.DATE_FORMAT.format(o.getFechaCarga()) + " (" + UTIL.TIME_FORMAT.format(o.getFechaCarga()) + ")"
-                    });
+                o.getId(), // <--- no es visible
+                JGestionUtils.getNumeracion(o, true),
+                o.getCliente().getNombre(),
+                o.getImporte(),
+                o.getRecibo() != null ? JGestionUtils.getNumeracion(o.getRecibo(), true) : null,
+                UTIL.DATE_FORMAT.format(o.getFechaNotaCredito()),
+                o.getUsuario().getNick(),
+                UTIL.DATE_FORMAT.format(o.getFechaCarga()) + " (" + UTIL.TIME_FORMAT.format(o.getFechaCarga()) + ")"
+            });
         }
     }
 
@@ -334,15 +328,15 @@ public class NotaCreditoController {
                         + UTIL.getPorcentaje(detalle.getPrecioUnitario(), Double.valueOf(iva.getIva()))).setScale(4, RoundingMode.HALF_EVEN);
                 //"IVA","Cód. Producto","Producto","Cantidad","P. Unitario","P. final","Desc","Sub total"
                 dtm.addRow(new Object[]{
-                            iva.getIva(),
-                            detalle.getProducto().getCodigo(),
-                            detalle.getProducto().getNombre() + "(" + iva.getIva() + ")",
-                            detalle.getCantidad(),
-                            detalle.getPrecioUnitario(),
-                            productoConIVA,
-                            0.0,
-                            productoConIVA.multiply(BigDecimal.valueOf(detalle.getCantidad())).setScale(2, RoundingMode.HALF_EVEN)
-                        });
+                    iva.getIva(),
+                    detalle.getProducto().getCodigo(),
+                    detalle.getProducto().getNombre() + "(" + iva.getIva() + ")",
+                    detalle.getCantidad(),
+                    detalle.getPrecioUnitario(),
+                    productoConIVA,
+                    0.0,
+                    productoConIVA.multiply(BigDecimal.valueOf(detalle.getCantidad())).setScale(2, RoundingMode.HALF_EVEN)
+                });
             } catch (NullPointerException e) {
                 throw new MessageException("Ocurrió un error recuperando el detalle y los datos del Producto:"
                         + "\nCódigo:" + detalle.getProducto().getNombre()
@@ -442,91 +436,12 @@ public class NotaCreditoController {
     }
 
     /**
-     * Resta crédito de las {@link NotaCredito} del {@link Cliente}
-     *
-     * @param recibo El cual en su detalle ({@link Recibo#detalleReciboList})
-     * contiene las facturas que fueron acreditadas
-     * @param cliente Al cual se le van desacreditar
-     * @param montoDesacreditar monto que se le va a desacreditar. Si es &lt=0,
-     * no se hace nada.
-     * @return la diferencia entre (montoDesacreditar - lo que se pudo
-     * desacreditar)
-     */
-    void desacreditar(Recibo recibo, Cliente cliente, BigDecimal montoDesacreditar) {
-        List<NotaCredito> notaCreditoList = findNotaCreditoAcreditables(cliente);
-        List<DetalleRecibo> acreditadosList = new ArrayList<DetalleRecibo>(5);
-        for (DetalleRecibo detalleRecibo : recibo.getDetalle()) {
-            if (detalleRecibo.isAcreditado()) {
-                acreditadosList.add(detalleRecibo);
-            }
-        }
-        Iterator<NotaCredito> notaCreditoIterator = notaCreditoList.iterator();
-        Iterator<DetalleRecibo> detalleReciboIterator = acreditadosList.iterator();
-        EntityManager em = getEntityManager();
-        NotaCredito notaCredito = null;
-        DetalleRecibo detalleRecibo = null;
-        DetalleAcreditacion detalleAcreditacion;
-        //flag, acumulador de desacreditacion
-        BigDecimal totalDesacreditado = BigDecimal.ZERO;
-        //monto del detalle del recibo que tiene que ser acreditado
-        BigDecimal montoEntrega = BigDecimal.ZERO;
-        //credito del cual dispone la nota de creditoy que va ir decreciendo a
-        //medidad que se acrediten los montoEntrega
-        BigDecimal creditoRestante = BigDecimal.ZERO;
-        try {
-            em.getTransaction().begin();
-            while (totalDesacreditado.doubleValue() < montoDesacreditar.doubleValue()) {
-                if (creditoRestante.doubleValue() <= 0) {
-                    notaCredito = notaCreditoIterator.next();
-                    System.out.println("CRE:" + notaCredito);
-                    creditoRestante = notaCredito.getImporte().subtract(notaCredito.getDesacreditado());
-                }
-                if (montoEntrega.doubleValue() <= 0) {
-                    detalleRecibo = detalleReciboIterator.next();
-                    System.out.println("DET:" + detalleRecibo);
-                    montoEntrega = detalleRecibo.getMontoEntrega();
-                }
-                detalleAcreditacion = new DetalleAcreditacion();
-
-                //si la notaCredito no es suficiente para cubrir la acreditación
-                if (creditoRestante.compareTo(montoEntrega) != 1) {
-                    notaCredito.setDesacreditado(notaCredito.getImporte());
-                    montoEntrega = montoEntrega.subtract(creditoRestante);
-                    detalleAcreditacion.setMonto(creditoRestante.doubleValue());
-                    creditoRestante = BigDecimal.ZERO; //renovar notaCredito
-                } else {
-                    notaCredito.setDesacreditado(notaCredito.getDesacreditado().add(montoEntrega));
-                    detalleAcreditacion.setMonto(montoEntrega.doubleValue());
-                    montoEntrega = BigDecimal.ZERO; // renovar detalleRecibo
-                }
-                detalleAcreditacion.setDetalleRecibo(detalleRecibo);
-                detalleAcreditacion.setNotaCredito(notaCredito);
-                em.merge(notaCredito);
-                em.persist(detalleAcreditacion);
-                totalDesacreditado = totalDesacreditado.add(BigDecimal.valueOf(detalleAcreditacion.getMonto()));
-                System.out.println("total ->" + totalDesacreditado + "/" + montoDesacreditar);
-            }
-            em.getTransaction().commit();
-        } catch (Exception ex) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            LOG.error(ex, ex);
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
-    }
-
-    /**
-     * Acredita el monto de {@link DetalleAcreditacion} a la {@link NotaCredito}
-     * Este método se utiliza cuando se anula un {@link Recibo} o
+     * Acredita el monto de {@link DetalleAcreditacion} a la {@link NotaCredito} Este método se
+     * utiliza cuando se anula un {@link Recibo} o
      * {@link FacturaVenta#formaPago} == {@link Valores.FormaPago#CTA_CTE}
      *
      * @param anular {@link DetalleAcreditacion} que fue anulado.
-     * @return instancia de {@link NotaCredito} que fue modificada (acreditada
-     * nuevamente).
+     * @return instancia de {@link NotaCredito} que fue modificada (acreditada nuevamente).
      */
     public NotaCredito acreditar(DetalleAcreditacion anular) {
         if (!anular.isAnulado()) {
@@ -539,8 +454,8 @@ public class NotaCreditoController {
     }
 
     /**
-     * NotaCredito cuyo... {@link NotaCredito#anulada} == false &&
-     * {@link NotaCredito#importe} &lt> {@link NotaCredito#desacreditado}
+     * NotaCredito cuyo... {@link NotaCredito#anulada} == false && {@link NotaCredito#importe} &lt>
+     * {@link NotaCredito#desacreditado}
      *
      * @param cliente Del cual se quieren las NotaCredito
      * @return chocolate..

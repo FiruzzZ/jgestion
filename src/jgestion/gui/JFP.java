@@ -63,6 +63,7 @@ import javax.persistence.EntityManager;
 import javax.swing.*;
 import jgestion.JGestion;
 import jgestion.controller.AFIPWSController;
+import jgestion.controller.FacturaEletronicaController;
 import jgestion.controller.RemitoCompraController;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -245,8 +246,10 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenuItem58 = new javax.swing.JMenuItem();
         jMenuItem59 = new javax.swing.JMenuItem();
         jMenuItemCuentasBancarias = new javax.swing.JMenuItem();
-        jMenuWSAFIP = new javax.swing.JMenu();
+        jMenuAFIPWS = new javax.swing.JMenu();
         jMenuItemAutAccess = new javax.swing.JMenuItem();
+        miAFIPFECompConsultar = new javax.swing.JMenuItem();
+        miAFIPSolicitarCAEsPendientes = new javax.swing.JMenuItem();
         jMenuReportes = new javax.swing.JMenu();
         jMenu24 = new javax.swing.JMenu();
         jMenuItem67 = new javax.swing.JMenuItem();
@@ -1129,7 +1132,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
         jMenu9.add(jMenu18);
 
-        jMenuWSAFIP.setText("WS AFIP");
+        jMenuAFIPWS.setText("AFIP WebService");
 
         jMenuItemAutAccess.setText("Autorización de Acceso");
         jMenuItemAutAccess.addActionListener(new java.awt.event.ActionListener() {
@@ -1137,9 +1140,25 @@ public class JFP extends javax.swing.JFrame implements Runnable {
                 jMenuItemAutAccessActionPerformed(evt);
             }
         });
-        jMenuWSAFIP.add(jMenuItemAutAccess);
+        jMenuAFIPWS.add(jMenuItemAutAccess);
 
-        jMenu9.add(jMenuWSAFIP);
+        miAFIPFECompConsultar.setText("Consultar CAE..");
+        miAFIPFECompConsultar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miAFIPFECompConsultarActionPerformed(evt);
+            }
+        });
+        jMenuAFIPWS.add(miAFIPFECompConsultar);
+
+        miAFIPSolicitarCAEsPendientes.setText("Solicitar CAEs pendientes");
+        miAFIPSolicitarCAEsPendientes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miAFIPSolicitarCAEsPendientesActionPerformed(evt);
+            }
+        });
+        jMenuAFIPWS.add(miAFIPSolicitarCAEsPendientes);
+
+        jMenu9.add(jMenuAFIPWS);
 
         jMenuBar1.add(jMenu9);
 
@@ -1677,7 +1696,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         try {
             new OrdenController().initOrden(this, true);
         } catch (MessageException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage());
+            ex.displayMessage(this);
         }
     }//GEN-LAST:event_jMenuItem40ActionPerformed
 
@@ -1697,7 +1716,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         try {
             new CtacteClienteController().initCheckVencimientos(this);
         } catch (MessageException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+            ex.displayMessage(this);
         }
     }//GEN-LAST:event_jMenuItem42ActionPerformed
 
@@ -1705,7 +1724,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         try {
             new Contabilidad().initMovimientosCajasUI(this);
         } catch (MessageException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+            ex.displayMessage(this);
         }
     }//GEN-LAST:event_jMenuItem44ActionPerformed
 
@@ -1713,23 +1732,23 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         try {
             new Contabilidad().initBalanceCompraVentaUI(this);
         } catch (MessageException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), null, 2);
+            ex.displayMessage(this);
         }
     }//GEN-LAST:event_jMenuItem46ActionPerformed
 
     private void jMenuItemOfertasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemOfertasActionPerformed
         try {
-            new ProductosWebJpaController().initOfertasUI((JFrame) this);
+            new ProductosWebJpaController().initOfertasUI(this);
         } catch (MessageException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), null, 2);
+            ex.displayMessage(this);
         }
     }//GEN-LAST:event_jMenuItemOfertasActionPerformed
 
     private void jMenuItemCatalogoWebActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCatalogoWebActionPerformed
         try {
-            new ProductosWebJpaController().initCatalogoGUI((JFrame) this);
+            new ProductosWebJpaController().initCatalogoGUI(this);
         } catch (MessageException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Advertencia", 2);
+            ex.displayMessage(this);
         }
     }//GEN-LAST:event_jMenuItemCatalogoWebActionPerformed
 
@@ -1758,15 +1777,15 @@ public class JFP extends javax.swing.JFrame implements Runnable {
     }//GEN-LAST:event_jMenuItem49ActionPerformed
 
     private void menuIitemCuentasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuIitemCuentasActionPerformed
-        new CuentaController().initContenedor((JFrame) this);
+        new CuentaController().initContenedor(this);
     }//GEN-LAST:event_menuIitemCuentasActionPerformed
 
 private void jMenuItem45ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem45ActionPerformed
-    new ClienteController().initClienteToProveedor((JFrame) this).setVisible(true);
+    new ClienteController().initClienteToProveedor(this).setVisible(true);
 }//GEN-LAST:event_jMenuItem45ActionPerformed
 
 private void jMenuItem54ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem54ActionPerformed
-    new ProveedorController().initProveedorToCliente((JFrame) this).setVisible(true);
+    new ProveedorController().initProveedorToCliente(this).setVisible(true);
 }//GEN-LAST:event_jMenuItem54ActionPerformed
 
 private void jMenuItem58ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem58ActionPerformed
@@ -1790,7 +1809,7 @@ private void jMenuItem60ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     try {
         new ChequePropioController().getManager(this).setVisible(true);
     } catch (MessageException ex) {
-        JOptionPane.showMessageDialog(this, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+        ex.displayMessage(this);
     }
 }//GEN-LAST:event_jMenuItem60ActionPerformed
 
@@ -1798,7 +1817,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     try {
         new ChequeTercerosController().getManager(this).setVisible(true);
     } catch (MessageException ex) {
-        JOptionPane.showMessageDialog(this, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+        ex.displayMessage(this);
     }
 }//GEN-LAST:event_jMenuItem56ActionPerformed
 
@@ -1806,7 +1825,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         try {
             new RemesaController().showBuscador(this, true, false);
         } catch (MessageException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+            ex.displayMessage(this);
         }
     }//GEN-LAST:event_jMenuItem55ActionPerformed
 
@@ -1814,7 +1833,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         try {
             new FacturaVentaController().displayABMUnlocked(this);
         } catch (MessageException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+            ex.displayMessage(this);
         }
     }//GEN-LAST:event_jMenuItem57ActionPerformed
 
@@ -1822,7 +1841,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         try {
             new RemitoController().unlockedABM(this);
         } catch (MessageException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+            ex.displayMessage(this);
         }
         refreshConnectionDB();
     }//GEN-LAST:event_jMenuItem62ActionPerformed
@@ -1831,7 +1850,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         try {
             new ReciboController().showABMRecibosNumeracionManual(this);
         } catch (MessageException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+            ex.displayMessage(this);
         }
         refreshConnectionDB();
     }//GEN-LAST:event_jMenuItem61ActionPerformed
@@ -1840,7 +1859,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         try {
             new Contabilidad().displayInformeComprobantesCompra(this);
         } catch (MessageException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+            ex.displayMessage(this);
         }
     }//GEN-LAST:event_jMenuItem67ActionPerformed
 
@@ -1850,7 +1869,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
             jd.setLocationRelativeTo(this);
             jd.setVisible(true);
         } catch (MessageException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+            ex.displayMessage(this);
         }
 
     }//GEN-LAST:event_jMenuItemCuentasBancariasActionPerformed
@@ -1865,7 +1884,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         try {
             new OperacionesBancariasController().initUIABM((Window) this);
         } catch (MessageException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+            ex.displayMessage(this);
         }
     }//GEN-LAST:event_jMenuItem68ActionPerformed
 
@@ -1902,7 +1921,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         try {
             new Contabilidad().displayInformeComprobantesVenta(this, false);
         } catch (MessageException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+            ex.displayMessage(this);
         }
     }//GEN-LAST:event_jMenuItem29ActionPerformed
 
@@ -2062,7 +2081,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         try {
             new Contabilidad().displayInformeComprobantesVenta(this, true);
         } catch (MessageException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+            ex.displayMessage(this);
         }
     }//GEN-LAST:event_jMenuItem98ActionPerformed
 
@@ -2103,12 +2122,21 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     }//GEN-LAST:event_jMenuItem102ActionPerformed
 
     private void jMenuItemAutAccessActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemAutAccessActionPerformed
-        try {
-            new AFIPWSController().initWSAA(this);
-        } catch (Exception ex) {
-            java.util.logging.Logger.getLogger(JFP.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
+        new JDWSAASetting(this, true).setVisible(true);
     }//GEN-LAST:event_jMenuItemAutAccessActionPerformed
+
+    private void miAFIPFECompConsultarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miAFIPFECompConsultarActionPerformed
+        try {
+            new AFIPWSController(null).consultarCAEs();
+        } catch (Exception ex) {
+            Logger.getRootLogger().error(ex, ex);
+            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+        }
+    }//GEN-LAST:event_miAFIPFECompConsultarActionPerformed
+
+    private void miAFIPSolicitarCAEsPendientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miAFIPSolicitarCAEsPendientesActionPerformed
+        FacturaEletronicaController.initSolicitudCAEs();
+    }//GEN-LAST:event_miAFIPSolicitarCAEsPendientesActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktopPane1;
@@ -2141,6 +2169,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenu jMenu7;
     private javax.swing.JMenu jMenu8;
     private javax.swing.JMenu jMenu9;
+    private javax.swing.JMenu jMenuAFIPWS;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem10;
@@ -2248,7 +2277,6 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenuItem jMenuItemDocumentosComerciales;
     private javax.swing.JMenuItem jMenuItemOfertas;
     private javax.swing.JMenu jMenuReportes;
-    private javax.swing.JMenu jMenuWSAFIP;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JPopupMenu.Separator jSeparator3;
@@ -2261,6 +2289,8 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenuItem menuItemSalir;
     private javax.swing.JMenuItem menuItemSubCuentas;
     private javax.swing.JMenu menuTesoreria;
+    private javax.swing.JMenuItem miAFIPFECompConsultar;
+    private javax.swing.JMenuItem miAFIPSolicitarCAEsPendientes;
     // End of variables declaration//GEN-END:variables
     private boolean activa = true;
     private CajaMovimientosController cajaMovimientoController;

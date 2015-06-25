@@ -27,7 +27,7 @@ import javax.persistence.UniqueConstraint;
  */
 @Entity
 @Table(name = "nota_credito", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"sucursal", "numero"})})
+    @UniqueConstraint(columnNames = {"sucursal", "numero", "tipo"})})
 @NamedQueries({
     @NamedQuery(name = "NotaCredito.findAll", query = "SELECT n FROM NotaCredito n"),
     @NamedQuery(name = "NotaCredito.findById", query = "SELECT n FROM NotaCredito n WHERE n.id = :id"),
@@ -41,6 +41,9 @@ public class NotaCredito implements Serializable {
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    @Basic(optional = false)
+    @Column(nullable = false)
+    private char tipo;
     @Basic(optional = false)
     @Column(name = "numero", nullable = false, precision = 8)
     private int numero;
@@ -87,9 +90,8 @@ public class NotaCredito implements Serializable {
     @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "notaCredito")
     private Collection<DetalleNotaCredito> detalleNotaCreditoCollection;
     /**
-     * Antes se podía ir desacreditando en porciones una nota de crédito, ya no
-     * mas. Cuando una nota de credito sea utilizada
-     * {@link #desacreditado} == {@link #importe}
+     * Antes se podía ir desacreditando en porciones una nota de crédito, ya no mas. Cuando una nota
+     * de credito sea utilizada {@link #desacreditado} == {@link #importe}
      *
      * @deprecated
      */
@@ -121,6 +123,14 @@ public class NotaCredito implements Serializable {
 
     public void setNumero(int numero) {
         this.numero = numero;
+    }
+
+    public char getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(char tipo) {
+        this.tipo = tipo;
     }
 
     public Date getFechaNotaCredito() {
@@ -236,9 +246,8 @@ public class NotaCredito implements Serializable {
     }
 
     /**
-     * Antes se podía ir desacreditando en porciones una nota de crédito, ya no
-     * mas. Cuando una nota de credito sea utilizada
-     * {@link #desacreditado} == {@link #importe}
+     * Antes se podía ir desacreditando en porciones una nota de crédito, ya no mas. Cuando una nota
+     * de credito sea utilizada {@link #desacreditado} == {@link #importe}
      *
      * @return
      * @deprecated
@@ -249,9 +258,8 @@ public class NotaCredito implements Serializable {
     }
 
     /**
-     * Antes se podía ir desacreditando en porciones una nota de crédito, ya no
-     * mas. Cuando una nota de credito sea utilizada
-     * {@link #desacreditado} == {@link #importe}
+     * Antes se podía ir desacreditando en porciones una nota de crédito, ya no mas. Cuando una nota
+     * de credito sea utilizada {@link #desacreditado} == {@link #importe}
      *
      * @param desacreditado
      * @deprecated

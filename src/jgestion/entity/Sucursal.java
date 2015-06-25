@@ -61,8 +61,17 @@ public class Sucursal implements Serializable {
     @Column(name = "factura_b", precision = 8, nullable = false)
     private Integer factura_b;
     @Basic(optional = false)
-    @Column(precision = 8, nullable = false)
-    private Integer notaCredito;
+    @Column(name = "factura_c", precision = 8, nullable = false)
+    private Integer factura_c;
+    @Basic(optional = false)
+    @Column(name = "notacredito_a", precision = 8, nullable = false)
+    private Integer notaCredito_a;
+    @Basic(optional = false)
+    @Column(name = "notacredito_b", precision = 8, nullable = false)
+    private Integer notaCredito_b;
+    @Basic(optional = false)
+    @Column(name = "notacredito_c", precision = 8, nullable = false)
+    private Integer notaCredito_c;
     @Basic(optional = false)
     @Column(name = "notadebito_a", precision = 8, nullable = false)
     private Integer notaDebitoA;
@@ -70,11 +79,22 @@ public class Sucursal implements Serializable {
     @Column(name = "notadebito_b", precision = 8, nullable = false)
     private Integer notaDebitoB;
     @Basic(optional = false)
-    @Column(precision = 8, nullable = false)
-    private Integer recibo;
+    @Column(name = "notadebito_c", precision = 8, nullable = false)
+    private Integer notaDebitoC;
+    @Basic(optional = false)
+    @Column(name = "recibo_a", precision = 8, nullable = false)
+    private Integer recibo_a;
+    @Basic(optional = false)
+    @Column(name = "recibo_b", precision = 8, nullable = false)
+    private Integer recibo_b;
+    @Basic(optional = false)
+    @Column(name = "recibo_c", precision = 8, nullable = false)
+    private Integer recibo_c;
     @Basic(optional = false)
     @Column(precision = 8, nullable = false)
     private Integer remito;
+    @Column(name = "webservices", nullable = false)
+    private boolean webServices;
 
     public Sucursal() {
     }
@@ -211,12 +231,36 @@ public class Sucursal implements Serializable {
         this.factura_b = factura_b;
     }
 
-    public Integer getNotaCredito() {
-        return notaCredito;
+    public Integer getFactura_c() {
+        return factura_c;
     }
 
-    public void setNotaCredito(Integer notaCredito) {
-        this.notaCredito = notaCredito;
+    public void setFactura_c(Integer factura_c) {
+        this.factura_c = factura_c;
+    }
+
+    public Integer getNotaCredito_a() {
+        return notaCredito_a;
+    }
+
+    public void setNotaCredito_a(Integer notaCredito_a) {
+        this.notaCredito_a = notaCredito_a;
+    }
+
+    public Integer getNotaCredito_b() {
+        return notaCredito_b;
+    }
+
+    public void setNotaCredito_b(Integer notaCredito_b) {
+        this.notaCredito_b = notaCredito_b;
+    }
+
+    public Integer getNotaCredito_c() {
+        return notaCredito_c;
+    }
+
+    public void setNotaCredito_c(Integer notaCredito_c) {
+        this.notaCredito_c = notaCredito_c;
     }
 
     public Integer getNotaDebitoA() {
@@ -235,12 +279,36 @@ public class Sucursal implements Serializable {
         this.notaDebitoB = notaDebitoB;
     }
 
-    public Integer getRecibo() {
-        return recibo;
+    public Integer getNotaDebitoC() {
+        return notaDebitoC;
     }
 
-    public void setRecibo(Integer recibo) {
-        this.recibo = recibo;
+    public void setNotaDebitoC(Integer notaDebitoC) {
+        this.notaDebitoC = notaDebitoC;
+    }
+
+    public Integer getRecibo_a() {
+        return recibo_a;
+    }
+
+    public void setRecibo_a(Integer recibo_a) {
+        this.recibo_a = recibo_a;
+    }
+
+    public Integer getRecibo_b() {
+        return recibo_b;
+    }
+
+    public void setRecibo_b(Integer recibo_b) {
+        this.recibo_b = recibo_b;
+    }
+
+    public Integer getRecibo_c() {
+        return recibo_c;
+    }
+
+    public void setRecibo_c(Integer recibo_c) {
+        this.recibo_c = recibo_c;
     }
 
     public Integer getRemito() {
@@ -249,6 +317,14 @@ public class Sucursal implements Serializable {
 
     public void setRemito(Integer remito) {
         this.remito = remito;
+    }
+
+    public boolean isWebServices() {
+        return webServices;
+    }
+
+    public void setWebServices(boolean webServices) {
+        this.webServices = webServices;
     }
 
     @Override
@@ -260,7 +336,6 @@ public class Sucursal implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Sucursal)) {
             return false;
         }
@@ -273,6 +348,12 @@ public class Sucursal implements Serializable {
 
     @Override
     public String toString() {
-        return "Sucursal{" + "id=" + id + ", nombre=" + nombre + ", direccion=" + direccion + ", tele1=" + tele1 + ", tele2=" + tele2 + ", estado=" + estado + ", interno1=" + interno1 + ", interno2=" + interno2 + ", encargado=" + encargado + ", email=" + email + ", departamento=" + departamento + ", municipio=" + municipio + ", provincia=" + provincia + ", puntoVenta=" + puntoVenta + ", factura_a=" + factura_a + ", factura_b=" + factura_b + ", notaCredito=" + notaCredito + ", notaDebitoA=" + notaDebitoA + ", notaDebitoB=" + notaDebitoB + ", recibo=" + recibo + ", remito=" + remito + '}';
+        return "Sucursal{" + "id=" + id + ", nombre=" + nombre + ", direccion=" + direccion
+                + ", tele1=" + tele1 + ", tele2=" + tele2 + ", estado=" + estado + ", interno1=" + interno1
+                + ", interno2=" + interno2 + ", encargado=" + encargado + ", email=" + email
+                + ", departamento=" + departamento + ", municipio=" + municipio + ", provincia=" + provincia
+                + ", puntoVenta=" + puntoVenta + ", factura_a=" + factura_a + ", factura_b=" + factura_b + ", factura_c=" + factura_c
+                + ", notaCredito=" + notaCredito_a + ", notaDebitoA=" + notaDebitoA + ", notaDebitoB=" + notaDebitoB
+                + ", recibo=" + recibo_a + ", remito=" + remito + '}';
     }
 }

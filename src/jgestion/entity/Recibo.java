@@ -13,7 +13,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "recibo", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"numero", "sucursal"})
+    @UniqueConstraint(columnNames = {"tipo", "numero", "sucursal"})
 })
 @NamedQueries({
     @NamedQuery(name = "Recibo.findAll", query = "SELECT r FROM Recibo r"),
@@ -28,6 +28,9 @@ public class Recibo implements Serializable {
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    @Basic(optional = false)
+    @Column(name = "tipo", nullable = false)
+    private char tipo;
     @Basic(optional = false)
     @Column(name = "numero", nullable = false, length = 8)
     private Integer numero;
@@ -67,6 +70,14 @@ public class Recibo implements Serializable {
     private Cliente cliente;
 
     public Recibo() {
+    }
+
+    public char getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(char tipo) {
+        this.tipo = tipo;
     }
 
     public Integer getNumero() {
@@ -154,8 +165,8 @@ public class Recibo implements Serializable {
     }
 
     /**
-     * Usar {@link ReciboController#loadPagos(entity.Recibo) } para recuperar
-     * las entidades pertinentes, antes de obtener esta collection.
+     * Usar {@link ReciboController#loadPagos(entity.Recibo) } para recuperar las entidades
+     * pertinentes, antes de obtener esta collection.
      *
      * @return
      */

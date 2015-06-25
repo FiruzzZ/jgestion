@@ -1,4 +1,3 @@
-
 package jgestion.entity;
 
 import java.io.Serializable;
@@ -22,13 +21,8 @@ import javax.persistence.UniqueConstraint;
 @Table(name = "provincia", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"nombre"})
 })
-@NamedQueries({
-   @NamedQuery(name = "Provincia.findAll", query = "SELECT p FROM Provincia p"),
-   @NamedQuery(name = "Provincia.findById", query = "SELECT p FROM Provincia p WHERE p.id = :id"),
-   @NamedQuery(name = "Provincia.findByNombre", query = "SELECT p FROM Provincia p WHERE p.nombre = :nombre"),
-   @NamedQuery(name = "Provincia.findByCodigo", query = "SELECT p FROM Provincia p WHERE p.codigo = :codigo")
-})
 public class Provincia implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)

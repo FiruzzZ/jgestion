@@ -2,7 +2,7 @@ package jgestion.controller;
 
 import com.toedter.calendar.JDateChooser;
 import generics.GenericBeanCollection;
-import gui.generics.GroupLayoutPanelBuilder;
+import generics.gui.GroupLayoutPanelBuilder;
 import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.Window;
@@ -275,7 +275,7 @@ public class Contabilidad {
     public void initBalanceCompraVentaUI(JFrame parent) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.TESORERIA);
         panelBalanceComprasVentas = new PanelBalanceComprasVentas();
-        List<EntityWrapper<Sucursal>> s = new UsuarioHelper().getWrappedSucursales();
+        List<EntityWrapper<Sucursal>> s = JGestionUtils.getWrappedSucursales(new UsuarioHelper().getSucursales());
         if (s.isEmpty()) {
             throw new MessageException(JGestion.resourceBundle.getString("unassigned.sucursal"));
         }
@@ -739,7 +739,7 @@ public class Contabilidad {
         buscadorReRe.getbImprimir().setVisible(true);
         UTIL.loadComboBox(buscadorReRe.getCbClieProv(), JGestionUtils.getWrappedClientes(new ClienteController().findAll()), true);
         UTIL.loadComboBox(buscadorReRe.getCbCaja(), new CajaController().findCajasPermitidasByUsuario(UsuarioController.getCurrentUser(), true), true);
-        List<EntityWrapper<Sucursal>> sucus = new UsuarioHelper().getWrappedSucursales();
+        List<EntityWrapper<Sucursal>> sucus = JGestionUtils.getWrappedSucursales(new UsuarioHelper().getSucursales());
         if (sucus.isEmpty()) {
             throw new MessageException(JGestion.resourceBundle.getString("unassigned.sucursal"));
         }
@@ -842,7 +842,7 @@ public class Contabilidad {
         buscadorReRe.getbImprimir().setVisible(true);
         UTIL.loadComboBox(buscadorReRe.getCbClieProv(), JGestionUtils.getWrappedProveedores(new ProveedorJpaController().findAllLite()), true);
         UTIL.loadComboBox(buscadorReRe.getCbCaja(), new CajaController().findCajasPermitidasByUsuario(UsuarioController.getCurrentUser(), true), true);
-        List<EntityWrapper<Sucursal>> sucus = new UsuarioHelper().getWrappedSucursales();
+        List<EntityWrapper<Sucursal>> sucus = JGestionUtils.getWrappedSucursales(new UsuarioHelper().getSucursales());
         if (sucus.isEmpty()) {
             throw new MessageException(JGestion.resourceBundle.getString("unassigned.sucursal"));
         }

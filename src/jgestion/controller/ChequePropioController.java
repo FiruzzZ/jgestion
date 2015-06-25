@@ -27,7 +27,7 @@ import jgestion.gui.JDChequesManager;
 import jgestion.gui.JDContenedor;
 import jgestion.gui.PanelABMCheques;
 import jgestion.gui.PanelChequesColumnsReport;
-import gui.generics.GroupLayoutPanelBuilder;
+import generics.gui.GroupLayoutPanelBuilder;
 import java.awt.Color;
 import java.awt.Window;
 import java.awt.event.ActionEvent;

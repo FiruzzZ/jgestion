@@ -1,92 +1,152 @@
 package generics;
 
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.io.Serializable;
 import javax.swing.*;
+import org.apache.log4j.LogManager;
 
 /**
  *
  * @author FiruzzZ
  */
-public class WaitingDialog extends JDialog implements Serializable, Runnable {
+public class WaitingDialog extends JDialog implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private String message;
     private JLabel labelMessage;
     private Icon iconMessage;
-
-    public WaitingDialog(Window owner, String title, boolean modal, String message, Icon iconMessage) {
-        super(owner, title, modal ? DEFAULT_MODALITY_TYPE : ModalityType.MODELESS);
-        this.message = message;
-        this.iconMessage = iconMessage;
-        initPrintingReportDialog();
-    }
+    private String messageToKeep;
 
     public WaitingDialog(Window owner, String title, boolean modal, String message) {
         this(owner, title, modal, message, null);
     }
 
+    public WaitingDialog(Window owner, String title, boolean modal, String message, Icon iconMessage) {
+        super(owner, title, modal ? DEFAULT_MODALITY_TYPE : ModalityType.MODELESS);
+        this.messageToKeep = message;
+        this.iconMessage = iconMessage;
+        initPrintingReportDialog();
+        if (message != null) {
+            appendMessage(message, true);
+        }
+    }
+
     private void initPrintingReportDialog() {
-        initMessageLabel();
         this.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-        this.setComponentOrientation(this.getComponentOrientation());
-        Container contentPane = this.getContentPane();
-//        BorderLayout b = new BorderLayout();
-//        contentPane.setLayout(b);
-//        contentPane.add(getMessageLabel(), BorderLayout.CENTER);
-        GroupLayout layout = new GroupLayout(contentPane);
-        contentPane.setLayout(layout);
-        layout.setAutoCreateGaps(true);
-        layout.setAutoCreateContainerGaps(true);
-        layout.setHorizontalGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                .addComponent(labelMessage)));
-//        layout.setHorizontalGroup(
-//                layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-//                .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup().addContainerGap()
-//                .addComponent(labelMessage).addContainerGap()));
+//        this.setUndecorated(true);
+//        this.setSize(400, 100);
+        this.setResizable(false);
+        this.setAlwaysOnTop(true);
+        labelMessage = new JLabel();
+//        labelMessage.setForeground(Color.WHITE);
+//        labelMessage.setFont(new Font("Tahoma", 0, 12)); // NOI18N
+//        labelMessage.setHorizontalAlignment(SwingConstants.CENTER);
+        labelMessage.setIcon(iconMessage);
+        GroupLayout layout = new GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+                layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(labelMessage)
+                        .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
         layout.setVerticalGroup(
                 layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
-                .addComponent(labelMessage) //                .addContainerGap(100, Short.MAX_VALUE)
-                ));
-//        contentPane.add(labelMessage);
-        this.pack();
-        this.setResizable(false);
-        this.setAlwaysOnTop(true);
-//        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-//        Dimension frameSize = this.getSize();
-//        this.setLocation((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
-        this.setLocation(GraphicsEnvironment.getLocalGraphicsEnvironment().getCenterPoint());
-    }
+                        .addContainerGap()
+                        .addComponent(labelMessage)
+                        .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
 
-    private Component initMessageLabel() {
-        labelMessage = new JLabel();
-        labelMessage.setFont(new Font("Tahoma", 0, 14)); // NOI18N
-        labelMessage.setHorizontalAlignment(SwingConstants.CENTER);
-        labelMessage.setIcon(iconMessage); // NOI18N
-        labelMessage.setText(message);
-        return labelMessage;
-    }
-
-    @Override
-    public void run() {
-        this.setVisible(true);
+        setLocationRelativeTo(null);
     }
 
     public JLabel getLabelMessage() {
         return labelMessage;
     }
 
-    public static void main(String[] args) throws Exception {
-//        String[] x = {"sadfsadfdasffdsf", "3242142134231233422323321334324223", "ssssssssssssssss.....", "fsadfasdfasdfasdfasdfwefea!!!!!!"};
-//        WaitingDialog jd = new WaitingDialog(null, "Tiiiitle....!!!", true, "<html>Cuando yo era chiquitito.. vi una mina andando en bicicletass.. <br>como no tenía manos manejaba con las teee..rminó<html>");
-//        new Thread(jd).start();
-//        for (int i = 0; i < 4; i++) {
-//            String string = x[i];
-//            jd.getLabelMessage().setText(string);
-//            Thread.sleep(3000);
-//        }
-//        System.exit(0);
+    /**
+     * Agrega el mensaje al panel de waiting..
+     *
+     * @param message the string will be enclosed between HTML tags
+     * @param keepIt if this message will be concatenated to the previous one, so the next message
+     * will not override this.
+     */
+    public final void appendMessage(String message, boolean keepIt) {
+        appendMessage(message, keepIt, false);
     }
+
+    /**
+     * Agrega el mensaje al panel de waiting..
+     *
+     * @param message the string will be enclosed between HTML tags
+     * @param keepIt if this message will be concatenated to the previous one, so the next message
+     * will not override this.
+     * @param newLine <code>true</code> will concat at the beginning of <code>message</code> a new
+     * line tag <b>&lt br></b>
+     */
+    public void appendMessage(String message, boolean keepIt, boolean newLine) {
+        labelMessage.setText(getHtmlText(messageToKeep + (newLine ? "<BR>" : "") + message));
+        if (keepIt) {
+            keepCurrentMessage();
+        }
+        SwingUtilities.invokeLater(new Runnable() {
+
+            @Override
+            public void run() {
+                pack();
+            }
+        });
+    }
+
+    public String keepCurrentMessage() {
+        messageToKeep = labelMessage.getText();
+        return messageToKeep;
+    }
+
+    private String getHtmlText(String messageText1) {
+        String insentiveCaseRegEx = "(?ui)";
+        if (messageText1 != null) {
+            String htmlFormatted;
+            htmlFormatted = messageText1.replaceAll(insentiveCaseRegEx + "<html>", "").replaceAll(insentiveCaseRegEx + "</html>", "");
+            htmlFormatted = htmlFormatted.replaceAll(insentiveCaseRegEx + "\\n", "<BR>");
+            return "<HTML>" + htmlFormatted + "</HTML>";
+        }
+        return null;
+    }
+
+    public String getMessageToKeep() {
+        return messageToKeep;
+    }
+
+    /**
+     * Este metodo no permite ir appendando información al diálogo del progreso de la acción
+     *
+     * @param owner
+     * @param title
+     * @param message
+     * @param run
+     */
+    public static final void initWaitingDialog(Window owner, String title, String message, Runnable run) {
+        final WaitingDialog waitingDialog = new WaitingDialog(owner, title, true, message);
+        waitingDialog.pack();
+        waitingDialog.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentShown(ComponentEvent e) {
+                try {
+                    Thread thread = new Thread(run);
+                    thread.start();
+                    thread.join();
+                } catch (InterruptedException ex) {
+                    LogManager.getLogger(WaitingDialog.class.getName()).error(ex.getMessage(), ex);
+                } finally {
+                    waitingDialog.dispose();
+                }
+            }
+        });
+        waitingDialog.setVisible(true);
+    }
+
 }

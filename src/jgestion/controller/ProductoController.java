@@ -721,7 +721,7 @@ public class ProductoController implements ActionListener, KeyListener {
         UTIL.loadComboBox(panelito.getCbMarcas(), JGestionUtils.getWrappedMarcas(new MarcaController().findAll()), true);
         UTIL.loadComboBox(panelito.getCbRubros(), JGestionUtils.getWrappedRubros(new RubroController().findRubros()), true);
         UTIL.loadComboBox(panelito.getCbSubRubros(), JGestionUtils.getWrappedRubros(new RubroController().findRubros()), true);
-        UTIL.loadComboBox(panelito.getCbSucursales(), new UsuarioHelper().getWrappedSucursales(), true);
+        UTIL.loadComboBox(panelito.getCbSucursales(), JGestionUtils.getWrappedSucursales(new UsuarioHelper().getSucursales()), true);
         buscador = new JDBuscador(frame, "Movimientos de productos", modal, panelito);
         buscador.getPanelInferior().setVisible(true);
         buscador.addResumeItem("Total", new JTextField(8));

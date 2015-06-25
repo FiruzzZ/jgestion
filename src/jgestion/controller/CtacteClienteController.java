@@ -78,11 +78,11 @@ public class CtacteClienteController implements ActionListener {
     void addToCtaCte(FacturaVenta facturaVenta) throws Exception {
         LOG.trace("adding CCC Nº" + facturaVenta);
         CtacteCliente ccp = new CtacteCliente();
-        ccp.setDias((short) facturaVenta.getDiasCtaCte());
+        ccp.setDias(facturaVenta.getDiasCtaCte());
         ccp.setEntregado(0.0); //monto $$
         ccp.setEstado((Valores.CtaCteEstado.PENDIENTE.getId()));
         ccp.setFactura(facturaVenta);
-        ccp.setFechaCarga(facturaVenta.getFechaalta());
+        ccp.setFechaCarga(facturaVenta.getFechaVenta());
         ccp.setImporte(facturaVenta.getImporte());
         jpaController.persist(ccp);
     }

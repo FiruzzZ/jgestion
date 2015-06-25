@@ -984,9 +984,9 @@
                 </MenuItem>
               </SubComponents>
             </Menu>
-            <Menu class="javax.swing.JMenu" name="jMenuWSAFIP">
+            <Menu class="javax.swing.JMenu" name="jMenuAFIPWS">
               <Properties>
-                <Property name="text" type="java.lang.String" value="WS AFIP"/>
+                <Property name="text" type="java.lang.String" value="AFIP WebService"/>
               </Properties>
               <SubComponents>
                 <MenuItem class="javax.swing.JMenuItem" name="jMenuItemAutAccess">
@@ -995,6 +995,22 @@
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemAutAccessActionPerformed"/>
+                  </Events>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="miAFIPFECompConsultar">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Consultar CAE.."/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="miAFIPFECompConsultarActionPerformed"/>
+                  </Events>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="miAFIPSolicitarCAEsPendientes">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Solicitar CAEs pendientes"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="miAFIPSolicitarCAEsPendientesActionPerformed"/>
                   </Events>
                 </MenuItem>
               </SubComponents>

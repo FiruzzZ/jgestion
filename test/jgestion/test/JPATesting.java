@@ -1,11 +1,10 @@
 package jgestion.test;
 
-import jgestion.jpa.controller.ProductoJpaController;
-import jgestion.jpa.controller.FacturaCompraJpaController;
-import jgestion.entity.DetalleCompra;
-import jgestion.entity.FacturaCompra;
-import jgestion.entity.ListaPrecios;
-import jgestion.entity.Producto;
+import afip.ws.jaxws.CbteTipo;
+import afip.ws.jaxws.DocTipo;
+import jgestion.controller.*;
+import jgestion.entity.*;
+import jgestion.jpa.controller.*;
 import ar.com.fdvs.dj.core.DynamicJasperHelper;
 import ar.com.fdvs.dj.core.layout.ClassicLayoutManager;
 import ar.com.fdvs.dj.domain.DynamicReport;
@@ -14,9 +13,8 @@ import ar.com.fdvs.dj.domain.builders.ColumnBuilder;
 import ar.com.fdvs.dj.domain.builders.DynamicReportBuilder;
 import ar.com.fdvs.dj.domain.constants.Font;
 import ar.com.fdvs.dj.domain.constants.HorizontalAlign;
-import jgestion.controller.DAO;
-import jgestion.controller.Reportes;
 import generics.PropsUtils;
+import java.awt.Window;
 import java.io.File;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -43,6 +41,8 @@ public class JPATesting {
             PropertyConfigurator.configure("log4j.properties");
             Properties properties = PropsUtils.load(new File("cfg.ini"));
             DAO.setProperties(properties);
+            Usuario u = new UsuarioJpaController().find(1);
+            new UsuarioController().checkLoginUser(u.getNick(), u.getPass());
             new JPATesting();
         } catch (Exception ex) {
             LOG.log(Level.SEVERE, null, ex);
@@ -51,6 +51,19 @@ public class JPATesting {
 
     @SuppressWarnings("unchecked")
     public JPATesting() throws Exception {
+        AFIPWSController afipwsController = new AFIPWSController(null);
+        System.out.println("Doc tipos");
+        for (DocTipo o : afipwsController.getDocumentosTipoList()) {
+            System.out.println(o.getId() + ", " + o.getDesc() + ", " + o.getFchDesde() + ", " + o.getFchHasta());
+        }
+        System.out.println("Comprobantes tipos");
+        for (CbteTipo o : afipwsController.getComprobantesTipoList()) {
+            System.out.println(o.getId() + ", " + o.getDesc() + ", " + o.getFchDesde() + ", " + o.getFchHasta());
+        }
+        System.out.println("Puntos Venta");
+        for (Integer puntoVenta : afipwsController.getPuntoVentas()) {
+            System.out.println(puntoVenta);
+        }
     }
 
     private void updateCostoCompraYPrecioVentaSegunDetalleCompra() {

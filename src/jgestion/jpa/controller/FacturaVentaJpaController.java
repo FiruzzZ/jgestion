@@ -30,18 +30,14 @@ public class FacturaVentaJpaController extends AbstractDAO<FacturaVenta, Integer
 
     @Override
     public FacturaVenta find(Integer id) {
-//        try {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<FacturaVenta> query = cb.createQuery(getEntityClass());
         Root<FacturaVenta> from = query.from(getEntityClass());
         query.where(cb.equal(from.get(FacturaVenta_.id), id));
         return getEntityManager().createQuery(query).setHint(QueryHints.REFRESH, Boolean.TRUE).getSingleResult();
-//        } finally {
-//            getEntityManager().close();
-//        }
     }
 
-    public FacturaVenta findBy(Sucursal sucursal, char tipo, Integer numero) {
+    public FacturaVenta findBy(Sucursal sucursal, char tipo, int numero) {
         try {
             return getEntityManager().createQuery("SELECT o FROM FacturaVenta o"
                     + " WHERE o.sucursal.id=" + sucursal.getId()
@@ -55,15 +51,17 @@ public class FacturaVentaJpaController extends AbstractDAO<FacturaVenta, Integer
 
     public Integer getNextNumero(Sucursal sucursal, char tipo) {
         EntityManager em = getEntityManager();
-        Integer next = null;
+        Integer next;
         if (Character.toUpperCase(tipo) == 'A') {
             next = sucursal.getFactura_a();
         } else if (Character.toUpperCase(tipo) == 'B') {
             next = sucursal.getFactura_b();
+        } else if (Character.toUpperCase(tipo) == 'C') {
+            next = sucursal.getFactura_c();
         } else {
             throw new IllegalArgumentException("Parameter tipo not valid, no corresponde a ningún tipo de Factura venta.");
         }
-        Object o = em.createQuery("SELECT MAX(o.numero) FROM " + getEntityClass().getSimpleName() + " o"
+        Object o = em.createQuery("SELECT MAX(o.numero) FROM " + getAlias()
                 + " WHERE o.tipo ='" + Character.toUpperCase(tipo) + "'"
                 + " AND o.sucursal.id= " + sucursal.getId()).getSingleResult();
         if (o != null) {

@@ -1,3 +1,22 @@
+--20150615
+alter table sucursal add column webservices boolean not null default false;
+alter table sucursal add column factura_c numeric(8,0) NOT NULL default 1;
+ALTER TABLE sucursal RENAME recibo TO recibo_a;
+alter table sucursal add column recibo_b numeric(8,0) NOT NULL default 1;
+alter table sucursal add column recibo_c numeric(8,0) NOT NULL default 1;
+ALTER TABLE sucursal RENAME notacredito TO notacredito_a;
+alter table sucursal add column notacredito_b numeric(8,0) NOT NULL default 1;
+alter table sucursal add column notacredito_c numeric(8,0) NOT NULL default 1;
+alter table sucursal add column notadebito_c numeric(8,0) NOT NULL default 1;
+alter table sucursal alter column puntoventa drop not null;
+ALTER TABLE factura_electronica ADD COLUMN pto_vta integer NOT NULL;
+ALTER TABLE factura_electronica DROP CONSTRAINT factura_electronica_cbte_numero_key;
+ALTER TABLE factura_electronica DROP CONSTRAINT unq_factura_electronica_0;
+alter table factura_electronica alter column cae drop not null;
+ALTER TABLE factura_electronica ADD CONSTRAINT factura_eletronica_cae_unique UNIQUE (cae);
+ALTER TABLE factura_electronica ADD CONSTRAINT factura_electronica_cbte_fields_unique UNIQUE (cbte_tipo, pto_vta, cbte_numero);
+alter table recibo add column tipo character(1) not null default 'B';
+alter table nota_credito add column tipo character(1) not null default 'B';
 --20150420
 drop table librado;
 --20150406

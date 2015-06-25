@@ -10,8 +10,6 @@ import jgestion.controller.Valores;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Window;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyListener;
 import java.util.Date;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -54,7 +52,6 @@ public class JDFacturaVenta extends javax.swing.JDialog {
             cbCuenta.setVisible(false);
             labelSubCuenta.setVisible(false);
             cbSubCuenta.setVisible(false);
-            checkFacturacionElectronica.setVisible(false);
             //Rem no tienen FORMA DE PAGO
             if (factVenta1_Presup2_Remito3 == 2) {
                 this.setTitle("Presupuesto");
@@ -127,6 +124,8 @@ public class JDFacturaVenta extends javax.swing.JDialog {
         labelObservacionCharactersCount = new javax.swing.JLabel();
         labelVendedor = new javax.swing.JLabel();
         cbVendedor = new javax.swing.JComboBox();
+        jLabel3 = new javax.swing.JLabel();
+        tfCAE = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         btnCancelar = new javax.swing.JButton();
@@ -173,7 +172,6 @@ public class JDFacturaVenta extends javax.swing.JDialog {
         btnFacturar = new javax.swing.JButton();
         btnAnular = new javax.swing.JButton();
         jCheckBox1 = new javax.swing.JCheckBox();
-        checkFacturacionElectronica = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Facturación - Ventas");
@@ -215,7 +213,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
             }
         });
 
-        labelLetra.setText("Letra");
+        labelLetra.setText("Tipo");
 
         cbFacturaTipo.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         cbFacturaTipo.setName("facturaLetra"); // NOI18N
@@ -328,6 +326,11 @@ public class JDFacturaVenta extends javax.swing.JDialog {
 
         labelVendedor.setText("Vendedor");
 
+        jLabel3.setText("CAE");
+
+        tfCAE.setEditable(false);
+        tfCAE.setToolTipText("Código de Autorización Eletrónico");
+
         javax.swing.GroupLayout panelDatosFacturacionLayout = new javax.swing.GroupLayout(panelDatosFacturacion);
         panelDatosFacturacion.setLayout(panelDatosFacturacionLayout);
         panelDatosFacturacionLayout.setHorizontalGroup(
@@ -346,34 +349,6 @@ public class JDFacturaVenta extends javax.swing.JDialog {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(panelDatosFacturacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(panelDatosFacturacionLayout.createSequentialGroup()
-                                .addComponent(cbFacturaTipo, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(labelN_factura)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(tfFacturaCuarto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(tfFacturaOcteto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(labeFecha)
-                                .addGap(10, 10, 10)
-                                .addComponent(dcFechaFactura, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(14, 14, 14)
-                                .addComponent(labelNumMovimiento)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(tfNumMovimiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(panelDatosFacturacionLayout.createSequentialGroup()
-                                .addComponent(cbListaPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(labelListaPrecioParaCatalogo)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(labelUnidadNegocio)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(cbUnidadDeNegocio, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jLabel2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(cbSucursal, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(panelDatosFacturacionLayout.createSequentialGroup()
                                 .addComponent(cbCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 364, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btnCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -382,7 +357,39 @@ public class JDFacturaVenta extends javax.swing.JDialog {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(tfRemito, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(6, 6, 6)
-                                .addComponent(btnBuscarRemito, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                .addComponent(btnBuscarRemito, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(panelDatosFacturacionLayout.createSequentialGroup()
+                                .addComponent(cbListaPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(labelListaPrecioParaCatalogo)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(labelUnidadNegocio)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(cbUnidadDeNegocio, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(cbSucursal, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(panelDatosFacturacionLayout.createSequentialGroup()
+                                .addComponent(cbFacturaTipo, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(labelN_factura)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(tfFacturaCuarto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(tfFacturaOcteto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(10, 10, 10)
+                                .addComponent(jLabel3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(tfCAE, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(labeFecha)
+                                .addGap(10, 10, 10)
+                                .addComponent(dcFechaFactura, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(14, 14, 14)
+                                .addComponent(labelNumMovimiento)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(tfNumMovimiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(panelDatosFacturacionLayout.createSequentialGroup()
                         .addGap(4, 4, 4)
                         .addGroup(panelDatosFacturacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -446,7 +453,9 @@ public class JDFacturaVenta extends javax.swing.JDialog {
                         .addGroup(panelDatosFacturacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                             .addComponent(tfFacturaOcteto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(dcFechaFactura, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(labeFecha))))
+                            .addComponent(labeFecha)
+                            .addComponent(jLabel3)
+                            .addComponent(tfCAE, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelDatosFacturacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(labelCaja)
@@ -829,9 +838,6 @@ public class JDFacturaVenta extends javax.swing.JDialog {
             }
         });
 
-        checkFacturacionElectronica.setText("Facturación Electrónica");
-        checkFacturacionElectronica.setToolTipText("Realiza la facturación electrónica, obteniendo un CAE como cofirmación");
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -845,9 +851,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
                     .addComponent(jPanel6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(btnAnular, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(54, 54, 54)
-                        .addComponent(checkFacturacionElectronica)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(193, 193, 193)
                         .addComponent(btnFacturar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnAceptar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -875,7 +879,6 @@ public class JDFacturaVenta extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(btnAnular, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(checkFacturacionElectronica)
                         .addComponent(btnFacturar, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1004,7 +1007,6 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
     private javax.swing.JComboBox cbSucursal;
     private javax.swing.JComboBox cbUnidadDeNegocio;
     private javax.swing.JComboBox cbVendedor;
-    private javax.swing.JCheckBox checkFacturacionElectronica;
     private com.toedter.calendar.JDateChooser dcFechaFactura;
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JLabel jLabel1;
@@ -1019,6 +1021,7 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
     private javax.swing.JLabel jLabel27;
     private javax.swing.JLabel jLabel28;
     private javax.swing.JLabel jLabel29;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel30;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel8;
@@ -1047,6 +1050,7 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
     private javax.swing.JLabel labelVendedor;
     private javax.swing.JPanel panelDatosFacturacion;
     private javax.swing.JPanel panelProducto;
+    private javax.swing.JTextField tfCAE;
     private javax.swing.JTextField tfCantidad;
     private javax.swing.JTextField tfDias;
     private javax.swing.JTextField tfDiferenciaRedondeo;
@@ -1096,6 +1100,10 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
 
     public DefaultTableModel getDtm() {
         return (DefaultTableModel) getjTable1().getModel();
+    }
+
+    public JTextField getTfCAE() {
+        return tfCAE;
     }
 
     public String getTfCantidad() {
@@ -1393,10 +1401,6 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
         return tfObservacion;
     }
 
-    public JCheckBox getCheckFacturacionElectronica() {
-        return checkFacturacionElectronica;
-    }
-
     /**
      * Settea la Ventana para ser utilizada por NotaCredito.
      */
@@ -1438,8 +1442,6 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
         labelDescuento.setVisible(false);
         cbDesc.setVisible(false);
         tfProductoDesc.setVisible(false);
-        //no factu electrónica
-        checkFacturacionElectronica.setVisible(false);
         pack();
     }
 
@@ -1511,12 +1513,6 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
         viewMode = false;
         editMode = true;
         cbListaPrecio.setEnabled(false);
-//        dcFechaFactura.setEnabled(false);
-//        cbFacturaTipo.setEnabled(false);
-//        cbCaja.setEnabled(false);
-//        cbFormaPago.setEnabled(false);
-//        tfDias.setEditable(false);
-//        tfObservacion.setEnabled(false);
         //////////////////
         tfProductoCodigo.setEnabled(false);
         bBuscarProducto.setEnabled(false);
@@ -1528,7 +1524,6 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
         tfProductoDesc.setEnabled(false);
         btnADD.setEnabled(false);
         btnDEL.setEnabled(false);
-        checkFacturacionElectronica.setEnabled(false);
         btnAnular.setVisible(false);
     }
 }

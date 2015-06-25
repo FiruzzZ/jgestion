@@ -5,7 +5,6 @@
  */
 package jgestion.gui;
 
-import afip.ws.wsaa.WSAA;
 import java.awt.Desktop;
 import java.awt.Window;
 import java.io.File;
@@ -24,6 +23,7 @@ import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import jgestion.controller.AFIPWSController;
 
 /**
  *
@@ -294,10 +294,9 @@ public class JDWSAASetting extends javax.swing.JDialog {
             }
             jProgressBar1.setValue(4);
             jProgressBar1.setString("Invocando ticket..");
-            String loginTicketResponseXML = WSAA.getLoginTicketResponse(null, jTextField1.getText(), null);
+            AFIPWSController af = new AFIPWSController(jTextField1.getText());
             jProgressBar1.setValue(6);
             jProgressBar1.setString("Creando ticket..");
-            createFile(loginTicketResponseXML, "./ws/tar.xml");
             jProgressBar1.setValue(8);
 
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();

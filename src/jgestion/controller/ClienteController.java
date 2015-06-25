@@ -1,5 +1,6 @@
 package jgestion.controller;
 
+import jgestion.jpa.controller.ProvinciaJpaController;
 import jgestion.controller.exceptions.MessageException;
 import jgestion.controller.exceptions.NonexistentEntityException;
 import jgestion.entity.Cliente;
@@ -128,7 +129,7 @@ public class ClienteController implements ActionListener {
         panelABM = new PanelABMProveedores();
         panelABM.getCheckRetencionDGR().setVisible(false);
         panelABM.getCheckRetencionIVA().setVisible(false);
-        UTIL.loadComboBox(panelABM.getCbProvincias(), new ProvinciaJpaController().findProvinciaEntities(), true);
+        UTIL.loadComboBox(panelABM.getCbProvincias(), new ProvinciaJpaController().findAll(), true);
         UTIL.loadComboBox(panelABM.getCbDepartamentos(), null, true);
         UTIL.loadComboBox(panelABM.getCbMunicipios(), null, true);
         UTIL.loadComboBox(panelABM.getCbCondicIVA(), new ContribuyenteController().findContribuyenteEntities(), false);

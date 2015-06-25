@@ -138,12 +138,20 @@ public class UnidadDeNegocioController {
     }
 
     private UnidadDeNegocio setEntity() throws MessageException {
+        String nombre = panelABMUnidadDeNegocio.getTfNombre().getText().trim();
+        if (nombre.isEmpty()) {
+            throw new MessageException("Nombre no válido");
+        } else {
+            if (!UTIL.VALIDAR_REGEX(UTIL.REGEX_ALFANUMERIC_WITH_WHITE, nombre)) {
+                throw new MessageException("Nombre solo puede contener caracteres alfanuméricos");
+            }
+        }
         if (EL_OBJECT == null) {
             EL_OBJECT = new UnidadDeNegocio();
         }
-        EL_OBJECT.setNombre(panelABMUnidadDeNegocio.getTfNombre().getText().trim());
+        EL_OBJECT.setNombre(nombre);
         DefaultTableModel dtm = (DefaultTableModel) panelABMUnidadDeNegocio.getjTable1().getModel();
-        Set<Sucursal> selected = new HashSet<Sucursal>();
+        Set<Sucursal> selected = new HashSet<>();
         for (int row = 0; row < dtm.getRowCount(); row++) {
             if ((Boolean) dtm.getValueAt(row, 2)) {
                 Sucursal s = (Sucursal) dtm.getValueAt(row, 0);

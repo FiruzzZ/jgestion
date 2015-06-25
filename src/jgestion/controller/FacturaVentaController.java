@@ -32,6 +32,7 @@ import jgestion.controller.exceptions.MessageException;
 import jgestion.controller.exceptions.MissingReportException;
 import generics.AutoCompleteComboBox;
 import generics.GenericBeanCollection;
+import java.awt.Color;
 import jgestion.gui.JDABM;
 import jgestion.gui.JDBuscadorReRe;
 import jgestion.gui.JDFacturaVenta;
@@ -59,7 +60,9 @@ import jgestion.ActionListenerManager;
 import jgestion.JGestionUtils;
 import jgestion.JGestion;
 import jgestion.Wrapper;
+import jgestion.entity.FacturaElectronica;
 import jgestion.entity.FacturaVenta_;
+import jgestion.jpa.controller.FacturaElectronicaJpaController;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -708,8 +711,10 @@ public class FacturaVentaController {
      *
      * @param monto cantidad monetaria sobre la cual se hará el cálculo
      * @param tipoDeMargen Indica como se aplicará el margen al monto. If
-     * <code>(tipo > 2 || 1 > tipo)</code> will return <code>null</code>. <lu>
-     * <li>1 = % (porcentaje) <li>2 = $ (monto fijo) <lu>
+     * <code>(tipo > 2 || 1 > tipo)</code> will return <code>null</code>.
+     * <lu>
+     * <li>1 = % (porcentaje) <li>2 = $ (monto fijo)
+     * </lu>
      * @param margen monto fijo o porcentual.
      * @return El margen de ganancia correspondiente al monto.
      */
@@ -741,8 +746,9 @@ public class FacturaVentaController {
         if (jdFactura.getDcFechaFactura() == null) {
             throw new MessageException("Fecha de factura no válida");
         }
+        Sucursal s;
         try {
-            Sucursal s = getSelectedSucursalFromJDFacturaVenta();
+            s = getSelectedSucursalFromJDFacturaVenta();
         } catch (ClassCastException e) {
             throw new MessageException("Debe crear una Sucursal para poder realizar la Factura Venta."
                     + "\nMenú: Datos Generales -> Sucursales");
@@ -759,9 +765,9 @@ public class FacturaVentaController {
             throw new MessageException("Debe crear una Caja para poder registrar la Factura Venta."
                     + "\nMenú: Tesorería -> ABM Cajas");
         }
-        if (((Valores.FormaPago) jdFactura.getCbFormaPago().getSelectedItem()).equals(Valores.FormaPago.CTA_CTE)) {
+        if (Valores.FormaPago.CTA_CTE.equals(jdFactura.getCbFormaPago().getSelectedItem())) {
             try {
-                if (Short.valueOf(jdFactura.getTfDias()) < 1) {
+                if (Integer.valueOf(jdFactura.getTfDias()) < 1) {
                     throw new MessageException("Cantidad de días de Cta. Cte. no válida. Debe ser mayor a 0");
                 }
             } catch (NumberFormatException e) {
@@ -809,6 +815,9 @@ public class FacturaVentaController {
             } catch (NumberFormatException ex) {
                 throw new MessageException("Número de factura no válido, ingrese solo dígitos");
             }
+        }
+        if (s.isWebServices() && !conFactura) {
+            throw new MessageException("No se pueden realizar MVI en puntos de venta habilitados para facturación electrónica");
         }
     }
 
@@ -963,7 +972,7 @@ public class FacturaVentaController {
         ActionListenerManager.setCuentasIngresosSubcuentaActionListener(buscador.getCbCuenta(), true, buscador.getCbSubCuenta(), true, true);
         UTIL.loadComboBox(buscador.getCbClieProv(), new ClienteController().findAll(), true);
         UTIL.loadComboBox(buscador.getCbCaja(), new CajaController().findCajasPermitidasByUsuario(UsuarioController.getCurrentUser(), true), true);
-//        UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), true);
+//        UTIL.loadComboBox(buscador.getCbSucursal(), JGestionUtil.getWrappedSucursales(new UsuarioHelper().getSucursales()), true);
         UTIL.loadComboBox(buscador.getCbFormasDePago(), Valores.FormaPago.getFormasDePago(), true);
         UTIL.loadComboBox(buscador.getCbVendedor(), JGestionUtils.getWrappedVendedor(new VendedorJpaController().findAll()), true);
         UTIL.getDefaultTableModel(
@@ -1415,13 +1424,20 @@ public class FacturaVentaController {
             //es decir que es un movimiento interno, y puede ser cambiado a FACTURA VENTA
             jdFactura.getBtnFacturar().setEnabled(true);
         }
-
+        FacturaElectronica fe = new FacturaEletronicaController().findBy(EL_OBJECT);
+        if (fe != null) {
+            if (fe.getCae() == null) {
+                jdFactura.getTfCAE().setForeground(Color.RED);
+                jdFactura.getTfCAE().setText("PENDIENTE!");
+            } else {
+                jdFactura.getTfCAE().setText(fe.getCae());
+            }
+        }
         if (paraAnular) {
             jdFactura.getBtnCancelar().setVisible(false);
             jdFactura.getBtnAceptar().setVisible(false);
             jdFactura.getBtnFacturar().setVisible(false);
             jdFactura.getBtnAnular().setVisible(paraAnular);
-            jdFactura.getCheckFacturacionElectronica().setVisible(false);
         }
         jdFactura.setLocationRelativeTo(buscador);
         jdFactura.setVisible(true);
@@ -1495,9 +1511,9 @@ public class FacturaVentaController {
         r.printReport(true);
     }
 
-    private String getNextNumeroFacturaConGuion(char letra) {
+    private String getNextNumeroFacturaConGuion(char tipo) {
         Sucursal s = getSelectedSucursalFromJDFacturaVenta();
-        Integer nextNumero = jpaController.getNextNumero(s, letra);
+        Integer nextNumero = jpaController.getNextNumero(s, tipo);
         String factuString = UTIL.AGREGAR_CEROS(nextNumero.toString(), 8);
         factuString = UTIL.AGREGAR_CEROS(s.getPuntoVenta(), 4) + "-" + factuString;
         return factuString;
@@ -1514,7 +1530,6 @@ public class FacturaVentaController {
         }
         imprimirFactura(facturaVenta);
         jdFactura.getBtnFacturar().setEnabled(false);
-//      limpiarPanel();
     }
 
     private void setAndEdit(boolean facturar) throws MessageException, Exception {
@@ -1680,18 +1695,16 @@ public class FacturaVentaController {
             checkConstraints(facturar);
             FacturaVenta newFacturaVenta = getEntity(facturar);
             jpaController.persist(newFacturaVenta);
-            //refreshing the entity from DB
-            System.out.println("FV.id=" + newFacturaVenta.getId());
-            newFacturaVenta
-                    = (FacturaVenta) DAO.findEntity(FacturaVenta.class, newFacturaVenta.getId());
+            if (newFacturaVenta.getSucursal().isWebServices()) {
+                FacturaElectronica fee = FacturaEletronicaController.createFrom(newFacturaVenta);
+                new FacturaElectronicaJpaController().persist(fee);
+                FacturaEletronicaController.initSolicitudCAEs();
+            }
             //actualiza Stock
-            new StockController()
-                    .updateStock(newFacturaVenta);
+            new StockController().updateStock(newFacturaVenta);
             //asiento en caja..
             registrarVentaSegunFormaDePago(newFacturaVenta);
             if (facturar) {
-                if (jdFactura.getCheckFacturacionElectronica().isSelected()) {
-                }
                 imprimirFactura(newFacturaVenta);
             } else {
                 if (JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog(jdFactura,
@@ -1880,113 +1893,95 @@ public class FacturaVentaController {
         ActionListenerManager.setUnidadDeNegocioSucursalActionListener(buscador.getCbUnidadDeNegocio(), true, buscador.getCbSucursal(), true, true);
         ActionListenerManager.setCuentasIngresosSubcuentaActionListener(buscador.getCbCuenta(), true, buscador.getCbSubCuenta(), true, true);
         UTIL.loadComboBox(buscador.getCbFormasDePago(), Valores.FormaPago.getFormasDePago(), true);
-        UTIL
-                .getDefaultTableModel(
-                        buscador.getjTable1(),
-                        new String[]{"facturaID", "Nº factura", "Mov.", "Cliente", "Importe", "Fecha", "Caja", "Sucursal", "Unid. Neg.", "Cuenta", "Sub Cuenta"},
-                        new int[]{1, 90, 10, 50, 40, 50, 50, 80, 50, 70, 70},
-                        new Class<?>[]{Integer.class, null, Integer.class, null, null, String.class, null, null, null, null, null},
-                        new int[]{8, 9, 10});
+        UTIL.getDefaultTableModel(
+                buscador.getjTable1(),
+                new String[]{"facturaID", "Nº factura", "Mov.", "Cliente", "Importe", "Fecha", "Caja", "Sucursal", "Unid. Neg.", "Cuenta", "Sub Cuenta"},
+                new int[]{1, 90, 10, 50, 40, 50, 50, 80, 50, 70, 70},
+                new Class<?>[]{Integer.class, null, Integer.class, null, null, String.class, null, null, null, null, null},
+                new int[]{8, 9, 10});
         JComboBox unidades = new JComboBox();
 
-        UTIL.loadComboBox(unidades,
-                new Wrapper<UnidadDeNegocio>().getWrapped(new UnidadDeNegocioJpaController().findAll()), false);
+        UTIL.loadComboBox(unidades, new Wrapper<UnidadDeNegocio>().getWrapped(new UnidadDeNegocioJpaController().findAll()), false);
         JComboBox cuentas = new JComboBox();
 
-        UTIL.loadComboBox(cuentas,
-                new Wrapper<Cuenta>().getWrapped(new CuentaController().findAll()), false);
+        UTIL.loadComboBox(cuentas, new Wrapper<Cuenta>().getWrapped(new CuentaController().findAll()), false);
         JComboBox subCuentas = new JComboBox();
 
         UTIL.loadComboBox(subCuentas, JGestionUtils.getWrappedSubCuentas(new SubCuentaJpaController().findAll()), false);
-        buscador.getjTable1()
-                .getColumnModel().getColumn(4).setCellRenderer(NumberRenderer.getCurrencyRenderer());
-        buscador.getjTable1()
-                .getColumnModel().getColumn(5).setCellRenderer(FormatRenderer.getDateRenderer());
-        buscador.getjTable1()
-                .getColumnModel().getColumn(8).setCellEditor(new DefaultCellEditor(unidades));
-        buscador.getjTable1()
-                .getColumnModel().getColumn(9).setCellEditor(new DefaultCellEditor(cuentas));
-        buscador.getjTable1()
-                .getColumnModel().getColumn(10).setCellEditor(new DefaultCellEditor(subCuentas));
+        buscador.getjTable1().getColumnModel().getColumn(4).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        buscador.getjTable1().getColumnModel().getColumn(5).setCellRenderer(FormatRenderer.getDateRenderer());
+        buscador.getjTable1().getColumnModel().getColumn(8).setCellEditor(new DefaultCellEditor(unidades));
+        buscador.getjTable1().getColumnModel().getColumn(9).setCellEditor(new DefaultCellEditor(cuentas));
+        buscador.getjTable1().getColumnModel().getColumn(10).setCellEditor(new DefaultCellEditor(subCuentas));
         UTIL.hideColumnTable(buscador.getjTable1(), 0);
-        buscador.getbBuscar()
-                .addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e
-                    ) {
+        buscador.getbBuscar().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    cargarTablaBuscadorAsignacion(armarQuerySinSELECT());
+                } catch (MessageException ex) {
+                    buscador.showMessage(ex.getMessage(), "Buscador - " + jpaController.getEntityClass().getSimpleName(), 0);
+                }
+            }
+        }
+        );
+        buscador.getjTable1().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() >= 2) {
+                    if (buscador.getjTable1().getSelectedRow() > -1) {
                         try {
-                            cargarTablaBuscadorAsignacion(armarQuerySinSELECT());
+                            EL_OBJECT = jpaController.find((Integer) buscador.getDtm().getValueAt(buscador.getjTable1().getSelectedRow(), 0));
+                            show(EL_OBJECT, false);
                         } catch (MessageException ex) {
-                            buscador.showMessage(ex.getMessage(), "Buscador - " + jpaController.getEntityClass().getSimpleName(), 0);
+                            buscador.showMessage(ex.getMessage(), "Error de datos", 0);
                         }
                     }
                 }
-                );
-        buscador.getjTable1()
-                .addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e
-                    ) {
-                        if (e.getClickCount() >= 2) {
-                            if (buscador.getjTable1().getSelectedRow() > -1) {
-                                try {
-                                    EL_OBJECT = jpaController.find((Integer) buscador.getDtm().getValueAt(buscador.getjTable1().getSelectedRow(), 0));
-                                    show(EL_OBJECT, false);
-                                } catch (MessageException ex) {
-                                    buscador.showMessage(ex.getMessage(), "Error de datos", 0);
-                                }
-                            }
-                        }
-                    }
-                }
-                );
-        buscador.getjTable1()
-                .getModel().addTableModelListener(new TableModelListener() {
-                    @Override
-                    public void tableChanged(TableModelEvent e
-                    ) {
-                        if (e.getType() == TableModelEvent.UPDATE) {
-                            int row = e.getFirstRow();
-                            int column = e.getColumn();
-                            TableModel model = (TableModel) e.getSource();
-                            Object data = model.getValueAt(row, column);
-                            System.out.println(row + "/" + column + " =" + data);
-                            FacturaVenta selected = jpaController.find((Integer) model.getValueAt(row, 0));
-                            if (data != null) {
-                                if (column == 8) {
-                                    UnidadDeNegocio unidad = ((EntityWrapper<UnidadDeNegocio>) data).getEntity();
-                                    selected.setUnidadDeNegocio(unidad);
-                                } else if (column == 9) {
-                                    @SuppressWarnings("unchecked")
-                                    Cuenta cuenta = ((EntityWrapper<Cuenta>) data).getEntity();
-                                    selected.setCuenta(cuenta);
+            }
+        }
+        );
+        buscador.getjTable1().getModel().addTableModelListener(new TableModelListener() {
+            @Override
+            public void tableChanged(TableModelEvent e) {
+                if (e.getType() == TableModelEvent.UPDATE) {
+                    int row = e.getFirstRow();
+                    int column = e.getColumn();
+                    TableModel model = (TableModel) e.getSource();
+                    Object data = model.getValueAt(row, column);
+                    System.out.println(row + "/" + column + " =" + data);
+                    FacturaVenta selected = jpaController.find((Integer) model.getValueAt(row, 0));
+                    if (data != null) {
+                        if (column == 8) {
+                            UnidadDeNegocio unidad = ((EntityWrapper<UnidadDeNegocio>) data).getEntity();
+                            selected.setUnidadDeNegocio(unidad);
+                        } else if (column == 9) {
+                            @SuppressWarnings("unchecked")
+                            Cuenta cuenta = ((EntityWrapper<Cuenta>) data).getEntity();
+                            selected.setCuenta(cuenta);
 
-                                    //carga las subCuentas
-                                    DefaultCellEditor dce = (DefaultCellEditor) buscador.getjTable1().getColumnModel()
+                            //carga las subCuentas
+                            DefaultCellEditor dce = (DefaultCellEditor) buscador.getjTable1().getColumnModel()
                                     //columnIndex is one lesser than its original position because one column was removed from table
                                     .getColumn(9).getCellEditor();
-                                    JComboBox cbSubCuentas = (JComboBox) dce.getComponent();
-                                    if (cuenta.getSubCuentas().isEmpty()) {
-                                        cbSubCuentas.removeAllItems();
-                                    } else {
-                                        UTIL.loadComboBox(cbSubCuentas, JGestionUtils.getWrappedSubCuentas(cuenta.getSubCuentas()), false);
-                                    }
-                                } else if (column == 10) {
-                                    SubCuenta subCuenta = ((EntityWrapper<SubCuenta>) data).getEntity();
-                                    selected.setSubCuenta(subCuenta);
-                                }
-                                jpaController.merge(selected);
+                            JComboBox cbSubCuentas = (JComboBox) dce.getComponent();
+                            if (cuenta.getSubCuentas().isEmpty()) {
+                                cbSubCuentas.removeAllItems();
+                            } else {
+                                UTIL.loadComboBox(cbSubCuentas, JGestionUtils.getWrappedSubCuentas(cuenta.getSubCuentas()), false);
                             }
+                        } else if (column == 10) {
+                            SubCuenta subCuenta = ((EntityWrapper<SubCuenta>) data).getEntity();
+                            selected.setSubCuenta(subCuenta);
                         }
+                        jpaController.merge(selected);
                     }
                 }
-                );
-        buscador.getbExtra()
-                .setVisible(false);
-        buscador.setLocationRelativeTo(
-                null);
-        buscador.setVisible(
-                true);
+            }
+        });
+        buscador.getbExtra().setVisible(false);
+        buscador.setLocationRelativeTo(null);
+        buscador.setVisible(true);
     }
 
     private void cargarTablaBuscadorAsignacion(String query) {
@@ -2009,5 +2004,10 @@ public class FacturaVentaController {
             });
         }
 
+    }
+
+    public FacturaVenta displayBuscador(Window window) throws MessageException {
+        displayBuscador(window, true, false);
+        return EL_OBJECT;
     }
 }

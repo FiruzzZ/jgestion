@@ -22,7 +22,7 @@ import jgestion.entity.enums.ChequeEstado;
 import generics.GenericBeanCollection;
 import jgestion.gui.JDBuscadorReRe;
 import jgestion.gui.JDReRe;
-import gui.generics.JDialogTable;
+import generics.gui.JDialogTable;
 import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Window;
@@ -105,7 +105,7 @@ public class ReciboController implements ActionListener, FocusListener {
                 new int[]{1, 60, 50});
         jdReRe.getTableAPagar().getColumnModel().getColumn(2).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         UTIL.hideColumnTable(jdReRe.getTableAPagar(), 0);
-        UTIL.loadComboBox(jdReRe.getCbSucursal(), uh.getWrappedSucursales(), false);
+        UTIL.loadComboBox(jdReRe.getCbSucursal(), JGestionUtils.getWrappedSucursales(uh.getSucursales()), false);
         UTIL.loadComboBox(jdReRe.getCbCaja(), uh.getCajas(true), false);
         UTIL.loadComboBox(jdReRe.getCbClienteProveedor(), new ClienteController().findAll(), true);
         AutoCompleteDecorator.decorate(jdReRe.getCbClienteProveedor());
@@ -164,7 +164,7 @@ public class ReciboController implements ActionListener, FocusListener {
                     if (!viewMode) {
                         Recibo re = setAndPersist();
                         selectedRecibo = re;
-                        jdReRe.showMessage(jpaController.getEntityClass().getSimpleName() + " Nº" + JGestionUtils.getNumeracion(re, true) + " registrado.", null, 1);
+                        jdReRe.showMessage(jpaController.getEntityClass().getSimpleName() + " " + JGestionUtils.getNumeracion(re, true) + " registrado.", null, 1);
                         jdReRe.limpiarDetalles();
                         resetPanel();
                     }
@@ -237,12 +237,14 @@ public class ReciboController implements ActionListener, FocusListener {
                 }
             }
         });
-        jdReRe.getCbSucursal().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (jdReRe.getCbSucursal().isEnabled()) {
-                    setNextNumeroReRe();
-                }
+        jdReRe.getCbTipo().addActionListener((ActionEvent e) -> {
+            if (jdReRe.getCbSucursal().isEnabled()) {
+                setNextNumeroReRe();
+            }
+        });
+        jdReRe.getCbSucursal().addActionListener((ActionEvent e) -> {
+            if (jdReRe.getCbSucursal().isEnabled()) {
+                setNextNumeroReRe();
             }
         });
         jdReRe.getbCancelar().addActionListener(new ActionListener() {
@@ -525,7 +527,7 @@ public class ReciboController implements ActionListener, FocusListener {
                 }
                 Recibo old = jpaController.find(getSelectedSucursalFromJD(), numero);
                 if (old != null) {
-                    throw new MessageException("Ya existe un registro de " + jpaController.getEntityClass().getSimpleName() + " N° " + JGestionUtils.getNumeracion(old, true));
+                    throw new MessageException("Ya existe un registro de " + jpaController.getEntityClass().getSimpleName() + " " + JGestionUtils.getNumeracion(old, true));
                 }
             } catch (NumberFormatException numberFormatException) {
                 throw new MessageException("Número de " + jpaController.getEntityClass().getSimpleName() + " no válido, ingrese solo dígitos");
@@ -547,17 +549,18 @@ public class ReciboController implements ActionListener, FocusListener {
         } catch (ClassCastException e) {
             re.setCaja(null);
         }
+        re.setTipo((char) jdReRe.getCbTipo().getSelectedItem());
         re.setSucursal(getSelectedSucursalFromJD());
         if (unlockedNumeracion || conciliando) {
             re.setNumero(Integer.valueOf(jdReRe.getTfOcteto()));
         } else {
-            re.setNumero(jpaController.getNextNumero(re.getSucursal()));
+            re.setNumero(jpaController.getNextNumero(re.getSucursal(), re.getTipo()));
         }
         re.setUsuario(UsuarioController.getCurrentUser());
         re.setEstado(true);
         re.setFechaRecibo(jdReRe.getDcFechaReRe().getDate());
-        re.setDetalle(new ArrayList<DetalleRecibo>(jdReRe.getDtmAPagar().getRowCount()));
-        re.setPagos(new ArrayList<ReciboPagos>(jdReRe.getDtmPagos().getRowCount()));
+        re.setDetalle(new ArrayList<>(jdReRe.getDtmAPagar().getRowCount()));
+        re.setPagos(new ArrayList<>(jdReRe.getDtmPagos().getRowCount()));
         re.setPorConciliar(toConciliar);
         re.setCliente((Cliente) jdReRe.getCbClienteProveedor().getSelectedItem());
         DefaultTableModel dtm = jdReRe.getDtmAPagar();
@@ -829,7 +832,7 @@ public class ReciboController implements ActionListener, FocusListener {
         buscador.setParaRecibos();
         UTIL.loadComboBox(buscador.getCbClieProv(), JGestionUtils.getWrappedClientes(new ClienteController().findAll()), true);
         UTIL.loadComboBox(buscador.getCbCaja(), new UsuarioHelper().getCajas(Boolean.TRUE), true);
-        UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), true);
+        UTIL.loadComboBox(buscador.getCbSucursal(), JGestionUtils.getWrappedSucursales(new UsuarioHelper().getSucursales()), true);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
                 new String[]{"Instance", "Nº Recibo", "Cliente", "Monto", "Fecha", "Caja", "Usuario", "Fecha/Hora (Sist)"},
@@ -1122,7 +1125,6 @@ public class ReciboController implements ActionListener, FocusListener {
                 }
             }
         }
-
     }
 
     /**
@@ -1130,7 +1132,7 @@ public class ReciboController implements ActionListener, FocusListener {
      */
     private void setNextNumeroReRe() {
         Sucursal sucursal = getSelectedSucursalFromJD();
-        Integer nextRe = jpaController.getNextNumero(sucursal);
+        Integer nextRe = jpaController.getNextNumero(sucursal, jdReRe.getCbTipo().getSelectedItem().toString());
         jdReRe.setTfCuarto(UTIL.AGREGAR_CEROS(sucursal.getPuntoVenta(), 4));
         jdReRe.setTfOcteto(UTIL.AGREGAR_CEROS(nextRe, 8));
     }

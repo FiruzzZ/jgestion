@@ -1,4 +1,4 @@
-package gui.generics;
+package generics.gui;
 
 import com.toedter.calendar.JDateChooser;
 import java.awt.Component;

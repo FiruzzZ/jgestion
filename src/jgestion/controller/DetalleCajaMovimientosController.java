@@ -17,7 +17,7 @@ import org.apache.log4j.Logger;
 
 /**
  *
- * @author Administrador
+ * @author FiruzzZ
  */
 public class DetalleCajaMovimientosController {
 

@@ -108,7 +108,7 @@ public class RemesaController implements FocusListener {
         UTIL.getDefaultTableModel(jdReRe.getTableAPagar(), COLUMN_NAMES, COLUMN_WIDTH);
         jdReRe.getTableAPagar().getColumnModel().getColumn(3).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         UTIL.hideColumnTable(jdReRe.getTableAPagar(), 0);
-        UTIL.loadComboBox(jdReRe.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), false);
+        UTIL.loadComboBox(jdReRe.getCbSucursal(), JGestionUtils.getWrappedSucursales(new UsuarioHelper().getSucursales()), false);
         UTIL.loadComboBox(jdReRe.getCbCaja(), new UsuarioHelper().getCajas(true), false);
         UTIL.loadComboBox(jdReRe.getCbClienteProveedor(), JGestionUtils.getWrappedProveedores(new ProveedorJpaController().findAll()), true);
         AutoCompleteDecorator.decorate(jdReRe.getCbClienteProveedor());

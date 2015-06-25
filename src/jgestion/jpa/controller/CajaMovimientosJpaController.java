@@ -251,7 +251,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
             newDetalleCajaMovimiento.setMonto(dcm.getMonto().negate());
             newDetalleCajaMovimiento.setNumero(Long.valueOf(recibo.getId()));
             newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosController.RECIBO);
-            newDetalleCajaMovimiento.setDescripcion("R" + JGestionUtils.getNumeracion(recibo, true) + " [ANULADO]");
+            newDetalleCajaMovimiento.setDescripcion(JGestionUtils.getNumeracion(recibo, true) + " [ANULADO]");
             newDetalleCajaMovimiento.setUsuario(UsuarioController.getCurrentUser());
             new DetalleCajaMovimientosController().create(newDetalleCajaMovimiento);
         } catch (Exception e) {
@@ -318,7 +318,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
                                     new NotaCreditoController().acreditar(anular);
                                 } else {
                                     newDetalleCajaMovimiento.setMonto(detalleRecibo.getMontoEntrega().negate());
-                                    newDetalleCajaMovimiento.setDescripcion(JGestionUtils.getNumeracion(facturaVenta) + " -> R" + JGestionUtils.getNumeracion(reciboQueEnSuDetalleContieneLaFacturaVenta, true) + " [ANULADA]");
+                                    newDetalleCajaMovimiento.setDescripcion(JGestionUtils.getNumeracion(facturaVenta) + " -> " + JGestionUtils.getNumeracion(reciboQueEnSuDetalleContieneLaFacturaVenta, true) + " [ANULADA]");
                                     new DetalleCajaMovimientosController().create(newDetalleCajaMovimiento);
                                 }
                                 em.merge(detalleRecibo);

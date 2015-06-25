@@ -3,7 +3,7 @@
  *
  * Created on 13/04/2011, 08:43:36
  */
-package gui.generics;
+package generics.gui;
 
 import java.awt.Window;
 import javax.swing.JTable;

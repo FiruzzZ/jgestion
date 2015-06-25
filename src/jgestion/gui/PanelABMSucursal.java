@@ -8,6 +8,7 @@ package jgestion.gui;
 
 import utilities.general.UTIL;
 import java.awt.event.ActionListener;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -66,9 +67,9 @@ public class PanelABMSucursal extends javax.swing.JPanel {
         jLabel17 = new javax.swing.JLabel();
         jLabel18 = new javax.swing.JLabel();
         jLabel19 = new javax.swing.JLabel();
-        tfInicialRecibo = new javax.swing.JTextField();
+        tfInicialReciboA = new javax.swing.JTextField();
         jLabel20 = new javax.swing.JLabel();
-        tfInicialNotaCredito = new javax.swing.JTextField();
+        tfInicialNotaCreditoA = new javax.swing.JTextField();
         jLabel21 = new javax.swing.JLabel();
         btnVerNumeracionActual = new javax.swing.JButton();
         jLabel14 = new javax.swing.JLabel();
@@ -76,6 +77,19 @@ public class PanelABMSucursal extends javax.swing.JPanel {
         tfInicialNotaDebitoA = new javax.swing.JTextField();
         jLabel23 = new javax.swing.JLabel();
         tfInicialNotaDebitoB = new javax.swing.JTextField();
+        checkWebServices = new javax.swing.JCheckBox();
+        jLabel24 = new javax.swing.JLabel();
+        tfInicialFacturaC = new javax.swing.JTextField();
+        jLabel25 = new javax.swing.JLabel();
+        jLabel26 = new javax.swing.JLabel();
+        tfInicialReciboB = new javax.swing.JTextField();
+        tfInicialReciboC = new javax.swing.JTextField();
+        jLabel27 = new javax.swing.JLabel();
+        tfInicialNotaCreditoB = new javax.swing.JTextField();
+        jLabel28 = new javax.swing.JLabel();
+        tfInicialNotaCreditoC = new javax.swing.JTextField();
+        jLabel29 = new javax.swing.JLabel();
+        tfInicialNotaDebitoC = new javax.swing.JTextField();
 
         jLabel6.setText("Provincia");
 
@@ -127,7 +141,7 @@ public class PanelABMSucursal extends javax.swing.JPanel {
 
         jLabel1.setText("Nombre");
 
-        jLabel2.setText("Encargado");
+        jLabel2.setText("Responsable");
 
         tfNombre.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
@@ -143,7 +157,6 @@ public class PanelABMSucursal extends javax.swing.JPanel {
 
         jLabel3.setText("Punto de Venta");
 
-        tfPuntoVenta.setColumns(4);
         tfPuntoVenta.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         tfPuntoVenta.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
@@ -162,85 +175,40 @@ public class PanelABMSucursal extends javax.swing.JPanel {
         tfInicialFacturaB.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         tfInicialFacturaB.setText("1");
         tfInicialFacturaB.setSelectionStart(0);
-        tfInicialFacturaB.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                tfInicialFacturaBFocusLost(evt);
-            }
-        });
-        tfInicialFacturaB.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                tfInicialFacturaBKeyTyped(evt);
-            }
-        });
 
         tfInicialFacturaA.setColumns(8);
         tfInicialFacturaA.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         tfInicialFacturaA.setText("1");
-        tfInicialFacturaA.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                tfInicialFacturaAFocusLost(evt);
-            }
-        });
-        tfInicialFacturaA.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                tfInicialFacturaAKeyTyped(evt);
-            }
-        });
 
         tfInicialRemito.setColumns(8);
         tfInicialRemito.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         tfInicialRemito.setText("1");
         tfInicialRemito.setSelectionStart(0);
-        tfInicialRemito.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                tfInicialRemitoFocusLost(evt);
-            }
-        });
         tfInicialRemito.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 tfInicialRemitoKeyTyped(evt);
             }
         });
 
-        jLabel16.setText("Factura \"A\"");
+        jLabel16.setText("Facturas: \"A\"");
 
-        jLabel17.setText("Factura \"B\"");
+        jLabel17.setText("\"B\"");
 
         jLabel18.setText("Remito");
 
-        jLabel19.setText("Recibo");
+        jLabel19.setText("Recibos: \"A\"");
 
-        tfInicialRecibo.setColumns(8);
-        tfInicialRecibo.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        tfInicialRecibo.setText("1");
-        tfInicialRecibo.setSelectionStart(0);
-        tfInicialRecibo.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                tfInicialReciboFocusLost(evt);
-            }
-        });
-        tfInicialRecibo.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                tfInicialReciboKeyTyped(evt);
-            }
-        });
+        tfInicialReciboA.setColumns(8);
+        tfInicialReciboA.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        tfInicialReciboA.setText("1");
+        tfInicialReciboA.setSelectionStart(0);
 
-        jLabel20.setText("Nota Crédito");
+        jLabel20.setText("Nota Crédito: \"A\"");
 
-        tfInicialNotaCredito.setColumns(8);
-        tfInicialNotaCredito.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        tfInicialNotaCredito.setText("1");
-        tfInicialNotaCredito.setSelectionStart(0);
-        tfInicialNotaCredito.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                tfInicialNotaCreditoFocusLost(evt);
-            }
-        });
-        tfInicialNotaCredito.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                tfInicialNotaCreditoKeyTyped(evt);
-            }
-        });
+        tfInicialNotaCreditoA.setColumns(8);
+        tfInicialNotaCreditoA.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        tfInicialNotaCreditoA.setText("1");
+        tfInicialNotaCreditoA.setSelectionStart(0);
 
         jLabel21.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/16px_blue_system-help.png"))); // NOI18N
         jLabel21.setText("Ayuda");
@@ -257,113 +225,166 @@ public class PanelABMSucursal extends javax.swing.JPanel {
             }
         });
 
-        jLabel22.setText("Nota Débito \"A\"");
+        jLabel22.setText("Nota Débito: \"A\"");
 
         tfInicialNotaDebitoA.setColumns(8);
         tfInicialNotaDebitoA.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         tfInicialNotaDebitoA.setText("1");
         tfInicialNotaDebitoA.setSelectionStart(0);
-        tfInicialNotaDebitoA.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                tfInicialNotaDebitoAFocusLost(evt);
-            }
-        });
-        tfInicialNotaDebitoA.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                tfInicialNotaDebitoAKeyTyped(evt);
-            }
-        });
 
-        jLabel23.setText("Nota Débito \"B\"");
+        jLabel23.setText("\"B\"");
 
         tfInicialNotaDebitoB.setColumns(8);
         tfInicialNotaDebitoB.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         tfInicialNotaDebitoB.setText("1");
         tfInicialNotaDebitoB.setSelectionStart(0);
-        tfInicialNotaDebitoB.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                tfInicialNotaDebitoBFocusLost(evt);
-            }
-        });
-        tfInicialNotaDebitoB.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                tfInicialNotaDebitoBKeyTyped(evt);
-            }
-        });
+
+        checkWebServices.setText("habilitado para Facturación Electrónica (AFIP)");
+
+        jLabel24.setText("\"C\"");
+
+        tfInicialFacturaC.setColumns(8);
+        tfInicialFacturaC.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        tfInicialFacturaC.setText("1");
+        tfInicialFacturaC.setSelectionStart(0);
+
+        jLabel25.setText("\"B\"");
+
+        jLabel26.setText("\"C\"");
+
+        tfInicialReciboB.setColumns(8);
+        tfInicialReciboB.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        tfInicialReciboB.setText("1");
+        tfInicialReciboB.setSelectionStart(0);
+
+        tfInicialReciboC.setColumns(8);
+        tfInicialReciboC.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        tfInicialReciboC.setText("1");
+        tfInicialReciboC.setSelectionStart(0);
+
+        jLabel27.setText("\"B\"");
+
+        tfInicialNotaCreditoB.setColumns(8);
+        tfInicialNotaCreditoB.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        tfInicialNotaCreditoB.setText("1");
+        tfInicialNotaCreditoB.setSelectionStart(0);
+
+        jLabel28.setText("\"C\"");
+
+        tfInicialNotaCreditoC.setColumns(8);
+        tfInicialNotaCreditoC.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        tfInicialNotaCreditoC.setText("1");
+        tfInicialNotaCreditoC.setSelectionStart(0);
+
+        jLabel29.setText("\"C\"");
+
+        tfInicialNotaDebitoC.setColumns(8);
+        tfInicialNotaDebitoC.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        tfInicialNotaDebitoC.setText("1");
+        tfInicialNotaDebitoC.setSelectionStart(0);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(6, 6, 6)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel11, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel12, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel13, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel16, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel18, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel19, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel20, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel22, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(cbMunicipios, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(cbDepartamentos, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(cbProvincias, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(tfEmail)
+                    .addComponent(tfDireccion)
+                    .addComponent(tfNombre)
+                    .addComponent(tfEncargado)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel7)
-                            .addComponent(jLabel6)
-                            .addComponent(jLabel4)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel8)
-                            .addComponent(jLabel5)
-                            .addComponent(jLabel12)
-                            .addComponent(jLabel11)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel13)
-                            .addComponent(jLabel16)
-                            .addComponent(jLabel17)
-                            .addComponent(jLabel18)
-                            .addComponent(jLabel22))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(cbMunicipios, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(cbDepartamentos, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(cbProvincias, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(tfEmail)
-                            .addComponent(tfDireccion)
-                            .addComponent(tfNombre)
-                            .addComponent(tfEncargado)
                             .addGroup(layout.createSequentialGroup()
+                                .addComponent(tfInicialNotaCreditoA, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel27)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(tfInicialNotaCreditoB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel28)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(tfInicialNotaCreditoC, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(tfTele2)
+                                    .addComponent(tfTele1, javax.swing.GroupLayout.DEFAULT_SIZE, 94, Short.MAX_VALUE))
+                                .addGap(18, 18, 18)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(tfInicialFacturaA, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(tfInicialFacturaB, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(tfInicialRemito, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(tfInicialNotaDebitoA, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(jLabel9)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel20, javax.swing.GroupLayout.Alignment.TRAILING)
-                                            .addComponent(jLabel19, javax.swing.GroupLayout.Alignment.TRAILING)
-                                            .addComponent(jLabel23, javax.swing.GroupLayout.Alignment.TRAILING))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(tfInicialNotaCredito, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(tfInicialRecibo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(tfInicialNotaDebitoB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addComponent(tfInterno1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGroup(layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addComponent(tfTele2)
-                                            .addComponent(tfTele1, javax.swing.GroupLayout.DEFAULT_SIZE, 94, Short.MAX_VALUE))
-                                        .addGap(18, 18, 18)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(jLabel9)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(tfInterno1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(jLabel10)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(tfInterno2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel21)
+                                        .addComponent(jLabel10)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(btnVerNumeracionActual))
-                                    .addComponent(tfPuntoVenta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(0, 51, Short.MAX_VALUE)))))
+                                        .addComponent(tfInterno2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel21)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnVerNumeracionActual))
+                            .addComponent(checkWebServices)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(tfInicialFacturaA, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(tfInicialRemito, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel17)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(tfInicialFacturaB, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel24)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(tfInicialFacturaC, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(tfInicialReciboA, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel25)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(tfInicialReciboB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel26)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(tfInicialReciboC, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(tfInicialNotaDebitoA, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel23)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(tfInicialNotaDebitoB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel29)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(tfInicialNotaDebitoC, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(tfPuntoVenta, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 107, Short.MAX_VALUE)))
                 .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addGap(10, 10, 10)
+                .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addGap(10, 10, 10))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -376,7 +397,9 @@ public class PanelABMSucursal extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(tfPuntoVenta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(checkWebServices)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel13)
                     .addComponent(jLabel21)
@@ -387,24 +410,40 @@ public class PanelABMSucursal extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(jLabel16)
                     .addComponent(tfInicialFacturaA, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel19)
-                    .addComponent(tfInicialRecibo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(jLabel17)
                     .addComponent(tfInicialFacturaB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel20)
-                    .addComponent(tfInicialNotaCredito, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel24)
+                        .addComponent(tfInicialFacturaC, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(jLabel19)
+                    .addComponent(tfInicialReciboA, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel25)
+                    .addComponent(tfInicialReciboB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel26)
+                        .addComponent(tfInicialReciboC, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(tfInicialRemito, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel18))
+                    .addComponent(tfInicialNotaCreditoA, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel20)
+                    .addComponent(jLabel27)
+                    .addComponent(tfInicialNotaCreditoB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel28)
+                    .addComponent(tfInicialNotaCreditoC, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel22)
                     .addComponent(tfInicialNotaDebitoA, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel23)
-                    .addComponent(tfInicialNotaDebitoB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(tfInicialNotaDebitoB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel29)
+                    .addComponent(tfInicialNotaDebitoC, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(6, 6, 6)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(tfInicialRemito, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel18))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(tfEncargado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -447,7 +486,7 @@ public class PanelABMSucursal extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(tfEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel11))
-                .addContainerGap(16, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -479,77 +518,26 @@ public class PanelABMSucursal extends javax.swing.JPanel {
         UTIL.AGREGAR_CEROS(((JTextField) evt.getSource()).getText(), 8);
     }//GEN-LAST:event_tfPuntoVentaFocusLost
 
-    private void tfInicialFacturaBFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfInicialFacturaBFocusLost
-        UTIL.AGREGAR_CEROS(((JTextField) evt.getSource()).getText(), 8);
-    }//GEN-LAST:event_tfInicialFacturaBFocusLost
-
-    private void tfInicialFacturaBKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfInicialFacturaBKeyTyped
-        SwingUtil.checkInputDigit(evt, 8);
-    }//GEN-LAST:event_tfInicialFacturaBKeyTyped
-
-    private void tfInicialFacturaAFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfInicialFacturaAFocusLost
-        UTIL.AGREGAR_CEROS(((JTextField) evt.getSource()).getText(), 8);
-    }//GEN-LAST:event_tfInicialFacturaAFocusLost
-
-    private void tfInicialFacturaAKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfInicialFacturaAKeyTyped
-        SwingUtil.checkInputDigit(evt, 8);
-    }//GEN-LAST:event_tfInicialFacturaAKeyTyped
-
     private void tfInicialRemitoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfInicialRemitoKeyTyped
         SwingUtil.checkInputDigit(evt, 8);
     }//GEN-LAST:event_tfInicialRemitoKeyTyped
-
-    private void tfInicialReciboFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfInicialReciboFocusLost
-        UTIL.AGREGAR_CEROS(((JTextField) evt.getSource()).getText(), 8);
-    }//GEN-LAST:event_tfInicialReciboFocusLost
-
-    private void tfInicialReciboKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfInicialReciboKeyTyped
-        SwingUtil.checkInputDigit(evt, 8);
-    }//GEN-LAST:event_tfInicialReciboKeyTyped
-
-    private void tfInicialNotaCreditoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfInicialNotaCreditoFocusLost
-        UTIL.AGREGAR_CEROS(((JTextField) evt.getSource()).getText(), 8);
-    }//GEN-LAST:event_tfInicialNotaCreditoFocusLost
-
-    private void tfInicialNotaCreditoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfInicialNotaCreditoKeyTyped
-        SwingUtil.checkInputDigit(evt, 8);
-    }//GEN-LAST:event_tfInicialNotaCreditoKeyTyped
-
-    private void tfInicialRemitoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfInicialRemitoFocusLost
-        UTIL.AGREGAR_CEROS(((JTextField) evt.getSource()).getText(), 8);
-
-    }//GEN-LAST:event_tfInicialRemitoFocusLost
 
     private void jLabel14MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel14MouseClicked
         if (evt.getClickCount() > 1) {
             JOptionPane.showMessageDialog(this,
                     "<html>Si se configuró para que las Facturas \"A\" comiencen a partir del 100"
-                    + "<br>y esta fue emitida (generada) por el sistema no se podrá ingresar"
+                    + "<br>y esta fue emitida (generada) por el sistema, posteriormente no se podrá ingresar"
                     + "<br>un valor menor a <b>101</b> en el campo Facturas \"A\""
                     + "</html>", "Ejemplo", JOptionPane.INFORMATION_MESSAGE);
         }
     }//GEN-LAST:event_jLabel14MouseClicked
 
-    private void tfInicialNotaDebitoAFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfInicialNotaDebitoAFocusLost
-        UTIL.AGREGAR_CEROS(((JTextField) evt.getSource()).getText(), 8);
-    }//GEN-LAST:event_tfInicialNotaDebitoAFocusLost
-
-    private void tfInicialNotaDebitoAKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfInicialNotaDebitoAKeyTyped
-        SwingUtil.checkInputDigit(evt, 8);
-    }//GEN-LAST:event_tfInicialNotaDebitoAKeyTyped
-
-    private void tfInicialNotaDebitoBFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_tfInicialNotaDebitoBFocusLost
-        // TODO add your handling code here:
-    }//GEN-LAST:event_tfInicialNotaDebitoBFocusLost
-
-    private void tfInicialNotaDebitoBKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfInicialNotaDebitoBKeyTyped
-        // TODO add your handling code here:
-    }//GEN-LAST:event_tfInicialNotaDebitoBKeyTyped
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnVerNumeracionActual;
     private javax.swing.JComboBox cbDepartamentos;
     private javax.swing.JComboBox cbMunicipios;
     private javax.swing.JComboBox cbProvincias;
+    private javax.swing.JCheckBox checkWebServices;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -565,6 +553,12 @@ public class PanelABMSucursal extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel23;
+    private javax.swing.JLabel jLabel24;
+    private javax.swing.JLabel jLabel25;
+    private javax.swing.JLabel jLabel26;
+    private javax.swing.JLabel jLabel27;
+    private javax.swing.JLabel jLabel28;
+    private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -577,10 +571,16 @@ public class PanelABMSucursal extends javax.swing.JPanel {
     private javax.swing.JTextField tfEncargado;
     private javax.swing.JTextField tfInicialFacturaA;
     private javax.swing.JTextField tfInicialFacturaB;
-    private javax.swing.JTextField tfInicialNotaCredito;
+    private javax.swing.JTextField tfInicialFacturaC;
+    private javax.swing.JTextField tfInicialNotaCreditoA;
+    private javax.swing.JTextField tfInicialNotaCreditoB;
+    private javax.swing.JTextField tfInicialNotaCreditoC;
     private javax.swing.JTextField tfInicialNotaDebitoA;
     private javax.swing.JTextField tfInicialNotaDebitoB;
-    private javax.swing.JTextField tfInicialRecibo;
+    private javax.swing.JTextField tfInicialNotaDebitoC;
+    private javax.swing.JTextField tfInicialReciboA;
+    private javax.swing.JTextField tfInicialReciboB;
+    private javax.swing.JTextField tfInicialReciboC;
     private javax.swing.JTextField tfInicialRemito;
     private javax.swing.JTextField tfInterno1;
     private javax.swing.JTextField tfInterno2;
@@ -699,8 +699,32 @@ public class PanelABMSucursal extends javax.swing.JPanel {
         return tfInicialFacturaB;
     }
 
-    public JTextField getTfInicialNotaCredito() {
-        return tfInicialNotaCredito;
+    public JTextField getTfInicialFacturaC() {
+        return tfInicialFacturaC;
+    }
+
+    public JTextField getTfInicialNotaCreditoB() {
+        return tfInicialNotaCreditoB;
+    }
+
+    public JTextField getTfInicialNotaCreditoC() {
+        return tfInicialNotaCreditoC;
+    }
+
+    public JTextField getTfInicialNotaDebitoC() {
+        return tfInicialNotaDebitoC;
+    }
+
+    public JTextField getTfInicialReciboB() {
+        return tfInicialReciboB;
+    }
+
+    public JTextField getTfInicialReciboC() {
+        return tfInicialReciboC;
+    }
+
+    public JTextField getTfInicialNotaCreditoA() {
+        return tfInicialNotaCreditoA;
     }
 
     public JTextField getTfInicialNotaDebitoA() {
@@ -711,12 +735,16 @@ public class PanelABMSucursal extends javax.swing.JPanel {
         return tfInicialNotaDebitoB;
     }
 
-    public JTextField getTfInicialRecibo() {
-        return tfInicialRecibo;
+    public JTextField getTfInicialReciboA() {
+        return tfInicialReciboA;
     }
 
     public JTextField getTfInicialRemito() {
         return tfInicialRemito;
+    }
+
+    public JCheckBox getCheckWebServices() {
+        return checkWebServices;
     }
     // </editor-fold>
 }

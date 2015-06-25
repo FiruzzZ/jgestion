@@ -5,12 +5,13 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import javax.persistence.*;
 import org.eclipse.persistence.config.QueryHints;
 
 /**
  *
- * @author Administrador
+ * @author FiruzzZ
  */
 @Entity
 @Table(name = "factura_venta"
@@ -377,17 +378,29 @@ public class FacturaVenta implements Serializable {
     }
 
     @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof FacturaVenta)) {
+    public boolean equals(Object obj) {
+        if (obj == null) {
             return false;
         }
-        FacturaVenta other = (FacturaVenta) object;
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final FacturaVenta other = (FacturaVenta) obj;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        if (this.tipo != other.tipo) {
+            return false;
+        }
+        if (this.numero != other.numero) {
+            return false;
+        }
+        if (!Objects.equals(this.sucursal, other.sucursal)) {
             return false;
         }
         return true;
     }
+
 
     @Override
     public String toString() {

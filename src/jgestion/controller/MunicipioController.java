@@ -1,5 +1,6 @@
 package jgestion.controller;
 
+import jgestion.jpa.controller.ProvinciaJpaController;
 import jgestion.controller.exceptions.MessageException;
 import jgestion.controller.exceptions.IllegalOrphanException;
 import jgestion.controller.exceptions.NonexistentEntityException;
@@ -282,7 +283,7 @@ public class MunicipioController implements ActionListener, MouseListener, KeyLi
         panel.getCbProvincias().addActionListener(this);
         panel.hideAbreviacion();
         panel.hideCodigo();
-        UTIL.loadComboBox(panel.getCbProvincias(), new ProvinciaJpaController().findProvinciaEntities(), true);
+        UTIL.loadComboBox(panel.getCbProvincias(), new ProvinciaJpaController().findAll(), true);
         if (isEditting) {
             cargarPanelABM(municipio);
         }

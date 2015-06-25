@@ -16,7 +16,6 @@ import jgestion.entity.Especie;
 import jgestion.entity.CuentabancariaMovimientos;
 import jgestion.entity.CtacteCliente;
 import jgestion.controller.CtacteClienteController;
-import jgestion.controller.DAO;
 import jgestion.controller.Valores;
 import jgestion.controller.exceptions.MessageException;
 import jgestion.entity.enums.ChequeEstado;
@@ -34,31 +33,34 @@ import jgestion.entity.DetalleRecibo_;
  *
  * @author FiruzzZ
  */
-public class ReciboJpaController extends AbstractDAO<Recibo, Integer> {
-
-    private EntityManager entityManager;
+public class ReciboJpaController extends JGestionJpaImpl<Recibo, Integer> {
 
     public ReciboJpaController() {
-        getEntityManager();
     }
 
-    @Override
-    protected final EntityManager getEntityManager() {
-        if (entityManager == null || !entityManager.isOpen()) {
-            entityManager = DAO.getEntityManager();
+    public Integer getNextNumero(Sucursal sucursal, String tipo) {
+        return getNextNumero(sucursal, tipo.charAt(0));
+    }
+
+    public Integer getNextNumero(Sucursal sucursal, char tipo) {
+        EntityManager em = getEntityManager();
+        Integer next;
+        if (Character.toUpperCase(tipo) == 'A') {
+            next = sucursal.getRecibo_a();
+        } else if (Character.toUpperCase(tipo) == 'B') {
+            next = sucursal.getRecibo_b();
+        } else if (Character.toUpperCase(tipo) == 'C') {
+            next = sucursal.getRecibo_c();
+        } else {
+            throw new IllegalArgumentException("Parameter tipo not valid, no corresponde a ningún tipo de Recibo.");
         }
-        return entityManager;
-    }
-
-    public Integer getNextNumero(Sucursal sucursal) {
-        Integer next = sucursal.getRecibo();
-        Object l = getEntityManager().createQuery("SELECT MAX(o.numero)"
-                + " FROM " + getEntityClass().getSimpleName() + " o"
-                + " WHERE o.sucursal.id = " + sucursal.getId()).getSingleResult();
-        if (l != null) {
-            Integer nextNumeroSegunDB = 1 + Integer.valueOf(l.toString());
+        Object o = em.createQuery("SELECT MAX(o.numero) FROM " + getAlias()
+                + " WHERE o.tipo ='" + Character.toUpperCase(tipo) + "'"
+                + " AND o.sucursal.id= " + sucursal.getId()).getSingleResult();
+        if (o != null) {
+            Integer nextNumeroSegunDB = 1 + Integer.valueOf(o.toString());
             if (nextNumeroSegunDB > next) {
-                //quiere decir que la numeración ya supera la configuración
+                //quiere decir que hay registrado un comprobante con mayor numeracion que supera la configuración de la sucursal
                 next = nextNumeroSegunDB;
             }
         }
@@ -66,9 +68,9 @@ public class ReciboJpaController extends AbstractDAO<Recibo, Integer> {
     }
 
     /**
-     * La anulación de una Recibo, resta a <code>CtaCteCliente.entregado</code>
-     * los pagos/entregas (parciales/totales) realizados de cada DetalleRecibo y
-     * cambia      <code>Recibo.estado = false<code>
+     * La anulación de una Recibo, resta a <code>CtaCteCliente.entregado</code> los pagos/entregas
+     * (parciales/totales) realizados de cada DetalleRecibo y cambia
+     * <code>Recibo.estado = false</code>
      *
      * @param recibo
      * @throws MessageException

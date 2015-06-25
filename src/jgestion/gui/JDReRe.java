@@ -69,6 +69,8 @@ public class JDReRe extends javax.swing.JDialog {
         tfCreditoDebitoDisponible = new javax.swing.JTextField();
         btnDetalleCreditoDebito = new javax.swing.JButton();
         labelAnulado = new javax.swing.JLabel();
+        labelLetra = new javax.swing.JLabel();
+        cbTipo = new javax.swing.JComboBox();
         bAnular = new javax.swing.JButton();
         panelAPagar = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
@@ -199,17 +201,22 @@ public class JDReRe extends javax.swing.JDialog {
         labelAnulado.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         labelAnulado.setText("ANULADO");
 
+        labelLetra.setText("Tipo");
+
+        cbTipo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "A", "B", "C" }));
+        cbTipo.setName("facturaLetra"); // NOI18N
+
         javax.swing.GroupLayout panelDatosLayout = new javax.swing.GroupLayout(panelDatos);
         panelDatos.setLayout(panelDatosLayout);
         panelDatosLayout.setHorizontalGroup(
             panelDatosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelDatosLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(panelDatosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(labelClienteProveedor, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel20, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(labelReRe, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addGap(11, 11, 11)
+                .addGroup(panelDatosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(labelClienteProveedor)
+                    .addComponent(jLabel20)
+                    .addComponent(jLabel4)
+                    .addComponent(labelLetra))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelDatosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelDatosLayout.createSequentialGroup()
@@ -222,10 +229,14 @@ public class JDReRe extends javax.swing.JDialog {
                     .addGroup(panelDatosLayout.createSequentialGroup()
                         .addGroup(panelDatosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(panelDatosLayout.createSequentialGroup()
+                                .addComponent(cbTipo, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(labelReRe)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(tfCuarto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(tfOcteto, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(labelAnulado))
                             .addGroup(panelDatosLayout.createSequentialGroup()
                                 .addComponent(dcFechaReRe, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -247,10 +258,12 @@ public class JDReRe extends javax.swing.JDialog {
             panelDatosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelDatosLayout.createSequentialGroup()
                 .addGroup(panelDatosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                    .addComponent(tfOcteto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(labelReRe)
                     .addComponent(tfCuarto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(labelAnulado))
+                    .addComponent(tfOcteto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(labelAnulado)
+                    .addComponent(cbTipo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(labelLetra))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelDatosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(dcFechaCarga, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -633,6 +646,7 @@ private void tfEntregaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:even
     private javax.swing.JComboBox cbCtaCtes;
     private javax.swing.JComboBox cbFormasDePago;
     private javax.swing.JComboBox cbSucursal;
+    private javax.swing.JComboBox cbTipo;
     private javax.swing.JCheckBox checkOcultarDatos;
     private com.toedter.calendar.JDateChooser dcFechaCarga;
     private com.toedter.calendar.JDateChooser dcFechaReRe;
@@ -652,6 +666,7 @@ private void tfEntregaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:even
     private javax.swing.JLabel labelAnulado;
     private javax.swing.JLabel labelClienteProveedor;
     private javax.swing.JLabel labelCreditoDebito;
+    private javax.swing.JLabel labelLetra;
     private javax.swing.JLabel labelReRe;
     private javax.swing.JPanel panelAPagar;
     private javax.swing.JPanel panelDatos;
@@ -741,6 +756,10 @@ private void tfEntregaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:even
 
     public JTextField getTfCreditoDebitoDisponible() {
         return tfCreditoDebitoDisponible;
+    }
+
+    public JComboBox getCbTipo() {
+        return cbTipo;
     }
 
     public JComboBox getCbCaja() {

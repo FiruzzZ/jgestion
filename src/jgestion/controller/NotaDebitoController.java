@@ -110,7 +110,7 @@ public class NotaDebitoController {
         });
         if (loadDefaultData) {
             UTIL.loadComboBox(abm.getCbCliente(), JGestionUtils.getWrappedClientes(new ClienteJpaController().findAll()), false);
-            UTIL.loadComboBox(abm.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), false);
+            UTIL.loadComboBox(abm.getCbSucursal(), JGestionUtils.getWrappedSucursales(new UsuarioHelper().getSucursales()), false);
             UTIL.loadComboBox(abm.getCbIVA(), JGestionUtils.getWrappedIva(new IvaJpaController().findAll()), false);
         }
         UTIL.getDefaultTableModel(abm.getjTable1(), new String[]{"DetalleNotaDebito Object", "Concepto", "Importe"},
@@ -406,7 +406,7 @@ public class NotaDebitoController {
         buscador = new JDBuscadorReRe(frame, "Buscador - Notas de Débito", modal, "Cliente", "Nº Nota");
         buscador.setParaNotaDebito();
         UTIL.loadComboBox(buscador.getCbClieProv(), new ClienteController().findAll(), true);
-        UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), true);
+        UTIL.loadComboBox(buscador.getCbSucursal(), JGestionUtils.getWrappedSucursales(new UsuarioHelper().getSucursales()), true);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
                 new String[]{"id", "Nº Nota Débito", "Cliente", "Importe", "Fecha", "Sucursal", "Saldo", "Usuario", "Fecha (Sistema)"},

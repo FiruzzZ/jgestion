@@ -1,5 +1,7 @@
 package jgestion.controller;
 
+import jgestion.jpa.controller.ProvinciaJpaController;
+import generics.WaitingDialog;
 import java.awt.GridLayout;
 import java.awt.Window;
 import jgestion.jpa.controller.NotaCreditoJpaController;
@@ -33,6 +35,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import jgestion.JGestion;
+import jgestion.JGestionUtils;
 import jgestion.controller.exceptions.MissingReportException;
 import jgestion.entity.Producto;
 import jgestion.entity.Stock;
@@ -56,8 +59,6 @@ public class SucursalController implements ActionListener {
     public final String CLASS_NAME = "Sucursal";
     private JDContenedor contenedor = null;
     private JDABM abm;
-    private final String[] colsName = {"Nº", "Nombre", "Punto Venta", "Encargado", "Dirección", "Teléfonos", "Prov.", "Depto.", "Municipio", "Email"};
-    private final int[] colsWidth = {15, 100, 20, 80, 100, 100, 40, 40, 40, 50};
     private PanelABMSucursal panel;
     private SucursalJpaController jpaController;
     /**
@@ -71,21 +72,22 @@ public class SucursalController implements ActionListener {
         jpaController = new SucursalJpaController();
     }
 
-    private void initABM(boolean isEditting, ActionEvent e) throws MessageException {
+    private void initABM(Window owner, boolean isEditting, ActionEvent e) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.DATOS_GENERAL);
         if (isEditting && entity == null) {
             throw new MessageException("Debe elegir una fila");
         }
         panel = new PanelABMSucursal();
-        UTIL.loadComboBox(panel.getCbProvincias(), new ProvinciaJpaController().findProvinciaEntities(), true);
+        UTIL.loadComboBox(panel.getCbProvincias(), new ProvinciaJpaController().findAll(), true);
+        AutoCompleteDecorator.decorate(panel.getCbProvincias());
         UTIL.loadComboBox(panel.getCbDepartamentos(), null, true);
         UTIL.loadComboBox(panel.getCbMunicipios(), null, true);
         panel.setListener(this);
         if (isEditting) {
             setPanel(entity);
         }
-        abm = new JDABM(contenedor, "ABM " + CLASS_NAME + "es", true, panel);
-        abm.setLocationRelativeTo(contenedor);
+        abm = new JDABM(owner, "ABM " + CLASS_NAME + "es", true, panel);
+        abm.setLocationRelativeTo(owner);
         abm.setListener(this);
         abm.setVisible(true);
     }
@@ -110,7 +112,10 @@ public class SucursalController implements ActionListener {
 //        contenedor.hideBtmEliminar();
         contenedor.hideBtmImprimir();
         try {
-            UTIL.getDefaultTableModel(contenedor.getjTable1(), colsName, colsWidth);
+            UTIL.getDefaultTableModel(contenedor.getjTable1(),
+                    new String[]{"Nº", "Nombre", "Punto Venta", "Encargado", "Dirección", "Teléfonos", "AFIP FE"},
+                    new int[]{15, 100, 30, 80, 50, 60, 40},
+                    new Class<?>[]{Integer.class, null, null, null, null, null, Boolean.class});
         } catch (Exception ex) {
             LOG.error(ex.getLocalizedMessage(), ex);
         }
@@ -144,10 +149,8 @@ public class SucursalController implements ActionListener {
                 o.getEncargado() != null ? o.getEncargado() : "",
                 o.getDireccion(),
                 getTele1ToString(o) + " / " + getTele2ToString(o),
-                o.getProvincia().getNombre(),
-                o.getDepartamento().getNombre(),
-                o.getMunicipio().getNombre(),
-                o.getEmail() != null ? o.getEmail() : ""});
+                o.isWebServices()
+            });
         }
     }
 
@@ -164,10 +167,16 @@ public class SucursalController implements ActionListener {
             entity = new Sucursal();
         }
         long puntoVenta;
-        Integer factura_a, factura_b, notaCredito, notaDebitoA, notaDebitoB, recibo, remito;
+        Integer factura_a, factura_b, factura_c, notaCredito_a, notaCredito_b, notaCredito_c,
+                notaDebitoA, notaDebitoB, notaDebitoC, recibo_a, recibo_b, recibo_c, remito;
         // <editor-fold defaultstate="collapsed" desc="CTRLS">
-        if (panel.getTfNombre() == null || panel.getTfNombre().length() < 1) {
-            throw new MessageException("Debe ingresar un nombre");
+        String nombre = panel.getTfNombre().toUpperCase().trim();
+        if (nombre.isEmpty()) {
+            throw new MessageException("Nombre no válido");
+        } else {
+            if (!UTIL.VALIDAR_REGEX(UTIL.REGEX_ALFANUMERIC_WITH_WHITE, nombre)) {
+                throw new MessageException("Nombre solo puede contener caracteres alfanuméricos");
+            }
         }
         try {
             puntoVenta = Integer.valueOf(panel.getTfPuntoVenta().getText().trim());
@@ -194,20 +203,44 @@ public class SucursalController implements ActionListener {
             throw new MessageException("Número de Factura 'B' no válido (debe estar compuesto solo por números)");
         }
         try {
-            notaCredito = Integer.valueOf(panel.getTfInicialNotaCredito().getText().trim());
-            if (notaCredito < 1 || notaCredito > 99999999) {
-                throw new MessageException("Número de Nota de Credito no válido (debe estar compuesto solo por números, mayor a cero y menor o igual a 99999999)");
+            factura_c = Integer.valueOf(panel.getTfInicialFacturaC().getText().trim());
+            if (factura_c < 1 || factura_c > 99999999) {
+                throw new MessageException("Número de Factura 'C' no válido (debe estar compuesto solo por números, mayor a cero y menor o igual a 99999999)");
             }
         } catch (Exception e) {
-            throw new MessageException("Número de Nota de Crédito no válido (debe estar compuesto solo por números)");
+            throw new MessageException("Número de Factura 'C' no válido (debe estar compuesto solo por números)");
+        }
+        try {
+            notaCredito_a = Integer.valueOf(panel.getTfInicialNotaCreditoA().getText().trim());
+            if (notaCredito_a < 1 || notaCredito_a > 99999999) {
+                throw new MessageException("Número de Nota de Credito 'A' no válido (debe estar compuesto solo por números, mayor a cero y menor o igual a 99999999)");
+            }
+        } catch (Exception e) {
+            throw new MessageException("Número de Nota de Crédito 'A' no válido (debe estar compuesto solo por números)");
+        }
+        try {
+            notaCredito_b = Integer.valueOf(panel.getTfInicialNotaCreditoB().getText().trim());
+            if (notaCredito_b < 1 || notaCredito_b > 99999999) {
+                throw new MessageException("Número de Nota de Credito 'B' no válido (debe estar compuesto solo por números, mayor a cero y menor o igual a 99999999)");
+            }
+        } catch (Exception e) {
+            throw new MessageException("Número de Nota de Crédito 'B' no válido (debe estar compuesto solo por números)");
+        }
+        try {
+            notaCredito_c = Integer.valueOf(panel.getTfInicialNotaCreditoC().getText().trim());
+            if (notaCredito_c < 1 || notaCredito_c > 99999999) {
+                throw new MessageException("Número de Nota de Credito 'C' no válido (debe estar compuesto solo por números, mayor a cero y menor o igual a 99999999)");
+            }
+        } catch (Exception e) {
+            throw new MessageException("Número de Nota de Crédito 'C' no válido (debe estar compuesto solo por números)");
         }
         try {
             notaDebitoA = Integer.valueOf(panel.getTfInicialNotaDebitoA().getText().trim());
             if (notaDebitoA < 1 || notaDebitoA > 99999999) {
-                throw new MessageException("Número de Nota de Débito \"A\" no válido (debe estar compuesto solo por números, mayor a cero y menor o igual a 99999999)");
+                throw new MessageException("Número de Nota de Débito 'A' no válido (debe estar compuesto solo por números, mayor a cero y menor o igual a 99999999)");
             }
         } catch (Exception e) {
-            throw new MessageException("Número de Nota de Débito \"A\" no válido (debe estar compuesto solo por números)");
+            throw new MessageException("Número de Nota de Débito 'A' no válido (debe estar compuesto solo por números)");
         }
         try {
             notaDebitoB = Integer.valueOf(panel.getTfInicialNotaDebitoB().getText().trim());
@@ -218,12 +251,36 @@ public class SucursalController implements ActionListener {
             throw new MessageException("Número de Nota de Débito \"B\" no válido (debe estar compuesto solo por números)");
         }
         try {
-            recibo = Integer.valueOf(panel.getTfInicialRecibo().getText().trim());
-            if (recibo < 1 || recibo > 99999999) {
-                throw new MessageException("Número de Recibo no válido (debe estar compuesto solo por números, mayor a cero y menor o igual a 99999999)");
+            notaDebitoC = Integer.valueOf(panel.getTfInicialNotaDebitoC().getText().trim());
+            if (notaDebitoC < 1 || notaDebitoC > 99999999) {
+                throw new MessageException("Número de Nota de Débito 'C' no válido (debe estar compuesto solo por números, mayor a cero y menor o igual a 99999999)");
             }
         } catch (Exception e) {
-            throw new MessageException("Número de Recibo no válido (debe estar compuesto solo por números)");
+            throw new MessageException("Número de Nota de Débito 'C' no válido (debe estar compuesto solo por números)");
+        }
+        try {
+            recibo_a = Integer.valueOf(panel.getTfInicialReciboA().getText().trim());
+            if (recibo_a < 1 || recibo_a > 99999999) {
+                throw new MessageException("Número de Recibo 'A' no válido (debe estar compuesto solo por números, mayor a cero y menor o igual a 99999999)");
+            }
+        } catch (Exception e) {
+            throw new MessageException("Número de Recibo 'A' no válido (debe estar compuesto solo por números)");
+        }
+        try {
+            recibo_b = Integer.valueOf(panel.getTfInicialReciboB().getText().trim());
+            if (recibo_b < 1 || recibo_b > 99999999) {
+                throw new MessageException("Número de Recibo 'B' no válido (debe estar compuesto solo por números, mayor a cero y menor o igual a 99999999)");
+            }
+        } catch (Exception e) {
+            throw new MessageException("Número de Recibo 'B' no válido (debe estar compuesto solo por números)");
+        }
+        try {
+            recibo_c = Integer.valueOf(panel.getTfInicialReciboC().getText().trim());
+            if (recibo_c < 1 || recibo_c > 99999999) {
+                throw new MessageException("Número de Recibo 'C' no válido (debe estar compuesto solo por números, mayor a cero y menor o igual a 99999999)");
+            }
+        } catch (Exception e) {
+            throw new MessageException("Número de Recibo 'C' no válido (debe estar compuesto solo por números)");
         }
         try {
             remito = Integer.valueOf(panel.getTfInicialRemito().getText().trim());
@@ -273,8 +330,8 @@ public class SucursalController implements ActionListener {
                 entity.setInterno2(new Integer(panel.getTfInterno2()));
             }
         }// </editor-fold>
-        // NOT NULLABLE's
-        entity.setNombre(panel.getTfNombre().toUpperCase());
+        entity.setNombre(nombre);
+        entity.setWebServices(panel.getCheckWebServices().isSelected());
         entity.setDireccion(panel.getTfDireccion());
         entity.setProvincia((Provincia) panel.getSelectedProvincia());
         entity.setDepartamento((Departamento) panel.getSelectedDepartamento());
@@ -282,10 +339,16 @@ public class SucursalController implements ActionListener {
         entity.setPuntoVenta(puntoVenta);
         entity.setFactura_a(factura_a);
         entity.setFactura_b(factura_b);
-        entity.setNotaCredito(notaCredito);
+        entity.setFactura_b(factura_c);
+        entity.setNotaCredito_a(notaCredito_a);
+        entity.setNotaCredito_b(notaCredito_b);
+        entity.setNotaCredito_c(notaCredito_c);
         entity.setNotaDebitoA(notaDebitoA);
-        entity.setNotaDebitoB(notaDebitoA);
-        entity.setRecibo(recibo);
+        entity.setNotaDebitoB(notaDebitoB);
+        entity.setNotaDebitoC(notaDebitoC);
+        entity.setRecibo_a(recibo_a);
+        entity.setRecibo_b(recibo_b);
+        entity.setRecibo_c(recibo_c);
         entity.setRemito(remito);
     }
 
@@ -325,10 +388,26 @@ public class SucursalController implements ActionListener {
                             + "\n" + anterior + "Facturación");
                 }
             }
-            if (!sucursal.getRecibo().equals(oldInstance.getRecibo())) {
-                next = new ReciboJpaController().getNextNumero(sucursal);
-                if (next > sucursal.getRecibo()) {
-                    throw new MessageException("Existen registros de Recibo superior a " + UTIL.AGREGAR_CEROS(sucursal.getRecibo(), 8) + "."
+            if (!sucursal.getRecibo_a().equals(oldInstance.getRecibo_a())) {
+                next = new ReciboJpaController().getNextNumero(sucursal, 'A');
+                if (next > sucursal.getRecibo_a()) {
+                    throw new MessageException("Existen registros de Recibo 'A' superior a " + UTIL.AGREGAR_CEROS(sucursal.getRecibo_a(), 8) + "."
+                            + "\n" + buttonMessage
+                            + "\n" + anterior + "Recibo");
+                }
+            }
+            if (!sucursal.getRecibo_b().equals(oldInstance.getRecibo_b())) {
+                next = new ReciboJpaController().getNextNumero(sucursal, 'B');
+                if (next > sucursal.getRecibo_b()) {
+                    throw new MessageException("Existen registros de Recibo 'B' superior a " + UTIL.AGREGAR_CEROS(sucursal.getRecibo_a(), 8) + "."
+                            + "\n" + buttonMessage
+                            + "\n" + anterior + "Recibo");
+                }
+            }
+            if (!sucursal.getRecibo_c().equals(oldInstance.getRecibo_c())) {
+                next = new ReciboJpaController().getNextNumero(sucursal, 'C');
+                if (next > sucursal.getRecibo_c()) {
+                    throw new MessageException("Existen registros de Recibo 'C' superior a " + UTIL.AGREGAR_CEROS(sucursal.getRecibo_a(), 8) + "."
                             + "\n" + buttonMessage
                             + "\n" + anterior + "Recibo");
                 }
@@ -341,10 +420,10 @@ public class SucursalController implements ActionListener {
                             + "\n" + anterior + "Remito");
                 }
             }
-            if (!sucursal.getNotaCredito().equals(oldInstance.getNotaCredito())) {
+            if (!sucursal.getNotaCredito_a().equals(oldInstance.getNotaCredito_a())) {
                 next = new NotaCreditoJpaController().getNextNumero(sucursal);
-                if (next > sucursal.getNotaCredito()) {
-                    throw new MessageException("Existen registros de Nota de Crédito superior a " + UTIL.AGREGAR_CEROS(sucursal.getNotaCredito(), 8) + "."
+                if (next > sucursal.getNotaCredito_a()) {
+                    throw new MessageException("Existen registros de Nota de Crédito superior a " + UTIL.AGREGAR_CEROS(sucursal.getNotaCredito_a(), 8) + "."
                             + "\n" + buttonMessage
                             + "\n" + anterior + "Nota de Crédito");
                 }
@@ -371,17 +450,23 @@ public class SucursalController implements ActionListener {
     private void setPanel(Sucursal s) {
         panel.setTfNombre(s.getNombre());
         panel.getTfPuntoVenta().setText(UTIL.AGREGAR_CEROS(s.getPuntoVenta(), 4));
+        panel.getCheckWebServices().setSelected(s.isWebServices());
         panel.getTfInicialFacturaA().setText(UTIL.AGREGAR_CEROS(s.getFactura_a(), 8));
         panel.getTfInicialFacturaB().setText(UTIL.AGREGAR_CEROS(s.getFactura_b(), 8));
-        panel.getTfInicialNotaCredito().setText(UTIL.AGREGAR_CEROS(s.getNotaCredito(), 8));
+        panel.getTfInicialFacturaC().setText(UTIL.AGREGAR_CEROS(s.getFactura_c(), 8));
+        panel.getTfInicialNotaCreditoA().setText(UTIL.AGREGAR_CEROS(s.getNotaCredito_a(), 8));
+        panel.getTfInicialNotaCreditoB().setText(UTIL.AGREGAR_CEROS(s.getNotaCredito_b(), 8));
+        panel.getTfInicialNotaCreditoC().setText(UTIL.AGREGAR_CEROS(s.getNotaCredito_c(), 8));
         panel.getTfInicialNotaDebitoA().setText(UTIL.AGREGAR_CEROS(s.getNotaDebitoA(), 8));
-        panel.getTfInicialRecibo().setText(UTIL.AGREGAR_CEROS(s.getRecibo(), 8));
+        panel.getTfInicialNotaDebitoB().setText(UTIL.AGREGAR_CEROS(s.getNotaDebitoB(), 8));
+        panel.getTfInicialNotaDebitoC().setText(UTIL.AGREGAR_CEROS(s.getNotaDebitoC(), 8));
+        panel.getTfInicialReciboA().setText(UTIL.AGREGAR_CEROS(s.getRecibo_a(), 8));
+        panel.getTfInicialReciboB().setText(UTIL.AGREGAR_CEROS(s.getRecibo_b(), 8));
+        panel.getTfInicialReciboC().setText(UTIL.AGREGAR_CEROS(s.getRecibo_c(), 8));
         panel.getTfInicialRemito().setText(UTIL.AGREGAR_CEROS(s.getRemito(), 8));
         panel.setTfDireccion(s.getDireccion());
-        if (s.getEncargado() != null) {
-            panel.setTfEncargado(s.getEncargado());
-        }
-
+        panel.setTfEncargado(s.getEncargado());
+        panel.setTfEmail(s.getEmail());
         if (s.getTele1() != null) {
             panel.setTfTele1(s.getTele1().toString());
         }
@@ -394,10 +479,6 @@ public class SucursalController implements ActionListener {
         }
         if (s.getInterno2() != null) {
             panel.setTfInterno2(s.getInterno2().toString());
-        }
-
-        if (s.getEmail() != null) {
-            panel.setTfEmail(s.getEmail());
         }
 
         for (int i = 0; i < panel.getCbProvincias().getItemCount(); i++) {
@@ -449,7 +530,7 @@ public class SucursalController implements ActionListener {
             JButton boton = (JButton) e.getSource();
             if (boton.getName().equalsIgnoreCase("new")) {
                 try {
-                    initABM(false, e);
+                    initABM(contenedor, false, e);
                 } catch (MessageException ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
@@ -459,7 +540,7 @@ public class SucursalController implements ActionListener {
             } else if (boton.getName().equalsIgnoreCase("edit")) {
                 try {
                     entity = getSelectedFromContendor();
-                    initABM(true, e);
+                    initABM(contenedor, true, e);
                 } catch (MessageException ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
@@ -545,25 +626,34 @@ public class SucursalController implements ActionListener {
 
     private void showNumeracionActualDialog(Sucursal sucursal) {
         JDialog jd = new JDialog(abm, "Numeración actual", true);
-        PanelNumeracionActual paneln = new PanelNumeracionActual();
-        Integer actual = (new FacturaVentaJpaController().getNextNumero(sucursal, 'a'));
+        final PanelNumeracionActual paneln = new PanelNumeracionActual();
+        Integer actual = new FacturaVentaJpaController().getNextNumero(sucursal, 'a');
         actual = actual.equals(sucursal.getFactura_a()) ? actual : actual - 1;
         paneln.setTfInicialFacturaA(UTIL.AGREGAR_CEROS(actual, 8));
 
-        actual = (new FacturaVentaJpaController().getNextNumero(sucursal, 'b'));
+        actual = new FacturaVentaJpaController().getNextNumero(sucursal, 'b');
         actual = actual.equals(sucursal.getFactura_b()) ? actual : actual - 1;
         paneln.setTfInicialFacturaB(UTIL.AGREGAR_CEROS(actual, 8));
+        actual = new FacturaVentaJpaController().getNextNumero(sucursal, 'C');
+        actual = actual.equals(sucursal.getFactura_c()) ? actual : actual - 1;
+        paneln.setTfInicialFacturaC(UTIL.AGREGAR_CEROS(actual, 8));
 
-        actual = new ReciboJpaController().getNextNumero(sucursal);
-        actual = actual.equals(sucursal.getRecibo()) ? actual : actual - 1;
-        paneln.setTfInicialRecibo(UTIL.AGREGAR_CEROS(actual, 8));
+        actual = new ReciboJpaController().getNextNumero(sucursal, 'A');
+        actual = actual.equals(sucursal.getRecibo_a()) ? actual : actual - 1;
+        paneln.setTfInicialReciboA(UTIL.AGREGAR_CEROS(actual, 8));
+        actual = new ReciboJpaController().getNextNumero(sucursal, 'B');
+        actual = actual.equals(sucursal.getRecibo_b()) ? actual : actual - 1;
+        paneln.setTfInicialReciboB(UTIL.AGREGAR_CEROS(actual, 8));
+        actual = new ReciboJpaController().getNextNumero(sucursal, 'C');
+        actual = actual.equals(sucursal.getRecibo_c()) ? actual : actual - 1;
+        paneln.setTfInicialReciboC(UTIL.AGREGAR_CEROS(actual, 8));
 
         actual = new RemitoJpaController().getNextNumero(sucursal);
         actual = actual.equals(sucursal.getRemito()) ? actual : actual - 1;
         paneln.setTfInicialRemito(UTIL.AGREGAR_CEROS(actual, 8));
 
         actual = new NotaCreditoJpaController().getNextNumero(sucursal);
-        actual = actual.equals(sucursal.getNotaCredito()) ? actual : actual - 1;
+        actual = actual.equals(sucursal.getNotaCredito_a()) ? actual : actual - 1;
         paneln.setTfInicialNotaCredito(UTIL.AGREGAR_CEROS(actual, 8));
 
         actual = new NotaDebitoJpaController().getNextNumero(sucursal, "A");
@@ -573,7 +663,20 @@ public class SucursalController implements ActionListener {
         actual = new NotaDebitoJpaController().getNextNumero(sucursal, "B");
         actual = actual.equals(sucursal.getNotaDebitoB()) ? actual : actual - 1;
         paneln.setTfInicialNotaDebitoB(UTIL.AGREGAR_CEROS(actual, 8));
-
+        if (sucursal.isWebServices()) {
+            WaitingDialog.initWaitingDialog(jd, "AFIP WebServices", "Recuperando últimos números de comprobantes", () -> {
+                try {
+                    AFIPWSController afipwsController = new AFIPWSController(null);
+                    paneln.getTfFactuA_AFIP().setText(afipwsController.getUltimoCompActualizado(sucursal.getPuntoVenta().intValue(), 1) + "");
+                    paneln.getTfFactuB_AFIP().setText(afipwsController.getUltimoCompActualizado(sucursal.getPuntoVenta().intValue(), 6) + "");
+                    paneln.getTfFactuC_AFIP().setText(afipwsController.getUltimoCompActualizado(sucursal.getPuntoVenta().intValue(), 11) + "");
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(panel, "Error recuperando números de últimos comprobantes\n" + ex.getMessage(),
+                            "AFIP Web Services", JOptionPane.ERROR_MESSAGE);
+                    LOG.error("Recuperando últimos comprobantes de Sucursal.id=" + sucursal.getId(), ex);
+                }
+            });
+        }
         jd.add(paneln);
         jd.pack();
         jd.setLocationRelativeTo(abm);
@@ -598,8 +701,9 @@ public class SucursalController implements ActionListener {
         panelDis = new PanelDistribucionStock();
         UTIL.loadComboBox(panelDis.getCbProductos(), new ProductoController().findWrappedProductoToCombo(true), false);
         AutoCompleteDecorator.decorate(panelDis.getCbProductos());
-        UTIL.loadComboBox(panelDis.getCbSucursalOrigen(), uh.getWrappedSucursales(), false);
-        UTIL.loadComboBox(panelDis.getCbSucursalDestino(), uh.getWrappedSucursales(), false);
+        List<EntityWrapper<Sucursal>> l = JGestionUtils.getWrappedSucursales(uh.getSucursales());
+        UTIL.loadComboBox(panelDis.getCbSucursalOrigen(), l, false);
+        UTIL.loadComboBox(panelDis.getCbSucursalDestino(), l, false);
         ActionListener aa = new ActionListener() {
 
             @Override
@@ -733,7 +837,7 @@ public class SucursalController implements ActionListener {
         pp.setBorder(BorderFactory.createEmptyBorder(5, 5, 0, 0));
         pp.setLayout(new GridLayout(2, 0));
         final JComboBox<Object> cbSucursal = new JComboBox<>();
-        UTIL.loadComboBox(cbSucursal, uh.getWrappedSucursales(), false);
+        UTIL.loadComboBox(cbSucursal, JGestionUtils.getWrappedSucursales(uh.getSucursales()), false);
         pp.add(new JLabel("Sucursal"));
         pp.add(cbSucursal);
         final JCheckBox checkStockCero = new JCheckBox("Incluir productos sin stock");

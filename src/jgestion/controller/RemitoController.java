@@ -436,7 +436,7 @@ public class RemitoController implements ActionListener {
             }
         });
         UTIL.loadComboBox(buscador.getCbClieProv(), new ClienteController().findAll(), true);
-        UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getWrappedSucursales(), true);
+        UTIL.loadComboBox(buscador.getCbSucursal(), JGestionUtils.getWrappedSucursales(new UsuarioHelper().getSucursales()), true);
         UTIL.loadComboBox(buscador.getCbVendedor(), JGestionUtils.getWrappedVendedor(new VendedorJpaController().findAll()), true);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),

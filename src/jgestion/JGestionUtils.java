@@ -34,16 +34,21 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Random;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import jgestion.controller.UsuarioController;
 import jgestion.entity.Caja;
 import jgestion.entity.RemitoCompra;
+import jgestion.jpa.controller.JGestionJpaImpl;
 import utilities.general.EntityWrapper;
 import utilities.general.UTIL;
 
@@ -59,6 +64,39 @@ public class JGestionUtils {
     public volatile static String LAST_DIRECTORY_PATH;
 
     public JGestionUtils() {
+    }
+    private static final String[] yyy = {
+        "",
+        "",
+        "",
+        "¡Bien! ",
+        "¡Que grande! ",
+        "Seguí así ",
+        "Cuando sea grande quiero ser como vos "
+    };
+    private static final String[] xxx = {
+        "", // <--- para confundir al usuario!!
+        "",
+        "O que você está querendo fazer?!",
+        "No no no.. nada que ver!",
+        "WTF!",
+        "Alerta de usuario peligroso!",
+        "No te hagás del vivo/a",
+        "Ojito vo!"
+    };
+
+    public static String getRandomMotivation() {
+        String s = yyy[new Random().nextInt(yyy.length)];
+        return s.isEmpty() ? s : "\n" + s + UsuarioController.getCurrentUser().getNick();
+    }
+
+    public static String getRandomAgression() {
+        return xxx[new Random().nextInt(xxx.length)];
+    }
+
+    public static Date getServerDate() {
+        return new JGestionJpaImpl<Object, Serializable>() {
+        }.getServerDate();
     }
 
     public static File showSaveDialogFileChooser(Component parent, String description, File fileDir, String fileExtension) throws IOException {
@@ -298,7 +336,7 @@ public class JGestionUtils {
 
     public static String getNumeracion(Recibo o, boolean conGuion) {
         String guion = conGuion ? "-" : "";
-        return UTIL.AGREGAR_CEROS(o.getSucursal().getPuntoVenta(), 4) + guion + UTIL.AGREGAR_CEROS(o.getNumero(), 8);
+        return "R" + o.getTipo() + UTIL.AGREGAR_CEROS(o.getSucursal().getPuntoVenta(), 4) + guion + UTIL.AGREGAR_CEROS(o.getNumero(), 8);
     }
 
     public static String getNumeracion(NotaCredito o, boolean conGuion) {

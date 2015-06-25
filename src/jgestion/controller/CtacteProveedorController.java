@@ -10,7 +10,7 @@ import jgestion.entity.FacturaCompra;
 import jgestion.entity.Proveedor;
 import jgestion.entity.Remesa;
 import jgestion.gui.JDResumenCtaCtes;
-import gui.generics.JDialogTable;
+import generics.gui.JDialogTable;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

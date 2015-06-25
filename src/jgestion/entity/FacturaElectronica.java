@@ -1,21 +1,18 @@
-
 package jgestion.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 import javax.persistence.*;
 
 /**
  *
- * @author Administrador
+ * @author FiruzzZ
  */
 @Entity
 @Table(name = "factura_electronica", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"cbte_numero"})})
-@NamedQueries({
-    @NamedQuery(name = "FacturaElectronica.findAll", query = "SELECT f FROM FacturaElectronica f"),
-    @NamedQuery(name = "FacturaElectronica.findById", query = "SELECT f FROM FacturaElectronica f WHERE f.id = :id"),
-    @NamedQuery(name = "FacturaElectronica.findByCae", query = "SELECT f FROM FacturaElectronica f WHERE f.cae = :cae")
+    @UniqueConstraint(name = "factura_electronica_cbte_fields_unique", columnNames = {"pto_vta", "cbte_tipo", "cbte_numero"}),
+    @UniqueConstraint(name = "factura_electronica_cae_unique", columnNames = {"cae"})
 })
 public class FacturaElectronica implements Serializable {
 
@@ -25,45 +22,78 @@ public class FacturaElectronica implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
+    @Column(name = "fecha_proceso")
+    @Temporal(TemporalType.DATE)
+    private Date fechaProceso;
+    /**
+     * A=APROBADO, R=RECHAZADO, P=PARCIAL
+     */
     @Basic(optional = false)
-    @Column(name = "fecha_proceso", nullable = false, length = 14)
-    private String fechaProceso;
-    @Basic(optional = false)
-    @Column(name = "resultado", nullable = false, length = 1)
+    @Column(name = "resultado", length = 1)
     private String resultado;
     @Basic(optional = false)
+    /**
+     * 1= PRODUCTO, 2= SERVICIO, 3= PRODUCTO Y SERVICIO
+     */
     @Column(name = "concepto", nullable = false)
     private int concepto;
+    @Column(name = "pto_vta", nullable = false, precision = 4)
+    private int ptoVta;
+    @Column(name = "cbte_numero", nullable = false, precision = 8)
+    private long cbteNumero;
+    /**
+     * <br>1, Factura A, 20100917, NULL
+     * <br>2, Nota de Débito A, 20100917, NULL
+     * <br>3, Nota de Crédito A, 20100917, NULL
+     * <br>6, Factura B, 20100917, NULL
+     * <br>7, Nota de Débito B, 20100917, NULL
+     * <br>8, Nota de Crédito B, 20100917, NULL
+     * <br>4, Recibos A, 20100917, NULL
+     * <br>5, Notas de Venta al contado A, 20100917, NULL
+     * <br>9, Recibos B, 20100917, NULL
+     * <br>10, Notas de Venta al contado B, 20100917, NULL
+     * <br>63, Liquidacion A, 20100917, NULL
+     * <br>64, Liquidacion B, 20100917, NULL
+     * <br>34, Cbtes. A del Anexo I, Apartado A,inc.f),R.G.Nro. 1415, 20100917, NULL
+     * <br>35, Cbtes. B del Anexo I,Apartado A,inc. f),R.G. Nro. 1415, 20100917, NULL
+     * <br>39, Otros comprobantes A que cumplan con R.G.Nro. 1415, 20100917, NULL
+     * <br>40, Otros comprobantes B que cumplan con R.G.Nro. 1415, 20100917, NULL
+     * <br>60, Cta de Vta y Liquido prod. A, 20100917, NULL
+     * <br>61, Cta de Vta y Liquido prod. B, 20100917, NULL
+     * <br>11, Factura C, 20110330, NULL
+     * <br>12, Nota de Débito C, 20110330, NULL
+     * <br>13, Nota de Crédito C, 20110330, NULL
+     * <br>15, Recibo C, 20110330, NULL
+     * <br>49, Comprobante de Compra de Bienes Usados a Consumidor Final, 20130401, NULL
+     * <br>51, Factura M, 20150522, NULL
+     * <br>52, Nota de Débito M, 20150522, NULL
+     * <br>53, Nota de Crédito M, 20150522, NULL
+     * <br>54, Recibo M, 20150522, NULL
+     */
     @Basic(optional = false)
     @Column(name = "cbte_tipo", nullable = false)
     private int cbteTipo;
-    @Basic(optional = false)
-    @Column(name = "cbte_numero", nullable = false)
-    private int cbteNumero;
-    @Column(name = "cae", length = 14)
+    @Column(name = "cae", length = 14, unique = true)
     private String cae;
     @Column(name = "cae_fecha_vto")
     @Temporal(TemporalType.DATE)
     private Date caeFechaVto;
-    @Column(name = "fecha_serv_desde")
-    @Temporal(TemporalType.DATE)
-    private Date fechaServDesde;
-    @Column(name = "fecha_serv_hasta")
-    @Temporal(TemporalType.DATE)
-    private Date fechaServHasta;
-    @Column(name = "observaciones", length = 2000)
     private String observaciones;
 
     public FacturaElectronica() {
     }
 
-    public FacturaElectronica(Integer id, String fechaProceso, String resultado, int concepto, int cbteTipo, int cbteNumero) {
+    public FacturaElectronica(Integer id, int cbteTipo, int ptoVta, long cbteNumero, Date fechaProceso, String resultado, int concepto, String cae, Date caeFechaVto, String observaciones) {
         this.id = id;
+        this.ptoVta = ptoVta;
+        this.cbteNumero = cbteNumero;
         this.fechaProceso = fechaProceso;
         this.resultado = resultado;
         this.concepto = concepto;
         this.cbteTipo = cbteTipo;
-        this.cbteNumero = cbteNumero;
+        this.cae = cae;
+        this.caeFechaVto = caeFechaVto;
+        this.observaciones = observaciones;
     }
 
     public Integer getId() {
@@ -74,11 +104,11 @@ public class FacturaElectronica implements Serializable {
         this.id = id;
     }
 
-    public String getFechaProceso() {
+    public Date getFechaProceso() {
         return fechaProceso;
     }
 
-    public void setFechaProceso(String fechaProceso) {
+    public void setFechaProceso(Date fechaProceso) {
         this.fechaProceso = fechaProceso;
     }
 
@@ -98,6 +128,14 @@ public class FacturaElectronica implements Serializable {
         this.concepto = concepto;
     }
 
+    public int getPtoVta() {
+        return ptoVta;
+    }
+
+    public void setPtoVta(int ptoVta) {
+        this.ptoVta = ptoVta;
+    }
+
     public int getCbteTipo() {
         return cbteTipo;
     }
@@ -106,11 +144,11 @@ public class FacturaElectronica implements Serializable {
         this.cbteTipo = cbteTipo;
     }
 
-    public int getCbteNumero() {
+    public long getCbteNumero() {
         return cbteNumero;
     }
 
-    public void setCbteNumero(int cbteNumero) {
+    public void setCbteNumero(long cbteNumero) {
         this.cbteNumero = cbteNumero;
     }
 
@@ -138,37 +176,29 @@ public class FacturaElectronica implements Serializable {
         this.observaciones = observaciones;
     }
 
-    public Date getFechaServDesde() {
-        return fechaServDesde;
-    }
-
-    public Date getFechaServHasta() {
-        return fechaServHasta;
-    }
-
-    public void setFechaServDesde(Date fechaServDesde) {
-        this.fechaServDesde = fechaServDesde;
-    }
-
-    public void setFechaServHasta(Date fechaServHasta) {
-        this.fechaServHasta = fechaServHasta;
-    }
-    
     @Override
     public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        int hash = 7;
+        hash = 89 * hash + Objects.hashCode(this.id);
+        hash = 89 * hash + this.ptoVta;
+        hash = 89 * hash + this.cbteTipo;
+        hash = 89 * hash + Objects.hashCode(this.cae);
         return hash;
     }
 
     @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof FacturaElectronica)) {
+    public boolean equals(Object obj) {
+        if (obj == null) {
             return false;
         }
-        FacturaElectronica other = (FacturaElectronica) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final FacturaElectronica other = (FacturaElectronica) obj;
+        if (!Objects.equals(this.id, other.id)) {
+            return false;
+        }
+        if (!Objects.equals(this.cae, other.cae)) {
             return false;
         }
         return true;
@@ -176,9 +206,10 @@ public class FacturaElectronica implements Serializable {
 
     @Override
     public String toString() {
-        return this.getClass() + "{" + "id=" + id + ", fechaProceso=" + fechaProceso
-                + ", resultado=" + resultado + ", concepto=" + concepto + ", cbteTipo="
-                + cbteTipo + ", cbteNumero=" + cbteNumero + ", cae=" + cae + ", caeFechaVto="
-                + caeFechaVto + ", observaciones=" + observaciones + '}';
+        return "FacturaElectronica{" + "id=" + id
+                + ", ptoVta=" + ptoVta + ", cbteNumero=" + cbteNumero + ", cbteTipo=" + cbteTipo + ", cae=" + cae
+                + ", fechaProceso=" + fechaProceso + ", resultado=" + resultado + ", concepto=" + concepto
+                + ", caeFechaVto=" + caeFechaVto + ", observaciones=" + observaciones + '}';
     }
+
 }

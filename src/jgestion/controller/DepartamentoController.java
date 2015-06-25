@@ -1,5 +1,6 @@
 package jgestion.controller;
 
+import jgestion.jpa.controller.ProvinciaJpaController;
 import jgestion.controller.exceptions.MessageException;
 import jgestion.controller.exceptions.IllegalOrphanException;
 import jgestion.controller.exceptions.NonexistentEntityException;
@@ -343,7 +344,7 @@ public class DepartamentoController implements ActionListener, MouseListener, Ke
         }
         panel = new PanelABMDeptos();
         panel.hideDepto();
-        UTIL.loadComboBox(panel.getCbProvincias(), new ProvinciaJpaController().findProvinciaEntities(), false);
+        UTIL.loadComboBox(panel.getCbProvincias(), new ProvinciaJpaController().findAll(), false);
         if (isEditting) {
             setPanel(entity);
         }

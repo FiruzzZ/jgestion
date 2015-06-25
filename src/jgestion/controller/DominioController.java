@@ -2,7 +2,7 @@ package jgestion.controller;
 
 import com.toedter.calendar.JDateChooser;
 import generics.GenericBeanCollection;
-import gui.generics.GroupLayoutPanelBuilder;
+import generics.gui.GroupLayoutPanelBuilder;
 import java.awt.Color;
 import java.awt.Window;
 import java.awt.event.ActionEvent;

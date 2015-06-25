@@ -1,40 +1,47 @@
 package jgestion.controller;
 
-import afip.ws.jaxws.*;
+import afip.ws.exception.WSAFIPErrorResponseException;
 import afip.ws.wsaa.WSAA;
-import afip.ws.wsfe.AFIPClient;
-import afip.ws.wsfe.exceptions.WSAFIPErrorResponseException;
-import afip.ws.wsfe.gui.PanelWSFE;
-import java.awt.Window;
+import afip.ws.jaxws.*;
+import afip.ws.wsfe.AFIPTestClient;
+//import afip.ws.produccion.fev1.*;
+//import afip.ws.wsfe.AFIPFEVClient;
+import generics.CustomABMJDialog;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.security.UnrecoverableKeyException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
+import java.util.Properties;
+import java.util.logging.Level;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import jgestion.JGestionUtils;
 import jgestion.controller.exceptions.MessageException;
 import jgestion.entity.DetalleVenta;
 import jgestion.entity.FacturaElectronica;
 import jgestion.entity.FacturaVenta;
+import jgestion.entity.NotaCredito;
+import jgestion.entity.NotaDebito;
+import jgestion.entity.Recibo;
 import jgestion.gui.JDABM;
-import jgestion.gui.JDWSAASetting;
-import jgestion.gui.WSFEVetificacionPanel;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
-import java.security.UnrecoverableKeyException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.List;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.xml.bind.DatatypeConverter;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+import jgestion.gui.PanelAFIPWSConsultarCbte;
+import jgestion.gui.WSFEVerificacionPanel;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import utilities.general.UTIL;
 
@@ -44,50 +51,68 @@ import utilities.general.UTIL;
  */
 public class AFIPWSController {
 
-    public static final String TICKET_ACCESS_XML_PATH = ".\\ws\\tar.xml";
-    private AFIPClient aFIPClient;
-    private JDABM jDABM;
-    private WSFEVetificacionPanel panelWSFE;
+    /**
+     * ./ws/
+     */
+    private static final String WS_FOLDER = "." + File.separator + "ws" + File.separator;
+    private static final String TICKET_ACCESS_XML = WS_FOLDER + "tar.xml";
+    private static final String WS_CLIENT_PROPERTIES = WS_FOLDER + "wsaa_client.properties";
+    private static final Logger LOG = Logger.getLogger(AFIPWSController.class);
+
+    private AFIPTestClient aFIPClient;
+//    private AFIPFEVClient aFIPClient;
+    private WSFEVerificacionPanel panelWSFE;
     private String eventos;
-    private org.w3c.dom.Document TA_XML;
+    private Document TA_XML;
 
-    public AFIPWSController() throws ParserConfigurationException, SAXException, IOException, Exception {
-        this(new File(TICKET_ACCESS_XML_PATH));
-    }
-
-    public AFIPWSController(File ticketAccessXMLFile) throws ParserConfigurationException, SAXException, IOException, Exception {
-        if (ticketAccessXMLFile == null || !ticketAccessXMLFile.exists()) {
-            throw new IllegalArgumentException("No se encontró el archivo de certificación de la AFIP.\n"
-                    + "\nSi dispone de este archivo, haga una copia, pegue y renombrelo como se indica a continuación:"
-                    + ticketAccessXMLFile.getAbsolutePath()
-                    + "\nSino debe crear el suyo en la página de la AFIP.");
-        }
-        if (!AFIPClient.areServicesAvailable()) {
+    /**
+     * Se encarga de instanciar un con un TickerAccess no expirado (si existiera uno pero ya
+     * expirado, genera uno nuevo a través de {@link WSAA})
+     *
+     * @param pwdPKCS12
+     * @throws ParserConfigurationException
+     * @throws SAXException
+     * @throws IOException
+     * @throws Exception
+     */
+    public AFIPWSController(String pwdPKCS12) throws ParserConfigurationException, SAXException, IOException, Exception {
+        if (!aFIPClient.areServicesAvailable()) {
             throw new MessageException("Los servicios de la AFIP no se encuentran disponibles.");
         }
-        TA_XML = getDocument(ticketAccessXMLFile);
-        Calendar expirationTime = getExpirationTime(TA_XML);
-        //chequea si el ticket está vigente
-        if (expirationTime.before(new GregorianCalendar())) {
-            String loginTicketResponse = null;
+        boolean expired = true;
+        File ticketAccessXMLFile = new File(TICKET_ACCESS_XML);
+        if (ticketAccessXMLFile.exists()) {
+            TA_XML = getDocument(ticketAccessXMLFile);
+            Date expirationTime = WSAA.getExpirationTime(TA_XML);
+            expired = expirationTime.before(JGestionUtils.getServerDate());
+        }
+        if (expired) {
             try {
-                loginTicketResponse = WSAA.getLoginTicketResponse(null, null, null);
+                File f = new File(WS_CLIENT_PROPERTIES);
+                if (!f.exists()) {
+                    throw new MessageException("No se encontró el archivo de propiedades de WS: " + WS_CLIENT_PROPERTIES);
+                }
+                Properties config = new Properties();
+                config.load(new FileInputStream(WS_CLIENT_PROPERTIES));
+                //en el archivo de propiedad no se hace referencia a ningún path específico, solo al nombre del archivo PKCS#12
+                config.setProperty("keystore", WS_FOLDER + config.getProperty("keystore"));
+                WSAA wsaa = new WSAA(config);
+                String tarXML = wsaa.getLoginTicketResponse(null, pwdPKCS12, null);
+                UTIL.createFile(tarXML, ticketAccessXMLFile.getCanonicalPath());
             } catch (UnrecoverableKeyException ex) {
-                throw new MessageException("No es posible crear el certificado porque contraseña del archivo PCKS#12 no es correcta"
+                throw new MessageException("No es posible crear el certificado porque la contraseña del archivo PCKS#12 no es correcta"
                         + "\n" + ex.getMessage());
             }
-            UTIL.createFile(loginTicketResponse, ticketAccessXMLFile.getCanonicalPath());
-            Logger.getLogger(this.getClass()).trace("TRACE - new TicketAccess expirationTime" + expirationTime.getTime());
-            TA_XML = getDocument(ticketAccessXMLFile);
         }
-        aFIPClient = new AFIPClient(TA_XML);
+        TA_XML = getDocument(ticketAccessXMLFile);
+        aFIPClient = new AFIPTestClient(TA_XML);
+//        aFIPClient = new AFIPFEVClient(TA_XML);
     }
 
     /**
-     * Parse the content of the given file as an XML document and return a new
-     * DOM {@link org.w3c.dom.Document} object normalized
-     * ({@link org.w3c.dom.Document#normalize()}). An IllegalArgumentException
-     * is thrown if the File is null null.
+     * Parse the content of the given file as an XML document and return a new DOM
+     * {@link org.w3c.dom.Document} object normalized ({@link org.w3c.dom.Document#normalize()}). An
+     * IllegalArgumentException is thrown if the File is null null.
      *
      * @param file
      * @return A new DOM Document object.
@@ -104,196 +129,60 @@ public class AFIPWSController {
         return TA_XML;
     }
 
-    public JDialog initFE(Window owner) throws WSAFIPErrorResponseException {
-//
-//        panelWSFE.getBtnAddItem().addActionListener(new ActionListener() {
-//
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                int cantidad;
-//                double precioUnitario;
-//
-//                try {
-//                    if (panelWSFE.getjTabbedPane1().getSelectedIndex() == 0) { //tab Producto
-//                        Producto p = (Producto) panelWSFE.getCbProductos().getSelectedItem();
-//                        if (p == null) {
-//                            throw new IllegalArgumentException("Debe seleccionar un producto");
-//                        }
-//                        try {
-//                            cantidad = Integer.parseInt(panelWSFE.getTfProductoCantidad().getText());
-//                        } catch (Exception ex) {
-//                            throw new IllegalArgumentException("cantidad no válida");
-//                        }
-//                        try {
-//                            precioUnitario = Double.parseDouble(panelWSFE.getTfProductoPrecioUnit().getText());
-//                        } catch (Exception ex) {
-//                            throw new IllegalArgumentException("precio unitario no válida");
-//                        }
-//                        addItemToFE((Producto) panelWSFE.getCbProductos().getSelectedItem(),
-//                                cantidad,
-//                                Double.parseDouble(((IvaTipo) panelWSFE.getCbProductoAlicuotas().getSelectedItem()).getDesc().replaceAll("%", "")),
-//                                precioUnitario);
-//                    }
-//                } catch (Exception ex) {
-//                    JOptionPane.showMessageDialog(jDABM, ex.getMessage());
-//                }
-//            }
-//
-//            private void addItemToFE(Producto selectedProducto, int cantidad, double alicuota, double precioUnitario) {
-//                DefaultTableModel dtm = UTIL.getDtm(panelWSFE.getTableDetalle());
-//                double unitarioConIva = precioUnitario + UTIL.getPorcentaje(precioUnitario, alicuota);
-//                dtm.addRow(new Object[]{
-//                            selectedProducto.getIva().toString(),
-//                            selectedProducto.getCodigo(),
-//                            selectedProducto.getNombre() + "(" + selectedProducto.getIva().toString() + ")",
-//                            cantidad,
-//                            UTIL.PRECIO_CON_PUNTO.format(precioUnitario),
-//                            UTIL.PRECIO_CON_PUNTO.format(unitarioConIva),
-//                            null,
-//                            UTIL.PRECIO_CON_PUNTO.format((cantidad * unitarioConIva)), //Total
-//                            null,//Tipo de descuento
-//                            selectedProducto.getId(),
-//                            null
-//                        });
-//                refreshResumen();
-//            }
-//        });
-//        panelWSFE.getBtnDropItem().addActionListener(new ActionListener() {
-//
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//            }
-//        });
-//        panelWSFE.getBtnAddTributo().addActionListener(new ActionListener() {
-//
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//            }
-//        });
-//        panelWSFE.getBtnDropTributo().addActionListener(new ActionListener() {
-//
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//            }
-//        });
-//        panelWSFE.getBtnGetCotizAFIP().addActionListener(new ActionListener() {
-//
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                try {
-//                    if (panelWSFE.getCbMonendas().getSelectedIndex() > 0) {
-//                        Cotizacion cotizacion = aFIPClient.getCotizacion(((Moneda) panelWSFE.getCbMonendas().getSelectedItem()).getId());
-//                        panelWSFE.getTfCotizacion().setText(String.valueOf(cotizacion.getMonCotiz()));
-//                    } else {
-//                        panelWSFE.getTfCotizacion().setText("1");
-//                    }
-//                } catch (WSAFIPErrorResponseException ex) {
-//                    JOptionPane.showMessageDialog(jDABM, ex.getMessage(), "Error obteniendo cotización", JOptionPane.ERROR_MESSAGE);
-//                    Logger.getLogger(AFIPWSController.class.getName()).log(Level.SEVERE, null, ex);
-//                }
-//            }
-//        });
-//        jDABM = new JDABM(owner, true, panelWSFE);
-//        jDABM.getbAceptar().addActionListener(new ActionListener() {
-//
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                try {
-//                    doFE(panelWSFE);
-//                } catch (WSAFIPErrorResponseException ex) {
-//                    jDABM.showMessage(ex.getMessage(), "AFIP FE Error", JOptionPane.ERROR_MESSAGE);
-//                    Logger.getLogger(AFIPWSController.class.getName()).log(Level.SEVERE, null, ex);
-//                }
-//            }
-//        });
-//        jDABM.getbCancelar().addActionListener(new ActionListener() {
-//
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                jDABM.dispose();
-//            }
-//        });
-//        jDABM.setTitle("Facturación Electrónica AFIP");
-        return jDABM;
+    /**
+     *
+     * @param ptoVta
+     * @param cbteTipo para saber el ID usar {@link #getTipoComprobanteID(java.lang.Object)}
+     * @return
+     * @throws WSAFIPErrorResponseException
+     */
+    public int getUltimoCompActualizado(int ptoVta, int cbteTipo) throws WSAFIPErrorResponseException {
+        CbteTipo cbteTipoo = new CbteTipo();
+        cbteTipoo.setId(cbteTipo);
+        return aFIPClient.getUltimoCompActualizado(ptoVta, cbteTipoo);
     }
 
-    private void refreshResumen() {
-//        Double gravado = 0.0;
-//        Double impTotal = 0.0;
-////        Double iva21 = 0.0;
-//        Double tribTotal = 0.0;
-//        Double subTotal = 0.0;
-//        DefaultTableModel detalle = (DefaultTableModel) panelWSFE.getTableDetalle().getModel();
-//        DefaultTableModel tributos = (DefaultTableModel) panelWSFE.getTableTributos().getModel();
-//        for (int index = 0; index < detalle.getRowCount(); index++) {
-//            double cantidad = Double.valueOf(detalle.getValueAt(index, 3).toString());
-//
-//            // precioSinIVA + cantidad
-//            gravado += (cantidad * Double.valueOf(detalle.getValueAt(index, 4).toString()));
-//
-//            // IVA's ++
-//            impTotal += cantidad * UTIL.getPorcentaje(Double.valueOf(detalle.getValueAt(index, 4).toString()), 10.5);
-//
-//            subTotal += Double.valueOf(detalle.getValueAt(index, 7).toString());
-//        }
-//
-//        for (int index = 0; index < tributos.getRowCount(); index++) {
-//            tribTotal += Double.valueOf(tributos.getValueAt(index, 3).toString());
-//        }
-//
-//        panelWSFE.getTfTotalNeto().setText(UTIL.PRECIO_CON_PUNTO.format(gravado));
-//        panelWSFE.getTfTotalIVAs().setText(UTIL.PRECIO_CON_PUNTO.format(impTotal));
-//        panelWSFE.getTfTotalTributos().setText(UTIL.PRECIO_CON_PUNTO.format(tribTotal));
-//        panelWSFE.getTfTotal().setText(UTIL.PRECIO_CON_PUNTO.format(subTotal));
-    }
-
-    private void doFE(PanelWSFE panelFE) throws WSAFIPErrorResponseException {
-//        IvaTipo iVATipo; //= (IvaTipo) panelFE.getCbAlicuotas().getSelectedItem();
-//        long docNro = Long.parseLong(panelFE.getTfDocNumero().getText());
-//        FECAERequest fECAERequest = new FECAERequest();
-//        FECAECabRequest fECAECabRequest = new FECAECabRequest();
-    }
-
-    private Calendar getExpirationTime(org.w3c.dom.Document ta)
-            throws SAXException, ParserConfigurationException {
-        NodeList nodeLst = ta.getElementsByTagName("header");
-        Node node = nodeLst.item(0);
-        Element element = (Element) node;
-        String XSDDateTime = AFIPClient.getTagValue("expirationTime", element);
-        Calendar parseDate = DatatypeConverter.parseDateTime(XSDDateTime);
-        System.out.println("TRACE: TicketAccess > expirationTime=" + parseDate.getTime());
-        return parseDate;
-    }
-
-    public static JDialog initWSAA(Window owner) {
-        JDWSAASetting jDWSAA = new JDWSAASetting(owner, true);
-        return jDWSAA;
+    public FacturaElectronica requestCAE(FacturaVenta fv) throws WSAFIPErrorResponseException, MessageException {
+        ConceptoTipo conceptoTipo = new ConceptoTipo();
+        conceptoTipo.setId(3);//prod y serv
+        DocTipo docTipo = new DocTipo();
+        //80, CUIT, 20080725, NULL
+        //86, CUIL, 20080725, NULL
+        //87, CDI, 20080725, NULL
+        //89, LE, 20080725, NULL
+        //90, LC, 20080725, NULL
+        //91, CI Extranjera, 20080725, NULL
+        //92, en trámite, 20080725, NULL
+        //93, Acta Nacimiento, 20080725, NULL
+        //95, CI Bs. As. RNP, 20080725, NULL
+        //96, DNI, 20080725, NULL
+        docTipo.setId(80);
+        Moneda moneda = new Moneda();
+        moneda.setId("PES");
+        CbteTipo cbteTipo = new CbteTipo();
+        cbteTipo.setId(getTipoComprobanteID(fv));
+        FacturaElectronica fe = invokeFE(fv, conceptoTipo, cbteTipo, docTipo, moneda, 1, new ArrayList<>());
+        return fe;
     }
 
     private FacturaElectronica invokeFE(FacturaVenta fv, ConceptoTipo conceptoTipo,
             CbteTipo cbteTipo, DocTipo docTipo, Moneda moneda, double monCotizacion,
-            Date fechaServDesde, Date fechaServHasta, List<Tributo> tributoList)
-            throws WSAFIPErrorResponseException, MessageException {
+            List<Tributo> tributoList) throws WSAFIPErrorResponseException, MessageException {
+        final int nextOne = aFIPClient.getUltimoCompActualizado(fv.getSucursal().getPuntoVenta().intValue(), cbteTipo) + 1;
+        if (!Objects.equals(nextOne + "", fv.getNumero() + "")) {
+            throw new MessageException("El número de Factura: " + fv.getNumero() + " no coincide con el esperado por AFIP: " + nextOne);
+        }
         List<IvaTipo> iVATipoList = getIVATipoList();
         FECAERequest fECAERequest = new FECAERequest();
         FECAECabRequest fECAECabRequest = new FECAECabRequest();
 
         fECAECabRequest.setCbteTipo(cbteTipo.getId());
         fECAECabRequest.setPtoVta(fv.getSucursal().getPuntoVenta().intValue());
-        int ultimoCompActualizado;
-        ultimoCompActualizado = aFIPClient.getUltimoCompActualizado(fv.getSucursal().getPuntoVenta().intValue(), new CbteTipo(fECAECabRequest.getCbteTipo()));
 
-
-
-        ArrayOfFECAEDetRequest arrayOfFECAEDetRequest = new ArrayOfFECAEDetRequest();
-        ArrayOfAlicIva arrayOfAlicIva = new ArrayOfAlicIva();
-
-
-        HashMap<IvaTipo, Double> totalesAlicuotas = new HashMap<IvaTipo, Double>();
+        HashMap<IvaTipo, BigDecimal> totalesAlicuotas = new HashMap<>();
         //inicializa todos los totales
         for (IvaTipo o : iVATipoList) {
-            totalesAlicuotas.put(o, 0.0);
-            Logger.getLogger(this.getClass()).debug("IvaTipo =" + o.getDesc());
+            totalesAlicuotas.put(o, BigDecimal.ZERO);
         }
 
         List<DetalleVenta> detallesVentaList = fv.getDetallesVentaList();
@@ -301,15 +190,15 @@ public class AFIPWSController {
         for (DetalleVenta detalleVenta : detallesVentaList) {
             boolean unknownIVA = true;
             int cantidad = detalleVenta.getCantidad();
-            Double precioUnitario = detalleVenta.getPrecioUnitario().doubleValue() - detalleVenta.getDescuento().doubleValue();
+            Double precioUnitario = detalleVenta.getPrecioUnitario().subtract(detalleVenta.getDescuento()).doubleValue();
             Double productoIVA = Double.valueOf(detalleVenta.getProducto().getIva().getIva());
             //identificando el IVA de cada item del detalle
             for (IvaTipo o : iVATipoList) {
                 Double AFIP_IVA = Double.valueOf(o.getDesc().replaceAll("%", ""));
                 if (0 == (AFIP_IVA.compareTo(productoIVA))) {
                     //acumulando 
-                    Double currentTotalIVA = totalesAlicuotas.get(o);
-                    currentTotalIVA += cantidad * precioUnitario;
+                    BigDecimal currentTotalIVA = totalesAlicuotas.get(o);
+                    currentTotalIVA = currentTotalIVA.add(BigDecimal.valueOf(cantidad * precioUnitario)).setScale(2, RoundingMode.HALF_UP);
                     totalesAlicuotas.put(o, currentTotalIVA);
                     unknownIVA = false;
                     break;
@@ -323,24 +212,24 @@ public class AFIPWSController {
                         + "\n tiene una alícuota (IVA) \"" + productoIVA + "\" que no existe en los registros de la AFIP.");
             }
         }
-
+        ArrayOfAlicIva arrayOfAlicIva = new ArrayOfAlicIva();
         //total de todos los IVA's
         double impIVA = 0;
-        //se agregan las alic con impuesto > a 0
+        //se agregan las alic con importe > 0
         for (IvaTipo ivaTipo : totalesAlicuotas.keySet()) {
-            double totalAlic = totalesAlicuotas.get(ivaTipo);
-            if (totalAlic > 0) {
-                double totalImporte = totalAlic * (Double.valueOf(ivaTipo.getDesc().replaceAll("%", "")) / 100);
+            BigDecimal totalAlic = totalesAlicuotas.get(ivaTipo);
+            if (totalAlic.compareTo(BigDecimal.ZERO) > 0) {
+                BigDecimal totalImporte = totalAlic.multiply(BigDecimal.valueOf((Double.valueOf(ivaTipo.getDesc().replaceAll("%", "")) / 100)))
+                        .setScale(2, RoundingMode.HALF_UP);
                 AlicIva alic = new AlicIva();
                 alic.setId(Integer.parseInt(ivaTipo.getId()));
-                alic.setBaseImp(totalAlic);
-                alic.setImporte(totalImporte);
-                Logger.getLogger(this.getClass()).trace("IVA Tipo: " + ivaTipo.getDesc() + " | " + alic.toString());
+                alic.setBaseImp(totalAlic.doubleValue());
+                alic.setImporte(totalImporte.doubleValue());
+                LOG.trace("IVA Tipo: " + ivaTipo.getDesc() + " | " + alic.toString());
                 arrayOfAlicIva.getAlicIva().add(alic);
                 impIVA += alic.getImporte();
             }
         }
-
 
         //armando detalle
         //gravado (neto) + impuestos + tributos
@@ -355,14 +244,14 @@ public class AFIPWSController {
 
         ArrayOfCbteAsoc arrayOfCbteAsoc = null;
         ArrayOfTributo arrayOfTributo = null;
-        if (tributoList != null && !tributoList.isEmpty()) {
+        if (!tributoList.isEmpty()) {
             arrayOfTributo = new ArrayOfTributo();
             for (Tributo tributo : tributoList) {
                 arrayOfTributo.getTributo().add(tributo);
                 impTributos += tributo.getImporte();
             }
         }
-
+        ArrayOfFECAEDetRequest arrayOfFECAEDetRequest = new ArrayOfFECAEDetRequest();
         FECAEDetRequest detalle = new FECAEDetRequest();
         detalle.setConcepto(conceptoTipo.getId());
         detalle.setDocTipo(docTipo.getId());
@@ -375,12 +264,10 @@ public class AFIPWSController {
         detalle.setImpNeto(impNeto);
         detalle.setImpOpEx(impExento);
         detalle.setImpTrib(impTributos);
-        detalle.setImpIVA(impIVA);
-        if (fechaServDesde != null && fechaServHasta != null) {
-            detalle.setFchServDesde(getXMLDate(fechaServDesde));
-            detalle.setFchServHasta(getXMLDate(fechaServHasta));
-            detalle.setFchVtoPago(getXMLDate(fv.getFechaVenta()));
-        }
+        detalle.setImpIVA(BigDecimal.valueOf(impIVA).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        detalle.setFchServDesde(getXMLDate(fv.getFechaVenta()));
+        detalle.setFchServHasta(getXMLDate(fv.getFechaVenta()));
+        detalle.setFchVtoPago(getXMLDate(fv.getFechaVenta()));
         detalle.setMonId(moneda.getId());
         detalle.setMonCotiz(monCotizacion);
         //array's....
@@ -388,7 +275,7 @@ public class AFIPWSController {
         detalle.setTributos(arrayOfTributo);
         detalle.setIva(arrayOfAlicIva);
         detalle.setOpcionales(null);
-        Logger.getLogger(this.getClass()).trace(detalle.toString());
+        LOG.trace(detalle);
         arrayOfFECAEDetRequest.getFECAEDetRequest().add(detalle);
 
         fECAECabRequest.setCantReg(arrayOfFECAEDetRequest.getFECAEDetRequest().size());
@@ -398,82 +285,73 @@ public class AFIPWSController {
         FECAEResponse fECAE = aFIPClient.invokeFECAESolicitar(fECAERequest);
         FECAECabResponse feCabResp = fECAE.getFeCabResp();
         FECAEDetResponse fEDetalle = fECAE.getFeDetResp().getFECAEDetResponse().get(0);
-        FacturaElectronica facturaElectronica = new FacturaElectronica(null,
-                feCabResp.getFchProceso(), feCabResp.getResultado(),
-                fEDetalle.getConcepto(), feCabResp.getCbteTipo(), fv.getId());
-        facturaElectronica.setCae(fEDetalle.getCAE());
-        StringBuilder sb;
+        LOG.info(feCabResp);
+        LOG.info(fEDetalle);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        SimpleDateFormat caeVtoformat = new SimpleDateFormat("yyyyMMdd");
+        FacturaElectronica facturaElectronica = null;
+        StringBuilder sb = new StringBuilder(100);
         if (fEDetalle.getObservaciones() != null
                 && fEDetalle.getObservaciones().getObs() != null
                 && !fEDetalle.getObservaciones().getObs().isEmpty()) {
-            sb = new StringBuilder("Observaciones");
+            sb = new StringBuilder("");
             for (Obs obs : fEDetalle.getObservaciones().getObs()) {
-                sb.append("\n").append(obs.getCode()).append(": ").append(obs.getMsg());
+                sb.append("code=").append(obs.getCode()).append(", msg=").append(obs.getMsg());
             }
-            facturaElectronica.setObservaciones(sb.toString());
+        }
+        if (feCabResp.getResultado().equalsIgnoreCase("R")) {
+            throw new WSAFIPErrorResponseException(sb.toString());
+        }
+        try {
+            facturaElectronica = new FacturaElectronica(null, feCabResp.getCbteTipo(),
+                    Long.valueOf(fv.getNumero()).intValue(),
+                    fv.getSucursal().getPuntoVenta().intValue(), sdf.parse(feCabResp.getFchProceso()),
+                    feCabResp.getResultado(), fEDetalle.getConcepto(),
+                    fEDetalle.getCAE(), caeVtoformat.parse(fEDetalle.getCAEFchVto()),
+                    sb.toString().isEmpty() ? null : sb.toString());
+        } catch (ParseException ex) {
+            LOG.error("parseando xml date", ex);
         }
         return facturaElectronica;
     }
 
-    public void getFEComprobante(int ptoVenta, long cbteNro, int cbteTipo) {
+    public FacturaElectronica getFEComprobante(int ptoVenta, int cbteNro, int cbteTipo) throws WSAFIPErrorResponseException {
         FECompConsultaReq fec = new FECompConsultaReq();
         fec.setPtoVta(ptoVenta);
         fec.setCbteNro(cbteNro);
         fec.setCbteTipo(cbteTipo);
         FECompConsultaResponse o = aFIPClient.getComprobante(fec);
-        FECompConsResponse comprobanteResp = o.getResultGet();
-        Logger.getLogger(this.getClass()).trace(comprobanteResp.toString());
-
-    }
-
-    private void checkErrorsAndEvents(ArrayOfErr errors, ArrayOfEvt events)
-            throws WSAFIPErrorResponseException {
-        StringBuilder sbErrors = null;
-        StringBuilder sbEvents = null;
-        if (errors != null && !errors.getErr().isEmpty()) {
-            sbErrors = new StringBuilder("Errors:" + errors.getErr().size());
-            for (Err err : errors.getErr()) {
-                sbErrors.append("\ncode:").append(err.getCode()).append(", msg:").append(err.getMsg());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        FECompConsResponse res = o.getResultGet();
+        String observaciones = null;
+        if (res.getObservaciones() != null && res.getObservaciones().getObs() != null && !res.getObservaciones().getObs().isEmpty()) {
+            observaciones = "";
+            for (Obs ob : res.getObservaciones().getObs()) {
+                observaciones += "code=" + ob.getCode() + ", msg=" + ob.getMsg();
             }
         }
-        if (events != null && !events.getEvt().isEmpty()) {
-            sbEvents = new StringBuilder("Events:" + events.getEvt().size());
-            for (Evt evt : events.getEvt()) {
-                sbEvents.append("\ncode:").append(evt.getCode()).append(", msg:").append(evt.getMsg());
-            }
+        try {
+            return new FacturaElectronica(null, cbteTipo, ptoVenta, cbteNro, sdf.parse(res.getFchProceso()), res.getResultado(), res.getConcepto(), res.getCodAutorizacion(), null, observaciones);
+        } catch (ParseException ex) {
+            LOG.error("parseando xml date=" + res.getFchProceso(), ex);
+            throw new WSAFIPErrorResponseException("Fecha proceso no válida: " + res.getFchProceso());
         }
-        eventos = sbEvents != null ? sbEvents.toString() : null;
-        if (sbErrors != null) {
-            if (sbEvents != null) {
-                sbErrors.append("----------------\n").append(sbEvents.toString());
-            }
-            throw new WSAFIPErrorResponseException(sbErrors.toString());
-        }
-
     }
 
     public List<CbteTipo> getComprobantesTipoList() throws WSAFIPErrorResponseException {
-        CbteTipoResponse o = aFIPClient.getComprobantesTipoList();
-        checkErrorsAndEvents(o.getErrors(), o.getEvents());
-        return o.getResultGet().getCbteTipo();
+        return aFIPClient.getComprobantesTipoList();
     }
 
     public List<ConceptoTipo> getConceptoTipoList() throws WSAFIPErrorResponseException {
-        ConceptoTipoResponse o = aFIPClient.getConceptoTipoList();
-        checkErrorsAndEvents(o.getErrors(), o.getEvents());
-        return o.getResultGet().getConceptoTipo();
+        return aFIPClient.getConceptoTipoList();
     }
 
     public List<DocTipo> getDocumentosTipoList() throws WSAFIPErrorResponseException {
-        DocTipoResponse o = aFIPClient.getDocumentosTipoList();
-        checkErrorsAndEvents(o.getErrors(), o.getEvents());
-        return o.getResultGet().getDocTipo();
+        return aFIPClient.getDocumentosTipoList();
     }
 
     public List<IvaTipo> getIVATipoList() throws WSAFIPErrorResponseException {
-        IvaTipoResponse o = aFIPClient.getIVATipoList();
-        checkErrorsAndEvents(o.getErrors(), o.getEvents());
-        return o.getResultGet().getIvaTipo();
+        return aFIPClient.getIVATipoList();
     }
 
     String getEventos() {
@@ -484,25 +362,18 @@ public class AFIPWSController {
      * Convert a Date to a formatted XML Date String (yyyyMMdd)
      *
      * @param fecha To be converted
-     * @return A XML Date String formatted. If <tt>fecha</tt> == null, returns
-     * null.
+     * @return A XML Date String formatted. If <tt>fecha</tt> == null, returns null.
      */
     private String getXMLDate(Date fecha) {
         if (fecha == null) {
             return null;
         }
-        GregorianCalendar gc = new GregorianCalendar();
-        gc.setTime(fecha);
-        int year = gc.get(Calendar.YEAR) * 10000;
-        int month = (gc.get(Calendar.MONTH) + 1) * 100;
-        int day = (gc.get(Calendar.DAY_OF_MONTH));
-        return String.valueOf(year + month + day);
+        return new SimpleDateFormat("yyyyMMdd").format(fecha);
     }
 
     public JDialog showSetting(final FacturaVenta fv) throws WSAFIPErrorResponseException, MessageException {
         if (panelWSFE == null) {
-            panelWSFE = new WSFEVetificacionPanel();
-            //implement del botón para obtener cotización de moneda según AFIP
+            panelWSFE = new WSFEVerificacionPanel();
             panelWSFE.getBtnGetCotizAFIP().addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -511,7 +382,7 @@ public class AFIPWSController {
                         panelWSFE.getTfCotizacion().setText(String.valueOf(cotizacion.getMonCotiz()));
                     } catch (WSAFIPErrorResponseException ex) {
                         JOptionPane.showMessageDialog(panelWSFE, ex.getMessage(), "Error obteniendo cotización", JOptionPane.ERROR_MESSAGE);
-                        Logger.getLogger(this.getClass()).error(ex);
+                        LOG.error(ex);
                     }
                 }
             });
@@ -527,20 +398,17 @@ public class AFIPWSController {
         UTIL.loadComboBox(panelWSFE.getCbConceptos(), conceptoTipoList, false);
         UTIL.loadComboBox(panelWSFE.getCbDocumentos(), docTipoList, false);
         UTIL.loadComboBox(panelWSFE.getCbMonendas(), monedaTipoList, false);
-//        UTIL.loadComboBox(panelWSFE.getCbTributos(), tributoTipoList, false);
-        CbteTipo ct = null;
-        if (String.valueOf(fv.getTipo()).equalsIgnoreCase("a")) {
-            ct = new CbteTipo(1);
-        } else if (String.valueOf(fv.getTipo()).equalsIgnoreCase("b")) {
-            ct = new CbteTipo(6);
-        } else if (String.valueOf(fv.getTipo()).equalsIgnoreCase("c")) {
-            ct = new CbteTipo(11);
-        }
+        UTIL.loadComboBox(panelWSFE.getCbTributos(), tributoTipoList, false);
+        CbteTipo ct = new CbteTipo();
+        ct.setId(getTipoComprobanteID(fv));
+        final int lastOne = aFIPClient.getUltimoCompActualizado(fv.getSucursal().getPuntoVenta().intValue(), ct) + 1;
+        panelWSFE.getTfCbteNumero().setText(lastOne + "");
         UTIL.setSelectedItem(panelWSFE.getCbComprobantes(), ct);
         panelWSFE.getTfTotalNeto().setText(UTIL.PRECIO_CON_PUNTO.format(fv.getGravado()));
         panelWSFE.getTfTotalIVAs().setText(UTIL.PRECIO_CON_PUNTO.format(fv.getImporte() - fv.getGravado()));
         panelWSFE.getTfTotalTributos().setText(UTIL.PRECIO_CON_PUNTO.format(0));
         panelWSFE.getTfTotal().setText(UTIL.PRECIO_CON_PUNTO.format(fv.getImporte()));
+        panelWSFE.getDcFechaCbte().setDate(fv.getFechaVenta());
         final JDABM jDABM1 = new JDABM(null, null, true, panelWSFE);
         jDABM1.getbAceptar().addActionListener(new ActionListener() {
             @Override
@@ -551,28 +419,71 @@ public class AFIPWSController {
                 Moneda moneda = (Moneda) panelWSFE.getCbMonendas().getSelectedItem();
                 double cotizacion = moneda.getId().equalsIgnoreCase("PES") ? 1
                         : Double.valueOf(panelWSFE.getTfCotizacion().getText());
-                Date fechaServDesde = panelWSFE.getDcServDesde();
-                Date fechaServHasta = panelWSFE.getDcServHasta();
-                List<Tributo> tributoList = null;
+                List<Tributo> tributoList = new ArrayList<>();
                 try {
-                    invokeFE(fv, conceptoTipo, cbteTipo, docTipo, moneda, cotizacion, fechaServDesde, fechaServHasta, tributoList);
+                    FacturaElectronica fe = invokeFE(fv, conceptoTipo, cbteTipo, docTipo, moneda, cotizacion, tributoList);
+                    System.out.println(fe.toString());
                 } catch (WSAFIPErrorResponseException ex) {
                     JOptionPane.showMessageDialog(jDABM1, ex.getMessage(), "Web Service AFIP Error", JOptionPane.ERROR_MESSAGE);
                 } catch (MessageException ex) {
-                    JOptionPane.showMessageDialog(jDABM1, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    ex.displayMessage(jDABM1);
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(jDABM1, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                    Logger.getLogger(this.getClass()).error(ex);
+                    LOG.error(ex);
                 }
             }
         });
-        jDABM1.getbCancelar().addActionListener(new ActionListener() {
+        jDABM1.getbCancelar().addActionListener((ActionEvent e) -> jDABM1.dispose());
+        return jDABM1;
+    }
+
+    /**
+     * Campo CbteTipo sea: {@link FacturaElectronica#cbteTipo}
+     *
+     * @param o {@link FacturaVenta}, {@link Recibo}, {@link NotaCredito}, {@link NotaDebito}
+     * @return
+     */
+    public static final int getTipoComprobanteID(Object o) {
+        if (o instanceof FacturaVenta) {
+            FacturaVenta fv = (FacturaVenta) o;
+            if (String.valueOf(fv.getTipo()).equalsIgnoreCase("A")) {
+                return 1;
+            } else if (String.valueOf(fv.getTipo()).equalsIgnoreCase("B")) {
+                return 6;
+            } else if (String.valueOf(fv.getTipo()).equalsIgnoreCase("C")) {
+                return 11;
+            }
+        }
+        return 0;
+    }
+
+    public void consultarCAEs() throws WSAFIPErrorResponseException {
+        final PanelAFIPWSConsultarCbte p = new PanelAFIPWSConsultarCbte();
+        UTIL.loadComboBox(p.getCbSucursal(), JGestionUtils.getWrappedSucursales(new UsuarioHelper().getSucursales()), false);
+        UTIL.loadComboBox(p.getCbCbte(), aFIPClient.getComprobantesTipoList(), false);
+        CustomABMJDialog abm = new CustomABMJDialog(null, p, "Consultar Comprobantes", true, "Bla bla bla..");
+        abm.getBtnAceptar().addActionListener(new ActionListener() {
+
             @Override
             public void actionPerformed(ActionEvent e) {
-                jDABM1.dispose();
+                try {
+                    FacturaElectronica feComprobante = getFEComprobante(
+                            Integer.valueOf(p.getTfPtoVta().getText()),
+                            Integer.valueOf(p.getTfNumero().getText()),
+                            ((CbteTipo) p.getCbCbte().getSelectedItem()).getId());
+
+                } catch (WSAFIPErrorResponseException ex) {
+                    LOG.error(ex, ex);
+                }
             }
         });
+    }
 
-        return jDABM1;
+    public List<Integer> getPuntoVentas() throws WSAFIPErrorResponseException {
+        List<Integer> l = new ArrayList<>();
+        for (PtoVenta pv : aFIPClient.getPtoVentaList()) {
+            l.add((int) pv.getNro());
+        }
+        return l;
     }
 }

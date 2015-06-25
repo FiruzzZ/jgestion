@@ -31,6 +31,7 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
     public JDBuscadorReRe(Window owner, String title, boolean modal, String labelClieProv, String labelReRe) {
         super(owner, modal ? DEFAULT_MODALITY_TYPE : ModalityType.MODELESS);
         initComponents();
+//        jTable1.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         init(title, labelClieProv, labelReRe);
     }
 
@@ -317,6 +318,7 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
 
             }
         ));
+        jTable1.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_NEXT_COLUMN);
         jTable1.addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentResized(java.awt.event.ComponentEvent evt) {
                 jTable1ComponentResized(evt);

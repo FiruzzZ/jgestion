@@ -1,5 +1,6 @@
 package jgestion.controller;
 
+import jgestion.jpa.controller.ProvinciaJpaController;
 import java.awt.Window;
 import jgestion.controller.exceptions.MessageException;
 import jgestion.controller.exceptions.NonexistentEntityException;
@@ -289,7 +290,7 @@ public class ProveedorController implements ActionListener {
         }
         panelABM = new PanelABMProveedores();
         UTIL.loadComboBox(panelABM.getCbCondicIVA(), new ContribuyenteController().findContribuyenteEntities(), false);
-        UTIL.loadComboBox(panelABM.getCbProvincias(), new ProvinciaJpaController().findProvinciaEntities(), true);
+        UTIL.loadComboBox(panelABM.getCbProvincias(), new ProvinciaJpaController().findAll(), true);
         UTIL.loadComboBox(panelABM.getCbDepartamentos(), null, true);
         UTIL.loadComboBox(panelABM.getCbMunicipios(), null, true);
         panelABM.setListener(this);
@@ -499,6 +500,7 @@ public class ProveedorController implements ActionListener {
         p.setEmail(cliente.getEmail());
         p.setObservacion(cliente.getObservacion());
         p.setWebpage(cliente.getWebpage());
+        p.setLimiteCtaCte(BigDecimal.ZERO);
         checkConstraints(p);
         create(p);
         return p;
