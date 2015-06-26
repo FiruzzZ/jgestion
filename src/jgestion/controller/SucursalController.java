@@ -1,5 +1,6 @@
 package jgestion.controller;
 
+import afip.ws.exception.WSAFIPErrorResponseException;
 import jgestion.jpa.controller.ProvinciaJpaController;
 import generics.WaitingDialog;
 import java.awt.GridLayout;
@@ -20,8 +21,11 @@ import jgestion.gui.JDContenedor;
 import jgestion.gui.PanelABMSucursal;
 import jgestion.gui.PanelNumeracionActual;
 import java.awt.event.*;
+import java.io.IOException;
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
 import javax.persistence.NoResultException;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -46,6 +50,7 @@ import jgestion.jpa.controller.StockJpaController;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.log4j.Logger;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
+import org.xml.sax.SAXException;
 import utilities.general.UTIL;
 import utilities.general.EntityWrapper;
 
@@ -166,7 +171,7 @@ public class SucursalController implements ActionListener {
         if (entity == null) {
             entity = new Sucursal();
         }
-        long puntoVenta;
+        Integer puntoVenta;
         Integer factura_a, factura_b, factura_c, notaCredito_a, notaCredito_b, notaCredito_c,
                 notaDebitoA, notaDebitoB, notaDebitoC, recibo_a, recibo_b, recibo_c, remito;
         // <editor-fold defaultstate="collapsed" desc="CTRLS">
@@ -444,6 +449,25 @@ public class SucursalController implements ActionListener {
                             + "\n" + anterior + "Nota de Débito");
                 }
             }
+            if (panel.getCheckWebServices().isSelected()) {
+                try {
+                    AFIPWSController afipwsController = new AFIPWSController(null);
+                    List<Integer> puntosVenta = afipwsController.getPuntoVentas();
+                    if (!puntosVenta.contains(sucursal.getPuntoVenta())) {
+                        throw new MessageException("El punto de venta: " + sucursal.getPuntoVenta()
+                                + " no se encuentra entre los habilitado para facturación electrónica."
+                                + "Habilitados: " + Arrays.toString(puntosVenta.toArray()));
+                    }
+                } catch (MessageException ex) {
+                    throw ex;
+                } catch (WSAFIPErrorResponseException ex) {
+                    throw new MessageException(ex.getMessage());
+                } catch (Exception ex) {
+                    LOG.error("Error AFIPWSController: " + sucursal.toString(), ex);
+                    throw new MessageException("Error verificando punto de venta con web services de AFIP."
+                            + ex.getMessage());
+                }
+            }
         }
     }
 
@@ -667,15 +691,17 @@ public class SucursalController implements ActionListener {
             WaitingDialog.initWaitingDialog(jd, "AFIP WebServices", "Recuperando últimos números de comprobantes", () -> {
                 try {
                     AFIPWSController afipwsController = new AFIPWSController(null);
-                    paneln.getTfFactuA_AFIP().setText(afipwsController.getUltimoCompActualizado(sucursal.getPuntoVenta().intValue(), 1) + "");
-                    paneln.getTfFactuB_AFIP().setText(afipwsController.getUltimoCompActualizado(sucursal.getPuntoVenta().intValue(), 6) + "");
-                    paneln.getTfFactuC_AFIP().setText(afipwsController.getUltimoCompActualizado(sucursal.getPuntoVenta().intValue(), 11) + "");
+                    paneln.getTfFactuA_AFIP().setText(afipwsController.getUltimoCompActualizado(sucursal.getPuntoVenta(), 1) + "");
+                    paneln.getTfFactuB_AFIP().setText(afipwsController.getUltimoCompActualizado(sucursal.getPuntoVenta(), 6) + "");
+                    paneln.getTfFactuC_AFIP().setText(afipwsController.getUltimoCompActualizado(sucursal.getPuntoVenta(), 11) + "");
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(panel, "Error recuperando números de últimos comprobantes\n" + ex.getMessage(),
                             "AFIP Web Services", JOptionPane.ERROR_MESSAGE);
                     LOG.error("Recuperando últimos comprobantes de Sucursal.id=" + sucursal.getId(), ex);
                 }
             });
+        } else {
+            paneln.hideAFIPFields();
         }
         jd.add(paneln);
         jd.pack();

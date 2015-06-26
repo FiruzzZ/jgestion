@@ -1926,7 +1926,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     }//GEN-LAST:event_jMenuItem29ActionPerformed
 
     private void jMenuItem37ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem37ActionPerformed
-        new Contabilidad().displayCtaCteGeneralResumen((Window) this);
+        new Contabilidad().displayCtaCteGeneralResumen(this);
     }//GEN-LAST:event_jMenuItem37ActionPerformed
 
     private void jMenuItem73ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem73ActionPerformed

@@ -849,7 +849,7 @@ public class ProductoController implements ActionListener, KeyListener {
         }
         mainQuery += ") as t ";
         mainQuery += " ORDER BY fechaalta";
-        Logger.getLogger(Producto.class).trace(mainQuery);
+        LOG.debug(mainQuery);
 
         return mainQuery;
     }
@@ -858,10 +858,10 @@ public class ProductoController implements ActionListener, KeyListener {
     private String concatQuery(String query) {
         StringBuilder sb = new StringBuilder(query);
         if (panelito.getTfCodigo().getText().trim().length() > 0) {
-            sb.append(" AND p.codigo = '").append(panelito.getTfCodigo().getText().trim()).append("'");
+            sb.append(" AND UPPER(p.codigo) LIKE '").append(panelito.getTfCodigo().getText().trim().toUpperCase()).append("%'");
         }
         if (panelito.getTfNombre().getText().trim().length() > 0) {
-            sb.append(" AND p.nombre ILIKE '").append(panelito.getTfNombre().getText().trim()).append("%'");
+            sb.append(" AND UPPER(p.nombre) LIKE '%").append(panelito.getTfNombre().getText().trim().toUpperCase()).append("%'");
         }
         if (panelito.getCbMarcas().getSelectedIndex() > 0) {
             sb.append(" AND p.marca = ").append(((EntityWrapper<Marca>) panelito.getCbMarcas().getSelectedItem()).getId());

@@ -54,7 +54,7 @@ public class FacturaEletronicaController {
                                 waiting.appendMessage("consultando CAE de " + JGestionUtils.getNumeracion(fv), true, true);
                                 FacturaElectronica fee = null;
                                 try {
-                                    fee = afipwsController.getFEComprobante(fv.getSucursal().getPuntoVenta().intValue(), tipo, (int) fv.getNumero());
+                                    fee = afipwsController.getFEComprobante(fv.getSucursal().getPuntoVenta(), tipo, (int) fv.getNumero());
                                 } catch (WSAFIPErrorResponseException ex) {
                                     waiting.appendMessage(ex.getMessage(), true, true);
                                 }
@@ -103,7 +103,7 @@ public class FacturaEletronicaController {
      */
     static FacturaElectronica createFrom(FacturaVenta f) {
         FacturaElectronica fe = new FacturaElectronica(null, AFIPWSController.getTipoComprobanteID(f),
-                f.getSucursal().getPuntoVenta().intValue(), Long.valueOf(f.getNumero()).intValue(),
+                f.getSucursal().getPuntoVenta(), Long.valueOf(f.getNumero()).intValue(),
                 null, null, 3, null, null, null);
         return fe;
     }
@@ -114,6 +114,6 @@ public class FacturaEletronicaController {
      * @return
      */
     public FacturaElectronica findBy(FacturaVenta fv) {
-        return jpaController.findBy(AFIPWSController.getTipoComprobanteID(fv), fv.getSucursal().getPuntoVenta().intValue(), fv.getNumero());
+        return jpaController.findBy(AFIPWSController.getTipoComprobanteID(fv), fv.getSucursal().getPuntoVenta(), fv.getNumero());
     }
 }

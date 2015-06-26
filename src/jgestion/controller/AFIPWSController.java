@@ -2,10 +2,15 @@ package jgestion.controller;
 
 import afip.ws.exception.WSAFIPErrorResponseException;
 import afip.ws.wsaa.WSAA;
-import afip.ws.jaxws.*;
-import afip.ws.wsfe.AFIPTestClient;
-//import afip.ws.produccion.fev1.*;
-//import afip.ws.wsfe.AFIPFEVClient;
+
+//entorno de test/homologación
+//import afip.ws.jaxws.*;
+//import afip.ws.wsfe.AFIPTestClient;
+
+//entorno de producción
+import afip.ws.produccion.fev1.*;
+import afip.ws.wsfe.AFIPFEVClient;
+
 import generics.CustomABMJDialog;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,7 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.logging.Level;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.xml.parsers.DocumentBuilder;
@@ -59,8 +63,8 @@ public class AFIPWSController {
     private static final String WS_CLIENT_PROPERTIES = WS_FOLDER + "wsaa_client.properties";
     private static final Logger LOG = Logger.getLogger(AFIPWSController.class);
 
-    private AFIPTestClient aFIPClient;
-//    private AFIPFEVClient aFIPClient;
+//    private AFIPTestClient aFIPClient;
+    private AFIPFEVClient aFIPClient;
     private WSFEVerificacionPanel panelWSFE;
     private String eventos;
     private Document TA_XML;
@@ -105,8 +109,8 @@ public class AFIPWSController {
             }
         }
         TA_XML = getDocument(ticketAccessXMLFile);
-        aFIPClient = new AFIPTestClient(TA_XML);
-//        aFIPClient = new AFIPFEVClient(TA_XML);
+//        aFIPClient = new AFIPTestClient(TA_XML);
+        aFIPClient = new AFIPFEVClient(TA_XML);
     }
 
     /**
@@ -168,7 +172,7 @@ public class AFIPWSController {
     private FacturaElectronica invokeFE(FacturaVenta fv, ConceptoTipo conceptoTipo,
             CbteTipo cbteTipo, DocTipo docTipo, Moneda moneda, double monCotizacion,
             List<Tributo> tributoList) throws WSAFIPErrorResponseException, MessageException {
-        final int nextOne = aFIPClient.getUltimoCompActualizado(fv.getSucursal().getPuntoVenta().intValue(), cbteTipo) + 1;
+        final int nextOne = aFIPClient.getUltimoCompActualizado(fv.getSucursal().getPuntoVenta(), cbteTipo) + 1;
         if (!Objects.equals(nextOne + "", fv.getNumero() + "")) {
             throw new MessageException("El número de Factura: " + fv.getNumero() + " no coincide con el esperado por AFIP: " + nextOne);
         }
@@ -177,7 +181,7 @@ public class AFIPWSController {
         FECAECabRequest fECAECabRequest = new FECAECabRequest();
 
         fECAECabRequest.setCbteTipo(cbteTipo.getId());
-        fECAECabRequest.setPtoVta(fv.getSucursal().getPuntoVenta().intValue());
+        fECAECabRequest.setPtoVta(fv.getSucursal().getPuntoVenta());
 
         HashMap<IvaTipo, BigDecimal> totalesAlicuotas = new HashMap<>();
         //inicializa todos los totales
@@ -305,7 +309,7 @@ public class AFIPWSController {
         try {
             facturaElectronica = new FacturaElectronica(null, feCabResp.getCbteTipo(),
                     Long.valueOf(fv.getNumero()).intValue(),
-                    fv.getSucursal().getPuntoVenta().intValue(), sdf.parse(feCabResp.getFchProceso()),
+                    fv.getSucursal().getPuntoVenta(), sdf.parse(feCabResp.getFchProceso()),
                     feCabResp.getResultado(), fEDetalle.getConcepto(),
                     fEDetalle.getCAE(), caeVtoformat.parse(fEDetalle.getCAEFchVto()),
                     sb.toString().isEmpty() ? null : sb.toString());
@@ -401,7 +405,7 @@ public class AFIPWSController {
         UTIL.loadComboBox(panelWSFE.getCbTributos(), tributoTipoList, false);
         CbteTipo ct = new CbteTipo();
         ct.setId(getTipoComprobanteID(fv));
-        final int lastOne = aFIPClient.getUltimoCompActualizado(fv.getSucursal().getPuntoVenta().intValue(), ct) + 1;
+        final int lastOne = aFIPClient.getUltimoCompActualizado(fv.getSucursal().getPuntoVenta(), ct) + 1;
         panelWSFE.getTfCbteNumero().setText(lastOne + "");
         UTIL.setSelectedItem(panelWSFE.getCbComprobantes(), ct);
         panelWSFE.getTfTotalNeto().setText(UTIL.PRECIO_CON_PUNTO.format(fv.getGravado()));

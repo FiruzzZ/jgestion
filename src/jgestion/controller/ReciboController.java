@@ -549,7 +549,7 @@ public class ReciboController implements ActionListener, FocusListener {
         } catch (ClassCastException e) {
             re.setCaja(null);
         }
-        re.setTipo((char) jdReRe.getCbTipo().getSelectedItem());
+        re.setTipo(jdReRe.getCbTipo().getSelectedItem().toString().charAt(0));
         re.setSucursal(getSelectedSucursalFromJD());
         if (unlockedNumeracion || conciliando) {
             re.setNumero(Integer.valueOf(jdReRe.getTfOcteto()));

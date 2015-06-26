@@ -53,11 +53,11 @@ public class JPATesting {
     public JPATesting() throws Exception {
         AFIPWSController afipwsController = new AFIPWSController(null);
         System.out.println("Doc tipos");
-        for (DocTipo o : afipwsController.getDocumentosTipoList()) {
+        for (afip.ws.produccion.fev1.DocTipo o : afipwsController.getDocumentosTipoList()) {
             System.out.println(o.getId() + ", " + o.getDesc() + ", " + o.getFchDesde() + ", " + o.getFchHasta());
         }
         System.out.println("Comprobantes tipos");
-        for (CbteTipo o : afipwsController.getComprobantesTipoList()) {
+        for (afip.ws.produccion.fev1.CbteTipo o : afipwsController.getComprobantesTipoList()) {
             System.out.println(o.getId() + ", " + o.getDesc() + ", " + o.getFchDesde() + ", " + o.getFchHasta());
         }
         System.out.println("Puntos Venta");

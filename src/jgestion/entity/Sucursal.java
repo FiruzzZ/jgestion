@@ -51,9 +51,12 @@ public class Sucursal implements Serializable {
     @JoinColumn(name = "provincia", referencedColumnName = "idprovincia", nullable = false)
     @ManyToOne(optional = false)
     private Provincia provincia;
-    @Basic(optional = false)
-    @Column(nullable = false, unique = true)
-    private Long puntoVenta;
+    /**
+     * No todas las sucursales son puntos de venta (no todas las sucus pueden estar habilitadas para
+     * emitir comprobantes)
+     */
+    @Column(unique = true, precision = 4)
+    private Integer puntoVenta;
     @Basic(optional = false)
     @Column(name = "factura_a", precision = 8, nullable = false)
     private Integer factura_a;
@@ -207,11 +210,11 @@ public class Sucursal implements Serializable {
         this.provincia = provincia;
     }
 
-    public Long getPuntoVenta() {
+    public Integer getPuntoVenta() {
         return puntoVenta;
     }
 
-    public void setPuntoVenta(Long puntoVenta) {
+    public void setPuntoVenta(Integer puntoVenta) {
         this.puntoVenta = puntoVenta;
     }
 

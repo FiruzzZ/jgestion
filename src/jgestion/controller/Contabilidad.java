@@ -577,11 +577,11 @@ public class Contabilidad {
     }
 
     /**
-     * 
+     *
      * @param monto
      * @param tipoDeMargen 1 = %, 2 = $
      * @param margen
-     * @return 
+     * @return
      */
     public static BigDecimal GET_MARGEN(BigDecimal monto, int tipoDeMargen, BigDecimal margen) {
         if (margen.compareTo(BigDecimal.ZERO) == 0) {
@@ -1188,6 +1188,27 @@ public class Contabilidad {
         resumenGeneralCtaCte.getbImprimir().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                try {
+                    List<GenericBeanCollection> data = new ArrayList<>(resumenGeneralCtaCte.getjXTable1().getRowCount());
+                    DefaultTableModel dtm = (DefaultTableModel) resumenGeneralCtaCte.getjXTable1().getModel();
+                    for (int row = 0; row < dtm.getRowCount(); row++) {
+                        data.add(new GenericBeanCollection(
+                                dtm.getValueAt(row, 1),
+                                dtm.getValueAt(row, 2)
+                        ));
+                    }
+                    Reportes r = new Reportes("ResumenCtaCteGeneral.jasper", "Resumen Cta Cte General");
+                    r.addParameter("CLI_O_PRO", resumenGeneralCtaCte.getCbClieProv().getSelectedItem().toString());
+                    r.setDataSource(data);
+                    r.addMembreteParameter();
+                    r.addConnection();
+                    r.viewReport();
+                } catch (MissingReportException ex) {
+                    JOptionPane.showMessageDialog(resumenGeneralCtaCte, ex.getMessage());
+                } catch (JRException ex) {
+                    LOG.error("error en reporte: ResumenCtaCteGeneral", ex);
+                    JOptionPane.showMessageDialog(resumenGeneralCtaCte, ex.getMessage());
+                }
             }
         });
         resumenGeneralCtaCte.setVisible(true);

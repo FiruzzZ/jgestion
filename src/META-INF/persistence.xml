@@ -87,7 +87,7 @@
       <property name="javax.persistence.jdbc.password" value="jgestion"/>
       <property name="eclipselink.logging.level" value="INFO"/>
       <!--<property name="eclipselink.logging.level.sql" value="FINER"/>-->
-      <property name="eclipselink.create-ddl-jdbc-file-name" value="createDDL.jdbc"/>
+      <!--<property name="eclipselink.create-ddl-jdbc-file-name" value="ddl.sql"/>-->
       <property name="eclipselink.ddl-generation.output-mode" value="both"/>
     </properties>
   </persistence-unit>
