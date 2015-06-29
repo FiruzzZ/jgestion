@@ -1,3 +1,7 @@
+--20150629
+ALTER TABLE nota_debito add constraint nota_debito_unique_numero ADD UNIQUE (tipo, sucursal, numero);
+ALTER TABLE nota_credito add constraint nota_credito_unique_numero ADD UNIQUE (tipo, sucursal, numero);
+ALTER TABLE recibo add constraint recibo_unique_numero ADD UNIQUE (tipo, sucursal, numero);
 --20150615
 alter table sucursal add column webservices boolean not null default false;
 alter table sucursal add column factura_c numeric(8,0) NOT NULL default 1;
@@ -23,7 +27,6 @@ drop table librado;
 alter table factura_compra add column acuenta boolean not null default false;
 --20150404
 alter table factura_venta add column venta_simple boolean default false not null;
--- alter table factura_compra add column producto_acuenta boolean default false not null;
 --20150403
 alter table usuario_acciones add column owner_entity varchar(100);
 alter table usuario_acciones add column owner_id varchar(50);
