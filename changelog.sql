@@ -1,7 +1,7 @@
 --20150629
-ALTER TABLE nota_debito add constraint nota_debito_unique_numero ADD UNIQUE (tipo, sucursal, numero);
-ALTER TABLE nota_credito add constraint nota_credito_unique_numero ADD UNIQUE (tipo, sucursal, numero);
-ALTER TABLE recibo add constraint recibo_unique_numero ADD UNIQUE (tipo, sucursal, numero);
+ALTER TABLE nota_debito add constraint nota_debito_unique_numero UNIQUE (tipo, sucursal_id, numero);
+ALTER TABLE nota_credito add constraint nota_credito_unique_numero UNIQUE (tipo, sucursal, numero);
+ALTER TABLE recibo add constraint recibo_unique_numero UNIQUE (tipo, sucursal, numero);
 --20150615
 alter table sucursal add column webservices boolean not null default false;
 alter table sucursal add column factura_c numeric(8,0) NOT NULL default 1;
