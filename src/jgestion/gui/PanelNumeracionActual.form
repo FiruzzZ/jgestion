@@ -19,6 +19,7 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="1" attributes="0">
+                  <Component id="jLabel28" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel27" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel26" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel25" min="-2" max="-2" attributes="0"/>
@@ -60,7 +61,7 @@
                               </Group>
                           </Group>
                       </Group>
-                      <EmptySpace max="32767" attributes="0"/>
+                      <EmptySpace pref="20" max="32767" attributes="0"/>
                   </Group>
                   <Group type="102" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
@@ -93,7 +94,7 @@
                           <Group type="102" attributes="0">
                               <Component id="tfInicialNotaDebitoA" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="tfInicialNotaDebitoAAFIP" min="-2" max="-2" attributes="0"/>
+                              <Component id="tfNotaDebitoAAFIP" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" attributes="0">
                               <Component id="tfInicialNotaCreditoB" min="-2" max="-2" attributes="0"/>
@@ -105,8 +106,13 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="tfInicialNotaCreditoCAFIP" min="-2" max="-2" attributes="0"/>
                           </Group>
+                          <Group type="102" attributes="0">
+                              <Component id="tfInicialNotaDebitoC" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="tfNotaDebitoCAFIP" min="-2" max="-2" attributes="0"/>
+                          </Group>
                       </Group>
-                      <EmptySpace min="0" pref="20" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                   </Group>
               </Group>
           </Group>
@@ -166,24 +172,22 @@
                   <Component id="jLabel20" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="jLabel26" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="tfInicialNotaCreditoBAFIP" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="tfInicialNotaCreditoB" alignment="3" min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="2" attributes="0">
+                  <Component id="jLabel26" alignment="2" min="-2" max="-2" attributes="0"/>
+                  <Component id="tfInicialNotaCreditoB" alignment="2" min="-2" max="-2" attributes="0"/>
+                  <Component id="tfInicialNotaCreditoBAFIP" alignment="2" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="103" alignment="0" groupAlignment="3" attributes="0">
-                      <Component id="tfInicialNotaCreditoCAFIP" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="tfInicialNotaCreditoC" alignment="3" min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <Component id="jLabel27" min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="2" attributes="0">
+                  <Component id="jLabel27" alignment="2" min="-2" max="-2" attributes="0"/>
+                  <Component id="tfInicialNotaCreditoC" alignment="2" min="-2" max="-2" attributes="0"/>
+                  <Component id="tfInicialNotaCreditoCAFIP" alignment="2" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace min="-2" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jLabel21" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="tfInicialNotaDebitoA" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="tfInicialNotaDebitoAAFIP" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="tfNotaDebitoAAFIP" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace min="-2" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
@@ -191,7 +195,15 @@
                   <Component id="tfInicialNotaDebitoB" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel22" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="jLabel28" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Group type="103" alignment="3" groupAlignment="3" attributes="0">
+                      <Component id="tfNotaDebitoCAFIP" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="tfInicialNotaDebitoC" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+              </Group>
+              <EmptySpace pref="32" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -220,9 +232,6 @@
         <Property name="columns" type="int" value="8"/>
         <Property name="horizontalAlignment" type="int" value="4"/>
       </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="tfInicialReciboAActionPerformed"/>
-      </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel16">
       <Properties>
@@ -330,7 +339,7 @@
         <Property name="horizontalAlignment" type="int" value="4"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JTextField" name="tfInicialNotaDebitoAAFIP">
+    <Component class="javax.swing.JTextField" name="tfNotaDebitoAAFIP">
       <Properties>
         <Property name="editable" type="boolean" value="false"/>
         <Property name="columns" type="int" value="8"/>
@@ -374,9 +383,6 @@
         <Property name="columns" type="int" value="8"/>
         <Property name="horizontalAlignment" type="int" value="4"/>
       </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="tfInicialReciboBActionPerformed"/>
-      </Events>
     </Component>
     <Component class="javax.swing.JTextField" name="tfReciboB_AFIP">
       <Properties>
@@ -391,9 +397,6 @@
         <Property name="columns" type="int" value="8"/>
         <Property name="horizontalAlignment" type="int" value="4"/>
       </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="tfInicialReciboCActionPerformed"/>
-      </Events>
     </Component>
     <Component class="javax.swing.JTextField" name="tfReciboC_AFIP">
       <Properties>
@@ -434,6 +437,25 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="tfInicialNotaCreditoCAFIP">
+      <Properties>
+        <Property name="editable" type="boolean" value="false"/>
+        <Property name="columns" type="int" value="8"/>
+        <Property name="horizontalAlignment" type="int" value="4"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel28">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Nota D&#xe9;bito &quot;C&quot;"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="tfInicialNotaDebitoC">
+      <Properties>
+        <Property name="editable" type="boolean" value="false"/>
+        <Property name="columns" type="int" value="8"/>
+        <Property name="horizontalAlignment" type="int" value="4"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="tfNotaDebitoCAFIP">
       <Properties>
         <Property name="editable" type="boolean" value="false"/>
         <Property name="columns" type="int" value="8"/>

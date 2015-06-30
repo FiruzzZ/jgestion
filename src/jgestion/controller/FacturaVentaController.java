@@ -381,6 +381,11 @@ public class FacturaVentaController {
             } else if (factVenta1_PresupNotaCredito2_Remito3 == 2) {
                 //Se cargan todas las sucursales a las cuales tiene permido, las unidades de negocio, cuentas y sub cuentas son solo para FacturasVenta
                 UTIL.loadComboBox(jdFactura.getCbSucursal(), JGestionUtils.getWrappedSucursales(uh.getSucursales()), false);
+                try {
+                    JGestionUtils.cargarComboTiposFacturas(jdFactura.getCbFacturaTipo(), (Cliente) jdFactura.getCbCliente().getSelectedItem());
+                } catch (ClassCastException ex) {
+                    throw new MessageException("Debe crear un Cliente para poder realizar una Facturas venta, Recibos, Presupuestos o Remitos.");
+                }
             } else if (factVenta1_PresupNotaCredito2_Remito3 == 3) {
                 //Se cargan todas las sucursales a las cuales tiene permido, las unidades de negocio, cuentas y sub cuentas son solo para FacturasVenta
                 UTIL.loadComboBox(jdFactura.getCbSucursal(), JGestionUtils.getWrappedSucursales(uh.getSucursales()), false);
@@ -428,22 +433,23 @@ public class FacturaVentaController {
 
     private void sucursalSelectedActionPerformanceOnComboBox(int factVenta1_PresupNotaCredito2_Remito3, Object listener) {
         Sucursal s = getSelectedSucursalFromJDFacturaVenta();
+        char tipo = jdFactura.getCbFacturaTipo().getSelectedItem().toString().charAt(0);
         if (factVenta1_PresupNotaCredito2_Remito3 == 1) {
             if (jdFactura.isEditMode()) {
                 if (EL_OBJECT.getSucursal().equals(s)) {
                     setNumeroFactura(s, Long.valueOf(EL_OBJECT.getNumero()).intValue());
                 } else {
-                    setNumeroFactura(s, jpaController.getNextNumero(s, jdFactura.getCbFacturaTipo().getSelectedItem().toString().charAt(0)));
+                    setNumeroFactura(s, jpaController.getNextNumero(s, tipo));
                 }
             } else {
-                setNumeroFactura(s, jpaController.getNextNumero(s, jdFactura.getCbFacturaTipo().getSelectedItem().toString().charAt(0)));
+                setNumeroFactura(s, jpaController.getNextNumero(s, tipo));
             }
         } else if (factVenta1_PresupNotaCredito2_Remito3 == 2) {
             if (listener != null) {
                 if (listener instanceof PresupuestoJpaController) {
                     setNumeroFactura(s, ((PresupuestoJpaController) listener).getNextNumero(s));
                 } else if (listener instanceof NotaCreditoController) {
-                    setNumeroFactura(s, ((NotaCreditoController) listener).getNextNumero(s));
+                    setNumeroFactura(s, ((NotaCreditoController) listener).getNextNumero(s, tipo));
                 }
             }
         } else if (factVenta1_PresupNotaCredito2_Remito3 == 3) {

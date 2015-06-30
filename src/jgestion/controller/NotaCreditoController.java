@@ -59,7 +59,7 @@ public class NotaCreditoController {
         jpaController = new NotaCreditoJpaController();
     }
 
-    public void initComprobanteUI(JFrame owner, boolean modal, boolean setVisible, boolean loadDefaultData) throws MessageException {
+    public void initComprobanteUI(Window owner, boolean modal, boolean setVisible, boolean loadDefaultData) throws MessageException {
         facturaVentaController = new FacturaVentaController();
         facturaVentaController.displayABM(owner, modal, this, 2, false, loadDefaultData);
         facturaVentaController.getContenedor().getBtnAceptar().addActionListener(new ActionListener() {
@@ -72,7 +72,8 @@ public class NotaCreditoController {
                         NotaCredito notaCreditoToPersist = setEntity();
                         jpaController.persist(notaCreditoToPersist);
                         reporte(notaCreditoToPersist);
-                        facturaVentaController.setNumeroFactura(notaCreditoToPersist.getSucursal(), jpaController.getNextNumero(notaCreditoToPersist.getSucursal()));
+                        char tipo = facturaVentaController.getContenedor().getCbFacturaTipo().getSelectedItem().toString().charAt(0);
+                        facturaVentaController.setNumeroFactura(notaCreditoToPersist.getSucursal(), jpaController.getNextNumero(notaCreditoToPersist.getSucursal(), tipo));
                         facturaVentaController.borrarDetalles();
                     } else {
                         if (JOptionPane.YES_OPTION == JOptionPane.showOptionDialog(jdFacturaVenta, "¿Desea reimprimir la Nota de crédito?", "Re imprimir", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null)) {
@@ -90,13 +91,14 @@ public class NotaCreditoController {
             }
         });
         if (loadDefaultData) {
+            Sucursal s;
             try {
-                @SuppressWarnings("unchecked")
-                Sucursal s = ((EntityWrapper<Sucursal>) facturaVentaController.getContenedor().getCbSucursal().getSelectedItem()).getEntity();
-                facturaVentaController.setNumeroFactura(s, jpaController.getNextNumero(s));
+                s = ((EntityWrapper<Sucursal>) facturaVentaController.getContenedor().getCbSucursal().getSelectedItem()).getEntity();
             } catch (Exception e) {
                 throw new MessageException("Para realizar una Nota de Crédito debe tener habilitada al menos una Sucursal");
             }
+            char tipo = facturaVentaController.getContenedor().getCbFacturaTipo().getSelectedItem().toString().charAt(0);
+            facturaVentaController.setNumeroFactura(s, jpaController.getNextNumero(s, tipo));
         }
         facturaVentaController.getContenedor().setUIToNotaCredito();
         jdFacturaVenta = facturaVentaController.getContenedor();
@@ -131,9 +133,10 @@ public class NotaCreditoController {
         }
 
         NotaCredito newNotaCredito = new NotaCredito();
-        newNotaCredito.setNumero(jpaController.getNextNumero(sucursal));
+        newNotaCredito.setTipo(jdFacturaVenta.getCbFacturaTipo().getSelectedItem().toString().charAt(0));
+        newNotaCredito.setNumero(jpaController.getNextNumero(sucursal, newNotaCredito.getTipo()));
         newNotaCredito.setFechaNotaCredito(fechaNotaCredito);
-        newNotaCredito.setImporte(new BigDecimal(UTIL.parseToDouble(jdFacturaVenta.getTfTotal())));
+        newNotaCredito.setImporte(new BigDecimal(UTIL.parseToDouble(jdFacturaVenta.getTfTotal())).setScale(2, RoundingMode.HALF_UP));
         newNotaCredito.setDesacreditado(BigDecimal.ZERO);
         newNotaCredito.setGravado(UTIL.parseToDouble(jdFacturaVenta.getTfGravado()));
         newNotaCredito.setNoGravado(new BigDecimal(UTIL.parseToDouble(jdFacturaVenta.getTfTotalNoGravado())));
@@ -144,7 +147,7 @@ public class NotaCreditoController {
         newNotaCredito.setSucursal(sucursal);
         newNotaCredito.setUsuario(UsuarioController.getCurrentUser());
         newNotaCredito.setObservacion(observacion);
-        newNotaCredito.setDetalleNotaCreditoCollection(new ArrayList<DetalleNotaCredito>(dtm.getRowCount()));
+        newNotaCredito.setDetalleNotaCreditoCollection(new ArrayList<>(dtm.getRowCount()));
         ProductoJpaController productoJpaController = new ProductoJpaController();
         for (int i = 0; i < dtm.getRowCount(); i++) {
             DetalleNotaCredito detalleVenta = new DetalleNotaCredito();
@@ -464,7 +467,7 @@ public class NotaCreditoController {
         return jpaController.findAll("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o WHERE o.importe <> o.desacreditado AND o.anulada = FALSE AND o.cliente.id=" + cliente.getId());
     }
 
-    Integer getNextNumero(Sucursal s) {
-        return jpaController.getNextNumero(s);
+    Integer getNextNumero(Sucursal s, char tipo) {
+        return jpaController.getNextNumero(s, tipo);
     }
 }

@@ -426,7 +426,7 @@ public class SucursalController implements ActionListener {
                 }
             }
             if (!sucursal.getNotaCredito_a().equals(oldInstance.getNotaCredito_a())) {
-                next = new NotaCreditoJpaController().getNextNumero(sucursal);
+                next = new NotaCreditoJpaController().getNextNumero(sucursal, 'A');
                 if (next > sucursal.getNotaCredito_a()) {
                     throw new MessageException("Existen registros de Nota de Crédito superior a " + UTIL.AGREGAR_CEROS(sucursal.getNotaCredito_a(), 8) + "."
                             + "\n" + buttonMessage
@@ -654,7 +654,6 @@ public class SucursalController implements ActionListener {
         Integer actual = new FacturaVentaJpaController().getNextNumero(sucursal, 'a');
         actual = actual.equals(sucursal.getFactura_a()) ? actual : actual - 1;
         paneln.setTfInicialFacturaA(UTIL.AGREGAR_CEROS(actual, 8));
-
         actual = new FacturaVentaJpaController().getNextNumero(sucursal, 'b');
         actual = actual.equals(sucursal.getFactura_b()) ? actual : actual - 1;
         paneln.setTfInicialFacturaB(UTIL.AGREGAR_CEROS(actual, 8));
@@ -676,17 +675,25 @@ public class SucursalController implements ActionListener {
         actual = actual.equals(sucursal.getRemito()) ? actual : actual - 1;
         paneln.setTfInicialRemito(UTIL.AGREGAR_CEROS(actual, 8));
 
-        actual = new NotaCreditoJpaController().getNextNumero(sucursal);
+        actual = new NotaCreditoJpaController().getNextNumero(sucursal, 'A');
         actual = actual.equals(sucursal.getNotaCredito_a()) ? actual : actual - 1;
-        paneln.setTfInicialNotaCredito(UTIL.AGREGAR_CEROS(actual, 8));
+        paneln.setTfInicialNotaCreditoA(UTIL.AGREGAR_CEROS(actual, 8));
+        actual = new NotaCreditoJpaController().getNextNumero(sucursal, 'B');
+        actual = actual.equals(sucursal.getNotaCredito_b()) ? actual : actual - 1;
+        paneln.getTfInicialNotaCreditoB().setText(UTIL.AGREGAR_CEROS(actual, 8));
+        actual = new NotaCreditoJpaController().getNextNumero(sucursal, 'C');
+        actual = actual.equals(sucursal.getNotaCredito_c()) ? actual : actual - 1;
+        paneln.getTfInicialNotaCreditoC().setText(UTIL.AGREGAR_CEROS(actual, 8));
 
         actual = new NotaDebitoJpaController().getNextNumero(sucursal, "A");
         actual = actual.equals(sucursal.getNotaDebitoA()) ? actual : actual - 1;
         paneln.setTfInicialNotaDebitoA(UTIL.AGREGAR_CEROS(actual, 8));
-
         actual = new NotaDebitoJpaController().getNextNumero(sucursal, "B");
         actual = actual.equals(sucursal.getNotaDebitoB()) ? actual : actual - 1;
         paneln.setTfInicialNotaDebitoB(UTIL.AGREGAR_CEROS(actual, 8));
+        actual = new NotaDebitoJpaController().getNextNumero(sucursal, "C");
+        actual = actual.equals(sucursal.getNotaDebitoC()) ? actual : actual - 1;
+        paneln.getTfInicialNotaDebitoC().setText(UTIL.AGREGAR_CEROS(actual, 8));
         if (sucursal.isWebServices()) {
             WaitingDialog.initWaitingDialog(jd, "AFIP WebServices", "Recuperando últimos números de comprobantes", () -> {
                 try {

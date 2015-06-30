@@ -13,40 +13,28 @@ import javax.persistence.EntityManager;
  */
 public class NotaCreditoJpaController extends JGestionJpaImpl<NotaCredito, Integer> {
 
+    public NotaCreditoJpaController() {
+    }
+
     @Override
     public void persist(NotaCredito notaCredito) {
         Collection<DetalleNotaCredito> toAttach = notaCredito.getDetalleNotaCreditoCollection();
-        notaCredito.setDetalleNotaCreditoCollection(new ArrayList<>());
-        EntityManager em = getEntityManager();
+//        notaCredito.setDetalleNotaCreditoCollection(new ArrayList<>());
+//        EntityManager em = getEntityManager();
         try {
-            em.getTransaction().begin();
-            em.persist(notaCredito);
+//            em.getTransaction().begin();
             for (DetalleNotaCredito detalleNotaCredito : toAttach) {
                 detalleNotaCredito.setNotaCredito(notaCredito);
-                em.persist(detalleNotaCredito);
+//                em.persist(detalleNotaCredito);
             }
-            em.getTransaction().commit();
-        } catch (Exception ex) {
-            em.getTransaction().rollback();
-            throw ex;
+            super.persist(notaCredito);
+//            em.getTransaction().commit();
+//        } catch (Exception ex) {
+//            em.getTransaction().rollback();
+//            throw ex;
         } finally {
             closeEntityManager();
         }
-    }
-
-    public Integer getNextNumero(Sucursal sucursal) {
-        Integer next = sucursal.getNotaCredito_a();
-        Object l = getEntityManager().createQuery("SELECT MAX(o.numero)"
-                + " FROM " + getEntityClass().getSimpleName() + " o"
-                + " WHERE o.sucursal.id = " + sucursal.getId()).getSingleResult();
-        if (l != null) {
-            Integer nextNumeroSegunDB = 1 + Integer.valueOf(l.toString());
-            if (nextNumeroSegunDB > next) {
-                //quiere decir que la numeración ya supera la configuración
-                next = nextNumeroSegunDB;
-            }
-        }
-        return next;
     }
 
     public Integer getNextNumero(Sucursal sucursal, char tipo) {
