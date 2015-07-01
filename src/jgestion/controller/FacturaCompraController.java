@@ -833,7 +833,7 @@ public class FacturaCompraController implements ActionListener {
             query.append(")");
         }
         if (buscador.getCbUnidadDeNegocio().getSelectedIndex() > 0) {
-            query.append(" AND o.unidadDeNegocio_id = ").append(((EntityWrapper<UnidadDeNegocio>) buscador.getCbUnidadDeNegocio().getSelectedItem()).getId());
+            query.append(" AND o.unidadDeNegocio.id = ").append(((EntityWrapper<UnidadDeNegocio>) buscador.getCbUnidadDeNegocio().getSelectedItem()).getId());
         }
         if (buscador.getCbCuenta().getSelectedIndex() > 0) {
             query.append(" AND o.cuenta.id = ").append(((EntityWrapper<Cuenta>) buscador.getCbCuenta().getSelectedItem()).getId());
