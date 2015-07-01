@@ -344,7 +344,7 @@ public class SucursalController implements ActionListener {
         entity.setPuntoVenta(puntoVenta);
         entity.setFactura_a(factura_a);
         entity.setFactura_b(factura_b);
-        entity.setFactura_b(factura_c);
+        entity.setFactura_c(factura_c);
         entity.setNotaCredito_a(notaCredito_a);
         entity.setNotaCredito_b(notaCredito_b);
         entity.setNotaCredito_c(notaCredito_c);

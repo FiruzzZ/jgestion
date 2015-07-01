@@ -39,16 +39,17 @@ public class NotaDebitoJpaController extends AbstractDAO<NotaDebito, Integer> {
             next = s.getNotaDebitoA();
         } else if (Character.toUpperCase(tipo) == 'B') {
             next = s.getNotaDebitoB();
+        } else if (Character.toUpperCase(tipo) == 'C') {
+            next = s.getNotaDebitoC();
         } else {
-            throw new IllegalArgumentException("Parameter tipo no corresponde a ningún ti<po de Nota de Débito (A, B).");
+            throw new IllegalArgumentException("Parameter tipo no corresponde a ningún tipo de Nota de Débito=" + tipo);
         }
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Integer> cq = cb.createQuery(Integer.class);
         Root<NotaDebito> from = cq.from(getEntityClass());
         cq.select(cb.max(from.get(NotaDebito_.numero)))
-                .where(cb.and(
-                cb.equal(from.get(NotaDebito_.sucursal), s),
-                cb.equal(from.get(NotaDebito_.tipo), Character.toUpperCase(tipo))));
+                .where(cb.and(cb.equal(from.get(NotaDebito_.sucursal), s),
+                                cb.equal(from.get(NotaDebito_.tipo), Character.toUpperCase(tipo))));
 
         Integer o = em.createQuery(cq).getSingleResult();
         if (o != null) {
