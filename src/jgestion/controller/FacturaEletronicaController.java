@@ -54,6 +54,11 @@ public class FacturaEletronicaController {
                                 waiting.appendMessage("consultando CAE de " + JGestionUtils.getNumeracion(fv), true, true);
                                 FacturaElectronica fee = null;
                                 try {
+                                    /**
+                                     * Si en el sistema figura como CAE pendiente, pero la consulta
+                                     * del comprobante retorna algo puede que haya sucedido un error
+                                     * y no se guardó el CAE retornado
+                                     */
                                     fee = afipwsController.getFEComprobante(fv.getSucursal().getPuntoVenta(), tipo, (int) fv.getNumero());
                                 } catch (WSAFIPErrorResponseException ex) {
                                     waiting.appendMessage(ex.getMessage(), true, true);
@@ -68,7 +73,8 @@ public class FacturaEletronicaController {
                                     fe.setObservaciones(fee.getObservaciones());
                                     fe.setResultado(fee.getResultado());
                                     fe.setFechaProceso(fee.getFechaProceso());
-                                    LOG.trace(fe.toString());
+                                    fe.setObservaciones(fee.getObservaciones());
+                                    LOG.info(fe.toString());
                                     feJpaController.merge(fe);
                                     waiting.appendMessage("guardando comprobante..", true, true);
                                 } catch (WSAFIPErrorResponseException | MessageException ex) {
