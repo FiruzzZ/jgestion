@@ -69,11 +69,12 @@ public class Reportes implements Runnable {
      * @throws MissingReportException si el archivo .jasper no se encuentra
      */
     public Reportes(String pathReport, String title) throws MissingReportException {
-
         if (pathReport == null) {
             throw new NullPointerException("pathReport CAN'T BE NULL....no es válida!");
         }
-
+        if (!pathReport.toLowerCase().contains(".jasper")) {
+            pathReport = pathReport + ".jasper";
+        }
         if (!new File(pathReport).exists()) {
             if (!new File(FOLDER_REPORTES + pathReport).exists()) {
                 LOG.error("No sé encontro reporte " + pathReport + " ni " + FOLDER_REPORTES + pathReport);
@@ -83,7 +84,7 @@ public class Reportes implements Runnable {
             pathReport = FOLDER_REPORTES + pathReport;
         }
         jd = new WaitingDialog(null, "Imprimiendo", false, "Preparando reporte....", impresoraIcon);
-        parameters = new HashMap<String, Object>();
+        parameters = new HashMap<>();
         this.pathReport = pathReport;
         tituloReporte = title;
         reporteFinalizado = false;
@@ -232,6 +233,10 @@ public class Reportes implements Runnable {
 
     void addMembreteParameter() {
         parameters.put("SUBREPORT_DIR", FOLDER_REPORTES);
+    }
+
+    public JRBeanCollectionDataSource getBeanCollectionDataSource(Collection<?> data) {
+        return new JRBeanCollectionDataSource(data);
     }
 
     void setDataSource(Collection<?> data) {

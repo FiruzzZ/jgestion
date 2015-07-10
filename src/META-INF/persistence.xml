@@ -80,6 +80,7 @@
     <class>jgestion.entity.RemitoCompra</class>
     <class>jgestion.entity.RemitoCompraDetalle</class>
     <class>jgestion.entity.ProductoAcuentaProveedor</class>
+    <class>jgestion.entity.TipoDocumento</class>
     <properties>
       <!--      <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://jgestion.no-ip.org:5433/jgestionahinco"/>-->
       <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>

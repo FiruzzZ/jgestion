@@ -160,7 +160,7 @@ public class AFIPWSController {
         //93, Acta Nacimiento, 20080725, NULL
         //95, CI Bs. As. RNP, 20080725, NULL
         //96, DNI, 20080725, NULL
-        docTipo.setId(80);
+        docTipo.setId(fv.getCliente().getTipodoc().getAfipID());
         Moneda moneda = new Moneda();
         moneda.setId("PES");
         CbteTipo cbteTipo = new CbteTipo();

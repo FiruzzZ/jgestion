@@ -63,7 +63,7 @@ import javax.persistence.EntityManager;
 import javax.swing.*;
 import jgestion.JGestion;
 import jgestion.controller.AFIPWSController;
-import jgestion.controller.FacturaEletronicaController;
+import jgestion.controller.FacturaElectronicaController;
 import jgestion.controller.RemitoCompraController;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -2135,7 +2135,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     }//GEN-LAST:event_miAFIPFECompConsultarActionPerformed
 
     private void miAFIPSolicitarCAEsPendientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miAFIPSolicitarCAEsPendientesActionPerformed
-        FacturaEletronicaController.initSolicitudCAEs();
+        FacturaElectronicaController.initSolicitudCAEs();
     }//GEN-LAST:event_miAFIPSolicitarCAEsPendientesActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

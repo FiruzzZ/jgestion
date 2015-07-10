@@ -1430,7 +1430,7 @@ public class FacturaVentaController {
             //es decir que es un movimiento interno, y puede ser cambiado a FACTURA VENTA
             jdFactura.getBtnFacturar().setEnabled(true);
         }
-        FacturaElectronica fe = new FacturaEletronicaController().findBy(EL_OBJECT);
+        FacturaElectronica fe = new FacturaElectronicaController().findBy(EL_OBJECT);
         if (fe != null) {
             if (fe.getCae() == null) {
                 jdFactura.getTfCAE().setForeground(Color.RED);
@@ -1702,9 +1702,9 @@ public class FacturaVentaController {
             FacturaVenta newFacturaVenta = getEntity(facturar);
             jpaController.persist(newFacturaVenta);
             if (newFacturaVenta.getSucursal().isWebServices()) {
-                FacturaElectronica fee = FacturaEletronicaController.createFrom(newFacturaVenta);
+                FacturaElectronica fee = FacturaElectronicaController.createFrom(newFacturaVenta);
                 new FacturaElectronicaJpaController().persist(fee);
-                FacturaEletronicaController.initSolicitudCAEs();
+                FacturaElectronicaController.initSolicitudCAEs();
             }
             //actualiza Stock
             new StockController().updateStock(newFacturaVenta);

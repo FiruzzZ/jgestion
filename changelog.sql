@@ -1,3 +1,14 @@
+--20150708
+CREATE TABLE tipo_documento (
+   id integer NOT NULL, 
+   nombre character varying(60) NOT NULL, 
+   afip_id integer not null,
+    PRIMARY KEY (id), 
+    UNIQUE (nombre),
+    UNIQUE (afip_id)
+);
+insert into tipo_documento values (1, 'DNI', 96), (2, 'CUIT', 80), (3,'CUIL', 86);
+alter table datos_empresa add column contribuyente_id integer not null default 4;
 --20150629
 ALTER TABLE nota_debito add constraint nota_debito_unique_numero UNIQUE (tipo, sucursal_id, numero);
 ALTER TABLE nota_credito add constraint nota_credito_unique_numero UNIQUE (tipo, sucursal, numero);

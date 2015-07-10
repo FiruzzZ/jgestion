@@ -1,7 +1,5 @@
 package jgestion.test;
 
-import afip.ws.jaxws.CbteTipo;
-import afip.ws.jaxws.DocTipo;
 import jgestion.controller.*;
 import jgestion.entity.*;
 import jgestion.jpa.controller.*;
@@ -14,7 +12,6 @@ import ar.com.fdvs.dj.domain.builders.DynamicReportBuilder;
 import ar.com.fdvs.dj.domain.constants.Font;
 import ar.com.fdvs.dj.domain.constants.HorizontalAlign;
 import generics.PropsUtils;
-import java.awt.Window;
 import java.io.File;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -51,19 +48,9 @@ public class JPATesting {
 
     @SuppressWarnings("unchecked")
     public JPATesting() throws Exception {
-        AFIPWSController afipwsController = new AFIPWSController(null);
-        System.out.println("Doc tipos");
-        for (afip.ws.produccion.fev1.DocTipo o : afipwsController.getDocumentosTipoList()) {
-            System.out.println(o.getId() + ", " + o.getDesc() + ", " + o.getFchDesde() + ", " + o.getFchHasta());
-        }
-        System.out.println("Comprobantes tipos");
-        for (afip.ws.produccion.fev1.CbteTipo o : afipwsController.getComprobantesTipoList()) {
-            System.out.println(o.getId() + ", " + o.getDesc() + ", " + o.getFchDesde() + ", " + o.getFchHasta());
-        }
-        System.out.println("Puntos Venta");
-        for (Integer puntoVenta : afipwsController.getPuntoVentas()) {
-            System.out.println(puntoVenta);
-        }
+        Sucursal sucu = new SucursalJpaController().findByPuntoVenta(9);
+        FacturaVenta fv = new FacturaVentaJpaController().findBy(sucu, 'B', 1);
+        new FacturaElectronicaController().doReport(fv);
     }
 
     private void updateCostoCompraYPrecioVentaSegunDetalleCompra() {

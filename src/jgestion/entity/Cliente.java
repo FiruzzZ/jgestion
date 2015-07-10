@@ -43,9 +43,9 @@ public class Cliente implements Serializable {
     @Basic(optional = false)
     @Column(name = "direccion", nullable = false, length = 150)
     private String direccion;
-    @Basic(optional = false)
-    @Column(name = "tipodoc", nullable = false)
-    private int tipodoc;
+    @JoinColumn(name = "tipodoc", nullable = false)
+    @ManyToOne(optional = false)
+    private TipoDocumento tipodoc;
     @Basic(optional = false)
     @Column(name = "num_doc", nullable = false)
     private long numDoc;
@@ -118,11 +118,11 @@ public class Cliente implements Serializable {
         this.direccion = direccion;
     }
 
-    public int getTipodoc() {
+    public TipoDocumento getTipodoc() {
         return tipodoc;
     }
 
-    public void setTipodoc(int tipodoc) {
+    public void setTipodoc(TipoDocumento tipodoc) {
         this.tipodoc = tipodoc;
     }
 
