@@ -119,7 +119,7 @@
 					<font size="8" isBold="true" isStrikeThrough="false"/>
 					<paragraph lineSpacing="Proportional"/>
 				</textElement>
-				<text><![CDATA[alicuota IVA]]></text>
+				<text><![CDATA[alicuota IVA %]]></text>
 			</staticText>
 			<staticText>
 				<reportElement uuid="2a86d2d4-f51c-4447-8759-bbd4fcc1f7ee" mode="Opaque" x="483" y="0" width="72" height="22" backcolor="#CCCCCC"/>
@@ -141,43 +141,59 @@
 			<textField>
 				<reportElement uuid="eac5e0cc-11e1-4611-b8fa-408d8dbe30e7" x="0" y="0" width="70" height="15"/>
 				<box leftPadding="2"/>
-				<textElement/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$F{codigo}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true">
 				<reportElement uuid="056d7052-c9ae-4e21-a177-faf043687a9b" x="70" y="0" width="160" height="15"/>
-				<textElement/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$F{producto}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement uuid="d0fd84cf-4c51-423e-b06d-3f0caf6e4925" x="230" y="0" width="45" height="15"/>
-				<textElement textAlignment="Right"/>
+				<textElement textAlignment="Right">
+					<font size="9"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$F{cantidad}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement uuid="828ed2ac-58a1-4321-97dd-9f5e7f379b66" x="275" y="0" width="50" height="15"/>
-				<textElement textAlignment="Right"/>
+				<textElement textAlignment="Right">
+					<font size="9"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$F{unidad}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement uuid="e073c0f1-8bb5-4b02-9542-8fde1c165dca" x="325" y="0" width="69" height="15"/>
-				<textElement textAlignment="Right"/>
+				<textElement textAlignment="Right">
+					<font size="9"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$F{preciou}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement uuid="6fb3f128-b71d-45bb-8944-8055cb0bf323" x="394" y="0" width="50" height="15"/>
-				<textElement textAlignment="Right"/>
+				<textElement textAlignment="Right">
+					<font size="9"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$F{bonif}]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0.0 %" isBlankWhenNull="true">
+			<textField isBlankWhenNull="true">
 				<reportElement uuid="739dad70-4832-494b-baab-230bd8f94deb" x="444" y="0" width="39" height="15"/>
-				<textElement textAlignment="Right"/>
+				<textElement textAlignment="Right">
+					<font size="9"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$F{alicuota}]]></textFieldExpression>
 			</textField>
 			<textField pattern="¤ #,##0.00">
 				<reportElement uuid="4041789e-3fb6-4b0d-b33a-3cb4aa851be9" x="483" y="0" width="72" height="15"/>
 				<box rightPadding="2"/>
-				<textElement textAlignment="Right"/>
+				<textElement textAlignment="Right">
+					<font size="9"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$F{subtotal}]]></textFieldExpression>
 			</textField>
 		</band>

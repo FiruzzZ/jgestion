@@ -653,7 +653,7 @@ public class ReciboController implements ActionListener, FocusListener {
     private void actualizarMontoEntrega(FacturaVenta facturaVenta, BigDecimal entrega) {
         CtacteCliente ctacte = new CtacteClienteController().findBy(facturaVenta);
         ctacte.setEntregado(ctacte.getEntregado() + entrega.doubleValue());
-        if (BigDecimal.valueOf(facturaVenta.getImporte()).compareTo(BigDecimal.valueOf(ctacte.getEntregado())) == 0) {
+        if (facturaVenta.getImporte().compareTo(BigDecimal.valueOf(ctacte.getEntregado())) == 0) {
             ctacte.setEstado(Valores.CtaCteEstado.PAGADA.getId());
         }
         new CtacteClienteController().edit(ctacte);

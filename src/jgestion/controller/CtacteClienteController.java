@@ -83,7 +83,7 @@ public class CtacteClienteController implements ActionListener {
         ccp.setEstado((Valores.CtaCteEstado.PENDIENTE.getId()));
         ccp.setFactura(facturaVenta);
         ccp.setFechaCarga(facturaVenta.getFechaVenta());
-        ccp.setImporte(facturaVenta.getImporte());
+        ccp.setImporte(facturaVenta.getImporte().doubleValue());
         jpaController.persist(ccp);
     }
 
@@ -325,7 +325,7 @@ public class CtacteClienteController implements ActionListener {
         dtm.addRow(new Object[]{null, "RESUMEN PREVIO", null, null, BigDecimal.valueOf(totalDebe), BigDecimal.valueOf(totalHaber), null, saldoAcumulativo});
         for (CtacteCliente ctaCte : cccList) {
             Date fechaComprobante = ctaCte.getFactura() != null ? ctaCte.getFactura().getFechaVenta() : ctaCte.getNotaDebito().getFechaNotaDebito();
-            BigDecimal importeComprobante = ctaCte.getFactura() != null ? BigDecimal.valueOf(ctaCte.getFactura().getImporte()) : ctaCte.getNotaDebito().getImporte();
+            BigDecimal importeComprobante = ctaCte.getFactura() != null ? ctaCte.getFactura().getImporte() : ctaCte.getNotaDebito().getImporte();
             boolean anulada;
             //checkea que no esté anulada la ccc
 //            anulada = (ctaCte.getEstado() == Valores.CtaCteEstado.ANULADA.getId());

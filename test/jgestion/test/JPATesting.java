@@ -49,7 +49,7 @@ public class JPATesting {
     @SuppressWarnings("unchecked")
     public JPATesting() throws Exception {
         Sucursal sucu = new SucursalJpaController().findByPuntoVenta(9);
-        FacturaVenta fv = new FacturaVentaJpaController().findBy(sucu, 'B', 1);
+        FacturaVenta fv = new FacturaVentaJpaController().findBy(sucu, 'A', 1);
         new FacturaElectronicaController().doReport(fv);
     }
 

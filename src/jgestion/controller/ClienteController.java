@@ -27,7 +27,10 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import jgestion.JGestionUtils;
+import jgestion.entity.TipoDocumento;
 import jgestion.jpa.controller.ClienteJpaController;
+import jgestion.jpa.controller.TipoDocumentoJpaController;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.postgresql.util.PSQLException;
 
@@ -106,7 +109,7 @@ public class ClienteController implements ActionListener {
                 o.getId(),
                 o.getCodigo(),
                 o.getNombre(),
-                o.getTipodoc() == 1 ? "DNI" : "CUIT",
+                o.getTipodoc().getNombre(),
                 o.getNumDoc(),
                 telefonosToString(o)
             });
@@ -130,9 +133,10 @@ public class ClienteController implements ActionListener {
         panelABM.getCheckRetencionDGR().setVisible(false);
         panelABM.getCheckRetencionIVA().setVisible(false);
         UTIL.loadComboBox(panelABM.getCbProvincias(), new ProvinciaJpaController().findAll(), true);
+        UTIL.loadComboBox(panelABM.getCbTipoDocumento(), JGestionUtils.getWrappedTipoDocumentos(new TipoDocumentoJpaController().findAll()), false);
         UTIL.loadComboBox(panelABM.getCbDepartamentos(), null, true);
         UTIL.loadComboBox(panelABM.getCbMunicipios(), null, true);
-        UTIL.loadComboBox(panelABM.getCbCondicIVA(), new ContribuyenteController().findContribuyenteEntities(), false);
+        UTIL.loadComboBox(panelABM.getCbCondicIVA(), new ContribuyenteController().findAll(), false);
         panelABM.setListener(this);
         if (isEditing) {
             setPanel(EL_OBJECT);
@@ -154,7 +158,7 @@ public class ClienteController implements ActionListener {
         panelABM.setTfCodigo(o.getCodigo());
         panelABM.setTfNombre(o.getNombre());
         panelABM.setTfDireccion(o.getDireccion());
-        panelABM.getCbTipoDocumento().setSelectedIndex(o.getTipodoc() - 1);
+        UTIL.setSelectedItem(panelABM.getCbTipoDocumento(), o.getTipodoc());
         panelABM.setTfNumDocumento(String.valueOf(o.getNumDoc()));
         panelABM.getTfLimiteCtaCte().setText(o.getLimiteCtaCte().intValue() + "");
         if (o.getCodigopostal() != null) {
@@ -320,7 +324,7 @@ public class ClienteController implements ActionListener {
         EL_OBJECT.setDepartamento(departamento);
         EL_OBJECT.setMunicipio(municipio);
         EL_OBJECT.setContribuyente((Contribuyente) panelABM.getSelectedCondicIVA());
-        EL_OBJECT.setTipodoc(panelABM.getCbTipoDocumento().getSelectedIndex() + 1);// DNI = 1 , CUIT = 2
+        EL_OBJECT.setTipodoc((TipoDocumento) UTIL.getEntityWrapped(panelABM.getCbTipoDocumento()).getEntity());
         EL_OBJECT.setNumDoc(new Long(panelABM.getTfNumDocumento()));
         EL_OBJECT.setLimiteCtaCte(new BigDecimal(panelABM.getTfLimiteCtaCte().getText()));
         // estado activo
@@ -599,7 +603,7 @@ public class ClienteController implements ActionListener {
         p.setNombre(proveedor.getNombre());
         p.setCodigo(proveedor.getCodigo());
         p.setContribuyente(proveedor.getContribuyente());
-        p.setTipodoc(2);
+        p.setTipodoc(new TipoDocumentoJpaController().find(2));
         p.setNumDoc(proveedor.getCuit());
         p.setProvincia(proveedor.getProvincia());
         p.setDepartamento(proveedor.getDepartamento());

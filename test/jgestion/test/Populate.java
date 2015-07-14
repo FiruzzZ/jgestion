@@ -5,24 +5,13 @@
 package jgestion.test;
 
 import jgestion.controller.DAO;
-import jgestion.entity.Cliente;
-import jgestion.entity.Contribuyente;
-import jgestion.entity.Departamento;
-import jgestion.entity.ListaPrecios;
-import jgestion.entity.Marca;
-import jgestion.entity.Municipio;
-import jgestion.entity.Provincia;
-import jgestion.entity.Rubro;
-import jgestion.entity.Sucursal;
 import generics.PropsUtils;
 import java.io.File;
-import java.math.BigInteger;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import org.apache.log4j.PropertyConfigurator;
-import org.junit.Test;
 
 /**
  *
@@ -30,7 +19,6 @@ import org.junit.Test;
  */
 public class Populate {
 
-    @Test
     public void populating() {
         try {
             PropertyConfigurator.configure("log4j.properties");

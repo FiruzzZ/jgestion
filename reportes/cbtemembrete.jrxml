@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="cbtemembrete" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="1ec79934-07fb-4be8-9933-0e01f27fea72">
-	<property name="ireport.zoom" value="1.2100000000000024"/>
+	<property name="ireport.zoom" value="1.4641000000000062"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.y" value="116"/>
 	<parameter name="CBTE_TIPO" class="java.lang.Object" isForPrompting="false">
 		<defaultValueExpression><![CDATA["A"]]></defaultValueExpression>
 	</parameter>
@@ -26,6 +26,9 @@
 	</parameter>
 	<parameter name="CBTE_CAE_VTO" class="java.util.Date" isForPrompting="false">
 		<defaultValueExpression><![CDATA[new Date()]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CBTE_BARRA" class="java.lang.Object" isForPrompting="false">
+		<defaultValueExpression><![CDATA["123456789123456789123456789123456789"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="EMP_LOGO" class="java.lang.Object" isForPrompting="false"/>
 	<parameter name="EMP_RAZON_SOCIAL" class="java.lang.String" isForPrompting="false">
@@ -61,6 +64,23 @@
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
 	<parameter name="DETALLE" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource" isForPrompting="false"/>
+	<parameter name="CBTE_GRAVADO" class="java.math.BigDecimal" isForPrompting="false"/>
+	<parameter name="CBTE_BONIF" class="java.math.BigDecimal" isForPrompting="false"/>
+	<parameter name="CBTE_NOGRAVADO" class="java.math.BigDecimal" isForPrompting="false"/>
+	<parameter name="CBTE_IVA27" class="java.math.BigDecimal" isForPrompting="false"/>
+	<parameter name="CBTE_IVA21" class="java.math.BigDecimal" isForPrompting="false"/>
+	<parameter name="CBTE_IVA105" class="java.math.BigDecimal" isForPrompting="false"/>
+	<parameter name="CBTE_IVA5" class="java.math.BigDecimal" isForPrompting="false"/>
+	<parameter name="CBTE_IVA205" class="java.math.BigDecimal" isForPrompting="false"/>
+	<parameter name="CBTE_OTROSTRIB" class="java.math.BigDecimal" isForPrompting="false"/>
+	<parameter name="CBTE_TOTAL" class="java.math.BigDecimal" isForPrompting="false"/>
+	<parameter name="CBTE_COPIA" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["ORIGINAL"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="pagination" class="java.lang.Integer"/>
 	<title>
 		<band height="147" splitType="Stretch">
 			<textField>
@@ -70,19 +90,6 @@
 				<textElement textAlignment="Center"/>
 				<textFieldExpression><![CDATA[$P{EMP_RAZON_SOCIAL}]]></textFieldExpression>
 			</textField>
-			<staticText>
-				<reportElement uuid="e8e66b68-3c98-4987-b189-831c6f8de012" x="0" y="0" width="555" height="20"/>
-				<box>
-					<topPen lineWidth="0.75"/>
-					<leftPen lineWidth="0.75"/>
-					<bottomPen lineWidth="0.75"/>
-					<rightPen lineWidth="0.75"/>
-				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="12" isBold="true"/>
-				</textElement>
-				<text><![CDATA[ORIGINAL]]></text>
-			</staticText>
 			<textField>
 				<reportElement uuid="feb7786f-a96d-4d38-90c0-0387bb9f11ba" x="261" y="20" width="33" height="33"/>
 				<box>
@@ -250,10 +257,23 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$P{EMP_FECHA_INICIO}]]></textFieldExpression>
 			</textField>
+			<textField>
+				<reportElement uuid="cec2a64f-f133-434c-95f5-993ebd34eff3" x="0" y="0" width="556" height="20"/>
+				<box>
+					<topPen lineWidth="0.75"/>
+					<leftPen lineWidth="0.75"/>
+					<bottomPen lineWidth="0.75"/>
+					<rightPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{CBTE_COPIA}]]></textFieldExpression>
+			</textField>
 		</band>
 	</title>
 	<pageHeader>
-		<band height="50">
+		<band height="50" splitType="Stretch">
 			<line>
 				<reportElement uuid="261fe195-3bfb-4ac3-ba9c-e88e08a7f4b2" x="0" y="49" width="555" height="1"/>
 				<graphicElement>
@@ -317,108 +337,228 @@
 			</textField>
 		</band>
 	</pageHeader>
-	<columnHeader>
-		<band height="60" splitType="Stretch">
-			<subreport>
-				<reportElement uuid="1556aced-04bb-4fa9-87d8-fefd52932809" x="0" y="0" width="556" height="60"/>
-				<dataSourceExpression><![CDATA[$P{DETALLE}]]></dataSourceExpression>
-				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "cbtedetalle.jasper"]]></subreportExpression>
-			</subreport>
-		</band>
-	</columnHeader>
-	<pageFooter>
-		<band height="394">
+	<columnFooter>
+		<band height="605">
+			<rectangle>
+				<reportElement uuid="8fc59772-be35-489e-b5b6-4e06efcbfccc" x="0" y="404" width="554" height="136"/>
+			</rectangle>
 			<staticText>
-				<reportElement uuid="682d04f0-da6b-4976-9128-361277a9bbd3" x="337" y="370" width="100" height="18"/>
+				<reportElement uuid="682d04f0-da6b-4976-9128-361277a9bbd3" x="337" y="563" width="100" height="18"/>
 				<textElement textAlignment="Right">
 					<font size="12"/>
 				</textElement>
 				<text><![CDATA[Fecha Vto. de CAE:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="2679e18e-7341-4a54-b57a-3346577209e6" x="337" y="352" width="100" height="18"/>
+				<reportElement uuid="2679e18e-7341-4a54-b57a-3346577209e6" x="337" y="545" width="100" height="18"/>
 				<textElement textAlignment="Right">
 					<font size="12"/>
 				</textElement>
 				<text><![CDATA[CAE N°:]]></text>
 			</staticText>
 			<textField>
-				<reportElement uuid="2a0bfb61-6224-4dac-a51e-b055dc587656" x="437" y="352" width="118" height="18"/>
+				<reportElement uuid="2a0bfb61-6224-4dac-a51e-b055dc587656" x="437" y="545" width="118" height="18"/>
 				<textElement>
 					<font size="12" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{CBTE_CAE}]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd/MM/yyyy">
-				<reportElement uuid="0ee663de-45fb-431c-a414-0171a0e3bdd2" x="437" y="370" width="118" height="18"/>
+				<reportElement uuid="0ee663de-45fb-431c-a414-0171a0e3bdd2" x="437" y="563" width="118" height="18"/>
 				<textElement>
 					<font size="12" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{CBTE_CAE_VTO}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement uuid="5900713a-4a8b-4468-bdb3-f2b2bf88e1cf" x="354" y="335" width="100" height="12"/>
+				<reportElement uuid="5900713a-4a8b-4468-bdb3-f2b2bf88e1cf" x="354" y="520" width="100" height="12"/>
 				<textElement textAlignment="Right">
 					<font size="9"/>
 				</textElement>
 				<text><![CDATA[Importe Total: ]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="5c31e366-5279-40c4-9ef1-42e80d7b431a" x="354" y="323" width="100" height="12"/>
+				<reportElement uuid="5c31e366-5279-40c4-9ef1-42e80d7b431a" x="354" y="508" width="100" height="12"/>
 				<textElement textAlignment="Right">
 					<font size="9"/>
 				</textElement>
 				<text><![CDATA[Importe Otros Tributos: ]]></text>
 			</staticText>
-			<staticText>
-				<reportElement uuid="58d07a50-6ae7-43a7-b760-a24ec7c49aab" x="354" y="311" width="100" height="12"/>
-				<textElement textAlignment="Right">
+			<textField>
+				<reportElement uuid="1f6782a3-e91c-48a3-b402-1c924f9e7cbd" x="354" y="496" width="100" height="12"/>
+				<textElement textAlignment="Right" markup="none">
 					<font size="9"/>
 				</textElement>
-				<text><![CDATA[Importe No Gravado: ]]></text>
-			</staticText>
+				<textFieldExpression><![CDATA[$P{CBTE_TIPO}.equals("A") ? "Importe No Gravado: " : "Subtotal: "]]></textFieldExpression>
+			</textField>
 			<staticText>
-				<reportElement uuid="49af7b47-908e-40ad-95b4-174d2bc80d04" x="354" y="299" width="100" height="12"/>
+				<reportElement uuid="49af7b47-908e-40ad-95b4-174d2bc80d04" x="354" y="484" width="100" height="12">
+					<printWhenExpression><![CDATA[$P{CBTE_TIPO}.equals("A")]]></printWhenExpression>
+				</reportElement>
 				<textElement textAlignment="Right">
 					<font size="9"/>
 				</textElement>
 				<text><![CDATA[IVA 2.5%: ]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="137cf381-dedd-411b-93c4-d8b539d41318" x="354" y="287" width="100" height="12"/>
+				<reportElement uuid="137cf381-dedd-411b-93c4-d8b539d41318" x="354" y="472" width="100" height="12">
+					<printWhenExpression><![CDATA[$P{CBTE_TIPO}.equals("A")]]></printWhenExpression>
+				</reportElement>
 				<textElement textAlignment="Right">
 					<font size="9"/>
 				</textElement>
 				<text><![CDATA[IVA 5%: ]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="9f89d121-0834-47be-980b-ca20ba56e8f3" x="354" y="275" width="100" height="12"/>
+				<reportElement uuid="9f89d121-0834-47be-980b-ca20ba56e8f3" x="354" y="460" width="100" height="12">
+					<printWhenExpression><![CDATA[$P{CBTE_TIPO}.equals("A")]]></printWhenExpression>
+				</reportElement>
 				<textElement textAlignment="Right">
 					<font size="9"/>
 				</textElement>
 				<text><![CDATA[IVA 10.5%: ]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="920a3ba4-8ee1-476f-837a-e6feb2cd88cb" x="354" y="263" width="100" height="12"/>
+				<reportElement uuid="920a3ba4-8ee1-476f-837a-e6feb2cd88cb" x="354" y="448" width="100" height="12">
+					<printWhenExpression><![CDATA[$P{CBTE_TIPO}.equals("A")]]></printWhenExpression>
+				</reportElement>
 				<textElement textAlignment="Right">
 					<font size="9"/>
 				</textElement>
 				<text><![CDATA[IVA 21%: ]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="80c8b5d8-3fd0-4fea-b64d-188a921701f1" x="354" y="241" width="100" height="12"/>
+				<reportElement uuid="80c8b5d8-3fd0-4fea-b64d-188a921701f1" x="354" y="414" width="100" height="12">
+					<printWhenExpression><![CDATA[$P{CBTE_TIPO}.equals("A")]]></printWhenExpression>
+				</reportElement>
 				<textElement textAlignment="Right">
 					<font size="9"/>
 				</textElement>
 				<text><![CDATA[Importe Neto Gravado: ]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="6ca9a6de-6a8f-4a7b-be7a-c0c583a4fcf4" x="354" y="251" width="100" height="12"/>
+				<reportElement uuid="6ca9a6de-6a8f-4a7b-be7a-c0c583a4fcf4" x="354" y="438" width="100" height="12">
+					<printWhenExpression><![CDATA[$P{CBTE_TIPO}.equals("A")]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[IVA 27%: ]]></text>
+			</staticText>
+			<textField pattern="¤ #,##0.00">
+				<reportElement uuid="3fbdefc0-effc-421d-9511-cec378299c07" x="454" y="520" width="100" height="12"/>
+				<box rightPadding="2"/>
+				<textElement textAlignment="Right">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{CBTE_TOTAL}]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤ #,##0.00">
+				<reportElement uuid="117c7267-0ddd-41fb-bc86-fef59db3f2a4" x="454" y="484" width="100" height="12">
+					<printWhenExpression><![CDATA[$P{CBTE_TIPO}.equals("A")]]></printWhenExpression>
+				</reportElement>
+				<box rightPadding="2"/>
+				<textElement textAlignment="Right">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{CBTE_IVA205}]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤ #,##0.00">
+				<reportElement uuid="64021bc9-7a62-479d-b3b5-f4e8a4714432" x="454" y="472" width="100" height="12">
+					<printWhenExpression><![CDATA[$P{CBTE_TIPO}.equals("A")]]></printWhenExpression>
+				</reportElement>
+				<box rightPadding="2"/>
+				<textElement textAlignment="Right">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{CBTE_IVA5}]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤ #,##0.00">
+				<reportElement uuid="38a1332d-32f1-4b62-9314-cf5c75869fcd" x="454" y="460" width="100" height="12">
+					<printWhenExpression><![CDATA[$P{CBTE_TIPO}.equals("A")]]></printWhenExpression>
+				</reportElement>
+				<box rightPadding="2"/>
+				<textElement textAlignment="Right">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{CBTE_IVA105}]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤ #,##0.00">
+				<reportElement uuid="5a8390e9-62c2-456c-8f95-edda62d32093" x="454" y="448" width="100" height="12">
+					<printWhenExpression><![CDATA[$P{CBTE_TIPO}.equals("A")]]></printWhenExpression>
+				</reportElement>
+				<box rightPadding="2"/>
+				<textElement textAlignment="Right">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{CBTE_IVA21}]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤ #,##0.00">
+				<reportElement uuid="3bb47cfa-ca73-4710-a409-2f204c0ef43e" x="454" y="508" width="100" height="12"/>
+				<box rightPadding="2"/>
+				<textElement textAlignment="Right">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{CBTE_OTROSTRIB}]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤ #,##0.00">
+				<reportElement uuid="bd76be99-e07c-4f28-8f6c-f36a061eb71a" x="454" y="414" width="100" height="12">
+					<printWhenExpression><![CDATA[$P{CBTE_TIPO}.equals("A")]]></printWhenExpression>
+				</reportElement>
+				<box rightPadding="2"/>
+				<textElement textAlignment="Right">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{CBTE_GRAVADO}]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤ #,##0.00">
+				<reportElement uuid="9841df0b-b029-4ae7-991d-0c139568ec01" x="454" y="496" width="100" height="12"/>
+				<box rightPadding="2"/>
+				<textElement textAlignment="Right">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{CBTE_NOGRAVADO}]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤ #,##0.00">
+				<reportElement uuid="dd7a1f0b-69ec-4a7f-bd21-a40b103c3c5c" x="454" y="426" width="100" height="12">
+					<printWhenExpression><![CDATA[$P{CBTE_TIPO}.equals("A")]]></printWhenExpression>
+				</reportElement>
+				<box rightPadding="2"/>
+				<textElement textAlignment="Right">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{CBTE_BONIF}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="0cb8bd14-4118-46ab-8b89-e8fde28388f6" x="354" y="426" width="100" height="12">
+					<printWhenExpression><![CDATA[$P{CBTE_TIPO}.equals("A")]]></printWhenExpression>
+				</reportElement>
 				<textElement textAlignment="Right">
 					<font size="9"/>
 				</textElement>
 				<text><![CDATA[Importe Bonif.: ]]></text>
 			</staticText>
+			<textField pattern="¤ #,##0.00">
+				<reportElement uuid="edfc5ccc-5884-4416-bb34-e6b4847b1cf3" x="454" y="438" width="100" height="12">
+					<printWhenExpression><![CDATA[$P{CBTE_TIPO}.equals("A")]]></printWhenExpression>
+				</reportElement>
+				<box rightPadding="2"/>
+				<textElement textAlignment="Right">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{CBTE_IVA27}]]></textFieldExpression>
+			</textField>
+			<componentElement>
+				<reportElement uuid="7b20a623-3834-4e42-8b26-aa4c8c6b2ca6" x="0" y="555" width="202" height="50"/>
+				<jr:barbecue xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" type="Int2of5" drawText="true" checksumRequired="false" barHeight="80">
+					<jr:codeExpression><![CDATA[$P{CBTE_BARRA}]]></jr:codeExpression>
+				</jr:barbecue>
+			</componentElement>
+			<subreport>
+				<reportElement uuid="1556aced-04bb-4fa9-87d8-fefd52932809" x="0" y="2" width="556" height="36"/>
+				<dataSourceExpression><![CDATA[$P{DETALLE}]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "cbtedetalle.jasper"]]></subreportExpression>
+			</subreport>
 		</band>
-	</pageFooter>
+	</columnFooter>
 </jasperReport>

@@ -6,7 +6,6 @@ import afip.ws.wsaa.WSAA;
 //entorno de test/homologación
 //import afip.ws.jaxws.*;
 //import afip.ws.wsfe.AFIPTestClient;
-
 //entorno de producción
 import afip.ws.produccion.fev1.*;
 import afip.ws.wsfe.AFIPFEVClient;
@@ -237,11 +236,9 @@ public class AFIPWSController {
 
         //armando detalle
         //gravado (neto) + impuestos + tributos
-        double impTotal = fv.getImporte();
         //importe NETO NO GRAVADO
         double impTotalConcepto = 0;
         //gravado (neto)
-        double impNeto = fv.getGravado();
         double impExento = 0;
         double impTributos = 0;
 //        double cotizacion = cotiz;
@@ -263,9 +260,9 @@ public class AFIPWSController {
         detalle.setCbteDesde(fv.getNumero());
         detalle.setCbteHasta(fv.getNumero());
         detalle.setCbteFch(getXMLDate(fv.getFechaVenta()));
-        detalle.setImpTotal(impTotal);
+        detalle.setImpTotal(fv.getImporte().doubleValue());
         detalle.setImpTotConc(impTotalConcepto);
-        detalle.setImpNeto(impNeto);
+        detalle.setImpNeto(fv.getGravado().doubleValue());
         detalle.setImpOpEx(impExento);
         detalle.setImpTrib(impTributos);
         detalle.setImpIVA(BigDecimal.valueOf(impIVA).setScale(2, RoundingMode.HALF_UP).doubleValue());
@@ -409,7 +406,7 @@ public class AFIPWSController {
         panelWSFE.getTfCbteNumero().setText(lastOne + "");
         UTIL.setSelectedItem(panelWSFE.getCbComprobantes(), ct);
         panelWSFE.getTfTotalNeto().setText(UTIL.PRECIO_CON_PUNTO.format(fv.getGravado()));
-        panelWSFE.getTfTotalIVAs().setText(UTIL.PRECIO_CON_PUNTO.format(fv.getImporte() - fv.getGravado()));
+        panelWSFE.getTfTotalIVAs().setText(UTIL.PRECIO_CON_PUNTO.format(fv.getImporte().subtract(fv.getGravado())));
         panelWSFE.getTfTotalTributos().setText(UTIL.PRECIO_CON_PUNTO.format(0));
         panelWSFE.getTfTotal().setText(UTIL.PRECIO_CON_PUNTO.format(fv.getImporte()));
         panelWSFE.getDcFechaCbte().setDate(fv.getFechaVenta());

@@ -47,7 +47,9 @@ import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import jgestion.controller.UsuarioController;
 import jgestion.entity.Caja;
+import jgestion.entity.Contribuyente;
 import jgestion.entity.RemitoCompra;
+import jgestion.entity.TipoDocumento;
 import jgestion.jpa.controller.JGestionJpaImpl;
 import utilities.general.EntityWrapper;
 import utilities.general.UTIL;
@@ -141,35 +143,51 @@ public class JGestionUtils {
         return l;
     }
 
+    public static List<EntityWrapper<?>> getWrappedContribuyentes(List<Contribuyente> list) {
+        List<EntityWrapper<?>> l = new ArrayList<>(list.size());
+        for (Contribuyente ccc : list) {
+            l.add(new EntityWrapper<>(ccc, ccc.getId(), ccc.getNombre()));
+        }
+        return l;
+    }
+
     public static List<EntityWrapper<?>> getWrappedCtacteCliente(List<CtacteCliente> list) {
         List<EntityWrapper<?>> l = new ArrayList<>(list.size());
-        for (CtacteCliente ccc : list) {
-            l.add(new EntityWrapper<Object>(ccc, ccc.getId(), ccc.getFactura() != null ? getNumeracion(ccc.getFactura()) : getNumeracion(ccc.getNotaDebito())));
-        }
+        list.stream().forEach((ccc) -> {
+            l.add(new EntityWrapper<>(ccc, ccc.getId(), ccc.getFactura() != null ? getNumeracion(ccc.getFactura()) : getNumeracion(ccc.getNotaDebito())));
+        });
         return l;
     }
 
     public static List<EntityWrapper<Cliente>> getWrappedClientes(List<Cliente> list) {
         List<EntityWrapper<Cliente>> l = new ArrayList<>(list.size());
-        for (Cliente o : list) {
+        list.stream().forEach((o) -> {
             l.add(new EntityWrapper<>(o, o.getId(), o.getNombre()));
-        }
+        });
+        return l;
+    }
+
+    public static List<EntityWrapper<?>> getWrappedTipoDocumentos(List<TipoDocumento> list) {
+        List<EntityWrapper<?>> l = new ArrayList<>(list.size());
+        list.stream().forEach((o) -> {
+            l.add(new EntityWrapper<>(o, o.getId(), o.getNombre()));
+        });
         return l;
     }
 
     public static List<EntityWrapper<Proveedor>> getWrappedProveedores(List<Proveedor> list) {
         List<EntityWrapper<Proveedor>> l = new ArrayList<>(list.size());
-        for (Proveedor o : list) {
+        list.stream().forEach((o) -> {
             l.add(new EntityWrapper<>(o, o.getId(), o.getNombre()));
-        }
+        });
         return l;
     }
 
-    public static List<EntityWrapper<ListaPrecios>> getWrappedListaPrecios(List<ListaPrecios> list) {
-        List<EntityWrapper<ListaPrecios>> l = new ArrayList<>(list.size());
-        for (ListaPrecios o : list) {
+    public static List<EntityWrapper<?>> getWrappedListaPrecios(List<ListaPrecios> list) {
+        List<EntityWrapper<?>> l = new ArrayList<>(list.size());
+        list.stream().forEach((o) -> {
             l.add(new EntityWrapper<>(o, o.getId(), o.getNombre()));
-        }
+        });
         return l;
     }
 
@@ -240,7 +258,7 @@ public class JGestionUtils {
     public static List<EntityWrapper<CuentaBancaria>> getWrappedCuentasBancarias(List<CuentaBancaria> list) {
         List<EntityWrapper<CuentaBancaria>> l = new ArrayList<>(list.size());
         for (CuentaBancaria o : list) {
-            l.add(new EntityWrapper<>(o, o.getId(), o.getNumero().toString()));
+            l.add(new EntityWrapper<>(o, o.getId(), o.getNumero()));
         }
         return l;
     }

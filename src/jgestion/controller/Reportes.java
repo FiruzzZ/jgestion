@@ -7,11 +7,19 @@ import java.awt.print.PrinterException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import javax.print.PrintService;
+import javax.print.PrintServiceLookup;
+import javax.print.attribute.HashPrintRequestAttributeSet;
+import javax.print.attribute.PrintRequestAttributeSet;
+import javax.print.attribute.standard.Copies;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
@@ -20,13 +28,21 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExporter;
 import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JRParameter;
+import net.sf.jasperreports.engine.JRPrintPage;
+import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperPrintManager;
+import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.export.JRPrintServiceExporter;
+import net.sf.jasperreports.engine.export.JRPrintServiceExporterParameter;
 import net.sf.jasperreports.engine.export.JRXlsExporter;
 import net.sf.jasperreports.engine.export.JRXlsExporterParameter;
+import net.sf.jasperreports.engine.util.JRLoader;
+import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.view.JasperViewer;
 import org.apache.log4j.Logger;
 
@@ -145,7 +161,7 @@ public class Reportes implements Runnable {
     }
 
     public void exportToPDF(String filePathSafer) throws JRException {
-        jPrint = JasperFillManager.fillReport(pathReport, parameters, jgestion.controller.DAO.getJDBCConnection());
+        jPrint = JasperFillManager.fillReport(pathReport, parameters, getConnection());
         JasperExportManager.exportReportToPdfFile(jPrint, filePathSafer);
     }
 
@@ -166,8 +182,8 @@ public class Reportes implements Runnable {
 
     @Override
     public void run() {
-        jd.setVisible(true);
         LOG.trace("Initializing Thread Reportes:" + pathReport);
+        jd.setVisible(true);
         try {
             if (dinamycReport) {
                 LOG.trace("Waiting JasperPrint for DynamicJasper..");
@@ -196,11 +212,7 @@ public class Reportes implements Runnable {
         try {
             //DynamicJasper already set JasperPrinter
             if (jPrint == null) {
-                if (beanCollectionDataSource == null) {
-                    jPrint = JasperFillManager.fillReport(pathReport, parameters, jgestion.controller.DAO.getJDBCConnection());
-                } else {
-                    jPrint = JasperFillManager.fillReport(pathReport, parameters, beanCollectionDataSource);
-                }
+                jPrint = getJasperPrinter();
             }
             if (isViewerReport) {
                 JasperViewer jViewer = new JasperViewer(jPrint, false);
@@ -244,7 +256,7 @@ public class Reportes implements Runnable {
     }
 
     void addConnection() {
-        parameters.put("REPORT_CONNECTION", jgestion.controller.DAO.getJDBCConnection());
+        parameters.put("REPORT_CONNECTION", getConnection());
     }
 
     public File exportToXLS(String excelFilePath) throws JRException, FileNotFoundException, IOException {
@@ -255,7 +267,7 @@ public class Reportes implements Runnable {
         jd.getLabelMessage().setText("Guardando en: " + excelFilePath);
         addParameter(JRParameter.IS_IGNORE_PAGINATION, Boolean.TRUE);
         if (beanCollectionDataSource == null) {
-            jPrint = JasperFillManager.fillReport(pathReport, parameters, jgestion.controller.DAO.getJDBCConnection());
+            jPrint = JasperFillManager.fillReport(pathReport, parameters, getConnection());
         } else {
             jPrint = JasperFillManager.fillReport(pathReport, parameters, beanCollectionDataSource);
         }
@@ -274,5 +286,63 @@ public class Reportes implements Runnable {
             jd.dispose();
         }
         return f;
+    }
+
+    /**
+     * Busca el .jasper y recupera o el .jrxml, compila y retorna el objecto {@link JasperReport}
+     *
+     * @param pathReport el nombre del archivo debe especificar la extensión jasper/jrxml
+     * @param parameters
+     * @return an instance of {@link JasperReport}
+     * @throws FileNotFoundException
+     * @throws JRException
+     */
+    public static JasperReport getJasperReport(String pathReport, Map<String, Object> parameters) throws FileNotFoundException, JRException {
+        String path = pathReport;
+        if (!new File(pathReport).exists()) {
+            if (!new File(FOLDER_REPORTES + pathReport).exists()) {
+                throw new FileNotFoundException("No se encontró el archivo del reporte: " + pathReport
+                        + "\n" + FOLDER_REPORTES + pathReport);
+            }
+            path = FOLDER_REPORTES + pathReport;
+        }
+        JasperReport jasperReport;
+        String extension = path.substring(path.lastIndexOf('.') + 1, path.length());
+        if (extension.equalsIgnoreCase("jrxml")) {
+            JasperDesign jasDesign = JRXmlLoader.load(path);
+            jasperReport = JasperCompileManager.compileReport(jasDesign);
+        } else {
+            jasperReport = (JasperReport) JRLoader.loadObjectFromFile(path);
+        }
+        return jasperReport;
+    }
+
+    public JasperPrint getJasperPrinter() throws JRException {
+        JasperPrint jp;
+        if (beanCollectionDataSource == null) {
+            jp = JasperFillManager.fillReport(pathReport, parameters, getConnection());
+        } else {
+            jp = JasperFillManager.fillReport(pathReport, parameters, beanCollectionDataSource);
+        }
+        return jp;
+    }
+
+    private Connection getConnection() {
+        return jgestion.controller.DAO.getJDBCConnection();
+    }
+
+    /**
+     * Agrega/appenda/concatena al final de la instancia actual de JasperPrint {@link #jPrint} hoja
+     * por hoja el JasperPrint
+     *
+     * @param toAdd
+     * @return la instancia actual + {@code toAdd}
+     */
+    public JasperPrint append(JasperPrint toAdd) {
+        List<JRPrintPage> pages = toAdd.getPages();
+        for (JRPrintPage page : pages) {
+            jPrint.addPage(page);
+        }
+        return jPrint;
     }
 }

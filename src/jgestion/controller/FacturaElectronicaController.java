@@ -5,8 +5,10 @@ import generics.GenericBeanCollection;
 import generics.WaitingDialog;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.io.FileNotFoundException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,6 +29,10 @@ import jgestion.jpa.controller.FacturaElectronicaJpaController;
 import jgestion.jpa.controller.FacturaVentaJpaController;
 import jgestion.jpa.controller.SucursalJpaController;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRPrintPage;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.view.JasperViewer;
 import org.apache.log4j.Logger;
 import utilities.general.UTIL;
 
@@ -138,11 +144,15 @@ public class FacturaElectronicaController {
         return jpaController.findBy(AFIPWSController.getTipoComprobanteID(fv), fv.getSucursal().getPuntoVenta(), fv.getNumero());
     }
 
-    public void doReport(FacturaVenta fv) throws MessageException, MissingReportException, JRException {
+    public void doReport(FacturaVenta fv) throws MissingReportException, JRException, MessageException {
         FacturaElectronica fe = findBy(fv);
+        if(fe.getCae() == null) {
+            throw new MessageException("el comprobante " + JGestionUtils.getNumeracion(fv) + " aún no posee CAE");
+        }
         HashMap<String, Object> parameters = new HashMap<>(30);
-        parameters.put("CBTE_TIPO", fv.getTipo());
-        parameters.put("CBTE_TIPO_COD", fe.getCbteTipo());
+        parameters.put("CBTE_TIPO", fv.getTipo() + "");
+        //tiene que tener 2 dígitos el cod tipo cbte
+        parameters.put("CBTE_TIPO_COD", fe.getCbteTipo() > 9 ? fe.getCbteTipo() : "0" + fe.getCbteTipo());
         parameters.put("CBTE_NOMBRE", "FACTURA");
         parameters.put("CBTE_FECHA_EMISION", fv.getFechaVenta());
         parameters.put("CBTE_PUNTO", UTIL.AGREGAR_CEROS(fe.getPtoVta(), 4));
@@ -151,11 +161,40 @@ public class FacturaElectronicaController {
         parameters.put("CBTE_CAE_VTO", fe.getCaeFechaVto());
         putClienteParameters(parameters, fv.getCliente());
         List<GenericBeanCollection> detalle = new ArrayList<>();
+        parameters.put("CBTE_TOTAL", fv.getImporte());
+        parameters.put("CBTE_GRAVADO", fv.getGravado());
+        if (parameters.get("CBTE_TIPO").equals("A")) {
+            parameters.put("CBTE_NOGRAVADO", fv.getNoGravado());
+        } else {
+            //se muestra como SubTotal
+            parameters.put("CBTE_NOGRAVADO", fv.getImporte());
+        }
+        parameters.put("CBTE_OTROSTRIB", BigDecimal.ZERO);
+        parameters.put("CBTE_BONIF", BigDecimal.ZERO);
+        BigDecimal iva27 = BigDecimal.ZERO;
+        BigDecimal iva21 = BigDecimal.ZERO;
+        BigDecimal iva105 = BigDecimal.ZERO;
+        BigDecimal iva5 = BigDecimal.ZERO;
+        BigDecimal iva205 = BigDecimal.ZERO;
         for (DetalleVenta d : fv.getDetallesVentaList()) {
-            BigDecimal alicuota = null;
-            BigDecimal subTotal = d.getPrecioUnitario().multiply(BigDecimal.valueOf(d.getCantidad()));
+            BigDecimal alicuota = BigDecimal.valueOf(d.getProducto().getIva().getIva()).setScale(2, RoundingMode.HALF_UP);
+            BigDecimal subTotal = d.getPrecioUnitario().multiply(BigDecimal.valueOf(d.getCantidad())).setScale(4, RoundingMode.HALF_UP);
             if (fv.getTipo() == 'A') {
-                alicuota = BigDecimal.valueOf(d.getProducto().getIva().getIva());
+                if (alicuota.doubleValue() > 0) {
+                    BigDecimal iva = subTotal.divide(alicuota, 2, RoundingMode.HALF_UP);
+                    if (alicuota.toString().equals("10.5")) {
+                        iva105 = iva105.add(iva);
+                    } else if (alicuota.toString().equals("2.5")) {
+                        iva205 = iva205.add(iva);
+                    } else if (alicuota.intValue() == 5) {
+                        iva5 = iva5.add(iva);
+                    } else if (alicuota.intValue() == 21) {
+                        iva21 = iva21.add(iva);
+                    } else if (alicuota.intValue() == 27) {
+                        iva27 = iva27.add(iva);
+                    }
+                }
+            } else {
                 subTotal = subTotal
                         .multiply((alicuota.divide(new BigDecimal("100")).add(BigDecimal.ONE)))
                         .setScale(2, RoundingMode.HALF_UP);
@@ -163,6 +202,11 @@ public class FacturaElectronicaController {
             detalle.add(new GenericBeanCollection(d.getProducto().getCodigo(), d.getProducto().getNombre(), d.getCantidad(),
                     "Unitario", d.getPrecioUnitario(), d.getDescuento(), alicuota, subTotal));
         }
+        parameters.put("CBTE_IVA27", iva27);
+        parameters.put("CBTE_IVA21", iva21);
+        parameters.put("CBTE_IVA105", iva105);
+        parameters.put("CBTE_IVA5", iva5);
+        parameters.put("CBTE_IVA205", iva205);
         doReport(parameters, detalle);
     }
 
@@ -182,7 +226,7 @@ public class FacturaElectronicaController {
         parameters.put("EMP_CUIT", de.getCuit());
         parameters.put("EMP_IIBB", de.getCuit());
         parameters.put("EMP_FECHA_INICIO", de.getFechaInicioActividad());
-        parameters.put("CBTE_BARRA", generateBarcode(parameters.get("EMP_CUIT"), parameters.get("CBTE_TIPOCOD"), parameters.get("CBTE_PUNTO"), parameters.get("CBTE_CAE"), (Date) parameters.get("CBTE_CAE_VTO")));
+        parameters.put("CBTE_BARRA", generateBarcode(parameters.get("EMP_CUIT"), parameters.get("CBTE_TIPO_COD"), parameters.get("CBTE_PUNTO"), parameters.get("CBTE_CAE"), (Date) parameters.get("CBTE_CAE_VTO")));
         Reportes r = new Reportes("cbtemembrete", "Comprobante FE " + parameters.get("CBTE_NOMBRE")
                 + " " + parameters.get("CBTE_TIPO")
                 + " " + parameters.get("CBTE_PUNTO") + "-" + parameters.get("CBTE_NUMERO"));
@@ -190,6 +234,16 @@ public class FacturaElectronicaController {
         for (Map.Entry<String, Object> entrySet : parameters.entrySet()) {
             r.addParameter(entrySet.getKey(), entrySet.getValue());
         }
+        r.setjPrint(r.getJasperPrinter());
+        //generación de reporte "duplicado"
+        HashMap<String, Object> clone = (HashMap) parameters.clone();
+        clone.put("DETALLE", r.getBeanCollectionDataSource(detalle));
+        Reportes r2 = new Reportes("cbtemembrete", "Comprobante FE " + clone.get("CBTE_NOMBRE")
+                + " " + clone.get("CBTE_TIPO")
+                + " " + clone.get("CBTE_PUNTO") + "-" + clone.get("CBTE_NUMERO"));
+        r2.setParameterMap(clone);
+        r2.addParameter("CBTE_COPIA", "DUPLICADO");
+        r.append(r2.getJasperPrinter());
         r.viewReport();
     }
 
@@ -221,11 +275,12 @@ public class FacturaElectronicaController {
         }
         a += b;
         int verificador = 0;
-        while (a % 10 != 0) {
+        while ((a + verificador) % 10 != 0) {
             verificador++;
-            a += verificador;
         }
+        LOG.trace("a=" + a + ", verificador=" + verificador);
         barcode += verificador;
+        LOG.info("barcode (" + barcode.length() + ")=" + barcode);
         return barcode;
     }
 

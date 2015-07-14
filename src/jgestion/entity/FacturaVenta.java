@@ -42,7 +42,7 @@ public class FacturaVenta implements Serializable {
     private Date fechaVenta;
     @Basic(optional = false)
     @Column(name = "importe", nullable = false, precision = 12, scale = 2)
-    private Double importe;
+    private BigDecimal importe;
     @Basic(optional = false)
     @Column(name = "fechaalta", nullable = false, insertable = false, updatable = false, columnDefinition = "timestamp with time zone NOT NULL DEFAULT now()")
     @Temporal(TemporalType.TIMESTAMP)
@@ -80,7 +80,7 @@ public class FacturaVenta implements Serializable {
     private Caja caja;
     @Basic(optional = false)
     @Column(name = "gravado", nullable = false, precision = 12, scale = 2)
-    private Double gravado;
+    private BigDecimal gravado;
     @Basic(optional = false)
     @Column(name = "no_gravado", nullable = false, precision = 12, scale = 2)
     private BigDecimal noGravado;
@@ -146,11 +146,11 @@ public class FacturaVenta implements Serializable {
         this.fechaVenta = fechaVenta;
     }
 
-    public Double getImporte() {
+    public BigDecimal getImporte() {
         return importe;
     }
 
-    public void setImporte(Double importe) {
+    public void setImporte(BigDecimal importe) {
         this.importe = importe;
     }
 
@@ -250,11 +250,11 @@ public class FacturaVenta implements Serializable {
         this.caja = caja;
     }
 
-    public Double getGravado() {
+    public BigDecimal getGravado() {
         return gravado;
     }
 
-    public void setGravado(Double gravado) {
+    public void setGravado(BigDecimal gravado) {
         this.gravado = gravado;
     }
 
@@ -400,7 +400,6 @@ public class FacturaVenta implements Serializable {
         }
         return true;
     }
-
 
     @Override
     public String toString() {

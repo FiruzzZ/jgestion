@@ -103,7 +103,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
             newDetalleCajaMovimiento.setCajaMovimientos(cajaMovimientoActual);
             newDetalleCajaMovimiento.setIngreso(true);
             if (facturaVenta.getFormaPagoEnum().equals(Valores.FormaPago.CONTADO)) {
-                newDetalleCajaMovimiento.setMonto(BigDecimal.valueOf(facturaVenta.getImporte()));
+                newDetalleCajaMovimiento.setMonto(facturaVenta.getImporte());
             } else {
                 throw new IllegalArgumentException(facturaVenta.getClass() + ".id=" + facturaVenta.getId()
                         + " contiene FormaPago=" + facturaVenta.getFormaPagoEnum() + " NO ASENTABLE COMO MOVIMIENTO CONTABLE.");
@@ -293,7 +293,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
             newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosController.ANULACION);
 
             if (facturaVenta.getFormaPagoEnum().equals(Valores.FormaPago.CONTADO)) {
-                newDetalleCajaMovimiento.setMonto(BigDecimal.valueOf(-facturaVenta.getImporte()));
+                newDetalleCajaMovimiento.setMonto(facturaVenta.getImporte().negate());
                 newDetalleCajaMovimiento.setDescripcion(JGestionUtils.getNumeracion(facturaVenta) + " [ANULADA]");
                 new DetalleCajaMovimientosController().create(newDetalleCajaMovimiento);
             } else if (facturaVenta.getFormaPagoEnum().equals(Valores.FormaPago.CTA_CTE)) {

@@ -510,13 +510,13 @@ public class Contabilidad {
         Double entregado;
         for (FacturaVenta factura : l) {
             if (!factura.getAnulada()) {
-                totalIngresos += factura.getImporte();
+                totalIngresos += factura.getImporte().doubleValue();
                 if (Valores.FormaPago.CONTADO.getId() == factura.getFormaPago()) {
                     cccpc = null;
-                    efectivo = factura.getImporte();
+                    efectivo = factura.getImporte().doubleValue();
                 } else if (Valores.FormaPago.CTA_CTE.getId() == factura.getFormaPago()) {
                     entregado = new CtacteClienteController().findBy(factura).getEntregado();
-                    double importe = factura.getImporte();
+                    double importe = factura.getImporte().doubleValue();
                     cccpc = (importe - entregado);
                     efectivo = entregado > 0 ? entregado : null;
                 } else {
@@ -810,14 +810,14 @@ public class Contabilidad {
                             facturaVenta.getFechaVenta(),
                             facturaVenta.getCliente().getNombre(),
                             facturaVenta.getCliente().getNumDoc(),
-                            new BigDecimal(facturaVenta.getGravado()),
+                            facturaVenta.getGravado(),
                             new BigDecimal(facturaVenta.getIva10()),
                             new BigDecimal(facturaVenta.getIva21()),
                             BigDecimal.ZERO,
                             BigDecimal.ZERO,
                             facturaVenta.getNoGravado(),
                             new BigDecimal(facturaVenta.getDescuento()),
-                            new BigDecimal(facturaVenta.getImporte())
+                            facturaVenta.getImporte()
                         });
                     }
                 } catch (MessageException ex) {

@@ -289,7 +289,7 @@ public class ProveedorController implements ActionListener {
             throw new MessageException("Debe elegir una fila de la tabla");
         }
         panelABM = new PanelABMProveedores();
-        UTIL.loadComboBox(panelABM.getCbCondicIVA(), new ContribuyenteController().findContribuyenteEntities(), false);
+        UTIL.loadComboBox(panelABM.getCbCondicIVA(), new ContribuyenteController().findAll(), false);
         UTIL.loadComboBox(panelABM.getCbProvincias(), new ProvinciaJpaController().findAll(), true);
         UTIL.loadComboBox(panelABM.getCbDepartamentos(), null, true);
         UTIL.loadComboBox(panelABM.getCbMunicipios(), null, true);

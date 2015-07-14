@@ -238,7 +238,7 @@ public class RemitoController implements ActionListener {
             r.getDetalleRemitoList().add(detalleRemito);
         }
         em.getTransaction().commit();
-        doImprimir(r);
+        doReport(r);
         facturaVentaUI.setVisible(false);
     }
 
@@ -250,7 +250,7 @@ public class RemitoController implements ActionListener {
     @SuppressWarnings("unchecked")
     private void setRemito() throws MessageException, Exception {
         if (MODO_VISTA) {
-            doImprimir(selectedRemito);
+            doReport(selectedRemito);
         } else {
             JDFacturaVenta facturaVentaUI = facturaVentaController.getContenedor();
             Cliente selectedCliente;
@@ -320,7 +320,7 @@ public class RemitoController implements ActionListener {
             } catch (PreexistingEntityException ex) {
                 Logger.getLogger(PresupuestoController.class.getName()).error(null, ex);
             }
-            doImprimir(newRemito);
+            doReport(newRemito);
             limpiarPanel();
         }
     }
@@ -329,7 +329,7 @@ public class RemitoController implements ActionListener {
         return jpaController.getNextNumero(s);
     }
 
-    private void doImprimir(Remito p) {
+    private void doReport(Remito p) {
         try {
             Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_Remito.jasper", "Remito");
             r.addParameter("REMITO_ID", p.getId());

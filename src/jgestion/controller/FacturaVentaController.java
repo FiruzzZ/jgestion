@@ -561,13 +561,11 @@ public class FacturaVentaController {
         precioUnitarioSinIVA = precioUnitarioSinIVA.subtract(descuentoUnitario);
 
         if (productoEnOferta == null) {
-        } else {
-            //el precio en oferta ya incluye IVA
-            //así que hay que hacerle la inversa 
-            if ((selectedProducto.getIva().getIva() > 0)) {
-                double d = ((selectedProducto.getIva().getIva() / 100) + 1);
-                precioUnitarioSinIVA = precioUnitarioSinIVA.divide(BigDecimal.valueOf(d));
-            }
+        } else //el precio en oferta ya incluye IVA
+        //así que hay que hacerle la inversa 
+        if ((selectedProducto.getIva().getIva() > 0)) {
+            double d = ((selectedProducto.getIva().getIva() / 100) + 1);
+            precioUnitarioSinIVA = precioUnitarioSinIVA.divide(BigDecimal.valueOf(d));
         }
         //quitando decimes indeseados..
         precioUnitarioSinIVA = precioUnitarioSinIVA.setScale(4, RoundingMode.HALF_UP);
@@ -889,8 +887,8 @@ public class FacturaVentaController {
 
         //setting fields
         newFacturaVenta.setFormaPago(((Valores.FormaPago) jdFactura.getCbFormaPago().getSelectedItem()).getId());
-        newFacturaVenta.setImporte(UTIL.parseToDouble(jdFactura.getTfTotal()));
-        newFacturaVenta.setGravado(UTIL.parseToDouble(jdFactura.getTfGravado()));
+        newFacturaVenta.setImporte(BigDecimal.valueOf(UTIL.parseToDouble(jdFactura.getTfTotal())));
+        newFacturaVenta.setGravado(BigDecimal.valueOf(UTIL.parseToDouble(jdFactura.getTfGravado())));
         newFacturaVenta.setNoGravado(new BigDecimal(UTIL.parseToDouble(jdFactura.getTfTotalNoGravado())));
         newFacturaVenta.setIva10(UTIL.parseToDouble(jdFactura.getTfTotalIVA105()));
         newFacturaVenta.setIva21(UTIL.parseToDouble(jdFactura.getTfTotalIVA21()));
@@ -1025,7 +1023,7 @@ public class FacturaVentaController {
             public void actionPerformed(ActionEvent e) {
                 try {
                     cargarTablaBuscador(armarQuerySinSELECT());
-                    doReportFacturas(null);
+                    doReportListadoFacturas(null);
                 } catch (MissingReportException ex) {
                     JOptionPane.showMessageDialog(null, ex.getMessage());
                 } catch (MessageException ex) {
@@ -1090,7 +1088,7 @@ public class FacturaVentaController {
                     }
                     File currentDirectory = JGestionUtils.showSaveDialogFileChooser(buscador, "Archivo Excel (.xls)", null, "xls");
                     if (currentDirectory != null) {
-                        doReportFacturas(currentDirectory.getCanonicalPath());
+                        doReportListadoFacturas(currentDirectory.getCanonicalPath());
                     }
                 } catch (MissingReportException | JRException | IOException | MessageException ex) {
                     JOptionPane.showMessageDialog(buscador, ex.getMessage());
@@ -1103,7 +1101,7 @@ public class FacturaVentaController {
         buscador.setVisible(true);
     }
 
-    private void doReportFacturas(String excelFilePath) throws MissingReportException, JRException, FileNotFoundException, IOException {
+    private void doReportListadoFacturas(String excelFilePath) throws MissingReportException, JRException, FileNotFoundException, IOException {
         List<GenericBeanCollection> data = new ArrayList<>(buscador.getjTable1().getRowCount());
         DefaultTableModel dtm = (DefaultTableModel) buscador.getjTable1().getModel();
         for (int row = 0; row < dtm.getRowCount(); row++) {
@@ -1303,28 +1301,26 @@ public class FacturaVentaController {
         }
         if (buscador.getCbSucursal().getSelectedIndex() > 0) {
             query.append(" AND o.sucursal.id = ").append(((EntityWrapper<Sucursal>) buscador.getCbSucursal().getSelectedItem()).getId());
-        } else {
-            if (buscador.getCbUnidadDeNegocio().getSelectedIndex() > 0) {
-                query.append(" AND (");
-                for (int i = 1; i < buscador.getCbSucursal().getItemCount(); i++) {
-                    EntityWrapper<Sucursal> cbw = (EntityWrapper<Sucursal>) buscador.getCbSucursal().getItemAt(i);
-                    query.append(" o.sucursal.id=").append(cbw.getId());
-                    if ((i + 1) < buscador.getCbSucursal().getItemCount()) {
-                        query.append(" OR ");
-                    }
+        } else if (buscador.getCbUnidadDeNegocio().getSelectedIndex() > 0) {
+            query.append(" AND (");
+            for (int i = 1; i < buscador.getCbSucursal().getItemCount(); i++) {
+                EntityWrapper<Sucursal> cbw = (EntityWrapper<Sucursal>) buscador.getCbSucursal().getItemAt(i);
+                query.append(" o.sucursal.id=").append(cbw.getId());
+                if ((i + 1) < buscador.getCbSucursal().getItemCount()) {
+                    query.append(" OR ");
                 }
-                query.append(")");
-            } else {
-                List<Sucursal> sucursales = new UsuarioHelper().getSucursales();
-                query.append(" AND (");
-                for (int i = 0; i < sucursales.size(); i++) {
-                    query.append(" o.sucursal.id=").append(sucursales.get(i).getId());
-                    if ((i + 1) < sucursales.size()) {
-                        query.append(" OR ");
-                    }
-                }
-                query.append(")");
             }
+            query.append(")");
+        } else {
+            List<Sucursal> sucursales = new UsuarioHelper().getSucursales();
+            query.append(" AND (");
+            for (int i = 0; i < sucursales.size(); i++) {
+                query.append(" o.sucursal.id=").append(sucursales.get(i).getId());
+                if ((i + 1) < sucursales.size()) {
+                    query.append(" OR ");
+                }
+            }
+            query.append(")");
         }
 
         if (buscador.getCbClieProv().getSelectedIndex() > 0) {
@@ -1499,22 +1495,26 @@ public class FacturaVentaController {
         return cajaMovToAsentarAnulacion;
     }
 
-    void imprimirMovimientoInterno(FacturaVenta facturaVenta) throws MissingReportException, JRException {
+    void doReportMovimientoInterno(FacturaVenta facturaVenta) throws MissingReportException, JRException {
         Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_FacturaVenta_I.jasper", "Comprobante venta N°" + facturaVenta.getMovimientoInterno());
         r.addParameter("FACTURA_ID", facturaVenta.getId());
         r.printReport(true);
     }
 
-    void imprimirFactura(FacturaVenta facturaVenta) throws MissingReportException, JRException {
-        Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_FacturaVenta_" + facturaVenta.getTipo() + ".jasper", "Factura Venta");
-        r.addParameter("FACTURA_ID", facturaVenta.getId());
-        if (facturaVenta.getRemito() != null) {
-            r.addParameter("REMITO", JGestionUtils.getNumeracion(facturaVenta.getRemito(), false));
+    void doReportFactura(FacturaVenta facturaVenta) throws MissingReportException, JRException, MessageException {
+        if (!facturaVenta.getSucursal().isWebServices()) {
+            Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_FacturaVenta_" + facturaVenta.getTipo() + ".jasper", "Factura Venta");
+            r.addParameter("FACTURA_ID", facturaVenta.getId());
+            if (facturaVenta.getRemito() != null) {
+                r.addParameter("REMITO", JGestionUtils.getNumeracion(facturaVenta.getRemito(), false));
+            }
+            if (facturaVenta.getCheque() != null) {
+                r.addParameter("CHEQUE", UTIL.AGREGAR_CEROS(facturaVenta.getCheque().getNumero(), 12));
+            }
+            r.printReport(true);
+        } else {
+            new FacturaElectronicaController().doReport(facturaVenta);
         }
-        if (facturaVenta.getCheque() != null) {
-            r.addParameter("CHEQUE", UTIL.AGREGAR_CEROS(facturaVenta.getCheque().getNumero(), 12));
-        }
-        r.printReport(true);
     }
 
     private String getNextNumeroFacturaConGuion(char tipo) {
@@ -1534,7 +1534,7 @@ public class FacturaVentaController {
             //si NO es al CONTADO no tiene un registro de DetalleCajaMovimiento
             new CajaMovimientosController().actualizarDescripcion(facturaVenta);
         }
-        imprimirFactura(facturaVenta);
+        doReportFactura(facturaVenta);
         jdFactura.getBtnFacturar().setEnabled(false);
     }
 
@@ -1605,10 +1605,10 @@ public class FacturaVentaController {
             if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(jdFactura, sb.toString(), "Confirmación de modificaciónes", JOptionPane.YES_NO_OPTION)) {
                 String mensaje = edit(cambiaCaja, cambiaFormaPago, editedFacturaVenta);
                 if (facturar) {
-                    imprimirFactura(editedFacturaVenta);
+                    doReportFactura(editedFacturaVenta);
                 } else if (JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog(jdFactura,
                         "¿Imprimir comprobante?", jpaController.getEntityClass().getSimpleName(), JOptionPane.OK_CANCEL_OPTION)) {
-                    imprimirMovimientoInterno(editedFacturaVenta);
+                    doReportMovimientoInterno(editedFacturaVenta);
                 }
                 jdFactura.showMessage("Modificaciones realizadas.\n" + mensaje, null, JOptionPane.INFORMATION_MESSAGE);
             }
@@ -1684,18 +1684,14 @@ public class FacturaVentaController {
                             + getNextNumeroFacturaConGuion(jdFactura.getCbFacturaTipo().getSelectedItem().toString().charAt(0)) + "?", "Facturación - Venta", JOptionPane.OK_CANCEL_OPTION)) {
                         cambiarMovimientoInternoToFactura(EL_OBJECT);
                     }
-                } else {
-                    if (JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog(jdFactura,
-                            "La Factura Nº" + JGestionUtils.getNumeracion(EL_OBJECT) + " ya fue impresa."
-                            + "\n¿Volver a imprimir?", jpaController.getEntityClass().getSimpleName(), JOptionPane.OK_CANCEL_OPTION)) {
-                        imprimirFactura(EL_OBJECT);
-                    }
+                } else if (JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog(jdFactura,
+                        "La Factura Nº" + JGestionUtils.getNumeracion(EL_OBJECT) + " ya fue impresa."
+                        + "\n¿Volver a imprimir?", jpaController.getEntityClass().getSimpleName(), JOptionPane.OK_CANCEL_OPTION)) {
+                    doReportFactura(EL_OBJECT);
                 }
-            } else {
-                if (JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog(jdFactura,
-                        "¿Re-Imprimir comprobante?", jpaController.getEntityClass().getSimpleName(), JOptionPane.OK_CANCEL_OPTION)) {
-                    imprimirMovimientoInterno(EL_OBJECT);
-                }
+            } else if (JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog(jdFactura,
+                    "¿Re-Imprimir comprobante?", jpaController.getEntityClass().getSimpleName(), JOptionPane.OK_CANCEL_OPTION)) {
+                doReportMovimientoInterno(EL_OBJECT);
             }
         } else {
             checkConstraints(facturar);
@@ -1710,16 +1706,14 @@ public class FacturaVentaController {
             new StockController().updateStock(newFacturaVenta);
             //asiento en caja..
             registrarVentaSegunFormaDePago(newFacturaVenta);
+            limpiarPanel();
             if (facturar) {
-                imprimirFactura(newFacturaVenta);
-            } else {
-                if (JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog(jdFactura,
-                        "¿Imprimir comprobante?", jpaController.getEntityClass().getSimpleName(), JOptionPane.OK_CANCEL_OPTION)) {
-                    imprimirMovimientoInterno(newFacturaVenta);
-                }
+                doReportFactura(newFacturaVenta);
+            } else if (JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog(jdFactura,
+                    "¿Imprimir comprobante?", jpaController.getEntityClass().getSimpleName(), JOptionPane.OK_CANCEL_OPTION)) {
+                doReportMovimientoInterno(newFacturaVenta);
             }
 
-            limpiarPanel();
         }
     }
 
@@ -2000,7 +1994,7 @@ public class FacturaVentaController {
                 JGestionUtils.getNumeracion(facturaVenta),
                 facturaVenta.getMovimientoInterno(),
                 facturaVenta.getCliente().getNombre(),
-                BigDecimal.valueOf(facturaVenta.getImporte()),
+                facturaVenta.getImporte(),
                 facturaVenta.getFechaVenta(),
                 facturaVenta.getSucursal().getNombre(),
                 facturaVenta.getCaja().getNombre(),
