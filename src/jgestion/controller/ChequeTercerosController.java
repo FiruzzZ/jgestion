@@ -62,6 +62,7 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.apache.log4j.Logger;
+import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 import utilities.general.UTIL;
 import utilities.swing.RowColorRender;
 import utilities.general.EntityWrapper;
@@ -554,6 +555,7 @@ public class ChequeTercerosController implements ActionListener {
         jdChequeManager.getCbCuentaBancaria().setVisible(false);
         jdChequeManager.getLabelCuentaBancaria().setVisible(false);
         UTIL.loadComboBox(jdChequeManager.getCbBancos(), JGestionUtils.getWrappedBancos(new BancoController().findEntities()), true);
+        AutoCompleteDecorator.decorate(jdChequeManager.getCbBancos());
         UTIL.loadComboBox(jdChequeManager.getCbEstados(), Arrays.asList(ChequeEstado.values()), true);
         UTIL.loadComboBox(jdChequeManager.getCbOrderBy(), Arrays.asList(orderByToComboBoxList), false);
         jdChequeManager.getCbOrderBy().setSelectedIndex(2);

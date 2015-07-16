@@ -1141,9 +1141,6 @@ public class FacturaVentaController {
         try {
             jdFactura.getBtnFacturar().setEnabled(false);
             jdFactura.getBtnAceptar().setEnabled(false);
-//            if (jdFactura.isViewMode()) {
-//                throw new MessageException("La ventana fue está seteada en modo Vista, no se puede completar la acción");
-//            }
             if (jdFactura.isEditMode()) {
                 setAndEdit(facturar);
             } else {
@@ -1689,9 +1686,14 @@ public class FacturaVentaController {
                         + "\n¿Volver a imprimir?", jpaController.getEntityClass().getSimpleName(), JOptionPane.OK_CANCEL_OPTION)) {
                     doReportFactura(EL_OBJECT);
                 }
-            } else if (JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog(jdFactura,
-                    "¿Re-Imprimir comprobante?", jpaController.getEntityClass().getSimpleName(), JOptionPane.OK_CANCEL_OPTION)) {
-                doReportMovimientoInterno(EL_OBJECT);
+            } else {
+                if (EL_OBJECT.getSucursal().isWebServices()) {
+                    throw new MessageException("No se pueden realizar MVI en puntos de venta habilitados para facturación electrónica");
+                }
+                if (JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog(jdFactura,
+                        "¿Re-Imprimir comprobante?", jpaController.getEntityClass().getSimpleName(), JOptionPane.OK_CANCEL_OPTION)) {
+                    doReportMovimientoInterno(EL_OBJECT);
+                }
             }
         } else {
             checkConstraints(facturar);

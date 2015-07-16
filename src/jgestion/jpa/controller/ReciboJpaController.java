@@ -27,6 +27,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import jgestion.JGestionUtils;
+import jgestion.controller.exceptions.DAOException;
 import jgestion.entity.DetalleRecibo_;
 
 /**
@@ -189,53 +190,81 @@ public class ReciboJpaController extends JGestionJpaImpl<Recibo, Integer> {
         }
         entityManager.persist(recibo);
         entityManager.getTransaction().commit();
-
-        entityManager.getTransaction().begin();
-        List<Object> pagosPost = new ArrayList<>(recibo.getPagosEntities().size());
-        for (Object object : recibo.getPagosEntities()) {
-            if (object instanceof DetalleCajaMovimientos) {
-                DetalleCajaMovimientos pago = (DetalleCajaMovimientos) object;
-                CajaMovimientos cm = new CajaMovimientosJpaController().findCajaMovimientoAbierta(recibo.getCaja());
-                pago.setCajaMovimientos(cm);
-                pago.setDescripcion(getEntityClass().getSimpleName() + " " + JGestionUtils.getNumeracion(recibo, true));
-                pago.setNumero(Long.valueOf(recibo.getId()));
-                entityManager.persist(pago);
-                pagosPost.add(pago);
-            } else if (object instanceof ChequePropio) {
-                ChequePropio pago = (ChequePropio) object;
-                pago.setComprobanteIngreso(getEntityClass().getSimpleName() + " " + JGestionUtils.getNumeracion(recibo, true));
-                entityManager.merge(pago);
-                pagosPost.add(pago);
-            } else if (object instanceof ChequeTerceros) {
-                ChequeTerceros pago = (ChequeTerceros) object;
-                pago.setComprobanteIngreso(getEntityClass().getSimpleName() + " " + JGestionUtils.getNumeracion(recibo, true));
-                if (pago.getId() == null) {
+        List<Object> pagosPost = null;
+        try {
+            entityManager.getTransaction().begin();
+            pagosPost = new ArrayList<>(recibo.getPagosEntities().size());
+            for (Object object : recibo.getPagosEntities()) {
+                if (object instanceof DetalleCajaMovimientos) {
+                    DetalleCajaMovimientos pago = (DetalleCajaMovimientos) object;
+                    CajaMovimientos cm = new CajaMovimientosJpaController().findCajaMovimientoAbierta(recibo.getCaja());
+                    pago.setCajaMovimientos(cm);
+                    pago.setDescripcion(getEntityClass().getSimpleName() + " " + JGestionUtils.getNumeracion(recibo, true));
+                    pago.setNumero(Long.valueOf(recibo.getId()));
                     entityManager.persist(pago);
-                } else {
+                    pagosPost.add(pago);
+                } else if (object instanceof ChequePropio) {
+                    ChequePropio pago = (ChequePropio) object;
+                    pago.setComprobanteIngreso(getEntityClass().getSimpleName() + " " + JGestionUtils.getNumeracion(recibo, true));
                     entityManager.merge(pago);
+                    pagosPost.add(pago);
+                } else if (object instanceof ChequeTerceros) {
+                    ChequeTerceros pago = (ChequeTerceros) object;
+                    pago.setComprobanteIngreso(getEntityClass().getSimpleName() + " " + JGestionUtils.getNumeracion(recibo, true));
+                    if (pago.getId() == null) {
+                        entityManager.persist(pago);
+                    } else {
+                        entityManager.merge(pago);
+                    }
+                    pagosPost.add(pago);
+                } else if (object instanceof NotaCredito) {
+                    NotaCredito pago = (NotaCredito) object;
+                    pago.setDesacreditado(pago.getImporte());
+                    pago.setRecibo(recibo);
+                    entityManager.merge(object);
+                    pagosPost.add(pago);
+                } else if (object instanceof ComprobanteRetencion) {
+                    ComprobanteRetencion pago = (ComprobanteRetencion) object;
+                    entityManager.persist(pago);
+                    pagosPost.add(pago);
+                } else if (object instanceof CuentabancariaMovimientos) {
+                    CuentabancariaMovimientos pago = (CuentabancariaMovimientos) object;
+                    entityManager.persist(pago);
+                    pagosPost.add(pago);
+                } else if (object instanceof Especie) {
+                    Especie pago = (Especie) object;
+                    entityManager.persist(pago);
+                    pagosPost.add(pago);
                 }
-                pagosPost.add(pago);
-            } else if (object instanceof NotaCredito) {
-                NotaCredito pago = (NotaCredito) object;
-                pago.setDesacreditado(pago.getImporte());
-                pago.setRecibo(recibo);
-                entityManager.merge(object);
-                pagosPost.add(pago);
-            } else if (object instanceof ComprobanteRetencion) {
-                ComprobanteRetencion pago = (ComprobanteRetencion) object;
-                entityManager.persist(pago);
-                pagosPost.add(pago);
-            } else if (object instanceof CuentabancariaMovimientos) {
-                CuentabancariaMovimientos pago = (CuentabancariaMovimientos) object;
-                entityManager.persist(pago);
-                pagosPost.add(pago);
-            } else if (object instanceof Especie) {
-                Especie pago = (Especie) object;
-                entityManager.persist(pago);
-                pagosPost.add(pago);
             }
+            entityManager.getTransaction().commit();
+        } catch (Exception ex) {
+            System.out.println("Error persistiendo Recibo.id=" + recibo.getId());
+            remove(recibo);
+            entityManager = getEntityManager();
+            if (!entityManager.getTransaction().isActive()) {
+                entityManager.getTransaction().begin();
+            }
+            for (Object object : pagosPost) {
+                if (object instanceof DetalleCajaMovimientos
+                        || object instanceof CuentabancariaMovimientos
+                        || object instanceof Especie
+                        || object instanceof ComprobanteRetencion) {
+                    entityManager.remove(object);
+                } else if (object instanceof NotaCredito) {
+                    NotaCredito pago = (NotaCredito) object;
+                    pago.setRecibo(null);
+                    entityManager.merge(object);
+                } else if (object instanceof ChequeTerceros) {
+                    ChequeTerceros pago = (ChequeTerceros) object;
+                    pago.setComprobanteIngreso(null);
+                    entityManager.merge(object);
+                }
+            }
+            entityManager.getTransaction().commit();
+            throw new DAOException("Error persistiendo Recibo.id=" + recibo.getId()
+                    + "\n" + ex.getMessage(), ex);
         }
-        entityManager.getTransaction().commit();
         entityManager.getTransaction().begin();
         for (Object object : pagosPost) {
             Integer tipo = null, id = null;

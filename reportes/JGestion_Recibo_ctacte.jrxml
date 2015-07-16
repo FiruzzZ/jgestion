@@ -21,8 +21,8 @@
 	<queryString>
 		<![CDATA[SELECT s.puntoventa, recibo.numero, recibo.estado, recibo.fecha_carga, recibo.fecha_recibo, d.fecha_inicio_actividad as empresa_fecha_inicio_actividad, d.nombre as empresa_nombre, d.cuit as empresa_cuit,
  d.direccion as empresa_dir, d.tele1 as empresa_tele1, d.tele2 as empresa_tele2, d.logo as empresa_logo,
-c.nombre as clie_nombre, c.direccion as clie_direccion, c.tele1 as clie_tele1, c.num_doc as clie_cuit, con.nombre as clie_contrib
-FROM datos_empresa d, contribuyente con, detalle_recibo dr
+c.nombre as clie_nombre, c.direccion as clie_direccion, c.tele1 as clie_tele1, c.num_doc as clie_cuit, con.nombre as clie_contrib, emp_con.nombre as empresa_condicion_iva
+FROM datos_empresa d join contribuyente emp_con ON d.contribuyente_id = emp_con.id, contribuyente con, detalle_recibo dr
 JOIN recibo ON (recibo.id = dr.recibo)
 JOIN sucursal s ON (recibo.sucursal = s.id), cliente c
 WHERE c.contribuyente = con.id
@@ -47,13 +47,14 @@ AND recibo.id =  $P{RECIBO_ID}]]>
 	<field name="clie_tele1" class="java.math.BigDecimal"/>
 	<field name="clie_cuit" class="java.math.BigDecimal"/>
 	<field name="clie_contrib" class="java.lang.String"/>
+	<field name="empresa_condicion_iva" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="113" splitType="Stretch">
+		<band height="120" splitType="Stretch">
 			<rectangle>
-				<reportElement uuid="235fb778-ca11-4ede-921c-2c3ff77abdf2" x="0" y="0" width="555" height="113"/>
+				<reportElement uuid="235fb778-ca11-4ede-921c-2c3ff77abdf2" x="0" y="0" width="555" height="120"/>
 			</rectangle>
 			<staticText>
 				<reportElement uuid="eeb41ce4-103a-4985-a9d2-ee076cb2617d" x="346" y="0" width="66" height="23"/>
@@ -77,7 +78,7 @@ AND recibo.id =  $P{RECIBO_ID}]]>
 				<text><![CDATA[Fecha:]]></text>
 			</staticText>
 			<line>
-				<reportElement uuid="bbbdda29-b7eb-4dfa-9136-ade0f86ec34c" x="278" y="0" width="1" height="113"/>
+				<reportElement uuid="bbbdda29-b7eb-4dfa-9136-ade0f86ec34c" x="278" y="0" width="1" height="120"/>
 			</line>
 			<textField pattern="" isBlankWhenNull="true">
 				<reportElement uuid="0e09bab4-abec-492e-ae81-97d9b418d1f9" x="368" y="23" width="161" height="20"/>
@@ -138,21 +139,21 @@ $F{numero}.toString().length() == 2 ?
 				<textFieldExpression><![CDATA[$F{empresa_cuit}]]></textFieldExpression>
 			</textField>
 			<textField pattern="" isBlankWhenNull="true">
-				<reportElement uuid="03a78d73-9fc2-43f6-825d-63d1786375e7" x="1" y="70" width="278" height="15"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
+				<reportElement uuid="03a78d73-9fc2-43f6-825d-63d1786375e7" x="1" y="63" width="278" height="15"/>
+				<textElement verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{empresa_nombre}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Razón Social: " + $F{empresa_nombre}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="36a319b2-d6cb-43f0-b105-1d7562f27a2c" x="1" y="85" width="278" height="12"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
+				<reportElement uuid="36a319b2-d6cb-43f0-b105-1d7562f27a2c" x="1" y="78" width="278" height="12"/>
+				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{empresa_dir}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Domicilio Comercial: " +$F{empresa_dir}]]></textFieldExpression>
 			</textField>
 			<image scaleImage="FillFrame">
-				<reportElement uuid="f3bd30ad-35c2-42a7-a190-165b588ffb14" x="79" y="1" width="125" height="70" isRemoveLineWhenBlank="true">
+				<reportElement uuid="f3bd30ad-35c2-42a7-a190-165b588ffb14" x="79" y="1" width="125" height="60" isRemoveLineWhenBlank="true">
 					<printWhenExpression><![CDATA[new Boolean ($F{empresa_logo} != null)]]></printWhenExpression>
 				</reportElement>
 				<imageExpression><![CDATA[net.sf.jasperreports.engine.util.JRImageLoader.loadImage((byte[]) $F{empresa_logo})]]></imageExpression>
@@ -165,8 +166,8 @@ $F{numero}.toString().length() == 2 ?
 				<textFieldExpression><![CDATA[$F{empresa_cuit}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement uuid="d8661493-6aff-423e-a599-6257f5b73b71" x="1" y="97" width="278" height="12"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
+				<reportElement uuid="d8661493-6aff-423e-a599-6257f5b73b71" x="1" y="90" width="278" height="12"/>
+				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Teléfonos:".concat(
@@ -198,14 +199,27 @@ $F{numero}.toString().length() == 2 ?
 				</textElement>
 				<text><![CDATA[ANULADA]]></text>
 			</staticText>
+			<textField>
+				<reportElement uuid="99f23621-96ad-4e0e-91c6-ab07ffab6f51" x="1" y="100" width="238" height="12"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Condición frente al IVA: "+$F{empresa_condicion_iva}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="5701a8f0-6866-4380-9a99-896bcecc39a1" x="279" y="100" width="275" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Comprobante no válido como Factura]]></text>
+			</staticText>
 		</band>
 	</title>
 	<pageHeader>
 		<band height="75" splitType="Stretch">
 			<staticText>
-				<reportElement uuid="5f082812-aed3-4aac-b703-e4b59792fcd6" x="0" y="46" width="50" height="14"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle"/>
-				<text><![CDATA[I.V.A.:]]></text>
+				<reportElement uuid="5f082812-aed3-4aac-b703-e4b59792fcd6" x="0" y="46" width="63" height="14"/>
+				<box leftPadding="2"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Condic. IVA: ]]></text>
 			</staticText>
 			<line>
 				<reportElement uuid="8b6a8551-9205-490c-8c58-03c1be3842b6" x="52" y="41" width="502" height="1"/>
@@ -214,21 +228,22 @@ $F{numero}.toString().length() == 2 ?
 				</graphicElement>
 			</line>
 			<line>
-				<reportElement uuid="e2b8e874-132d-43f8-a01a-3388c691e88b" x="50" y="18" width="504" height="1"/>
+				<reportElement uuid="e2b8e874-132d-43f8-a01a-3388c691e88b" x="55" y="18" width="499" height="1"/>
 				<graphicElement>
 					<pen lineWidth="0.75"/>
 				</graphicElement>
 			</line>
 			<line>
-				<reportElement uuid="013d91b5-0c7c-468a-aeb7-1d333dd5e589" x="52" y="59" width="502" height="1"/>
+				<reportElement uuid="013d91b5-0c7c-468a-aeb7-1d333dd5e589" x="63" y="60" width="491" height="1"/>
 				<graphicElement>
 					<pen lineWidth="0.75"/>
 				</graphicElement>
 			</line>
 			<staticText>
 				<reportElement uuid="1ba9bf56-e746-45cc-bf2a-8dd083fc2873" x="0" y="25" width="50" height="16"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle"/>
-				<text><![CDATA[Dirección:]]></text>
+				<box leftPadding="2"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Domicilio:]]></text>
 			</staticText>
 			<staticText>
 				<reportElement uuid="a97cb22f-5789-4d0c-9328-ef2afca471c9" x="318" y="46" width="29" height="14"/>
@@ -236,7 +251,7 @@ $F{numero}.toString().length() == 2 ?
 				<text><![CDATA[CUIT:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="65da1003-8795-4885-955b-a1eb71a3846d" x="52" y="41" width="197" height="18"/>
+				<reportElement uuid="65da1003-8795-4885-955b-a1eb71a3846d" x="63" y="41" width="186" height="18"/>
 				<textElement verticalAlignment="Bottom">
 					<font isBold="true"/>
 				</textElement>
@@ -250,7 +265,7 @@ $F{numero}.toString().length() == 2 ?
 				<textFieldExpression><![CDATA[$F{clie_cuit}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="1f160445-4891-4ae8-927f-0a52cd1f7272" x="52" y="2" width="502" height="16"/>
+				<reportElement uuid="1f160445-4891-4ae8-927f-0a52cd1f7272" x="55" y="2" width="499" height="16"/>
 				<textElement verticalAlignment="Bottom">
 					<font isBold="true"/>
 				</textElement>
@@ -264,8 +279,9 @@ $F{numero}.toString().length() == 2 ?
 				<textFieldExpression><![CDATA[$F{clie_direccion}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement uuid="2541140a-d701-4aed-b7bf-8276f3e316a9" x="0" y="2" width="50" height="16"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<reportElement uuid="2541140a-d701-4aed-b7bf-8276f3e316a9" x="0" y="2" width="55" height="16"/>
+				<box leftPadding="2"/>
+				<textElement verticalAlignment="Middle"/>
 				<text><![CDATA[Señor (es):]]></text>
 			</staticText>
 			<staticText>

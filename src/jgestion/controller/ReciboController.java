@@ -38,6 +38,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import jgestion.JGestionUtils;
 import jgestion.JGestion;
+import jgestion.controller.exceptions.DAOException;
 import jgestion.jpa.controller.CajaMovimientosJpaController;
 import jgestion.jpa.controller.ChequePropioJpaController;
 import jgestion.jpa.controller.ChequeTercerosJpaController;
@@ -614,7 +615,12 @@ public class ReciboController implements ActionListener, FocusListener {
         if (conciliando) {
             jpaController.conciliar(re);
         } else {
-            jpaController.persist(re);
+            try {
+                jpaController.persist(re);
+            } catch (DAOException ex) {
+                LOG.fatal("Error persistiendo Recibo.id=" + re.getId(), ex);
+                throw new MessageException(ex.getMessage());
+            }
         }
         for (DetalleRecibo detalle : re.getDetalle()) {
             if (detalle.getFacturaVenta() != null) {
