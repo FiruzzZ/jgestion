@@ -9,8 +9,6 @@ import jgestion.entity.Departamento;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
@@ -31,6 +29,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
@@ -248,7 +247,7 @@ public class DepartamentoController implements ActionListener, MouseListener, Ke
                         contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                     } catch (Exception ex) {
                         contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                        Logger.getLogger(DepartamentoController.class.getName()).log(Level.SEVERE, null, ex);
+                        LogManager.getLogger();//(DepartamentoController.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 } else if (boton.getName().equalsIgnoreCase("edit")) {
                     try {
@@ -257,7 +256,7 @@ public class DepartamentoController implements ActionListener, MouseListener, Ke
                         contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                     } catch (Exception ex) {
                         contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                        Logger.getLogger(DepartamentoController.class.getName()).log(Level.SEVERE, null, ex);
+                        LogManager.getLogger();//(DepartamentoController.class.getName()).log(Level.SEVERE, null, ex);
                     }
 
                 } else if (boton.getName().equalsIgnoreCase("del")) {
@@ -271,7 +270,7 @@ public class DepartamentoController implements ActionListener, MouseListener, Ke
                         contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                     } catch (Exception ex) {
                         contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                        Logger.getLogger(DepartamentoController.class.getName()).log(Level.SEVERE, null, ex);
+                        LogManager.getLogger();//(DepartamentoController.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 } else if (boton.getName().equalsIgnoreCase("exit")) {
                     contenedor.dispose();
@@ -292,7 +291,7 @@ public class DepartamentoController implements ActionListener, MouseListener, Ke
                         abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
                     } catch (Exception ex) {
                         abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                        Logger.getLogger(DepartamentoController.class.getName()).log(Level.SEVERE, null, ex);
+                        LogManager.getLogger();//(DepartamentoController.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 } else if (boton.getName().equalsIgnoreCase("cancelar")) {
                     abm.dispose();

@@ -14,7 +14,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import jgestion.entity.Proveedor;
-import org.apache.log4j.Logger;
 import utilities.general.UTIL;
 
 /**
@@ -23,7 +22,6 @@ import utilities.general.UTIL;
  */
 public class FacturaCompraJpaController extends AbstractDAO<FacturaCompra, Integer> {
 
-    private static final Logger LOG = Logger.getLogger(FacturaCompraJpaController.class.getName());
     private EntityManager entityManager;
 
     public FacturaCompraJpaController() {
@@ -54,7 +52,6 @@ public class FacturaCompraJpaController extends AbstractDAO<FacturaCompra, Integ
                 o.getDetalleCompraList().add(detallesCompra);
             }
         } catch (Exception ex) {
-            LOG.fatal(ex, ex);
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }

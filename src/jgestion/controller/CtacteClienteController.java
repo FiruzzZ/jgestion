@@ -24,16 +24,17 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import jgestion.JGestionUtils;
+import jgestion.entity.CtacteProveedor;
 import jgestion.jpa.controller.CtacteClienteJpaController;
 import net.sf.jasperreports.engine.JRException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import utilities.general.EntityWrapper;
 import utilities.swing.components.NumberRenderer;
 
@@ -49,7 +50,7 @@ public class CtacteClienteController implements ActionListener {
     private double totalHaber; //<----
     private PanelCtaCteCheckVencimientos panelCCCheck;
     private JDBuscador buscador;
-    private static final Logger LOG = Logger.getLogger(CtacteClienteController.class);
+    private static final Logger LOG = LogManager.getLogger();
     private final CtacteClienteJpaController jpaController = new CtacteClienteJpaController();
 
     public CtacteClienteController() {
@@ -470,7 +471,7 @@ public class CtacteClienteController implements ActionListener {
                     JOptionPane.showMessageDialog(buscador, ex.getMessage(), "ERROR", 0);
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(buscador, ex.getMessage(), "ERROR CRÍTICO", 0);
-                    Logger.getLogger(CtacteClienteController.class.getName()).error(ex);
+                    LogManager.getLogger();//(CtacteClienteController.class.getName()).error(ex);
                 } finally {
                     buscador.bloquearBotones(false);
                 }
@@ -486,7 +487,7 @@ public class CtacteClienteController implements ActionListener {
                     JOptionPane.showMessageDialog(buscador, ex.getMessage(), "ERROR", 0);
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(buscador, ex.getMessage(), "ERROR CRÍTICO", 0);
-                    Logger.getLogger(CtacteClienteController.class.getName()).error(ex, ex);
+                    LogManager.getLogger();//(CtacteClienteController.class.getName()).error(ex, ex);
                 } finally {
                     buscador.bloquearBotones(false);
                 }

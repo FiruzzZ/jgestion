@@ -11,7 +11,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
@@ -33,7 +32,7 @@ import jgestion.jpa.controller.ProductoJpaController;
 import jgestion.jpa.controller.ProveedorJpaController;
 import jgestion.jpa.controller.RemitoCompraJpaController;
 import jgestion.jpa.controller.UsuarioAccionesJpaController;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 import utilities.general.EntityWrapper;
 import utilities.general.UTIL;
@@ -222,7 +221,7 @@ public class RemitoCompraController {
                     ex.displayMessage(jd);
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(jd, "Error: " + ex.getMessage());
-                    Logger.getRootLogger().error(ex, ex);
+                    JGestion.LOG.error(ex, ex);
                 }
             }
 

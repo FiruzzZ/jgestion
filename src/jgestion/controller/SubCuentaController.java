@@ -16,8 +16,8 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import jgestion.Wrapper;
 import jgestion.jpa.controller.SubCuentaJpaController;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.postgresql.util.PSQLException;
 import utilities.general.UTIL;
@@ -29,7 +29,7 @@ import utilities.general.EntityWrapper;
  */
 public class SubCuentaController {
 
-    private static final Logger LOG = Logger.getLogger(SubCuentaController.class.getName());
+    private static final Logger LOG = LogManager.getLogger();
     private SubCuentaJpaController jpaController;
     private SubCuenta EL_OBJECT;
 
@@ -84,7 +84,7 @@ public class SubCuentaController {
                     JOptionPane.showMessageDialog(abm, ex.getMessage(), ex.getClass().toString(), JOptionPane.WARNING_MESSAGE);
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(abm, ex.getMessage(), ex.getClass().toString(), JOptionPane.WARNING_MESSAGE);
-                    Logger.getLogger(CuentaController.class.getName()).log(Level.ERROR, null, ex);
+                    LogManager.getLogger();//(CuentaController.class.getName()).log(Level.ERROR, null, ex);
                 } finally {
                     abm.getbAceptar().setEnabled(true);
                 }

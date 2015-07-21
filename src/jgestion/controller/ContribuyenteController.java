@@ -17,10 +17,9 @@ import utilities.general.UTIL;
 import jgestion.gui.JDMiniABM;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.NoResultException;
 import javax.swing.table.DefaultTableModel;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
@@ -165,13 +164,13 @@ public class ContribuyenteController implements ActionListener, MouseListener {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (IllegalOrphanException ex) {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                    Logger.getLogger(ContribuyenteController.class.getName()).log(Level.SEVERE, null, ex);
+                    LogManager.getLogger();//(ContribuyenteController.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (NonexistentEntityException ex) {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                    Logger.getLogger(ContribuyenteController.class.getName()).log(Level.SEVERE, null, ex);
+                    LogManager.getLogger();//(ContribuyenteController.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (Exception ex) {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                    Logger.getLogger(ContribuyenteController.class.getName()).log(Level.SEVERE, null, ex);
+                    LogManager.getLogger();//(ContribuyenteController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
             return;
@@ -246,7 +245,7 @@ public class ContribuyenteController implements ActionListener, MouseListener {
         try {
             UTIL.getDefaultTableModel(abm.getjTable1(), colsName, colsWidth);
         } catch (Exception ex) {
-            Logger.getLogger(MarcaController.class.getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger();//(MarcaController.class.getName()).log(Level.SEVERE, null, ex);
         }
         cargarDTM(abm.getDTM(), null);
         abm.setListeners(this);

@@ -34,7 +34,8 @@ import jgestion.JGestionUtils;
 import jgestion.jpa.controller.CreditoProveedorJpaController;
 import jgestion.jpa.controller.NotaCreditoProveedorJpaController;
 import jgestion.jpa.controller.ProveedorJpaController;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import utilities.general.UTIL;
 import utilities.general.EntityWrapper;
 import utilities.swing.components.NumberRenderer;
@@ -45,7 +46,7 @@ import utilities.swing.components.NumberRenderer;
  */
 public class NotaCreditoProveedorController implements ActionListener {
 
-    private static final Logger LOG = Logger.getLogger(NotaCreditoProveedorController.class.getName());
+    private static final Logger LOG = LogManager.getLogger();
     private final NotaCreditoProveedorJpaController jpaController;
     private JDFacturaCompra jdFactura;
     private final String[] colsName = {"IVA", "Cód. Producto", "Producto", "Cantidad", "Precio U.", "Sub total", "Mod", "Producto.instance"};

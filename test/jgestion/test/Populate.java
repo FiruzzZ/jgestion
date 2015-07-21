@@ -11,7 +11,6 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
-import org.apache.log4j.PropertyConfigurator;
 
 /**
  *
@@ -21,7 +20,6 @@ public class Populate {
 
     public void populating() {
         try {
-            PropertyConfigurator.configure("log4j.properties");
             Properties properties = PropsUtils.load(new File("cfg.ini"));
             DAO.setProperties(properties);
             EntityManager em = DAO.getEntityManager();

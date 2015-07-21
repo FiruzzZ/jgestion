@@ -25,8 +25,8 @@ import javax.persistence.RollbackException;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.table.DefaultTableModel;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.postgresql.util.PSQLException;
 import utilities.general.UTIL;
@@ -46,7 +46,7 @@ public class BancoController {
     private PanelABMBancoSucursales panelABM;
     private boolean permitirFiltroVacio;
     private EntityManager entityManager;
-    private static Logger LOG = Logger.getLogger(BancoController.class);
+    private static final Logger LOG = LogManager.getLogger();
 
     public BancoController() {
     }
@@ -64,7 +64,7 @@ public class BancoController {
         try {
             DAO.create(banco);
         } catch (Exception ex) {
-            Logger.getLogger(BancoController.class.getName()).fatal(ex, ex);
+            LogManager.getLogger();//(BancoController.class.getName()).fatal(ex, ex);
         }
     }
 
@@ -244,7 +244,7 @@ public class BancoController {
                 } catch (IllegalOrphanException ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (NonexistentEntityException ex) {
-                    Logger.getLogger(BancoController.class.getName()).log(Level.ERROR, null, ex);
+                    LogManager.getLogger();//(BancoController.class.getName()).log(Level.ERROR, null, ex);
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
                 }
             }

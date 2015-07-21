@@ -5,7 +5,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.Serializable;
 import javax.swing.*;
-import org.apache.log4j.LogManager;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *

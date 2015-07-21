@@ -19,7 +19,7 @@ import javax.persistence.NoResultException;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.table.DefaultTableModel;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
@@ -149,7 +149,7 @@ public class UnidadmedidaJpaController implements ActionListener, MouseListener 
                 } catch (IllegalOrphanException ex) {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 0);
                 } catch (Exception ex) {
-                    Logger.getLogger(this.getClass()).error(null, ex);
+                    LogManager.getLogger();//(this.getClass()).error(null, ex);
                 }
             } else if (boton.getName().equalsIgnoreCase("cancelar")) {
                 clearPanelFields();
@@ -162,7 +162,7 @@ public class UnidadmedidaJpaController implements ActionListener, MouseListener 
                 } catch (MessageException ex) {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
-                    Logger.getLogger(this.getClass()).error(null, ex);
+                    LogManager.getLogger();//(this.getClass()).error(null, ex);
                 }
             }
 
@@ -250,7 +250,7 @@ public class UnidadmedidaJpaController implements ActionListener, MouseListener 
             UTIL.getDefaultTableModel(abm.getjTable1(), colsName, colsWidth);
             UTIL.hideColumnTable(abm.getjTable1(), 0);
         } catch (Exception ex) {
-            Logger.getLogger(this.getClass()).error(null, ex);
+            LogManager.getLogger();//(this.getClass()).error(null, ex);
         }
         cargarDTM(abm.getDTM(), null);
         abm.getjTable1().addMouseListener(new MouseAdapter() {

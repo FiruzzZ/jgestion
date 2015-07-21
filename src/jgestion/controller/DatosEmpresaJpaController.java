@@ -10,11 +10,10 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
@@ -150,7 +149,7 @@ public class DatosEmpresaJpaController implements ActionListener {
                 try {
                     cargarImagen();
                 } catch (Exception ex) {
-                    Logger.getLogger(DatosEmpresaJpaController.class.getName()).log(Level.SEVERE, null, ex);
+                    LogManager.getLogger();//(DatosEmpresaJpaController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             } else if (boton.getName().equals("bQuitarFoto")) {
                 jd.getLabelLogo().setIcon(null);
@@ -249,10 +248,10 @@ public class DatosEmpresaJpaController implements ActionListener {
                 EL_OBJECT.setLogo(UTIL.getBytesFromFile(logoFile));
             } catch (IOException ex) {
                 jd.showMessage(ex.getMessage(), "Datos Empresa", 0);
-                Logger.getLogger(DatosEmpresaJpaController.class.getName()).log(Level.SEVERE, null, ex);
+                LogManager.getLogger();//(DatosEmpresaJpaController.class.getName()).log(Level.SEVERE, null, ex);
             } catch (Exception ex) {
                 jd.showMessage(ex.getMessage(), "Datos Empresa", 0);
-                Logger.getLogger(DatosEmpresaJpaController.class.getName()).log(Level.SEVERE, null, ex);
+                LogManager.getLogger();//(DatosEmpresaJpaController.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {
             // si logoFile == null, es porque no se eligió ninguna foto 

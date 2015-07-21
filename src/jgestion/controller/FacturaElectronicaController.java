@@ -5,10 +5,8 @@ import generics.GenericBeanCollection;
 import generics.WaitingDialog;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.io.FileNotFoundException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -29,11 +27,8 @@ import jgestion.jpa.controller.FacturaElectronicaJpaController;
 import jgestion.jpa.controller.FacturaVentaJpaController;
 import jgestion.jpa.controller.SucursalJpaController;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRPrintPage;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.view.JasperViewer;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import utilities.general.UTIL;
 
 /**
@@ -42,7 +37,7 @@ import utilities.general.UTIL;
  */
 public class FacturaElectronicaController {
 
-    private static final Logger LOG = Logger.getLogger(FacturaElectronicaController.class);
+    private static final Logger LOG = LogManager.getLogger();
     private static Thread caeRequestThread;
 
     public static void initSolicitudCAEs() {
@@ -146,7 +141,7 @@ public class FacturaElectronicaController {
 
     public void doReport(FacturaVenta fv) throws MissingReportException, JRException, MessageException {
         FacturaElectronica fe = findBy(fv);
-        if(fe.getCae() == null) {
+        if (fe.getCae() == null) {
             throw new MessageException("el comprobante " + JGestionUtils.getNumeracion(fv) + " aún no posee CAE");
         }
         HashMap<String, Object> parameters = new HashMap<>(30);
@@ -157,6 +152,7 @@ public class FacturaElectronicaController {
         parameters.put("CBTE_FECHA_EMISION", fv.getFechaVenta());
         parameters.put("CBTE_PUNTO", UTIL.AGREGAR_CEROS(fe.getPtoVta(), 4));
         parameters.put("CBTE_NUMERO", UTIL.AGREGAR_CEROS(fe.getCbteNumero(), 8));
+        parameters.put("CBTE_CONDICION_VENTA", fv.getFormaPago() == 1 ? "Contado" : "Cta. Cte.");
         parameters.put("CBTE_CAE", fe.getCae());
         parameters.put("CBTE_CAE_VTO", fe.getCaeFechaVto());
         putClienteParameters(parameters, fv.getCliente());

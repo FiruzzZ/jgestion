@@ -8,7 +8,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -20,7 +21,7 @@ public abstract class ShutDownListener {
     private boolean shutDownSystem = false;
     private boolean activeConnection = false;
     private Connection connection;
-    private static final Logger LOG = Logger.getLogger(ShutDownListener.class.getName());
+    private static final Logger LOG = LogManager.getLogger();
     private String message;
     private WaitingDialog lostConnectionDialog;
     private final Thread fuerzaBrutaShutDown = new Thread(new Runnable() {

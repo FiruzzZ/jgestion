@@ -84,6 +84,9 @@ public class FacturaVenta implements Serializable {
     @Basic(optional = false)
     @Column(name = "no_gravado", nullable = false, precision = 12, scale = 2)
     private BigDecimal noGravado;
+    /**
+     * 1= contado, 2 = ctacte
+     */
     @Basic(optional = false)
     @Column(name = "forma_pago", nullable = false)
     private int formaPago;

@@ -43,7 +43,8 @@ import jgestion.entity.Recibo;
 import jgestion.gui.JDABM;
 import jgestion.gui.PanelAFIPWSConsultarCbte;
 import jgestion.gui.WSFEVerificacionPanel;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 import utilities.general.UTIL;
@@ -60,7 +61,7 @@ public class AFIPWSController {
     private static final String WS_FOLDER = "." + File.separator + "ws" + File.separator;
     private static final String TICKET_ACCESS_XML = WS_FOLDER + "tar.xml";
     private static final String WS_CLIENT_PROPERTIES = WS_FOLDER + "wsaa_client.properties";
-    private static final Logger LOG = Logger.getLogger(AFIPWSController.class);
+    private static final Logger LOG = LogManager.getLogger();
 
 //    private AFIPTestClient aFIPClient;
     private AFIPFEVClient aFIPClient;

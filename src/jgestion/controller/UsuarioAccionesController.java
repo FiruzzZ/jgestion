@@ -8,7 +8,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Objects;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -16,7 +17,7 @@ import org.apache.log4j.Logger;
  */
 public class UsuarioAccionesController {
 
-    private static final Logger LOG = Logger.getLogger(UsuarioAccionesController.class);
+    private static final Logger LOG = LogManager.getLogger();
     private final UsuarioAccionesJpaController jpaController = new UsuarioAccionesJpaController();
     /**
      * Map para establecer las relaciones de propiedad entre las entidades. Una entidad no puede

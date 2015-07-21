@@ -3,14 +3,10 @@ package jgestion.controller;
 import jgestion.controller.exceptions.DatabaseErrorException;
 import jgestion.controller.exceptions.MessageException;
 import jgestion.controller.exceptions.MissingReportException;
-import jgestion.controller.exceptions.PreexistingEntityException;
 import jgestion.entity.Cliente;
 import jgestion.entity.DetalleAcreditacion;
-import jgestion.entity.DetalleRecibo;
 import jgestion.entity.NotaCredito;
-import java.util.Iterator;
 import java.util.List;
-import javax.persistence.EntityManager;
 import jgestion.entity.DetalleNotaCredito;
 import jgestion.entity.FacturaVenta;
 import jgestion.entity.Iva;
@@ -37,7 +33,8 @@ import jgestion.JGestionUtils;
 import jgestion.jpa.controller.NotaCreditoJpaController;
 import jgestion.jpa.controller.ProductoJpaController;
 import net.sf.jasperreports.engine.JRException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import utilities.general.EntityWrapper;
 import utilities.swing.components.NumberRenderer;
 
@@ -47,7 +44,7 @@ import utilities.swing.components.NumberRenderer;
  */
 public class NotaCreditoController {
 
-    private static final Logger LOG = Logger.getLogger(NotaCreditoController.class.getName());
+    private static final Logger LOG = LogManager.getLogger();
     private FacturaVentaController facturaVentaController;
     private JDFacturaVenta jdFacturaVenta;
     private JDBuscadorReRe buscador;

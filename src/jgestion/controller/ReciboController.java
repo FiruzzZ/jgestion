@@ -50,7 +50,8 @@ import jgestion.jpa.controller.NotaDebitoJpaController;
 import jgestion.jpa.controller.ReciboJpaController;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 import utilities.general.NumberToLetterConverter;
 import utilities.general.TableExcelExporter;
@@ -66,7 +67,7 @@ import utilities.swing.components.NumberRenderer;
  */
 public class ReciboController implements ActionListener, FocusListener {
 
-    private static final Logger LOG = Logger.getLogger(ReciboController.class.getName());
+    private static final Logger LOG = LogManager.getLogger();
     private static final String CLASS_NAME = Recibo.class.getSimpleName();
     private JDReRe jdReRe;
     private CtacteCliente selectedCtaCte;
@@ -146,7 +147,7 @@ public class ReciboController implements ActionListener, FocusListener {
                     jdReRe.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
                     jdReRe.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    Logger.getLogger(ReciboController.class).log(org.apache.log4j.Level.ERROR, null, ex);
+                    LogManager.getLogger();//(ReciboController.class).log(org.apache.logging.log4j.Level.ERROR, null, ex);
                 }
             }
         });
@@ -893,7 +894,7 @@ public class ReciboController implements ActionListener, FocusListener {
                 } catch (MessageException ex) {
                     JOptionPane.showMessageDialog(buscador, ex.getMessage(), null, 2);
                 } catch (Exception ex) {
-                    LOG.error(null, ex);
+                    LOG.error("", ex);
                     JOptionPane.showMessageDialog(buscador, ex.getMessage(), "ERROR", 0);
                 }
             }

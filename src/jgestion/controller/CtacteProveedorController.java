@@ -21,8 +21,6 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.*;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
@@ -35,6 +33,7 @@ import jgestion.jpa.controller.CreditoProveedorJpaController;
 import jgestion.jpa.controller.ProveedorJpaController;
 import jgestion.jpa.controller.RemesaJpaController;
 import net.sf.jasperreports.engine.JRException;
+import org.apache.logging.log4j.LogManager;
 import org.eclipse.persistence.config.QueryHints;
 import utilities.general.UTIL;
 import utilities.general.EntityWrapper;
@@ -308,7 +307,7 @@ public class CtacteProveedorController implements ActionListener {
                     resumenCtaCtes.showMessage(ex.getMessage(), null, 2);
                 } catch (Exception ex) {
                     resumenCtaCtes.showMessage(ex.getMessage(), null, 2);
-                    Logger.getLogger(CtacteClienteController.class.getName()).log(Level.SEVERE, null, ex);
+                    LogManager.getLogger();//(CtacteClienteController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }// </editor-fold>
             else if (btn.equals(resumenCtaCtes.getbImprimir())) {
@@ -318,7 +317,7 @@ public class CtacteProveedorController implements ActionListener {
                     resumenCtaCtes.showMessage(ex.getMessage(), null, 2);
                 } catch (Exception ex) {
                     resumenCtaCtes.showMessage(ex.getMessage(), null, 2);
-                    Logger.getLogger(CtacteClienteController.class.getName()).log(Level.SEVERE, null, ex);
+                    LogManager.getLogger();//(CtacteClienteController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }// </editor-fold>

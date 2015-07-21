@@ -2,7 +2,6 @@ package jgestion.controller;
 
 import java.util.Arrays;
 import java.util.List;
-import org.apache.log4j.Logger;
 
 /**
  * Clase contenedora de Enums y variables genéricas (estados de cuentas, tipos
@@ -24,7 +23,6 @@ public abstract class Valores {
         private FormaPago(int id, String nombre) {
             this.id = id;
             this.nombre = nombre;
-            Logger.getLogger(Valores.class).debug("Initializing " + FormaPago.class + ": id=" + id + ", nombre=" + nombre);
         }
 
         public static FormaPago getFormaPago(int formaPagoID) {
@@ -66,7 +64,6 @@ public abstract class Valores {
         private CtaCteEstado(int id, String nombre) {
             this.id = (short) id;
             this.nombre = nombre;
-            Logger.getLogger(Valores.class).debug("Initializing " + CtaCteEstado.class + ": id=" + id + ", nombre=" + nombre);
         }
 
         public short getId() {

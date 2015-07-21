@@ -19,7 +19,8 @@ import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -299,7 +300,7 @@ public class DlgImportarArchivoExtraBancario extends javax.swing.JDialog {
             JOptionPane.showMessageDialog(this, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(this, "Ocurrió un error al intentar acceder al archivo de extracto bancario", "IOException", JOptionPane.ERROR_MESSAGE);
-            Logger.getLogger(DlgImportarArchivoExtraBancario.class.getName()).error(ex, ex);
+            LogManager.getLogger().error(ex, ex);
         }
     }//GEN-LAST:event_btnAceptarActionPerformed
 
@@ -473,13 +474,13 @@ public class DlgImportarArchivoExtraBancario extends javax.swing.JDialog {
                     saldo = new BigDecimal(read.get(saldoIndex - 1).replaceAll(",", ""));
                 }
             } catch (IndexOutOfBoundsException ex) {
-                Logger.getLogger(DlgImportarArchivoExtraBancario.class.getName()).error(ex, ex);
+                LogManager.getLogger().error(ex, ex);
                 throw new MessageException("Error intentando leer valores de la fila N° " + rowIndex
                         + "\nvalor=" + Arrays.toString(read.toArray())
                         + "\nEsto puede ser causado porque el formato del archivo no coincide con los parámetros especificados."
                         + "\nEj: Si el archivo tiene los valores separador por comas (,) y se seleccionó la opción punto y comas (;)");
             } catch (Exception ex) {
-                Logger.getLogger(DlgImportarArchivoExtraBancario.class.getName()).error(ex, ex);
+                LogManager.getLogger().error(ex, ex);
                 throw new MessageException("Error intentando leer valores de la fila N° " + rowIndex
                         + "\nvalor=" + Arrays.toString(read.toArray()));
             }

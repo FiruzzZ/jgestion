@@ -21,11 +21,9 @@ import jgestion.gui.JDContenedor;
 import jgestion.gui.PanelABMSucursal;
 import jgestion.gui.PanelNumeracionActual;
 import java.awt.event.*;
-import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
 import javax.persistence.NoResultException;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -48,9 +46,9 @@ import jgestion.gui.PanelDistribucionStock;
 import jgestion.jpa.controller.ProductoJpaController;
 import jgestion.jpa.controller.StockJpaController;
 import net.sf.jasperreports.engine.JRException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
-import org.xml.sax.SAXException;
 import utilities.general.UTIL;
 import utilities.general.EntityWrapper;
 
@@ -60,7 +58,7 @@ import utilities.general.EntityWrapper;
  */
 public class SucursalController implements ActionListener {
 
-    private static final Logger LOG = Logger.getLogger(SucursalController.class.getName());
+    private static final Logger LOG = LogManager.getLogger();
     public final String CLASS_NAME = "Sucursal";
     private JDContenedor contenedor = null;
     private JDABM abm;

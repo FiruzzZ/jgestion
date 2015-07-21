@@ -32,7 +32,8 @@ import jgestion.gui.JDABM;
 import jgestion.gui.JDMiniABM;
 import jgestion.jpa.controller.DominioJpaController;
 import net.sf.jasperreports.engine.JRException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.postgresql.util.PSQLException;
 import utilities.general.UTIL;
@@ -44,7 +45,7 @@ import utilities.general.EntityWrapper;
  */
 public class DominioController implements ActionListener {
 
-    private static final Logger LOG = Logger.getLogger(DominioController.class);
+    private static final Logger LOG = LogManager.getLogger();
     private final DominioJpaController jpaController = new DominioJpaController();
     private JDMiniABM abm;
     private Dominio entity;

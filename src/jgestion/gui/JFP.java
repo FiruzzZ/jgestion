@@ -56,7 +56,6 @@ import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.Window;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -65,10 +64,9 @@ import jgestion.JGestion;
 import jgestion.controller.AFIPWSController;
 import jgestion.controller.FacturaElectronicaController;
 import jgestion.controller.RemitoCompraController;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.persistence.exceptions.DatabaseException;
-import org.xml.sax.SAXException;
 
 /**
  *
@@ -1401,7 +1399,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
             refreshConnectionDB();
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage());
-            Logger.getLogger(this.getClass()).log(Level.ERROR, null, ex);
+            JGestion.LOG.error(ex, ex);
         }
 
     }//GEN-LAST:event_jMenuItem9ActionPerformed
@@ -1441,7 +1439,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
             refreshConnectionDB();
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage());
-            Logger.getLogger(this.getName()).log(Level.ERROR, null, ex);
+            JGestion.LOG.error(ex, ex);
         }
     }//GEN-LAST:event_jMenuItem13ActionPerformed
 
@@ -1504,7 +1502,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
             new DatosEmpresaJpaController().initJD(this, true);
             refreshConnectionDB();
         } catch (Exception ex) {
-            Logger.getLogger(JFP.class.getName()).log(Level.ERROR, null, ex);
+            JGestion.LOG.error(ex, ex);
         }
     }//GEN-LAST:event_jMenuItem22ActionPerformed
 
@@ -1793,7 +1791,7 @@ private void jMenuItem58ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         new BancoController().initContenedor(this, true, false).setVisible(true);
     } catch (DatabaseErrorException ex) {
         JOptionPane.showMessageDialog(this, ex.getMessage());
-        Logger.getLogger(JFP.class.getName()).error(ex);
+        JGestion.LOG.error(ex, ex);
     }
 }//GEN-LAST:event_jMenuItem58ActionPerformed
 
@@ -2129,7 +2127,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         try {
             new AFIPWSController(null).consultarCAEs();
         } catch (Exception ex) {
-            Logger.getRootLogger().error(ex, ex);
+            JGestion.LOG.error(ex, ex);
             JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
         }
     }//GEN-LAST:event_miAFIPFECompConsultarActionPerformed
@@ -2325,19 +2323,18 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
                         labelConnetionState.setToolTipText("Conexión establecida y funcionando");
                         labelConnetionState.setText("");
                     }
-                } catch (DatabaseException e) {
+                } catch (DatabaseException ex) {
                     labelConnetionState.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/database_close_32.png"))); // NOI18N
                     labelConnetionState.setToolTipText("¡ERROR DE CONEXIÓN!");
                     labelConnetionState.setText("¡ERROR DE CONEXIÓN!");
                     labelConnetionState.setForeground(Color.RED);
-                    Logger.getLogger(this.getClass()).log(Level.ERROR, e);
+                    JGestion.LOG.error(ex, ex);
                 } catch (Exception e) {
                     labelConnetionState.setEnabled(false);
                     labelConnetionState.setText("¡ERROR DE CONEXIÓN!");
                     labelConnetionState.setForeground(Color.RED);
                     labelConnetionState.setToolTipText("¡ERROR DE CONEXIÓN!");
-                    Logger
-                            .getLogger(JFP.class).log(Level.ERROR, "Error en Thread de Chequeo de conexión con DB", e);
+                    JGestion.LOG.error("Error en Thread de Chequeo de conexión con DB", e);
                     activa = false;
                 } finally {
                     try {
@@ -2346,8 +2343,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
                         Thread.sleep(3000);
 
                     } catch (InterruptedException ex) {
-                        Logger.getLogger(JFP.class
-                                .getName()).log(Level.ERROR, null, ex);
+                        JGestion.LOG.error(ex, ex);
                         JOptionPane.showMessageDialog(
                                 this, "Sucedió un error en el hilo de conexión, para asegurar un correcto funcionamiento del sistema, cierre y vuelva a abrirlo");
                     }

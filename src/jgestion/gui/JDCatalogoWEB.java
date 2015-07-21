@@ -21,8 +21,9 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import jgestion.jpa.controller.ProductoJpaController;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -317,7 +318,7 @@ public class JDCatalogoWEB extends javax.swing.JDialog {
            } catch (NonexistentEntityException ex) {
                JOptionPane.showMessageDialog(this, ex.getMessage(), "ERROR", 2);
            } catch (Exception ex) {
-               Logger.getLogger(JDCatalogoWEB.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
+               LogManager.getLogger().error(ex, ex);
                JOptionPane.showMessageDialog(this, ex.getMessage(), "ERROR", 2);
            }
        } else {
@@ -330,9 +331,9 @@ public class JDCatalogoWEB extends javax.swing.JDialog {
        try {
            String data = ProductosWebJpaController.UPDATE_CATALOGOWEB();
            JOptionPane.showMessageDialog(this, data);
-       } catch (Exception e) {
-           JOptionPane.showMessageDialog(this, e.getMessage(), "Error en el módulo de actualización web", 0);
-           Logger.getLogger(JDCatalogoWEB.class).log(org.apache.log4j.Level.ERROR, e);
+       } catch (Exception ex) {
+           JOptionPane.showMessageDialog(this, ex.getMessage(), "Error en el módulo de actualización web", 0);
+           LogManager.getLogger().error(ex, ex);
        } finally {
            btnActualizarCatalogo.setEnabled(true);
        }
@@ -463,7 +464,7 @@ public class JDCatalogoWEB extends javax.swing.JDialog {
                 productosWebJpaController.create(productosWeb);
             } else {
                 if (oldProductosWeb.getEstado() == ProductosWeb.BAJA) {
-                    Logger.getLogger(JDCatalogoWEB.class).log(Level.TRACE, "ProductoWeb.id=" + oldProductosWeb.getId() + ", estado=BAJA :::VA A SER REVIVIDO:::");
+                    LogManager.getLogger().trace("ProductoWeb.id=" + oldProductosWeb.getId() + ", estado=BAJA :::VA A SER REVIVIDO:::");
                     productosWeb.setEstado(ProductosWeb.ALTA);
                     productosWebJpaController.edit(productosWeb);
                 }
@@ -479,7 +480,7 @@ public class JDCatalogoWEB extends javax.swing.JDialog {
                     + Contabilidad.GET_MARGEN_SEGUN_LISTAPRECIOS(listaPrecios, producto, null));
             iva = UTIL.getPorcentaje(precioFinal, producto.getIva().getIva());
         } catch (NullPointerException e) {
-            Logger.getLogger(this.getClass()).debug("Producto:" + producto.getNombre() + ", $venta:" + producto.getPrecioVenta() + ", ListaPrecio:" + listaPrecios.getNombre());
+            LogManager.getLogger().debug("Producto:" + producto.getNombre() + ", $venta:" + producto.getPrecioVenta() + ", ListaPrecio:" + listaPrecios.getNombre());
         }
         return precioFinal + iva;
     }

@@ -25,7 +25,8 @@ import jgestion.JGestionUtils;
 import jgestion.jpa.controller.IvaJpaController;
 import jgestion.jpa.controller.NotaDebitoProveedorJpaController;
 import jgestion.jpa.controller.ProveedorJpaController;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import utilities.general.UTIL;
 import utilities.gui.SwingUtil;
 import utilities.general.EntityWrapper;
@@ -38,7 +39,7 @@ import utilities.swing.components.NumberRenderer;
  */
 public class NotaDebitoProveedorController {
 
-    private static final Logger LOG = Logger.getLogger(NotaDebitoProveedorController.class.getName());
+    private static final Logger LOG = LogManager.getLogger();
     private JDNotaDebito abm;
     private final NotaDebitoProveedorJpaController jpaController;
     private NotaDebitoProveedor EL_OBJECT;

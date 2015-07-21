@@ -28,7 +28,8 @@ import javax.swing.JComboBox;
 import jgestion.ActionListenerManager;
 import jgestion.JGestionUtils;
 import jgestion.jpa.controller.UnidadDeNegocioJpaController;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jdesktop.swingx.treetable.AbstractTreeTableModel;
 import utilities.general.UTIL;
 import utilities.general.EntityWrapper;
@@ -40,7 +41,7 @@ import utilities.swing.components.NumberRenderer;
  */
 public class JDInformeUnidadesDeNegocios extends javax.swing.JDialog {
 
-    private static final Logger LOG = Logger.getLogger(JDInformeUnidadesDeNegocios.class.getName());
+    private static final Logger LOG = LogManager.getLogger();
     private final String[] columnNames = new String[13];
     private SimpleDateFormat yyyyMMdd = new SimpleDateFormat("yyyy/MM/dd");
 

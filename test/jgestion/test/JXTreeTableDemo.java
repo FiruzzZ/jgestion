@@ -36,7 +36,6 @@ import javax.swing.JComboBox;
 import jgestion.ActionListenerManager;
 import jgestion.JGestionUtils;
 import jgestion.jpa.controller.UnidadDeNegocioJpaController;
-import org.apache.log4j.PropertyConfigurator;
 import org.jdesktop.swingx.treetable.AbstractTreeTableModel;
 import utilities.general.UTIL;
 import utilities.swing.components.ComboBoxWrapper;
@@ -360,7 +359,6 @@ public class JXTreeTableDemo extends javax.swing.JDialog {
      */
     public static void main(String args[]) {
         try {
-            PropertyConfigurator.configure("log4j.properties");
             Properties properties = PropsUtils.load(new File("cfg.ini"));
             DAO.setProperties(properties);
             new UsuarioController().checkLoginUser("admin", "asdfasdf");
@@ -376,14 +374,8 @@ public class JXTreeTableDemo extends javax.swing.JDialog {
                         break;
                     }
                 }
-            } catch (ClassNotFoundException ex) {
-                java.util.logging.Logger.getLogger(JXTreeTableDemo.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-            } catch (InstantiationException ex) {
-                java.util.logging.Logger.getLogger(JXTreeTableDemo.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-            } catch (IllegalAccessException ex) {
-                java.util.logging.Logger.getLogger(JXTreeTableDemo.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-            } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-                java.util.logging.Logger.getLogger(JXTreeTableDemo.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
             //</editor-fold>
 

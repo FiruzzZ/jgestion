@@ -8,7 +8,6 @@ import jgestion.entity.Cuenta;
 import jgestion.entity.DetalleCajaMovimientos;
 import jgestion.entity.FacturaCompra;
 import jgestion.entity.FacturaVenta;
-import jgestion.entity.SubCuenta;
 import jgestion.entity.Sucursal;
 import jgestion.entity.UnidadDeNegocio;
 import java.awt.Window;
@@ -18,7 +17,6 @@ import java.math.BigDecimal;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -26,10 +24,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import javax.swing.JComboBox;
-import jgestion.ActionListenerManager;
 import jgestion.JGestionUtils;
 import jgestion.jpa.controller.UnidadDeNegocioJpaController;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jdesktop.swingx.treetable.AbstractTreeTableModel;
 import utilities.general.UTIL;
 import utilities.general.EntityWrapper;
@@ -41,7 +39,7 @@ import utilities.swing.components.NumberRenderer;
  */
 public class JDInformeResultados extends javax.swing.JDialog {
 
-    private static final Logger LOG = Logger.getLogger(JDInformeResultados.class.getName());
+    private static final Logger LOG = LogManager.getLogger();
     private static final long serialVersionUID = 1L;
     private final String[] columnNames = new String[13];
     private SimpleDateFormat yyyyMMdd = new SimpleDateFormat("yyyy/MM/dd");

@@ -2,7 +2,6 @@ package jgestion.controller;
 
 import jgestion.controller.exceptions.MessageException;
 import jgestion.controller.exceptions.MissingReportException;
-import jgestion.controller.exceptions.DatabaseErrorException;
 import jgestion.entity.Orden;
 import java.awt.event.MouseEvent;
 import jgestion.entity.DetalleOrden;
@@ -25,14 +24,13 @@ import java.awt.event.MouseAdapter;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.JTextComponent;
 import jgestion.JGestionUtils;
 import jgestion.jpa.controller.JGestionJpaImpl;
 import jgestion.jpa.controller.ProductoJpaController;
 import net.sf.jasperreports.engine.JRException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import utilities.general.EntityWrapper;
 
 /**
@@ -180,7 +178,7 @@ public class OrdenController {
                         jdFactura.showMessage(ex.getMessage(), "Error", 2);
                     } catch (Exception ex) {
                         jdFactura.showMessage(ex.getMessage(), "Error", 2);
-                        Logger.getLogger(OrdenController.class.getSimpleName()).error(ex, ex);
+                        LogManager.getLogger();//(OrdenController.class.getSimpleName()).error(ex, ex);
                     }
                 }
             });

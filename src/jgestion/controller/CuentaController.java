@@ -18,7 +18,8 @@ import javax.persistence.NoResultException;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import jgestion.jpa.controller.CuentaJpaController;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import utilities.general.UTIL;
 
 /**
@@ -27,7 +28,7 @@ import utilities.general.UTIL;
  */
 public class CuentaController {
 
-    private static final Logger LOG = Logger.getLogger(CuentaController.class.getName());
+    private static final Logger LOG = LogManager.getLogger();
     private final CuentaJpaController jpaController = new CuentaJpaController();
     private Cuenta EL_OBJECT;
     public static final Cuenta SIN_CLASIFICAR; //antes llamado EFECTIVO

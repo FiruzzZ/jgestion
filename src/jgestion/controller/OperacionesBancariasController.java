@@ -12,7 +12,8 @@ import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import jgestion.jpa.controller.OperacionesBancariasJpaController;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import utilities.general.UTIL;
 
 /**
@@ -21,7 +22,7 @@ import utilities.general.UTIL;
  */
 public class OperacionesBancariasController {
 
-    private static final Logger LOG = Logger.getLogger(OperacionesBancariasController.class.getName());
+    private static final Logger LOG = LogManager.getLogger();
     private final OperacionesBancariasJpaController jpaController;
     private OperacionesBancarias selectedEntity;
     private JDMiniABM abm;

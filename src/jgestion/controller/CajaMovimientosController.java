@@ -27,7 +27,6 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -51,8 +50,8 @@ import jgestion.jpa.controller.CajaMovimientosJpaController;
 import jgestion.jpa.controller.SubCuentaJpaController;
 import jgestion.jpa.controller.UnidadDeNegocioJpaController;
 import net.sf.jasperreports.engine.JRException;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import utilities.general.UTIL;
 import utilities.general.EntityWrapper;
 import utilities.swing.components.FormatRenderer;
@@ -65,7 +64,7 @@ import utilities.swing.components.NumberRenderer;
  */
 public class CajaMovimientosController implements ActionListener {
 
-    private static final Logger LOG = Logger.getLogger(CajaMovimientosController.class);
+    private static final Logger LOG = LogManager.getLogger();
     public static final String CLASS_NAME = CajaMovimientos.class.getSimpleName();
     private JDCierreCaja jdCierreCaja;
     private JDCajaToCaja jdCajaToCaja;
@@ -193,10 +192,10 @@ public class CajaMovimientosController implements ActionListener {
                         }
                     } catch (MissingReportException ex) {
                         JOptionPane.showMessageDialog(jdCierreCaja, ex.getMessage());
-                        Logger.getLogger(CajaMovimientosController.class.getName()).log(Level.ERROR, null, ex);
+                        LogManager.getLogger();//(CajaMovimientosController.class.getName()).log(Level.ERROR, null, ex);
                     } catch (JRException ex) {
                         JOptionPane.showMessageDialog(jdCierreCaja, ex.getMessage());
-                        Logger.getLogger(CajaMovimientosController.class.getName()).log(Level.ERROR, null, ex);
+                        LogManager.getLogger();//(CajaMovimientosController.class.getName()).log(Level.ERROR, null, ex);
                     } catch (ClassCastException ex) {
                         jdCierreCaja.showMessage("No hay ninguna Caja seleccionada", null, 2);
                     }
@@ -212,7 +211,7 @@ public class CajaMovimientosController implements ActionListener {
                             jdCierreCaja.showMessage(ex.getMessage(), "Error", 2);
                         } catch (Exception ex) {
                             jdCierreCaja.showMessage(ex.getMessage(), "Error.Exception", 0);
-                            Logger.getLogger(CajaMovimientosController.class.getSimpleName()).fatal(ex.getLocalizedMessage(), ex);
+                            LogManager.getLogger();//(CajaMovimientosController.class.getSimpleName()).fatal(ex.getLocalizedMessage(), ex);
                         }
                     } else {
                         jdCierreCaja.showMessage("No hay Caja seleccionada", "Error", 2);
@@ -360,7 +359,7 @@ public class CajaMovimientosController implements ActionListener {
                 //get cajaMovim abierta correspondiente a cada Caja
                 cajaMovimiento = jpaController.findCajaMovimientoAbierta(caja);
             } catch (NoResultException ex) {
-                Logger.getLogger(this.getClass()).error("No debería entrar acá!! fixCaja=" + caja);
+                LogManager.getLogger();//(this.getClass()).error("No debería entrar acá!! fixCaja=" + caja);
                 fixCajaMalAbierta(caja);
                 cajaMovimiento = jpaController.findCajaMovimientoAbierta(caja);
             }
@@ -699,7 +698,7 @@ public class CajaMovimientosController implements ActionListener {
                     String query = armarQueryMovimientosVarios();
                     cargarTablaBuscadorMovimientosVarios(query);
                 } catch (Exception ex) {
-                    Logger.getLogger(CajaMovimientosController.class.getName()).log(Level.ERROR, null, ex);
+                    LogManager.getLogger();//(CajaMovimientosController.class.getName()).log(Level.ERROR, null, ex);
                 }
             }
         });
@@ -711,7 +710,7 @@ public class CajaMovimientosController implements ActionListener {
                     cargarTablaBuscadorMovimientosVarios(query);
                     doReportMovimientosVarios();
                 } catch (Exception ex) {
-                    Logger.getLogger(CajaMovimientosController.class.getName()).log(Level.ERROR, null, ex);
+                    LogManager.getLogger();//(CajaMovimientosController.class.getName()).log(Level.ERROR, null, ex);
                 }
             }
         });
@@ -787,7 +786,7 @@ public class CajaMovimientosController implements ActionListener {
         if (panelBuscadorMovimientosVarios.getCbSubCuenta().getSelectedIndex() > 0) {
             query += " AND o.subCuenta.id = " + ((EntityWrapper<SubCuenta>) panelBuscadorMovimientosVarios.getCbSubCuenta().getSelectedItem()).getId();
         }
-        Logger.getLogger(this.getClass()).debug(query);
+        LogManager.getLogger();//(this.getClass()).debug(query);
         return query;
     }
 
@@ -1084,13 +1083,12 @@ public class CajaMovimientosController implements ActionListener {
     private void fixCajaMalAbierta(Caja caja) {
         Integer lastIDCajaMovimientoCerrada = jpaController.findLastCajaMovimientoIDCerrada(caja);
         CajaMovimientos lastCajaMovCerrada = jpaController.find(lastIDCajaMovimientoCerrada);
-        Logger.getLogger(this.getClass()).warn(
-                "Corrigiendo error en creación de caja. fixCaja()"
+        LOG.warn("Corrigiendo error en creación de caja. fixCaja()"
                 + "\n\túltima Caja cerrada: id=" + caja.getId() + ", nombre=" + caja.getNombre() + "-> lastID:" + lastIDCajaMovimientoCerrada);
         try {
             abrirNextCajaMovimiento(lastCajaMovCerrada);
         } catch (Exception ex) {
-            Logger.getLogger(CajaMovimientosController.class.getName()).log(Level.ERROR, null, ex);
+            LogManager.getLogger();//(CajaMovimientosController.class.getName()).log(Level.ERROR, null, ex);
         }
     }
 
@@ -1126,7 +1124,7 @@ public class CajaMovimientosController implements ActionListener {
                     String query = armarQueryMovimientosVarios();
                     cargarTablaBuscadorAsignacion(query);
                 } catch (Exception ex) {
-                    Logger.getLogger(CajaMovimientosController.class.getName()).log(Level.ERROR, null, ex);
+                    LogManager.getLogger();//(CajaMovimientosController.class.getName()).log(Level.ERROR, null, ex);
                 }
             }
         });

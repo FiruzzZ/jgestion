@@ -1,6 +1,5 @@
 package jgestion.controller;
 
-import jgestion.controller.exceptions.IllegalOrphanException;
 import jgestion.controller.exceptions.MessageException;
 import jgestion.controller.exceptions.NonexistentEntityException;
 import jgestion.entity.DocumentoComercial;
@@ -10,7 +9,6 @@ import jgestion.gui.PanelABMDocumentoComercial;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
@@ -18,7 +16,8 @@ import javax.persistence.RollbackException;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import jgestion.jpa.controller.DocumentoComercialJpaController;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.postgresql.util.PSQLException;
 import utilities.general.UTIL;
@@ -29,7 +28,7 @@ import utilities.general.UTIL;
  */
 public class DocumentoComercialController {
 
-    private final static Logger LOG = Logger.getLogger(DocumentoComercialController.class);
+    private final static Logger LOG = LogManager.getLogger();
     private final DocumentoComercialJpaController jpaController = new DocumentoComercialJpaController();
     private DocumentoComercial EL_OBJECT;
 

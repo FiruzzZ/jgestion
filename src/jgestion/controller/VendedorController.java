@@ -18,7 +18,8 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import jgestion.jpa.controller.VendedorJpaController;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import utilities.general.UTIL;
 
 /**
@@ -27,7 +28,7 @@ import utilities.general.UTIL;
  */
 public class VendedorController implements ActionListener {
 
-    private static final Logger LOG = Logger.getLogger(VendedorController.class.getName());
+    private static final Logger LOG = LogManager.getLogger();
     private final String[] colsName = {"ID", "Apellido", "Nombre", "Dirección", "Teléfonos"};
     private final int[] colsWidth = {1, 50, 50, 100, 100};
     private JDContenedor contenedor;

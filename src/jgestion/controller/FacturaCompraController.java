@@ -54,7 +54,8 @@ import jgestion.jpa.controller.ProveedorJpaController;
 import jgestion.jpa.controller.SubCuentaJpaController;
 import jgestion.jpa.controller.UnidadDeNegocioJpaController;
 import net.sf.jasperreports.engine.JRException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import utilities.gui.SwingUtil;
 import utilities.general.EntityWrapper;
 import utilities.swing.components.FormatRenderer;
@@ -75,7 +76,7 @@ public class FacturaCompraController implements ActionListener {
     private Producto selectedProducto;
     private FacturaCompra EL_OBJECT;
     private JDBuscadorReRe buscador;
-    private static final Logger LOG = Logger.getLogger(FacturaCompraController.class.getName());
+    private static final Logger LOG = LogManager.getLogger();
     private final FacturaCompraJpaController jpaController = new FacturaCompraJpaController();
 
     static {

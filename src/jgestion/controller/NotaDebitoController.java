@@ -29,7 +29,8 @@ import jgestion.jpa.controller.ClienteJpaController;
 import jgestion.jpa.controller.IvaJpaController;
 import jgestion.jpa.controller.NotaDebitoJpaController;
 import net.sf.jasperreports.engine.JRException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import utilities.general.UTIL;
 import utilities.gui.SwingUtil;
 import utilities.general.EntityWrapper;
@@ -42,7 +43,7 @@ import utilities.swing.components.NumberRenderer;
  */
 public class NotaDebitoController {
 
-    private static final Logger LOG = Logger.getLogger(NotaDebitoController.class.getName());
+    private static final Logger LOG = LogManager.getLogger();
     private JDNotaDebito abm;
     private final NotaDebitoJpaController jpaController;
     private NotaDebito EL_OBJECT;

@@ -9,21 +9,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import javax.print.PrintService;
-import javax.print.PrintServiceLookup;
-import javax.print.attribute.HashPrintRequestAttributeSet;
-import javax.print.attribute.PrintRequestAttributeSet;
-import javax.print.attribute.standard.Copies;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExporter;
 import net.sf.jasperreports.engine.JRExporterParameter;
@@ -37,14 +29,13 @@ import net.sf.jasperreports.engine.JasperPrintManager;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.export.JRPrintServiceExporter;
-import net.sf.jasperreports.engine.export.JRPrintServiceExporterParameter;
 import net.sf.jasperreports.engine.export.JRXlsExporter;
 import net.sf.jasperreports.engine.export.JRXlsExporterParameter;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.view.JasperViewer;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -68,9 +59,9 @@ public class Reportes implements Runnable {
      * Si aparece el PrintDialog Default = true
      */
     private boolean withPrintDialog;
-    private final WaitingDialog jd;
-    private JRBeanCollectionDataSource beanCollectionDataSource;
-    private static final Logger LOG = Logger.getLogger(Reportes.class.getName());
+    private final WaitingDialog waitingDialog;
+    private JRBeanCollectionDataSource dataSource;
+    private static final Logger LOG = LogManager.getLogger();
     private JasperPrint jPrint;
     private final Icon impresoraIcon = new ImageIcon(getClass().getResource("/iconos/impresora.png"));
     private boolean dinamycReport;
@@ -99,7 +90,7 @@ public class Reportes implements Runnable {
             }
             pathReport = FOLDER_REPORTES + pathReport;
         }
-        jd = new WaitingDialog(null, "Imprimiendo", false, "Preparando reporte....", impresoraIcon);
+        waitingDialog = new WaitingDialog(null, "Imprimiendo", false, "Preparando reporte....", impresoraIcon);
         parameters = new HashMap<>();
         this.pathReport = pathReport;
         tituloReporte = title;
@@ -108,7 +99,7 @@ public class Reportes implements Runnable {
     }
 
     public Reportes(JasperPrint jp, boolean dinamycReport) {
-        jd = new WaitingDialog(null, "Imprimiendo", false, "Preparando reporte....", impresoraIcon);
+        waitingDialog = new WaitingDialog(null, "Imprimiendo", false, "Preparando reporte....", impresoraIcon);
         pathReport = null;
         tituloReporte = null;
         jPrint = jp;
@@ -122,7 +113,7 @@ public class Reportes implements Runnable {
     }
 
     public void setWaitingDialogMessage(String string) {
-        jd.getLabelMessage().setText(string);
+        waitingDialog.getLabelMessage().setText(string);
     }
 
     public void setjPrint(JasperPrint jPrint) {
@@ -183,12 +174,12 @@ public class Reportes implements Runnable {
     @Override
     public void run() {
         LOG.trace("Initializing Thread Reportes:" + pathReport);
-        jd.setVisible(true);
+        waitingDialog.setVisible(true);
         try {
             if (dinamycReport) {
                 LOG.trace("Waiting JasperPrint for DynamicJasper..");
                 while (!isViewerReport) {
-                    jd.getLabelMessage().setText(jd.getLabelMessage().getText() + ".");
+                    waitingDialog.getLabelMessage().setText(waitingDialog.getLabelMessage().getText() + ".");
                     Thread.sleep(500);
                 }
             }
@@ -216,13 +207,13 @@ public class Reportes implements Runnable {
             }
             if (isViewerReport) {
                 JasperViewer jViewer = new JasperViewer(jPrint, false);
-                jd.dispose();
+                waitingDialog.dispose();
                 jViewer.setTitle(tituloReporte);
                 jViewer.setExtendedState(JasperViewer.NORMAL);
                 jViewer.setModalExclusionType(Dialog.ModalExclusionType.APPLICATION_EXCLUDE);
                 jViewer.setVisible(true);
             } else {
-                jd.dispose();
+                waitingDialog.dispose();
                 JasperPrintManager.printReport(jPrint, withPrintDialog);
             }
         } catch (JRException ex) {
@@ -232,8 +223,8 @@ public class Reportes implements Runnable {
                 throw ex;
             }
         } finally {
-            if (jd.isVisible()) {
-                jd.dispose();
+            if (waitingDialog.isVisible()) {
+                waitingDialog.dispose();
             }
         }
         LOG.trace("Finished doReport()");
@@ -252,7 +243,7 @@ public class Reportes implements Runnable {
     }
 
     void setDataSource(Collection<?> data) {
-        beanCollectionDataSource = new JRBeanCollectionDataSource(data);
+        dataSource = new JRBeanCollectionDataSource(data);
     }
 
     void addConnection() {
@@ -260,16 +251,16 @@ public class Reportes implements Runnable {
     }
 
     public File exportToXLS(String excelFilePath) throws JRException, FileNotFoundException, IOException {
-        jd.setTitle("Exportando..");
+        waitingDialog.setTitle("Exportando..");
         if (!excelFilePath.substring(excelFilePath.length() - 4).equals(".xls")) {
             excelFilePath += ".xls";
         }
-        jd.getLabelMessage().setText("Guardando en: " + excelFilePath);
+        waitingDialog.getLabelMessage().setText("Guardando en: " + excelFilePath);
         addParameter(JRParameter.IS_IGNORE_PAGINATION, Boolean.TRUE);
-        if (beanCollectionDataSource == null) {
+        if (dataSource == null) {
             jPrint = JasperFillManager.fillReport(pathReport, parameters, getConnection());
         } else {
-            jPrint = JasperFillManager.fillReport(pathReport, parameters, beanCollectionDataSource);
+            jPrint = JasperFillManager.fillReport(pathReport, parameters, dataSource);
         }
         File f = new File(excelFilePath);
         JRExporter exporter = new JRXlsExporter();
@@ -282,8 +273,8 @@ public class Reportes implements Runnable {
         exporter.setParameter(JRXlsExporterParameter.IS_DETECT_CELL_TYPE, Boolean.TRUE);
         exporter.setParameter(JRXlsExporterParameter.IGNORE_PAGE_MARGINS, Boolean.TRUE);
         exporter.exportReport();
-        if (jd.isVisible()) {
-            jd.dispose();
+        if (waitingDialog.isVisible()) {
+            waitingDialog.dispose();
         }
         return f;
     }
@@ -319,10 +310,10 @@ public class Reportes implements Runnable {
 
     public JasperPrint getJasperPrinter() throws JRException {
         JasperPrint jp;
-        if (beanCollectionDataSource == null) {
+        if (dataSource == null) {
             jp = JasperFillManager.fillReport(pathReport, parameters, getConnection());
         } else {
-            jp = JasperFillManager.fillReport(pathReport, parameters, beanCollectionDataSource);
+            jp = JasperFillManager.fillReport(pathReport, parameters, dataSource);
         }
         return jp;
     }

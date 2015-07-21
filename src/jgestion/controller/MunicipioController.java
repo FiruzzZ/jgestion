@@ -23,12 +23,11 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.NoResultException;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.table.DefaultTableModel;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
@@ -176,7 +175,7 @@ public class MunicipioController implements ActionListener, MouseListener, KeyLi
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    Logger.getLogger(DepartamentoController.class.getName()).log(Level.SEVERE, null, ex);
+                    LogManager.getLogger().error("", ex);
                 }
             } else if (boton.getName().equalsIgnoreCase("edit")) {
                 try {
@@ -185,7 +184,7 @@ public class MunicipioController implements ActionListener, MouseListener, KeyLi
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    Logger.getLogger(DepartamentoController.class.getName()).log(Level.SEVERE, null, ex);
+                    LogManager.getLogger().error("", ex);
                 }
 
             } else if (boton.getName().equalsIgnoreCase("del")) {
@@ -200,10 +199,10 @@ public class MunicipioController implements ActionListener, MouseListener, KeyLi
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (IllegalOrphanException ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    Logger.getLogger(DepartamentoController.class.getName()).log(Level.SEVERE, null, ex);
+                    LogManager.getLogger();//(DepartamentoController.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (NonexistentEntityException ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    Logger.getLogger(DepartamentoController.class.getName()).log(Level.SEVERE, null, ex);
+                    LogManager.getLogger();//(DepartamentoController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             } else if (boton.getName().equalsIgnoreCase("Print")) {
             } else if (boton.getName().equalsIgnoreCase("exit")) {
@@ -222,7 +221,7 @@ public class MunicipioController implements ActionListener, MouseListener, KeyLi
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                    Logger.getLogger(DepartamentoController.class.getName()).log(Level.SEVERE, null, ex);
+                    LogManager.getLogger();//(DepartamentoController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             } else if (boton.getName().equalsIgnoreCase("cancelar")) {
                 abm.dispose();

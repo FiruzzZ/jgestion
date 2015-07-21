@@ -64,8 +64,9 @@ import jgestion.entity.FacturaElectronica;
 import jgestion.entity.FacturaVenta_;
 import jgestion.jpa.controller.FacturaElectronicaJpaController;
 import net.sf.jasperreports.engine.JRException;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import utilities.general.UTIL;
 import utilities.general.EntityWrapper;
 import utilities.swing.components.FormatRenderer;
@@ -104,7 +105,7 @@ public class FacturaVentaController {
      */
     private CajaMovimientos cajaMovToAsentarAnulacion;
     private HistorialOfertas productoEnOferta;
-    private static final Logger LOG = Logger.getLogger(FacturaVentaController.class);
+    private static final Logger LOG = LogManager.getLogger();
     private boolean unlockedNumeracion = false;
     private final FacturaVentaJpaController jpaController = new FacturaVentaJpaController();
 
@@ -556,7 +557,7 @@ public class FacturaVentaController {
         } catch (NumberFormatException ex) {
             throw new MessageException("Descuento no válido");
         }// </editor-fold>
-        //adiciona el descuento
+        //deduce el descuento
         descuentoUnitario = descuentoUnitario.setScale(4, RoundingMode.HALF_UP);
         precioUnitarioSinIVA = precioUnitarioSinIVA.subtract(descuentoUnitario);
 
@@ -1468,9 +1469,7 @@ public class FacturaVentaController {
             cmController.anular(factura, cmAbierta);
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(jdFactura, ex.getMessage());
-            Logger
-                    .getLogger(FacturaVentaController.class
-                            .getName()).log(Level.ERROR, null, ex);
+            LOG.error("anulando: factura.id" + factura.getId(), ex);
         }
     }
 

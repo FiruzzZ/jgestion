@@ -17,12 +17,11 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import utilities.general.UTIL;
 
 /**
@@ -31,18 +30,17 @@ import utilities.general.UTIL;
  */
 public class JPATesting {
 
-    private static final Logger LOG = Logger.getLogger(JPATesting.class.getName());
+    private static final Logger LOG = LogManager.getLogger();
 
     public static void main(String[] args) {
         try {
-            PropertyConfigurator.configure("log4j.properties");
             Properties properties = PropsUtils.load(new File("cfg.ini"));
             DAO.setProperties(properties);
             Usuario u = new UsuarioJpaController().find(1);
             new UsuarioController().checkLoginUser(u.getNick(), u.getPass());
             new JPATesting();
         } catch (Exception ex) {
-            LOG.log(Level.SEVERE, null, ex);
+            LOG.error("Error:" + ex.getLocalizedMessage(), ex);
         }
     }
 
@@ -114,7 +112,7 @@ public class JPATesting {
             r.setjPrint(jp);
             r.viewReport();
         } catch (Exception ex) {
-            LOG.log(Level.WARNING, "algo salió mal", ex);
+            LOG.error("algo salió mal", ex);
             System.exit(0);
         }
     }

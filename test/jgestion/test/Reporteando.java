@@ -20,7 +20,6 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.view.JasperViewer;
-import org.apache.log4j.PropertyConfigurator;
 
 /**
  *
@@ -30,7 +29,6 @@ public class Reporteando {
 
     public static void main(String[] args) {
         try {
-            PropertyConfigurator.configure("log4j.properties");
             Properties properties = PropsUtils.load(new File("cfg.ini"));
             DAO.setProperties(properties);
 //            new Reporteando();

@@ -26,7 +26,8 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import utilities.general.UTIL;
 
 /**
@@ -44,7 +45,7 @@ public class BancoSucursalController implements Serializable {
     private JDContenedor contenedor;
     private boolean permitirFiltroVacio;
     private EntityManager entityManager;
-    private static Logger LOGGER = Logger.getLogger(BancoSucursalController.class);
+    private static Logger LOGGER = LogManager.getLogger();
 
     public BancoSucursalController() {
     }

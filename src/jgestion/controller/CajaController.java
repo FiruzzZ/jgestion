@@ -23,7 +23,7 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import jgestion.entity.CajaMovimientos;
 import jgestion.jpa.controller.CajaMovimientosJpaController;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
@@ -172,7 +172,7 @@ public class CajaController implements ActionListener {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    Logger.getLogger(this.getClass()).error("Error en al creación de Caja", ex);
+                    LogManager.getLogger();//(this.getClass()).error("Error en al creación de Caja", ex);
                 }
             } else if (boton.getName().equalsIgnoreCase("lock")) {
                 try {
@@ -184,7 +184,7 @@ public class CajaController implements ActionListener {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 0);
                 } catch (Exception ex) {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    Logger.getLogger(this.getClass()).error("Error cambiando de estado la Caja", ex);
+                    LogManager.getLogger();//(this.getClass()).error("Error cambiando de estado la Caja", ex);
                 } finally {
                     ELOBJECT = null;
                 }

@@ -43,8 +43,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import jgestion.JGestionUtils;
 import jgestion.entity.DetalleCajaMovimientos_;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.eclipse.persistence.config.QueryHints;
 import utilities.general.UTIL;
 
@@ -65,7 +63,6 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
     }
 
     public void asentarMovimiento(FacturaCompra facturaCompra) throws Exception {
-        Logger.getLogger(this.getClass()).trace("asentarMovimiento (FacturaCompra): id=" + facturaCompra.getId() + ", numero=" + facturaCompra.getNumero());
         CajaMovimientos cm = findCajaMovimientoAbierta(facturaCompra.getCaja());
         EntityManager em = getEntityManager();
         try {
@@ -92,7 +89,6 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
     }
 
     public void asentarMovimiento(FacturaVenta facturaVenta) throws Exception {
-        Logger.getLogger(this.getClass()).trace("asentarMovimiento FactuaVenta");
         //caja en la q se va asentar
         EntityManager em = getEntityManager();
         CajaMovimientos cm = findCajaMovimientoAbierta(facturaVenta.getCaja());
@@ -470,7 +466,6 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
             throw ex;
         } catch (NonUniqueResultException ex) {
             //esto ya sería el colmo...!!
-            Logger.getLogger(this.getClass()).log(Level.FATAL, "HAY MAS DE 1 ABIERTA!!! -> CAJA: " + cajaCandidata, ex);
             throw ex;
         }
         return cajaMovimiento;

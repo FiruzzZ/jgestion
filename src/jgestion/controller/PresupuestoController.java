@@ -28,7 +28,8 @@ import jgestion.JGestionUtils;
 import jgestion.jpa.controller.PresupuestoJpaController;
 import jgestion.jpa.controller.ProductoJpaController;
 import net.sf.jasperreports.engine.JRException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import utilities.general.UTIL;
 import utilities.general.EntityWrapper;
 
@@ -38,7 +39,7 @@ import utilities.general.EntityWrapper;
  */
 public class PresupuestoController implements ActionListener {
 
-    private static final Logger LOG = Logger.getLogger(PresupuestoController.class.getName());
+    private static final Logger LOG = LogManager.getLogger();
     public static final String CLASS_NAME = "Presupuesto";
     private JDFacturaVenta jdFacturaVenta;
     private final FacturaVentaController facturaVentaController;

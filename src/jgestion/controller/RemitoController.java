@@ -20,8 +20,6 @@ import java.awt.Component;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +32,8 @@ import jgestion.JGestionUtils;
 import jgestion.jpa.controller.ProductoJpaController;
 import jgestion.jpa.controller.RemitoJpaController;
 import jgestion.jpa.controller.VendedorJpaController;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import utilities.gui.SwingUtil;
 import utilities.general.EntityWrapper;
 
@@ -52,7 +51,7 @@ public class RemitoController implements ActionListener {
     private boolean toFacturar;
     private boolean unlockedNumeracion = false;
     private RemitoJpaController jpaController;
-    private static final Logger LOG = Logger.getLogger(RemitoController.class.getName());
+    private static final Logger LOG = LogManager.getLogger();
     //global mutable
     private boolean editing = false;
     private boolean anulando = false;
@@ -182,7 +181,7 @@ public class RemitoController implements ActionListener {
                     facturaVentaController.getContenedor().showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
                     facturaVentaController.getContenedor().showMessage(ex.getMessage(), CLASS_NAME, 2);
-                    Logger.getLogger(RemitoController.class).error(ex.getLocalizedMessage(), ex);
+                    LogManager.getLogger();//(RemitoController.class).error(ex.getLocalizedMessage(), ex);
                 } finally {
                     facturaVentaController.getContenedor().getBtnAceptar().setEnabled(true);
                 }
@@ -318,7 +317,7 @@ public class RemitoController implements ActionListener {
             try {
                 newRemito = create(newRemito);
             } catch (PreexistingEntityException ex) {
-                Logger.getLogger(PresupuestoController.class.getName()).error(null, ex);
+                LogManager.getLogger();//(PresupuestoController.class.getName()).error(null, ex);
             }
             doReport(newRemito);
             limpiarPanel();
@@ -336,7 +335,7 @@ public class RemitoController implements ActionListener {
             r.printReport(true);
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
-            Logger.getLogger(this.getClass()).error("Error - Impresión de Remito.id=" + p.getId(), ex);
+            LogManager.getLogger();//(this.getClass()).error("Error - Impresión de Remito.id=" + p.getId(), ex);
         }
     }
 

@@ -31,10 +31,9 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-import jgestion.gui.JFP;
 import jgestion.jpa.controller.ProveedorJpaController;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.postgresql.util.PSQLException;
 
@@ -44,7 +43,7 @@ import org.postgresql.util.PSQLException;
  */
 public class ProveedorController implements ActionListener {
 
-    private static final Logger LOG = Logger.getLogger(ProveedorController.class.getName());
+    private static final Logger LOG = LogManager.getLogger();
     public final String CLASS_NAME = Proveedor.class.getSimpleName();
     private final String[] colsName = {"ID", "Código", "Razón social", "CUIT", "Teléfonos"};
     private final int[] colsWidth = {10, 20, 120, 40, 90};
@@ -528,7 +527,7 @@ public class ProveedorController implements ActionListener {
                     JOptionPane.showMessageDialog(contenedor, ex.getMessage());
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(contenedor, ex.getMessage());
-                    Logger.getLogger(ClienteController.class.getName()).log(Level.ERROR, null, ex);
+                    LogManager.getLogger();//(ClienteController.class.getName()).log(Level.ERROR, null, ex);
                 }
             }
         });

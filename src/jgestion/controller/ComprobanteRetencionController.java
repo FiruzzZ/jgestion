@@ -9,7 +9,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.math.BigDecimal;
 import jgestion.jpa.controller.ComprobanteRetencionJpaController;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import utilities.general.UTIL;
 
 /**
@@ -18,7 +19,7 @@ import utilities.general.UTIL;
  */
 public class ComprobanteRetencionController {
 
-    private static final Logger LOG = Logger.getLogger(ComprobanteRetencionController.class.getName());
+    private static final Logger LOG = LogManager.getLogger();
     /**
      * mutables
      */

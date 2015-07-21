@@ -55,7 +55,8 @@ import jgestion.jpa.controller.RemesaJpaController;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 import utilities.general.NumberToLetterConverter;
 import utilities.general.UTIL;
@@ -78,7 +79,7 @@ public class RemesaController implements FocusListener {
     private NotaDebitoProveedor selectedNotaDebito;
     private JDBuscadorReRe buscador;
     private Remesa selectedRemesa;
-    private static final Logger LOG = Logger.getLogger(RemesaController.class);
+    private static final Logger LOG = LogManager.getLogger();
     private final RemesaJpaController jpaController = new RemesaJpaController();
     private boolean unlockedNumeracion = false;
     private boolean toConciliar;

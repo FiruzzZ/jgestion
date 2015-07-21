@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Configuration>
+    <!--<filter class="org.apache.log4j.logging.varia.DenyAllFilter"/>-->
+    <Appenders>
+        <Console name="console" target="System.out">
+            <RegexFilter regex=".*(Javassist Enhancement failed|could not create proxy factory for).*" onMatch="DENY" onMismatch="ACCEPT"/>
+            <PatternLayout pattern="%d %-2p %c{2} %x - %m%n"/> 
+        </Console>
+        <File name="logfile" filename="./app.log" append="true">
+            <PatternLayout pattern="%d %-4r [%t] %-5p %c - %m%n"/> 
+            <!--Evita cargar en el log el error que tira hibernate por Java 8 (default method en Interfaces)-->
+            <RegexFilter regex=".*(Javassist Enhancement failed|could not create proxy factory for).*" onMatch="DENY" onMismatch="ACCEPT"/>
+        </File>
+    </Appenders>
+    <Loggers>
+        <Logger name="org.hibernate" level ="warn">
+        </Logger>
+        <logger name="net.sf.jasperreports" level="info">
+        </logger>
+        <Logger name="org.apache.commons.beanutils.converters" level="warn">
+        </Logger>
+        <Logger name="com.mchange" level="info">
+        </Logger>
+        <Root level="all">
+            <AppenderRef ref="console"/>
+            <AppenderRef ref="logfile" level="error" />
+        </Root>
+    </Loggers>
+</Configuration>

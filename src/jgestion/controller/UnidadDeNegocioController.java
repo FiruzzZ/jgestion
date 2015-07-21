@@ -17,7 +17,8 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import jgestion.jpa.controller.SucursalJpaController;
 import jgestion.jpa.controller.UnidadDeNegocioJpaController;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import utilities.general.UTIL;
 
 /**
@@ -26,7 +27,7 @@ import utilities.general.UTIL;
  */
 public class UnidadDeNegocioController {
 
-    private static final Logger LOG = Logger.getLogger(UnidadDeNegocioController.class.getName());
+    private static final Logger LOG = LogManager.getLogger();
     private final UnidadDeNegocioJpaController jpaController;
     private UnidadDeNegocio EL_OBJECT;
     private JDABM abm;

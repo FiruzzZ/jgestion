@@ -28,8 +28,8 @@ import jgestion.jpa.controller.ChequePropioJpaController;
 import jgestion.jpa.controller.ChequeTercerosJpaController;
 import jgestion.jpa.controller.CuentabancariaJpaController;
 import jgestion.jpa.controller.CuentabancariaMovimientosJpaController;
-import org.apache.log4j.Logger;
-import utilities.general.EntityWrapper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import utilities.general.UTIL;
 import utilities.gui.SwingUtil;
 import utilities.general.EntityWrapper;
@@ -45,7 +45,7 @@ public class CuentabancariaController {
     private JDContenedor contenedor;
     private boolean permitirFiltroVacio;
     private CuentaBancaria EL_OBJECT;
-    private static final Logger LOG = Logger.getLogger(CuentabancariaController.class.getName());
+    private static final Logger LOG = LogManager.getLogger();
     private PanelABMCuentabancaria panelABM;
     private PanelDepositoCheque panelDeposito;
 

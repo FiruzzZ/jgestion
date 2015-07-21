@@ -29,18 +29,15 @@ import jgestion.controller.exceptions.MessageException;
 import jgestion.controller.exceptions.MissingReportException;
 import jgestion.controller.exceptions.NonexistentEntityException;
 import generics.GenericBeanCollection;
-import java.awt.BorderLayout;
 import java.awt.Window;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
 import javax.persistence.NoResultException;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -52,7 +49,8 @@ import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import utilities.general.UTIL;
 import utilities.general.EntityWrapper;
 import utilities.swing.components.NumberRenderer;
@@ -63,7 +61,7 @@ import utilities.swing.components.NumberRenderer;
  */
 public class ProductoController implements ActionListener, KeyListener {
 
-    private static final Logger LOG = Logger.getLogger(ProductoController.class.getName());
+    private static final Logger LOG = LogManager.getLogger();
     public static final String CLASS_NAME = Producto.class.getSimpleName();
     private JDContenedor contenedor;
     private JDABM abm;
@@ -171,7 +169,7 @@ public class ProductoController implements ActionListener, KeyListener {
                         }
                     }
                 } catch (Exception ex) {
-                    Logger.getLogger(ProductoController.class).fatal("Error recuperando Productos en Contenedor", ex);
+                    LogManager.getLogger();//(ProductoController.class).fatal("Error recuperando Productos en Contenedor", ex);
                     JOptionPane.showMessageDialog(null, ex);
                 }
             }
@@ -939,7 +937,7 @@ public class ProductoController implements ActionListener, KeyListener {
                 try {
                     armarQueryProductosListado(true);
                 } catch (Exception ex) {
-                    Logger.getLogger(ProductoController.class).error(ex);
+                    LogManager.getLogger();//(ProductoController.class).error(ex);
                     JOptionPane.showMessageDialog(buscador, ex.getMessage());
                 }
             }

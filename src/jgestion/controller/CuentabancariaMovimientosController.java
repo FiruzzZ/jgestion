@@ -23,7 +23,8 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import jgestion.JGestionUtils;
 import jgestion.jpa.controller.CuentabancariaMovimientosJpaController;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import utilities.general.UTIL;
 import utilities.gui.SwingUtil;
 import utilities.general.EntityWrapper;
@@ -34,7 +35,7 @@ import utilities.general.EntityWrapper;
  */
 public class CuentabancariaMovimientosController {
 
-    private static final Logger LOG = Logger.getLogger(CuentabancariaMovimientosController.class.getName());
+    private static final Logger LOG = LogManager.getLogger();
     private CuentabancariaMovimientosJpaController jpaController;
     private JDCuentabancariaManager manager;
     private JDABM abm;

@@ -39,7 +39,8 @@ import javax.swing.JFrame;
 import javax.swing.table.DefaultTableModel;
 import jgestion.jpa.controller.SucursalJpaController;
 import jgestion.jpa.controller.UsuarioJpaController;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -47,7 +48,7 @@ import org.apache.log4j.Logger;
  */
 public class UsuarioController implements ActionListener, MouseListener, KeyListener {
 
-    private static final Logger LOG = Logger.getLogger(UsuarioController.class.getName());
+    private static final Logger LOG = LogManager.getLogger();
     public static final String ESTADO_ACTIVO = "Activo";
     public static final String ESTADO_BAJA = "Baja";
     /**

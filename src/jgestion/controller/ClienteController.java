@@ -31,6 +31,7 @@ import jgestion.JGestionUtils;
 import jgestion.entity.TipoDocumento;
 import jgestion.jpa.controller.ClienteJpaController;
 import jgestion.jpa.controller.TipoDocumentoJpaController;
+import org.apache.logging.log4j.LogManager;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.postgresql.util.PSQLException;
 
@@ -412,7 +413,7 @@ public class ClienteController implements ActionListener {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    Logger.getLogger(ClienteController.class.getName()).log(Level.SEVERE, null, ex);
+                    LogManager.getLogger();//(ClienteController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             } else if (boton.equals(contenedor.getbModificar())) {
                 try {
@@ -428,7 +429,7 @@ public class ClienteController implements ActionListener {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    Logger.getLogger(ClienteController.class.getName()).log(Level.SEVERE, null, ex);
+                    LogManager.getLogger();//(ClienteController.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
             } else if (boton.equals(contenedor.getbBorrar())) {
@@ -445,10 +446,10 @@ public class ClienteController implements ActionListener {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (NonexistentEntityException ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    Logger.getLogger(ClienteController.class.getName()).log(Level.SEVERE, null, ex);
+                    LogManager.getLogger();//(ClienteController.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (Exception ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    Logger.getLogger(ClienteController.class.getName()).log(Level.SEVERE, null, ex);
+                    LogManager.getLogger();//(ClienteController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             } else if (boton.getName().equalsIgnoreCase("Print")) {
                 //no implementado aun...
@@ -473,7 +474,7 @@ public class ClienteController implements ActionListener {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                    Logger.getLogger(ClienteController.class.getName()).log(Level.SEVERE, null, ex);
+                    LogManager.getLogger();//(ClienteController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             } else if (boton.getName().equalsIgnoreCase("cancelar")) {
                 abm.dispose();

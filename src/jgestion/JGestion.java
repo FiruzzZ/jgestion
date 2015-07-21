@@ -6,7 +6,6 @@ import jgestion.controller.exceptions.MessageException;
 import jgestion.entity.Usuario;
 import generics.PropsUtils;
 import jgestion.gui.JFP;
-import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -23,8 +22,8 @@ import javax.persistence.PersistenceException;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import jgestion.jpa.controller.UsuarioJpaController;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.persistence.exceptions.DatabaseException;
 
 /**
@@ -34,7 +33,7 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 public class JGestion {
 
     private static final String propertiesFile = System.getProperty("user.dir") + System.getProperty("file.separator") + "cfg.ini";
-    private static final Logger LOG = Logger.getLogger(JGestion.class);
+    public static final Logger LOG = LogManager.getLogger();
     private static boolean OCURRIO_ERROR = false;
     public static final ResourceBundle resourceBundle = ResourceBundle.getBundle("resources");
     private static boolean develop;
@@ -68,7 +67,6 @@ public class JGestion {
     }
 
     private JGestion() {
-        PropertyConfigurator.configure("log4j.properties");
         threadSafe();
         try {
             Properties properties = PropsUtils.load(new File(propertiesFile));

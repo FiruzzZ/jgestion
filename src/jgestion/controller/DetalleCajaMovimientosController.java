@@ -13,7 +13,8 @@ import javax.persistence.criteria.Root;
 import jgestion.entity.DetalleCajaMovimientos_;
 import jgestion.entity.FacturaVenta;
 import jgestion.entity.Producto;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -67,7 +68,7 @@ public class DetalleCajaMovimientosController {
      * nº 11
      */
     public final static short CHEQUE_PROPIO = 11;
-    private static Logger LOG = Logger.getLogger(DetalleCajaMovimientosController.class);
+    private static Logger LOG = LogManager.getLogger();
 
     public DetalleCajaMovimientosController() {
     }

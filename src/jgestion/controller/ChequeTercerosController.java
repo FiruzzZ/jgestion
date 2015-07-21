@@ -55,13 +55,13 @@ import javax.swing.table.DefaultTableModel;
 import jgestion.JGestionUtils;
 import jgestion.jpa.controller.ChequeTercerosJpaController;
 import jgestion.jpa.controller.CuentabancariaMovimientosJpaController;
-import jgestion.jpa.controller.UsuarioAccionesJpaController;
 import jgestion.jpa.controller.UsuarioJpaController;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 import utilities.general.UTIL;
 import utilities.swing.RowColorRender;
@@ -75,7 +75,7 @@ import utilities.swing.components.NumberRenderer;
  */
 public class ChequeTercerosController implements ActionListener {
 
-    private static final Logger LOG = Logger.getLogger(ChequePropioController.class);
+    private static final Logger LOG = LogManager.getLogger();
     public final static int MAX_LENGHT_DIGITS_QUANTITY = 20;
     private ChequeTerceros EL_OBJECT;
     private JDABM abm;

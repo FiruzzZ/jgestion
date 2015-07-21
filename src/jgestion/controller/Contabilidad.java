@@ -80,8 +80,8 @@ import jgestion.jpa.controller.ComprobanteRetencionJpaController;
 import jgestion.jpa.controller.ProveedorJpaController;
 import jgestion.jpa.controller.VendedorJpaController;
 import net.sf.jasperreports.engine.JRException;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import utilities.general.TableExcelExporter;
 import utilities.general.UTIL;
 import utilities.general.EntityWrapper;
@@ -105,7 +105,7 @@ public class Contabilidad {
     private static final Class[] columnClassBalanceGeneral = {Object.class, Object.class, String.class, String.class, String.class};
     private PanelBalanceComprasVentas panelBalanceComprasVentas;
 //    private static final Class[] columnClassBalanceCompraVenta = {Object.class, Object.class, String.class, String.class, String.class, String.class};
-    private static final Logger LOG = Logger.getLogger(Contabilidad.class.getName());
+    private static final Logger LOG = LogManager.getLogger();
 
     static {
         DecimalFormatSymbols simbolos = new DecimalFormatSymbols();
@@ -147,7 +147,7 @@ public class Contabilidad {
                     List<DetalleCajaMovimientos> l = (List<DetalleCajaMovimientos>) DAO.getNativeQueryResultList(armarQueryBalanceGeneral(), DetalleCajaMovimientos.class.getSimpleName() + ".BalanceGeneral");
                     cargarTablaBalanceGeneral(l);
                 } catch (DatabaseErrorException ex) {
-                    Logger.getLogger(Contabilidad.class.getName()).log(Level.FATAL, null, ex);
+                    LogManager.getLogger();//(Contabilidad.class.getName()).log(Level.FATAL, null, ex);
                 }
             }
         });
@@ -336,7 +336,7 @@ public class Contabilidad {
                 } catch (MessageException ex) {
                     JOptionPane.showMessageDialog(jdBalanceUI, ex.getMessage(), null, 2);
                 } catch (Exception ex) {
-                    LOG.error(null, ex);
+                    LOG.error("error buscando balance compraventa", ex);
                     JOptionPane.showMessageDialog(jdBalanceUI, ex.getMessage(), null, 2);
                 }
             }
@@ -354,7 +354,7 @@ public class Contabilidad {
                 } catch (MessageException ex) {
                     JOptionPane.showMessageDialog(jdBalanceUI, ex.getMessage(), null, 2);
                 } catch (Exception ex) {
-                    LOG.error(null, ex);
+                    LOG.error("error buscando balance compraventa", ex);
                     JOptionPane.showMessageDialog(jdBalanceUI, ex.getMessage(), "ERROR", 0);
                 }
             }
@@ -375,7 +375,7 @@ public class Contabilidad {
                 } catch (MessageException ex) {
                     JOptionPane.showMessageDialog(jdBalanceUI, ex.getMessage(), null, 2);
                 } catch (Exception ex) {
-                    LOG.error(null, ex);
+                    LOG.error("", ex);
                     JOptionPane.showMessageDialog(jdBalanceUI, ex.getMessage(), "ERROR", 0);
                 }
             }
@@ -456,7 +456,7 @@ public class Contabilidad {
         }
 
         query.append(" ORDER BY o.fecha_").append(tabla);
-        Logger.getLogger(Contabilidad.class).debug(query.toString());
+        LogManager.getLogger();//(Contabilidad.class).debug(query.toString());
         return query.toString();
     }
 
@@ -520,7 +520,7 @@ public class Contabilidad {
                     cccpc = (importe - entregado);
                     efectivo = entregado > 0 ? entregado : null;
                 } else {
-                    Logger.getLogger(Contabilidad.class).warn("FormaPago DESCONOCIDA = " + factura.getFormaPago() + ", FacturaVenta.id=" + factura.getId());
+                    LogManager.getLogger();//(Contabilidad.class).warn("FormaPago DESCONOCIDA = " + factura.getFormaPago() + ", FacturaVenta.id=" + factura.getId());
                 }
             } else {
                 efectivo = null;
@@ -566,7 +566,7 @@ public class Contabilidad {
      * @return precioFinal incluido IVA
      */
     public static Double getPrecioFinal(Producto producto, ListaPrecios listaPrecios, boolean incluirIVA) {
-        //      Logger.getLogger(this.getClass()).debug("Producto:" + producto.getNombre() + ", $venta:"+producto.getPrecioVenta() + ", ListaPrecio:" + listaPrecios.getNombre());
+        //      LogManager.getLogger();//(this.getClass()).debug("Producto:" + producto.getNombre() + ", $venta:"+producto.getPrecioVenta() + ", ListaPrecio:" + listaPrecios.getNombre());
         Double precioFinal = (producto.getPrecioVenta().doubleValue()
                 + GET_MARGEN_SEGUN_LISTAPRECIOS(listaPrecios, producto, null));
         Double iva = 0.0;

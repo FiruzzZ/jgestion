@@ -1,6 +1,5 @@
 package jgestion.controller;
 
-import jgestion.entity.PermisosCaja;
 import jgestion.entity.Cuenta;
 import jgestion.entity.DatosEmpresa;
 import jgestion.entity.Contribuyente;
@@ -19,8 +18,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import javax.persistence.*;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.exceptions.DatabaseException;
 
@@ -70,7 +68,7 @@ public abstract class DAO implements Runnable {
     public static EntityManager getEntityManager() {
         if (emf == null) {
             String persistenceUnitName = "JGestionPU";
-            Logger.getLogger(DAO.class).trace("Initializing EntityManagerFactory= " + persistenceUnitName);
+            LogManager.getLogger();//(DAO.class).trace("Initializing EntityManagerFactory= " + persistenceUnitName);
             String server, port, database;
             server = properties.getProperty("server");
             port = properties.getProperty("port");
@@ -96,15 +94,15 @@ public abstract class DAO implements Runnable {
                 connection.close();
             }
         } catch (SQLException ex) {
-            Logger.getLogger(DAO.class).error(ex.getMessage(), ex);
+            LogManager.getLogger();//(DAO.class).error(ex.getMessage(), ex);
         }
         if (entityManagerForJDBC != null && entityManagerForJDBC.isOpen()) {
-            Logger.getLogger(DAO.class).trace("Closing EntityManager for JDBC conn..");
+            LogManager.getLogger();//(DAO.class).trace("Closing EntityManager for JDBC conn..");
             entityManagerForJDBC.close();
 
         }
         if (emf != null && emf.isOpen()) {
-            Logger.getLogger(DAO.class).trace("Closing EntityManagerFactory..");
+            LogManager.getLogger();//(DAO.class).trace("Closing EntityManagerFactory..");
             emf.close();
         }
     }
@@ -123,10 +121,10 @@ public abstract class DAO implements Runnable {
                 return connection;
             }
         } catch (SQLException ex) {
-            Logger.getLogger(DAO.class).log(Level.ERROR, ex.getMessage(), ex);
+            LogManager.getLogger();//(DAO.class).log(Level.ERROR, ex.getMessage(), ex);
         }
         instanceOfJDBCCreated++;
-        Logger.getLogger(DAO.class).log(Level.TRACE, "Creating a new JDBC #" + instanceOfJDBCCreated);
+        LogManager.getLogger();//(DAO.class).log(Level.TRACE, "Creating a new JDBC #" + instanceOfJDBCCreated);
         entityManagerForJDBC = emf.createEntityManager();
         entityManagerForJDBC.getTransaction().begin();
 
@@ -203,7 +201,7 @@ public abstract class DAO implements Runnable {
             em.getTransaction().commit();
             return merge;
         } catch (Exception ex) {
-            Logger.getLogger(DAO.class).log(Level.ERROR, o.toString() + " > " + ex.getLocalizedMessage(), ex);
+            LogManager.getLogger();//(DAO.class).log(Level.ERROR, o.toString() + " > " + ex.getLocalizedMessage(), ex);
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
@@ -220,7 +218,7 @@ public abstract class DAO implements Runnable {
         try {
             return em.createNativeQuery(sqlString, resultClass).getSingleResult();
         } catch (DatabaseException e) {
-            Logger.getLogger(DAO.class).log(Level.FATAL, e);
+            LogManager.getLogger();//(DAO.class).log(Level.FATAL, e);
             throw new DatabaseErrorException();
         } finally {
             em.close();
@@ -334,7 +332,7 @@ public abstract class DAO implements Runnable {
         if (properties.getProperty("populate", "false").equals("false")) {
             return;
         }
-        Logger.getLogger(DAO.class).trace("Iniciando carga de DefaultData: populating..");
+        LogManager.getLogger();//(DAO.class).trace("Iniciando carga de DefaultData: populating..");
         EntityManager em = null;
         JDSystemMessages ventanaSystemMessage = new JDSystemMessages(null, true);
 
@@ -497,7 +495,7 @@ public abstract class DAO implements Runnable {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            Logger.getLogger(DAO.class.getName()).log(Level.ERROR, null, ex);
+            LogManager.getLogger();//(DAO.class.getName()).log(Level.ERROR, null, ex);
             throw ex;
         } finally {
             if (em != null) {

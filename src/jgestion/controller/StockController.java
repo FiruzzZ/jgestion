@@ -13,7 +13,8 @@ import jgestion.entity.RemitoCompra;
 import jgestion.entity.RemitoCompraDetalle;
 import jgestion.jpa.controller.ProductoJpaController;
 import jgestion.jpa.controller.StockJpaController;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -22,7 +23,7 @@ import org.apache.log4j.Logger;
 public class StockController {
 
     public static final String CLASS_NAME = Stock.class.getSimpleName();
-    public static final Logger LOG = Logger.getLogger(StockController.class.getName());
+    public static final Logger LOG = LogManager.getLogger();
     private final StockJpaController jpaController = new StockJpaController();
 
     public StockController() {
