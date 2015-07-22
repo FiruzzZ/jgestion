@@ -19,12 +19,17 @@ import jgestion.controller.exceptions.MessageException;
 import jgestion.controller.exceptions.MissingReportException;
 import jgestion.entity.Cliente;
 import jgestion.entity.DatosEmpresa;
+import jgestion.entity.DetalleNotaCredito;
 import jgestion.entity.DetalleVenta;
 import jgestion.entity.FacturaElectronica;
 import jgestion.entity.FacturaVenta;
+import jgestion.entity.NotaCredito;
+import jgestion.entity.NotaDebito;
 import jgestion.entity.Sucursal;
 import jgestion.jpa.controller.FacturaElectronicaJpaController;
 import jgestion.jpa.controller.FacturaVentaJpaController;
+import jgestion.jpa.controller.NotaCreditoJpaController;
+import jgestion.jpa.controller.NotaDebitoJpaController;
 import jgestion.jpa.controller.SucursalJpaController;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.logging.log4j.LogManager;
@@ -60,41 +65,64 @@ public class FacturaElectronicaController {
                         waiting.appendMessage("CAE pendientes: " + l.size(), true, true);
                         waiting.appendMessage("obteniendo ticket de acceso..", true, true);
                         AFIPWSController afipwsController = new AFIPWSController(null);
+                        Object comprobante = null;
                         for (FacturaElectronica fe : l) {
-                            if (fe.getCbteTipo() == 1 || fe.getCbteTipo() == 6 || fe.getCbteTipo() == 11) {
-                                Sucursal s = new SucursalJpaController().findByPuntoVenta(fe.getPtoVta());
-                                char tipo = fe.getCbteTipo() == 1 ? 'A'
+                            String cbteNumero = null;
+                            Sucursal s = new SucursalJpaController().findByPuntoVenta(fe.getPtoVta());
+                            char tipo = 0;
+                            if (fe.getCbteTipo() == 1 || fe.getCbteTipo() == 6 || fe.getCbteTipo() == 11 || fe.getCbteTipo() == 51) {
+                                tipo = fe.getCbteTipo() == 1 ? 'A'
                                         : fe.getCbteTipo() == 6 ? 'B' : 'C';
                                 FacturaVenta fv = new FacturaVentaJpaController().findBy(s, tipo, (int) fe.getCbteNumero());
-                                waiting.appendMessage("consultando CAE de " + JGestionUtils.getNumeracion(fv), true, true);
-                                FacturaElectronica fee = null;
-                                try {
-                                    /**
-                                     * Si en el sistema figura como CAE pendiente, pero la consulta
-                                     * del comprobante retorna algo puede que haya sucedido un error
-                                     * y no se guardó el CAE retornado
-                                     */
-                                    fee = afipwsController.getFEComprobante(fv.getSucursal().getPuntoVenta(), tipo, (int) fv.getNumero());
-                                } catch (WSAFIPErrorResponseException ex) {
-                                    waiting.appendMessage(ex.getMessage(), true, true);
-                                }
-                                try {
-                                    if (fee == null) {
-                                        waiting.appendMessage("solicitando CAE de " + JGestionUtils.getNumeracion(fv), true, true);
-                                        fee = afipwsController.requestCAE(fv);
+                                comprobante = fv;
+                                cbteNumero = JGestionUtils.getNumeracion(fv);
+                            } else if (fe.getCbteTipo() == 2 || fe.getCbteTipo() == 7 || fe.getCbteTipo() == 12 || fe.getCbteTipo() == 52) {
+                                tipo = fe.getCbteTipo() == 2 ? 'A'
+                                        : fe.getCbteTipo() == 7 ? 'B'
+                                                : fe.getCbteTipo() == 12 ? 'C' : 'M';
+                                NotaDebito nc = new NotaDebitoJpaController().findBy(s, tipo, (int) fe.getCbteNumero());
+                                comprobante = nc;
+                                cbteNumero = JGestionUtils.getNumeracion(nc);
+                            } else if (fe.getCbteTipo() == 3 || fe.getCbteTipo() == 8 || fe.getCbteTipo() == 13 || fe.getCbteTipo() == 53) {
+                                tipo = fe.getCbteTipo() == 3 ? 'A'
+                                        : fe.getCbteTipo() == 8 ? 'B'
+                                                : fe.getCbteTipo() == 13 ? 'C' : 'M';
+                                NotaCredito nc = new NotaCreditoJpaController().findBy(s, tipo, (int) fe.getCbteNumero());
+                                comprobante = nc;
+                                cbteNumero = JGestionUtils.getNumeracion(nc, true);
+
+                            }
+                            waiting.appendMessage("consultando CAE de " + cbteNumero, true, true);
+                            FacturaElectronica fee = null;
+                            try {
+                                /**
+                                 * Si en el sistema figura como CAE pendiente, pero la consulta del
+                                 * comprobante retorna algo puede que haya sucedido un error y no se
+                                 * guardó el CAE retornado
+                                 */
+                                fee = afipwsController.getFEComprobante(s.getPuntoVenta(), tipo, (int) fe.getCbteNumero());
+                            } catch (WSAFIPErrorResponseException ex) {
+                                waiting.appendMessage(ex.getMessage(), true, true);
+                            }
+                            try {
+                                if (fee == null) {
+                                    waiting.appendMessage("solicitando CAE de " + cbteNumero, true, true);
+                                    if (comprobante instanceof FacturaVenta) {
+                                        fee = afipwsController.requestCAE(fe, (FacturaVenta) comprobante);
                                     }
-                                    fe.setCae(fee.getCae());
-                                    fe.setCaeFechaVto(fee.getCaeFechaVto());
-                                    fe.setObservaciones(fee.getObservaciones());
-                                    fe.setResultado(fee.getResultado());
-                                    fe.setFechaProceso(fee.getFechaProceso());
-                                    fe.setObservaciones(fee.getObservaciones());
-                                    LOG.info(fe.toString());
-                                    feJpaController.merge(fe);
-                                    waiting.appendMessage("guardando comprobante..", true, true);
-                                } catch (WSAFIPErrorResponseException | MessageException ex) {
-                                    waiting.appendMessage(ex.getMessage(), true, true);
+                                    if (comprobante instanceof NotaCredito) {
+                                        fee = afipwsController.requestCAE(fe, (NotaCredito) comprobante);
+                                    }
+                                    if (comprobante instanceof NotaDebito) {
+                                        fee = afipwsController.requestCAE(fe, (NotaDebito) comprobante);
+                                    }
                                 }
+
+                                LOG.info(fee.toString());
+                                feJpaController.merge(fee);
+                                waiting.appendMessage("guardando comprobante..", true, true);
+                            } catch (WSAFIPErrorResponseException | MessageException ex) {
+                                waiting.appendMessage(ex.getMessage(), true, true);
                             }
                         }
                     } catch (Exception ex) {
@@ -130,40 +158,49 @@ public class FacturaElectronicaController {
         return fe;
     }
 
-    /**
-     *
-     * @param fv
-     * @return
-     */
-    public FacturaElectronica findBy(FacturaVenta fv) {
-        return jpaController.findBy(AFIPWSController.getTipoComprobanteID(fv), fv.getSucursal().getPuntoVenta(), fv.getNumero());
+    static FacturaElectronica createFrom(NotaCredito f) {
+        FacturaElectronica fe = new FacturaElectronica(null, AFIPWSController.getTipoComprobanteID(f),
+                f.getSucursal().getPuntoVenta(), Long.valueOf(f.getNumero()).intValue(),
+                null, null, 3, null, null, null);
+        return fe;
     }
 
-    public void doReport(FacturaVenta fv) throws MissingReportException, JRException, MessageException {
-        FacturaElectronica fe = findBy(fv);
+    public FacturaElectronica findBy(FacturaVenta cbte) {
+        return jpaController.findBy(AFIPWSController.getTipoComprobanteID(cbte), cbte.getSucursal().getPuntoVenta(), cbte.getNumero());
+    }
+
+    public FacturaElectronica findBy(NotaCredito cbte) {
+        return jpaController.findBy(AFIPWSController.getTipoComprobanteID(cbte), cbte.getSucursal().getPuntoVenta(), cbte.getNumero());
+    }
+
+    public FacturaElectronica findBy(NotaDebito cbte) {
+        return jpaController.findBy(AFIPWSController.getTipoComprobanteID(cbte), cbte.getSucursal().getPuntoVenta(), cbte.getNumero());
+    }
+
+    public void doReport(FacturaVenta cbte) throws MissingReportException, JRException, MessageException {
+        FacturaElectronica fe = findBy(cbte);
         if (fe.getCae() == null) {
-            throw new MessageException("el comprobante " + JGestionUtils.getNumeracion(fv) + " aún no posee CAE");
+            throw new MessageException("el comprobante " + JGestionUtils.getNumeracion(cbte) + " aún no posee CAE");
         }
         HashMap<String, Object> parameters = new HashMap<>(30);
-        parameters.put("CBTE_TIPO", fv.getTipo() + "");
+        parameters.put("CBTE_TIPO", cbte.getTipo() + "");
         //tiene que tener 2 dígitos el cod tipo cbte
         parameters.put("CBTE_TIPO_COD", fe.getCbteTipo() > 9 ? fe.getCbteTipo() : "0" + fe.getCbteTipo());
         parameters.put("CBTE_NOMBRE", "FACTURA");
-        parameters.put("CBTE_FECHA_EMISION", fv.getFechaVenta());
+        parameters.put("CBTE_FECHA_EMISION", cbte.getFechaVenta());
         parameters.put("CBTE_PUNTO", UTIL.AGREGAR_CEROS(fe.getPtoVta(), 4));
         parameters.put("CBTE_NUMERO", UTIL.AGREGAR_CEROS(fe.getCbteNumero(), 8));
-        parameters.put("CBTE_CONDICION_VENTA", fv.getFormaPago() == 1 ? "Contado" : "Cta. Cte.");
+        parameters.put("CBTE_CONDICION_VENTA", cbte.getFormaPago() == 1 ? "Contado" : "Cta. Cte.");
         parameters.put("CBTE_CAE", fe.getCae());
         parameters.put("CBTE_CAE_VTO", fe.getCaeFechaVto());
-        putClienteParameters(parameters, fv.getCliente());
-        List<GenericBeanCollection> detalle = new ArrayList<>();
-        parameters.put("CBTE_TOTAL", fv.getImporte());
-        parameters.put("CBTE_GRAVADO", fv.getGravado());
+        putClienteParameters(parameters, cbte.getCliente());
+        parameters.put("CBTE_TOTAL", cbte.getImporte());
+        parameters.put("CBTE_GRAVADO", cbte.getGravado());
         if (parameters.get("CBTE_TIPO").equals("A")) {
-            parameters.put("CBTE_NOGRAVADO", fv.getNoGravado());
+            parameters.put("CBTE_NOGRAVADO", cbte.getNoGravado());
         } else {
             //se muestra como SubTotal
-            parameters.put("CBTE_NOGRAVADO", fv.getImporte());
+            parameters.put("CBTE_NOGRAVADO", cbte.getImporte());
         }
         parameters.put("CBTE_OTROSTRIB", BigDecimal.ZERO);
         parameters.put("CBTE_BONIF", BigDecimal.ZERO);
@@ -172,12 +209,14 @@ public class FacturaElectronicaController {
         BigDecimal iva105 = BigDecimal.ZERO;
         BigDecimal iva5 = BigDecimal.ZERO;
         BigDecimal iva205 = BigDecimal.ZERO;
-        for (DetalleVenta d : fv.getDetallesVentaList()) {
+        List<GenericBeanCollection> detalle = new ArrayList<>();
+        for (DetalleVenta d : cbte.getDetallesVentaList()) {
             BigDecimal alicuota = BigDecimal.valueOf(d.getProducto().getIva().getIva()).setScale(2, RoundingMode.HALF_UP);
-            BigDecimal subTotal = d.getPrecioUnitario().multiply(BigDecimal.valueOf(d.getCantidad())).setScale(4, RoundingMode.HALF_UP);
-            if (fv.getTipo() == 'A') {
+            BigDecimal precioUnitario = d.getPrecioUnitario();
+            BigDecimal subTotal = precioUnitario.multiply(BigDecimal.valueOf(d.getCantidad())).setScale(4, RoundingMode.HALF_UP);
+            if (cbte.getTipo() == 'A') {
                 if (alicuota.doubleValue() > 0) {
-                    BigDecimal iva = subTotal.divide(alicuota, 2, RoundingMode.HALF_UP);
+                    BigDecimal iva = UTIL.getPorcentaje(subTotal, alicuota);
                     if (alicuota.toString().equals("10.5")) {
                         iva105 = iva105.add(iva);
                     } else if (alicuota.toString().equals("2.5")) {
@@ -194,9 +233,12 @@ public class FacturaElectronicaController {
                 subTotal = subTotal
                         .multiply((alicuota.divide(new BigDecimal("100")).add(BigDecimal.ONE)))
                         .setScale(2, RoundingMode.HALF_UP);
+                precioUnitario = precioUnitario.multiply((alicuota.divide(new BigDecimal("100")).add(BigDecimal.ONE)))
+                        .setScale(4, RoundingMode.HALF_UP);
+                alicuota = null;
             }
             detalle.add(new GenericBeanCollection(d.getProducto().getCodigo(), d.getProducto().getNombre(), d.getCantidad(),
-                    "Unitario", d.getPrecioUnitario(), d.getDescuento(), alicuota, subTotal));
+                    "Unitario", precioUnitario, d.getDescuento(), alicuota, subTotal));
         }
         parameters.put("CBTE_IVA27", iva27);
         parameters.put("CBTE_IVA21", iva21);
@@ -280,4 +322,75 @@ public class FacturaElectronicaController {
         return barcode;
     }
 
+    void doReport(NotaCredito cbte) throws MessageException, MissingReportException, JRException {
+        FacturaElectronica fe = findBy(cbte);
+        if (fe.getCae() == null) {
+            throw new MessageException("el comprobante " + JGestionUtils.getNumeracion(cbte, true) + " aún no posee CAE");
+        }
+        HashMap<String, Object> parameters = new HashMap<>(30);
+        parameters.put("CBTE_TIPO", cbte.getTipo() + "");
+        //tiene que tener 2 dígitos el cod tipo cbte
+        parameters.put("CBTE_TIPO_COD", fe.getCbteTipo() > 9 ? fe.getCbteTipo() : "0" + fe.getCbteTipo());
+        parameters.put("CBTE_NOMBRE", "NOTA CRÉDITO");
+        parameters.put("CBTE_FECHA_EMISION", cbte.getFechaNotaCredito());
+        parameters.put("CBTE_PUNTO", UTIL.AGREGAR_CEROS(fe.getPtoVta(), 4));
+        parameters.put("CBTE_NUMERO", UTIL.AGREGAR_CEROS(fe.getCbteNumero(), 8));
+//        parameters.put("CBTE_CONDICION_VENTA", cbte.getFormaPago() == 1 ? "Contado" : "Cta. Cte.");
+        parameters.put("CBTE_CAE", fe.getCae());
+        parameters.put("CBTE_CAE_VTO", fe.getCaeFechaVto());
+        putClienteParameters(parameters, cbte.getCliente());
+        parameters.put("CBTE_OBSERVACION", cbte.getObservacion());
+        parameters.put("CBTE_TOTAL", cbte.getImporte());
+        parameters.put("CBTE_GRAVADO", cbte.getGravado());
+        if (parameters.get("CBTE_TIPO").equals("A")) {
+            parameters.put("CBTE_NOGRAVADO", cbte.getNoGravado());
+        } else {
+            //se muestra como SubTotal
+            parameters.put("CBTE_NOGRAVADO", cbte.getImporte());
+        }
+        parameters.put("CBTE_OTROSTRIB", BigDecimal.ZERO);
+        parameters.put("CBTE_BONIF", BigDecimal.ZERO);
+        BigDecimal iva27 = BigDecimal.ZERO;
+        BigDecimal iva21 = BigDecimal.ZERO;
+        BigDecimal iva105 = BigDecimal.ZERO;
+        BigDecimal iva5 = BigDecimal.ZERO;
+        BigDecimal iva205 = BigDecimal.ZERO;
+        List<GenericBeanCollection> detalle = new ArrayList<>();
+        for (DetalleNotaCredito d : cbte.getDetalle()) {
+            BigDecimal alicuota = BigDecimal.valueOf(d.getProducto().getIva().getIva()).setScale(2, RoundingMode.HALF_UP);
+            BigDecimal precioUnitario = d.getPrecioUnitario();
+            BigDecimal subTotal = precioUnitario.multiply(BigDecimal.valueOf(d.getCantidad())).setScale(4, RoundingMode.HALF_UP);
+            if (cbte.getTipo() == 'A') {
+                if (alicuota.doubleValue() > 0) {
+                    BigDecimal iva = UTIL.getPorcentaje(subTotal, alicuota);
+                    if (alicuota.toString().equals("10.5")) {
+                        iva105 = iva105.add(iva);
+                    } else if (alicuota.toString().equals("2.5")) {
+                        iva205 = iva205.add(iva);
+                    } else if (alicuota.intValue() == 5) {
+                        iva5 = iva5.add(iva);
+                    } else if (alicuota.intValue() == 21) {
+                        iva21 = iva21.add(iva);
+                    } else if (alicuota.intValue() == 27) {
+                        iva27 = iva27.add(iva);
+                    }
+                }
+            } else {
+                subTotal = subTotal
+                        .multiply((alicuota.divide(new BigDecimal("100")).add(BigDecimal.ONE)))
+                        .setScale(2, RoundingMode.HALF_UP);
+                precioUnitario = precioUnitario.multiply((alicuota.divide(new BigDecimal("100")).add(BigDecimal.ONE)))
+                        .setScale(4, RoundingMode.HALF_UP);
+                alicuota = null;
+            }
+            detalle.add(new GenericBeanCollection(d.getProducto().getCodigo(), d.getProducto().getNombre(), d.getCantidad(),
+                    "Unitario", precioUnitario, BigDecimal.ZERO, alicuota, subTotal));
+        }
+        parameters.put("CBTE_IVA27", iva27);
+        parameters.put("CBTE_IVA21", iva21);
+        parameters.put("CBTE_IVA105", iva105);
+        parameters.put("CBTE_IVA5", iva5);
+        parameters.put("CBTE_IVA205", iva205);
+        doReport(parameters, detalle);
+    }
 }

@@ -1,5 +1,6 @@
 package jgestion.controller;
 
+import java.awt.Color;
 import jgestion.controller.exceptions.DatabaseErrorException;
 import jgestion.controller.exceptions.MessageException;
 import jgestion.controller.exceptions.MissingReportException;
@@ -30,6 +31,9 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import jgestion.JGestionUtils;
+import jgestion.entity.FacturaElectronica;
+import jgestion.entity.NotaCredito_;
+import jgestion.jpa.controller.FacturaElectronicaJpaController;
 import jgestion.jpa.controller.NotaCreditoJpaController;
 import jgestion.jpa.controller.ProductoJpaController;
 import net.sf.jasperreports.engine.JRException;
@@ -68,14 +72,17 @@ public class NotaCreditoController {
                     if (!facturaVentaController.getContenedor().isViewMode()) {
                         NotaCredito notaCreditoToPersist = setEntity();
                         jpaController.persist(notaCreditoToPersist);
-                        reporte(notaCreditoToPersist);
+                        if (notaCreditoToPersist.getSucursal().isWebServices()) {
+                            FacturaElectronica fee = FacturaElectronicaController.createFrom(notaCreditoToPersist);
+                            new FacturaElectronicaJpaController().persist(fee);
+                            FacturaElectronicaController.initSolicitudCAEs();
+                        }
+                        doReportComprobante(notaCreditoToPersist);
                         char tipo = facturaVentaController.getContenedor().getCbFacturaTipo().getSelectedItem().toString().charAt(0);
                         facturaVentaController.setNumeroFactura(notaCreditoToPersist.getSucursal(), jpaController.getNextNumero(notaCreditoToPersist.getSucursal(), tipo));
                         facturaVentaController.borrarDetalles();
-                    } else {
-                        if (JOptionPane.YES_OPTION == JOptionPane.showOptionDialog(jdFacturaVenta, "¿Desea reimprimir la Nota de crédito?", "Re imprimir", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null)) {
-                            reporte(EL_OBJECT);
-                        }
+                    } else if (JOptionPane.YES_OPTION == JOptionPane.showOptionDialog(jdFacturaVenta, "¿Desea reimprimir la Nota de crédito?", "Re imprimir", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null)) {
+                        doReportComprobante(EL_OBJECT);
                     }
                 } catch (MessageException ex) {
                     facturaVentaController.getContenedor().showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 2);
@@ -135,7 +142,7 @@ public class NotaCreditoController {
         newNotaCredito.setFechaNotaCredito(fechaNotaCredito);
         newNotaCredito.setImporte(new BigDecimal(UTIL.parseToDouble(jdFacturaVenta.getTfTotal())).setScale(2, RoundingMode.HALF_UP));
         newNotaCredito.setDesacreditado(BigDecimal.ZERO);
-        newNotaCredito.setGravado(UTIL.parseToDouble(jdFacturaVenta.getTfGravado()));
+        newNotaCredito.setGravado(BigDecimal.valueOf(UTIL.parseToDouble(jdFacturaVenta.getTfGravado())));
         newNotaCredito.setNoGravado(new BigDecimal(UTIL.parseToDouble(jdFacturaVenta.getTfTotalNoGravado())));
         newNotaCredito.setIva10(UTIL.parseToDouble(jdFacturaVenta.getTfTotalIVA105()));
         newNotaCredito.setIva21(UTIL.parseToDouble(jdFacturaVenta.getTfTotalIVA21()));
@@ -144,14 +151,14 @@ public class NotaCreditoController {
         newNotaCredito.setSucursal(sucursal);
         newNotaCredito.setUsuario(UsuarioController.getCurrentUser());
         newNotaCredito.setObservacion(observacion);
-        newNotaCredito.setDetalleNotaCreditoCollection(new ArrayList<>(dtm.getRowCount()));
+        newNotaCredito.setDetalle(new ArrayList<>(dtm.getRowCount()));
         ProductoJpaController productoJpaController = new ProductoJpaController();
         for (int i = 0; i < dtm.getRowCount(); i++) {
             DetalleNotaCredito detalleVenta = new DetalleNotaCredito();
             detalleVenta.setCantidad((Integer) dtm.getValueAt(i, 3));
-            detalleVenta.setPrecioUnitario(Double.valueOf(dtm.getValueAt(i, 4).toString()));
+            detalleVenta.setPrecioUnitario((BigDecimal) dtm.getValueAt(i, 4));
             detalleVenta.setProducto(productoJpaController.find((Integer) dtm.getValueAt(i, 9)));
-            newNotaCredito.getDetalleNotaCreditoCollection().add(detalleVenta);
+            newNotaCredito.getDetalle().add(detalleVenta);
         }
         return newNotaCredito;
     }
@@ -226,7 +233,7 @@ public class NotaCreditoController {
         return EL_OBJECT;
     }
 
-    public void initBuscador(JFrame owner, final boolean paraAnular) throws MessageException {
+    public void initBuscador(Window owner, final boolean paraAnular) throws MessageException {
         initBuscador(owner, paraAnular, null, false);
     }
 
@@ -238,7 +245,7 @@ public class NotaCreditoController {
      */
     @SuppressWarnings("unchecked")
     private String armarQuery(boolean soloAcreditables) throws MessageException {
-        StringBuilder query = new StringBuilder("SELECT o.* FROM nota_credito o"
+        StringBuilder query = new StringBuilder(jpaController.getSelectFrom()
                 + " WHERE o.anulada = " + buscador.isCheckAnuladaSelected());
         if (soloAcreditables) {
             query.append(" AND o.recibo IS NULL");
@@ -254,18 +261,24 @@ public class NotaCreditoController {
             }
         }
         if (buscador.getDcDesde() != null) {
-            query.append(" AND o.fecha_nota_credito >= '").append(buscador.getDcDesde()).append("'");
+            query.append(" AND o.").append(NotaCredito_.fechaNotaCredito.getName()).append(" >= '").append(buscador.getDcDesde()).append("'");
         }
         if (buscador.getDcHasta() != null) {
-            query.append(" AND o.fecha_nota_credito <= '").append(buscador.getDcHasta()).append("'");
+            StringBuilder append = query.append(" AND o." + NotaCredito_.fechaNotaCredito.getName() + " <= '").append(buscador.getDcHasta()).append("'");
+        }
+        if (buscador.getDcDesdeSistema() != null) {
+            query.append(" AND o.").append(NotaCredito_.fechaCarga.getName()).append(" >= '").append(UTIL.yyyy_MM_dd.format(buscador.getDcDesdeSistema())).append("'");
+        }
+        if (buscador.getDcHastaSistema() != null) {
+            query.append(" AND o.").append(NotaCredito_.fechaCarga.getName()).append(" < '").append(UTIL.yyyy_MM_dd.format(UTIL.customDateByDays(buscador.getDcHastaSistema(), 1))).append("'");
         }
         if (buscador.getCbSucursal().getSelectedIndex() > 0) {
-            query.append(" AND o.sucursal = ").append(((EntityWrapper<Sucursal>) buscador.getCbSucursal().getSelectedItem()).getId());
+            query.append(" AND o.sucursal.id = ").append(((EntityWrapper<Sucursal>) buscador.getCbSucursal().getSelectedItem()).getId());
         } else {
             query.append(" AND (");
             for (int i = 1; i < buscador.getCbSucursal().getItemCount(); i++) {
                 EntityWrapper<Sucursal> cbw = (EntityWrapper<Sucursal>) buscador.getCbSucursal().getItemAt(i);
-                query.append(" o.sucursal=").append(cbw.getId());
+                query.append(" o.sucursal.id=").append(cbw.getId());
                 if ((i + 1) < buscador.getCbSucursal().getItemCount()) {
                     query.append(" OR ");
                 }
@@ -283,7 +296,7 @@ public class NotaCreditoController {
     private void cargarDtmBuscador(String query) {
         DefaultTableModel dtm = buscador.getDtm();
         dtm.setRowCount(0);
-        List<NotaCredito> l = jpaController.findByNativeQuery(query);
+        List<NotaCredito> l = jpaController.findAll(query);
         for (NotaCredito o : l) {
             dtm.addRow(new Object[]{
                 o.getId(), // <--- no es visible
@@ -310,7 +323,16 @@ public class NotaCreditoController {
         jdFacturaVenta.setTfFacturaOcteto(numFactura.substring(4));
         jdFacturaVenta.setDcFechaFactura(notaCredito.getFechaNotaCredito());
         jdFacturaVenta.getTfObservacion().setText(notaCredito.getObservacion());
-        Collection<DetalleNotaCredito> lista = notaCredito.getDetalleNotaCreditoCollection();
+        FacturaElectronica fe = new FacturaElectronicaController().findBy(notaCredito);
+        if (fe != null) {
+            if (fe.getCae() == null) {
+                jdFacturaVenta.getTfCAE().setForeground(Color.RED);
+                jdFacturaVenta.getTfCAE().setText("PENDIENTE!");
+            } else {
+                jdFacturaVenta.getTfCAE().setText(fe.getCae());
+            }
+        }
+        Collection<DetalleNotaCredito> lista = notaCredito.getDetalle();
         DefaultTableModel dtm = jdFacturaVenta.getDtm();
         for (DetalleNotaCredito detalle : lista) {
             Iva iva = detalle.getProducto().getIva();
@@ -324,8 +346,9 @@ public class NotaCreditoController {
                 }
             }
             try {
-                BigDecimal productoConIVA = BigDecimal.valueOf(detalle.getPrecioUnitario()
-                        + UTIL.getPorcentaje(detalle.getPrecioUnitario(), Double.valueOf(iva.getIva()))).setScale(4, RoundingMode.HALF_EVEN);
+                BigDecimal productoConIVA = detalle.getPrecioUnitario().add(
+                        UTIL.getPorcentaje(detalle.getPrecioUnitario(), BigDecimal.valueOf(iva.getIva()), 4, RoundingMode.HALF_EVEN)
+                );
                 //"IVA","Cód. Producto","Producto","Cantidad","P. Unitario","P. final","Desc","Sub total"
                 dtm.addRow(new Object[]{
                     iva.getIva(),
@@ -387,11 +410,15 @@ public class NotaCreditoController {
         DAO.merge(notaCredito);
     }
 
-    private void reporte(NotaCredito notaCredito) throws MissingReportException, JRException {
-        Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_NotaCredito.jasper", "Nota de Crédito");
-        r.addCurrent_User();
-        r.addParameter("NOTA_CREDITO_ID", notaCredito.getId());
-        r.printReport(true);
+    private void doReportComprobante(NotaCredito notaCredito) throws MissingReportException, JRException, MessageException {
+        if (notaCredito.getSucursal().isWebServices()) {
+            new FacturaElectronicaController().doReport(notaCredito);
+        } else {
+            Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_NotaCredito.jasper", "Nota de Crédito");
+            r.addCurrent_User();
+            r.addParameter("NOTA_CREDITO_ID", notaCredito.getId());
+            r.printReport(true);
+        }
     }
 
     double getCreditoDisponible(Cliente cliente) {

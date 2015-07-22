@@ -16,52 +16,35 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" attributes="0">
-              <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jLabel1" alignment="1" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel2" alignment="1" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel11" alignment="1" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel12" alignment="1" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel3" alignment="1" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel6" alignment="1" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel7" alignment="1" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel13" alignment="1" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel16" alignment="1" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel18" alignment="1" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel19" alignment="1" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel20" alignment="1" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel22" alignment="1" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel8" alignment="1" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel4" alignment="1" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel5" alignment="1" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="cbMunicipios" alignment="0" max="32767" attributes="1"/>
-                  <Component id="cbDepartamentos" alignment="0" max="32767" attributes="1"/>
-                  <Component id="cbProvincias" alignment="0" max="32767" attributes="1"/>
-                  <Component id="tfEmail" max="32767" attributes="0"/>
-                  <Component id="tfDireccion" alignment="0" max="32767" attributes="0"/>
-                  <Component id="tfNombre" max="32767" attributes="0"/>
-                  <Component id="tfEncargado" alignment="0" max="32767" attributes="0"/>
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="1" attributes="0">
+                  <Component id="panelPuntoVenta" alignment="1" min="-2" max="-2" attributes="0"/>
                   <Group type="102" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" attributes="0">
-                              <Component id="tfInicialNotaCreditoA" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jLabel27" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="tfInicialNotaCreditoB" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jLabel28" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="tfInicialNotaCreditoC" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <Group type="102" attributes="0">
+                          <Component id="jLabel6" alignment="1" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel7" alignment="1" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel8" alignment="1" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel4" alignment="1" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel5" alignment="1" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel1" alignment="1" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel2" alignment="1" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel11" alignment="1" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel12" alignment="1" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="tfNombre" min="-2" pref="355" max="-2" attributes="0"/>
+                          <Component id="cbMunicipios" alignment="0" min="-2" pref="355" max="-2" attributes="1"/>
+                          <Component id="cbDepartamentos" alignment="0" min="-2" pref="355" max="-2" attributes="1"/>
+                          <Component id="cbProvincias" alignment="0" min="-2" pref="355" max="-2" attributes="1"/>
+                          <Component id="tfEmail" min="-2" pref="355" max="-2" attributes="0"/>
+                          <Component id="tfDireccion" alignment="0" min="-2" pref="355" max="-2" attributes="0"/>
+                          <Component id="tfEncargado" alignment="0" min="-2" pref="355" max="-2" attributes="0"/>
+                          <Group type="102" alignment="0" attributes="0">
                               <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                   <Component id="tfTele2" max="32767" attributes="1"/>
-                                  <Component id="tfTele1" alignment="0" pref="94" max="32767" attributes="1"/>
+                                  <Component id="tfTele1" alignment="0" min="-2" pref="94" max="-2" attributes="1"/>
                               </Group>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
@@ -77,59 +60,11 @@
                                   </Group>
                               </Group>
                           </Group>
-                          <Group type="102" alignment="0" attributes="0">
-                              <Component id="jLabel21" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="btnVerNumeracionActual" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <Component id="checkWebServices" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Group type="102" alignment="0" attributes="0">
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="tfInicialFacturaA" max="-2" attributes="0"/>
-                                  <Component id="tfInicialRemito" alignment="0" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jLabel17" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="tfInicialFacturaB" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jLabel24" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="tfInicialFacturaC" max="-2" attributes="0"/>
-                          </Group>
-                          <Group type="102" alignment="0" attributes="0">
-                              <Component id="tfInicialReciboA" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jLabel25" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="tfInicialReciboB" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jLabel26" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="tfInicialReciboC" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <Group type="102" alignment="0" attributes="0">
-                              <Component id="tfInicialNotaDebitoA" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jLabel23" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="tfInicialNotaDebitoB" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jLabel29" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="tfInicialNotaDebitoC" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <Component id="tfPuntoVenta" alignment="0" min="-2" pref="50" max="-2" attributes="0"/>
+                          <Component id="checkHabilitarPuntoVenta" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace min="0" pref="107" max="32767" attributes="0"/>
                   </Group>
               </Group>
-              <EmptySpace max="-2" attributes="0"/>
-          </Group>
-          <Group type="102" attributes="0">
-              <EmptySpace min="10" pref="10" max="-2" attributes="0"/>
-              <Component id="jLabel14" pref="0" max="32767" attributes="0"/>
-              <EmptySpace min="10" pref="10" max="-2" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -140,66 +75,6 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="tfNombre" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="tfPuntoVenta" alignment="3" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Component id="checkWebServices" min="-2" max="-2" attributes="0"/>
-              <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="jLabel13" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel21" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="btnVerNumeracionActual" alignment="3" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="jLabel14" min="-2" pref="52" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="2" attributes="0">
-                  <Component id="jLabel16" alignment="2" min="-2" max="-2" attributes="0"/>
-                  <Component id="tfInicialFacturaA" alignment="2" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel17" alignment="2" min="-2" max="-2" attributes="0"/>
-                  <Component id="tfInicialFacturaB" alignment="2" min="-2" max="-2" attributes="0"/>
-                  <Group type="103" alignment="2" groupAlignment="3" attributes="0">
-                      <Component id="jLabel24" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="tfInicialFacturaC" alignment="3" min="-2" max="-2" attributes="0"/>
-                  </Group>
-              </Group>
-              <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="2" attributes="0">
-                  <Component id="jLabel19" alignment="2" min="-2" max="-2" attributes="0"/>
-                  <Component id="tfInicialReciboA" alignment="2" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel25" alignment="2" min="-2" max="-2" attributes="0"/>
-                  <Component id="tfInicialReciboB" alignment="2" min="-2" max="-2" attributes="0"/>
-                  <Group type="103" alignment="2" groupAlignment="3" attributes="0">
-                      <Component id="jLabel26" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="tfInicialReciboC" alignment="3" min="-2" max="-2" attributes="0"/>
-                  </Group>
-              </Group>
-              <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="tfInicialNotaCreditoA" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel20" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel27" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="tfInicialNotaCreditoB" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel28" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="tfInicialNotaCreditoC" alignment="3" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="jLabel22" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="tfInicialNotaDebitoA" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel23" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="tfInicialNotaDebitoB" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel29" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="tfInicialNotaDebitoC" alignment="3" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="tfInicialRemito" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel18" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace min="-2" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
@@ -256,7 +131,11 @@
                   <Component id="tfEmail" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel11" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace max="32767" attributes="0"/>
+              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <Component id="checkHabilitarPuntoVenta" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="9" max="-2" attributes="0"/>
+              <Component id="panelPuntoVenta" min="-2" max="-2" attributes="0"/>
+              <EmptySpace pref="14" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -274,7 +153,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel7">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Depto"/>
+        <Property name="text" type="java.lang.String" value="Departamento"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JComboBox" name="cbDepartamentos">
@@ -369,7 +248,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel12">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Municipios"/>
+        <Property name="text" type="java.lang.String" value="Municipio"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JComboBox" name="cbMunicipios">
@@ -377,228 +256,398 @@
         <Property name="name" type="java.lang.String" value="cbMunicipios" noResource="true"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JLabel" name="jLabel3">
+    <Container class="javax.swing.JPanel" name="panelPuntoVenta">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Punto de Venta"/>
+        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+            <TitledBorder title="Punto de Venta"/>
+          </Border>
+        </Property>
       </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="tfPuntoVenta">
+
+      <Layout>
+        <DimensionLayout dim="0">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
+                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Component id="jLabel22" alignment="1" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel3" alignment="1" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel13" alignment="1" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel16" alignment="1" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel18" alignment="1" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel19" alignment="1" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel20" alignment="1" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" alignment="0" attributes="0">
+                          <Component id="tfInicialNotaCreditoA" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jLabel27" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="tfInicialNotaCreditoB" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jLabel28" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="tfInicialNotaCreditoC" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="102" alignment="0" attributes="0">
+                          <Component id="jLabel21" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="btnVerNumeracionActual" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="102" alignment="0" attributes="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="tfInicialFacturaA" max="-2" attributes="0"/>
+                              <Component id="tfInicialRemito" alignment="0" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jLabel17" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="tfInicialFacturaB" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jLabel24" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="tfInicialFacturaC" max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="102" alignment="0" attributes="0">
+                          <Component id="tfInicialReciboA" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jLabel25" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="tfInicialReciboB" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jLabel26" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="tfInicialReciboC" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="102" alignment="0" attributes="0">
+                          <Component id="tfInicialNotaDebitoA" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jLabel23" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="tfInicialNotaDebitoB" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jLabel29" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="tfInicialNotaDebitoC" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="102" alignment="0" attributes="0">
+                          <Component id="tfPuntoVenta" min="-2" pref="62" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="checkWebServices" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+                  <EmptySpace max="32767" attributes="0"/>
+              </Group>
+              <Group type="102" alignment="1" attributes="0">
+                  <EmptySpace pref="17" max="32767" attributes="0"/>
+                  <Component id="jLabel14" min="-2" pref="398" max="-2" attributes="0"/>
+                  <EmptySpace pref="18" max="32767" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+        <DimensionLayout dim="1">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="tfPuntoVenta" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="checkWebServices" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="jLabel13" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel21" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnVerNumeracionActual" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="jLabel14" min="-2" pref="52" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="2" attributes="0">
+                      <Component id="jLabel16" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Component id="tfInicialFacturaA" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel17" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Component id="tfInicialFacturaB" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" alignment="2" groupAlignment="3" attributes="0">
+                          <Component id="jLabel24" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="tfInicialFacturaC" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="2" attributes="0">
+                      <Component id="jLabel19" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Component id="tfInicialReciboA" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel25" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Component id="tfInicialReciboB" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" alignment="2" groupAlignment="3" attributes="0">
+                          <Component id="jLabel26" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="tfInicialReciboC" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="tfInicialNotaCreditoA" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel20" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel27" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="tfInicialNotaCreditoB" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel28" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="tfInicialNotaCreditoC" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="jLabel22" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="tfInicialNotaDebitoA" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel23" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="tfInicialNotaDebitoB" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel29" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="tfInicialNotaDebitoC" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="tfInicialRemito" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel18" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="32767" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+      </Layout>
+      <SubComponents>
+        <Component class="javax.swing.JLabel" name="jLabel21">
+          <Properties>
+            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/iconos/16px_blue_system-help.png"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Ayuda"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="btnVerNumeracionActual">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Ver Numeraci&#xf3;n actual"/>
+            <Property name="name" type="java.lang.String" value="verNumeracionActual" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel14">
+          <Properties>
+            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/iconos/exclamation.png"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="&lt;html&gt;Una vez que se haya cargado el primer comprobante, la numeraci&#xf3;n inicial no podr&#xe1;s ser re-configurada con un n&#xfa;mero &lt;b&gt;anterior&lt;/b&gt; a alg&#xfa;n comprobante existente. (Doble click para ver ejemplo).&lt;/html&gt;"/>
+          </Properties>
+          <Events>
+            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jLabel14MouseClicked"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel22">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Nota D&#xe9;bito: &quot;A&quot;"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="tfInicialNotaDebitoA">
+          <Properties>
+            <Property name="columns" type="int" value="8"/>
+            <Property name="horizontalAlignment" type="int" value="4"/>
+            <Property name="text" type="java.lang.String" value="1"/>
+            <Property name="selectionStart" type="int" value="0"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel23">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="&quot;B&quot;"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="tfInicialNotaDebitoB">
+          <Properties>
+            <Property name="columns" type="int" value="8"/>
+            <Property name="horizontalAlignment" type="int" value="4"/>
+            <Property name="text" type="java.lang.String" value="1"/>
+            <Property name="selectionStart" type="int" value="0"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="checkWebServices">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="habilitado para Facturaci&#xf3;n Electr&#xf3;nica (AFIP)"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="checkWebServicesActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel24">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="&quot;C&quot;"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="tfInicialFacturaC">
+          <Properties>
+            <Property name="columns" type="int" value="8"/>
+            <Property name="horizontalAlignment" type="int" value="4"/>
+            <Property name="text" type="java.lang.String" value="1"/>
+            <Property name="selectionStart" type="int" value="0"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel25">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="&quot;B&quot;"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel26">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="&quot;C&quot;"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="tfInicialReciboB">
+          <Properties>
+            <Property name="columns" type="int" value="8"/>
+            <Property name="horizontalAlignment" type="int" value="4"/>
+            <Property name="text" type="java.lang.String" value="1"/>
+            <Property name="selectionStart" type="int" value="0"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="tfInicialReciboC">
+          <Properties>
+            <Property name="columns" type="int" value="8"/>
+            <Property name="horizontalAlignment" type="int" value="4"/>
+            <Property name="text" type="java.lang.String" value="1"/>
+            <Property name="selectionStart" type="int" value="0"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel27">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="&quot;B&quot;"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="tfInicialNotaCreditoB">
+          <Properties>
+            <Property name="columns" type="int" value="8"/>
+            <Property name="horizontalAlignment" type="int" value="4"/>
+            <Property name="text" type="java.lang.String" value="1"/>
+            <Property name="selectionStart" type="int" value="0"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel28">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="&quot;C&quot;"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="tfInicialNotaCreditoC">
+          <Properties>
+            <Property name="columns" type="int" value="8"/>
+            <Property name="horizontalAlignment" type="int" value="4"/>
+            <Property name="text" type="java.lang.String" value="1"/>
+            <Property name="selectionStart" type="int" value="0"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel29">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="&quot;C&quot;"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="tfInicialNotaDebitoC">
+          <Properties>
+            <Property name="columns" type="int" value="8"/>
+            <Property name="horizontalAlignment" type="int" value="4"/>
+            <Property name="text" type="java.lang.String" value="1"/>
+            <Property name="selectionStart" type="int" value="0"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel3">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="N&#xb0;"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="tfPuntoVenta">
+          <Properties>
+            <Property name="horizontalAlignment" type="int" value="4"/>
+          </Properties>
+          <Events>
+            <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="tfPuntoVentaFocusLost"/>
+            <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="tfPuntoVentaKeyTyped"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel13">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Numeraci&#xf3;n Inicial"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="tfInicialFacturaB">
+          <Properties>
+            <Property name="columns" type="int" value="8"/>
+            <Property name="horizontalAlignment" type="int" value="4"/>
+            <Property name="text" type="java.lang.String" value="1"/>
+            <Property name="selectionStart" type="int" value="0"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="tfInicialFacturaA">
+          <Properties>
+            <Property name="columns" type="int" value="8"/>
+            <Property name="horizontalAlignment" type="int" value="4"/>
+            <Property name="text" type="java.lang.String" value="1"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="tfInicialRemito">
+          <Properties>
+            <Property name="columns" type="int" value="8"/>
+            <Property name="horizontalAlignment" type="int" value="4"/>
+            <Property name="text" type="java.lang.String" value="1"/>
+            <Property name="selectionStart" type="int" value="0"/>
+          </Properties>
+          <Events>
+            <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="tfInicialRemitoKeyTyped"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel16">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Facturas: &quot;A&quot;"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel17">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="&quot;B&quot;"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel18">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Remito"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel19">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Recibos: &quot;A&quot;"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="tfInicialReciboA">
+          <Properties>
+            <Property name="columns" type="int" value="8"/>
+            <Property name="horizontalAlignment" type="int" value="4"/>
+            <Property name="text" type="java.lang.String" value="1"/>
+            <Property name="selectionStart" type="int" value="0"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel20">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Nota Cr&#xe9;dito: &quot;A&quot;"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="tfInicialNotaCreditoA">
+          <Properties>
+            <Property name="columns" type="int" value="8"/>
+            <Property name="horizontalAlignment" type="int" value="4"/>
+            <Property name="text" type="java.lang.String" value="1"/>
+            <Property name="selectionStart" type="int" value="0"/>
+          </Properties>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Component class="javax.swing.JCheckBox" name="checkHabilitarPuntoVenta">
       <Properties>
-        <Property name="horizontalAlignment" type="int" value="4"/>
+        <Property name="text" type="java.lang.String" value="Habilitar como Punto de Venta"/>
       </Properties>
       <Events>
-        <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="tfPuntoVentaFocusLost"/>
-        <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="tfPuntoVentaKeyTyped"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="checkHabilitarPuntoVentaActionPerformed"/>
       </Events>
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabel13">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Numeraci&#xf3;n Inicial"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="tfInicialFacturaB">
-      <Properties>
-        <Property name="columns" type="int" value="8"/>
-        <Property name="horizontalAlignment" type="int" value="4"/>
-        <Property name="text" type="java.lang.String" value="1"/>
-        <Property name="selectionStart" type="int" value="0"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="tfInicialFacturaA">
-      <Properties>
-        <Property name="columns" type="int" value="8"/>
-        <Property name="horizontalAlignment" type="int" value="4"/>
-        <Property name="text" type="java.lang.String" value="1"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="tfInicialRemito">
-      <Properties>
-        <Property name="columns" type="int" value="8"/>
-        <Property name="horizontalAlignment" type="int" value="4"/>
-        <Property name="text" type="java.lang.String" value="1"/>
-        <Property name="selectionStart" type="int" value="0"/>
-      </Properties>
-      <Events>
-        <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="tfInicialRemitoKeyTyped"/>
-      </Events>
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabel16">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Facturas: &quot;A&quot;"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabel17">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="&quot;B&quot;"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabel18">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Remito"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabel19">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Recibos: &quot;A&quot;"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="tfInicialReciboA">
-      <Properties>
-        <Property name="columns" type="int" value="8"/>
-        <Property name="horizontalAlignment" type="int" value="4"/>
-        <Property name="text" type="java.lang.String" value="1"/>
-        <Property name="selectionStart" type="int" value="0"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabel20">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Nota Cr&#xe9;dito: &quot;A&quot;"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="tfInicialNotaCreditoA">
-      <Properties>
-        <Property name="columns" type="int" value="8"/>
-        <Property name="horizontalAlignment" type="int" value="4"/>
-        <Property name="text" type="java.lang.String" value="1"/>
-        <Property name="selectionStart" type="int" value="0"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabel21">
-      <Properties>
-        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/iconos/16px_blue_system-help.png"/>
-        </Property>
-        <Property name="text" type="java.lang.String" value="Ayuda"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JButton" name="btnVerNumeracionActual">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Ver Numeraci&#xf3;n actual"/>
-        <Property name="name" type="java.lang.String" value="verNumeracionActual" noResource="true"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabel14">
-      <Properties>
-        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-          <Color blue="33" green="0" red="ff" type="rgb"/>
-        </Property>
-        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/iconos/16px_blue_system-help.png"/>
-        </Property>
-        <Property name="text" type="java.lang.String" value="&lt;html&gt;Una vez que se haya cargado el primer comprobante, la numeraci&#xf3;n inicial no podr&#xe1;s ser re-configurada con un n&#xfa;mero &lt;b&gt;anterior&lt;/b&gt; a alg&#xfa;n comprobante existente. (Doble click para ver ejemplo).&lt;/html&gt;"/>
-      </Properties>
-      <Events>
-        <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jLabel14MouseClicked"/>
-      </Events>
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabel22">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Nota D&#xe9;bito: &quot;A&quot;"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="tfInicialNotaDebitoA">
-      <Properties>
-        <Property name="columns" type="int" value="8"/>
-        <Property name="horizontalAlignment" type="int" value="4"/>
-        <Property name="text" type="java.lang.String" value="1"/>
-        <Property name="selectionStart" type="int" value="0"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabel23">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="&quot;B&quot;"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="tfInicialNotaDebitoB">
-      <Properties>
-        <Property name="columns" type="int" value="8"/>
-        <Property name="horizontalAlignment" type="int" value="4"/>
-        <Property name="text" type="java.lang.String" value="1"/>
-        <Property name="selectionStart" type="int" value="0"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JCheckBox" name="checkWebServices">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="habilitado para Facturaci&#xf3;n Electr&#xf3;nica (AFIP)"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabel24">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="&quot;C&quot;"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="tfInicialFacturaC">
-      <Properties>
-        <Property name="columns" type="int" value="8"/>
-        <Property name="horizontalAlignment" type="int" value="4"/>
-        <Property name="text" type="java.lang.String" value="1"/>
-        <Property name="selectionStart" type="int" value="0"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabel25">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="&quot;B&quot;"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabel26">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="&quot;C&quot;"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="tfInicialReciboB">
-      <Properties>
-        <Property name="columns" type="int" value="8"/>
-        <Property name="horizontalAlignment" type="int" value="4"/>
-        <Property name="text" type="java.lang.String" value="1"/>
-        <Property name="selectionStart" type="int" value="0"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="tfInicialReciboC">
-      <Properties>
-        <Property name="columns" type="int" value="8"/>
-        <Property name="horizontalAlignment" type="int" value="4"/>
-        <Property name="text" type="java.lang.String" value="1"/>
-        <Property name="selectionStart" type="int" value="0"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabel27">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="&quot;B&quot;"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="tfInicialNotaCreditoB">
-      <Properties>
-        <Property name="columns" type="int" value="8"/>
-        <Property name="horizontalAlignment" type="int" value="4"/>
-        <Property name="text" type="java.lang.String" value="1"/>
-        <Property name="selectionStart" type="int" value="0"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabel28">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="&quot;C&quot;"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="tfInicialNotaCreditoC">
-      <Properties>
-        <Property name="columns" type="int" value="8"/>
-        <Property name="horizontalAlignment" type="int" value="4"/>
-        <Property name="text" type="java.lang.String" value="1"/>
-        <Property name="selectionStart" type="int" value="0"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabel29">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="&quot;C&quot;"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="tfInicialNotaDebitoC">
-      <Properties>
-        <Property name="columns" type="int" value="8"/>
-        <Property name="horizontalAlignment" type="int" value="4"/>
-        <Property name="text" type="java.lang.String" value="1"/>
-        <Property name="selectionStart" type="int" value="0"/>
-      </Properties>
     </Component>
   </SubComponents>
 </Form>

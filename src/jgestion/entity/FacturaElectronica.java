@@ -120,10 +120,18 @@ public class FacturaElectronica implements Serializable {
         this.resultado = resultado;
     }
 
+    /**
+     *
+     * @return {@link #concepto}
+     */
     public int getConcepto() {
         return concepto;
     }
 
+    /**
+     * 1= PRODUCTO, 2= SERVICIO, 3= PRODUCTO Y SERVICIO
+     * @param concepto
+     */
     public void setConcepto(int concepto) {
         this.concepto = concepto;
     }
@@ -136,10 +144,18 @@ public class FacturaElectronica implements Serializable {
         this.ptoVta = ptoVta;
     }
 
+    /**
+     *
+     * @return {@link #cbteTipo}
+     */
     public int getCbteTipo() {
         return cbteTipo;
     }
 
+    /**
+     *
+     * @param cbteTipo {@link #cbteTipo}
+     */
     public void setCbteTipo(int cbteTipo) {
         this.cbteTipo = cbteTipo;
     }

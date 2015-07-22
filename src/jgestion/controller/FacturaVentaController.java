@@ -387,6 +387,28 @@ public class FacturaVentaController {
                 } catch (ClassCastException ex) {
                     throw new MessageException("Debe crear un Cliente para poder realizar una Facturas venta, Recibos, Presupuestos o Remitos.");
                 }
+                //carga los tipos de facturas que puede se le pueden dar al Cliente
+                jdFactura.getCbCliente().addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        try {
+                            JGestionUtils.cargarComboTiposFacturas(jdFactura.getCbFacturaTipo(), (Cliente) jdFactura.getCbCliente().getSelectedItem());
+                            remitoToFacturar = null;
+                            jdFactura.setTfRemito("Sin Remito");
+                        } catch (ClassCastException ex) {
+                            jdFactura.setTfRemito("Cliente no válido");
+                        }
+                    }
+                });
+                jdFactura.getCbFacturaTipo().addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if (jdFactura.getCbFacturaTipo().getSelectedItem() != null) {
+                            Sucursal s = getSelectedSucursalFromJDFacturaVenta();
+                            setNumeroFactura(s, jpaController.getNextNumero(s, jdFactura.getCbFacturaTipo().getSelectedItem().toString().charAt(0)));
+                        }
+                    }
+                });
             } else if (factVenta1_PresupNotaCredito2_Remito3 == 3) {
                 //Se cargan todas las sucursales a las cuales tiene permido, las unidades de negocio, cuentas y sub cuentas son solo para FacturasVenta
                 UTIL.loadComboBox(jdFactura.getCbSucursal(), JGestionUtils.getWrappedSucursales(uh.getSucursales()), false);
@@ -757,6 +779,9 @@ public class FacturaVentaController {
         } catch (ClassCastException e) {
             throw new MessageException("Debe crear una Sucursal para poder realizar la Factura Venta."
                     + "\nMenú: Datos Generales -> Sucursales");
+        }
+        if(s.isWebServices() && unlockedNumeracion) {
+            throw new MessageException("No se pueden cargar comprobantes con numeración manual de Sucursales habilitadas para Facturación Electrónica");
         }
         try {
             ListaPrecios c = (ListaPrecios) jdFactura.getCbListaPrecio().getSelectedItem();

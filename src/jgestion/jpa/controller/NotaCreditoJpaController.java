@@ -6,6 +6,7 @@ import jgestion.entity.Sucursal;
 import java.util.ArrayList;
 import java.util.Collection;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 
 /**
  *
@@ -18,20 +19,12 @@ public class NotaCreditoJpaController extends JGestionJpaImpl<NotaCredito, Integ
 
     @Override
     public void persist(NotaCredito notaCredito) {
-        Collection<DetalleNotaCredito> toAttach = notaCredito.getDetalleNotaCreditoCollection();
-//        notaCredito.setDetalleNotaCreditoCollection(new ArrayList<>());
-//        EntityManager em = getEntityManager();
+        Collection<DetalleNotaCredito> toAttach = notaCredito.getDetalle();
         try {
-//            em.getTransaction().begin();
             for (DetalleNotaCredito detalleNotaCredito : toAttach) {
                 detalleNotaCredito.setNotaCredito(notaCredito);
-//                em.persist(detalleNotaCredito);
             }
             super.persist(notaCredito);
-//            em.getTransaction().commit();
-//        } catch (Exception ex) {
-//            em.getTransaction().rollback();
-//            throw ex;
         } finally {
             closeEntityManager();
         }
@@ -60,5 +53,16 @@ public class NotaCreditoJpaController extends JGestionJpaImpl<NotaCredito, Integ
             }
         }
         return next;
+    }
+
+    public NotaCredito findBy(Sucursal sucursal, char tipo, int numero) {
+        try {
+            return findByQuery(getSelectFrom()
+                    + " WHERE o.sucursal.id=" + sucursal.getId()
+                    + " AND o.numero=" + numero
+                    + " AND o.tipo='" + Character.toUpperCase(tipo) + "'");
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 }

@@ -61,8 +61,8 @@ public class NotaCredito implements Serializable {
     @Column(name = "observacion", length = 250)
     private String observacion;
     @Basic(optional = false)
-    @Column(name = "gravado", nullable = false)
-    private double gravado;
+    @Column(name = "gravado", nullable = false, precision = 12, scale = 2)
+    private BigDecimal gravado;
     @Basic(optional = false)
     @Column(name = "no_gravado", nullable = false, precision = 12, scale = 2)
     private BigDecimal noGravado;
@@ -88,7 +88,7 @@ public class NotaCredito implements Serializable {
     @ManyToOne(optional = false)
     private Sucursal sucursal;
     @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "notaCredito")
-    private Collection<DetalleNotaCredito> detalleNotaCreditoCollection;
+    private Collection<DetalleNotaCredito> detalle;
     /**
      * Antes se podía ir desacreditando en porciones una nota de crédito, ya no mas. Cuando una nota
      * de credito sea utilizada {@link #desacreditado} == {@link #importe}
@@ -165,11 +165,11 @@ public class NotaCredito implements Serializable {
         this.observacion = observacion;
     }
 
-    public double getGravado() {
+    public BigDecimal getGravado() {
         return gravado;
     }
 
-    public void setGravado(double gravado) {
+    public void setGravado(BigDecimal gravado) {
         this.gravado = gravado;
     }
 
@@ -237,12 +237,12 @@ public class NotaCredito implements Serializable {
         this.usuario = usuario;
     }
 
-    public Collection<DetalleNotaCredito> getDetalleNotaCreditoCollection() {
-        return detalleNotaCreditoCollection;
+    public Collection<DetalleNotaCredito> getDetalle() {
+        return detalle;
     }
 
-    public void setDetalleNotaCreditoCollection(Collection<DetalleNotaCredito> detalleNotaCreditoCollection) {
-        this.detalleNotaCreditoCollection = detalleNotaCreditoCollection;
+    public void setDetalle(Collection<DetalleNotaCredito> detalle) {
+        this.detalle = detalle;
     }
 
     /**
@@ -299,6 +299,6 @@ public class NotaCredito implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.NotaCredito[id=" + id + ", número=" + numero + ", importe=" + importe + ",desacreditado=" + desacreditado + ", fechaNotaCredito=" + fechaNotaCredito + ", fechaCarga=" + fechaCarga + ", Cliente=" + cliente + ", Usuario=" + usuario + ", Sucursal=" + sucursal + ", detalle.size=" + detalleNotaCreditoCollection.size() + "]";
+        return "entity.NotaCredito[id=" + id + ", tipo=" + tipo + ", número=" + numero + ", importe=" + importe + ", fechaNotaCredito=" + fechaNotaCredito + ", fechaCarga=" + fechaCarga + ", Cliente=" + cliente + ", Usuario=" + usuario + ", Sucursal=" + sucursal + ", detalle.size=" + detalle.size() + "]";
     }
 }

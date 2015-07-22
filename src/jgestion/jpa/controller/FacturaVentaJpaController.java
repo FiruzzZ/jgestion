@@ -39,11 +39,10 @@ public class FacturaVentaJpaController extends AbstractDAO<FacturaVenta, Integer
 
     public FacturaVenta findBy(Sucursal sucursal, char tipo, int numero) {
         try {
-            return getEntityManager().createQuery("SELECT o FROM FacturaVenta o"
+            return findByQuery(getSelectFrom()
                     + " WHERE o.sucursal.id=" + sucursal.getId()
                     + " AND o.numero=" + numero
-                    + " AND o.tipo='" + Character.toUpperCase(tipo) + "'", FacturaVenta.class).
-                    getSingleResult();
+                    + " AND o.tipo='" + Character.toUpperCase(tipo) + "'");
         } catch (NoResultException e) {
             return null;
         }

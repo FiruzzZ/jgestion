@@ -1,6 +1,7 @@
 package jgestion.entity;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -36,7 +37,7 @@ public class DetalleNotaCredito implements Serializable {
     private int cantidad;
     @Basic(optional = false)
     @Column(name = "precio_unitario", nullable = false, precision = 12, scale = 4)
-    private double precioUnitario;
+    private BigDecimal precioUnitario;
     @JoinColumn(name = "nota_credito", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
     private NotaCredito notaCredito;
@@ -67,11 +68,11 @@ public class DetalleNotaCredito implements Serializable {
         this.cantidad = cantidad;
     }
 
-    public double getPrecioUnitario() {
+    public BigDecimal getPrecioUnitario() {
         return precioUnitario;
     }
 
-    public void setPrecioUnitario(double precioUnitario) {
+    public void setPrecioUnitario(BigDecimal precioUnitario) {
         this.precioUnitario = precioUnitario;
     }
 
