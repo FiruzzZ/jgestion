@@ -314,8 +314,15 @@ public class NotaDebitoController {
     }
 
     private void checkConstraints() throws MessageException {
-        if (abm.getDcFechaFactura().getDate() == null) {
+        Date fecha = abm.getDcFechaFactura().getDate();
+        if (fecha == null) {
             throw new MessageException("Fecha de comprobante no válida");
+        }
+        Sucursal s = ((EntityWrapper<Sucursal>) abm.getCbSucursal().getSelectedItem()).getEntity();
+        if (s.isWebServices()) {
+            if (UTIL.getDaysBetween(fecha, JGestionUtils.getServerDate()) > 5) {
+                throw new MessageException("La AFIP no permite informar comprobantes con mas de 5 días de antigüedad");
+            }
         }
         if (abm.getTfObservacion().getText().trim().length() > 100) {
             throw new MessageException("Observación no válida, no debe superar los 100 caracteres (no es una novela)");
@@ -332,7 +339,6 @@ public class NotaDebitoController {
                     throw new MessageException("Número de comprobante no válido, debe ser mayor a 0 y menor o igual a 99999999");
                 }
                 char letra = abm.getCbFacturaTipo().getSelectedItem().toString().charAt(0);
-                Sucursal s = ((EntityWrapper<Sucursal>) abm.getCbSucursal().getSelectedItem()).getEntity();
                 NotaDebito old = jpaController.findBy(s, letra, octeto);
                 if (old != null) {
                     throw new MessageException("Ya existe un registro del comprobante N° " + JGestionUtils.getNumeracion(old));
@@ -594,7 +600,7 @@ public class NotaDebitoController {
         abm.getDcFechaFactura().setDate(notaDebito.getFechaNotaDebito());
         abm.getTfObservacion().setText(notaDebito.getObservacion());
         FacturaElectronica fe = new FacturaElectronicaController().findBy(notaDebito);
-        if(fe != null) {
+        if (fe != null) {
             if (fe.getCae() == null) {
                 abm.getTfCAE().setForeground(Color.RED);
                 abm.getTfCAE().setText("PENDIENTE!");

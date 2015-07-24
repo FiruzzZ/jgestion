@@ -110,10 +110,10 @@ public class NotaCreditoController {
     }
 
     private NotaCredito setEntity() throws MessageException, Exception {
-        if (jdFacturaVenta.getDcFechaFactura() == null) {
+        Date fecha = jdFacturaVenta.getDcFechaFactura();
+        if (fecha == null) {
             throw new MessageException("Fecha de comprobante no válida");
         }
-        Date fechaNotaCredito = jdFacturaVenta.getDcFechaFactura();
         Sucursal sucursal;
         Cliente cliente = (Cliente) jdFacturaVenta.getCbCliente().getSelectedItem();
         String observacion = null;
@@ -122,6 +122,11 @@ public class NotaCreditoController {
         } catch (ClassCastException e) {
             throw new MessageException("Debe crear una Sucursal."
                     + "\nMenú: Datos Generales -> Sucursales");
+        }
+        if (sucursal.isWebServices()) {
+            if (UTIL.getDaysBetween(fecha, JGestionUtils.getServerDate()) > 5) {
+                throw new MessageException("La AFIP no permite informar comprobantes con mas de 5 días de antigüedad");
+            }
         }
         if (jdFacturaVenta.getTfObservacion().getText().trim().length() > 0) {
             observacion = jdFacturaVenta.getTfObservacion().getText().trim();
@@ -139,7 +144,7 @@ public class NotaCreditoController {
         NotaCredito newNotaCredito = new NotaCredito();
         newNotaCredito.setTipo(jdFacturaVenta.getCbFacturaTipo().getSelectedItem().toString().charAt(0));
         newNotaCredito.setNumero(jpaController.getNextNumero(sucursal, newNotaCredito.getTipo()));
-        newNotaCredito.setFechaNotaCredito(fechaNotaCredito);
+        newNotaCredito.setFechaNotaCredito(fecha);
         newNotaCredito.setImporte(new BigDecimal(UTIL.parseToDouble(jdFacturaVenta.getTfTotal())).setScale(2, RoundingMode.HALF_UP));
         newNotaCredito.setDesacreditado(BigDecimal.ZERO);
         newNotaCredito.setGravado(BigDecimal.valueOf(UTIL.parseToDouble(jdFacturaVenta.getTfGravado())));

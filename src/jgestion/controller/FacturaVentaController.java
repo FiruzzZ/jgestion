@@ -770,7 +770,8 @@ public class FacturaVentaController {
             throw new MessageException("Para registrar la carga de una Factura Venta Antigua debe utilizar el botón \"Facturar\"."
                     + "\nNota: No se pueden generar Movimientos Internos antiguos.");
         }
-        if (jdFactura.getDcFechaFactura() == null) {
+        Date fecha = jdFactura.getDcFechaFactura();
+        if (fecha == null) {
             throw new MessageException("Fecha de factura no válida");
         }
         Sucursal s;
@@ -846,8 +847,13 @@ public class FacturaVentaController {
                 throw new MessageException("Número de factura no válido, ingrese solo dígitos");
             }
         }
-        if (s.isWebServices() && !conFactura) {
+        if (s.isWebServices()) {
+            if(!conFactura) {
             throw new MessageException("No se pueden realizar MVI en puntos de venta habilitados para facturación electrónica");
+            }
+            if(UTIL.getDaysBetween(fecha, JGestionUtils.getServerDate()) > 5) {
+                throw new MessageException("La AFIP no permite informar comprobantes con mas de 5 días de antigüedad");
+            }
         }
     }
 
