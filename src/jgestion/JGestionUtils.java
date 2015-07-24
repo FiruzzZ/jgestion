@@ -342,9 +342,8 @@ public class JGestionUtils {
         return UTIL.AGREGAR_CEROS(o.getSucursal().getPuntoVenta(), 4) + guion + UTIL.AGREGAR_CEROS(o.getNumero(), 8);
     }
 
-    public static String getNumeracion(Remito o, boolean conGuion) {
-        String guion = conGuion ? "-" : "";
-        return UTIL.AGREGAR_CEROS(o.getSucursal().getPuntoVenta(), 4) + guion + UTIL.AGREGAR_CEROS(o.getNumero(), 8);
+    public static String getNumeracion(Remito o) {
+        return UTIL.AGREGAR_CEROS(o.getSucursal().getPuntoVenta(), 4) + "-" + UTIL.AGREGAR_CEROS(o.getNumero(), 8);
     }
 
     public static String getNumeracion(RemitoCompra o, boolean conGuion) {

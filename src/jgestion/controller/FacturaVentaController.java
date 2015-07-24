@@ -1219,7 +1219,7 @@ public class FacturaVentaController {
         UTIL.setSelectedItem(jdFactura.getCbSucursal(), s);
         JGestionUtils.cargarComboTiposFacturas(jdFactura.getCbFacturaTipo(), EL_OBJECT.getCliente());
         if (EL_OBJECT.getRemito() != null) {
-            jdFactura.setTfRemito(JGestionUtils.getNumeracion(EL_OBJECT.getRemito(), false));
+            jdFactura.setTfRemito(JGestionUtils.getNumeracion(EL_OBJECT.getRemito()));
         }
         if (EL_OBJECT.getVendedor() != null) {
             UTIL.setSelectedItem(jdFactura.getCbVendedor(), EL_OBJECT.getVendedor());
@@ -1412,14 +1412,14 @@ public class FacturaVentaController {
         } catch (Exception e) {
         }
         if (facturaVenta.getVendedor() != null) {
-            Vendedor v = EL_OBJECT.getVendedor();
+            Vendedor v = facturaVenta.getVendedor();
             jdFactura.getCbVendedor().addItem(new EntityWrapper<>(v, v.getId(), v.getApellido() + " " + v.getNombre()));
         }
         jdFactura.getCbListaPrecio().addItem(facturaVenta.getListaPrecios());
 
         jdFactura.setDcFechaFactura(facturaVenta.getFechaVenta());
         if (facturaVenta.getRemito() != null) {
-            jdFactura.setTfRemito(JGestionUtils.getNumeracion(facturaVenta.getRemito(), false));
+            jdFactura.setTfRemito(JGestionUtils.getNumeracion(facturaVenta.getRemito()));
         }
 
         //Los tipos de factura se tienen q cargar antes, sinó modifica el Nº de factura y muestra el siguiente
@@ -1449,7 +1449,7 @@ public class FacturaVentaController {
             //es decir que es un movimiento interno, y puede ser cambiado a FACTURA VENTA
             jdFactura.getBtnFacturar().setEnabled(true);
         }
-        FacturaElectronica fe = new FacturaElectronicaController().findBy(EL_OBJECT);
+        FacturaElectronica fe = new FacturaElectronicaController().findBy(facturaVenta);
         if (fe != null) {
             if (fe.getCae() == null) {
                 jdFactura.getTfCAE().setForeground(Color.RED);
@@ -1527,7 +1527,7 @@ public class FacturaVentaController {
             Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_FacturaVenta_" + facturaVenta.getTipo() + ".jasper", "Factura Venta");
             r.addParameter("FACTURA_ID", facturaVenta.getId());
             if (facturaVenta.getRemito() != null) {
-                r.addParameter("REMITO", JGestionUtils.getNumeracion(facturaVenta.getRemito(), false));
+                r.addParameter("REMITO", JGestionUtils.getNumeracion(facturaVenta.getRemito()));
             }
             if (facturaVenta.getCheque() != null) {
                 r.addParameter("CHEQUE", UTIL.AGREGAR_CEROS(facturaVenta.getCheque().getNumero(), 12));
@@ -1611,10 +1611,10 @@ public class FacturaVentaController {
         }
         if (EL_OBJECT.getRemito() != null && !editedFacturaVenta.getRemito().equals(EL_OBJECT.getRemito())) {
             Remito remitoToUnbind = EL_OBJECT.getRemito();
-            modificaciones.add("Se desvinculará el Remito N°" + JGestionUtils.getNumeracion(remitoToUnbind, true) + " del comprobante.");
+            modificaciones.add("Se desvinculará el Remito N°" + JGestionUtils.getNumeracion(remitoToUnbind) + " del comprobante.");
         }
         if (editedFacturaVenta.getRemito() != null && !editedFacturaVenta.getRemito().equals(EL_OBJECT.getRemito())) {
-            modificaciones.add("Se vinculará el Remito N°" + JGestionUtils.getNumeracion(remitoToFacturar, true) + " al comprobante.");
+            modificaciones.add("Se vinculará el Remito N°" + JGestionUtils.getNumeracion(remitoToFacturar) + " al comprobante.");
         }
 
         if (!modificaciones.isEmpty()) {
@@ -1782,7 +1782,7 @@ public class FacturaVentaController {
         remitoController.initBuscadorToFacturar(jdFactura, clienteSeleccionado);
         remitoToFacturar = remitoController.getSelectedRemito();
         if (remitoToFacturar != null) {
-            jdFactura.setTfRemito(JGestionUtils.getNumeracion(remitoToFacturar, false));
+            jdFactura.setTfRemito(JGestionUtils.getNumeracion(remitoToFacturar));
             if (JOptionPane.YES_OPTION == JOptionPane.showOptionDialog(jdFactura, "Desea cargar el detalle del remito a la Factura?",
                     "Volcar detalle", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null)) {
                 cargarRemitoToDetallesFactura(remitoToFacturar);

@@ -34,9 +34,10 @@ public class DetalleNotaDebito implements Serializable {
     @Basic(optional = false)
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal importe;
+    @Column(nullable = false)
+    private Integer cantidad;
     /**
-     * Si la nota de débito es tipo "B", no se discriminan IVA's por lo tanto va
-     * ser
+     * Si la nota de débito es tipo "B", no se discriminan IVA's por lo tanto va ser
      * <code>null</code>
      */
     @JoinColumn(name = "iva_id")
@@ -53,8 +54,9 @@ public class DetalleNotaDebito implements Serializable {
         this.id = id;
     }
 
-    public DetalleNotaDebito(Integer id, String concepto, BigDecimal importe, Iva iva) {
+    public DetalleNotaDebito(Integer id, Integer cantidad, String concepto, BigDecimal importe, Iva iva) {
         this.id = id;
+        this.cantidad = cantidad;
         this.concepto = concepto;
         this.importe = importe;
         this.iva = iva;
@@ -100,6 +102,14 @@ public class DetalleNotaDebito implements Serializable {
         this.notaDebito = notaDebito;
     }
 
+    public Integer getCantidad() {
+        return cantidad;
+    }
+
+    public void setCantidad(Integer cantidad) {
+        this.cantidad = cantidad;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -122,6 +132,7 @@ public class DetalleNotaDebito implements Serializable {
 
     @Override
     public String toString() {
-        return "DetalleNotaDebito{" + "id=" + id + ", concepto=" + concepto + ", importe=" + importe + ", iva=" + iva + '}';
+        return "DetalleNotaDebito{" + "id=" + id + ", concepto=" + concepto + ", importe=" + importe + ", cantidad=" + cantidad + ", iva=" + iva + ", notaDebito=" + (notaDebito == null ? null : notaDebito.getId()) + '}';
     }
+
 }

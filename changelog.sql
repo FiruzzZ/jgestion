@@ -1,3 +1,5 @@
+--20150723
+alter table detalle_nota_debito add column cantidad integer not null default 1;
 --20150708
 CREATE TABLE tipo_documento (
    id integer NOT NULL, 

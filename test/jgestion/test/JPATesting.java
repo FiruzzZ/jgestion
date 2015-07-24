@@ -17,6 +17,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
@@ -43,12 +44,9 @@ public class JPATesting {
             LOG.error("Error:" + ex.getLocalizedMessage(), ex);
         }
     }
-
-    @SuppressWarnings("unchecked")
+    
     public JPATesting() throws Exception {
-        Sucursal sucu = new SucursalJpaController().findByPuntoVenta(9);
-        FacturaVenta fv = new FacturaVentaJpaController().findBy(sucu, 'A', 1);
-        new FacturaElectronicaController().doReport(fv);
+        
     }
 
     private void updateCostoCompraYPrecioVentaSegunDetalleCompra() {

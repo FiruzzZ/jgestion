@@ -1,9 +1,7 @@
 package jgestion.controller;
 
 import jgestion.controller.exceptions.MessageException;
-import jgestion.controller.exceptions.IllegalOrphanException;
 import jgestion.controller.exceptions.NonexistentEntityException;
-import jgestion.controller.exceptions.PreexistingEntityException;
 import jgestion.entity.Cliente;
 import jgestion.entity.Remito;
 import jgestion.entity.DetalleRemito;
@@ -13,7 +11,6 @@ import jgestion.entity.Sucursal;
 import jgestion.entity.Vendedor;
 import jgestion.gui.JDFacturaVenta;
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import utilities.general.UTIL;
 import jgestion.gui.JDBuscadorReRe;
 import java.awt.Component;
@@ -61,104 +58,6 @@ public class RemitoController implements ActionListener {
         facturaVentaController = new FacturaVentaController();
     }
 
-    // <editor-fold defaultstate="collapsed" desc="CRUD..">
-    public EntityManager getEntityManager() {
-        return DAO.getEntityManager();
-    }
-
-    public Remito create(Remito remito) throws PreexistingEntityException, Exception {
-        EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            List<DetalleRemito> detalleRemitoList = remito.getDetalleRemitoList();
-            remito.setDetalleRemitoList(new ArrayList<DetalleRemito>());
-            em.persist(remito);
-            em.getTransaction().commit();
-            //por que no respeta el orden en q fueron agregados los items a la List
-            for (DetalleRemito detalleRemito : detalleRemitoList) {
-                detalleRemito.setRemito(remito);
-                DAO.create(detalleRemito);
-            }
-            remito.setDetalleRemitoList(detalleRemitoList);
-        } catch (Exception ex) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            throw ex;
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
-        return remito;
-    }
-
-    public void edit(Remito remito) throws IllegalOrphanException, NonexistentEntityException, Exception {
-        EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            em.find(Remito.class, remito.getId());
-            remito = em.merge(remito);
-            em.getTransaction().commit();
-        } catch (Exception ex) {
-            String msg = ex.getLocalizedMessage();
-            if (msg == null || msg.length() == 0) {
-                Integer id = remito.getId();
-                if (findRemito(id) == null) {
-                    throw new NonexistentEntityException("The remito " + remito.getNumero() + " no longer exists.");
-                }
-            }
-            throw ex;
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
-    }
-
-    public List<Remito> findRemitoEntities() {
-        return findRemitoEntities(true, -1, -1);
-    }
-
-    public List<Remito> findRemitoEntities(int maxResults, int firstResult) {
-        return findRemitoEntities(false, maxResults, firstResult);
-    }
-
-    private List<Remito> findRemitoEntities(boolean all, int maxResults, int firstResult) {
-        EntityManager em = getEntityManager();
-        try {
-            Query q = em.createQuery("select object(o) from Remito as o");
-            if (!all) {
-                q.setMaxResults(maxResults);
-                q.setFirstResult(firstResult);
-            }
-            return q.getResultList();
-        } finally {
-            em.close();
-        }
-    }
-
-    public Remito findRemito(Integer id) {
-        EntityManager em = getEntityManager();
-        try {
-            return em.find(Remito.class, id);
-        } finally {
-            em.close();
-        }
-    }
-
-    public int getRemitoCount() {
-        EntityManager em = getEntityManager();
-        try {
-            Query q = em.createQuery("select count(o) from Remito as o");
-            return ((Long) q.getSingleResult()).intValue();
-        } finally {
-            em.close();
-        }
-    }// </editor-fold>
-
     public JDBuscadorReRe getBuscador() {
         return buscador;
     }
@@ -181,7 +80,7 @@ public class RemitoController implements ActionListener {
                     facturaVentaController.getContenedor().showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
                     facturaVentaController.getContenedor().showMessage(ex.getMessage(), CLASS_NAME, 2);
-                    LogManager.getLogger();//(RemitoController.class).error(ex.getLocalizedMessage(), ex);
+                    LogManager.getLogger();
                 } finally {
                     facturaVentaController.getContenedor().getBtnAceptar().setEnabled(true);
                 }
@@ -247,7 +146,7 @@ public class RemitoController implements ActionListener {
     }
 
     @SuppressWarnings("unchecked")
-    private void setRemito() throws MessageException, Exception {
+    private void setRemito() throws MessageException {
         if (MODO_VISTA) {
             doReport(selectedRemito);
         } else {
@@ -276,9 +175,10 @@ public class RemitoController implements ActionListener {
                     if (octeto < 1 && octeto > 99999999) {
                         throw new MessageException("Número de Remito no válido, debe ser mayor a 0 y menor o igual a 99999999");
                     }
-                    Remito oldFactura = find(facturaVentaController.getSelectedSucursalFromJDFacturaVenta(), octeto);
+                    
+                    Remito oldFactura = jpaController.findBy(facturaVentaController.getSelectedSucursalFromJDFacturaVenta(), octeto);
                     if (oldFactura != null) {
-                        throw new MessageException("Ya existe un registro de Remito N° " + JGestionUtils.getNumeracion(oldFactura, true));
+                        throw new MessageException("Ya existe un registro de Remito N° " + JGestionUtils.getNumeracion(oldFactura));
                     }
                 } catch (Exception ex) {
                     throw new MessageException("Número de Remito no válido, ingrese solo dígitos");
@@ -304,7 +204,7 @@ public class RemitoController implements ActionListener {
             if (facturaVentaUI.getCbVendedor().getSelectedIndex() > 0) {
                 newRemito.setVendedor(((EntityWrapper<Vendedor>) facturaVentaUI.getCbVendedor().getSelectedItem()).getEntity());
             }
-            newRemito.setDetalleRemitoList(new ArrayList<DetalleRemito>(dtm.getRowCount()));
+            newRemito.setDetalleRemitoList(new ArrayList<>(dtm.getRowCount()));
             // carga de detalleVenta
             DetalleRemito detalleRemito;
             for (int i = 0; i < dtm.getRowCount(); i++) {
@@ -314,11 +214,7 @@ public class RemitoController implements ActionListener {
                 detalleRemito.setRemito(newRemito);
                 newRemito.getDetalleRemitoList().add(detalleRemito);
             }
-            try {
-                newRemito = create(newRemito);
-            } catch (PreexistingEntityException ex) {
-                LogManager.getLogger();//(PresupuestoController.class.getName()).error(null, ex);
-            }
+            jpaController.persist(newRemito);
             doReport(newRemito);
             limpiarPanel();
         }
@@ -335,22 +231,16 @@ public class RemitoController implements ActionListener {
             r.printReport(true);
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
-            LogManager.getLogger();//(this.getClass()).error("Error - Impresión de Remito.id=" + p.getId(), ex);
+            LogManager.getLogger();
         }
     }
 
     private void limpiarPanel() {
         facturaVentaController.borrarDetalles();
-        facturaVentaController.getContenedor().setTfNumMovimiento(String.valueOf(getRemitoCount() + 1));
         Sucursal s = facturaVentaController.getSelectedSucursalFromJDFacturaVenta();
         facturaVentaController.setNumeroFactura(s, getNextNumero(s));
     }
 
-//    public void initBuscador(JDialog dialog, boolean modal, boolean setVisible) {
-//        buscador = new JDBuscadorReRe(dialog, "Buscador - " + CLASS_NAME, modal, "Cliente", "Nº " + CLASS_NAME);
-//        buscador.hideFormaPago();
-//        initBuscador(setVisible);
-//    }
     /**
      * Inicia el buscador con el JFrame como padre
      *
@@ -418,7 +308,7 @@ public class RemitoController implements ActionListener {
                         editing = true;
                         selectedRemito = (Remito) buscador.getDtm().getValueAt(buscador.getjTable1().getSelectedRow(), 0);
                         if (selectedRemito.getFacturaVenta() != null) {
-                            throw new MessageException("No se puede " + (editing ? "modificar" : "anular") + " el Remito " + JGestionUtils.getNumeracion(selectedRemito, true)
+                            throw new MessageException("No se puede " + (editing ? "modificar" : "anular") + " el Remito " + JGestionUtils.getNumeracion(selectedRemito)
                                     + "\nporque ya fue relacionado a la Factura " + JGestionUtils.getNumeracion(selectedRemito.getFacturaVenta()));
                         }
                         show(selectedRemito);
@@ -487,7 +377,7 @@ public class RemitoController implements ActionListener {
                     public void actionPerformed(ActionEvent e) {
                         selectedRemito.setAnulada(DAO.getDateFromDB());
                         jpaController.merge(selectedRemito);
-                        jdFacturaVenta.showMessage("Remito " + JGestionUtils.getNumeracion(selectedRemito, true) + " anulado", null, JOptionPane.INFORMATION_MESSAGE);
+                        jdFacturaVenta.showMessage("Remito " + JGestionUtils.getNumeracion(selectedRemito) + " anulado", null, JOptionPane.INFORMATION_MESSAGE);
                         jdFacturaVenta.dispose();
                         try {
                             armarQuery();
@@ -592,7 +482,7 @@ public class RemitoController implements ActionListener {
         for (Remito remito : list) {
             dtm.addRow(new Object[]{
                 remito,
-                JGestionUtils.getNumeracion(remito, true),
+                JGestionUtils.getNumeracion(remito),
                 remito.getFacturaVenta() != null ? JGestionUtils.getNumeracion(remito.getFacturaVenta()) : "",
                 remito.getCliente().getNombre(),
                 UTIL.DATE_FORMAT.format(remito.getFechaRemito()),
@@ -603,8 +493,8 @@ public class RemitoController implements ActionListener {
     }
 
     /**
-     * Para distingir cuando una selección es para visualizar un Remito y una de
-     * para "relaciónar un Remito a una Factura Venta".
+     * Para distingir cuando una selección es para visualizar un Remito y una de para "relaciónar un
+     * Remito a una Factura Venta".
      *
      * @param toFacturar
      */
@@ -625,11 +515,6 @@ public class RemitoController implements ActionListener {
 
     }
 
-    private Remito find(Sucursal sucursal, Integer numero) {
-        return getEntityManager().createQuery("SELECT o FROM Remito o"
-                + " WHERE o.sucursal.id=" + sucursal.getId() + " AND o.numero=" + numero, Remito.class).getSingleResult();
-    }
-
     public void initBuscadorToAnular(Window owner) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.ANULAR_COMPROBANTES);
         editing = false;
@@ -642,8 +527,8 @@ public class RemitoController implements ActionListener {
     }
 
     /**
-     * Inicializa y hace visible la UI (modal) de busqueda y selección de Remito
-     * para relacionarlo con una {@link FacturaVenta}
+     * Inicializa y hace visible la UI (modal) de busqueda y selección de Remito para relacionarlo
+     * con una {@link FacturaVenta}
      *
      * @param owner
      * @param cliente entity {@link Cliente} del cual se van a buscar el Remito

@@ -264,7 +264,7 @@ public class NotaCreditoController {
             query.append(" AND o.").append(NotaCredito_.fechaNotaCredito.getName()).append(" >= '").append(buscador.getDcDesde()).append("'");
         }
         if (buscador.getDcHasta() != null) {
-            StringBuilder append = query.append(" AND o." + NotaCredito_.fechaNotaCredito.getName() + " <= '").append(buscador.getDcHasta()).append("'");
+            query.append(" AND o.").append(NotaCredito_.fechaNotaCredito.getName()).append(" <= '").append(buscador.getDcHasta()).append("'");
         }
         if (buscador.getDcDesdeSistema() != null) {
             query.append(" AND o.").append(NotaCredito_.fechaCarga.getName()).append(" >= '").append(UTIL.yyyy_MM_dd.format(buscador.getDcDesdeSistema())).append("'");
@@ -286,7 +286,7 @@ public class NotaCreditoController {
             query.append(")");
         }
         if (buscador.getCbClieProv().getSelectedIndex() > 0) {
-            query.append(" AND o.cliente = ").append(((Cliente) buscador.getCbClieProv().getSelectedItem()).getId());
+            query.append(" AND o.cliente.id = ").append(((Cliente) buscador.getCbClieProv().getSelectedItem()).getId());
         }
         query.append(" ORDER BY o.id");
         LOG.trace("queryBuscador=" + query.toString());
@@ -313,14 +313,13 @@ public class NotaCreditoController {
 
     private void setComprobanteUI(final NotaCredito notaCredito, boolean paraAnular) throws MessageException {
         initComprobanteUI(null, true, false, false);
-        jdFacturaVenta.setViewMode(true);
         jdFacturaVenta.modoVista();
         // setting info on UI
-        String numFactura = UTIL.AGREGAR_CEROS(notaCredito.getNumero(), 12);
         jdFacturaVenta.getCbCliente().addItem(new EntityWrapper<>(notaCredito.getCliente(), notaCredito.getCliente().getId(), notaCredito.getCliente().getNombre()));
+        jdFacturaVenta.getCbFacturaTipo().addItem(notaCredito.getTipo());
         jdFacturaVenta.getCbSucursal().addItem(new EntityWrapper<>(notaCredito.getSucursal(), notaCredito.getId(), notaCredito.getSucursal().getNombre()));
-        jdFacturaVenta.setTfFacturaCuarto(numFactura.substring(0, 4));
-        jdFacturaVenta.setTfFacturaOcteto(numFactura.substring(4));
+        jdFacturaVenta.setTfFacturaCuarto(UTIL.AGREGAR_CEROS(notaCredito.getSucursal().getPuntoVenta(), 4));
+        jdFacturaVenta.setTfFacturaOcteto(UTIL.AGREGAR_CEROS(notaCredito.getNumero(), 8));
         jdFacturaVenta.setDcFechaFactura(notaCredito.getFechaNotaCredito());
         jdFacturaVenta.getTfObservacion().setText(notaCredito.getObservacion());
         FacturaElectronica fe = new FacturaElectronicaController().findBy(notaCredito);

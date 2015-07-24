@@ -20,6 +20,7 @@ import jgestion.controller.exceptions.MissingReportException;
 import jgestion.entity.Cliente;
 import jgestion.entity.DatosEmpresa;
 import jgestion.entity.DetalleNotaCredito;
+import jgestion.entity.DetalleNotaDebito;
 import jgestion.entity.DetalleVenta;
 import jgestion.entity.FacturaElectronica;
 import jgestion.entity.FacturaVenta;
@@ -158,6 +159,13 @@ public class FacturaElectronicaController {
         return fe;
     }
 
+    static FacturaElectronica createFrom(NotaDebito f) {
+        FacturaElectronica fe = new FacturaElectronica(null, AFIPWSController.getTipoComprobanteID(f),
+                f.getSucursal().getPuntoVenta(), Long.valueOf(f.getNumero()).intValue(),
+                null, null, 3, null, null, null);
+        return fe;
+    }
+
     static FacturaElectronica createFrom(NotaCredito f) {
         FacturaElectronica fe = new FacturaElectronica(null, AFIPWSController.getTipoComprobanteID(f),
                 f.getSucursal().getPuntoVenta(), Long.valueOf(f.getNumero()).intValue(),
@@ -177,7 +185,7 @@ public class FacturaElectronicaController {
         return jpaController.findBy(AFIPWSController.getTipoComprobanteID(cbte), cbte.getSucursal().getPuntoVenta(), cbte.getNumero());
     }
 
-    public void doReport(FacturaVenta cbte) throws MissingReportException, JRException, MessageException {
+    void doReport(FacturaVenta cbte) throws MissingReportException, JRException, MessageException {
         FacturaElectronica fe = findBy(cbte);
         if (fe.getCae() == null) {
             throw new MessageException("el comprobante " + JGestionUtils.getNumeracion(cbte) + " aún no posee CAE");
@@ -239,6 +247,150 @@ public class FacturaElectronicaController {
             }
             detalle.add(new GenericBeanCollection(d.getProducto().getCodigo(), d.getProducto().getNombre(), d.getCantidad(),
                     "Unitario", precioUnitario, d.getDescuento(), alicuota, subTotal));
+        }
+        parameters.put("CBTE_IVA27", iva27);
+        parameters.put("CBTE_IVA21", iva21);
+        parameters.put("CBTE_IVA105", iva105);
+        parameters.put("CBTE_IVA5", iva5);
+        parameters.put("CBTE_IVA205", iva205);
+        doReport(parameters, detalle);
+    }
+
+    void doReport(NotaDebito cbte) throws MessageException, MissingReportException, JRException {
+        FacturaElectronica fe = findBy(cbte);
+        if (fe.getCae() == null) {
+            throw new MessageException("el comprobante " + JGestionUtils.getNumeracion(cbte) + " aún no posee CAE");
+        }
+        HashMap<String, Object> parameters = new HashMap<>(30);
+        parameters.put("CBTE_TIPO", cbte.getTipo() + "");
+        //tiene que tener 2 dígitos el cod tipo cbte
+        parameters.put("CBTE_TIPO_COD", fe.getCbteTipo() > 9 ? fe.getCbteTipo() : "0" + fe.getCbteTipo());
+        parameters.put("CBTE_NOMBRE", "NOTA DÉBITO");
+        parameters.put("CBTE_FECHA_EMISION", cbte.getFechaNotaDebito());
+        parameters.put("CBTE_PUNTO", UTIL.AGREGAR_CEROS(fe.getPtoVta(), 4));
+        parameters.put("CBTE_NUMERO", UTIL.AGREGAR_CEROS(fe.getCbteNumero(), 8));
+//        parameters.put("CBTE_CONDICION_VENTA", cbte.getFormaPago() == 1 ? "Contado" : "Cta. Cte.");
+        parameters.put("CBTE_CAE", fe.getCae());
+        parameters.put("CBTE_CAE_VTO", fe.getCaeFechaVto());
+        putClienteParameters(parameters, cbte.getCliente());
+        parameters.put("CBTE_OBSERVACION", cbte.getObservacion());
+        parameters.put("CBTE_TOTAL", cbte.getImporte());
+        parameters.put("CBTE_GRAVADO", cbte.getGravado());
+        if (parameters.get("CBTE_TIPO").equals("A")) {
+            parameters.put("CBTE_NOGRAVADO", cbte.getNoGravado());
+        } else {
+            //se muestra como SubTotal
+            parameters.put("CBTE_NOGRAVADO", cbte.getImporte());
+        }
+        parameters.put("CBTE_OTROSTRIB", BigDecimal.ZERO);
+        parameters.put("CBTE_BONIF", BigDecimal.ZERO);
+        BigDecimal iva27 = BigDecimal.ZERO;
+        BigDecimal iva21 = BigDecimal.ZERO;
+        BigDecimal iva105 = BigDecimal.ZERO;
+        BigDecimal iva5 = BigDecimal.ZERO;
+        BigDecimal iva205 = BigDecimal.ZERO;
+        List<GenericBeanCollection> detalle = new ArrayList<>();
+        for (DetalleNotaDebito d : cbte.getDetalle()) {
+            BigDecimal alicuota = BigDecimal.valueOf(d.getIva().getIva()).setScale(2, RoundingMode.HALF_UP);
+            BigDecimal precioUnitario = d.getImporte();
+            BigDecimal subTotal = precioUnitario.multiply(BigDecimal.valueOf(d.getCantidad())).setScale(4, RoundingMode.HALF_UP);
+            if (cbte.getTipo() == 'A') {
+                if (alicuota.doubleValue() > 0) {
+                    BigDecimal iva = UTIL.getPorcentaje(subTotal, alicuota);
+                    if (alicuota.toString().equals("10.5")) {
+                        iva105 = iva105.add(iva);
+                    } else if (alicuota.toString().equals("2.5")) {
+                        iva205 = iva205.add(iva);
+                    } else if (alicuota.intValue() == 5) {
+                        iva5 = iva5.add(iva);
+                    } else if (alicuota.intValue() == 21) {
+                        iva21 = iva21.add(iva);
+                    } else if (alicuota.intValue() == 27) {
+                        iva27 = iva27.add(iva);
+                    }
+                }
+            } else {
+                subTotal = subTotal
+                        .multiply((alicuota.divide(new BigDecimal("100")).add(BigDecimal.ONE)))
+                        .setScale(2, RoundingMode.HALF_UP);
+                precioUnitario = precioUnitario.multiply((alicuota.divide(new BigDecimal("100")).add(BigDecimal.ONE)))
+                        .setScale(4, RoundingMode.HALF_UP);
+                alicuota = null;
+            }
+            detalle.add(new GenericBeanCollection(null, d.getConcepto(), d.getCantidad(),
+                    "Unitario", precioUnitario, BigDecimal.ZERO, alicuota, subTotal));
+        }
+        parameters.put("CBTE_IVA27", iva27);
+        parameters.put("CBTE_IVA21", iva21);
+        parameters.put("CBTE_IVA105", iva105);
+        parameters.put("CBTE_IVA5", iva5);
+        parameters.put("CBTE_IVA205", iva205);
+        doReport(parameters, detalle);
+    }
+
+    void doReport(NotaCredito cbte) throws MessageException, MissingReportException, JRException {
+        FacturaElectronica fe = findBy(cbte);
+        if (fe.getCae() == null) {
+            throw new MessageException("el comprobante " + JGestionUtils.getNumeracion(cbte, true) + " aún no posee CAE");
+        }
+        HashMap<String, Object> parameters = new HashMap<>(30);
+        parameters.put("CBTE_TIPO", cbte.getTipo() + "");
+        //tiene que tener 2 dígitos el cod tipo cbte
+        parameters.put("CBTE_TIPO_COD", fe.getCbteTipo() > 9 ? fe.getCbteTipo() : "0" + fe.getCbteTipo());
+        parameters.put("CBTE_NOMBRE", "NOTA CRÉDITO");
+        parameters.put("CBTE_FECHA_EMISION", cbte.getFechaNotaCredito());
+        parameters.put("CBTE_PUNTO", UTIL.AGREGAR_CEROS(fe.getPtoVta(), 4));
+        parameters.put("CBTE_NUMERO", UTIL.AGREGAR_CEROS(fe.getCbteNumero(), 8));
+//        parameters.put("CBTE_CONDICION_VENTA", cbte.getFormaPago() == 1 ? "Contado" : "Cta. Cte.");
+        parameters.put("CBTE_CAE", fe.getCae());
+        parameters.put("CBTE_CAE_VTO", fe.getCaeFechaVto());
+        putClienteParameters(parameters, cbte.getCliente());
+        parameters.put("CBTE_OBSERVACION", cbte.getObservacion());
+        parameters.put("CBTE_TOTAL", cbte.getImporte());
+        parameters.put("CBTE_GRAVADO", cbte.getGravado());
+        if (parameters.get("CBTE_TIPO").equals("A")) {
+            parameters.put("CBTE_NOGRAVADO", cbte.getNoGravado());
+        } else {
+            //se muestra como SubTotal
+            parameters.put("CBTE_NOGRAVADO", cbte.getImporte());
+        }
+        parameters.put("CBTE_OTROSTRIB", BigDecimal.ZERO);
+        parameters.put("CBTE_BONIF", BigDecimal.ZERO);
+        BigDecimal iva27 = BigDecimal.ZERO;
+        BigDecimal iva21 = BigDecimal.ZERO;
+        BigDecimal iva105 = BigDecimal.ZERO;
+        BigDecimal iva5 = BigDecimal.ZERO;
+        BigDecimal iva205 = BigDecimal.ZERO;
+        List<GenericBeanCollection> detalle = new ArrayList<>();
+        for (DetalleNotaCredito d : cbte.getDetalle()) {
+            BigDecimal alicuota = BigDecimal.valueOf(d.getProducto().getIva().getIva()).setScale(2, RoundingMode.HALF_UP);
+            BigDecimal precioUnitario = d.getPrecioUnitario();
+            BigDecimal subTotal = precioUnitario.multiply(BigDecimal.valueOf(d.getCantidad())).setScale(4, RoundingMode.HALF_UP);
+            if (cbte.getTipo() == 'A') {
+                if (alicuota.doubleValue() > 0) {
+                    BigDecimal iva = UTIL.getPorcentaje(subTotal, alicuota);
+                    if (alicuota.toString().equals("10.5")) {
+                        iva105 = iva105.add(iva);
+                    } else if (alicuota.toString().equals("2.5")) {
+                        iva205 = iva205.add(iva);
+                    } else if (alicuota.intValue() == 5) {
+                        iva5 = iva5.add(iva);
+                    } else if (alicuota.intValue() == 21) {
+                        iva21 = iva21.add(iva);
+                    } else if (alicuota.intValue() == 27) {
+                        iva27 = iva27.add(iva);
+                    }
+                }
+            } else {
+                subTotal = subTotal
+                        .multiply((alicuota.divide(new BigDecimal("100")).add(BigDecimal.ONE)))
+                        .setScale(2, RoundingMode.HALF_UP);
+                precioUnitario = precioUnitario.multiply((alicuota.divide(new BigDecimal("100")).add(BigDecimal.ONE)))
+                        .setScale(4, RoundingMode.HALF_UP);
+                alicuota = null;
+            }
+            detalle.add(new GenericBeanCollection(d.getProducto().getCodigo(), d.getProducto().getNombre(), d.getCantidad(),
+                    "Unitario", precioUnitario, BigDecimal.ZERO, alicuota, subTotal));
         }
         parameters.put("CBTE_IVA27", iva27);
         parameters.put("CBTE_IVA21", iva21);
@@ -322,75 +474,4 @@ public class FacturaElectronicaController {
         return barcode;
     }
 
-    void doReport(NotaCredito cbte) throws MessageException, MissingReportException, JRException {
-        FacturaElectronica fe = findBy(cbte);
-        if (fe.getCae() == null) {
-            throw new MessageException("el comprobante " + JGestionUtils.getNumeracion(cbte, true) + " aún no posee CAE");
-        }
-        HashMap<String, Object> parameters = new HashMap<>(30);
-        parameters.put("CBTE_TIPO", cbte.getTipo() + "");
-        //tiene que tener 2 dígitos el cod tipo cbte
-        parameters.put("CBTE_TIPO_COD", fe.getCbteTipo() > 9 ? fe.getCbteTipo() : "0" + fe.getCbteTipo());
-        parameters.put("CBTE_NOMBRE", "NOTA CRÉDITO");
-        parameters.put("CBTE_FECHA_EMISION", cbte.getFechaNotaCredito());
-        parameters.put("CBTE_PUNTO", UTIL.AGREGAR_CEROS(fe.getPtoVta(), 4));
-        parameters.put("CBTE_NUMERO", UTIL.AGREGAR_CEROS(fe.getCbteNumero(), 8));
-//        parameters.put("CBTE_CONDICION_VENTA", cbte.getFormaPago() == 1 ? "Contado" : "Cta. Cte.");
-        parameters.put("CBTE_CAE", fe.getCae());
-        parameters.put("CBTE_CAE_VTO", fe.getCaeFechaVto());
-        putClienteParameters(parameters, cbte.getCliente());
-        parameters.put("CBTE_OBSERVACION", cbte.getObservacion());
-        parameters.put("CBTE_TOTAL", cbte.getImporte());
-        parameters.put("CBTE_GRAVADO", cbte.getGravado());
-        if (parameters.get("CBTE_TIPO").equals("A")) {
-            parameters.put("CBTE_NOGRAVADO", cbte.getNoGravado());
-        } else {
-            //se muestra como SubTotal
-            parameters.put("CBTE_NOGRAVADO", cbte.getImporte());
-        }
-        parameters.put("CBTE_OTROSTRIB", BigDecimal.ZERO);
-        parameters.put("CBTE_BONIF", BigDecimal.ZERO);
-        BigDecimal iva27 = BigDecimal.ZERO;
-        BigDecimal iva21 = BigDecimal.ZERO;
-        BigDecimal iva105 = BigDecimal.ZERO;
-        BigDecimal iva5 = BigDecimal.ZERO;
-        BigDecimal iva205 = BigDecimal.ZERO;
-        List<GenericBeanCollection> detalle = new ArrayList<>();
-        for (DetalleNotaCredito d : cbte.getDetalle()) {
-            BigDecimal alicuota = BigDecimal.valueOf(d.getProducto().getIva().getIva()).setScale(2, RoundingMode.HALF_UP);
-            BigDecimal precioUnitario = d.getPrecioUnitario();
-            BigDecimal subTotal = precioUnitario.multiply(BigDecimal.valueOf(d.getCantidad())).setScale(4, RoundingMode.HALF_UP);
-            if (cbte.getTipo() == 'A') {
-                if (alicuota.doubleValue() > 0) {
-                    BigDecimal iva = UTIL.getPorcentaje(subTotal, alicuota);
-                    if (alicuota.toString().equals("10.5")) {
-                        iva105 = iva105.add(iva);
-                    } else if (alicuota.toString().equals("2.5")) {
-                        iva205 = iva205.add(iva);
-                    } else if (alicuota.intValue() == 5) {
-                        iva5 = iva5.add(iva);
-                    } else if (alicuota.intValue() == 21) {
-                        iva21 = iva21.add(iva);
-                    } else if (alicuota.intValue() == 27) {
-                        iva27 = iva27.add(iva);
-                    }
-                }
-            } else {
-                subTotal = subTotal
-                        .multiply((alicuota.divide(new BigDecimal("100")).add(BigDecimal.ONE)))
-                        .setScale(2, RoundingMode.HALF_UP);
-                precioUnitario = precioUnitario.multiply((alicuota.divide(new BigDecimal("100")).add(BigDecimal.ONE)))
-                        .setScale(4, RoundingMode.HALF_UP);
-                alicuota = null;
-            }
-            detalle.add(new GenericBeanCollection(d.getProducto().getCodigo(), d.getProducto().getNombre(), d.getCantidad(),
-                    "Unitario", precioUnitario, BigDecimal.ZERO, alicuota, subTotal));
-        }
-        parameters.put("CBTE_IVA27", iva27);
-        parameters.put("CBTE_IVA21", iva21);
-        parameters.put("CBTE_IVA105", iva105);
-        parameters.put("CBTE_IVA5", iva5);
-        parameters.put("CBTE_IVA205", iva205);
-        doReport(parameters, detalle);
-    }
 }

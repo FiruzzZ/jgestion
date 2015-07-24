@@ -23,6 +23,9 @@ public class NotaDebito implements Serializable {
     @Column(nullable = false)
     private Integer id;
     @Basic(optional = false)
+    @Column(nullable = false)
+    private char tipo;
+    @Basic(optional = false)
     @Column(nullable = false, precision = 8)
     private int numero;
     @Basic(optional = false)
@@ -58,9 +61,6 @@ public class NotaDebito implements Serializable {
     @Basic(optional = false)
     @Column(name = "impuestos_recuperables", nullable = false, precision = 12, scale = 2)
     private BigDecimal impuestosRecuperables;
-    @Basic(optional = false)
-    @Column(nullable = false)
-    private char tipo;
     @JoinColumn(nullable = false)
     @ManyToOne(optional = false)
     private Usuario usuario;

@@ -4,6 +4,7 @@ import jgestion.controller.DAO;
 import jgestion.entity.Remito;
 import jgestion.entity.Sucursal;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 
 /**
  *
@@ -34,5 +35,17 @@ public class RemitoJpaController extends AbstractDAO<Remito, Integer> {
             }
         }
         return next;
+    }
+
+    public Remito findBy(Sucursal sucursal, Integer numero) {
+        try {
+            return findByQuery(getSelectFrom()
+                    + " WHERE o.sucursal.id=" + sucursal.getId()
+                    + " AND o.numero=" + numero
+            );
+        } catch (NoResultException e) {
+            return null;
+        }
+
     }
 }

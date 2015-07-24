@@ -1312,6 +1312,7 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
 
     public void modoVista() {
         viewMode = true;
+        editMode = false;
         SwingUtil.setComponentsEnabled(panelDatosFacturacion.getComponents(), false, true, (Class<? extends Component>[]) null);
         SwingUtil.setComponentsEnabled(panelProducto.getComponents(), false, true, (Class<? extends Component>[]) null);
         btnAceptar.setEnabled(true);

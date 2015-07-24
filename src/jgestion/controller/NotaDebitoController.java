@@ -1,5 +1,6 @@
 package jgestion.controller;
 
+import java.awt.Color;
 import jgestion.controller.exceptions.MessageException;
 import jgestion.controller.exceptions.MissingReportException;
 import jgestion.entity.Cliente;
@@ -14,6 +15,8 @@ import java.awt.Component;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -25,12 +28,15 @@ import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import jgestion.JGestionUtils;
+import jgestion.entity.FacturaElectronica;
 import jgestion.jpa.controller.ClienteJpaController;
+import jgestion.jpa.controller.FacturaElectronicaJpaController;
 import jgestion.jpa.controller.IvaJpaController;
 import jgestion.jpa.controller.NotaDebitoJpaController;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 import utilities.general.UTIL;
 import utilities.gui.SwingUtil;
 import utilities.general.EntityWrapper;
@@ -58,27 +64,26 @@ public class NotaDebitoController {
     }
 
     public void initContenedor(Window owner, boolean modal) {
-        initNotaDebitoUI(owner, modal, true);
+        initComprobanteUI(owner, modal, true);
         abm.setLocationRelativeTo(owner);
         abm.setVisible(true);
     }
 
-    private void calcularSubTotal() {
+    private void calcularSubTotalItem() {
         try {
-            BigDecimal subTotal = new BigDecimal(abm.getTfImporte().getText());
-            if (abm.getCbIVA().isEnabled()) {
-                @SuppressWarnings("unchecked")
-                Iva iva = abm.getCbIVA().isEnabled() ? ((EntityWrapper<Iva>) abm.getCbIVA().getSelectedItem()).getEntity() : null;
-                BigDecimal porcentaje = UTIL.getPorcentaje(subTotal, BigDecimal.valueOf(iva.getIva()));
-                subTotal = subTotal.add(porcentaje);
-            }
+            BigDecimal ca = new BigDecimal(abm.getTfCantidad().getText());
+            BigDecimal subTotal = new BigDecimal(abm.getTfImporte().getText()).multiply(ca);
+            @SuppressWarnings("unchecked")
+            Iva iva = ((EntityWrapper<Iva>) abm.getCbIVA().getSelectedItem()).getEntity();
+            BigDecimal porcentaje = UTIL.getPorcentaje(subTotal, BigDecimal.valueOf(iva.getIva()));
+            subTotal = subTotal.add(porcentaje);
             abm.getTfSubTotal().setText(UTIL.PRECIO_CON_PUNTO.format(subTotal));
         } catch (Exception e) {
             //ignored..
         }
     }
 
-    void initNotaDebitoUI(Window owner, boolean modal, boolean loadDefaultData) {
+    void initComprobanteUI(Window owner, boolean modal, boolean loadDefaultData) {
         abm = new JDNotaDebito(owner, modal, false);
         abm.getCbCliente().addActionListener(new ActionListener() {
             @Override
@@ -86,8 +91,6 @@ public class NotaDebitoController {
             public void actionPerformed(ActionEvent e) {
                 if (abm.getCbCliente().getItemCount() > 0) {
                     JGestionUtils.cargarComboTiposFacturas(abm.getCbFacturaTipo(), ((EntityWrapper<Cliente>) abm.getCbCliente().getSelectedItem()).getEntity());
-                    boolean comprobanteA = abm.getCbFacturaTipo().getSelectedItem().toString().equalsIgnoreCase("A");
-                    abm.getCbIVA().setEnabled(comprobanteA);
                 }
             }
         });
@@ -100,23 +103,31 @@ public class NotaDebitoController {
         abm.getCbIVA().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                calcularSubTotal();
+                calcularSubTotalItem();
+            }
+        });
+        abm.getTfImporte().addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                calcularSubTotalItem();
             }
         });
         abm.getTfImporte().addKeyListener(new KeyAdapter() {
             @Override
-            public void keyTyped(KeyEvent e) {
-                calcularSubTotal();
+            public void keyReleased(KeyEvent e) {
+                calcularSubTotalItem();
             }
         });
         if (loadDefaultData) {
             UTIL.loadComboBox(abm.getCbCliente(), JGestionUtils.getWrappedClientes(new ClienteJpaController().findAll()), false);
+            AutoCompleteDecorator.decorate(abm.getCbCliente());
             UTIL.loadComboBox(abm.getCbSucursal(), JGestionUtils.getWrappedSucursales(new UsuarioHelper().getSucursales()), false);
             UTIL.loadComboBox(abm.getCbIVA(), JGestionUtils.getWrappedIva(new IvaJpaController().findAll()), false);
         }
-        UTIL.getDefaultTableModel(abm.getjTable1(), new String[]{"DetalleNotaDebito Object", "Concepto", "Importe"},
-                new int[]{1, 500, 100});
-        abm.getjTable1().getColumnModel().getColumn(2).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        UTIL.getDefaultTableModel(abm.getjTable1(), new String[]{"DetalleNotaDebito Object", "Cantidad", "Concepto", "Importe"},
+                new int[]{1, 50, 500, 100},
+                new Class<?>[]{null, Integer.class, null, null});
+        abm.getjTable1().getColumnModel().getColumn(3).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         UTIL.hideColumnTable(abm.getjTable1(), 0);
         abm.getBtnADD().addActionListener(new ActionListener() {
             @Override
@@ -124,10 +135,19 @@ public class NotaDebitoController {
                 try {
                     String concepto = abm.getTfConcepto().getText().trim();
                     BigDecimal importe;
+                    Integer cantidad;
                     if (concepto.length() > 200) {
                         throw new MessageException("Concepto no puede superar los 200 caracteres. (No es una novela!)");
                     } else if (concepto.length() < 5) {
                         throw new MessageException("Muy pobre el concepto");
+                    }
+                    try {
+                        cantidad = Integer.valueOf(abm.getTfCantidad().getText().trim());
+                        if (cantidad < 1) {
+                            throw new MessageException("Cantidad no puede ser menor a 1");
+                        }
+                    } catch (NumberFormatException ex) {
+                        throw new MessageException("Importe no válido");
                     }
                     try {
                         importe = new BigDecimal(abm.getTfImporte().getText().trim());
@@ -137,9 +157,8 @@ public class NotaDebitoController {
                     } catch (NumberFormatException ex) {
                         throw new MessageException("Importe no válido");
                     }
-                    @SuppressWarnings("unchecked")
-                    Iva iva = abm.getCbIVA().isEnabled() ? ((EntityWrapper<Iva>) abm.getCbIVA().getSelectedItem()).getEntity() : null;
-                    DetalleNotaDebito d = new DetalleNotaDebito(null, concepto, importe, iva);
+                    Iva iva = ((EntityWrapper<Iva>) abm.getCbIVA().getSelectedItem()).getEntity();
+                    DetalleNotaDebito d = new DetalleNotaDebito(null, cantidad, concepto, importe, iva);
                     addDetalle(d);
                     refreshResumen();
                 } catch (MessageException ex) {
@@ -189,28 +208,33 @@ public class NotaDebitoController {
             if (JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog(abm,
                     "¿Re-Imprimir comprobante?", jpaController.getEntityClass().getSimpleName(), JOptionPane.OK_CANCEL_OPTION)) {
                 try {
-                    doReport(EL_OBJECT);
+                    doReportComprobante(EL_OBJECT);
                 } catch (MissingReportException | JRException ex) {
                     JOptionPane.showMessageDialog(abm, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         } else {
-            EL_OBJECT = getEntity();
-            String msg = EL_OBJECT.getId() == null ? " registrada" : " modificada";
-            if (EL_OBJECT.getId() == null) {
+            NotaDebito newNotaDebito = getEntity();
+            String msg = newNotaDebito.getId() == null ? " registrada" : " modificada";
+            if (newNotaDebito.getId() == null) {
                 try {
-                    jpaController.persist(EL_OBJECT);
-                    new CtacteClienteController().addToCtaCte(EL_OBJECT);
-                    doReport(EL_OBJECT);
+                    jpaController.persist(newNotaDebito);
+                    if (newNotaDebito.getSucursal().isWebServices()) {
+                        FacturaElectronica fee = FacturaElectronicaController.createFrom(newNotaDebito);
+                        new FacturaElectronicaJpaController().persist(fee);
+                        FacturaElectronicaController.initSolicitudCAEs();
+                    }
+                    new CtacteClienteController().addToCtaCte(newNotaDebito);
+                    doReportComprobante(newNotaDebito);
                 } catch (MissingReportException | JRException ex) {
                     JOptionPane.showMessageDialog(abm, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(abm, ex.getMessage(), "Algo salió mal", JOptionPane.ERROR_MESSAGE);
-                    LOG.error("persistiendo " + EL_OBJECT, ex);
+                    LOG.error("persistiendo " + newNotaDebito, ex);
                 }
             } else {
             }
-            JOptionPane.showMessageDialog(abm, JGestionUtils.getNumeracion(EL_OBJECT) + msg);
+            JOptionPane.showMessageDialog(abm, JGestionUtils.getNumeracion(newNotaDebito) + msg);
         }
     }
 
@@ -232,8 +256,8 @@ public class NotaDebitoController {
     }
 
     /**
-     * Agrega a <code>numero</code> tantos 0 (ceros) a la izq hasta completar
-     * los 12 dígitos (#### ########) y setea en la GUI
+     * Agrega a <code>numero</code> tantos 0 (ceros) a la izq hasta completar los 12 dígitos (####
+     * ########) y setea en la GUI
      *
      * @param numero
      */
@@ -279,7 +303,7 @@ public class NotaDebitoController {
         o.setImpuestosRecuperables(BigDecimal.ZERO);
         o.setUsuario(UsuarioController.getCurrentUser());
         DefaultTableModel dtm = (DefaultTableModel) abm.getjTable1().getModel();
-        List<DetalleNotaDebito> detalle = new ArrayList<DetalleNotaDebito>(dtm.getRowCount());
+        List<DetalleNotaDebito> detalle = new ArrayList<>(dtm.getRowCount());
         for (int row = 0; row < dtm.getRowCount(); row++) {
             DetalleNotaDebito d = (DetalleNotaDebito) dtm.getValueAt(row, 0);
             d.setNotaDebito(o);
@@ -331,33 +355,25 @@ public class NotaDebitoController {
         DefaultTableModel dtm = (DefaultTableModel) abm.getjTable1().getModel();
         for (int rowIndex = 0; rowIndex < dtm.getRowCount(); rowIndex++) {
             DetalleNotaDebito d = (DetalleNotaDebito) dtm.getValueAt(rowIndex, 0);
-            BigDecimal cantidad = BigDecimal.ONE;
-            BigDecimal importe = d.getImporte();
-            BigDecimal alicuota = d.getIva() == null ? null : new BigDecimal(d.getIva().getIva());
-
-            // Gravado (precioSinIVA + cantidad)
-            if (alicuota != null && alicuota.intValue() > 0) {
-                gravado = gravado.add(importe.multiply(cantidad));
+            BigDecimal alicuota = BigDecimal.valueOf(d.getIva().getIva());
+            BigDecimal totalPorItem = d.getImporte().multiply(BigDecimal.valueOf(d.getCantidad()));
+            subTotal = subTotal.add(totalPorItem);
+            if (alicuota.intValue() > 0) {
+                gravado = gravado.add(totalPorItem);
             }
-            /**
-             * Se calcula sin aplicar ningún redondeo (se trabaja posiblemente
-             * mas de 2 decimales).
-             */
-//            BigDecimal sinRedondeo = importe.multiply(cantidad).multiply(alicuota.divide(new BigDecimal("100")));
-            if (alicuota == null || alicuota.intValue() == 0) {
-                noGravado = noGravado.add(cantidad.multiply(importe));
+            BigDecimal iva = UTIL.getPorcentaje(totalPorItem, alicuota);
+            if (alicuota.intValue() == 0) {
+                noGravado = noGravado.add(iva);
             } else if (alicuota.toString().equalsIgnoreCase("10.5")) {
-                iva10 = iva10.add(cantidad.multiply(importe).multiply((alicuota.divide(new BigDecimal("100")))));
+                iva10 = iva10.add(iva);
             } else if (alicuota.intValue() == 21) {
-                iva21 = iva21.add(cantidad.multiply(importe).multiply((alicuota.divide(new BigDecimal("100")))));
+                iva21 = iva21.add(iva);
             } else if (alicuota.compareTo(BigDecimal.ZERO) > 0) {
-                otrosImps = otrosImps.add(cantidad.multiply(importe).multiply((alicuota.divide(new BigDecimal("100")))));
+                otrosImps = otrosImps.add(iva);
             } else {
                 throw new IllegalArgumentException("IVA no determinado");
             }
-//            LOG.debug("alicuota=" + alicuota + ", redondeo=" + sinRedondeo);
-
-            subTotal = subTotal.add((BigDecimal) dtm.getValueAt(rowIndex, 2));
+            subTotal = subTotal.add(iva);
         }
         abm.getTfGravado().setText(UTIL.DECIMAL_FORMAT.format(gravado));
         abm.getTfTotalNoGravado().setText(UTIL.DECIMAL_FORMAT.format(noGravado));
@@ -373,9 +389,10 @@ public class NotaDebitoController {
 
     private void addDetalle(DetalleNotaDebito detalle) {
         DefaultTableModel dtm = (DefaultTableModel) abm.getjTable1().getModel();
-        BigDecimal importe = (detalle.getIva() == null ? detalle.getImporte() : detalle.getImporte().add(UTIL.getPorcentaje(detalle.getImporte(), BigDecimal.valueOf(detalle.getIva().getIva()))));
+        BigDecimal importe = detalle.getImporte().multiply(BigDecimal.valueOf(detalle.getCantidad()));
+        importe = importe.add(UTIL.getPorcentaje(importe, BigDecimal.valueOf(detalle.getIva().getIva())));
         dtm.addRow(new Object[]{
-            detalle, detalle.getConcepto(), importe
+            detalle, detalle.getCantidad(), detalle.getConcepto(), importe
         });
     }
 
@@ -560,7 +577,7 @@ public class NotaDebitoController {
     }
 
     void show(NotaDebito notaDebito, boolean toAnular) throws MessageException {
-        initNotaDebitoUI(buscador, true, false);
+        initComprobanteUI(buscador, true, false);
         SwingUtil.setComponentsEnabled(abm.getPanelDatosFacturacion().getComponents(), false, true, (Class<? extends Component>[]) null);
         SwingUtil.setComponentsEnabled(abm.getPanelDetalle().getComponents(), false, true, (Class<? extends Component>[]) null);
         abm.getBtnAnular().setVisible(toAnular);
@@ -572,10 +589,19 @@ public class NotaDebitoController {
     private void setPanel(NotaDebito notaDebito) {
         Sucursal s = notaDebito.getSucursal();
         Cliente c = notaDebito.getCliente();
-        abm.getCbCliente().addItem(new EntityWrapper<Cliente>(c, c.getId(), c.getNombre()));
-        abm.getCbSucursal().addItem(new EntityWrapper<Sucursal>(s, s.getId(), s.getNombre()));
+        abm.getCbCliente().addItem(new EntityWrapper<>(c, c.getId(), c.getNombre()));
+        abm.getCbSucursal().addItem(new EntityWrapper<>(s, s.getId(), s.getNombre()));
         abm.getDcFechaFactura().setDate(notaDebito.getFechaNotaDebito());
         abm.getTfObservacion().setText(notaDebito.getObservacion());
+        FacturaElectronica fe = new FacturaElectronicaController().findBy(notaDebito);
+        if(fe != null) {
+            if (fe.getCae() == null) {
+                abm.getTfCAE().setForeground(Color.RED);
+                abm.getTfCAE().setText("PENDIENTE!");
+            } else {
+                abm.getTfCAE().setText(fe.getCae());
+            }
+        }
         //Los tipos de factura se tienen q cargar antes, sinó modifica el Nº de factura y muestra el siguiente
         //y no el de Factura seleccionada
         JGestionUtils.cargarComboTiposFacturas(abm.getCbFacturaTipo(), notaDebito.getCliente());
@@ -589,11 +615,15 @@ public class NotaDebitoController {
         refreshResumen();
     }
 
-    private void doReport(NotaDebito o) throws MissingReportException, JRException {
-        Reportes r = new Reportes("JGestion_NotaDebito.jasper", jpaController.getEntityClass().getSimpleName() + " " + JGestionUtils.getNumeracion(o));
-        r.addParameter("ENTITY_ID", o.getId());
-        r.addCurrent_User();
-        r.printReport(true);
+    private void doReportComprobante(NotaDebito o) throws MissingReportException, JRException, MessageException {
+        if (o.getSucursal().isWebServices()) {
+            new FacturaElectronicaController().doReport(o);
+        } else {
+            Reportes r = new Reportes("JGestion_NotaDebito.jasper", jpaController.getEntityClass().getSimpleName() + " " + JGestionUtils.getNumeracion(o));
+            r.addParameter("ENTITY_ID", o.getId());
+            r.addCurrent_User();
+            r.printReport(true);
+        }
     }
 
     void view(NotaDebito notaDebito) throws MessageException {

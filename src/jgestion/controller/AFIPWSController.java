@@ -34,6 +34,7 @@ import jgestion.JGestionUtils;
 import jgestion.controller.exceptions.MessageException;
 import jgestion.entity.Cliente;
 import jgestion.entity.DetalleNotaCredito;
+import jgestion.entity.DetalleNotaDebito;
 import jgestion.entity.DetalleVenta;
 import jgestion.entity.FacturaElectronica;
 import jgestion.entity.FacturaVenta;
@@ -143,7 +144,41 @@ public class AFIPWSController {
     }
 
     public FacturaElectronica requestCAE(FacturaElectronica fe, NotaDebito cbte) throws WSAFIPErrorResponseException, MessageException {
-        return null;
+        //<editor-fold defaultstate="collapsed" desc="IVAs">
+        List<IvaTipo> iVATipoList = getIVATipoList();
+        HashMap<IvaTipo, BigDecimal> totalesAlicuotas = new HashMap<>();
+        for (IvaTipo o : iVATipoList) {
+            totalesAlicuotas.put(o, BigDecimal.ZERO);
+        }
+        //recorriendo el detalle de la facturaVenta
+        for (DetalleNotaDebito detalleVenta : cbte.getDetalle()) {
+            boolean unknownIVA = true;
+            int cantidad = detalleVenta.getCantidad();
+            BigDecimal precioUnitario = detalleVenta.getImporte();
+            Double productoIVA = Double.valueOf(detalleVenta.getIva().getIva());
+            //identificando el IVA de cada item del detalle
+            for (IvaTipo o : iVATipoList) {
+                Double AFIP_IVA = Double.valueOf(o.getDesc().replaceAll("%", ""));
+                if (0 == (AFIP_IVA.compareTo(productoIVA))) {
+                    BigDecimal currentTotalIVA = totalesAlicuotas.get(o);
+                    currentTotalIVA = currentTotalIVA.add(precioUnitario.multiply(BigDecimal.valueOf(cantidad))).setScale(2, RoundingMode.HALF_UP);
+                    totalesAlicuotas.put(o, currentTotalIVA);
+                    unknownIVA = false;
+                    break;
+                }
+            }
+            if (unknownIVA) {
+                //no existe la alicuota IVA que tiene el producto..
+                throw new MessageException("El producto:"
+                        + "\n" + detalleVenta.getConcepto()
+                        + "\n tiene una alícuota (IVA) \"" + productoIVA + "\" que no existe en los registros de la AFIP.");
+            }
+        }
+        //</editor-fold>
+        DocTipo docTipo = new DocTipo();
+        docTipo.setId(cbte.getCliente().getTipodoc().getAfipID());
+        return invokeFE(fe, cbte.getCliente(), cbte.getFechaNotaDebito(), cbte.getImporte(),
+                cbte.getGravado(), cbte.getNoGravado(), totalesAlicuotas, docTipo);
     }
 
     public FacturaElectronica requestCAE(FacturaElectronica fe, NotaCredito cbte) throws WSAFIPErrorResponseException, MessageException {
@@ -269,10 +304,7 @@ public class AFIPWSController {
             }
         }
 
-        //armando detalle
-        //gravado (neto) + impuestos + tributos
         double impTributos = 0;
-//        double cotizacion = cotiz;
 
         ArrayOfCbteAsoc arrayOfCbteAsoc = null;
         ArrayOfTributo arrayOfTributo = null;
@@ -307,7 +339,8 @@ public class AFIPWSController {
         detalle.setTributos(arrayOfTributo);
         detalle.setIva(arrayOfAlicIva);
         detalle.setOpcionales(null);
-        LOG.trace(detalle);
+        LOG.trace("total=" + detalle.getImpTotal() + ", neto=" + detalle.getImpNeto() + ", totConc=" + detalle.getImpTotConc()
+                + ", OpEx=" + detalle.getImpOpEx() + ", Trib=" + detalle.getImpTrib() + ", IVA=" + detalle.getImpIVA());
         arrayOfFECAEDetRequest.getFECAEDetRequest().add(detalle);
 
         fECAECabRequest.setCantReg(arrayOfFECAEDetRequest.getFECAEDetRequest().size());
