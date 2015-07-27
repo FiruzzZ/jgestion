@@ -626,7 +626,7 @@ public class NotaDebitoController {
             new FacturaElectronicaController().doReport(o);
         } else {
             Reportes r = new Reportes("JGestion_NotaDebito.jasper", jpaController.getEntityClass().getSimpleName() + " " + JGestionUtils.getNumeracion(o));
-            r.addParameter("ENTITY_ID", o.getId());
+            r.addParameter("CBTE_ID", o.getId());
             r.addCurrent_User();
             r.printReport(true);
         }

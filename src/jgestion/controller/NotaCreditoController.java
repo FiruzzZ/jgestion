@@ -420,7 +420,7 @@ public class NotaCreditoController {
         } else {
             Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_NotaCredito.jasper", "Nota de Crédito");
             r.addCurrent_User();
-            r.addParameter("NOTA_CREDITO_ID", notaCredito.getId());
+            r.addParameter("CBTE_ID", notaCredito.getId());
             r.printReport(true);
         }
     }
