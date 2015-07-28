@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="NotaDebito" pageWidth="595" pageHeight="842" columnWidth="534" leftMargin="42" rightMargin="19" topMargin="28" bottomMargin="28" uuid="d142408a-0f2e-4041-9fc9-7987df8c1dfb">
-	<property name="ireport.zoom" value="1.5"/>
-	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.zoom" value="4.707642565081508"/>
+	<property name="ireport.x" value="1020"/>
+	<property name="ireport.y" value="664"/>
 	<parameter name="CBTE_ID" class="java.lang.Integer">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<queryString>
 		<![CDATA[select 1 as pag, ss.* FROM ( SELECT dc.id, nc.numero, nc.tipo, nc.fecha_nota_debito fecha, nc.importe,
  pro.nombre AS proveedor, pro.num_doc, pro.direccion, con.id as contribuyente
-, dc.cantidad, dc.importe precio_unitario, dc.concepto AS producto
+, dc.cantidad, dc.importe precio_unitario, dc.concepto AS producto, 1 forma_pago, 0 dias_cta_cte
 from nota_debito nc
 JOIN detalle_nota_debito dc ON nc.id = dc.nota_debito_id
 JOIN cliente pro ON pro.id = nc.cliente_id
@@ -21,7 +21,7 @@ ORDER BY dc.id
 UNION
 select 2 as pag, ss.* FROM ( SELECT dc.id, nc.numero, nc.tipo, nc.fecha_nota_debito fecha, nc.importe,
  pro.nombre AS proveedor, pro.num_doc, pro.direccion, con.id as contribuyente
-, dc.cantidad, dc.importe precio_unitario, dc.concepto AS producto
+, dc.cantidad, dc.importe precio_unitario, dc.concepto AS producto, 1 forma_pago, 0 dias_cta_cte
 from nota_debito nc
 JOIN detalle_nota_debito dc ON nc.id = dc.nota_debito_id
 JOIN cliente pro ON pro.id = nc.cliente_id
@@ -47,6 +47,8 @@ ORDER BY pag, id]]>
 	<field name="cantidad" class="java.lang.Integer"/>
 	<field name="precio_unitario" class="java.math.BigDecimal"/>
 	<field name="producto" class="java.lang.String"/>
+	<field name="forma_pago" class="java.lang.Integer"/>
+	<field name="dias_cta_cte" class="java.lang.Integer"/>
 	<variable name="precioUnitario" class="java.math.BigDecimal">
 		<variableExpression><![CDATA[$F{precio_unitario}.setScale(4, java.math.RoundingMode.HALF_UP)]]></variableExpression>
 	</variable>
@@ -122,6 +124,40 @@ ORDER BY pag, id]]>
 					<font size="7" isBold="true"/>
 				</textElement>
 				<text><![CDATA[X]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="328cad6d-b709-456e-876d-b87c59b489ec" x="256" y="167" width="10" height="12">
+					<printWhenExpression><![CDATA[$F{forma_pago}.intValue() == 2]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[X]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="02db95e1-5985-4149-8c54-a2ecd8418df6" x="186" y="167" width="10" height="12">
+					<printWhenExpression><![CDATA[$F{forma_pago}.intValue() == 2]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[X]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="92c366ee-35e0-4168-adf8-dfb8608ff6bd" x="324" y="167" width="41" height="12">
+					<printWhenExpression><![CDATA[new Boolean ($F{dias_cta_cte}.intValue() > 0)]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dias_cta_cte}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="cb91fadd-3e4d-49bf-b965-bef7f8fa63e8" x="300" y="167" width="24" height="12"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[Días:]]></text>
 			</staticText>
 		</band>
 	</pageHeader>

@@ -56,6 +56,7 @@ import jgestion.entity.FacturaVenta_;
 import jgestion.entity.ListaPrecios;
 import jgestion.entity.Marca;
 import jgestion.entity.NotaCredito;
+import jgestion.entity.NotaDebito;
 import jgestion.entity.Producto;
 import jgestion.entity.Producto_;
 import jgestion.entity.Proveedor;
@@ -77,6 +78,9 @@ import jgestion.gui.PanelInformeFlujoVentas;
 import jgestion.gui.PanelProductosCostoVenta;
 import jgestion.jpa.controller.ClienteJpaController;
 import jgestion.jpa.controller.ComprobanteRetencionJpaController;
+import jgestion.jpa.controller.FacturaVentaJpaController;
+import jgestion.jpa.controller.NotaCreditoJpaController;
+import jgestion.jpa.controller.NotaDebitoJpaController;
 import jgestion.jpa.controller.ProveedorJpaController;
 import jgestion.jpa.controller.VendedorJpaController;
 import net.sf.jasperreports.engine.JRException;
@@ -659,12 +663,10 @@ public class Contabilidad {
                 if (dlp.getRubro().equals(rubro)) {
                     encontro = true;
                     margenEncontrado = dlp.getMargen();
-                } else {
-                    //si el subRubro coincide con algún Rubro definido en la ListaPrecios
-                    if (!encontro && subRubro != null) {
-                        if (dlp.getRubro().equals(subRubro)) {
-                            margenEncontrado = dlp.getMargen();
-                        }
+                } else //si el subRubro coincide con algún Rubro definido en la ListaPrecios
+                if (!encontro && subRubro != null) {
+                    if (dlp.getRubro().equals(subRubro)) {
+                        margenEncontrado = dlp.getMargen();
                     }
                 }
                 if (margenEncontrado > margenFinal) {
@@ -801,24 +803,11 @@ public class Contabilidad {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    List<FacturaVenta> data = getComprobantesVenta(soloMovimientosInternos);
+                    List<Object[]> data = getComprobantesVenta(soloMovimientosInternos);
                     DefaultTableModel dtm = (DefaultTableModel) buscadorReRe.getjTable1().getModel();
                     dtm.setRowCount(0);
-                    for (FacturaVenta facturaVenta : data) {
-                        dtm.addRow(new Object[]{
-                            JGestionUtils.getNumeracion(facturaVenta),
-                            facturaVenta.getFechaVenta(),
-                            facturaVenta.getCliente().getNombre(),
-                            facturaVenta.getCliente().getNumDoc(),
-                            facturaVenta.getGravado(),
-                            new BigDecimal(facturaVenta.getIva10()),
-                            new BigDecimal(facturaVenta.getIva21()),
-                            BigDecimal.ZERO,
-                            BigDecimal.ZERO,
-                            facturaVenta.getNoGravado(),
-                            new BigDecimal(facturaVenta.getDescuento()),
-                            facturaVenta.getImporte()
-                        });
+                    for (Object[] o : data) {
+                        dtm.addRow(o);
                     }
                 } catch (MessageException ex) {
                     ex.displayMessage(buscadorReRe);
@@ -936,7 +925,6 @@ public class Contabilidad {
     @SuppressWarnings("unchecked")
     private List<?> getComprobantesCompra() throws MessageException, DatabaseErrorException {
         StringBuilder queryFactuCompra = new StringBuilder(300);
-        StringBuilder queryNotaCredito = new StringBuilder(300);
 
         long numero;
         //filtro por nº de ReRe
@@ -944,7 +932,6 @@ public class Contabilidad {
             try {
                 numero = Long.parseLong(buscadorReRe.getTfOcteto());
                 queryFactuCompra.append(" AND o.numero = ").append(numero);
-                queryNotaCredito.append(" AND o.numero = ").append(numero);
             } catch (NumberFormatException ex) {
                 throw new MessageException("Número de comprobante no válido");
             }
@@ -955,27 +942,21 @@ public class Contabilidad {
             try {
                 numero = Long.parseLong(buscadorReRe.getTfFactu4() + buscadorReRe.getTfFactu8());
                 queryFactuCompra.append(" AND o.numero = ").append(numero);
-                queryNotaCredito.append(" AND sucursal.puntoventa = ").append(buscadorReRe.getTfFactu4());
-                queryNotaCredito.append(" AND o.numero = ").append(buscadorReRe.getTfFactu8());
             } catch (NumberFormatException ex) {
                 throw new MessageException("Número de comprobante no válido");
             }
         }
         if (buscadorReRe.getDcDesde() != null) {
             queryFactuCompra.append(" AND o.fecha_compra >= '").append(UTIL.yyyy_MM_dd.format(buscadorReRe.getDcDesde())).append("'");
-            queryNotaCredito.append(" AND o.fecha_nota_credito >= '").append(UTIL.yyyy_MM_dd.format(buscadorReRe.getDcDesde())).append("'");
         }
         if (buscadorReRe.getDcHasta() != null) {
             queryFactuCompra.append(" AND o.fecha_compra <= '").append(UTIL.yyyy_MM_dd.format(buscadorReRe.getDcHasta())).append("'");
-            queryNotaCredito.append(" AND o.fecha_nota_credito <= '").append(UTIL.yyyy_MM_dd.format(buscadorReRe.getDcHasta())).append("'");
         }
         if (buscadorReRe.getDcDesdeSistema() != null) {
             queryFactuCompra.append(" AND o.fechaalta >= '").append(UTIL.yyyy_MM_dd.format(buscadorReRe.getDcDesdeSistema())).append("'");
-            queryNotaCredito.append(" AND o.fecha_Carga >= '").append(UTIL.yyyy_MM_dd.format(buscadorReRe.getDcDesdeSistema())).append("'");
         }
         if (buscadorReRe.getDcHastaSistema() != null) {
             queryFactuCompra.append(" AND o.fechaalta <= '").append(UTIL.yyyy_MM_dd.format(buscadorReRe.getDcHastaSistema())).append("'");
-            queryNotaCredito.append(" AND o.fecha_Carga <= '").append(UTIL.yyyy_MM_dd.format(buscadorReRe.getDcHastaSistema())).append("'");
         }
         if (buscadorReRe.getCbFormasDePago().getSelectedIndex() > 0) {
             queryFactuCompra.append(" AND o.tipo = '").append(buscadorReRe.getCbFormasDePago().getSelectedItem()).append("'");
@@ -1014,31 +995,28 @@ public class Contabilidad {
         }
 
         String sql
-                = "SELECT com.* FROM ("
-                + " SELECT 'F' || o.tipo || to_char(o.numero, '0000-00000000') as comprobante,	o.fecha_compra as fecha, proveedor.nombre, proveedor.cuit,"
+                = " SELECT 'F' || o.tipo || to_char(o.numero, '0000-00000000') as comprobante,	o.fecha_compra as fecha, proveedor.nombre, proveedor.cuit,"
                 + " cast(case when o.gravado <=0 then (o.importe-o.iva10-o.iva21-o.perc_iva-o.impuestos_recuperables) else o.gravado end as numeric(12,2)),	cast(o.iva10 as numeric(12,2)),	cast(o.iva21 as numeric(12,2)), o.otros_ivas, "
                 + "	cast(o.perc_dgr as numeric(12,2)), cast(o.perc_iva as numeric(12,2)), cast( o.impuestos_recuperables as numeric(12,2)), cast( o.impuestos_norecuperables as numeric(12,2)), cast( o.no_gravado as numeric(12,2)), cast( o.descuento as numeric(12,2)), cast( o.importe as numeric(12,2))"
                 + " FROM factura_compra o, proveedor"
                 + " WHERE o.anulada = false AND o.proveedor = proveedor.id "
                 + queryFactuCompra.toString()
-                + " ORDER BY"
-                + " o.fecha_compra ASC) com"
-                + " UNION ("
-                + " SELECT 'NC' || to_char(sucursal.puntoventa, '0000') || to_char(o.numero,'-00000000'), o.fecha_nota_credito as fecha, cliente.nombre, cliente.num_doc,"
-                + " cast(o.gravado as numeric(12,2)), cast(o.iva10 as numeric(12,2)), cast(o.iva21 as numeric(12,2)), cast(o.impuestos_recuperables as numeric(12,2)),"
-                + " cast(0 as numeric(12,2)), cast(0 as numeric(12,2)), cast(0 as numeric(12,2)), cast(0 as numeric(12,2)), cast(o.no_gravado as numeric(12,2)), cast(0 as numeric(12,2)) as descuento, cast(o.importe as numeric(12,2))"
-                + " FROM nota_credito o, cliente, sucursal"
-                + " WHERE o.anulada = false AND o.cliente = cliente.id AND o.sucursal = sucursal.id"
-                + queryNotaCredito.toString()
-                + " ORDER BY"
-                + " o.fecha_nota_credito ASC)"
-                + " ORDER BY fecha";
+                + " ORDER BY o.fecha_compra ASC ";
         System.out.println("QUERY: " + sql);
         List<?> l = DAO.getNativeQueryResultList(sql, (String) null);
         return l;
     }
 
-    private List<FacturaVenta> getComprobantesVenta(boolean soloMovimientosInternos) throws MessageException, DatabaseErrorException {
+    /**
+     * listado de {@link FacturaVenta}, {@link NotaCredito} (importe en negativo),
+     * {@link NotaDebito}
+     *
+     * @param soloMovimientosInternos
+     * @return
+     * @throws MessageException
+     * @throws DatabaseErrorException
+     */
+    private List<Object[]> getComprobantesVenta(boolean soloMovimientosInternos) throws MessageException, DatabaseErrorException {
         StringBuilder queryWhereFactuVenta = new StringBuilder(300).append(" o.");
         if (soloMovimientosInternos) {
             queryWhereFactuVenta.append(FacturaVenta_.tipo.getName()).append(" = 'I'");
@@ -1046,6 +1024,7 @@ public class Contabilidad {
             queryWhereFactuVenta.append(FacturaVenta_.tipo.getName()).append(" <> 'I'");
         }
         StringBuilder queryWhereNotaCredito = new StringBuilder(300).append(" o.id is not null");
+        StringBuilder queryWhereNotaDebito = new StringBuilder(300).append(" o.id is not null");
 
         long numero;
         //filtro por nº de comprobante
@@ -1054,6 +1033,7 @@ public class Contabilidad {
                 numero = Long.parseLong(buscadorReRe.getTfCuarto());
                 queryWhereFactuVenta.append(" AND o.sucursal.puntoVenta = ").append(numero);
                 queryWhereNotaCredito.append(" AND o.sucursal.puntoVenta = ").append(numero);
+                queryWhereNotaDebito.append(" AND o.sucursal.puntoVenta = ").append(numero);
             } catch (NumberFormatException ex) {
                 throw new MessageException("Número de Punto de Venta de comprobante no válido");
             }
@@ -1067,6 +1047,7 @@ public class Contabilidad {
                     queryWhereFactuVenta.append(" AND o.").append(FacturaVenta_.numero.getName()).append(" = ").append(numero);
                 }
                 queryWhereNotaCredito.append(" AND o.numero = ").append(numero);
+                queryWhereNotaDebito.append(" AND o.numero = ").append(numero);
             } catch (NumberFormatException ex) {
                 throw new MessageException("Número de comprobante no válido");
             }
@@ -1075,18 +1056,22 @@ public class Contabilidad {
         if (buscadorReRe.getDcDesde() != null) {
             queryWhereFactuVenta.append(" AND o.fechaVenta >= '").append(UTIL.yyyy_MM_dd.format(buscadorReRe.getDcDesde())).append("'");
             queryWhereNotaCredito.append(" AND o.fechaNotaCredito >= '").append(UTIL.yyyy_MM_dd.format(buscadorReRe.getDcDesde())).append("'");
+            queryWhereNotaDebito.append(" AND o.fechaNotaDebito >= '").append(UTIL.yyyy_MM_dd.format(buscadorReRe.getDcDesde())).append("'");
         }
         if (buscadorReRe.getDcHasta() != null) {
             queryWhereFactuVenta.append(" AND o.fechaVenta <= '").append(UTIL.yyyy_MM_dd.format(buscadorReRe.getDcHasta())).append("'");
-            queryWhereNotaCredito.append(" AND o.fechaNotaCredito <= '").append(UTIL.yyyy_MM_dd.format(buscadorReRe.getDcDesde())).append("'");
+            queryWhereNotaCredito.append(" AND o.fechaNotaCredito <= '").append(UTIL.yyyy_MM_dd.format(buscadorReRe.getDcHasta())).append("'");
+            queryWhereNotaDebito.append(" AND o.fechaNotaDebito <= '").append(UTIL.yyyy_MM_dd.format(buscadorReRe.getDcHasta())).append("'");
         }
         if (buscadorReRe.getDcDesdeSistema() != null) {
             queryWhereFactuVenta.append(" AND o.fechaalta >= '").append(UTIL.yyyy_MM_dd.format(buscadorReRe.getDcDesdeSistema())).append("'");
             queryWhereNotaCredito.append(" AND o.fechaCarga >= '").append(UTIL.yyyy_MM_dd.format(buscadorReRe.getDcDesdeSistema())).append("'");
+            queryWhereNotaDebito.append(" AND o.fechaCarga >= '").append(UTIL.yyyy_MM_dd.format(buscadorReRe.getDcDesdeSistema())).append("'");
         }
         if (buscadorReRe.getDcHastaSistema() != null) {
             queryWhereFactuVenta.append(" AND o.fechaalta <= '").append(UTIL.yyyy_MM_dd.format(buscadorReRe.getDcHastaSistema())).append("'");
             queryWhereNotaCredito.append(" AND o.fechaCarga <= '").append(UTIL.yyyy_MM_dd.format(buscadorReRe.getDcHastaSistema())).append("'");
+            queryWhereNotaDebito.append(" AND o.fechaCarga <= '").append(UTIL.yyyy_MM_dd.format(buscadorReRe.getDcHastaSistema())).append("'");
         }
         UsuarioHelper usuarioHelper = new UsuarioHelper();
         if (buscadorReRe.getCbCaja().getSelectedIndex() > 0) {
@@ -1120,15 +1105,67 @@ public class Contabilidad {
         if (buscadorReRe.getCbClieProv().getSelectedIndex() > 0) {
             queryWhereFactuVenta.append(" AND o.cliente.id = ").append(((EntityWrapper<Cliente>) buscadorReRe.getCbClieProv().getSelectedItem()).getId());
         }
-
         queryWhereFactuVenta.append(" AND o.anulada = ").append(buscadorReRe.getCheckAnulada().isSelected());
         queryWhereNotaCredito.append(" AND o.anulada = ").append(buscadorReRe.getCheckAnulada().isSelected());
+        queryWhereNotaDebito.append(" AND o.anulada = ").append(buscadorReRe.getCheckAnulada().isSelected());
 
-        System.out.println("QUERY: " + queryWhereFactuVenta.toString());
-        @SuppressWarnings("unchecked")
-        List<FacturaVenta> l = (List<FacturaVenta>) DAO.findEntities(FacturaVenta.class, queryWhereFactuVenta.toString());
-        List<NotaCredito> ln = (List<NotaCredito>) DAO.findEntities(NotaCredito.class, queryWhereNotaCredito.toString());
-        return l;
+        FacturaVentaJpaController jpa = new FacturaVentaJpaController();
+        List<FacturaVenta> l = jpa.findAll(jpa.getSelectFrom() + " WHERE " + queryWhereFactuVenta.toString());
+        NotaCreditoJpaController ncj = new NotaCreditoJpaController();
+        List<NotaCredito> ln = ncj.findAll(ncj.getSelectFrom() + " WHERE " + queryWhereNotaCredito.toString());
+        NotaDebitoJpaController ndj = new NotaDebitoJpaController();
+        List<NotaDebito> lnd = ndj.findAll(ndj.getSelectFrom() + " WHERE " + queryWhereNotaCredito.toString());
+        System.out.println("ln" + ln.size());
+        List<Object[]> data = new ArrayList<>(l.size() + ln.size() + lnd.size());
+        for (FacturaVenta o : l) {
+            data.add(new Object[]{
+                JGestionUtils.getNumeracion(o),
+                o.getFechaVenta(),
+                o.getCliente().getNombre(),
+                o.getCliente().getNumDoc(),
+                o.getGravado(),
+                new BigDecimal(o.getIva10()),
+                new BigDecimal(o.getIva21()),
+                BigDecimal.ZERO,
+                BigDecimal.ZERO,
+                o.getNoGravado(),
+                new BigDecimal(o.getDescuento()),
+                o.getImporte()
+            });
+        }
+        for (NotaCredito o : ln) {
+            data.add(new Object[]{
+                JGestionUtils.getNumeracion(o, true),
+                o.getFechaNotaCredito(),
+                o.getCliente().getNombre(),
+                o.getCliente().getNumDoc(),
+                o.getGravado(),
+                new BigDecimal(o.getIva10()),
+                new BigDecimal(o.getIva21()),
+                BigDecimal.ZERO,
+                BigDecimal.ZERO,
+                o.getNoGravado(),
+                BigDecimal.ZERO,
+                o.getImporte().negate()
+            });
+        }
+        for (NotaDebito o : lnd) {
+            data.add(new Object[]{
+                JGestionUtils.getNumeracion(o),
+                o.getFechaNotaDebito(),
+                o.getCliente().getNombre(),
+                o.getCliente().getNumDoc(),
+                o.getGravado(),
+                o.getIva10(),
+                o.getIva21(),
+                BigDecimal.ZERO,
+                BigDecimal.ZERO,
+                o.getNoGravado(),
+                BigDecimal.ZERO,
+                o.getImporte()
+            });
+        }
+        return data;
     }
 
     public void displayMovimientosGenerales(Window owner) {

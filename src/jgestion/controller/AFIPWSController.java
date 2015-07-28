@@ -224,7 +224,6 @@ public class AFIPWSController {
         for (IvaTipo o : iVATipoList) {
             totalesAlicuotas.put(o, BigDecimal.ZERO);
         }
-        //recorriendo el detalle de la facturaVenta
         for (DetalleVenta detalleVenta : cbte.getDetallesVentaList()) {
             boolean unknownIVA = true;
             int cantidad = detalleVenta.getCantidad();
@@ -290,17 +289,19 @@ public class AFIPWSController {
         double impIVA = 0;
         //se agregan las alic con importe > 0
         for (IvaTipo ivaTipo : totalesAlicuotas.keySet()) {
-            BigDecimal totalAlic = totalesAlicuotas.get(ivaTipo);
-            if (totalAlic.compareTo(BigDecimal.ZERO) > 0) {
-                BigDecimal totalImporte = totalAlic.multiply(BigDecimal.valueOf((Double.valueOf(ivaTipo.getDesc().replaceAll("%", "")) / 100)))
-                        .setScale(2, RoundingMode.HALF_UP);
-                AlicIva alic = new AlicIva();
-                alic.setId(Integer.parseInt(ivaTipo.getId()));
-                alic.setBaseImp(totalAlic.doubleValue());
-                alic.setImporte(totalImporte.doubleValue());
-                LOG.trace("IVA Tipo: " + ivaTipo.getDesc() + " | " + alic.toString());
-                arrayOfAlicIva.getAlicIva().add(alic);
-                impIVA += alic.getImporte();
+            if (Double.valueOf(ivaTipo.getDesc().replaceAll("%", "")) > 0) {
+                BigDecimal totalAlic = totalesAlicuotas.get(ivaTipo);
+                if (totalAlic.compareTo(BigDecimal.ZERO) > 0) {
+                    BigDecimal totalImporte = totalAlic.multiply(BigDecimal.valueOf((Double.valueOf(ivaTipo.getDesc().replaceAll("%", "")) / 100)))
+                            .setScale(2, RoundingMode.HALF_UP);
+                    AlicIva alic = new AlicIva();
+                    alic.setId(Integer.parseInt(ivaTipo.getId()));
+                    alic.setBaseImp(totalAlic.doubleValue());
+                    alic.setImporte(totalImporte.doubleValue());
+                    LOG.trace("IVA Tipo: " + ivaTipo.getDesc() + " | " + alic.toString());
+                    arrayOfAlicIva.getAlicIva().add(alic);
+                    impIVA += alic.getImporte();
+                }
             }
         }
 
@@ -337,7 +338,7 @@ public class AFIPWSController {
         detalle.setMonCotiz(monCotizacion);
         detalle.setCbtesAsoc(arrayOfCbteAsoc);
         detalle.setTributos(arrayOfTributo);
-        detalle.setIva(arrayOfAlicIva);
+        detalle.setIva(arrayOfAlicIva.getAlicIva().isEmpty() ? null : arrayOfAlicIva);
         detalle.setOpcionales(null);
         LOG.trace("total=" + detalle.getImpTotal() + ", neto=" + detalle.getImpNeto() + ", totConc=" + detalle.getImpTotConc()
                 + ", OpEx=" + detalle.getImpOpEx() + ", Trib=" + detalle.getImpTrib() + ", IVA=" + detalle.getImpIVA());
