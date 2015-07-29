@@ -781,7 +781,7 @@ public class FacturaVentaController {
             throw new MessageException("Debe crear una Sucursal para poder realizar la Factura Venta."
                     + "\nMenú: Datos Generales -> Sucursales");
         }
-        if(s.isWebServices() && unlockedNumeracion) {
+        if (s.isWebServices() && unlockedNumeracion) {
             throw new MessageException("No se pueden cargar comprobantes con numeración manual de Sucursales habilitadas para Facturación Electrónica");
         }
         try {
@@ -848,10 +848,10 @@ public class FacturaVentaController {
             }
         }
         if (s.isWebServices()) {
-            if(!conFactura) {
-            throw new MessageException("No se pueden realizar MVI en puntos de venta habilitados para facturación electrónica");
+            if (!conFactura) {
+                throw new MessageException("No se pueden realizar MVI en puntos de venta habilitados para facturación electrónica");
             }
-            if(UTIL.getDaysBetween(fecha, JGestionUtils.getServerDate()) > 5) {
+            if (UTIL.getDaysBetween(fecha, JGestionUtils.getServerDate()) > 5) {
                 throw new MessageException("La AFIP no permite informar comprobantes con mas de 5 días de antigüedad");
             }
         }
@@ -1455,13 +1455,15 @@ public class FacturaVentaController {
             //es decir que es un movimiento interno, y puede ser cambiado a FACTURA VENTA
             jdFactura.getBtnFacturar().setEnabled(true);
         }
-        FacturaElectronica fe = new FacturaElectronicaController().findBy(facturaVenta);
-        if (fe != null) {
-            if (fe.getCae() == null) {
-                jdFactura.getTfCAE().setForeground(Color.RED);
-                jdFactura.getTfCAE().setText("PENDIENTE!");
-            } else {
-                jdFactura.getTfCAE().setText(fe.getCae());
+        if (facturaVenta.getSucursal().isWebServices()) {
+            FacturaElectronica fe = new FacturaElectronicaController().findBy(facturaVenta);
+            if (fe != null) {
+                if (fe.getCae() == null) {
+                    jdFactura.getTfCAE().setForeground(Color.RED);
+                    jdFactura.getTfCAE().setText("PENDIENTE!");
+                } else {
+                    jdFactura.getTfCAE().setText(fe.getCae());
+                }
             }
         }
         if (paraAnular) {
