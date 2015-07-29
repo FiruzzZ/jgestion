@@ -1114,7 +1114,7 @@ public class Contabilidad {
         NotaCreditoJpaController ncj = new NotaCreditoJpaController();
         List<NotaCredito> ln = ncj.findAll(ncj.getSelectFrom() + " WHERE " + queryWhereNotaCredito.toString());
         NotaDebitoJpaController ndj = new NotaDebitoJpaController();
-        List<NotaDebito> lnd = ndj.findAll(ndj.getSelectFrom() + " WHERE " + queryWhereNotaCredito.toString());
+        List<NotaDebito> lnd = ndj.findAll(ndj.getSelectFrom() + " WHERE " + queryWhereNotaDebito.toString());
         System.out.println("ln" + ln.size());
         List<Object[]> data = new ArrayList<>(l.size() + ln.size() + lnd.size());
         for (FacturaVenta o : l) {
