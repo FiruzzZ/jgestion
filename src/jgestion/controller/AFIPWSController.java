@@ -227,14 +227,15 @@ public class AFIPWSController {
         for (DetalleVenta detalleVenta : cbte.getDetallesVentaList()) {
             boolean unknownIVA = true;
             int cantidad = detalleVenta.getCantidad();
-            Double precioUnitario = detalleVenta.getPrecioUnitario().subtract(detalleVenta.getDescuento()).doubleValue();
+            BigDecimal subTotalProducto = detalleVenta.getPrecioUnitario()
+                    .multiply(BigDecimal.valueOf(cantidad)).setScale(2, RoundingMode.HALF_UP);
             Double productoIVA = Double.valueOf(detalleVenta.getProducto().getIva().getIva());
             //identificando el IVA de cada item del detalle
             for (IvaTipo o : iVATipoList) {
                 Double AFIP_IVA = Double.valueOf(o.getDesc().replaceAll("%", ""));
                 if (0 == (AFIP_IVA.compareTo(productoIVA))) {
                     BigDecimal currentTotalIVA = totalesAlicuotas.get(o);
-                    currentTotalIVA = currentTotalIVA.add(BigDecimal.valueOf(cantidad * precioUnitario)).setScale(2, RoundingMode.HALF_UP);
+                    currentTotalIVA = currentTotalIVA.add(subTotalProducto).setScale(2, RoundingMode.HALF_UP);
                     totalesAlicuotas.put(o, currentTotalIVA);
                     unknownIVA = false;
                     break;
@@ -251,16 +252,6 @@ public class AFIPWSController {
         ConceptoTipo conceptoTipo = new ConceptoTipo();
         conceptoTipo.setId(3);//prod y serv
         DocTipo docTipo = new DocTipo();
-        //80, CUIT, 20080725, NULL
-        //86, CUIL, 20080725, NULL
-        //87, CDI, 20080725, NULL
-        //89, LE, 20080725, NULL
-        //90, LC, 20080725, NULL
-        //91, CI Extranjera, 20080725, NULL
-        //92, en trámite, 20080725, NULL
-        //93, Acta Nacimiento, 20080725, NULL
-        //95, CI Bs. As. RNP, 20080725, NULL
-        //96, DNI, 20080725, NULL
         docTipo.setId(cbte.getCliente().getTipodoc().getAfipID());
         return invokeFE(fe, cbte.getCliente(), cbte.getFechaVenta(), cbte.getImporte(), cbte.getGravado(), cbte.getNoGravado(), totalesAlicuotas, docTipo);
     }
@@ -391,7 +382,7 @@ public class AFIPWSController {
         if (res.getObservaciones() != null && res.getObservaciones().getObs() != null && !res.getObservaciones().getObs().isEmpty()) {
             observaciones = "";
             for (Obs ob : res.getObservaciones().getObs()) {
-                observaciones += "code=" + ob.getCode() + ", msg=" + ob.getMsg();
+                observaciones += "code:" + ob.getCode() + ", msg:" + ob.getMsg();
             }
         }
         try {

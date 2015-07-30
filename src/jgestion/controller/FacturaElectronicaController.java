@@ -103,7 +103,9 @@ public class FacturaElectronicaController {
                                  */
                                 fee = afipwsController.getFEComprobante(s.getPuntoVenta(), tipo, (int) fe.getCbteNumero());
                             } catch (WSAFIPErrorResponseException ex) {
-                                waiting.appendMessage(ex.getMessage(), true, true);
+                                if (!ex.getMessage().contains("code:602")) {
+                                    waiting.appendMessage(ex.getMessage(), true, true);
+                                }
                             }
                             try {
                                 if (fee == null) {
