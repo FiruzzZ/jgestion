@@ -81,6 +81,11 @@ public class SucursalController implements ActionListener {
             throw new MessageException("Debe elegir una fila");
         }
         panel = new PanelABMSucursal();
+        panel.getBtnVerNumeracionActual().addActionListener((ActionEvent e1) -> {
+            if (entity != null && entity.getId() != null) {
+                showNumeracionActualDialog(entity);
+            }
+        });
         UTIL.loadComboBox(panel.getCbProvincias(), new ProvinciaJpaController().findAll(), true);
         AutoCompleteDecorator.decorate(panel.getCbProvincias());
         UTIL.loadComboBox(panel.getCbDepartamentos(), null, true);
@@ -176,10 +181,8 @@ public class SucursalController implements ActionListener {
         String nombre = panel.getTfNombre().toUpperCase().trim();
         if (nombre.isEmpty()) {
             throw new MessageException("Nombre no válido");
-        } else {
-            if (!UTIL.VALIDAR_REGEX(UTIL.REGEX_ALFANUMERIC_WITH_WHITE, nombre)) {
-                throw new MessageException("Nombre solo puede contener caracteres alfanuméricos");
-            }
+        } else if (!UTIL.VALIDAR_REGEX(UTIL.REGEX_ALFANUMERIC_WITH_WHITE, nombre)) {
+            throw new MessageException("Nombre solo puede contener caracteres alfanuméricos");
         }
         try {
             puntoVenta = Integer.valueOf(panel.getTfPuntoVenta().getText().trim());
@@ -613,11 +616,6 @@ public class SucursalController implements ActionListener {
                 panel = null;
                 abm = null;
                 entity = null;
-            } else if (boton.getName().equalsIgnoreCase("verNumeracionActual")) {
-                if (entity != null && entity.getId() != null) {
-                    showNumeracionActualDialog(entity);
-                } else {
-                }
             }
         } // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="JTextField">
@@ -699,6 +697,12 @@ public class SucursalController implements ActionListener {
                     paneln.getTfFactuA_AFIP().setText(afipwsController.getUltimoCompActualizado(sucursal.getPuntoVenta(), 1) + "");
                     paneln.getTfFactuB_AFIP().setText(afipwsController.getUltimoCompActualizado(sucursal.getPuntoVenta(), 6) + "");
                     paneln.getTfFactuC_AFIP().setText(afipwsController.getUltimoCompActualizado(sucursal.getPuntoVenta(), 11) + "");
+                    paneln.getTfInicialNotaCreditoAAFIP().setText(afipwsController.getUltimoCompActualizado(sucursal.getPuntoVenta(), 2) + "");
+                    paneln.getTfInicialNotaCreditoBAFIP().setText(afipwsController.getUltimoCompActualizado(sucursal.getPuntoVenta(), 7) + "");
+                    paneln.getTfInicialNotaCreditoCAFIP().setText(afipwsController.getUltimoCompActualizado(sucursal.getPuntoVenta(), 12) + "");
+                    paneln.getTfInicialNotaDebitoAAFIP().setText(afipwsController.getUltimoCompActualizado(sucursal.getPuntoVenta(), 3) + "");
+                    paneln.getTfInicialNotaDebitoBAFIP().setText(afipwsController.getUltimoCompActualizado(sucursal.getPuntoVenta(), 8) + "");
+                    paneln.getTfInicialNotaDebitoCAFIP().setText(afipwsController.getUltimoCompActualizado(sucursal.getPuntoVenta(), 13) + "");
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(panel, "Error recuperando números de últimos comprobantes\n" + ex.getMessage(),
                             "AFIP Web Services", JOptionPane.ERROR_MESSAGE);

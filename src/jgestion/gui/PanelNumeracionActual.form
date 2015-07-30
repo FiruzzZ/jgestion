@@ -71,21 +71,9 @@
                                   <Component id="tfNotaDebitoBAFIP" alignment="0" min="-2" max="-2" attributes="0"/>
                               </Group>
                           </Group>
-                          <Group type="102" alignment="0" attributes="0">
-                              <Component id="tfInicialReciboA" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="tfReciboA_AFIP" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <Group type="102" attributes="0">
-                              <Component id="tfInicialReciboB" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="tfReciboB_AFIP" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <Group type="102" attributes="0">
-                              <Component id="tfInicialReciboC" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="tfReciboC_AFIP" min="-2" max="-2" attributes="0"/>
-                          </Group>
+                          <Component id="tfInicialReciboA" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="tfInicialReciboB" min="-2" max="-2" attributes="0"/>
+                          <Component id="tfInicialReciboC" min="-2" max="-2" attributes="0"/>
                           <Group type="102" attributes="0">
                               <Component id="tfInicialNotaDebitoA" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
@@ -106,11 +94,7 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="tfNotaDebitoCAFIP" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <Group type="102" attributes="0">
-                              <Component id="tfInicialRemito" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="tfRemitoAFIP" min="-2" max="-2" attributes="0"/>
-                          </Group>
+                          <Component id="tfInicialRemito" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                   </Group>
@@ -145,17 +129,14 @@
               <Group type="103" groupAlignment="2" attributes="0">
                   <Component id="jLabel19" alignment="2" min="-2" max="-2" attributes="0"/>
                   <Component id="tfInicialReciboA" alignment="2" min="-2" max="-2" attributes="0"/>
-                  <Component id="tfReciboA_AFIP" alignment="2" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="2" attributes="0">
                   <Component id="jLabel24" alignment="2" min="-2" max="-2" attributes="0"/>
                   <Component id="tfInicialReciboB" alignment="2" min="-2" max="-2" attributes="0"/>
-                  <Component id="tfReciboB_AFIP" alignment="2" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="2" attributes="0">
-                  <Component id="tfReciboC_AFIP" alignment="2" min="-2" max="-2" attributes="0"/>
                   <Component id="tfInicialReciboC" alignment="2" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel25" alignment="2" min="-2" max="-2" attributes="0"/>
               </Group>
@@ -201,7 +182,6 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jLabel18" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="tfInicialRemito" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="tfRemitoAFIP" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="32767" attributes="0"/>
           </Group>
@@ -332,21 +312,7 @@
         <Property name="horizontalAlignment" type="int" value="4"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JTextField" name="tfRemitoAFIP">
-      <Properties>
-        <Property name="editable" type="boolean" value="false"/>
-        <Property name="columns" type="int" value="8"/>
-        <Property name="horizontalAlignment" type="int" value="4"/>
-      </Properties>
-    </Component>
     <Component class="javax.swing.JTextField" name="tfNotaDebitoAAFIP">
-      <Properties>
-        <Property name="editable" type="boolean" value="false"/>
-        <Property name="columns" type="int" value="8"/>
-        <Property name="horizontalAlignment" type="int" value="4"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="tfReciboA_AFIP">
       <Properties>
         <Property name="editable" type="boolean" value="false"/>
         <Property name="columns" type="int" value="8"/>
@@ -384,21 +350,7 @@
         <Property name="horizontalAlignment" type="int" value="4"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JTextField" name="tfReciboB_AFIP">
-      <Properties>
-        <Property name="editable" type="boolean" value="false"/>
-        <Property name="columns" type="int" value="8"/>
-        <Property name="horizontalAlignment" type="int" value="4"/>
-      </Properties>
-    </Component>
     <Component class="javax.swing.JTextField" name="tfInicialReciboC">
-      <Properties>
-        <Property name="editable" type="boolean" value="false"/>
-        <Property name="columns" type="int" value="8"/>
-        <Property name="horizontalAlignment" type="int" value="4"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="tfReciboC_AFIP">
       <Properties>
         <Property name="editable" type="boolean" value="false"/>
         <Property name="columns" type="int" value="8"/>

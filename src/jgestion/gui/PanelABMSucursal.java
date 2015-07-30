@@ -8,6 +8,7 @@ package jgestion.gui;
 
 import utilities.general.UTIL;
 import java.awt.event.ActionListener;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
@@ -799,5 +800,10 @@ public class PanelABMSucursal extends javax.swing.JPanel {
     public JCheckBox getCheckWebServices() {
         return checkWebServices;
     }
+
+    public JButton getBtnVerNumeracionActual() {
+        return btnVerNumeracionActual;
+    }
+
     // </editor-fold>
 }

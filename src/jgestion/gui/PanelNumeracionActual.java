@@ -48,17 +48,13 @@ public class PanelNumeracionActual extends javax.swing.JPanel {
         tfFactuA_AFIP = new javax.swing.JTextField();
         tfFactuB_AFIP = new javax.swing.JTextField();
         tfFactuC_AFIP = new javax.swing.JTextField();
-        tfRemitoAFIP = new javax.swing.JTextField();
         tfNotaDebitoAAFIP = new javax.swing.JTextField();
-        tfReciboA_AFIP = new javax.swing.JTextField();
         tfInicialNotaCreditoAAFIP = new javax.swing.JTextField();
         tfNotaDebitoBAFIP = new javax.swing.JTextField();
         jLabel24 = new javax.swing.JLabel();
         jLabel25 = new javax.swing.JLabel();
         tfInicialReciboB = new javax.swing.JTextField();
-        tfReciboB_AFIP = new javax.swing.JTextField();
         tfInicialReciboC = new javax.swing.JTextField();
-        tfReciboC_AFIP = new javax.swing.JTextField();
         jLabel26 = new javax.swing.JLabel();
         tfInicialNotaCreditoB = new javax.swing.JTextField();
         tfInicialNotaCreditoBAFIP = new javax.swing.JTextField();
@@ -132,17 +128,9 @@ public class PanelNumeracionActual extends javax.swing.JPanel {
         tfFactuC_AFIP.setColumns(8);
         tfFactuC_AFIP.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
 
-        tfRemitoAFIP.setEditable(false);
-        tfRemitoAFIP.setColumns(8);
-        tfRemitoAFIP.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-
         tfNotaDebitoAAFIP.setEditable(false);
         tfNotaDebitoAAFIP.setColumns(8);
         tfNotaDebitoAAFIP.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-
-        tfReciboA_AFIP.setEditable(false);
-        tfReciboA_AFIP.setColumns(8);
-        tfReciboA_AFIP.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
 
         tfInicialNotaCreditoAAFIP.setEditable(false);
         tfInicialNotaCreditoAAFIP.setColumns(8);
@@ -160,17 +148,9 @@ public class PanelNumeracionActual extends javax.swing.JPanel {
         tfInicialReciboB.setColumns(8);
         tfInicialReciboB.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
 
-        tfReciboB_AFIP.setEditable(false);
-        tfReciboB_AFIP.setColumns(8);
-        tfReciboB_AFIP.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-
         tfInicialReciboC.setEditable(false);
         tfInicialReciboC.setColumns(8);
         tfInicialReciboC.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-
-        tfReciboC_AFIP.setEditable(false);
-        tfReciboC_AFIP.setColumns(8);
-        tfReciboC_AFIP.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
 
         jLabel26.setText("Nota Crédito \"B\"");
 
@@ -251,18 +231,9 @@ public class PanelNumeracionActual extends javax.swing.JPanel {
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(tfInicialNotaCreditoAAFIP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(tfNotaDebitoBAFIP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(tfInicialReciboA, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(tfReciboA_AFIP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(tfInicialReciboB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(tfReciboB_AFIP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(tfInicialReciboC, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(tfReciboC_AFIP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(tfInicialReciboA, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(tfInicialReciboB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(tfInicialReciboC, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(tfInicialNotaDebitoA, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -279,10 +250,7 @@ public class PanelNumeracionActual extends javax.swing.JPanel {
                                 .addComponent(tfInicialNotaDebitoC, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(tfNotaDebitoCAFIP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(tfInicialRemito, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(tfRemitoAFIP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(tfInicialRemito, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(0, 0, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
@@ -308,16 +276,13 @@ public class PanelNumeracionActual extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(jLabel19)
-                    .addComponent(tfInicialReciboA, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(tfReciboA_AFIP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(tfInicialReciboA, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(jLabel24)
-                    .addComponent(tfInicialReciboB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(tfReciboB_AFIP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(tfInicialReciboB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                    .addComponent(tfReciboC_AFIP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(tfInicialReciboC, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel25))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -354,8 +319,7 @@ public class PanelNumeracionActual extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel18)
-                    .addComponent(tfInicialRemito, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(tfRemitoAFIP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(tfInicialRemito, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -397,10 +361,6 @@ public class PanelNumeracionActual extends javax.swing.JPanel {
     private javax.swing.JTextField tfNotaDebitoAAFIP;
     private javax.swing.JTextField tfNotaDebitoBAFIP;
     private javax.swing.JTextField tfNotaDebitoCAFIP;
-    private javax.swing.JTextField tfReciboA_AFIP;
-    private javax.swing.JTextField tfReciboB_AFIP;
-    private javax.swing.JTextField tfReciboC_AFIP;
-    private javax.swing.JTextField tfRemitoAFIP;
     // End of variables declaration//GEN-END:variables
 
     public void setTfInicialFacturaA(String numero) {
@@ -502,6 +462,16 @@ public class PanelNumeracionActual extends javax.swing.JPanel {
     public JTextField getTfInicialNotaDebitoAAFIP() {
         return tfNotaDebitoAAFIP;
     }
+    public JTextField getTfInicialNotaDebitoBAFIP() {
+        return tfNotaDebitoBAFIP;
+    }
+    public JTextField getTfInicialNotaDebitoCAFIP() {
+        return tfNotaDebitoCAFIP;
+    }
+
+    public JTextField getTfNotaDebitoAAFIP() {
+        return tfNotaDebitoAAFIP;
+    }
 
     public JTextField getTfInicialNotaDebitoB() {
         return tfInicialNotaDebitoB;
@@ -538,9 +508,5 @@ public class PanelNumeracionActual extends javax.swing.JPanel {
         tfNotaDebitoAAFIP.setVisible(false);
         tfNotaDebitoBAFIP.setVisible(false);
         tfNotaDebitoCAFIP.setVisible(false);
-        tfReciboA_AFIP.setVisible(false);
-        tfReciboB_AFIP.setVisible(false);
-        tfReciboC_AFIP.setVisible(false);
-        tfRemitoAFIP.setVisible(false);
     }
 }
