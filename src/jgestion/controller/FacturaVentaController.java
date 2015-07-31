@@ -456,8 +456,8 @@ public class FacturaVentaController {
 
     private void sucursalSelectedActionPerformanceOnComboBox(int factVenta1_PresupNotaCredito2_Remito3, Object listener) {
         Sucursal s = getSelectedSucursalFromJDFacturaVenta();
-        char tipo = jdFactura.getCbFacturaTipo().getSelectedItem().toString().charAt(0);
         if (factVenta1_PresupNotaCredito2_Remito3 == 1) {
+            char tipo = jdFactura.getCbFacturaTipo().getSelectedItem().toString().charAt(0);
             if (jdFactura.isEditMode()) {
                 if (EL_OBJECT.getSucursal().equals(s)) {
                     setNumeroFactura(s, Long.valueOf(EL_OBJECT.getNumero()).intValue());
@@ -468,6 +468,7 @@ public class FacturaVentaController {
                 setNumeroFactura(s, jpaController.getNextNumero(s, tipo));
             }
         } else if (factVenta1_PresupNotaCredito2_Remito3 == 2) {
+            char tipo = jdFactura.getCbFacturaTipo().getSelectedItem().toString().charAt(0);
             if (listener != null) {
                 if (listener instanceof PresupuestoJpaController) {
                     setNumeroFactura(s, ((PresupuestoJpaController) listener).getNextNumero(s));

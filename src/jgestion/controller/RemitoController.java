@@ -442,6 +442,12 @@ public class RemitoController implements ActionListener {
         if (buscador.getDcHasta() != null) {
             query.append(" AND o.fecha_remito <='").append(buscador.getDcHasta()).append("'");
         }
+        if (buscador.getDcDesdeSistema()!= null) {
+            query.append(" AND o.fecha_creacion >='").append(UTIL.yyyy_MM_dd.format(buscador.getDcDesdeSistema())).append("'");
+        }
+        if (buscador.getDcHastaSistema()!= null) {
+            query.append(" AND o.fecha_creacion <='").append(UTIL.yyyy_MM_dd.format(UTIL.customDateByDays(buscador.getDcHastaSistema(), 1))).append("'");
+        }
         if (buscador.getCbSucursal().getSelectedIndex() > 0) {
             query.append(" AND o.sucursal= ").append(((EntityWrapper<Sucursal>) buscador.getCbSucursal().getSelectedItem()).getEntity().getId());
         } else {

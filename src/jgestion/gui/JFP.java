@@ -87,10 +87,10 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         Dimension frameSize = getSize();
         setLocation((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
         jMenuItem11.setVisible(false); // Menú -> Datos Generales -> Contribuyente
-        this.setTitle(JGestion.resourceBundle.getString("softwareTitle")
-                + " - "
-                + JGestion.resourceBundle.getString("softwareDescription")
-                + " V" + JGestion.resourceBundle.getString("softwareVersion"));
+        setTitle(JGestion.resourceBundle.getString("application.title")
+                + " v" + JGestion.resourceBundle.getString("application.version")
+                + JGestion.resourceBundle.getString("application.buildnumber")
+         + " - " + UsuarioController.getCurrentUser().getNick());
     }
 
     private void loginUser() {

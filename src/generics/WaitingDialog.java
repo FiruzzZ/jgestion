@@ -24,7 +24,6 @@ public class WaitingDialog extends JDialog implements Serializable {
 
     public WaitingDialog(Window owner, String title, boolean modal, String message, Icon iconMessage) {
         super(owner, title, modal ? DEFAULT_MODALITY_TYPE : ModalityType.MODELESS);
-        this.messageToKeep = message;
         this.iconMessage = iconMessage;
         initPrintingReportDialog();
         if (message != null) {
