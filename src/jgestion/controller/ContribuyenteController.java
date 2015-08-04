@@ -1,5 +1,6 @@
 package jgestion.controller;
 
+import java.awt.Window;
 import jgestion.controller.exceptions.IllegalOrphanException;
 import jgestion.controller.exceptions.MessageException;
 import jgestion.controller.exceptions.NonexistentEntityException;
@@ -162,15 +163,9 @@ public class ContribuyenteController implements ActionListener, MouseListener {
                     cargarDTM(abm.getDTM(), "");
                 } catch (MessageException ex) {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                } catch (IllegalOrphanException ex) {
-                    abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                    LogManager.getLogger();//(ContribuyenteController.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (NonexistentEntityException ex) {
-                    abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                    LogManager.getLogger();//(ContribuyenteController.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (Exception ex) {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                    LogManager.getLogger();//(ContribuyenteController.class.getName()).log(Level.SEVERE, null, ex);
+                    LogManager.getLogger().error(ex.getMessage(), ex);
                 }
             }
             return;
@@ -208,20 +203,19 @@ public class ContribuyenteController implements ActionListener, MouseListener {
     }
 
     private void cargarDTM(DefaultTableModel dtm, String query) {
-        for (int i = dtm.getRowCount(); i > 0; i--) {
-            dtm.removeRow(i - 1);
-        }
-        java.util.List<Contribuyente> l;
+        dtm.setRowCount(0);
+        List<Contribuyente> l;
         if (query == null || query.length() < 10) {
             l = findAll();
-        } else // para cuando se usa el Buscador del ABM
-        {
+        } else {
+            // para cuando se usa el Buscador del ABM
             l = DAO.getEntityManager().createNativeQuery(query, Contribuyente.class).getResultList();
         }
         for (Contribuyente o : l) {
             dtm.addRow(new Object[]{
                 o.getId(),
-                o.getNombre(),});
+                o.getNombre()
+            });
         }
     }
 
@@ -230,23 +224,18 @@ public class ContribuyenteController implements ActionListener, MouseListener {
         abm.tfNombreRequestFocus();
     }
 
-    public void initABM(java.awt.Frame frame, boolean modal) {
-        // <editor-fold defaultstate="collapsed" desc="checking Permiso">
+    public void initABM(Window owner, boolean modal) {
         try {
             UsuarioController.checkPermiso(PermisosController.PermisoDe.DATOS_GENERAL);
         } catch (MessageException ex) {
             javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
             return;
-        }// </editor-fold>
-        abm = new JDMiniABM(frame, modal);
+        }
+        abm = new JDMiniABM(owner, modal);
         abm.hideFieldExtra();
         abm.hideFieldCodigo();
         abm.setTitle("ABM - " + CLASS_NAME + "s");
-        try {
-            UTIL.getDefaultTableModel(abm.getjTable1(), colsName, colsWidth);
-        } catch (Exception ex) {
-            LogManager.getLogger();//(MarcaController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        UTIL.getDefaultTableModel(abm.getjTable1(), colsName, colsWidth);
         cargarDTM(abm.getDTM(), null);
         abm.setListeners(this);
         abm.setVisible(true);

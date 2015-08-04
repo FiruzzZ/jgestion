@@ -45,9 +45,12 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import jgestion.controller.DatosEmpresaJpaController;
 import jgestion.controller.UsuarioController;
+import jgestion.controller.exceptions.MessageException;
 import jgestion.entity.Caja;
 import jgestion.entity.Contribuyente;
+import jgestion.entity.DatosEmpresa;
 import jgestion.entity.RemitoCompra;
 import jgestion.entity.TipoDocumento;
 import jgestion.jpa.controller.JGestionJpaImpl;
@@ -436,25 +439,34 @@ public class JGestionUtils {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public static void cargarComboTiposFacturas(JComboBox cb, Cliente o) {
-        if (o != null) {
-            cb.removeAllItems();
+    public static void cargarComboTiposFacturas(JComboBox cb, Cliente o) throws MessageException {
+        cb.removeAllItems();
+        DatosEmpresa de = new DatosEmpresaJpaController().findDatosEmpresa();
+        if (de.getContribuyente().equals(o.getContribuyente())) {
             if (o.getContribuyente().getFactuA()) {
                 cb.addItem("A");
-            }
-            if (o.getContribuyente().getFactuB()) {
+            } else if (o.getContribuyente().getFactuB()) {
                 cb.addItem("B");
-            }
-            if (o.getContribuyente().getFactuC()) {
+            } else if (o.getContribuyente().getFactuC()) {
                 cb.addItem("C");
-            }
-            if (o.getContribuyente().getFactuM()) {
+            } else if (o.getContribuyente().getFactuM()) {
                 cb.addItem("M");
+            } else {
+                throw new MessageException("No hay definido un tipo de comprobante para el contribuyente " + o.getContribuyente().getNombre());
             }
-            if (o.getContribuyente().getFactuX()) {
-                cb.addItem("X");
+        } else {
+            if (de.getContribuyente().getFactuA()) {
+                cb.addItem("A");
+            } else if (de.getContribuyente().getFactuB()) {
+                cb.addItem("B");
+            } else if (de.getContribuyente().getFactuC()) {
+                cb.addItem("C");
+            } else if (de.getContribuyente().getFactuM()) {
+                cb.addItem("M");
+            } else {
+                throw new MessageException("No hay definido un tipo de comprobante para el contribuyente " + o.getContribuyente().getNombre());
             }
+            
         }
     }
 

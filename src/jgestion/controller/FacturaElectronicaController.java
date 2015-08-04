@@ -410,7 +410,7 @@ public class FacturaElectronicaController {
      * @throws MissingReportException
      */
     private void doReport(HashMap<String, Object> parameters, List<GenericBeanCollection> detalle) throws MissingReportException, JRException {
-        DatosEmpresa de = new DatosEmpresaJpaController().findDatosEmpresa(1);
+        DatosEmpresa de = new DatosEmpresaJpaController().findDatosEmpresa();
         parameters.put("EMP_LOGO", de.getLogo());
         parameters.put("EMP_RAZON_SOCIAL", de.getNombre());
         parameters.put("EMP_DOMICILIO", de.getDireccion());

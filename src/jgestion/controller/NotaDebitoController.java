@@ -25,6 +25,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import jgestion.JGestionUtils;
@@ -90,7 +91,11 @@ public class NotaDebitoController {
             @SuppressWarnings("unchecked")
             public void actionPerformed(ActionEvent e) {
                 if (abm.getCbCliente().getItemCount() > 0) {
-                    JGestionUtils.cargarComboTiposFacturas(abm.getCbFacturaTipo(), ((EntityWrapper<Cliente>) abm.getCbCliente().getSelectedItem()).getEntity());
+                    try {
+                        JGestionUtils.cargarComboTiposFacturas(abm.getCbFacturaTipo(), ((EntityWrapper<Cliente>) abm.getCbCliente().getSelectedItem()).getEntity());
+                    } catch (MessageException ex) {
+                        ex.displayMessage(abm);
+                    }
                 }
             }
         });
@@ -591,7 +596,6 @@ public class NotaDebitoController {
         abm.setVisible(true);
     }
 
-    @SuppressWarnings("unchecked")
     private void setPanel(NotaDebito notaDebito) {
         Sucursal s = notaDebito.getSucursal();
         Cliente c = notaDebito.getCliente();
@@ -608,9 +612,13 @@ public class NotaDebitoController {
                 abm.getTfCAE().setText(fe.getCae());
             }
         }
-        //Los tipos de factura se tienen q cargar antes, sinó modifica el Nº de factura y muestra el siguiente
-        //y no el de Factura seleccionada
-        JGestionUtils.cargarComboTiposFacturas(abm.getCbFacturaTipo(), notaDebito.getCliente());
+        try {
+            //Los tipos de factura se tienen q cargar antes, sinó modifica el Nº de factura y muestra el siguiente
+            //y no el de Factura seleccionada
+            JGestionUtils.cargarComboTiposFacturas(abm.getCbFacturaTipo(), notaDebito.getCliente());
+        } catch (MessageException ex) {
+            ex.displayMessage(abm);
+        }
         abm.getTfFacturaCuarto().setText(UTIL.AGREGAR_CEROS(notaDebito.getSucursal().getPuntoVenta(), 4));
         abm.getTfFacturaOcteto().setText(UTIL.AGREGAR_CEROS(notaDebito.getNumero(), 8));
         DefaultTableModel dtm = (DefaultTableModel) abm.getjTable1().getModel();

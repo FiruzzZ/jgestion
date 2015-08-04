@@ -1,5 +1,6 @@
 package jgestion.controller;
 
+import java.awt.Window;
 import jgestion.controller.exceptions.MessageException;
 import jgestion.controller.exceptions.NonexistentEntityException;
 import jgestion.entity.DatosEmpresa;
@@ -13,6 +14,8 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
+import javax.swing.JButton;
+import jgestion.entity.Contribuyente;
 import org.apache.logging.log4j.LogManager;
 
 /**
@@ -50,37 +53,7 @@ public class DatosEmpresaJpaController implements ActionListener {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            datosEmpresa = em.merge(datosEmpresa);
-            em.getTransaction().commit();
-        } catch (Exception ex) {
-            String msg = ex.getLocalizedMessage();
-            if (msg == null || msg.length() == 0) {
-                Integer id = datosEmpresa.getId();
-                if (findDatosEmpresa(id) == null) {
-                    throw new NonexistentEntityException("The datosEmpresa with id " + id + " no longer exists.");
-                }
-            }
-            throw ex;
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
-    }
-
-    public void destroy(Integer id) throws NonexistentEntityException {
-        EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            DatosEmpresa datosEmpresa;
-            try {
-                datosEmpresa = em.getReference(DatosEmpresa.class, id);
-                datosEmpresa.getId();
-            } catch (EntityNotFoundException enfe) {
-                throw new NonexistentEntityException("The datosEmpresa with id " + id + " no longer exists.", enfe);
-            }
-            em.remove(datosEmpresa);
+            em.merge(datosEmpresa);
             em.getTransaction().commit();
         } finally {
             if (em != null) {
@@ -89,50 +62,19 @@ public class DatosEmpresaJpaController implements ActionListener {
         }
     }
 
-    public List<DatosEmpresa> findDatosEmpresaEntities() {
-        return findDatosEmpresaEntities(true, -1, -1);
-    }
-
-    public List<DatosEmpresa> findDatosEmpresaEntities(int maxResults, int firstResult) {
-        return findDatosEmpresaEntities(false, maxResults, firstResult);
-    }
-
-    private List<DatosEmpresa> findDatosEmpresaEntities(boolean all, int maxResults, int firstResult) {
+    public DatosEmpresa findDatosEmpresa() {
         EntityManager em = getEntityManager();
         try {
-            Query q = em.createQuery("select object(o) from DatosEmpresa as o");
-            if (!all) {
-                q.setMaxResults(maxResults);
-                q.setFirstResult(firstResult);
-            }
-            return q.getResultList();
+            return em.find(DatosEmpresa.class, 1);
         } finally {
             em.close();
         }
     }
-
-    public DatosEmpresa findDatosEmpresa(Integer id) {
-        EntityManager em = getEntityManager();
-        try {
-            return em.find(DatosEmpresa.class, id);
-        } finally {
-            em.close();
-        }
-    }
-
-    public int getDatosEmpresaCount() {
-        EntityManager em = getEntityManager();
-        try {
-            Query q = em.createQuery("select count(o) from DatosEmpresa as o");
-            return ((Long) q.getSingleResult()).intValue();
-        } finally {
-            em.close();
-        }
-    }// </editor-fold>
+    // </editor-fold>
 
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource().getClass().equals(javax.swing.JButton.class)) {
-            javax.swing.JButton boton = (javax.swing.JButton) e.getSource();
+        if (e.getSource().getClass().equals(JButton.class)) {
+            JButton boton = (JButton) e.getSource();
             if (boton.getName().equals("bGuardar")) {
                 try {
                     checkAndSet();
@@ -140,8 +82,8 @@ public class DatosEmpresaJpaController implements ActionListener {
                 } catch (MessageException ex) {
                     jd.showMessage(ex.getMessage(), "", 2);
                 } catch (Exception ex) {
-                    jd.showMessage(ex.getMessage(), "", 0);
-                    ex.printStackTrace();
+                    LogManager.getLogger().error(ex.getMessage(), ex);
+                    jd.showMessage(ex.getMessage(), "Error", 0);
                 }
             } else if (boton.getName().equals("bSalir")) {
                 jd.dispose();
@@ -149,7 +91,7 @@ public class DatosEmpresaJpaController implements ActionListener {
                 try {
                     cargarImagen();
                 } catch (Exception ex) {
-                    LogManager.getLogger();//(DatosEmpresaJpaController.class.getName()).log(Level.SEVERE, null, ex);
+                    LogManager.getLogger().error(ex.getMessage(), ex);
                 }
             } else if (boton.getName().equals("bQuitarFoto")) {
                 jd.getLabelLogo().setIcon(null);
@@ -161,7 +103,7 @@ public class DatosEmpresaJpaController implements ActionListener {
         }
     }
 
-    public void initJD(java.awt.Frame frame, boolean modal) throws Exception {
+    public void initJD(Window owner, boolean modal) throws Exception {
         // <editor-fold defaultstate="collapsed" desc="checking Permiso">
         try {
             UsuarioController.checkPermiso(PermisosController.PermisoDe.DATOS_GENERAL);
@@ -169,14 +111,13 @@ public class DatosEmpresaJpaController implements ActionListener {
             javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
             return;
         }// </editor-fold>
-        jd = new JDDatosEmpresa(frame, modal);
+        jd = new JDDatosEmpresa(owner, modal);
         jd.setListener(this);
-        EL_OBJECT = findDatosEmpresa(1);
+        EL_OBJECT = findDatosEmpresa();
         if (EL_OBJECT != null) {
             setearJD();
         }
-
-        jd.setLocationRelativeTo(frame);
+        jd.setLocationRelativeTo(owner);
         jd.setVisible(true);
     }
 
@@ -184,7 +125,6 @@ public class DatosEmpresaJpaController implements ActionListener {
         if (jd.getTfNombre().length() < 1) {
             throw new MessageException("Nombre no válido");
         }
-
         try {
             UTIL.VALIDAR_CUIL(jd.getTfCUIT().trim());
         } catch (Exception ex) {
@@ -210,6 +150,7 @@ public class DatosEmpresaJpaController implements ActionListener {
         EL_OBJECT.setCuit(Long.valueOf(jd.getTfCUIT()));
         EL_OBJECT.setFechaInicioActividad(jd.getDcInicioActividad());
         EL_OBJECT.setDireccion(jd.getTfDireccion());
+        EL_OBJECT.setContribuyente((Contribuyente) UTIL.getEntityWrapped(jd.getCbContribuyente()).getEntity());
 
         try {
             if (jd.getTfTele1().length() > 0) {
@@ -246,12 +187,9 @@ public class DatosEmpresaJpaController implements ActionListener {
         if (logoFile != null && !quitarImagen) {
             try {
                 EL_OBJECT.setLogo(UTIL.getBytesFromFile(logoFile));
-            } catch (IOException ex) {
-                jd.showMessage(ex.getMessage(), "Datos Empresa", 0);
-                LogManager.getLogger();//(DatosEmpresaJpaController.class.getName()).log(Level.SEVERE, null, ex);
             } catch (Exception ex) {
-                jd.showMessage(ex.getMessage(), "Datos Empresa", 0);
-                LogManager.getLogger();//(DatosEmpresaJpaController.class.getName()).log(Level.SEVERE, null, ex);
+                LogManager.getLogger().error(ex.getMessage(), ex);
+                jd.showMessage(ex.getMessage(), "Error seteando logo", 0);
             }
         } else {
             // si logoFile == null, es porque no se eligió ninguna foto 

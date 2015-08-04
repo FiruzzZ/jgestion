@@ -1,3 +1,9 @@
+--20150804
+update contribuyente set factu_a = false, factu_b = true, factu_c = true WHERE id = 1;
+update contribuyente set factu_a = false, factu_b = true, factu_c = true WHERE id = 2;
+update contribuyente set factu_a = false, factu_b = false, factu_c = true WHERE id = 3;
+update contribuyente set factu_a = true, factu_b = true, factu_c = true WHERE id = 4;
+update contribuyente set factu_a = false, factu_b = true, factu_c = true WHERE id = 5;
 --20150723
 alter table detalle_nota_debito add column cantidad integer not null default 1;
 --20150708

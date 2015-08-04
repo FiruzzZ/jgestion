@@ -332,6 +332,8 @@ public class FacturaVentaController {
                             jdFactura.setTfRemito("Sin Remito");
                         } catch (ClassCastException ex) {
                             jdFactura.setTfRemito("Cliente no válido");
+                        } catch (MessageException ex) {
+                            
                         }
                     }
                 });
@@ -397,6 +399,8 @@ public class FacturaVentaController {
                             jdFactura.setTfRemito("Sin Remito");
                         } catch (ClassCastException ex) {
                             jdFactura.setTfRemito("Cliente no válido");
+                        } catch (MessageException ex) {
+                            ex.displayMessage(jdFactura);
                         }
                     }
                 });
