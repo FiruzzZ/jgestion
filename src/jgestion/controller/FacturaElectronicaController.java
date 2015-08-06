@@ -51,7 +51,7 @@ public class FacturaElectronicaController {
             JOptionPane.showMessageDialog(null, "En proceso...");
             return;
         }
-        final WaitingDialog waiting = new WaitingDialog(null, "Solicitando CAE..", false, "");
+        final WaitingDialog waiting = new WaitingDialog(null, "Solicitando CAE..", false, null);
         waiting.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentShown(ComponentEvent e) {
@@ -91,7 +91,6 @@ public class FacturaElectronicaController {
                                 NotaCredito nc = new NotaCreditoJpaController().findBy(s, tipo, (int) fe.getCbteNumero());
                                 comprobante = nc;
                                 cbteNumero = JGestionUtils.getNumeracion(nc, true);
-
                             }
                             waiting.appendMessage("consultando CAE de " + cbteNumero, true, true);
                             FacturaElectronica fee = null;
@@ -101,7 +100,7 @@ public class FacturaElectronicaController {
                                  * comprobante retorna algo puede que haya sucedido un error y no se
                                  * guardó el CAE retornado
                                  */
-                                fee = afipwsController.getFEComprobante(s.getPuntoVenta(), tipo, (int) fe.getCbteNumero());
+                                fee = afipwsController.getFEComprobante(s.getPuntoVenta(), (int) fe.getCbteNumero(), fe.getCbteTipo());
                             } catch (WSAFIPErrorResponseException ex) {
                                 if (!ex.getMessage().contains("code:602")) {
                                     waiting.appendMessage(ex.getMessage(), true, true);
