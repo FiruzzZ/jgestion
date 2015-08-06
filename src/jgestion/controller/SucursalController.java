@@ -703,6 +703,8 @@ public class SucursalController implements ActionListener {
                     paneln.getTfInicialNotaDebitoAAFIP().setText(afipwsController.getUltimoCompActualizado(sucursal.getPuntoVenta(), 3) + "");
                     paneln.getTfInicialNotaDebitoBAFIP().setText(afipwsController.getUltimoCompActualizado(sucursal.getPuntoVenta(), 8) + "");
                     paneln.getTfInicialNotaDebitoCAFIP().setText(afipwsController.getUltimoCompActualizado(sucursal.getPuntoVenta(), 13) + "");
+                } catch (MessageException ex) {
+                    ex.displayMessage(jd);
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(panel, "Error recuperando números de últimos comprobantes\n" + ex.getMessage(),
                             "AFIP Web Services", JOptionPane.ERROR_MESSAGE);

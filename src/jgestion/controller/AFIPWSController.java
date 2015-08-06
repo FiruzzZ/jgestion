@@ -71,14 +71,19 @@ public class AFIPWSController {
      * expirado, genera uno nuevo a través de {@link WSAA})
      *
      * @param pwdPKCS12
+     * @throws jgestion.controller.exceptions.MessageException
      * @throws ParserConfigurationException
      * @throws SAXException
      * @throws IOException
      * @throws Exception
      */
-    public AFIPWSController(String pwdPKCS12) throws ParserConfigurationException, SAXException, IOException, Exception {
+    public AFIPWSController(String pwdPKCS12) throws MessageException, ParserConfigurationException, SAXException, IOException {
         if (!aFIPClient.areServicesAvailable()) {
-            throw new MessageException("Los servicios de la AFIP no se encuentran disponibles.");
+            String s = "";
+            s += "Applicación: " + (aFIPClient.getAppServer() ? " NO" : " OK");
+            s += "Autenticación: " + (aFIPClient.getAuthServer() ? " NO" : " OK");
+            s += "Base de Datos: " + (aFIPClient.getDbServer() ? " NO" : " OK");
+            throw new MessageException("Los servicios de la AFIP no se encuentran disponibles." + s);
         }
         boolean expired = true;
         File ticketAccessXMLFile = new File(TICKET_ACCESS_XML);
@@ -103,6 +108,9 @@ public class AFIPWSController {
             } catch (UnrecoverableKeyException ex) {
                 throw new MessageException("No es posible crear el certificado porque la contraseña del archivo PCKS#12 no es correcta"
                         + "\n" + ex.getMessage());
+            } catch (Exception ex) {
+                LOG.error("obteniendo TA", ex);
+                throw new MessageException("Error", ex.getMessage());
             }
         }
         TA_XML = getDocument(ticketAccessXMLFile);

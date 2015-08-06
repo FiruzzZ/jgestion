@@ -1229,6 +1229,7 @@ public class FacturaVentaController {
         }
         UTIL.setSelectedItem(jdFactura.getCbSucursal(), s);
         JGestionUtils.cargarComboTiposFacturas(jdFactura.getCbFacturaTipo(), EL_OBJECT.getCliente());
+        remitoToFacturar = EL_OBJECT.getRemito();
         if (EL_OBJECT.getRemito() != null) {
             jdFactura.setTfRemito(JGestionUtils.getNumeracion(EL_OBJECT.getRemito()));
         }
@@ -1622,7 +1623,7 @@ public class FacturaVentaController {
                 || EL_OBJECT.getNumero() != editedFacturaVenta.getNumero()) {
             modificaciones.add("Se modificará la Numeración: " + JGestionUtils.getNumeracion(EL_OBJECT) + ", por: " + JGestionUtils.getNumeracion(editedFacturaVenta));
         }
-        if (EL_OBJECT.getRemito() != null && !editedFacturaVenta.getRemito().equals(EL_OBJECT.getRemito())) {
+        if (EL_OBJECT.getRemito() != null && !EL_OBJECT.getRemito().equals(editedFacturaVenta.getRemito())) {
             Remito remitoToUnbind = EL_OBJECT.getRemito();
             modificaciones.add("Se desvinculará el Remito N°" + JGestionUtils.getNumeracion(remitoToUnbind) + " del comprobante.");
         }
