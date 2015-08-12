@@ -89,6 +89,8 @@ public class WaitingDialog extends JDialog implements Serializable {
     public void appendMessage(String message, boolean keepIt, boolean newLine) {
         if (messageToKeep != null) {
             labelMessage.setText(getHtmlText(messageToKeep + (newLine ? "<BR>" : "") + message));
+        } else {
+            labelMessage.setText(getHtmlText((newLine ? "<BR>" : "") + message));
         }
         if (keepIt) {
             keepCurrentMessage();

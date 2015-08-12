@@ -1013,7 +1013,6 @@ public class FacturaVentaController {
         ActionListenerManager.setCuentasIngresosSubcuentaActionListener(buscador.getCbCuenta(), true, buscador.getCbSubCuenta(), true, true);
         UTIL.loadComboBox(buscador.getCbClieProv(), new ClienteController().findAll(), true);
         UTIL.loadComboBox(buscador.getCbCaja(), new CajaController().findCajasPermitidasByUsuario(UsuarioController.getCurrentUser(), true), true);
-//        UTIL.loadComboBox(buscador.getCbSucursal(), JGestionUtil.getWrappedSucursales(new UsuarioHelper().getSucursales()), true);
         UTIL.loadComboBox(buscador.getCbFormasDePago(), Valores.FormaPago.getFormasDePago(), true);
         UTIL.loadComboBox(buscador.getCbVendedor(), JGestionUtils.getWrappedVendedor(new VendedorJpaController().findAll()), true);
         UTIL.getDefaultTableModel(

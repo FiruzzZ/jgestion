@@ -70,6 +70,7 @@ public class JGestionUtils {
 
     public JGestionUtils() {
     }
+
     private static final String[] yyy = {
         "",
         "",

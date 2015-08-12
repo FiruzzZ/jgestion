@@ -1210,7 +1210,7 @@ public class Contabilidad {
                             Cliente o = new ClienteJpaController().find((Integer) resumenGeneralCtaCte.getjXTable1().getModel().getValueAt(selectedRow, 0));
                             new CtacteClienteController().getResumenCtaCte(resumenGeneralCtaCte, true, o).setVisible(true);
                         } else {
-                            Proveedor o = new ProveedorController().findProveedor((Integer) resumenGeneralCtaCte.getjXTable1().getModel().getValueAt(selectedRow, 0));
+                            Proveedor o = new ProveedorJpaController().find((Integer) resumenGeneralCtaCte.getjXTable1().getModel().getValueAt(selectedRow, 0));
                             new CtacteProveedorController().getResumenCtaCte(resumenGeneralCtaCte, true, o).setVisible(true);
                         }
                     } catch (MessageException | MissingReportException | JRException ex) {

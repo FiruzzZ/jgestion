@@ -3,19 +3,14 @@ package jgestion.controller;
 import jgestion.jpa.controller.ProvinciaJpaController;
 import java.awt.Window;
 import jgestion.controller.exceptions.MessageException;
-import jgestion.controller.exceptions.NonexistentEntityException;
 import jgestion.entity.Cliente;
 import jgestion.entity.Proveedor;
 import java.awt.event.KeyEvent;
 import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.persistence.EntityNotFoundException;
 import jgestion.entity.Contribuyente;
 import jgestion.entity.Departamento;
 import jgestion.entity.Municipio;
 import jgestion.entity.Provincia;
-import javax.swing.JFrame;
 import utilities.general.UTIL;
 import jgestion.gui.JDABM;
 import jgestion.gui.JDContenedor;
@@ -25,7 +20,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.math.BigDecimal;
 import javax.persistence.NoResultException;
-import javax.persistence.RollbackException;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -34,8 +28,6 @@ import javax.swing.table.DefaultTableModel;
 import jgestion.jpa.controller.ProveedorJpaController;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.eclipse.persistence.exceptions.DatabaseException;
-import org.postgresql.util.PSQLException;
 
 /**
  *
@@ -52,82 +44,13 @@ public class ProveedorController implements ActionListener {
     private Proveedor EL_OBJECT;
     private PanelABMProveedores panelABM;
     private final ProveedorJpaController jpaController;
-    // <editor-fold defaultstate="collapsed" desc="CRUD y List's">
-
-    public EntityManager getEntityManager() {
-        return DAO.getEntityManager();
-    }
-
-    public void create(Proveedor proveedor) throws Exception {
-        DAO.create(proveedor);
-    }
-
-    public void edit(Proveedor proveedor) {
-        DAO.merge(proveedor);
-    }
-
-    public void destroy(Integer id) throws NonexistentEntityException, MessageException {
-        EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            Proveedor proveedor;
-            try {
-                proveedor = em.getReference(Proveedor.class, id);
-                proveedor.getId();
-            } catch (EntityNotFoundException enfe) {
-                throw new NonexistentEntityException("The proveedor with id " + id + " no longer exists.", enfe);
-            }
-
-            em.remove(proveedor);
-            em.getTransaction().commit();
-        } catch (RollbackException ex) {
-            if (ex.getCause() instanceof DatabaseException) {
-                PSQLException ps = (PSQLException) ex.getCause().getCause();
-                if (ps.getMessage().contains("viola la llave foránea")) {
-                    throw new MessageException("No se puede eliminar porque existen otros registros que están relacionados a este");
-                }
-            }
-            throw ex;
-
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
-    }
-
-    public List<Proveedor> findAll() {
-        EntityManager em = getEntityManager();
-        try {
-            Query q = em.createQuery("select object(o) from Proveedor as o order by o.nombre");
-            return q.getResultList();
-        } finally {
-            em.close();
-        }
-    }
-
-    public Proveedor findProveedor(Integer id) {
-        EntityManager em = getEntityManager();
-        try {
-            return em.find(Proveedor.class, id);
-        } finally {
-            em.close();
-        }
-    }
-
-    public int getProveedorCount() {
-        EntityManager em = getEntityManager();
-        try {
-            return ((Long) em.createQuery("select count(o) from Proveedor as o").getSingleResult()).intValue();
-        } finally {
-            em.close();
-        }
-    }
-    // </editor-fold>
 
     public ProveedorController() {
         jpaController = new ProveedorJpaController();
+    }
+
+    public List<Proveedor> findAll() {
+        return jpaController.findAllLite();
     }
 
     @Override
@@ -158,16 +81,13 @@ public class ProveedorController implements ActionListener {
                     try {
                         Integer selectedRow = contenedor.getjTable1().getSelectedRow();
                         if (selectedRow > -1) {
-                            destroy(Integer.valueOf((contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
+                            jpaController.remove(jpaController.find(Integer.valueOf((contenedor.getDTM().getValueAt(selectedRow, 0)).toString())));
                             cargarContenedorTabla(contenedor.getDTM());
                         } else {
                             throw new MessageException("No hay " + CLASS_NAME + " seleccionada");
                         }
                     } catch (MessageException ex) {
                         JOptionPane.showMessageDialog(null, ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
-                    } catch (NonexistentEntityException ex) {
-                        JOptionPane.showMessageDialog(null, "No existe el registro que intenta borrar", null, JOptionPane.ERROR_MESSAGE);
-                        cargarContenedorTabla(contenedor.getDTM());
                     }
                 } else if (boton.getName().equalsIgnoreCase("Print")) {
                 } else if (boton.getName().equalsIgnoreCase("exit")) {
@@ -179,9 +99,9 @@ public class ProveedorController implements ActionListener {
                         String msg = EL_OBJECT.getId() == null ? "Registrado" : "Modificado";
                         checkConstraints(EL_OBJECT);
                         if (EL_OBJECT.getId() == null) {
-                            create(EL_OBJECT);
+                            jpaController.persist(EL_OBJECT);
                         } else {
-                            edit(EL_OBJECT);
+                            jpaController.merge(EL_OBJECT);
                         }
                         abm.showMessage(msg, CLASS_NAME, 1);
                         cargarContenedorTabla(contenedor.getDTM());
@@ -215,9 +135,9 @@ public class ProveedorController implements ActionListener {
                         UTIL.loadComboBox(panelABM.getCbMunicipios(), null, true);
                     }
                 }
-            }// </editor-fold>
+            } // </editor-fold>
             // <editor-fold defaultstate="collapsed" desc="ComboBox">
-            else if (e.getSource().getClass().equals(javax.swing.JComboBox.class)) {
+            else if (e.getSource().getClass().equals(JComboBox.class)) {
                 JComboBox combo = (JComboBox) e.getSource();
                 if (combo.equals(panelABM.getCbProvincias())) {
                     if (combo.getSelectedIndex() > 0) {
@@ -241,8 +161,8 @@ public class ProveedorController implements ActionListener {
         }
     }
 
-    public JDialog initContenedor(JFrame frame, boolean modal) {
-        contenedor = new JDContenedor(frame, modal, "ABM - " + CLASS_NAME);
+    public JDialog initContenedor(Window owner, boolean modal) {
+        contenedor = new JDContenedor(owner, modal, "ABM - " + CLASS_NAME);
         contenedor.getTfFiltro().addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
@@ -366,7 +286,6 @@ public class ProveedorController implements ActionListener {
         } catch (IllegalArgumentException ex) {
             panelABM.setIconoValidadorCUIT(false, ex.getMessage());
         }
-
         if (panelABM.getTfDireccion() == null) {
             throw new MessageException("Debe indicar la dirección de la proveedor");
         }
@@ -437,32 +356,30 @@ public class ProveedorController implements ActionListener {
     /**
      * Check the constraints related to the Entity like UNIQUE's codigo, nombre...
      *
-     * @param object
+     * @param o
      * @throws MessageException end-user explanation message.
-     * @throws Exception
      */
-    private void checkConstraints(Proveedor object) throws MessageException, Exception {
+    private void checkConstraints(Proveedor o) throws MessageException {
         String idQuery = "";
-
-        if (object.getId() != null) {
-            idQuery = "o.id!=" + object.getId() + " AND ";
+        if (o.getId() != null) {
+            idQuery = "o.id <>" + o.getId() + " AND ";
         }
         try {
-            DAO.getEntityManager().createNativeQuery("SELECT * FROM " + CLASS_NAME + " o "
-                    + " WHERE " + idQuery + " o.nombre='" + object.getNombre() + "' ", Proveedor.class).getSingleResult();
+            jpaController.findByQuery(jpaController.getSelectFrom()
+                    + " WHERE " + idQuery + " UPPER(o.nombre)='" + o.getNombre().toUpperCase() + "' ");
             throw new MessageException("Ya existe un " + CLASS_NAME + " con este nombre.");
         } catch (NoResultException ex) {
         }
         try {
-            DAO.getEntityManager().createNativeQuery("SELECT * FROM " + CLASS_NAME + " o "
-                    + " WHERE " + idQuery + " o.cuit=" + object.getCuit(), Proveedor.class).getSingleResult();
-            throw new MessageException("Ya existe un " + CLASS_NAME + " con este CUIT.");
+            jpaController.findByQuery(jpaController.getSelectFrom()
+                    + " WHERE " + idQuery + " o.cuit=" + o.getCuit());
+            throw new MessageException("Ya existe un " + CLASS_NAME + " con esta CUIT/CUIL/DNI.");
         } catch (NoResultException ex) {
         }
         try {
-            DAO.getEntityManager().createNativeQuery("SELECT * FROM " + CLASS_NAME + " o "
-                    + " WHERE " + idQuery + " o.codigo='" + object.getCodigo() + "'", Proveedor.class).getSingleResult();
-            throw new MessageException("Ya existe un " + CLASS_NAME + " con este Código.");
+            jpaController.findByQuery(jpaController.getSelectFrom()
+                    + " WHERE " + idQuery + " o.codigo='" + o.getCodigo() + "'");
+            throw new MessageException("Ya existe un " + CLASS_NAME + " con este código.");
         } catch (NoResultException ex) {
         }
     }
@@ -475,12 +392,12 @@ public class ProveedorController implements ActionListener {
     private void armarQuery(String filtro) {
         String query = null;
         if (filtro != null && filtro.length() > 0) {
-            query = "SELECT * FROM " + CLASS_NAME + " o WHERE o.nombre ILIKE '" + filtro + "%' ORDER BY o.nombre";
+            query = "SELECT * FROM " + CLASS_NAME + " o WHERE o.nombre ILIKE '%" + filtro + "%' ORDER BY o.nombre";
         }
         cargarContenedorTabla(contenedor.getDTM(), query);
     }
 
-    Proveedor createProveedorFromCliente(Cliente cliente) throws MessageException, Exception {
+    Proveedor createProveedorFromCliente(Cliente cliente) throws MessageException {
         Proveedor p = new Proveedor();
         p.setNombre(cliente.getNombre());
         p.setCodigo(cliente.getCodigo());
@@ -501,12 +418,12 @@ public class ProveedorController implements ActionListener {
         p.setWebpage(cliente.getWebpage());
         p.setLimiteCtaCte(BigDecimal.ZERO);
         checkConstraints(p);
-        create(p);
+        jpaController.persist(p);
         return p;
     }
 
-    public JDialog initProveedorToCliente(JFrame jFrame) {
-        initContenedor(jFrame, true);
+    public JDialog initProveedorToCliente(Window window) {
+        initContenedor(window, true);
         contenedor.setButtonsVisible(false);
         contenedor.getLabelMensaje().setText("<html>Esta opción le permite crear un Cliente de los datos de un Proveedor</html>");
         contenedor.getbNuevo().setVisible(true);
@@ -516,7 +433,7 @@ public class ProveedorController implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Integer proveedorID = (Integer) UTIL.getSelectedValue(contenedor.getjTable1(), 0);
-                Proveedor proveedor = findProveedor(proveedorID);
+                Proveedor proveedor = jpaController.find(proveedorID);
                 try {
                     if (proveedor == null) {
                         throw new MessageException("Seleccione el " + CLASS_NAME + " que desea convertir");
@@ -527,7 +444,7 @@ public class ProveedorController implements ActionListener {
                     JOptionPane.showMessageDialog(contenedor, ex.getMessage());
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(contenedor, ex.getMessage());
-                    LogManager.getLogger();//(ClienteController.class.getName()).log(Level.ERROR, null, ex);
+                    LogManager.getLogger().error(ex.getMessage(), ex);
                 }
             }
         });

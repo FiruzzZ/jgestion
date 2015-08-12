@@ -1,8 +1,8 @@
 package jgestion.controller;
 
+import java.awt.Window;
 import jgestion.jpa.controller.ProvinciaJpaController;
 import jgestion.controller.exceptions.MessageException;
-import jgestion.controller.exceptions.NonexistentEntityException;
 import jgestion.entity.Cliente;
 import java.awt.event.KeyEvent;
 import java.util.List;
@@ -19,9 +19,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.math.BigDecimal;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.persistence.RollbackException;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -32,8 +29,6 @@ import jgestion.entity.TipoDocumento;
 import jgestion.jpa.controller.ClienteJpaController;
 import jgestion.jpa.controller.TipoDocumentoJpaController;
 import org.apache.logging.log4j.LogManager;
-import org.eclipse.persistence.exceptions.DatabaseException;
-import org.postgresql.util.PSQLException;
 
 /**
  *
@@ -54,33 +49,12 @@ public class ClienteController implements ActionListener {
         jpaController = new ClienteJpaController();
     }
 
-    public void destroy(Integer id) throws NonexistentEntityException, MessageException {
-        try {
-            Cliente cliente;
-            cliente = jpaController.find(id);
-            if (cliente == null) {
-                throw new NonexistentEntityException("The cliente with id " + id + " no longer exists.");
-            }
-            jpaController.remove(cliente);
-        } catch (RollbackException ex) {
-            if (ex.getCause() instanceof DatabaseException) {
-                PSQLException ps = (PSQLException) ex.getCause().getCause();
-                if (ps.getMessage().contains("viola la llave foránea") || ps.getMessage().contains("violates foreign key constraint")) {
-                    throw new MessageException("No se puede eliminar porque existen otros registros que están relacionados a este");
-                }
-            }
-            throw ex;
-        } finally {
-            jpaController.closeEntityManager();
-        }
-    }
-
     public List<Cliente> findAll() {
         return jpaController.findAll();
     }
 
-    public JDialog initContenedor(JFrame frame, boolean modal) {
-        contenedor = new JDContenedor(frame, modal, "ABM - " + CLASS_NAME + "s");
+    public JDialog initContenedor(Window owner, boolean modal) {
+        contenedor = new JDContenedor(owner, modal, "ABM - " + CLASS_NAME + "s");
         contenedor.getTfFiltro().addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
@@ -367,35 +341,30 @@ public class ClienteController implements ActionListener {
      *
      * @param object
      * @throws MessageException end-user explanation message.
-     * @throws Exception
      */
     private void checkConstraints(Cliente object) throws MessageException {
         String idQuery = "";
 
         if (object.getId() != null) {
             idQuery = "o.id<>" + object.getId() + " AND ";
-
         }
         String l = (String) jpaController.findAttribute("SELECT o.nombre"
-                + " FROM " + jpaController.getEntityClass().getSimpleName() + " o "
+                + " FROM " + jpaController.getAlias()
                 + " WHERE " + idQuery + " o.codigo='" + object.getCodigo() + "'");
         if (l != null) {
-            throw new MessageException(
-                    "Ya existe el cliente: " + l + " con este Código.");
+            throw new MessageException("Ya existe el cliente: " + l + " con este Código.");
         }
         l = (String) jpaController.findAttribute("SELECT o.nombre"
-                + " FROM " + jpaController.getEntityClass().getSimpleName() + " o "
+                + " FROM " + jpaController.getAlias()
                 + " WHERE " + idQuery + " o.nombre='" + object.getNombre() + "' ");
         if (l != null) {
-            throw new MessageException(
-                    "Ya existe un " + CLASS_NAME + " con este nombre.");
+            throw new MessageException("Ya existe un " + CLASS_NAME + " con este nombre.");
         }
         l = (String) jpaController.findAttribute("SELECT o.nombre"
-                + " FROM " + jpaController.getEntityClass().getSimpleName() + " o "
+                + " FROM " + jpaController.getAlias()
                 + " WHERE " + idQuery + " o.numDoc=" + object.getNumDoc());
         if (l != null) {
-            throw new MessageException(
-                    "Ya existe el cliente: " + l + " con este DNI/CUIT.");
+            throw new MessageException("Ya existe el cliente: " + l + " con este DNI/CUIT.");
         }
     }
 
@@ -413,7 +382,7 @@ public class ClienteController implements ActionListener {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    LogManager.getLogger();//(ClienteController.class.getName()).log(Level.SEVERE, null, ex);
+                    LogManager.getLogger().error(ex.getMessage(), ex);
                 }
             } else if (boton.equals(contenedor.getbModificar())) {
                 try {
@@ -429,14 +398,14 @@ public class ClienteController implements ActionListener {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    LogManager.getLogger();//(ClienteController.class.getName()).log(Level.SEVERE, null, ex);
+                    LogManager.getLogger().error(ex.getMessage(), ex);
                 }
 
             } else if (boton.equals(contenedor.getbBorrar())) {
                 try {
                     int selectedRow = contenedor.getjTable1().getSelectedRow();
                     if (selectedRow > -1) {
-                        destroy(Integer.valueOf((contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
+                        jpaController.remove(jpaController.find(Integer.valueOf((contenedor.getDTM().getValueAt(selectedRow, 0)).toString())));
                         cargarContenedorTabla(contenedor.getDTM(), null);
                     } else {
                         throw new MessageException("No hay " + CLASS_NAME + " seleccionado");
@@ -444,12 +413,9 @@ public class ClienteController implements ActionListener {
                     JOptionPane.showMessageDialog(contenedor, "Registro eliminado");
                 } catch (MessageException ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                } catch (NonexistentEntityException ex) {
-                    contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    LogManager.getLogger();//(ClienteController.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (Exception ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    LogManager.getLogger();//(ClienteController.class.getName()).log(Level.SEVERE, null, ex);
+                    LogManager.getLogger().error(ex.getMessage(), ex);
                 }
             } else if (boton.getName().equalsIgnoreCase("Print")) {
                 //no implementado aun...
@@ -474,7 +440,7 @@ public class ClienteController implements ActionListener {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                    LogManager.getLogger();//(ClienteController.class.getName()).log(Level.SEVERE, null, ex);
+                    LogManager.getLogger().error(ex.getMessage(), ex);
                 }
             } else if (boton.getName().equalsIgnoreCase("cancelar")) {
                 abm.dispose();
@@ -536,7 +502,7 @@ public class ClienteController implements ActionListener {
     private void armarQuery(String filtro) {
         String query = null;
         if (filtro != null && filtro.length() > 0) {
-            query = "SELECT * FROM " + CLASS_NAME + " o WHERE o.nombre ILIKE '" + filtro + "%'";
+            query = "SELECT * FROM " + CLASS_NAME + " o WHERE o.nombre ILIKE '%" + filtro + "%'";
         }
         cargarContenedorTabla(contenedor.getDTM(), query);
     }
@@ -563,7 +529,7 @@ public class ClienteController implements ActionListener {
     public JDialog initClienteToProveedor(JFrame owner) {
         initContenedor(owner, true);
         contenedor.setButtonsVisible(false);
-        contenedor.getLabelMensaje().setText("<html>Esta opción le permite crear un Proveedor de los datos de un Cliente</html>");
+        contenedor.getLabelMensaje().setText("<html>Esta opción le permite crear un Proveedor a partir de los datos de un Cliente</html>");
         contenedor.getbNuevo().setVisible(true);
         contenedor.getbNuevo().setText("Convertir");
         contenedor.getbNuevo().removeActionListener(this);
@@ -586,16 +552,14 @@ public class ClienteController implements ActionListener {
                     JOptionPane.showMessageDialog(contenedor, ex.getMessage());
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(contenedor, ex.getMessage());
-                    Logger
-                            .getLogger(ClienteController.class
-                                    .getName()).log(Level.SEVERE, null, ex);
+                    LogManager.getLogger().error(ex.getMessage(), ex);
                 }
             }
         });
         return contenedor;
     }
 
-    private void createProveedorFromCliente(Cliente cliente) throws MessageException, Exception {
+    private void createProveedorFromCliente(Cliente cliente) throws MessageException {
         new ProveedorController().createProveedorFromCliente(cliente);
     }
 
