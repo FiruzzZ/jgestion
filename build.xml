@@ -10,8 +10,7 @@
 <project name="JGestion" default="default" basedir=".">
     <description>Builds, tests, and runs the project JGestion.</description>
     <import file="nbproject/build-impl.xml"/>
-    
-    <target name="-post-jar" description="Sets the buildversion for the current build">
+    <target name="-pre-compile" description="Sets the buildversion for the current build">
     <propertyfile file="${src.dir}\resources.properties">
         <entry key="application.buildnumber" value="1" type="int" operation="+"/>
         <entry key="application.builddate" value="now" type="date"/>
