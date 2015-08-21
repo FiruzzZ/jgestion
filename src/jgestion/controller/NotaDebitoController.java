@@ -22,6 +22,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -362,17 +363,22 @@ public class NotaDebitoController {
         BigDecimal iva21 = BigDecimal.ZERO;
         BigDecimal otrosImps = BigDecimal.ZERO;
         BigDecimal desc = BigDecimal.ZERO;
-        BigDecimal subTotal = BigDecimal.ZERO;
+        BigDecimal total = BigDecimal.ZERO;
         DefaultTableModel dtm = (DefaultTableModel) abm.getjTable1().getModel();
         for (int rowIndex = 0; rowIndex < dtm.getRowCount(); rowIndex++) {
             DetalleNotaDebito d = (DetalleNotaDebito) dtm.getValueAt(rowIndex, 0);
             BigDecimal alicuota = BigDecimal.valueOf(d.getIva().getIva());
-            BigDecimal totalPorItem = d.getImporte().multiply(BigDecimal.valueOf(d.getCantidad()));
-            subTotal = subTotal.add(totalPorItem);
+            BigDecimal cantidad = BigDecimal.valueOf(d.getCantidad());
+            BigDecimal precioUnitarioSinIVA = d.getImporte();
+            BigDecimal subTotal = precioUnitarioSinIVA.multiply(cantidad);
             if (alicuota.intValue() > 0) {
-                gravado = gravado.add(totalPorItem);
+                gravado = gravado.add(precioUnitarioSinIVA.multiply(cantidad));
+                BigDecimal precioUnitarioConIva = subTotal
+                        .multiply((alicuota.divide(new BigDecimal("100")).add(BigDecimal.ONE)))
+                        .setScale(4, RoundingMode.HALF_UP); //subTotal
+                redondeoTotal = redondeoTotal.add(precioUnitarioConIva);
             }
-            BigDecimal iva = UTIL.getPorcentaje(totalPorItem, alicuota);
+            BigDecimal iva = UTIL.getPorcentaje(subTotal, alicuota);
             if (alicuota.intValue() == 0) {
                 noGravado = noGravado.add(iva);
             } else if (alicuota.toString().equalsIgnoreCase("10.5")) {
@@ -384,7 +390,7 @@ public class NotaDebitoController {
             } else {
                 throw new IllegalArgumentException("IVA no determinado");
             }
-            subTotal = subTotal.add(iva);
+            total = total.add(subTotal.add(iva));
         }
         abm.getTfGravado().setText(UTIL.DECIMAL_FORMAT.format(gravado));
         abm.getTfTotalNoGravado().setText(UTIL.DECIMAL_FORMAT.format(noGravado));
@@ -394,8 +400,8 @@ public class NotaDebitoController {
         abm.getTfTotalOtrosImps().setText(UTIL.DECIMAL_FORMAT.format(otrosImps));
         redondeoTotal = gravado.add(iva10).add(iva21).add(otrosImps).subtract(redondeoTotal);
         abm.getTfDiferenciaRedondeo().setText(UTIL.DECIMAL_FORMAT.format(redondeoTotal));
-        abm.getTfTotal().setText(UTIL.DECIMAL_FORMAT.format(subTotal));
-        LOG.debug("Gravado:" + gravado + ", Desc.:" + desc + ", IVA105:" + iva10 + ", IVA21:" + iva21 + ", OtrosImp.:" + otrosImps + ", Redondeo:" + redondeoTotal);
+        abm.getTfTotal().setText(UTIL.DECIMAL_FORMAT.format(total));
+        LOG.debug("Tota=" + total + ", Gravado:" + gravado + ", Desc.:" + desc + ", IVA105:" + iva10 + ", IVA21:" + iva21 + ", OtrosImp.:" + otrosImps + ", Redondeo:" + redondeoTotal);
     }
 
     private void addDetalle(DetalleNotaDebito detalle) {

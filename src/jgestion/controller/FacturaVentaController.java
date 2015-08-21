@@ -64,7 +64,6 @@ import jgestion.entity.FacturaElectronica;
 import jgestion.entity.FacturaVenta_;
 import jgestion.jpa.controller.FacturaElectronicaJpaController;
 import net.sf.jasperreports.engine.JRException;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import utilities.general.UTIL;
@@ -333,7 +332,7 @@ public class FacturaVentaController {
                         } catch (ClassCastException ex) {
                             jdFactura.setTfRemito("Cliente no válido");
                         } catch (MessageException ex) {
-                            
+
                         }
                     }
                 });
@@ -1023,6 +1022,7 @@ public class FacturaVentaController {
         buscador.getjTable1().getColumnModel().getColumn(4).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         buscador.getjTable1().getColumnModel().getColumn(5).setCellRenderer(FormatRenderer.getDateRenderer());
         buscador.getjTable1().getColumnModel().getColumn(9).setCellRenderer(FormatRenderer.getDateTimeRenderer());
+        buscador.getjTable1().setAutoCreateRowSorter(true);
         UTIL.hideColumnTable(buscador.getjTable1(), 0);
         UTIL.setHorizonalAlignment(buscador.getjTable1(), String.class, SwingConstants.RIGHT);
         buscador.getjTable1().addMouseListener(new MouseAdapter() {
@@ -1372,8 +1372,7 @@ public class FacturaVentaController {
                 throw new MessageException("Número de movimiento no válido");
             }
         }
-        query.append(" ORDER BY o.fechaVenta");
-        LOG.trace("queryBuscador=" + query);
+        query.append(" ORDER BY o.fechaalta");
         return query.toString();
     }
 
