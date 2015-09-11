@@ -1,25 +1,16 @@
 package jgestion.jpa.controller;
 
-import jgestion.controller.DAO;
 import jgestion.entity.Remito;
 import jgestion.entity.Sucursal;
-import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
 /**
  *
  * @author Administrador
  */
-public class RemitoJpaController extends AbstractDAO<Remito, Integer> {
+public class RemitoJpaController extends JGestionJpaImpl<Remito, Integer> {
 
-    private EntityManager entityManager;
-
-    @Override
-    protected EntityManager getEntityManager() {
-        if (entityManager == null || !entityManager.isOpen()) {
-            entityManager = DAO.getEntityManager();
-        }
-        return entityManager;
+    public RemitoJpaController() {
     }
 
     public Integer getNextNumero(Sucursal sucursal) {

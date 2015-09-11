@@ -198,10 +198,10 @@ public class NotaCreditoProveedorController implements ActionListener {
             query.append(" AND o.fechaNotaCredito <= '").append(buscador.getDcHasta()).append("'");
         }
         if (buscador.getDcDesdeSistema() != null) {
-            query.append(" AND o.fechacarga >= '").append(buscador.getDcDesdeSistema()).append("'");
+            query.append(" AND o.fechaCarga >= '").append(buscador.getDcDesdeSistema()).append("'");
         }
         if (buscador.getDcHastaSistema() != null) {
-            query.append(" AND o.fechacarga <= '").append(buscador.getDcHastaSistema()).append("'");
+            query.append(" AND o.fechaCarga <= '").append(buscador.getDcHastaSistema()).append("'");
         }
 
         if (buscador.getCbClieProv().getSelectedIndex() > 0) {
@@ -213,7 +213,7 @@ public class NotaCreditoProveedorController implements ActionListener {
             query.append(" AND o.remesa ").append(buscador.getCbFormasDePago().getSelectedItem().toString().equalsIgnoreCase("si") ? " is not null" : " is null");
         }
 
-        query.append( //" GROUP BY o.id, o.fecha_carga, o.hora_carga, o.monto_entrega, o.usuario, o.caja, o.sucursal, o.fecha_remesa, o.estado"
+        query.append(
                 " ORDER BY o.fechaCarga");
         LOG.debug("Buscador.query=" + query.toString());
         return query.toString();

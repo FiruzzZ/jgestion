@@ -1,12 +1,8 @@
 package jgestion.jpa.controller;
 
-import jgestion.controller.DAO;
-import jgestion.entity.Cliente;
-import jgestion.entity.Cliente_;
 import jgestion.entity.Vendedor;
 import jgestion.entity.Vendedor_;
 import java.util.List;
-import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -16,17 +12,11 @@ import org.eclipse.persistence.config.QueryHints;
  *
  * @author FiruzzZ
  */
-public class VendedorJpaController extends AbstractDAO<Vendedor, Integer> {
+public class VendedorJpaController extends JGestionJpaImpl<Vendedor, Integer> {
 
-    private EntityManager entityManager;
-
-    @Override
-    protected EntityManager getEntityManager() {
-        if (entityManager == null || !entityManager.isOpen()) {
-            entityManager = DAO.getEntityManager();
-        }
-        return entityManager;
+    public VendedorJpaController() {
     }
+
 
     @Override
     public List<Vendedor> findAll() {

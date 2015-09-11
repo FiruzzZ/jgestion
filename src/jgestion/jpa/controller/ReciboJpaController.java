@@ -97,7 +97,7 @@ public class ReciboJpaController extends JGestionJpaImpl<Recibo, Integer> {
                 } else {
                     ctaCteCliente = new CtacteClienteController().findByNotaDebito(dr.getNotaDebito().getId());
                 }
-                ctaCteCliente.setEntregado(ctaCteCliente.getEntregado() - dr.getMontoEntrega().doubleValue());
+                ctaCteCliente.setEntregado(ctaCteCliente.getEntregado().subtract(dr.getMontoEntrega()));
                 // y si había sido pagada en su totalidad..
                 if (ctaCteCliente.getEstado() == Valores.CtaCteEstado.PAGADA.getId()) {
                     ctaCteCliente.setEstado(Valores.CtaCteEstado.PENDIENTE.getId());
@@ -167,10 +167,11 @@ public class ReciboJpaController extends JGestionJpaImpl<Recibo, Integer> {
 
     @SuppressWarnings("unchecked")
     public List<DetalleRecibo> findDetalleReciboBy(FacturaVenta factura) {
-        return getEntityManager().
-                //SELECT d FROM DetalleRecibo d WHERE d.facturaVenta = :facturaVenta
-                createNamedQuery("DetalleRecibo.findByFacturaVenta").
-                setParameter("facturaVenta", factura).getResultList();
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<DetalleRecibo> query = cb.createQuery(DetalleRecibo.class);
+        Root<DetalleRecibo> from = query.from(query.getResultType());
+        query.where(cb.equal(from.get(DetalleRecibo_.factura), factura));
+        return getEntityManager().createQuery(query).getResultList();
     }
 
     @SuppressWarnings("unchecked")
@@ -205,12 +206,12 @@ public class ReciboJpaController extends JGestionJpaImpl<Recibo, Integer> {
                     pagosPost.add(pago);
                 } else if (object instanceof ChequePropio) {
                     ChequePropio pago = (ChequePropio) object;
-                    pago.setComprobanteIngreso(getEntityClass().getSimpleName() + " " + JGestionUtils.getNumeracion(recibo, true));
+                    pago.setComprobanteIngreso(JGestionUtils.getNumeracion(recibo, true));
                     entityManager.merge(pago);
                     pagosPost.add(pago);
                 } else if (object instanceof ChequeTerceros) {
                     ChequeTerceros pago = (ChequeTerceros) object;
-                    pago.setComprobanteIngreso(getEntityClass().getSimpleName() + " " + JGestionUtils.getNumeracion(recibo, true));
+                    pago.setComprobanteIngreso(JGestionUtils.getNumeracion(recibo, true));
                     if (pago.getId() == null) {
                         entityManager.persist(pago);
                     } else {
@@ -240,7 +241,6 @@ public class ReciboJpaController extends JGestionJpaImpl<Recibo, Integer> {
             entityManager.getTransaction().commit();
         } catch (Exception ex) {
             System.out.println("Error persistiendo Recibo.id=" + recibo.getId());
-            remove(recibo);
             entityManager = getEntityManager();
             if (!entityManager.getTransaction().isActive()) {
                 entityManager.getTransaction().begin();
@@ -262,6 +262,7 @@ public class ReciboJpaController extends JGestionJpaImpl<Recibo, Integer> {
                 }
             }
             entityManager.getTransaction().commit();
+            remove(recibo);
             throw new DAOException("Error persistiendo Recibo.id=" + recibo.getId()
                     + "\n" + ex.getMessage(), ex);
         }

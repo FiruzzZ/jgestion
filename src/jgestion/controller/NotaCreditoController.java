@@ -27,12 +27,10 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import jgestion.JGestionUtils;
 import jgestion.entity.FacturaElectronica;
-import jgestion.entity.NotaCredito_;
 import jgestion.jpa.controller.FacturaElectronicaJpaController;
 import jgestion.jpa.controller.NotaCreditoJpaController;
 import jgestion.jpa.controller.ProductoJpaController;
@@ -266,16 +264,16 @@ public class NotaCreditoController {
             }
         }
         if (buscador.getDcDesde() != null) {
-            query.append(" AND o.").append(NotaCredito_.fechaNotaCredito.getName()).append(" >= '").append(buscador.getDcDesde()).append("'");
+            query.append(" AND o.").append("fechaNotaCredito").append(" >= '").append(buscador.getDcDesde()).append("'");
         }
         if (buscador.getDcHasta() != null) {
-            query.append(" AND o.").append(NotaCredito_.fechaNotaCredito.getName()).append(" <= '").append(buscador.getDcHasta()).append("'");
+            query.append(" AND o.").append("fechaNotaCredito").append(" <= '").append(buscador.getDcHasta()).append("'");
         }
         if (buscador.getDcDesdeSistema() != null) {
-            query.append(" AND o.").append(NotaCredito_.fechaCarga.getName()).append(" >= '").append(UTIL.yyyy_MM_dd.format(buscador.getDcDesdeSistema())).append("'");
+            query.append(" AND o.").append("fechaCarga").append(" >= '").append(UTIL.yyyy_MM_dd.format(buscador.getDcDesdeSistema())).append("'");
         }
         if (buscador.getDcHastaSistema() != null) {
-            query.append(" AND o.").append(NotaCredito_.fechaCarga.getName()).append(" < '").append(UTIL.yyyy_MM_dd.format(UTIL.customDateByDays(buscador.getDcHastaSistema(), 1))).append("'");
+            query.append(" AND o.").append("fechaCarga").append(" < '").append(UTIL.yyyy_MM_dd.format(UTIL.customDateByDays(buscador.getDcHastaSistema(), 1))).append("'");
         }
         if (buscador.getCbSucursal().getSelectedIndex() > 0) {
             query.append(" AND o.sucursal.id = ").append(((EntityWrapper<Sucursal>) buscador.getCbSucursal().getSelectedItem()).getId());

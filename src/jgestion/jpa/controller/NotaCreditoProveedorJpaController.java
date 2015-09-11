@@ -10,7 +10,7 @@ import javax.persistence.NoResultException;
  *
  * @author FiruzzZ
  */
-public class NotaCreditoProveedorJpaController extends AbstractDAO<NotaCreditoProveedor, Integer> {
+public class NotaCreditoProveedorJpaController extends JGestionJpaImpl<NotaCreditoProveedor, Integer> {
 
     private EntityManager entityManager;
 

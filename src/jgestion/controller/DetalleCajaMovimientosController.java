@@ -10,7 +10,6 @@ import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import jgestion.entity.DetalleCajaMovimientos_;
 import jgestion.entity.FacturaVenta;
 import jgestion.entity.Producto;
 import org.apache.logging.log4j.LogManager;
@@ -198,24 +197,29 @@ public class DetalleCajaMovimientosController {
      * @return instance of {@code DetalleCajaMovimientos} if exist, else {@code null}
      */
     public DetalleCajaMovimientos findBy(long numero, short tipo) {
-        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        CriteriaQuery<DetalleCajaMovimientos> query = cb.createQuery(DetalleCajaMovimientos.class);
-        Root<DetalleCajaMovimientos> from = query.from(DetalleCajaMovimientos.class);
-        query.select(from).
-                where(cb.equal(from.get(DetalleCajaMovimientos_.numero), numero),
-                        cb.equal(from.get(DetalleCajaMovimientos_.tipo), tipo));
+//        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+//        CriteriaQuery<DetalleCajaMovimientos> query = cb.createQuery(DetalleCajaMovimientos.class);
+//        Root<DetalleCajaMovimientos> from = query.from(DetalleCajaMovimientos.class);
+//        query.select(from).
+//                where(cb.equal(from.get(DetalleCajaMovimientos_.numero), numero),
+//                        cb.equal(from.get(DetalleCajaMovimientos_.tipo), tipo));
         try {
-            return getEntityManager().createQuery(query).getSingleResult();
+            return (DetalleCajaMovimientos) getEntityManager().createQuery("SELECT o FROM DetalleCajaMovimientos o"
+                    + " WHERE o.numero=" + numero
+                    + " AND o.tipo=" + tipo).getSingleResult();
         } catch (NoResultException e) {
             return null;
         }
     }
-/**
- * Recupera el importa de ventas (solo los generados por {@link FacturaVenta})generado por el Producto
- * @param cm
- * @param p
- * @return {@code BigDecimal.ZERO} si no existe ninguna venta
- */
+
+    /**
+     * Recupera el importa de ventas (solo los generados por {@link FacturaVenta})generado por el
+     * Producto
+     *
+     * @param cm
+     * @param p
+     * @return {@code BigDecimal.ZERO} si no existe ninguna venta
+     */
     public BigDecimal getTotalVentas(CajaMovimientos cm, Producto p) {
         return (BigDecimal) getEntityManager().createQuery("SELECT COALESCE(SUM(p.precioVenta * detalleVenta.cantidad), 0)"
                 + " FROM " + DetalleCajaMovimientos.class.getSimpleName() + " detalle"

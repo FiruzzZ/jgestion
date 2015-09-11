@@ -1,10 +1,8 @@
 package jgestion.jpa.controller;
 
-import jgestion.controller.DAO;
 import jgestion.entity.CtacteCliente;
 import jgestion.entity.CtacteCliente_;
 import jgestion.entity.FacturaVenta;
-import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -14,16 +12,9 @@ import javax.persistence.criteria.Root;
  *
  * @author FiruzzZ
  */
-public class CtacteClienteJpaController extends AbstractDAO<CtacteCliente, Integer> {
+public class CtacteClienteJpaController extends JGestionJpaImpl<CtacteCliente, Integer> {
 
-    private EntityManager entityManager;
-
-    @Override
-    protected EntityManager getEntityManager() {
-        if (entityManager == null || !entityManager.isOpen()) {
-            entityManager = DAO.getEntityManager();
-        }
-        return entityManager;
+    public CtacteClienteJpaController() {
     }
 
     public CtacteCliente findByNotaDebito(Integer id) {
@@ -34,6 +25,7 @@ public class CtacteClienteJpaController extends AbstractDAO<CtacteCliente, Integ
             return null;
         }
     }
+
     public CtacteCliente findByFactura(Integer id) {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<CtacteCliente> query = cb.createQuery(CtacteCliente.class);

@@ -4,6 +4,7 @@ import jgestion.controller.Valores;
 import jgestion.controller.Valores.CtaCteEstado;
 import jgestion.controller.Valores.FormaPago;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -46,13 +47,13 @@ public class CtacteCliente implements Serializable {
     private short dias;
     @Basic(optional = false)
     @Column(name = "importe", nullable = false, precision = 12, scale = 2)
-    private double importe;
+    private BigDecimal importe;
     @Basic(optional = false)
     @Column(name = "estado", nullable = false)
     private short estado;
     @Basic(optional = false)
     @Column(name = "entregado", nullable = false, precision = 12, scale = 2)
-    private double entregado;
+    private BigDecimal entregado;
     @Basic(optional = false)
     @Column(name = "fecha_carga", nullable = false, updatable = false, columnDefinition = "timestamp with time zone NOT NULL DEFAULT now()")
     @Temporal(TemporalType.TIMESTAMP)
@@ -88,11 +89,11 @@ public class CtacteCliente implements Serializable {
         this.dias = dias;
     }
 
-    public double getImporte() {
+    public BigDecimal getImporte() {
         return importe;
     }
 
-    public void setImporte(double importe) {
+    public void setImporte(BigDecimal importe) {
         this.importe = importe;
     }
 
@@ -109,11 +110,11 @@ public class CtacteCliente implements Serializable {
         this.estado = estado;
     }
 
-    public double getEntregado() {
+    public BigDecimal getEntregado() {
         return entregado;
     }
 
-    public void setEntregado(double entregado) {
+    public void setEntregado(BigDecimal entregado) {
         this.entregado = entregado;
     }
 

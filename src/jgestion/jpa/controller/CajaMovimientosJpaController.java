@@ -20,12 +20,10 @@ import jgestion.entity.FacturaCompra;
 import jgestion.controller.RemesaController;
 import jgestion.controller.StockController;
 import jgestion.controller.NotaCreditoController;
-import jgestion.controller.DAO;
 import jgestion.controller.CuentaController;
 import jgestion.controller.DetalleAcreditacionJpaController;
 import jgestion.controller.UsuarioController;
 import jgestion.controller.ProductoController;
-import jgestion.controller.CtacteProveedorController;
 import jgestion.controller.CtacteClienteController;
 import jgestion.controller.ReciboController;
 import jgestion.controller.Valores;
@@ -42,7 +40,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import jgestion.JGestionUtils;
-import jgestion.entity.DetalleCajaMovimientos_;
 import org.eclipse.persistence.config.QueryHints;
 import utilities.general.UTIL;
 
@@ -50,16 +47,9 @@ import utilities.general.UTIL;
  *
  * @author Administrador
  */
-public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, Integer> {
+public class CajaMovimientosJpaController extends JGestionJpaImpl<CajaMovimientos, Integer> {
 
-    private EntityManager entityManager;
-
-    @Override
-    protected EntityManager getEntityManager() {
-        if (entityManager == null || !entityManager.isOpen()) {
-            entityManager = DAO.getEntityManager();
-        }
-        return entityManager;
+    public CajaMovimientosJpaController() {
     }
 
     public void asentarMovimiento(FacturaCompra facturaCompra) throws Exception {
@@ -262,14 +252,12 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
 
     /**
      * Realiza todos los procesos de anulación de una FacturaVenta/Comprobante.
-     * <html><ul> <li> Asentar el reintegro del importe de facturaVenta a la
-     * cajaMovimientoDestino. <li> Re-establece los stock de Productos
-     * involucrados. <li> Si es por CtaCte, ccc.estado = 3 (anulado), así como
-     * los posible pagos realizados. </ul></html>
+     * <html><ul> <li> Asentar el reintegro del importe de facturaVenta a la cajaMovimientoDestino.
+     * <li> Re-establece los stock de Productos involucrados. <li> Si es por CtaCte, ccc.estado = 3
+     * (anulado), así como los posible pagos realizados. </ul></html>
      *
      * @param facturaVenta la cual se quiere anular
-     * @param cajaMovimientoDestino en la cual se van a registrar los
-     * movimientos contables
+     * @param cajaMovimientoDestino en la cual se van a registrar los movimientos contables
      * @throws Exception
      */
     public void anular(FacturaVenta facturaVenta, CajaMovimientos cajaMovimientoDestino) throws Exception {
@@ -294,7 +282,7 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
                 new DetalleCajaMovimientosController().create(newDetalleCajaMovimiento);
             } else if (facturaVenta.getFormaPagoEnum().equals(Valores.FormaPago.CTA_CTE)) {
                 CtacteCliente ccc = new CtacteClienteController().findBy(facturaVenta);
-                if (ccc.getEntregado() > 0) {
+                if (ccc.getEntregado().compareTo(BigDecimal.ZERO) == 1) {
                     //find all receipts (Recibo's) that contains a payment of the bill (FacturaVenta)
                     List<Recibo> recibosList = new ReciboController().findByFactura(facturaVenta);
                     boolean detalleUnico;
@@ -353,16 +341,15 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
 
     /**
      * Realiza todos los procesos de anulación de una FacturaCompra <html><ul>
-     * <li> Asentar el reintegro del importe de facturaVenta a la
-     * cajaMovimientoDestino. <li> Re-establece los stock de Productos
-     * involucrados. <li> Si es por CtaCte, ccc.estado = 3 (anulado), así como
-     * los posible pagos realizados. </ul></html>
+     * <li> Asentar el reintegro del importe de facturaVenta a la cajaMovimientoDestino. <li>
+     * Re-establece los stock de Productos involucrados. <li> Si es por CtaCte, ccc.estado = 3
+     * (anulado), así como los posible pagos realizados. </ul></html>
      *
      * @param facturaCompra
      * @param cajaMovimientoDestino
      * @throws jgestion.controller.exceptions.MessageException
      */
-    public void anular(FacturaCompra facturaCompra, CajaMovimientos cajaMovimientoDestino) throws MessageException{
+    public void anular(FacturaCompra facturaCompra, CajaMovimientos cajaMovimientoDestino) throws MessageException {
         EntityManager em = getEntityManager();
         try {
             em.getTransaction().begin();
@@ -382,36 +369,16 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
                 new DetalleCajaMovimientosController().create(newDetalleCajaMovimiento);
             } else if (facturaCompra.getFormaPago() == Valores.FormaPago.CTA_CTE.getId()) {
                 // o CTA CTE..
-                CtacteProveedor ccp = new CtacteProveedorController().findCtacteProveedorByFactura(facturaCompra.getId());
+                CtacteProveedor ccp = new CtacteProveedorJpaController().findBy(facturaCompra);
                 //si se hicieron REMESA's de pago de esta deuda
                 if (ccp.getEntregado().doubleValue() > 0) {
                     List<Remesa> remesaList = new RemesaJpaController().findByFactura(facturaCompra);
                     boolean detalleUnico; //Therefore, the entire Recibo must be annulled
                     for (Remesa remesaQueEnSuDetalleContieneLaFactura : remesaList) {
                         detalleUnico = remesaQueEnSuDetalleContieneLaFactura.getDetalle().size() == 1;
-                        if(!detalleUnico) {
+                        if (!detalleUnico) {
                             throw new MessageException("No se puede anular la factura porque existen Remesas (" + remesaList.size() + ") que contienen pagos de esta y otras facturas.");
                         }
-//                        for (DetalleRemesa detalleRemesa : remesaQueEnSuDetalleContieneLaFactura.getDetalle()) {
-//                            if (detalleRemesa.getFacturaCompra().equals(facturaCompra)) {
-//                                detalleRemesa.setObservacion("ANULADO - " + detalleRemesa.getObservacion());
-//                                detalleRemesa.setAnulado(true);
-//                                remesaQueEnSuDetalleContieneLaFactura.setMontoEntrega(remesaQueEnSuDetalleContieneLaFactura.getMonto() - detalleRemesa.getMontoEntrega().doubleValue());
-//                                newDetalleCajaMovimiento = new DetalleCajaMovimientos();
-//                                newDetalleCajaMovimiento.setCajaMovimientos(cajaMovimientoDestino);
-//                                newDetalleCajaMovimiento.setIngreso(true);
-//                                newDetalleCajaMovimiento.setMonto(detalleRemesa.getMontoEntrega());
-//                                newDetalleCajaMovimiento.setNumero(facturaCompra.getId());
-//                                newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosController.ANULACION);
-//                                newDetalleCajaMovimiento.setDescripcion(JGestionUtils.getNumeracion(facturaCompra)
-//                                        + " -> R" + remesaQueEnSuDetalleContieneLaFactura.getNumero() + " [ANULADA]");
-//                                newDetalleCajaMovimiento.setUsuario(UsuarioController.getCurrentUser());
-//                                em.persist(newDetalleCajaMovimiento);
-//                                em.merge(detalleRemesa);
-//                                if (detalleUnico) {
-//                                }
-//                            }
-//                        }
                         remesaQueEnSuDetalleContieneLaFactura.setEstado(false);
                         em.merge(remesaQueEnSuDetalleContieneLaFactura);
                     }
@@ -446,12 +413,12 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
     }
 
     /**
-     * Busca la CajaMovimiento abierta correspodiente a la Caja candidata. Es
-     * decir con fecha_cierre == NULL
+     * Busca la CajaMovimiento abierta correspodiente a la Caja candidata. Es decir con fecha_cierre
+     * == NULL
      *
      * @param cajaCandidata
-     * @return una entidad CajaMomiviento, o <code>null</code> si no existe una
-     * para la cajaCandidata
+     * @return una entidad CajaMomiviento, o <code>null</code> si no existe una para la
+     * cajaCandidata
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
@@ -472,11 +439,9 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
     }
 
     /**
-     * Crea (abre) LA SIGUIENTE
-     * <code>CajaMovimientos</code> implicita POST cierre de la actual. El
-     * montoApertura de la nueva
-     * <code>CajaMovimientos</code> es == al montoCierre de la anterior. La
-     * fechaApertura de la nueva es == a un día después de la anterior.
+     * Crea (abre) LA SIGUIENTE <code>CajaMovimientos</code> implicita POST cierre de la actual. El
+     * montoApertura de la nueva <code>CajaMovimientos</code> es == al montoCierre de la anterior.
+     * La fechaApertura de la nueva es == a un día después de la anterior.
      *
      * @param cajaMovimiento la que precede a la que se va abrir.
      */
@@ -522,8 +487,8 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
     }
 
     /**
-     * Busca en los {@link DetalleCajaMovimientos}, el comprobante por número y
-     * tipo; y retorna la {@link CajaMovimientos}.
+     * Busca en los {@link DetalleCajaMovimientos}, el comprobante por número y tipo; y retorna la
+     * {@link CajaMovimientos}.
      *
      * @param numero
      * @param tipo
@@ -533,9 +498,9 @@ public class CajaMovimientosJpaController extends AbstractDAO<CajaMovimientos, I
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<CajaMovimientos> query = cb.createQuery(CajaMovimientos.class);
         Root<DetalleCajaMovimientos> from = query.from(DetalleCajaMovimientos.class);
-        query.select(from.get(DetalleCajaMovimientos_.cajaMovimientos)).
-                where(cb.equal(from.get(DetalleCajaMovimientos_.numero), numero),
-                cb.equal(from.get(DetalleCajaMovimientos_.tipo), tipo));
+        query.select(from.get("cajaMovimientos")).
+                where(cb.equal(from.get("numero"), numero),
+                        cb.equal(from.get("tipo"), tipo));
         try {
             return getEntityManager().createQuery(query).getSingleResult();
         } catch (NoResultException e) {

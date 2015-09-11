@@ -10,7 +10,7 @@ import javax.persistence.NoResultException;
  *
  * @author FiruzzZ
  */
-public class ChequeTercerosJpaController extends AbstractDAO<ChequeTerceros, Integer> {
+public class ChequeTercerosJpaController extends JGestionJpaImpl<ChequeTerceros, Integer> {
 
     private EntityManager entityManager;
 

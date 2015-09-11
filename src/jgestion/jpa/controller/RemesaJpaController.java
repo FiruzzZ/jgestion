@@ -1,8 +1,6 @@
 package jgestion.jpa.controller;
 
 import jgestion.entity.*;
-import jgestion.controller.CtacteProveedorController;
-import jgestion.controller.DAO;
 import jgestion.controller.DetalleCajaMovimientosController;
 import jgestion.controller.Valores;
 import jgestion.controller.exceptions.MessageException;
@@ -21,17 +19,11 @@ import jgestion.JGestionUtils;
  *
  * @author FiruzzZ
  */
-public class RemesaJpaController extends AbstractDAO<Remesa, Integer> {
+public class RemesaJpaController extends JGestionJpaImpl<Remesa, Integer> {
 
-    private EntityManager entityManager;
-
-    @Override
-    protected EntityManager getEntityManager() {
-        if (entityManager == null || !entityManager.isOpen()) {
-            entityManager = DAO.getEntityManager();
-        }
-        return entityManager;
+    public RemesaJpaController() {
     }
+
 
     public Remesa findByNumero(long numero) {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
@@ -65,12 +57,6 @@ public class RemesaJpaController extends AbstractDAO<Remesa, Integer> {
             entityManager.getTransaction().begin();
         }
         entityManager.persist(remesa);
-        for (DetalleRemesa d : remesa.getDetalle()) {
-            if (d.getNotaDebitoProveedor() != null) {
-                d.getNotaDebitoProveedor().setRemesa(remesa);
-                entityManager.merge(d.getNotaDebitoProveedor());
-            }
-        }
         entityManager.getTransaction().commit();
         boolean todoBien = false;
         List<Object> pagosPost = new ArrayList<>(remesa.getPagosEntities().size());
@@ -238,20 +224,18 @@ public class RemesaJpaController extends AbstractDAO<Remesa, Integer> {
         try {
             em.getTransaction().begin();
             for (DetalleRemesa dr : detalleRemesaList) {
+                //se resta la entrega ($) que implicaba este detalle con respecto a la factura
                 if (dr.getFacturaCompra() != null) {
-                    //se resta la entrega ($) que implicaba este detalle con respecto a la factura
-                    ctaCteProveedor = new CtacteProveedorController().findCtacteProveedorByFactura(dr.getFacturaCompra().getId());
-                    ctaCteProveedor.setEntregado(ctaCteProveedor.getEntregado().subtract(dr.getMontoEntrega()));
-                    // y si había sido pagada en su totalidad..
-                    if (ctaCteProveedor.getEstado() == Valores.CtaCteEstado.PAGADA.getId()) {
-                        ctaCteProveedor.setEstado(Valores.CtaCteEstado.PENDIENTE.getId());
-                    }
-                    em.merge(ctaCteProveedor);
+                    ctaCteProveedor = new CtacteProveedorJpaController().findBy(dr.getFacturaCompra());
                 } else {
-                    NotaDebitoProveedor nd = em.find(dr.getNotaDebitoProveedor().getClass(), dr.getNotaDebitoProveedor().getId());
-                    nd.setRemesa(null);
-                    em.merge(nd);
+                    ctaCteProveedor = new CtacteProveedorJpaController().findBy(dr.getNotaDebitoProveedor());
                 }
+                ctaCteProveedor.setEntregado(ctaCteProveedor.getEntregado().subtract(dr.getMontoEntrega()));
+                // y si había sido pagada en su totalidad..
+                if (ctaCteProveedor.getEstado() == Valores.CtaCteEstado.PAGADA.getId()) {
+                    ctaCteProveedor.setEstado(Valores.CtaCteEstado.PENDIENTE.getId());
+                }
+                em.merge(ctaCteProveedor);
             }
             for (Object object : remesa.getPagosEntities()) {
                 if (object instanceof ChequePropio) {
@@ -320,10 +304,6 @@ public class RemesaJpaController extends AbstractDAO<Remesa, Integer> {
         for (DetalleRemesa d : old.getDetalle()) {
             d.setRemesa(old);
             entityManager.persist(d);
-            if (d.getNotaDebitoProveedor() != null) {
-                d.getNotaDebitoProveedor().setRemesa(old);
-                entityManager.merge(d.getNotaDebitoProveedor());
-            }
         }
         entityManager.merge(old);
         entityManager.getTransaction().commit();

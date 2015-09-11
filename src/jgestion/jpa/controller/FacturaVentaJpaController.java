@@ -1,6 +1,5 @@
 package jgestion.jpa.controller;
 
-import jgestion.controller.DAO;
 import jgestion.entity.FacturaVenta;
 import jgestion.entity.FacturaVenta_;
 import jgestion.entity.Remito;
@@ -16,16 +15,9 @@ import org.eclipse.persistence.config.QueryHints;
  *
  * @author FiruzzZ
  */
-public class FacturaVentaJpaController extends AbstractDAO<FacturaVenta, Integer> {
+public class FacturaVentaJpaController extends JGestionJpaImpl<FacturaVenta, Integer> {
 
-    private EntityManager entityManager;
-
-    @Override
-    protected EntityManager getEntityManager() {
-        if (entityManager == null || !entityManager.isOpen()) {
-            entityManager = DAO.getEntityManager();
-        }
-        return entityManager;
+    public FacturaVentaJpaController() {
     }
 
     @Override

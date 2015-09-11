@@ -118,8 +118,11 @@ public class FacturaElectronicaController {
                                     if (comprobante instanceof NotaDebito) {
                                         fee = afipwsController.requestCAE(fe, (NotaDebito) comprobante);
                                     }
+                                } else {
+                                    LOG.trace(fe);
+                                    waiting.appendMessage("recuperando CAE ya asignado " + cbteNumero, true, true);
+                                    fee.setId(fe.getId());
                                 }
-
                                 LOG.info(fee.toString());
                                 feJpaController.merge(fee);
                                 waiting.appendMessage("guardando comprobante..", true, true);

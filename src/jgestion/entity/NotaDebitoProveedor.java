@@ -13,8 +13,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -27,9 +25,7 @@ import javax.persistence.UniqueConstraint;
  */
 @Entity
 @Table(name = "nota_debito_proveedor", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"proveedor_id", "numero"})})
-@NamedQueries({
-    @NamedQuery(name = "NotaDebitoProveedor.findAll", query = "SELECT n FROM NotaDebitoProveedor n")})
+    @UniqueConstraint(columnNames = {"proveedor_id", "tipo", "numero"})})
 public class NotaDebitoProveedor implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -80,13 +76,14 @@ public class NotaDebitoProveedor implements Serializable {
     @JoinColumn(nullable = false)
     @ManyToOne(optional = false)
     private Usuario usuario;
-    @ManyToOne
-    private Remesa remesa;
     @JoinColumn(nullable = false)
     @ManyToOne(optional = false)
     private Proveedor proveedor;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "notaDebitoProveedor", orphanRemoval = true)
     private List<DetalleNotaDebitoProveedor> detalle;
+
+    public NotaDebitoProveedor() {
+    }
 
     public Integer getId() {
         return id;
@@ -208,14 +205,6 @@ public class NotaDebitoProveedor implements Serializable {
         this.usuario = usuario;
     }
 
-    public Remesa getRemesa() {
-        return remesa;
-    }
-
-    public void setRemesa(Remesa remesa) {
-        this.remesa = remesa;
-    }
-
     public Proveedor getProveedor() {
         return proveedor;
     }
@@ -254,6 +243,12 @@ public class NotaDebitoProveedor implements Serializable {
 
     @Override
     public String toString() {
-        return "NotaDebitoProveedor{" + "id=" + id + ", numero=" + numero + ", fechaNotaDebito=" + fechaNotaDebito + ", fechaCarga=" + fechaCarga + ", importe=" + importe + ", observacion=" + observacion + ", gravado=" + gravado + ", noGravado=" + noGravado + ", iva10=" + iva10 + ", iva21=" + iva21 + ", otrosIvas=" + otrosIvas + ", anulada=" + anulada + ", impuestosRecuperables=" + impuestosRecuperables + ", tipo=" + tipo + ", usuario=" + usuario.getId() + ", remesa=" + (remesa != null ? remesa.getId() : null) + ", proveedor=" + (proveedor != null ? proveedor.getId() : null) + ", detalle=" + (detalle != null ? detalle.size() : null) + '}';
+        return "NotaDebitoProveedor{" + "id=" + id + ", numero=" + numero + ", fechaNotaDebito=" + fechaNotaDebito
+                + ", fechaCarga=" + fechaCarga + ", importe=" + importe + ", observacion=" + observacion
+                + ", gravado=" + gravado + ", noGravado=" + noGravado + ", iva10=" + iva10 + ", iva21=" + iva21
+                + ", otrosIvas=" + otrosIvas + ", anulada=" + anulada + ", impuestosRecuperables=" + impuestosRecuperables
+                + ", tipo=" + tipo + ", usuario=" + usuario.getId()
+                + ", proveedor=" + (proveedor != null ? proveedor.getId() : null)
+                + ", detalle=" + (detalle != null ? detalle.size() : null) + '}';
     }
 }

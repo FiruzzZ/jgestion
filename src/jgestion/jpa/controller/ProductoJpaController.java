@@ -1,11 +1,9 @@
 package jgestion.jpa.controller;
 
-import jgestion.controller.DAO;
 import jgestion.entity.Producto;
 import jgestion.entity.Producto_;
 import jgestion.entity.Rubro;
 import java.util.List;
-import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -15,19 +13,9 @@ import org.eclipse.persistence.config.QueryHints;
  *
  * @author Administrador
  */
-public class ProductoJpaController extends AbstractDAO<Producto, Integer> {
-
-    private EntityManager entityManager;
+public class ProductoJpaController extends JGestionJpaImpl<Producto, Integer> {
 
     public ProductoJpaController() {
-    }
-
-    @Override
-    protected final EntityManager getEntityManager() {
-        if (entityManager == null || !entityManager.isOpen()) {
-            entityManager = DAO.getEntityManager();
-        }
-        return entityManager;
     }
 
     @Override

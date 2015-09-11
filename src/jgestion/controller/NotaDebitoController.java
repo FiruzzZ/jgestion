@@ -26,7 +26,6 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import jgestion.JGestionUtils;
@@ -426,7 +425,7 @@ public class NotaDebitoController {
                 notaDebito.getImporte(),
                 notaDebito.getFechaNotaDebito(),
                 notaDebito.getSucursal().getNombre(),
-                ccc == null ? null : notaDebito.getImporte().subtract(BigDecimal.valueOf(ccc.getEntregado())),
+                notaDebito.getImporte().subtract(ccc.getEntregado()),
                 notaDebito.getUsuario().getNick(),
                 notaDebito.getFechaCarga()
             });

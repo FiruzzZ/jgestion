@@ -1,3 +1,30 @@
+--20150908
+ALTER TABLE ctacte_proveedor ALTER COLUMN factura DROP NOT NULL;
+CREATE OR REPLACE FUNCTION notadebitoproveedor_to_ctacte()
+  RETURNS void AS
+$BODY$
+declare 
+ r record;
+
+ begin 
+	for r in select nd.* from nota_debito_proveedor nd
+	loop 
+		insert into ctacte_proveedor values(
+		default,
+		case when r.remesa_id is not null then 2 else 1 end,
+		case when r.remesa_id is not null then r.importe else 0 end,
+		30, r.fecha_carga, r.importe, null, r.id);
+	end loop;
+end;
+$BODY$
+LANGUAGE plpgsql VOLATILE  COST 100;
+select notadebitoproveedor_to_ctacte();
+alter table nota_debito_proveedor drop column remesa_id;
+--20150904
+ALTER TABLE ctacte_proveedor drop constraint 
+ALTER TABLE ctacte_proveedor ADD COLUMN notadebito_id integer;
+ALTER TABLE ctacte_proveedor ADD FOREIGN KEY (notadebito_id) REFERENCES nota_debito_proveedor (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE ctacte_proveedor ADD CONSTRAINT ctacte_proveedor_cbte CHECK ((factura is not null and notadebito_id is null) or (factura is null and notadebito_id is not null));
 --20150804
 update contribuyente set factu_a = false, factu_b = true, factu_c = true WHERE id = 1;
 update contribuyente set factu_a = false, factu_b = true, factu_c = true WHERE id = 2;

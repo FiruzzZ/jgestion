@@ -120,26 +120,20 @@
         <Component class="javax.swing.JTable" name="tableAPagar">
           <Properties>
             <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-              <Table columnCount="4" rowCount="0">
+              <Table columnCount="3" rowCount="0">
                 <Column editable="false" title="Object" type="java.lang.Object"/>
                 <Column editable="false" title="Factura" type="java.lang.Object"/>
-                <Column editable="true" title="Observaci&#xf3;n" type="java.lang.Object"/>
                 <Column editable="true" title="Importe" type="java.lang.Object"/>
               </Table>
             </Property>
             <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
               <TableColumnModel selectionModel="0">
-                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="false">
+                <Column maxWidth="-1" minWidth="-1" prefWidth="1" resizable="false">
                   <Title/>
                   <Editor/>
                   <Renderer/>
                 </Column>
-                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="false">
-                  <Title/>
-                  <Editor/>
-                  <Renderer/>
-                </Column>
-                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="false">
+                <Column maxWidth="-1" minWidth="-1" prefWidth="80" resizable="false">
                   <Title/>
                   <Editor/>
                   <Renderer/>
@@ -200,92 +194,80 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Group type="102" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
                   <EmptySpace min="-2" pref="11" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="1" attributes="0">
-                      <Component id="labelClienteProveedor" alignment="1" min="-2" max="-2" attributes="0"/>
+                      <Component id="labelClienteProveedor" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel20" alignment="1" min="-2" max="-2" attributes="0"/>
-                      <Component id="jLabel4" alignment="1" min="-2" max="-2" attributes="0"/>
                       <Component id="labelLetra" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel15" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" attributes="0">
-                          <Component id="cbSucursal" min="-2" pref="180" max="-2" attributes="1"/>
-                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Component id="jLabel15" min="-2" max="-2" attributes="0"/>
+                      <Group type="102" alignment="0" attributes="0">
+                          <Component id="cbTipo" min="-2" pref="59" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="cbCaja" min="-2" pref="179" max="-2" attributes="1"/>
-                          <EmptySpace min="-2" pref="304" max="-2" attributes="0"/>
+                          <Component id="labelReRe" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="tfCuarto" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="tfOcteto" min="-2" pref="73" max="-2" attributes="0"/>
+                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                          <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="dcFechaReRe" min="-2" pref="120" max="-2" attributes="0"/>
+                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                          <Component id="labelAnulado" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <Group type="102" attributes="0">
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Group type="102" alignment="0" attributes="0">
-                                  <Component id="cbTipo" min="-2" pref="59" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="labelReRe" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="tfCuarto" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="tfOcteto" min="-2" pref="73" max="-2" attributes="0"/>
-                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                  <Component id="labelAnulado" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <Group type="102" alignment="0" attributes="0">
-                                  <Component id="dcFechaReRe" min="-2" pref="120" max="-2" attributes="0"/>
-                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                  <Component id="jLabel7" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="dcFechaCarga" min="-2" pref="120" max="-2" attributes="0"/>
-                              </Group>
-                              <Group type="102" alignment="0" attributes="0">
-                                  <Component id="cbClienteProveedor" min="-2" pref="395" max="-2" attributes="1"/>
-                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                  <Component id="labelCreditoDebito" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="tfCreditoDebitoDisponible" min="-2" pref="80" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="btnDetalleCreditoDebito" min="-2" pref="30" max="-2" attributes="0"/>
-                              </Group>
+                      <Component id="cbCaja" min="-2" pref="179" max="-2" attributes="1"/>
+                      <Group type="102" alignment="0" attributes="0">
+                          <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                              <Component id="cbSucursal" alignment="0" max="32767" attributes="1"/>
+                              <Component id="cbClienteProveedor" alignment="0" pref="395" max="32767" attributes="1"/>
                           </Group>
-                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="labelCreditoDebito" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="tfCreditoDebitoDisponible" min="-2" pref="80" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="btnDetalleCreditoDebito" min="-2" pref="30" max="-2" attributes="0"/>
                       </Group>
                   </Group>
+                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" attributes="0">
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="2" attributes="0">
+                      <Component id="labelClienteProveedor" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Component id="labelCreditoDebito" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Component id="tfCreditoDebitoDisponible" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Component id="cbClienteProveedor" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnDetalleCreditoDebito" alignment="2" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="cbSucursal" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel20" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="2" attributes="0">
                       <Component id="labelReRe" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="tfCuarto" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="tfOcteto" alignment="2" min="-2" max="-2" attributes="0"/>
-                      <Component id="labelAnulado" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="cbTipo" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="labelLetra" alignment="2" min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <EmptySpace max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="2" attributes="0">
-                      <Component id="dcFechaCarga" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="dcFechaReRe" alignment="2" min="-2" max="-2" attributes="0"/>
-                      <Component id="jLabel7" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel4" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Component id="labelAnulado" alignment="2" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="2" attributes="0">
-                      <Component id="cbCaja" alignment="2" min="-2" max="-2" attributes="0"/>
-                      <Component id="jLabel15" alignment="2" min="-2" max="-2" attributes="0"/>
-                      <Component id="cbSucursal" alignment="2" min="-2" max="-2" attributes="0"/>
-                      <Component id="jLabel20" alignment="2" min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <EmptySpace max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="2" attributes="0">
-                      <Component id="labelCreditoDebito" alignment="2" min="-2" max="-2" attributes="0"/>
-                      <Component id="tfCreditoDebitoDisponible" alignment="2" min="-2" max="-2" attributes="0"/>
-                      <Component id="btnDetalleCreditoDebito" alignment="2" min="-2" max="-2" attributes="0"/>
-                      <Component id="cbClienteProveedor" alignment="2" min="-2" max="-2" attributes="0"/>
-                      <Component id="labelClienteProveedor" alignment="2" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="cbCaja" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel15" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="32767" attributes="0"/>
               </Group>
@@ -363,21 +345,6 @@
         <Component class="javax.swing.JLabel" name="jLabel15">
           <Properties>
             <Property name="text" type="java.lang.String" value="Caja"/>
-          </Properties>
-        </Component>
-        <Component class="com.toedter.calendar.JDateChooser" name="dcFechaCarga">
-          <Properties>
-            <Property name="date" type="java.util.Date" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-              <Connection code="new java.util.Date()" type="code"/>
-            </Property>
-            <Property name="enabled" type="boolean" value="false"/>
-            <Property name="focusable" type="boolean" value="false"/>
-            <Property name="requestFocusEnabled" type="boolean" value="false"/>
-          </Properties>
-        </Component>
-        <Component class="javax.swing.JLabel" name="jLabel7">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="Fecha carga"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="labelCreditoDebito">

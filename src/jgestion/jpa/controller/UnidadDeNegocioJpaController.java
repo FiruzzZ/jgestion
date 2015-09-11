@@ -1,11 +1,9 @@
 package jgestion.jpa.controller;
 
-import jgestion.controller.DAO;
 import jgestion.entity.Sucursal;
 import jgestion.entity.UnidadDeNegocio;
 import jgestion.entity.UnidadDeNegocio_;
 import java.util.List;
-import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import org.eclipse.persistence.config.QueryHints;
@@ -14,19 +12,9 @@ import org.eclipse.persistence.config.QueryHints;
  *
  * @author FiruzzZ
  */
-public class UnidadDeNegocioJpaController extends AbstractDAO<UnidadDeNegocio, Integer> {
-
-    private EntityManager entityManager;
+public class UnidadDeNegocioJpaController extends JGestionJpaImpl<UnidadDeNegocio, Integer> {
 
     public UnidadDeNegocioJpaController() {
-    }
-
-    @Override
-    protected EntityManager getEntityManager() {
-        if (entityManager == null || !entityManager.isOpen()) {
-            entityManager = DAO.getEntityManager();
-        }
-        return entityManager;
     }
 
     @Override

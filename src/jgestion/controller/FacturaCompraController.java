@@ -500,7 +500,7 @@ public class FacturaCompraController implements ActionListener {
                 break;
             }
             case 2: { // CTA CTE Proveedor (NO HAY NINGÚN MOVIMIENTO DE CAJA)
-                new CtacteProveedorController().nuevaCtaCte(facturaCompra);
+                new CtacteProveedorController().addToCtaCte(facturaCompra);
                 break;
             }
             case 3: { // CHEQUE

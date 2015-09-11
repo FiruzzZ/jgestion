@@ -50,15 +50,12 @@ import jgestion.entity.DetalleCompra;
 import jgestion.entity.DetalleListaPrecios;
 import jgestion.entity.DetalleVenta;
 import jgestion.entity.FacturaCompra;
-import jgestion.entity.FacturaCompra_;
 import jgestion.entity.FacturaVenta;
-import jgestion.entity.FacturaVenta_;
 import jgestion.entity.ListaPrecios;
 import jgestion.entity.Marca;
 import jgestion.entity.NotaCredito;
 import jgestion.entity.NotaDebito;
 import jgestion.entity.Producto;
-import jgestion.entity.Producto_;
 import jgestion.entity.Proveedor;
 import jgestion.entity.Recibo;
 import jgestion.entity.Remesa;
@@ -78,6 +75,7 @@ import jgestion.gui.PanelInformeFlujoVentas;
 import jgestion.gui.PanelProductosCostoVenta;
 import jgestion.jpa.controller.ClienteJpaController;
 import jgestion.jpa.controller.ComprobanteRetencionJpaController;
+import jgestion.jpa.controller.CtacteProveedorJpaController;
 import jgestion.jpa.controller.FacturaVentaJpaController;
 import jgestion.jpa.controller.NotaCreditoJpaController;
 import jgestion.jpa.controller.NotaDebitoJpaController;
@@ -460,7 +458,7 @@ public class Contabilidad {
         }
 
         query.append(" ORDER BY o.fecha_").append(tabla);
-        LogManager.getLogger();//(Contabilidad.class).debug(query.toString());
+        LogManager.getLogger().debug(query.toString());
         return query.toString();
     }
 
@@ -478,7 +476,7 @@ public class Contabilidad {
                     efectivo = factura.getImporte();
                 } else if (Valores.FormaPago.CTA_CTE.getId() == factura.getFormaPago()) {
                     try {
-                        entregado = new CtacteProveedorController().findCtacteProveedorByFactura(factura.getId()).getEntregado().doubleValue();
+                        entregado = new CtacteProveedorJpaController().findBy(factura).getEntregado().doubleValue();
                         cccpc = (factura.getImporte() - entregado);
                         efectivo = entregado > 0 ? entregado : null;
                     } catch (NoResultException ex) {
@@ -509,20 +507,20 @@ public class Contabilidad {
 
     private List<Object[]> getFacturaVentaList(List<FacturaVenta> l) {
         List<Object[]> data = new ArrayList<Object[]>(l.size());
-        Double efectivo = null, cccpc = null;
-        Double totalIngresos = 0.0;
-        Double entregado;
+        BigDecimal efectivo = null, cccpc = null;
+        BigDecimal totalIngresos = BigDecimal.ZERO;
+        BigDecimal entregado;
         for (FacturaVenta factura : l) {
             if (!factura.getAnulada()) {
-                totalIngresos += factura.getImporte().doubleValue();
+                totalIngresos = totalIngresos.add(factura.getImporte());
                 if (Valores.FormaPago.CONTADO.getId() == factura.getFormaPago()) {
                     cccpc = null;
-                    efectivo = factura.getImporte().doubleValue();
+                    efectivo = factura.getImporte();
                 } else if (Valores.FormaPago.CTA_CTE.getId() == factura.getFormaPago()) {
                     entregado = new CtacteClienteController().findBy(factura).getEntregado();
-                    double importe = factura.getImporte().doubleValue();
-                    cccpc = (importe - entregado);
-                    efectivo = entregado > 0 ? entregado : null;
+                    BigDecimal importe = factura.getImporte();
+                    cccpc = importe.subtract(entregado);
+                    efectivo = entregado.compareTo(BigDecimal.ZERO) == 1 ? entregado : null;
                 } else {
                     LogManager.getLogger();//(Contabilidad.class).warn("FormaPago DESCONOCIDA = " + factura.getFormaPago() + ", FacturaVenta.id=" + factura.getId());
                 }
@@ -1019,9 +1017,9 @@ public class Contabilidad {
     private List<Object[]> getComprobantesVenta(boolean soloMovimientosInternos) throws MessageException, DatabaseErrorException {
         StringBuilder queryWhereFactuVenta = new StringBuilder(300).append(" o.");
         if (soloMovimientosInternos) {
-            queryWhereFactuVenta.append(FacturaVenta_.tipo.getName()).append(" = 'I'");
+            queryWhereFactuVenta.append("tipo").append(" = 'I'");
         } else {
-            queryWhereFactuVenta.append(FacturaVenta_.tipo.getName()).append(" <> 'I'");
+            queryWhereFactuVenta.append("tipo").append(" <> 'I'");
         }
         StringBuilder queryWhereNotaCredito = new StringBuilder(300).append(" o.id is not null");
         StringBuilder queryWhereNotaDebito = new StringBuilder(300).append(" o.id is not null");
@@ -1042,9 +1040,9 @@ public class Contabilidad {
             try {
                 numero = Long.parseLong(buscadorReRe.getTfOcteto());
                 if (soloMovimientosInternos) {
-                    queryWhereFactuVenta.append(" AND o.").append(FacturaVenta_.movimientoInterno.getName()).append(" = ").append(numero);
+                    queryWhereFactuVenta.append(" AND o.").append("movimientoInterno").append(" = ").append(numero);
                 } else {
-                    queryWhereFactuVenta.append(" AND o.").append(FacturaVenta_.numero.getName()).append(" = ").append(numero);
+                    queryWhereFactuVenta.append(" AND o.").append("numero").append(" = ").append(numero);
                 }
                 queryWhereNotaCredito.append(" AND o.numero = ").append(numero);
                 queryWhereNotaDebito.append(" AND o.numero = ").append(numero);
@@ -1134,17 +1132,17 @@ public class Contabilidad {
             });
         }
         for (NotaCredito o : ln) {
-            data.add(new Object[]{
+            data.add(new Object[] {
                 JGestionUtils.getNumeracion(o, true),
                 o.getFechaNotaCredito(),
                 o.getCliente().getNombre(),
                 o.getCliente().getNumDoc(),
-                o.getGravado(),
-                new BigDecimal(o.getIva10()),
-                new BigDecimal(o.getIva21()),
+                o.getGravado().negate(),
+                new BigDecimal(o.getIva10()).negate(),
+                new BigDecimal(o.getIva21()).negate(),
                 BigDecimal.ZERO,
                 BigDecimal.ZERO,
-                o.getNoGravado(),
+                o.getNoGravado().negate(),
                 BigDecimal.ZERO,
                 o.getImporte().negate()
             });
@@ -1319,10 +1317,10 @@ public class Contabilidad {
             sb.append(" AND p.marca.id = ").append(((EntityWrapper<Marca>) panelito.getCbMarcas().getSelectedItem()).getId());
         }
         if (panelito.getCbRubros().getSelectedIndex() > 0) {
-            sb.append(" AND p.").append(Producto_.rubro.getName()).append(".id = ").append(((EntityWrapper<Rubro>) panelito.getCbRubros().getSelectedItem()).getId());
+            sb.append(" AND p.").append("rubro").append(".id = ").append(((EntityWrapper<Rubro>) panelito.getCbRubros().getSelectedItem()).getId());
         }
         if (panelito.getCbSubRubros().getSelectedIndex() > 0) {
-            sb.append(" AND p.").append(Producto_.subrubro.getName()).append(".id = ").append(((EntityWrapper<Rubro>) panelito.getCbSubRubros().getSelectedItem()).getId());
+            sb.append(" AND p.").append("subrubro").append(".id = ").append(((EntityWrapper<Rubro>) panelito.getCbSubRubros().getSelectedItem()).getId());
         }
         if (panelito.getCbClientes().getSelectedIndex() > 0) {
             sb.append(" AND fv.cliente.id = ").append(((EntityWrapper<Sucursal>) panelito.getCbClientes().getSelectedItem()).getId());
@@ -1494,12 +1492,12 @@ public class Contabilidad {
             queryEgresos.append(" AND fv.fechaCompra <='").append(UTIL.yyyy_MM_dd.format(p.getDcHasta())).append("'");
         }
         if (p.getDcDesdeSistema() != null) {
-            queryIngresos.append(" AND fv.").append(FacturaVenta_.fechaalta.getName()).append(" >='").append(UTIL.yyyy_MM_dd.format(p.getDcDesdeSistema())).append("'");
-            queryEgresos.append(" AND fv.").append(FacturaCompra_.fechaalta.getName()).append(" >='").append(UTIL.yyyy_MM_dd.format(p.getDcDesdeSistema())).append("'");
+            queryIngresos.append(" AND fv.").append("fechaalta").append(" >='").append(UTIL.yyyy_MM_dd.format(p.getDcDesdeSistema())).append("'");
+            queryEgresos.append(" AND fv.").append("fechaalta").append(" >='").append(UTIL.yyyy_MM_dd.format(p.getDcDesdeSistema())).append("'");
         }
         if (p.getDcHastaSistema() != null) {
-            queryIngresos.append(" AND fv.").append(FacturaVenta_.fechaalta.getName()).append(" <='").append(UTIL.yyyy_MM_dd.format(p.getDcHastaSistema())).append("'");
-            queryEgresos.append(" AND fv.").append(FacturaCompra_.fechaalta.getName()).append(" <='").append(UTIL.yyyy_MM_dd.format(p.getDcHastaSistema())).append("'");
+            queryIngresos.append(" AND fv.").append("fechaalta").append(" <='").append(UTIL.yyyy_MM_dd.format(p.getDcHastaSistema())).append("'");
+            queryEgresos.append(" AND fv.").append("fechaalta").append(" <='").append(UTIL.yyyy_MM_dd.format(p.getDcHastaSistema())).append("'");
         }
         String q;
         if (p.getCbComprasVentas().getSelectedIndex() == 0) {

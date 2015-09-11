@@ -1,29 +1,21 @@
 package jgestion.jpa.controller;
 
-import jgestion.controller.DAO;
 import jgestion.entity.DetallePresupuesto;
 import jgestion.entity.Presupuesto;
 import jgestion.entity.Sucursal;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
 /**
  *
  * @author FiruzzZ
  */
-public class PresupuestoJpaController extends AbstractDAO<Presupuesto, Integer> {
+public class PresupuestoJpaController extends JGestionJpaImpl<Presupuesto, Integer> {
 
-    private EntityManager entityManager;
-
-    @Override
-    protected EntityManager getEntityManager() {
-        if (entityManager == null || !entityManager.isOpen()) {
-            entityManager = DAO.getEntityManager();
-        }
-        return entityManager;
+    public PresupuestoJpaController() {
     }
+
 
     @Override
     public void persist(Presupuesto presupuesto) {

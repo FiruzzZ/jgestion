@@ -1,6 +1,5 @@
 package jgestion.jpa.controller;
 
-import jgestion.controller.DAO;
 import jgestion.controller.DetalleCompraJpaController;
 import jgestion.entity.DetalleCompra;
 import jgestion.entity.FacturaCompra;
@@ -20,19 +19,9 @@ import utilities.general.UTIL;
  *
  * @author Administrador
  */
-public class FacturaCompraJpaController extends AbstractDAO<FacturaCompra, Integer> {
-
-    private EntityManager entityManager;
+public class FacturaCompraJpaController extends JGestionJpaImpl<FacturaCompra, Integer> {
 
     public FacturaCompraJpaController() {
-    }
-
-    @Override
-    protected EntityManager getEntityManager() {
-        if (entityManager == null || !entityManager.isOpen()) {
-            entityManager = DAO.getEntityManager();
-        }
-        return entityManager;
     }
 
     @Override
@@ -42,7 +31,7 @@ public class FacturaCompraJpaController extends AbstractDAO<FacturaCompra, Integ
             em = getEntityManager();
             em.getTransaction().begin();
             List<DetalleCompra> detallesCompraListToPersist = o.getDetalleCompraList();
-            o.setDetalleCompraList(new ArrayList<DetalleCompra>());
+            o.setDetalleCompraList(new ArrayList<>());
             em.persist(o);
             em.getTransaction().commit();
             DetalleCompraJpaController dcController = new DetalleCompraJpaController();

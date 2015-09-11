@@ -3,7 +3,6 @@ package jgestion.jpa.controller;
 import jgestion.entity.DetalleNotaCredito;
 import jgestion.entity.NotaCredito;
 import jgestion.entity.Sucursal;
-import java.util.ArrayList;
 import java.util.Collection;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;

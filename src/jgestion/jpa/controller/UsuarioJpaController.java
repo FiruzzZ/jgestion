@@ -1,13 +1,11 @@
 package jgestion.jpa.controller;
 
-import jgestion.controller.DAO;
 import jgestion.entity.ChequeTerceros;
 import jgestion.entity.ChequeTerceros_;
 import jgestion.entity.Usuario;
 import jgestion.entity.Usuario_;
 import jgestion.entity.enums.ChequeEstado;
 import java.util.List;
-import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -16,17 +14,11 @@ import javax.persistence.criteria.Root;
  *
  * @author FiruzzZ
  */
-public class UsuarioJpaController extends AbstractDAO<Usuario, Integer> {
+public class UsuarioJpaController extends JGestionJpaImpl<Usuario, Integer> {
 
-    private EntityManager entityManager;
-
-    @Override
-    protected EntityManager getEntityManager() {
-        if (entityManager == null || !entityManager.isOpen()) {
-            entityManager = DAO.getEntityManager();
-        }
-        return entityManager;
+    public UsuarioJpaController() {
     }
+
 
     public List<Usuario> findByEstado(boolean activo) {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();

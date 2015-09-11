@@ -12,7 +12,7 @@ import javax.persistence.EntityManager;
  *
  * @author FiruzzZ
  */
-public class OperacionesBancariasJpaController extends AbstractDAO<OperacionesBancarias, Integer> {
+public class OperacionesBancariasJpaController extends JGestionJpaImpl<OperacionesBancarias, Integer> {
     private EntityManager entityManager;
 
     public OperacionesBancariasJpaController() {

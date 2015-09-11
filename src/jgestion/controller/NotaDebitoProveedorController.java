@@ -22,6 +22,7 @@ import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import jgestion.JGestionUtils;
+import jgestion.jpa.controller.CtacteProveedorJpaController;
 import jgestion.jpa.controller.IvaJpaController;
 import jgestion.jpa.controller.NotaDebitoProveedorJpaController;
 import jgestion.jpa.controller.ProveedorJpaController;
@@ -151,7 +152,6 @@ public class NotaDebitoProveedorController {
                 try {
                     if (editMode) {
                         jpaController.merge(EL_OBJECT);
-
                     } else {
                         setAndPersist();
                     }
@@ -175,27 +175,17 @@ public class NotaDebitoProveedorController {
 
     private void setAndPersist() throws MessageException {
         if (viewMode) {
-//            if (JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog(abm,
-//                    "¿Re-Imprimir comprobante?", jpaController.getEntityClass().getSimpleName(), JOptionPane.OK_CANCEL_OPTION)) {
-//                try {
-//                    doReport(EL_OBJECT);
-//                } catch (MissingReportException ex) {
-//                    JOptionPane.showMessageDialog(abm, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-//                } catch (JRException ex) {
-//                    JOptionPane.showMessageDialog(abm, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-//                }
-//            }
         } else {
             EL_OBJECT = getEntity();
             String msg = EL_OBJECT.getId() == null ? " registrada" : " modificada";
             if (EL_OBJECT.getId() == null) {
                 try {
                     jpaController.persist(EL_OBJECT);
+                    new CtacteProveedorController().addToCtaCte(EL_OBJECT);
                 } catch (Exception ex) {
+                    LOG.error("creando Nota debito Proveedor > " + EL_OBJECT, ex);
                     JOptionPane.showMessageDialog(abm, ex.getMessage(), "Algo salió mal", JOptionPane.ERROR_MESSAGE);
-                    LOG.error("creando Nota debito > " + EL_OBJECT, ex);
                 }
-            } else {
             }
             JOptionPane.showMessageDialog(abm, JGestionUtils.getNumeracion(EL_OBJECT) + msg);
         }
@@ -209,7 +199,6 @@ public class NotaDebitoProveedorController {
         refreshResumen();
     }
 
-    @SuppressWarnings("unchecked")
     private NotaDebitoProveedor getEntity() throws MessageException {
         checkConstraints();
         NotaDebitoProveedor o = new NotaDebitoProveedor();
@@ -276,6 +265,15 @@ public class NotaDebitoProveedorController {
         }
         if (Long.valueOf(abm.getTfFacturaCuarto().getText() + abm.getTfFacturaOcteto().getText()) < 100000001) {
             throw new MessageException("Número de comprobante no válido (no puede ser menor a 0001-00000001");
+        }
+        Proveedor proveedor = ((EntityWrapper<Proveedor>) abm.getCbCliente().getSelectedItem()).getEntity();
+        char tipo = abm.getCbFacturaTipo().getSelectedItem().toString().charAt(0);
+        Long numero = Long.valueOf(abm.getTfFacturaCuarto().getText() + UTIL.AGREGAR_CEROS(abm.getTfFacturaOcteto().getText(), 8));
+        NotaDebitoProveedor old = jpaController.findBy(proveedor, tipo, numero);
+        if (old != null) {
+            throw new MessageException("Ya existe la " + JGestionUtils.getNumeracion(old) + " de este proveedor"
+                    + "\nFecha: " + UTIL.DATE_FORMAT.format(old.getFechaNotaDebito())
+                    + "\nImporte: $" + UTIL.DECIMAL_FORMAT.format(old.getImporte()));
         }
     }
 
@@ -349,7 +347,7 @@ public class NotaDebitoProveedorController {
                 notaDebito.getProveedor().getNombre(),
                 notaDebito.getImporte(),
                 notaDebito.getFechaNotaDebito(),
-                notaDebito.getRemesa() == null ? null : JGestionUtils.getNumeracion(notaDebito.getRemesa(), true),
+                new CtacteProveedorJpaController().getSaldo(notaDebito),
                 notaDebito.getUsuario().getNick(),
                 notaDebito.getFechaCarga()
             });
@@ -368,9 +366,9 @@ public class NotaDebitoProveedorController {
         UTIL.loadComboBox(buscador.getCbSucursal(), JGestionUtils.getWrappedSucursales(new UsuarioHelper().getSucursales()), true);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
-                new String[]{"id", "Nº Nota Débito", "Proveedor", "Importe", "Fecha", "Remesa", "Usuario", "Fecha (Sistema)"},
+                new String[]{"id", "Nº Nota Débito", "Proveedor", "Importe", "Fecha", "Saldo", "Usuario", "Fecha (Sistema)"},
                 new int[]{1, 90, 100, 50, 50, 80, 50, 80},
-                new Class<?>[]{Integer.class, null, null, BigDecimal.class, Date.class, null, null, Date.class});
+                new Class<?>[]{Integer.class, null, null, BigDecimal.class, Date.class, BigDecimal.class, null, Date.class});
         buscador.getjTable1().getColumnModel().getColumn(3).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         buscador.getjTable1().getColumnModel().getColumn(4).setCellRenderer(FormatRenderer.getDateRenderer());
         buscador.getjTable1().getColumnModel().getColumn(7).setCellRenderer(FormatRenderer.getDateTimeRenderer());

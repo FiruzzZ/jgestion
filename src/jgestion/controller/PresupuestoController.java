@@ -7,7 +7,6 @@ import jgestion.entity.DetallePresupuesto;
 import jgestion.entity.Iva;
 import jgestion.entity.ListaPrecios;
 import jgestion.entity.Presupuesto;
-import jgestion.entity.Presupuesto_;
 import jgestion.entity.Producto;
 import jgestion.entity.Sucursal;
 import jgestion.gui.JDBuscadorReRe;
@@ -242,10 +241,10 @@ public class PresupuestoController implements ActionListener {
 
         SimpleDateFormat yyyyMMdd = new SimpleDateFormat("yyyy/MM/dd");
         if (buscador.getDcDesdeSistema() != null) {
-            query.append(" AND o.").append(Presupuesto_.fechaalta.getName()).append(" >= '").append(yyyyMMdd.format(buscador.getDcDesdeSistema())).append("'");
+            query.append(" AND o.").append("fechaalta").append(" >= '").append(yyyyMMdd.format(buscador.getDcDesdeSistema())).append("'");
         }
         if (buscador.getDcHastaSistema() != null) {
-            query.append(" AND o.").append(Presupuesto_.fechaalta.getName()).append(" <= '").append(yyyyMMdd.format(buscador.getDcHastaSistema())).append("'");
+            query.append(" AND o.").append("fechaalta").append(" <= '").append(yyyyMMdd.format(buscador.getDcHastaSistema())).append("'");
         }
         if (buscador.getCbSucursal().getSelectedIndex() > 0) {
             query.append(" AND o.sucursal.id = " + ((Sucursal) buscador.getCbSucursal().getSelectedItem()).getId());

@@ -1,8 +1,6 @@
 package jgestion.jpa.controller;
 
-import jgestion.controller.DAO;
 import jgestion.entity.UsuarioAcciones;
-import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -13,17 +11,11 @@ import jgestion.entity.UsuarioAcciones_;
  *
  * @author FiruzzZ
  */
-public class UsuarioAccionesJpaController extends AbstractDAO<UsuarioAcciones, Integer> {
+public class UsuarioAccionesJpaController extends JGestionJpaImpl<UsuarioAcciones, Integer> {
 
-    private EntityManager entityManager;
-
-    @Override
-    protected EntityManager getEntityManager() {
-        if (entityManager == null || !entityManager.isOpen()) {
-            entityManager = DAO.getEntityManager();
-        }
-        return entityManager;
+    public UsuarioAccionesJpaController() {
     }
+
 
     public UsuarioAcciones findCreate(Object entidad, Integer entidadId) {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();

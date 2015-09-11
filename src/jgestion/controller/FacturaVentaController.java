@@ -61,7 +61,6 @@ import jgestion.JGestionUtils;
 import jgestion.JGestion;
 import jgestion.Wrapper;
 import jgestion.entity.FacturaElectronica;
-import jgestion.entity.FacturaVenta_;
 import jgestion.jpa.controller.FacturaElectronicaJpaController;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.logging.log4j.LogManager;
@@ -1098,7 +1097,7 @@ public class FacturaVentaController {
                             }
                         } else if (EL_OBJECT.getFormaPagoEnum().equals(Valores.FormaPago.CTA_CTE)) {
                             CtacteCliente ccc = new CtacteClienteController().findBy(EL_OBJECT);
-                            if (ccc.getEntregado() > 0) {
+                            if (ccc.getEntregado().compareTo(BigDecimal.ZERO) == 1) {
                                 throw new MessageException("No se puede modificar una Factura cuya forma de pago es a Cta. Cte. y ya tiene asignado pago(s)."
                                         + "\nEstado de la Cta. Cte. para esta Factura: " + ccc.getEstadoEnum()
                                         + "\nImporte:   $" + UTIL.DECIMAL_FORMAT.format(ccc.getImporte())
@@ -1303,10 +1302,10 @@ public class FacturaVentaController {
             query.append(" AND o.fechaVenta <= '").append(yyyyMMdd.format(buscador.getDcHasta())).append("'");
         }
         if (buscador.getDcDesdeSistema() != null) {
-            query.append(" AND o.").append(FacturaVenta_.fechaalta.getName()).append(" >= '").append(yyyyMMdd.format(buscador.getDcDesdeSistema())).append("'");
+            query.append(" AND o.").append("fechaalta").append(" >= '").append(yyyyMMdd.format(buscador.getDcDesdeSistema())).append("'");
         }
         if (buscador.getDcHastaSistema() != null) {
-            query.append(" AND o.").append(FacturaVenta_.fechaalta.getName()).append(" < '").append(yyyyMMdd.format(UTIL.customDateByDays(buscador.getDcHastaSistema(), 1))).append("'");
+            query.append(" AND o.").append("fechaalta").append(" < '").append(yyyyMMdd.format(UTIL.customDateByDays(buscador.getDcHastaSistema(), 1))).append("'");
         }
         if (buscador.getCbCaja().getSelectedIndex() > 0) {
             query.append(" AND o.caja.id = ").append(((Caja) buscador.getCbCaja().getSelectedItem()).getId());

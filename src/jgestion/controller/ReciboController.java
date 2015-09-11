@@ -230,8 +230,9 @@ public class ReciboController implements ActionListener, FocusListener {
                         selectedCtaCte = (CtacteCliente) cbw.getEntity();
                         jdReRe.setTfImporte(UTIL.PRECIO_CON_PUNTO.format(selectedCtaCte.getImporte()));
                         jdReRe.setTfPagado(UTIL.PRECIO_CON_PUNTO.format(selectedCtaCte.getEntregado()));
-                        jdReRe.setTfSaldo(UTIL.PRECIO_CON_PUNTO.format(selectedCtaCte.getImporte() - selectedCtaCte.getEntregado()));
-                        jdReRe.setTfEntrega(UTIL.PRECIO_CON_PUNTO.format(selectedCtaCte.getImporte() - selectedCtaCte.getEntregado()));
+                        jdReRe.setTfSaldo(UTIL.PRECIO_CON_PUNTO.format(selectedCtaCte.getImporte().subtract(selectedCtaCte.getEntregado())));
+                        //se autocompleta el monto de entrega igual al saldo restante del cbte
+                        jdReRe.setTfEntrega(UTIL.PRECIO_CON_PUNTO.format(selectedCtaCte.getImporte().subtract(selectedCtaCte.getEntregado())));
                         jdReRe.getTfEntrega().setEditable(true);
                     }
                 } catch (ClassCastException | NullPointerException ex) {
@@ -566,27 +567,20 @@ public class ReciboController implements ActionListener, FocusListener {
         re.setPorConciliar(toConciliar);
         re.setCliente((Cliente) jdReRe.getCbClienteProveedor().getSelectedItem());
         DefaultTableModel dtm = jdReRe.getDtmAPagar();
-        FacturaVentaController fcc = new FacturaVentaController();
         BigDecimal monto = BigDecimal.ZERO;
         for (int rowIndex = 0; rowIndex < dtm.getRowCount(); rowIndex++) {
-            Object o = dtm.getValueAt(rowIndex, 0);
-            DetalleRecibo detalle = new DetalleRecibo();
-            if (o instanceof FacturaVenta) {
-                FacturaVenta fv = fcc.find(((FacturaVenta) o).getId());
+            DetalleRecibo detalle = (DetalleRecibo) dtm.getValueAt(rowIndex, 0);
+            if (detalle.getFacturaVenta() != null) {
+                FacturaVenta fv = detalle.getFacturaVenta();
                 if (UTIL.compararIgnorandoTimeFields(re.getFechaRecibo(), fv.getFechaVenta()) < 0) {
                     throw new MessageException("La fecha de la factura es posterior a la " + JGestionUtils.getNumeracion(fv));
                 }
-                detalle.setFacturaVenta(fv);
-            } else if (o instanceof NotaDebito) {
-                NotaDebito nota = new NotaDebitoJpaController().find(((NotaDebito) o).getId());
+            } else {
+                NotaDebito nota = detalle.getNotaDebito();
                 if (UTIL.compararIgnorandoTimeFields(re.getFechaRecibo(), nota.getFechaNotaDebito()) < 0) {
                     throw new MessageException("La fecha de la Nota de Débito es posterior a la " + JGestionUtils.getNumeracion(nota));
                 }
-                detalle.setNotaDebito(nota);
-            } else {
-                throw new IllegalArgumentException();
             }
-            detalle.setMontoEntrega((BigDecimal) dtm.getValueAt(rowIndex, 2));
             detalle.setRecibo(re);
             re.getDetalle().add(detalle);
             monto = monto.add(detalle.getMontoEntrega());
@@ -649,8 +643,8 @@ public class ReciboController implements ActionListener, FocusListener {
 
     private void actualizarMontoEntrega(NotaDebito notaDebito, BigDecimal entrega) {
         CtacteCliente ctacte = new CtacteClienteController().findByNotaDebito(notaDebito.getId());
-        ctacte.setEntregado(ctacte.getEntregado() + entrega.doubleValue());
-        if (notaDebito.getImporte().compareTo(BigDecimal.valueOf(ctacte.getEntregado())) == 0) {
+        ctacte.setEntregado(ctacte.getEntregado().add(entrega));
+        if (notaDebito.getImporte().compareTo(ctacte.getEntregado()) == 0) {
             ctacte.setEstado(Valores.CtaCteEstado.PAGADA.getId());
         }
         new CtacteClienteController().edit(ctacte);
@@ -659,8 +653,8 @@ public class ReciboController implements ActionListener, FocusListener {
 
     private void actualizarMontoEntrega(FacturaVenta facturaVenta, BigDecimal entrega) {
         CtacteCliente ctacte = new CtacteClienteController().findBy(facturaVenta);
-        ctacte.setEntregado(ctacte.getEntregado() + entrega.doubleValue());
-        if (facturaVenta.getImporte().compareTo(BigDecimal.valueOf(ctacte.getEntregado())) == 0) {
+        ctacte.setEntregado(ctacte.getEntregado().add(entrega));
+        if (facturaVenta.getImporte().compareTo(ctacte.getEntregado()) == 0) {
             ctacte.setEstado(Valores.CtaCteEstado.PAGADA.getId());
         }
         new CtacteClienteController().edit(ctacte);
@@ -695,9 +689,7 @@ public class ReciboController implements ActionListener, FocusListener {
         if (entrega$.doubleValue() <= 0) {
             throw new MessageException("Monto de entrega no válido (Debe ser mayor a 0)");
         }
-        BigDecimal d = BigDecimal.valueOf(selectedCtaCte.getImporte()).setScale(2, RoundingMode.HALF_EVEN)
-                .subtract(
-                        BigDecimal.valueOf(selectedCtaCte.getEntregado()).setScale(2, RoundingMode.HALF_EVEN));
+        BigDecimal d = selectedCtaCte.getImporte().subtract(selectedCtaCte.getEntregado());
         if (entrega$.compareTo(d) == 1) {
             throw new MessageException("Monto de entrega no puede ser mayor al Saldo restante (" + d + ")");
         }
@@ -713,10 +705,14 @@ public class ReciboController implements ActionListener, FocusListener {
                 }
             }
         }
+        DetalleRecibo detalle = new DetalleRecibo();
+        detalle.setFacturaVenta(selectedCtaCte.getFactura());
+        detalle.setNotaDebito(selectedCtaCte.getNotaDebito());
+        detalle.setMontoEntrega(entrega$);
         jdReRe.getDtmAPagar().addRow(new Object[]{
-            selectedCtaCte.getFactura() != null ? selectedCtaCte.getFactura() : selectedCtaCte.getNotaDebito(),
-            selectedCtaCte.getFactura() != null ? JGestionUtils.getNumeracion(selectedCtaCte.getFactura()) : JGestionUtils.getNumeracion(selectedCtaCte.getNotaDebito()),
-            entrega$
+            detalle,
+            detalle.getFacturaVenta() != null ? JGestionUtils.getNumeracion(detalle.getFacturaVenta()) : JGestionUtils.getNumeracion(detalle.getNotaDebito()),
+            detalle.getMontoEntrega()
         });
         updateTotales();
     }
@@ -726,8 +722,8 @@ public class ReciboController implements ActionListener, FocusListener {
         BigDecimal totalPagado = BigDecimal.ZERO;
         DefaultTableModel dtm = (DefaultTableModel) jdReRe.getTableAPagar().getModel();
         for (int row = 0; row < dtm.getRowCount(); row++) {
-            BigDecimal monto = (BigDecimal) dtm.getValueAt(row, 2);
-            totalAPagar = totalAPagar.add(monto);
+            DetalleRecibo detalle = (DetalleRecibo) dtm.getValueAt(row, 0);
+            totalAPagar = totalAPagar.add(detalle.getMontoEntrega());
         }
         dtm = (DefaultTableModel) jdReRe.getTablePagos().getModel();
         for (int row = 0; row < dtm.getRowCount(); row++) {
@@ -819,7 +815,6 @@ public class ReciboController implements ActionListener, FocusListener {
         jdReRe.setTfCuarto(UTIL.AGREGAR_CEROS(recibo.getSucursal().getPuntoVenta(), 4));
         jdReRe.setTfOcteto(UTIL.AGREGAR_CEROS(recibo.getNumero(), 8));
         jdReRe.getDcFechaReRe().setDate(recibo.getFechaRecibo());
-        jdReRe.setDcFechaCarga(recibo.getFechaCarga());
         cargarDetalleReRe(recibo);
         updateTotales();
         SwingUtil.setComponentsEnabled(jdReRe.getPanelDatos().getComponents(), false, true);

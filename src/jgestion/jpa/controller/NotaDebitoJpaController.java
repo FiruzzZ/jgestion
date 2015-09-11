@@ -1,11 +1,8 @@
 package jgestion.jpa.controller;
 
-import jgestion.controller.DAO;
-import jgestion.entity.Cliente;
 import jgestion.entity.NotaDebito;
 import jgestion.entity.NotaDebito_;
 import jgestion.entity.Sucursal;
-import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -16,16 +13,9 @@ import javax.persistence.criteria.Root;
  *
  * @author FiruzzZ
  */
-public class NotaDebitoJpaController extends AbstractDAO<NotaDebito, Integer> {
+public class NotaDebitoJpaController extends JGestionJpaImpl<NotaDebito, Integer> {
 
-    private EntityManager entityManager;
-
-    @Override
-    protected EntityManager getEntityManager() {
-        if (entityManager == null || !entityManager.isOpen()) {
-            entityManager = DAO.getEntityManager();
-        }
-        return entityManager;
+    public NotaDebitoJpaController() {
     }
 
     public Integer getNextNumero(Sucursal s, String tipo) {
@@ -49,7 +39,7 @@ public class NotaDebitoJpaController extends AbstractDAO<NotaDebito, Integer> {
         Root<NotaDebito> from = cq.from(getEntityClass());
         cq.select(cb.max(from.get(NotaDebito_.numero)))
                 .where(cb.and(cb.equal(from.get(NotaDebito_.sucursal), s),
-                                cb.equal(from.get(NotaDebito_.tipo), Character.toUpperCase(tipo))));
+                        cb.equal(from.get(NotaDebito_.tipo), Character.toUpperCase(tipo))));
 
         Integer o = em.createQuery(cq).getSingleResult();
         if (o != null) {

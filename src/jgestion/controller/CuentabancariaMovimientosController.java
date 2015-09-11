@@ -4,7 +4,6 @@ import jgestion.entity.CuentaBancaria;
 import jgestion.controller.exceptions.MessageException;
 import jgestion.entity.Banco;
 import jgestion.entity.CuentabancariaMovimientos;
-import jgestion.entity.CuentabancariaMovimientos_;
 import jgestion.entity.OperacionesBancarias;
 import jgestion.gui.JDABM;
 import jgestion.gui.JDConciliacionBancaria;
@@ -498,10 +497,10 @@ public class CuentabancariaMovimientosController {
                     StringBuilder query = new StringBuilder("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o "
                             + "WHERE ");
                     query.append(" o.cuentaBancaria.id=").append(cuentaBancaria.getId())
-                            .append(" AND o.").append(CuentabancariaMovimientos_.fechaCreditoDebito.getName())
+                            .append(" AND o.").append("fechaCreditoDebito")
                             .append(" BETWEEN '").append(UTIL.yyyy_MM_dd.format(jd.getDcDesde().getDate())).append("'")
                             .append("  AND '").append(UTIL.yyyy_MM_dd.format(jd.getDcHasta().getDate())).append("'");
-                    query.append(" ORDER BY o.").append(CuentabancariaMovimientos_.fechaCreditoDebito.getName()).append(" DESC");
+                    query.append(" ORDER BY o.").append("fechaCreditoDebito").append(" DESC");
                     LOG.debug(query.toString());
                     List<CuentabancariaMovimientos> l = jpaController.findAll(query.toString());
                     DefaultTableModel dtm = (DefaultTableModel) jd.getjTableMovimientos().getModel();

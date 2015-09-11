@@ -132,17 +132,10 @@ public class JGestionUtils {
         throw new CloneNotSupportedException();
     }
 
-    public static List<EntityWrapper<?>> getWrappedCtacteProveedor(List<?> list) {
+    public static List<EntityWrapper<?>> getWrappedCtacteProveedor(List<CtacteProveedor> list) {
         List<EntityWrapper<?>> l = new ArrayList<>(list.size());
-        for (Object o : list) {
-            if (o instanceof CtacteProveedor) {
-                CtacteProveedor cc = (CtacteProveedor) o;
-                l.add(new EntityWrapper<Object>(cc, cc.getId(), getNumeracion(cc.getFactura())));
-            } else {
-                NotaDebitoProveedor nota = (NotaDebitoProveedor) o;
-                l.add(new EntityWrapper<Object>(nota, nota.getId(), getNumeracion(nota)));
-
-            }
+        for (CtacteProveedor o : list) {
+                l.add(new EntityWrapper<>(o, o.getId(), o.getFactura() != null ? getNumeracion(o.getFactura()) : getNumeracion(o.getNotaDebito())));
         }
         return l;
     }

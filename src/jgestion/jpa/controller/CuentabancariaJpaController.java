@@ -8,7 +8,7 @@ import javax.persistence.EntityManager;
  *
  * @author FiruzzZ
  */
-public class CuentabancariaJpaController extends AbstractDAO<CuentaBancaria, Integer> {
+public class CuentabancariaJpaController extends JGestionJpaImpl<CuentaBancaria, Integer> {
 
     private EntityManager entityManager;
 

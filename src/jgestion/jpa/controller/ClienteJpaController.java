@@ -1,10 +1,8 @@
 package jgestion.jpa.controller;
 
-import jgestion.controller.DAO;
 import jgestion.entity.Cliente;
 import jgestion.entity.Cliente_;
 import java.util.List;
-import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -14,17 +12,7 @@ import org.eclipse.persistence.config.QueryHints;
  *
  * @author FiruzzZ
  */
-public class ClienteJpaController extends AbstractDAO<Cliente, Integer> {
-
-    private EntityManager entityManager;
-
-    @Override
-    protected EntityManager getEntityManager() {
-        if (entityManager == null || !entityManager.isOpen()) {
-            entityManager = DAO.getEntityManager();
-        }
-        return entityManager;
-    }
+public class ClienteJpaController extends JGestionJpaImpl<Cliente, Integer> {
 
     /**
      *

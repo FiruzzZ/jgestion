@@ -1,13 +1,11 @@
 package jgestion.jpa.controller;
 
-import jgestion.controller.DAO;
 import jgestion.entity.Cheque;
 import jgestion.entity.ChequePropio;
 import jgestion.entity.CuentaBancaria;
 import jgestion.entity.CuentabancariaMovimientos;
 import jgestion.entity.CuentabancariaMovimientos_;
 import java.math.BigDecimal;
-import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -17,20 +15,9 @@ import javax.persistence.criteria.Root;
  *
  * @author FiruzzZ
  */
-public class CuentabancariaMovimientosJpaController extends AbstractDAO<CuentabancariaMovimientos, Integer> {
-
-    private EntityManager entityManager;
+public class CuentabancariaMovimientosJpaController extends JGestionJpaImpl<CuentabancariaMovimientos, Integer> {
 
     public CuentabancariaMovimientosJpaController() {
-        getEntityManager();
-    }
-
-    @Override
-    protected final EntityManager getEntityManager() {
-        if (entityManager == null || !entityManager.isOpen()) {
-            entityManager = DAO.getEntityManager();
-        }
-        return entityManager;
     }
 
     public CuentabancariaMovimientos findBy(Cheque cheque) {

@@ -46,8 +46,8 @@ public class CtacteClienteController implements ActionListener {
 
     public static final String CLASS_NAME = CtacteCliente.class.getSimpleName();
     private JDResumenCtaCtes resumenCtaCtes;
-    private double totalDebe;  //<----
-    private double totalHaber; //<----
+    private BigDecimal totalDebe;  //<----
+    private BigDecimal totalHaber; //<----
     private PanelCtaCteCheckVencimientos panelCCCheck;
     private JDBuscador buscador;
     private static final Logger LOG = LogManager.getLogger();
@@ -68,11 +68,11 @@ public class CtacteClienteController implements ActionListener {
         LOG.trace("adding CCC Nº" + notaDebito);
         CtacteCliente ccp = new CtacteCliente();
         ccp.setDias((short) 0);
-        ccp.setEntregado(0.0); //monto $$
+        ccp.setEntregado(BigDecimal.ZERO);
         ccp.setEstado((Valores.CtaCteEstado.PENDIENTE.getId()));
         ccp.setNotaDebito(notaDebito);
         ccp.setFechaCarga(notaDebito.getFechaNotaDebito());
-        ccp.setImporte(notaDebito.getImporte().doubleValue());
+        ccp.setImporte(notaDebito.getImporte());
         jpaController.persist(ccp);
     }
 
@@ -80,11 +80,11 @@ public class CtacteClienteController implements ActionListener {
         LOG.trace("adding CCC Nº" + facturaVenta);
         CtacteCliente ccp = new CtacteCliente();
         ccp.setDias(facturaVenta.getDiasCtaCte());
-        ccp.setEntregado(0.0); //monto $$
+        ccp.setEntregado(BigDecimal.ZERO);
         ccp.setEstado((Valores.CtaCteEstado.PENDIENTE.getId()));
         ccp.setFactura(facturaVenta);
         ccp.setFechaCarga(facturaVenta.getFechaVenta());
-        ccp.setImporte(facturaVenta.getImporte().doubleValue());
+        ccp.setImporte(facturaVenta.getImporte());
         jpaController.persist(ccp);
     }
 
@@ -130,24 +130,33 @@ public class CtacteClienteController implements ActionListener {
     List<Object[]> findSaldos(Date desde, Date hasta) {
         List<CtacteCliente> l;
         l = jpaController.findAll(
-                "SELECT o FROM " + CtacteCliente.class.getSimpleName() + " o"
-                + " WHERE o.factura.anulada = FALSE AND o.estado = 1"
-                + (desde != null ? " AND o.factura.fechaVenta >='" + UTIL.DATE_FORMAT.format(desde) + "'" : "")
-                + (hasta != null ? " AND o.factura.fechaVenta <='" + UTIL.DATE_FORMAT.format(hasta) + "'" : "")
-                + " ORDER BY o.factura.cliente.nombre");
+                jpaController.getSelectFrom() + " LEFT JOIN o.factura f LEFT JOIN o.notaDebito nd LEFT JOIN f.cliente cf LEFT JOIN nd.cliente cnd"
+                + " WHERE o.estado = 1"
+                + " AND ((nd IS NULL AND f.anulada = FALSE) OR"
+                + " (f IS NULL AND nd.anulada = FALSE)) "
+                + (desde != null ? " AND ("
+                        + "     (f IS NOT NULL AND f.fechaVenta >='" + UTIL.DATE_FORMAT.format(desde) + "')"
+                        + "     OR (nd IS NOT NULL AND nd.fechaNotaDebito >='" + UTIL.DATE_FORMAT.format(desde) + "')"
+                        + ")" : "")
+                + (hasta != null ? " AND ("
+                        + "     (f IS NOT NULL AND f.fechaVenta <='" + UTIL.DATE_FORMAT.format(desde) + "')"
+                        + "     OR (nd IS NOT NULL AND nd.fechaNotaDebito <='" + UTIL.DATE_FORMAT.format(desde) + "')"
+                        + ")" : "")
+                + " ORDER BY cf.nombre, cnd.nombre");
         if (l.isEmpty()) {
             return new ArrayList<>(0);
         }
         List<Object[]> data = new ArrayList<>();
         BigDecimal importeCCC = BigDecimal.ZERO;
-        Cliente c = l.get(0).getFactura().getCliente();
+        Cliente c = l.get(0).getFactura() != null ? l.get(0).getFactura().getCliente() : l.get(0).getNotaDebito().getCliente();
         for (CtacteCliente ccc : l) {
-            if (!c.equals(ccc.getFactura().getCliente())) {
+            Cliente cc = ccc.getFactura() != null ? ccc.getFactura().getCliente() : ccc.getNotaDebito().getCliente();
+            if (!c.equals(cc)) {
                 data.add(new Object[]{c.getId(), c.getNombre(), importeCCC});
                 importeCCC = BigDecimal.ZERO;
-                c = ccc.getFactura().getCliente();
+                c = cc;
             }
-            importeCCC = importeCCC.add(BigDecimal.valueOf(ccc.getImporte() - ccc.getEntregado())).setScale(2, RoundingMode.HALF_UP);
+            importeCCC = importeCCC.add(ccc.getImporte().subtract(ccc.getEntregado()));
         }
         data.add(new Object[]{c.getId(), c.getNombre(), importeCCC});
         return data;
@@ -270,8 +279,8 @@ public class CtacteClienteController implements ActionListener {
 
     @SuppressWarnings("unchecked")
     private void armarQueryResumenCCC(boolean imprimirResumen) throws MessageException, MissingReportException, JRException {
-        totalDebe = 0.0;
-        totalHaber = 0.0;
+        totalDebe = BigDecimal.ZERO;
+        totalHaber = BigDecimal.ZERO;
 
         String query
                 = " SELECT ctacte.* FROM (                                      "
@@ -300,7 +309,6 @@ public class CtacteClienteController implements ActionListener {
             //calcula los totales del DEBE / HABER / SALDO ACUMULATIVO de la CtaCte
             // anterior a la fecha desde la cual se eligió en el buscador
             setResumenHistorial(query + filters + " AND fecha < '" + resumenCtaCtes.getDcDesde() + "'");
-
             filters += " AND fecha >= '" + resumenCtaCtes.getDcDesde() + "'";
         }
         if (resumenCtaCtes.getCheckExcluirPagadas().isSelected()) {
@@ -322,8 +330,8 @@ public class CtacteClienteController implements ActionListener {
         dtm.setRowCount(0);
         List<CtacteCliente> cccList = jpaController.findByNativeQuery(query);
         //agregar la 1er fila a la tabla
-        BigDecimal saldoAcumulativo = BigDecimal.valueOf(totalDebe - totalHaber).setScale(2, RoundingMode.HALF_EVEN);
-        dtm.addRow(new Object[]{null, "RESUMEN PREVIO", null, null, BigDecimal.valueOf(totalDebe), BigDecimal.valueOf(totalHaber), null, saldoAcumulativo});
+        BigDecimal saldoAcumulativo = totalDebe.subtract(totalHaber).setScale(2, RoundingMode.HALF_EVEN);
+        dtm.addRow(new Object[]{null, "RESUMEN PREVIO", null, null, totalDebe, totalHaber, null, saldoAcumulativo});
         for (CtacteCliente ctaCte : cccList) {
             Date fechaComprobante = ctaCte.getFactura() != null ? ctaCte.getFactura().getFechaVenta() : ctaCte.getNotaDebito().getFechaNotaDebito();
             BigDecimal importeComprobante = ctaCte.getFactura() != null ? ctaCte.getFactura().getImporte() : ctaCte.getNotaDebito().getImporte();
@@ -333,7 +341,7 @@ public class CtacteClienteController implements ActionListener {
             //chequear que el DOCUMENTO no esté anulado
             anulada = ctaCte.getFactura() != null ? ctaCte.getFactura().getAnulada() : ctaCte.getNotaDebito().getAnulada();
             if (!anulada) {
-                saldoAcumulativo = saldoAcumulativo.add(importeComprobante.subtract(BigDecimal.valueOf(ctaCte.getEntregado())));
+                saldoAcumulativo = saldoAcumulativo.add(importeComprobante.subtract(ctaCte.getEntregado()));
             }
 
             dtm.addRow(new Object[]{
@@ -342,8 +350,8 @@ public class CtacteClienteController implements ActionListener {
                 UTIL.DATE_FORMAT.format(fechaComprobante),
                 UTIL.DATE_FORMAT.format(UTIL.customDateByDays(fechaComprobante, ctaCte.getDias())),
                 importeComprobante,
-                anulada ? Valores.CtaCteEstado.ANULADA : BigDecimal.valueOf(ctaCte.getEntregado()),
-                anulada ? Valores.CtaCteEstado.ANULADA : importeComprobante.subtract(BigDecimal.valueOf(ctaCte.getEntregado())),
+                anulada ? Valores.CtaCteEstado.ANULADA : ctaCte.getEntregado(),
+                anulada ? Valores.CtaCteEstado.ANULADA : importeComprobante.subtract(ctaCte.getEntregado()),
                 anulada ? Valores.CtaCteEstado.ANULADA : saldoAcumulativo,
                 ctaCte.getEstado()
             });
@@ -422,9 +430,9 @@ public class CtacteClienteController implements ActionListener {
     private void setResumenHistorial(String query) {
         List<CtacteCliente> lista = jpaController.findByNativeQuery(query);
         for (CtacteCliente ccc : lista) {
-            if (ccc.getEstado() != 3) { // 3 == anulada
-                totalDebe += ccc.getImporte();
-                totalHaber += ccc.getEntregado();
+            if (ccc.getEstado() != Valores.CtaCteEstado.ANULADA.getId()) {
+                totalDebe = totalDebe.add(ccc.getImporte());
+                totalHaber = totalHaber.add(ccc.getEntregado());
             }
         }
     }
@@ -525,7 +533,7 @@ public class CtacteClienteController implements ActionListener {
             if (panelCCCheck.getCbClientesProveedores().getSelectedIndex() > 0) {
                 Proveedor p = ((EntityWrapper<Proveedor>) panelCCCheck.getCbClientesProveedores().getSelectedItem()).getEntity();
                 query += " AND c.id= " + p.getId();
-                sub_titulo_entidad = "Proveedor: (" + p.getCuit()+ ") " + p.getNombre();
+                sub_titulo_entidad = "Proveedor: (" + p.getCuit() + ") " + p.getNombre();
 
             }
             query += ") as c";
@@ -571,6 +579,8 @@ public class CtacteClienteController implements ActionListener {
 
     JDialog getResumenCtaCte(Window owner, boolean modal, Cliente cliente) throws MessageException, MissingReportException, JRException {
         getResumenCtaCte(owner, modal);
+        resumenCtaCtes.getCheckExcluirAnuladas().setSelected(true);
+        resumenCtaCtes.getCheckExcluirPagadas().setSelected(true);
         if (cliente != null) {
             UTIL.setSelectedItem(resumenCtaCtes.getCbClieProv(), cliente);
             armarQueryResumenCCC(false);
