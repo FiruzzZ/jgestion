@@ -33,6 +33,7 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
@@ -372,10 +373,6 @@ public class ReciboController implements ActionListener, FocusListener {
             ChequeTerceros cheque = null;
             if (opt == 0) {
                 cheque = new ChequeTercerosController().initManagerBuscador(null);
-                if (cheque.getComprobanteIngreso() != null) {
-                    throw new MessageException("El cheque seleccionado ya está asociado a un comprobante de ingreso:"
-                            + "\n" + cheque.getComprobanteIngreso());
-                }
             } else if (opt == 1) {
                 Cliente c = null;
                 try {
@@ -386,6 +383,10 @@ public class ReciboController implements ActionListener, FocusListener {
                 cheque = new ChequeTercerosController().displayABM(jdReRe, null, c);
             }
             if (cheque != null) {
+                if (cheque.getComprobanteIngreso() != null) {
+                    throw new MessageException("El cheque seleccionado ya está asociado a un comprobante de ingreso:"
+                            + "\n" + cheque.getComprobanteIngreso());
+                }
                 ChequesController.checkUniquenessOnTable(jdReRe.getDtmPagos(), cheque);
                 DefaultTableModel dtm = jdReRe.getDtmPagos();
                 dtm.addRow(new Object[]{cheque, "CH", cheque.getBanco().getNombre() + " " + cheque.getNumero(), cheque.getImporte()});
@@ -451,7 +452,7 @@ public class ReciboController implements ActionListener, FocusListener {
                 for (int row = 0; row < dtm.getRowCount(); row++) {
                     if (dtm.getValueAt(row, 0) instanceof ComprobanteRetencion) {
                         ComprobanteRetencion old = (ComprobanteRetencion) dtm.getValueAt(row, 0);
-                        if (comprobante.getNumero() == old.getNumero()) {
+                        if (Objects.equals(comprobante.getNumero(), old.getNumero())) {
                             throw new MessageException("Ya existe un comprobante de retención con el N° " + old.getNumero());
                         }
                     }
@@ -697,7 +698,9 @@ public class ReciboController implements ActionListener, FocusListener {
         //ctrl que no se inserte + de una entrega de la misma factura
         //        double entregaParcial = 0;
         for (int i = 0; i < jdReRe.getDtmAPagar().getRowCount(); i++) {
-            if (comprobante.equals(jdReRe.getDtmAPagar().getValueAt(i, 0))) {
+            DetalleRecibo detalleRecibo = (DetalleRecibo) jdReRe.getDtmAPagar().getValueAt(i, 0);
+            Object old = detalleRecibo.getFacturaVenta() != null ? detalleRecibo.getFacturaVenta() : detalleRecibo.getNotaDebito();
+            if (comprobante.equals(old)) {
                 if (selectedCtaCte.getFactura() != null) {
                     throw new MessageException("La factura " + JGestionUtils.getNumeracion(selectedCtaCte.getFactura()) + " ya se ha agregada al detalle");
                 } else {

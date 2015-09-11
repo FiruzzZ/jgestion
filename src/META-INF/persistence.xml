@@ -50,7 +50,6 @@
     <class>jgestion.entity.FacturaCompra</class>
     <class>jgestion.entity.DetalleRemesa</class>
     <class>jgestion.entity.Producto</class>
-    <class>jgestion.entity.DetalleAcreditacion</class>
     <class>jgestion.entity.FacturaElectronica</class>
     <class>jgestion.entity.FacturaVenta</class>
     <class>jgestion.entity.DocumentoComercial</class>

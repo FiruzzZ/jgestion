@@ -248,7 +248,6 @@ public class JDFacturaVenta extends javax.swing.JDialog {
 
         dcFechaFactura.setMaxSelectableDate(new java.util.Date(4070923260000L));
         dcFechaFactura.setMinSelectableDate(new java.util.Date(-2208969732000L));
-        dcFechaFactura.setNextFocusableComponent(cbFacturaTipo);
 
         jLabel2.setText("Sucursal");
 

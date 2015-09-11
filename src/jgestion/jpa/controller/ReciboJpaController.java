@@ -170,7 +170,7 @@ public class ReciboJpaController extends JGestionJpaImpl<Recibo, Integer> {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<DetalleRecibo> query = cb.createQuery(DetalleRecibo.class);
         Root<DetalleRecibo> from = query.from(query.getResultType());
-        query.where(cb.equal(from.get(DetalleRecibo_.factura), factura));
+        query.where(cb.equal(from.get(DetalleRecibo_.facturaVenta), factura));
         return getEntityManager().createQuery(query).getResultList();
     }
 
@@ -220,7 +220,6 @@ public class ReciboJpaController extends JGestionJpaImpl<Recibo, Integer> {
                     pagosPost.add(pago);
                 } else if (object instanceof NotaCredito) {
                     NotaCredito pago = (NotaCredito) object;
-                    pago.setDesacreditado(pago.getImporte());
                     pago.setRecibo(recibo);
                     entityManager.merge(object);
                     pagosPost.add(pago);

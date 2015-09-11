@@ -38,9 +38,6 @@ public class DetalleRecibo implements Serializable {
     private Recibo recibo;
     @Column(nullable = false)
     private boolean anulado;
-    @Column(name = "acreditado", insertable = true, updatable = false, nullable = false)
-    @Deprecated
-    private boolean acreditado;
 
     public DetalleRecibo() {
     }
@@ -101,16 +98,6 @@ public class DetalleRecibo implements Serializable {
         this.anulado = anulado;
     }
 
-    @Deprecated
-    public void setAcreditado(boolean acreditado) {
-        this.acreditado = acreditado;
-    }
-
-    @Deprecated
-    public boolean isAcreditado() {
-        return acreditado;
-    }
-
     @Override
     public int hashCode() {
         int hash = 0;
@@ -133,6 +120,6 @@ public class DetalleRecibo implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.DetalleRecibo[id=" + id + ", monto=" + montoEntrega + ", acreditado=" + acreditado + "]";
+        return "entity.DetalleRecibo[id=" + id + ", monto=" + montoEntrega + "]";
     }
 }

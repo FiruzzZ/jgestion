@@ -15,13 +15,10 @@ import jgestion.entity.DetalleRecibo;
 import jgestion.entity.Recibo;
 import jgestion.entity.DetalleVenta;
 import jgestion.entity.CtacteCliente;
-import jgestion.entity.DetalleAcreditacion;
 import jgestion.entity.FacturaCompra;
 import jgestion.controller.RemesaController;
 import jgestion.controller.StockController;
-import jgestion.controller.NotaCreditoController;
 import jgestion.controller.CuentaController;
-import jgestion.controller.DetalleAcreditacionJpaController;
 import jgestion.controller.UsuarioController;
 import jgestion.controller.ProductoController;
 import jgestion.controller.CtacteClienteController;
@@ -297,14 +294,9 @@ public class CajaMovimientosJpaController extends JGestionJpaImpl<CajaMovimiento
                                 detalleRecibo.setAnulado(true);
                                 reciboQueEnSuDetalleContieneLaFacturaVenta.setMonto(
                                         reciboQueEnSuDetalleContieneLaFacturaVenta.getMonto().subtract(detalleRecibo.getMontoEntrega()));
-                                if (detalleRecibo.isAcreditado()) {
-                                    DetalleAcreditacion anular = new DetalleAcreditacionJpaController().anular(detalleRecibo);
-                                    new NotaCreditoController().acreditar(anular);
-                                } else {
-                                    newDetalleCajaMovimiento.setMonto(detalleRecibo.getMontoEntrega().negate());
-                                    newDetalleCajaMovimiento.setDescripcion(JGestionUtils.getNumeracion(facturaVenta) + " -> " + JGestionUtils.getNumeracion(reciboQueEnSuDetalleContieneLaFacturaVenta, true) + " [ANULADA]");
-                                    new DetalleCajaMovimientosController().create(newDetalleCajaMovimiento);
-                                }
+                                newDetalleCajaMovimiento.setMonto(detalleRecibo.getMontoEntrega().negate());
+                                newDetalleCajaMovimiento.setDescripcion(JGestionUtils.getNumeracion(facturaVenta) + " -> " + JGestionUtils.getNumeracion(reciboQueEnSuDetalleContieneLaFacturaVenta, true) + " [ANULADA]");
+                                new DetalleCajaMovimientosController().create(newDetalleCajaMovimiento);
                                 em.merge(detalleRecibo);
                                 reciboQueEnSuDetalleContieneLaFacturaVenta.setEstado(!detalleUnico);
                                 em.merge(reciboQueEnSuDetalleContieneLaFacturaVenta);

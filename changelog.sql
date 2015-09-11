@@ -1,3 +1,5 @@
+--20150911
+drop table detalle_acreditacion
 --20150908
 ALTER TABLE ctacte_proveedor ALTER COLUMN factura DROP NOT NULL;
 CREATE OR REPLACE FUNCTION notadebitoproveedor_to_ctacte()

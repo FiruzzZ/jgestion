@@ -5,14 +5,11 @@ import jgestion.controller.exceptions.DatabaseErrorException;
 import jgestion.controller.exceptions.MessageException;
 import jgestion.controller.exceptions.MissingReportException;
 import jgestion.entity.Cliente;
-import jgestion.entity.DetalleAcreditacion;
 import jgestion.entity.NotaCredito;
 import java.util.List;
 import jgestion.entity.DetalleNotaCredito;
-import jgestion.entity.FacturaVenta;
 import jgestion.entity.Iva;
 import jgestion.entity.Producto;
-import jgestion.entity.Recibo;
 import jgestion.entity.Sucursal;
 import utilities.general.UTIL;
 import jgestion.gui.JDBuscadorReRe;
@@ -144,7 +141,6 @@ public class NotaCreditoController {
         newNotaCredito.setNumero(jpaController.getNextNumero(sucursal, newNotaCredito.getTipo()));
         newNotaCredito.setFechaNotaCredito(fecha);
         newNotaCredito.setImporte(new BigDecimal(UTIL.parseToDouble(jdFacturaVenta.getTfTotal())).setScale(2, RoundingMode.HALF_UP));
-        newNotaCredito.setDesacreditado(BigDecimal.ZERO);
         newNotaCredito.setGravado(BigDecimal.valueOf(UTIL.parseToDouble(jdFacturaVenta.getTfGravado())));
         newNotaCredito.setNoGravado(new BigDecimal(UTIL.parseToDouble(jdFacturaVenta.getTfTotalNoGravado())));
         newNotaCredito.setIva10(UTIL.parseToDouble(jdFacturaVenta.getTfTotalIVA105()));
@@ -402,14 +398,15 @@ public class NotaCreditoController {
     }
 
     private void anular(NotaCredito notaCredito) throws MessageException {
-        if (notaCredito.getDesacreditado().compareTo(BigDecimal.ZERO) != 0) {
-            throw new MessageException("La Nota de crédito Nº" + JGestionUtils.getNumeracion(notaCredito, true) + " ha sido usada para acreditar pagos y no puede ser anulada.");
+        if (notaCredito.getRecibo() != null) {
+            throw new MessageException("La Nota de crédito " + JGestionUtils.getNumeracion(notaCredito, true) + " ha sido usada"
+                    + "\nen el Recibo " + JGestionUtils.getNumeracion(notaCredito.getRecibo(), true));
         }
         if (notaCredito.getAnulada()) {
             throw new MessageException("La Nota de crédito Nº" + JGestionUtils.getNumeracion(notaCredito, true) + " ya está anulada.");
         }
         notaCredito.setAnulada(true);
-        DAO.merge(notaCredito);
+        jpaController.merge(notaCredito);
     }
 
     private void doReportComprobante(NotaCredito notaCredito) throws MissingReportException, JRException, MessageException {
@@ -462,24 +459,6 @@ public class NotaCreditoController {
                 "SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o "
                 + "WHERE o.cliente.id= " + cliente.getId()
                 + filtro).getResultList();
-    }
-
-    /**
-     * Acredita el monto de {@link DetalleAcreditacion} a la {@link NotaCredito} Este método se
-     * utiliza cuando se anula un {@link Recibo} o
-     * {@link FacturaVenta#formaPago} == {@link Valores.FormaPago#CTA_CTE}
-     *
-     * @param anular {@link DetalleAcreditacion} que fue anulado.
-     * @return instancia de {@link NotaCredito} que fue modificada (acreditada nuevamente).
-     */
-    public NotaCredito acreditar(DetalleAcreditacion anular) {
-        if (!anular.isAnulado()) {
-            throw new IllegalArgumentException(DetalleAcreditacion.class + " must be anulado == TRUE");
-        }
-        NotaCredito notaCredito = anular.getNotaCredito();
-        notaCredito.setDesacreditado(notaCredito.getDesacreditado().subtract(BigDecimal.valueOf(anular.getMonto())));
-        DAO.merge(notaCredito);
-        return notaCredito;
     }
 
     /**

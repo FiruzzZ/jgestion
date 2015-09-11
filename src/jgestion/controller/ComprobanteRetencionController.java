@@ -38,7 +38,7 @@ public class ComprobanteRetencionController {
             panelABM.getTfNumero().setText(toEdit.getNumero().toString());
             panelABM.getDcFecha().setDate(toEdit.getFecha());
         }
-        final JDABM jd = new JDABM(owner, null, true, panelABM);
+        final JDABM jd = new JDABM(owner, "Retenciones", true, panelABM);
         jd.getbAceptar().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -86,7 +86,6 @@ public class ComprobanteRetencionController {
                 jd.dispose();
             }
         });
-
         jd.setLocationRelativeTo(owner);
         jd.setVisible(true);
         return entity;
