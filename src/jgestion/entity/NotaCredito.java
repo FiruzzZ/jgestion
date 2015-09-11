@@ -90,14 +90,8 @@ public class NotaCredito implements Serializable {
     @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "notaCredito")
     private Collection<DetalleNotaCredito> detalle;
     /**
-     * Antes se podía ir desacreditando en porciones una nota de crédito, ya no mas. Cuando una nota
-     * de credito sea utilizada {@link #desacreditado} == {@link #importe}
-     *
-     * @deprecated
+     * Cuando la nota de crédito es utilizada, se especifica en que recibo
      */
-    @Deprecated
-    @Column(name = "desacreditado", nullable = false, precision = 12, scale = 2)
-    private BigDecimal desacreditado;
     @JoinColumn(name = "recibo")
     @ManyToOne
     private Recibo recibo;
@@ -243,30 +237,6 @@ public class NotaCredito implements Serializable {
 
     public void setDetalle(Collection<DetalleNotaCredito> detalle) {
         this.detalle = detalle;
-    }
-
-    /**
-     * Antes se podía ir desacreditando en porciones una nota de crédito, ya no mas. Cuando una nota
-     * de credito sea utilizada {@link #desacreditado} == {@link #importe}
-     *
-     * @return
-     * @deprecated
-     */
-    @Deprecated
-    public BigDecimal getDesacreditado() {
-        return desacreditado;
-    }
-
-    /**
-     * Antes se podía ir desacreditando en porciones una nota de crédito, ya no mas. Cuando una nota
-     * de credito sea utilizada {@link #desacreditado} == {@link #importe}
-     *
-     * @param desacreditado
-     * @deprecated
-     */
-    @Deprecated
-    public void setDesacreditado(BigDecimal desacreditado) {
-        this.desacreditado = desacreditado;
     }
 
     public Recibo getRecibo() {
