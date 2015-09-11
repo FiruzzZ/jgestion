@@ -1,5 +1,5 @@
 --20150911
-drop table detalle_acreditacion
+drop table detalle_acreditacion;
 --20150908
 ALTER TABLE ctacte_proveedor ALTER COLUMN factura DROP NOT NULL;
 CREATE OR REPLACE FUNCTION notadebitoproveedor_to_ctacte()
@@ -23,9 +23,9 @@ LANGUAGE plpgsql VOLATILE  COST 100;
 select notadebitoproveedor_to_ctacte();
 alter table nota_debito_proveedor drop column remesa_id;
 --20150904
-ALTER TABLE ctacte_proveedor drop constraint 
+ALTER TABLE ctacte_proveedor ALTER COLUMN factura DROP NOT NULL;
 ALTER TABLE ctacte_proveedor ADD COLUMN notadebito_id integer;
-ALTER TABLE ctacte_proveedor ADD FOREIGN KEY (notadebito_id) REFERENCES nota_debito_proveedor (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE ctacte_proveedor ADD CONSTRAINT ctacte_proveedor_notadebito_id_fk FOREIGN KEY (notadebito_id) REFERENCES nota_debito_proveedor (id);
 ALTER TABLE ctacte_proveedor ADD CONSTRAINT ctacte_proveedor_cbte CHECK ((factura is not null and notadebito_id is null) or (factura is null and notadebito_id is not null));
 --20150804
 update contribuyente set factu_a = false, factu_b = true, factu_c = true WHERE id = 1;
