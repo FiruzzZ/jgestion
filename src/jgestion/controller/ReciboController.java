@@ -1047,7 +1047,7 @@ public class ReciboController implements ActionListener, FocusListener {
         dtm.setRowCount(0);
         for (DetalleRecibo r : detalleReciboList) {
             dtm.addRow(new Object[]{
-                r.getFacturaVenta() != null ? r.getFacturaVenta() : r.getNotaDebito(),
+                r,
                 r.getFacturaVenta() != null ? JGestionUtils.getNumeracion(r.getFacturaVenta()) : JGestionUtils.getNumeracion(r.getNotaDebito()),
                 r.getMontoEntrega()
             });

@@ -300,9 +300,10 @@ public class PresupuestoController implements ActionListener {
         }
         jdFacturaVenta = facturaVentaController.getContenedor();
         jdFacturaVenta.setLocationRelativeTo(buscador);
-        jdFacturaVenta.getCbCliente().addItem(presupuesto.getCliente());
-        jdFacturaVenta.getCbSucursal().addItem(presupuesto.getSucursal());
-        jdFacturaVenta.getCbListaPrecio().addItem(presupuesto.getListaPrecios());
+        jdFacturaVenta.getCbCliente().addItem(presupuesto.getCliente().getNombre());
+        Sucursal s = presupuesto.getSucursal();
+        jdFacturaVenta.getCbSucursal().addItem(new EntityWrapper<>(s, s.getId(), s.getNombre()));
+        jdFacturaVenta.getCbListaPrecio().addItem(presupuesto.getListaPrecios().getNombre());
         jdFacturaVenta.getTfObservacion().setText(presupuesto.getObservacion());
         jdFacturaVenta.setDcFechaFactura(presupuesto.getFechaalta());
         for (Valores.FormaPago formaPago : Valores.FormaPago.getFormasDePago()) {
