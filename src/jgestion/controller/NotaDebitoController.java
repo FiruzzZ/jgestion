@@ -184,12 +184,11 @@ public class NotaDebitoController {
                 try {
                     if (editMode) {
                         jpaController.merge(EL_OBJECT);
-
                     } else {
                         setAndPersist();
                     }
-                    EL_OBJECT = null;
                     if (!viewMode) {
+                        EL_OBJECT = null;
                         resetUI();
                     }
                 } catch (MessageException ex) {
@@ -379,7 +378,7 @@ public class NotaDebitoController {
             }
             BigDecimal iva = UTIL.getPorcentaje(subTotal, alicuota);
             if (alicuota.intValue() == 0) {
-                noGravado = noGravado.add(iva);
+                noGravado = noGravado.add(subTotal);
             } else if (alicuota.toString().equalsIgnoreCase("10.5")) {
                 iva10 = iva10.add(iva);
             } else if (alicuota.intValue() == 21) {

@@ -141,7 +141,7 @@ public class NotaCreditoController {
         newNotaCredito.setNumero(jpaController.getNextNumero(sucursal, newNotaCredito.getTipo()));
         newNotaCredito.setFechaNotaCredito(fecha);
         newNotaCredito.setImporte(new BigDecimal(UTIL.parseToDouble(jdFacturaVenta.getTfTotal())).setScale(2, RoundingMode.HALF_UP));
-        newNotaCredito.setGravado(BigDecimal.valueOf(UTIL.parseToDouble(jdFacturaVenta.getTfGravado())));
+        newNotaCredito.setGravado(BigDecimal.valueOf(UTIL.parseToDouble(jdFacturaVenta.getTfTotalGravado())));
         newNotaCredito.setNoGravado(new BigDecimal(UTIL.parseToDouble(jdFacturaVenta.getTfTotalNoGravado())));
         newNotaCredito.setIva10(UTIL.parseToDouble(jdFacturaVenta.getTfTotalIVA105()));
         newNotaCredito.setIva21(UTIL.parseToDouble(jdFacturaVenta.getTfTotalIVA21()));

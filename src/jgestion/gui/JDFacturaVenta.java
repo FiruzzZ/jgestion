@@ -156,7 +156,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
         tfMarca = new javax.swing.JTextField();
         jPanel6 = new javax.swing.JPanel();
         jLabel23 = new javax.swing.JLabel();
-        tfGravado = new javax.swing.JTextField();
+        tfTotalGravado = new javax.swing.JTextField();
         tfTotal = new javax.swing.JTextField();
         jLabel24 = new javax.swing.JLabel();
         jLabel25 = new javax.swing.JLabel();
@@ -573,7 +573,6 @@ public class JDFacturaVenta extends javax.swing.JDialog {
         tfProductoDesc.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         tfProductoDesc.setText("0");
         tfProductoDesc.setToolTipText("Descuento sobre Precio Unitario");
-        tfProductoDesc.setNextFocusableComponent(btnADD);
         tfProductoDesc.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 tfProductoDescFocusGained(evt);
@@ -681,11 +680,11 @@ public class JDFacturaVenta extends javax.swing.JDialog {
 
         jLabel23.setText("Gravado");
 
-        tfGravado.setEditable(false);
-        tfGravado.setColumns(8);
-        tfGravado.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        tfGravado.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        tfGravado.setText("0.00");
+        tfTotalGravado.setEditable(false);
+        tfTotalGravado.setColumns(8);
+        tfTotalGravado.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        tfTotalGravado.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        tfTotalGravado.setText("0.00");
 
         tfTotal.setEditable(false);
         tfTotal.setColumns(10);
@@ -755,7 +754,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(tfGravado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(tfTotalGravado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel23))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -804,7 +803,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(tfGravado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(tfTotalGravado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(tfTotalDesc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(tfTotalIVA105, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(tfTotalIVA21, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -903,8 +902,6 @@ public class JDFacturaVenta extends javax.swing.JDialog {
             tfDias.setRequestFocusEnabled(tfDias.isEnabled());
             tfDias.setText("");
 
-//        boolean habilitarCaja = (formaPago.equals(Valores.FormaPago.CONTADO)
-//                || formaPago.equals(Valores.FormaPago.CONTADO_CHEQUE));
             //deshabilita la selección de caja
             //ya que cuando es CtaCte o Cheque, no hay movimiento de Caja
             cbCaja.setEnabled(!habilitarDias);
@@ -1057,7 +1054,6 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
     private javax.swing.JTextField tfDiferenciaRedondeo;
     private javax.swing.JTextField tfFacturaCuarto;
     private javax.swing.JTextField tfFacturaOcteto;
-    private javax.swing.JTextField tfGravado;
     private javax.swing.JTextField tfMarca;
     private javax.swing.JTextField tfNumMovimiento;
     private javax.swing.JTextField tfObservacion;
@@ -1068,6 +1064,7 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
     private javax.swing.JTextField tfRemito;
     private javax.swing.JTextField tfTotal;
     private javax.swing.JTextField tfTotalDesc;
+    private javax.swing.JTextField tfTotalGravado;
     private javax.swing.JTextField tfTotalIVA105;
     private javax.swing.JTextField tfTotalIVA21;
     private javax.swing.JTextField tfTotalNoGravado;
@@ -1123,8 +1120,8 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
         return tfFacturaOcteto.getText().trim();
     }
 
-    public String getTfGravado() {
-        return tfGravado.getText().trim();
+    public String getTfTotalGravado() {
+        return tfTotalGravado.getText().trim();
     }
 
     public String getTfTotalNoGravado() {
@@ -1230,7 +1227,7 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
     }
 
     public void setTfGravado(String tfGravado) {
-        this.tfGravado.setText(tfGravado);
+        this.tfTotalGravado.setText(tfGravado);
     }
 
     public void setTfTotalNoGravado(String noGravado) {

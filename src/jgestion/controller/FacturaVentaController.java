@@ -379,6 +379,28 @@ public class FacturaVentaController {
                 jdFactura.setTfNumMovimiento(jpaController.getNextMovimientoInterno().toString());
                 Sucursal s = getSelectedSucursalFromJDFacturaVenta();
                 setNumeroFactura(s, jpaController.getNextNumero(s, jdFactura.getCbFacturaTipo().getSelectedItem().toString().charAt(0)));
+                jdFactura.getBtnAnular().addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        try {
+                            if (EL_OBJECT.getAnulada()) {
+                                throw new MessageException("Ya está ANULADA!");
+                            }
+                            String factu_compro = EL_OBJECT.getMovimientoInterno() == 0 ? "Factura Venta" : "Comprobante";
+                            String msg_extra_para_ctacte = EL_OBJECT.getFormaPago() == Valores.FormaPago.CTA_CTE.getId() ? "\n- Recibos de pago de Cta.Cte." : "";
+                            int showOptionDialog = JOptionPane.showOptionDialog(jdFactura, "- " + factu_compro + " Nº:" + UTIL.AGREGAR_CEROS(EL_OBJECT.getNumero() + "\n- Movimiento de Caja\n- Movimiento de Stock" + msg_extra_para_ctacte, 12), "Confirmación de anulación", JOptionPane.YES_OPTION, 2, null, null, null);
+                            if (showOptionDialog == JOptionPane.OK_OPTION) {
+                                anular(EL_OBJECT);
+                                msg_extra_para_ctacte = (msg_extra_para_ctacte.length() > 1 ? "\nNota: Si el Recibo contenía como único detalle de pago esta Factura, este será anulado completamente\ny no solamente la referencia a esta Factura" : "");
+                                jdFactura.showMessage("Anulada" + msg_extra_para_ctacte, "Factura Venta", 1);
+                                jdFactura.dispose();
+                            }
+                        } catch (MessageException ex) {
+                            jdFactura.showMessage(ex.getMessage(), "ERROR", 0);
+                        } catch (Exception ex) {
+                        }
+                    }
+                });
             } else if (factVenta1_PresupNotaCredito2_Remito3 == 2) {
                 //Se cargan todas las sucursales a las cuales tiene permido, las unidades de negocio, cuentas y sub cuentas son solo para FacturasVenta
                 UTIL.loadComboBox(jdFactura.getCbSucursal(), JGestionUtils.getWrappedSucursales(uh.getSucursales()), false);
@@ -419,30 +441,6 @@ public class FacturaVentaController {
                 Sucursal s = getSelectedSucursalFromJDFacturaVenta();
                 setNumeroFactura(s, ((RemitoController) listener).getNextNumero(s));
             }
-        }
-        if (factVenta1_PresupNotaCredito2_Remito3 == 1) {
-            jdFactura.getBtnAnular().addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    try {
-                        if (EL_OBJECT.getAnulada()) {
-                            throw new MessageException("Ya está ANULADA!");
-                        }
-                        String factu_compro = EL_OBJECT.getMovimientoInterno() == 0 ? "Factura Venta" : "Comprobante";
-                        String msg_extra_para_ctacte = EL_OBJECT.getFormaPago() == Valores.FormaPago.CTA_CTE.getId() ? "\n- Recibos de pago de Cta.Cte." : "";
-                        int showOptionDialog = JOptionPane.showOptionDialog(jdFactura, "- " + factu_compro + " Nº:" + UTIL.AGREGAR_CEROS(EL_OBJECT.getNumero() + "\n- Movimiento de Caja\n- Movimiento de Stock" + msg_extra_para_ctacte, 12), "Confirmación de anulación", JOptionPane.YES_OPTION, 2, null, null, null);
-                        if (showOptionDialog == JOptionPane.OK_OPTION) {
-                            anular(EL_OBJECT);
-                            msg_extra_para_ctacte = (msg_extra_para_ctacte.length() > 1 ? "\nNota: Si el Recibo contenía como único detalle de pago esta Factura, este será anulado completamente\ny no solamente la referencia a esta Factura" : "");
-                            jdFactura.showMessage("Anulada" + msg_extra_para_ctacte, "Factura Venta", 1);
-                            jdFactura.dispose();
-                        }
-                    } catch (MessageException ex) {
-                        jdFactura.showMessage(ex.getMessage(), "ERROR", 0);
-                    } catch (Exception ex) {
-                    }
-                }
-            });
         }
         try {
             selectedListaPrecios = (ListaPrecios) jdFactura.getCbListaPrecio().getSelectedItem();
@@ -729,7 +727,7 @@ public class FacturaVentaController {
         redondeoTotal = gravado.add(iva10).add(iva21).add(otrosImps).subtract(redondeoTotal);
         contenedor.getTfDiferenciaRedondeo().setText(UTIL.DECIMAL_FORMAT.format(redondeoTotal));
         contenedor.setTfTotal(UTIL.DECIMAL_FORMAT.format(subTotal));
-        LOG.debug("Gravado=" + gravado + ", Desc.=" + desc
+        LOG.debug("Gravado=" + gravado + ", NoGrav=" + noGravado + ", Desc.=" + desc
                 + ", IVA105=" + iva10.toPlainString()
                 + ", IVA21=" + iva21.toPlainString()
                 + ", OtrosImp=" + otrosImps.toPlainString()
@@ -923,7 +921,7 @@ public class FacturaVentaController {
         //setting fields
         newFacturaVenta.setFormaPago(((Valores.FormaPago) jdFactura.getCbFormaPago().getSelectedItem()).getId());
         newFacturaVenta.setImporte(BigDecimal.valueOf(UTIL.parseToDouble(jdFactura.getTfTotal())));
-        newFacturaVenta.setGravado(BigDecimal.valueOf(UTIL.parseToDouble(jdFactura.getTfGravado())));
+        newFacturaVenta.setGravado(BigDecimal.valueOf(UTIL.parseToDouble(jdFactura.getTfTotalGravado())));
         newFacturaVenta.setNoGravado(new BigDecimal(UTIL.parseToDouble(jdFactura.getTfTotalNoGravado())));
         newFacturaVenta.setIva10(UTIL.parseToDouble(jdFactura.getTfTotalIVA105()));
         newFacturaVenta.setIva21(UTIL.parseToDouble(jdFactura.getTfTotalIVA21()));

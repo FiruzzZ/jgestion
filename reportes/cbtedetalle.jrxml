@@ -138,7 +138,7 @@
 	</columnHeader>
 	<detail>
 		<band height="15">
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement uuid="eac5e0cc-11e1-4611-b8fa-408d8dbe30e7" x="0" y="0" width="70" height="15"/>
 				<box leftPadding="2"/>
 				<textElement>
