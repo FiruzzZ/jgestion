@@ -129,7 +129,6 @@ public class NotaDebitoProveedorController {
                     } catch (NumberFormatException ex) {
                         throw new MessageException("Importe no válido");
                     }
-                    @SuppressWarnings("unchecked")
                     Iva iva = abm.getCbIVA().isEnabled() ? ((EntityWrapper<Iva>) abm.getCbIVA().getSelectedItem()).getEntity() : null;
                     DetalleNotaDebitoProveedor d = new DetalleNotaDebitoProveedor(null, concepto, importe, iva);
                     addDetalle(d);
@@ -330,7 +329,9 @@ public class NotaDebitoProveedorController {
 
     private void addDetalle(DetalleNotaDebitoProveedor detalle) {
         DefaultTableModel dtm = (DefaultTableModel) abm.getjTable1().getModel();
-        BigDecimal importe = (detalle.getIva() == null ? detalle.getImporte() : detalle.getImporte().add(UTIL.getPorcentaje(detalle.getImporte(), BigDecimal.valueOf(detalle.getIva().getIva()))));
+        BigDecimal importe = (detalle.getIva() == null
+                ? detalle.getImporte()
+                : detalle.getImporte().add(UTIL.getPorcentaje(detalle.getImporte(), BigDecimal.valueOf(detalle.getIva().getIva()))));
         dtm.addRow(new Object[]{
             detalle, detalle.getConcepto(), importe
         });

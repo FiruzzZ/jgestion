@@ -404,8 +404,9 @@ public class NotaDebitoController {
 
     private void addDetalle(DetalleNotaDebito detalle) {
         DefaultTableModel dtm = (DefaultTableModel) abm.getjTable1().getModel();
-        BigDecimal importe = detalle.getImporte().multiply(BigDecimal.valueOf(detalle.getCantidad()));
-        importe = importe.add(UTIL.getPorcentaje(importe, BigDecimal.valueOf(detalle.getIva().getIva())));
+        BigDecimal importe = (detalle.getIva() == null
+                ? detalle.getImporte()
+                : detalle.getImporte().add(UTIL.getPorcentaje(detalle.getImporte(), BigDecimal.valueOf(detalle.getIva().getIva()))));
         dtm.addRow(new Object[]{
             detalle, detalle.getCantidad(), detalle.getConcepto(), importe
         });
