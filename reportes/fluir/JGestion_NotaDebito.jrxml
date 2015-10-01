@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="NotaDebito" pageWidth="595" pageHeight="842" columnWidth="534" leftMargin="42" rightMargin="19" topMargin="28" bottomMargin="28" uuid="d142408a-0f2e-4041-9fc9-7987df8c1dfb">
-	<property name="ireport.zoom" value="4.707642565081508"/>
-	<property name="ireport.x" value="1020"/>
-	<property name="ireport.y" value="664"/>
+	<property name="ireport.zoom" value="1.6500000000000024"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
 	<parameter name="CBTE_ID" class="java.lang.Integer">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<queryString>
 		<![CDATA[select 1 as pag, ss.* FROM ( SELECT dc.id, nc.numero, nc.tipo, nc.fecha_nota_debito fecha, nc.importe,
  pro.nombre AS proveedor, pro.num_doc, pro.direccion, con.id as contribuyente
-, dc.cantidad, dc.importe precio_unitario, dc.concepto AS producto, 1 forma_pago, 0 dias_cta_cte
+, dc.cantidad, dc.importe* (1+(iva.iva/100))::numeric(12,2) precio_unitario, dc.concepto AS producto, 1 forma_pago, 0 dias_cta_cte
+
 from nota_debito nc
 JOIN detalle_nota_debito dc ON nc.id = dc.nota_debito_id
+JOIN iva ON iva.id = dc.iva_id
 JOIN cliente pro ON pro.id = nc.cliente_id
 JOIN contribuyente con ON pro.contribuyente = con.id
 WHERE nc.id IS NOT NULL
@@ -21,9 +23,10 @@ ORDER BY dc.id
 UNION
 select 2 as pag, ss.* FROM ( SELECT dc.id, nc.numero, nc.tipo, nc.fecha_nota_debito fecha, nc.importe,
  pro.nombre AS proveedor, pro.num_doc, pro.direccion, con.id as contribuyente
-, dc.cantidad, dc.importe precio_unitario, dc.concepto AS producto, 1 forma_pago, 0 dias_cta_cte
+, dc.cantidad, dc.importe* (1+(iva.iva/100))::numeric(12,2), dc.concepto AS producto, 1 forma_pago, 0 dias_cta_cte
 from nota_debito nc
 JOIN detalle_nota_debito dc ON nc.id = dc.nota_debito_id
+JOIN iva ON iva.id = dc.iva_id
 JOIN cliente pro ON pro.id = nc.cliente_id
 JOIN contribuyente con ON pro.contribuyente = con.id
 WHERE nc.id IS NOT NULL

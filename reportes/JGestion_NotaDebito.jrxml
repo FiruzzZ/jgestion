@@ -10,7 +10,9 @@
 	<queryString>
 		<![CDATA[SELECT 1 as pag, ss.*
     FROM (
-    SELECT dp.id, r.tipo, r.numero, r.importe, r.fecha_nota_debito, r.observacion, dp.concepto , dp.importe as detalle_importe, iva.iva, con.nombre as cliecontrib,
+    SELECT dp.id, r.tipo, r.numero, r.importe, r.fecha_nota_debito, r.observacion, dp.concepto ,
+	dp.cantidad*(dp.importe* (1+(iva.iva/100))::numeric(12,2)) as detalle_importe,
+	 iva.iva, con.nombre as cliecontrib,
 emp.nombre as empresa_nombre,emp.direccion as empresa_dir, emp.logo as empresa_logo, emp.tele1 as empresa_tele1, emp.tele2 as empresa_tele2, emp.cuit as empresa_cuit, emp.fecha_inicio_actividad as empresa_fecha_inicio_actividad, s.puntoventa, u.nick, clie.nombre as clienombre, clie.num_doc, clie.direccion as clieDireccion, clie.tele1 as clieTele1
 	FROM nota_debito r JOIN detalle_nota_debito dp ON r.id = dp.nota_debito_id LEFT JOIN iva ON iva.id = dp.iva_id, datos_empresa emp, cliente clie, sucursal s, usuario u, contribuyente con
 WHERE con.id = clie.contribuyente
@@ -18,7 +20,9 @@ AND s.id = r.sucursal_id AND clie.id = r.cliente_id AND u.id = r.usuario_id AND 
 ORDER BY dp.id ) ss
 UNION SELECT 2 as pag, ss.*
     FROM (
-    SELECT dp.id, r.tipo, r.numero, r.importe, r.fecha_nota_debito, r.observacion, dp.concepto , dp.importe as detalle_importe, iva.iva, con.nombre as cliecontrib,
+    SELECT dp.id, r.tipo, r.numero, r.importe, r.fecha_nota_debito, r.observacion, dp.concepto,
+	dp.cantidad*(dp.importe* (1+(iva.iva/100))::numeric(12,2)) as detalle_importe,
+	iva.iva, con.nombre as cliecontrib,
 emp.nombre as empresa_nombre,emp.direccion as empresa_dir, emp.logo as empresa_logo, emp.tele1 as empresa_tele1, emp.tele2 as empresa_tele2, emp.cuit as empresa_cuit, emp.fecha_inicio_actividad as empresa_fecha_inicio_actividad, s.puntoventa, u.nick, clie.nombre as clienombre, clie.num_doc, clie.direccion as clieDireccion, clie.tele1 as clieTele1
 	FROM nota_debito r JOIN detalle_nota_debito dp ON r.id = dp.nota_debito_id LEFT JOIN iva ON iva.id = dp.iva_id, datos_empresa emp, cliente clie, sucursal s, usuario u, contribuyente con
 WHERE con.id = clie.contribuyente
@@ -56,7 +60,7 @@ order by pag]]>
 		<variableExpression><![CDATA[$F{detalle_importe}]]></variableExpression>
 	</variable>
 	<variable name="sub_total_iva" class="java.math.BigDecimal" resetType="Page" calculation="Sum">
-		<variableExpression><![CDATA[$F{iva} != null ?
+		<variableExpression><![CDATA[$F{tipo}.equals("A") ?
    $F{iva}.divide(new BigDecimal("100")).multiply($F{detalle_importe})
    : BigDecimal.ZERO]]></variableExpression>
 	</variable>

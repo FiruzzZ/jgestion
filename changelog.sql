@@ -1,3 +1,10 @@
+--20151009
+ALTER TABLE detalle_nota_debito ALTER COLUMN iva_id SET NOT NULL;
+COMMENT ON COLUMN detalle_nota_debito.iva_id IS '';
+ALTER TABLE detalle_nota_debito ALTER COLUMN cantidad DROP DEFAULT;
+ALTER TABLE detalle_nota_debito_proveedor ALTER COLUMN iva_id SET NOT NULL;
+COMMENT ON COLUMN detalle_nota_debito_proveedor.iva_id IS '';
+
 --20150911
 drop table detalle_acreditacion;
 --20150908

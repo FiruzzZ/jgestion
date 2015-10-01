@@ -918,7 +918,7 @@ public class RemesaController implements FocusListener {
         dtm.setRowCount(0);
         for (DetalleRemesa r : detalle) {
             dtm.addRow(new Object[]{
-                r.getFacturaCompra() != null ? r.getFacturaCompra() : r.getNotaDebitoProveedor(),
+                r,
                 r.getFacturaCompra() != null ? JGestionUtils.getNumeracion(r.getFacturaCompra()) : JGestionUtils.getNumeracion(r.getNotaDebitoProveedor()),
                 null,
                 r.getMontoEntrega()

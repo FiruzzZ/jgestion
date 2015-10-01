@@ -36,12 +36,8 @@ public class DetalleNotaDebito implements Serializable {
     private BigDecimal importe;
     @Column(nullable = false)
     private Integer cantidad;
-    /**
-     * Si la nota de débito es tipo "B", no se discriminan IVA's por lo tanto va ser
-     * <code>null</code>
-     */
-    @JoinColumn(name = "iva_id")
-    @ManyToOne
+    @JoinColumn(name = "iva_id", nullable = false)
+    @ManyToOne(optional = false)
     private Iva iva;
     @JoinColumn(name = "nota_debito_id", nullable = false)
     @ManyToOne(optional = false)
