@@ -264,7 +264,7 @@ public class CtacteProveedorController implements ActionListener {
         query += filters + " ORDER BY fecha";
         cargarDtmResumen(query);
         if (imprimirResumen) {
-            doReportResumenCCC(resumenCtaCtes.getDcDesde(), filters);
+            doReportResumenCCP(resumenCtaCtes.getDcDesde(), filters);
         }
     }
 
@@ -307,7 +307,7 @@ public class CtacteProveedorController implements ActionListener {
         }
     }
 
-    private void doReportResumenCCC(Date filterDate, String filters) throws JRException, MissingReportException {
+    private void doReportResumenCCP(Date filterDate, String filters) throws JRException, MissingReportException {
         Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_ResumenCCP.jasper", "Resumen Cta. Cte. Proveedor");
         r.addCurrent_User();
         r.addParameter("SUBREPORT_DIR", Reportes.FOLDER_REPORTES);

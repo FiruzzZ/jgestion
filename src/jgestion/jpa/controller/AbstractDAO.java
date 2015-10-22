@@ -303,4 +303,11 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
     public final Date getServerDate() {
         return (Date) getEntityManager().createNativeQuery("SELECT CURRENT_TIMESTAMP").getSingleResult();
     }
+
+    /**
+     * La implementación de este método debe cargar todos los atributos mappeados como LAZY
+     *
+     * @param o
+     */
+    public abstract void loadLazies(T o);
 }
