@@ -662,9 +662,11 @@ public class Contabilidad {
                     encontro = true;
                     margenEncontrado = dlp.getMargen();
                 } else //si el subRubro coincide con algún Rubro definido en la ListaPrecios
-                if (!encontro && subRubro != null) {
-                    if (dlp.getRubro().equals(subRubro)) {
-                        margenEncontrado = dlp.getMargen();
+                {
+                    if (!encontro && subRubro != null) {
+                        if (dlp.getRubro().equals(subRubro)) {
+                            margenEncontrado = dlp.getMargen();
+                        }
                     }
                 }
                 if (margenEncontrado > margenFinal) {
@@ -737,6 +739,7 @@ public class Contabilidad {
         buscadorReRe.hideUDNCuentaSubCuenta();
         buscadorReRe.hideVendedor();
         buscadorReRe.getbImprimir().setVisible(true);
+        buscadorReRe.getBtnToExcel().setVisible(false);
         UTIL.loadComboBox(buscadorReRe.getCbClieProv(), JGestionUtils.getWrappedClientes(new ClienteController().findAll()), true);
         UTIL.loadComboBox(buscadorReRe.getCbCaja(), new CajaController().findCajasPermitidasByUsuario(UsuarioController.getCurrentUser(), true), true);
         List<EntityWrapper<Sucursal>> sucus = JGestionUtils.getWrappedSucursales(new UsuarioHelper().getSucursales());
@@ -790,13 +793,6 @@ public class Contabilidad {
                 r.viewReport();
             }
         });
-        buscadorReRe.getBtnToExcel().addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
-        });
         buscadorReRe.getbBuscar().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -827,6 +823,7 @@ public class Contabilidad {
         buscadorReRe.hideFactura();
         buscadorReRe.hideCheckAnulado();
         buscadorReRe.getbImprimir().setVisible(true);
+        buscadorReRe.getBtnToExcel().setVisible(false);
         UTIL.loadComboBox(buscadorReRe.getCbClieProv(), JGestionUtils.getWrappedProveedores(new ProveedorJpaController().findAllLite()), true);
         UTIL.loadComboBox(buscadorReRe.getCbCaja(), new CajaController().findCajasPermitidasByUsuario(UsuarioController.getCurrentUser(), true), true);
         List<EntityWrapper<Sucursal>> sucus = JGestionUtils.getWrappedSucursales(new UsuarioHelper().getSucursales());
@@ -1132,7 +1129,7 @@ public class Contabilidad {
             });
         }
         for (NotaCredito o : ln) {
-            data.add(new Object[] {
+            data.add(new Object[]{
                 JGestionUtils.getNumeracion(o, true),
                 o.getFechaNotaCredito(),
                 o.getCliente().getNombre(),

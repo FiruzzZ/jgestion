@@ -52,29 +52,14 @@ public class JDFacturaVenta extends javax.swing.JDialog {
             cbSubCuenta.setVisible(false);
             //Rem no tienen FORMA DE PAGO
             if (factVenta1_Presup2_Remito3 == 2) {
-                this.setTitle("Presupuesto");
+                setTitle("Presupuesto");
                 labelNumMovimiento.setVisible(false);
                 tfNumMovimiento.setVisible(false);
-                labelN_factura.setVisible(false);
+                labelNumFactura.setVisible(false);
                 tfFacturaCuarto.setVisible(false);
                 tfFacturaOcteto.setVisible(false);
                 labeFecha.setVisible(false);
                 dcFechaFactura.setVisible(false);
-            } else if (factVenta1_Presup2_Remito3 == 3) {
-                this.setTitle("Remito");
-                labelN_factura.setText("Nº Remito");
-                //Los remitos no tienen tipo: A B C
-                labelLetra.setVisible(false);
-                cbFacturaTipo.setVisible(false);
-                //Campo se pagan!
-                labelFormaPago.setVisible(false);
-                cbFormaPago.setVisible(false);
-                labelDias.setVisible(false);
-                tfDias.setVisible(false);
-
-                labelListaPrecios.setVisible(false);
-                cbListaPrecio.setVisible(false);
-                labelListaPrecioParaCatalogo.setVisible(false);
             }
         }
         pack();
@@ -89,7 +74,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
     private void initComponents() {
 
         panelDatosFacturacion = new javax.swing.JPanel();
-        labelN_factura = new javax.swing.JLabel();
+        labelNumFactura = new javax.swing.JLabel();
         labeFecha = new javax.swing.JLabel();
         tfFacturaCuarto = new javax.swing.JTextField();
         tfFacturaOcteto = new javax.swing.JTextField();
@@ -126,7 +111,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
         labelObservacionCharactersCount = new javax.swing.JLabel();
         labelVendedor = new javax.swing.JLabel();
         cbVendedor = new javax.swing.JComboBox();
-        jLabel3 = new javax.swing.JLabel();
+        labelCAE = new javax.swing.JLabel();
         tfCAE = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
@@ -181,7 +166,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
 
         panelDatosFacturacion.setBorder(javax.swing.BorderFactory.createTitledBorder("Datos facturación"));
 
-        labelN_factura.setText("Nº factura");
+        labelNumFactura.setText("Nº factura");
 
         labeFecha.setText("Fecha");
 
@@ -327,7 +312,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
 
         labelVendedor.setText("Vendedor");
 
-        jLabel3.setText("CAE");
+        labelCAE.setText("CAE");
 
         tfCAE.setEditable(false);
         tfCAE.setToolTipText("Código de Autorización Eletrónico");
@@ -374,13 +359,13 @@ public class JDFacturaVenta extends javax.swing.JDialog {
                             .addGroup(panelDatosFacturacionLayout.createSequentialGroup()
                                 .addComponent(cbFacturaTipo, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(labelN_factura)
+                                .addComponent(labelNumFactura)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(tfFacturaCuarto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(tfFacturaOcteto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(10, 10, 10)
-                                .addComponent(jLabel3)
+                                .addComponent(labelCAE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(tfCAE, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -445,7 +430,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
                 .addGroup(panelDatosFacturacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(cbFacturaTipo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(tfFacturaCuarto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(labelN_factura)
+                    .addComponent(labelNumFactura)
                     .addComponent(labelLetra)
                     .addGroup(panelDatosFacturacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(panelDatosFacturacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -455,7 +440,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
                             .addComponent(tfFacturaOcteto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(dcFechaFactura, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(labeFecha)
-                            .addComponent(jLabel3)
+                            .addComponent(labelCAE)
                             .addComponent(tfCAE, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelDatosFacturacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -1019,7 +1004,6 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
     private javax.swing.JLabel jLabel27;
     private javax.swing.JLabel jLabel28;
     private javax.swing.JLabel jLabel29;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel30;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel8;
@@ -1028,6 +1012,7 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JLabel labeFecha;
+    private javax.swing.JLabel labelCAE;
     private javax.swing.JLabel labelCaja;
     private javax.swing.JLabel labelCodigoNoRegistrado;
     private javax.swing.JLabel labelCuenta;
@@ -1038,7 +1023,7 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
     private javax.swing.JLabel labelLetra;
     private javax.swing.JLabel labelListaPrecioParaCatalogo;
     private javax.swing.JLabel labelListaPrecios;
-    private javax.swing.JLabel labelN_factura;
+    private javax.swing.JLabel labelNumFactura;
     private javax.swing.JLabel labelNumMovimiento;
     private javax.swing.JLabel labelObservacion;
     private javax.swing.JLabel labelObservacionCharactersCount;
@@ -1290,14 +1275,6 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
         tfCantidad.requestFocus();
     }
 
-    public JTextField getTfNumMovimiento() {
-        return tfNumMovimiento;
-    }
-
-    public JLabel getLabelNumMovimiento() {
-        return labelNumMovimiento;
-    }
-
     public JLabel getLabelDias() {
         return labelDias;
     }
@@ -1405,12 +1382,12 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
      */
     public void setUIToNotaCredito() {
         setTitle("ABM - Nota de Crédito");
-        labelN_factura.setText("Nº");
+        labelNumFactura.setText("Nº");
         btnAceptar.setText("Aceptar");
         btnAceptar.setMnemonic('a');
         labelObservacion.setVisible(true);
         tfObservacion.setVisible(true);
-        labelN_factura.setVisible(true);
+        labelNumFactura.setVisible(true);
         tfFacturaCuarto.setVisible(true);
         tfFacturaOcteto.setVisible(true);
         labeFecha.setVisible(true);
@@ -1446,6 +1423,60 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
         labelObservacion.setVisible(true);
         tfObservacion.setVisible(true);
         pack();
+    }
+
+    public void setUIToPresupuesto() {
+        setTitle("Presupuestos");
+        btnAceptar.setText("Aceptar");
+        btnAceptar.setMnemonic('a');
+        btnFacturar.setVisible(false);
+        labelCaja.setVisible(false);
+        cbCaja.setVisible(false);
+        //tienen tipo: A B C
+        labelLetra.setVisible(true);
+        cbFacturaTipo.setVisible(true);
+        //Presup y Remito no se los puede vincular con un Remito
+        labelRemito.setVisible(false);
+        tfRemito.setVisible(false);
+        btnBuscarRemito.setVisible(false);
+        labelUnidadNegocio.setVisible(false);
+        cbUnidadDeNegocio.setVisible(false);
+        labelCuenta.setVisible(false);
+        cbCuenta.setVisible(false);
+        labelSubCuenta.setVisible(false);
+        cbSubCuenta.setVisible(false);
+        labelNumMovimiento.setVisible(false);
+        tfNumMovimiento.setVisible(false);
+        labelNumFactura.setVisible(false);
+        tfFacturaCuarto.setVisible(false);
+        tfFacturaOcteto.setVisible(false);
+        labeFecha.setVisible(false);
+        dcFechaFactura.setVisible(false);
+        //no CAE
+        labelCAE.setVisible(false);
+        tfCAE.setVisible(false);
+        //no se Vendedor
+        labelVendedor.setVisible(false);
+        cbVendedor.setVisible(false);
+        pack();
+    }
+
+    public void setUIToRemito() {
+        setTitle("Remito");
+        labelNumFactura.setText("Nº Remito");
+        labelNumMovimiento.setVisible(false);
+        tfNumMovimiento.setVisible(true);
+        //tienen tipo: A B C
+        labelLetra.setVisible(false);
+        cbFacturaTipo.setVisible(false);
+        //Campo se pagan!
+        labelFormaPago.setVisible(false);
+        cbFormaPago.setVisible(false);
+        labelDias.setVisible(false);
+        tfDias.setVisible(false);
+        labelListaPrecios.setVisible(false);
+        cbListaPrecio.setVisible(false);
+        labelListaPrecioParaCatalogo.setVisible(false);
     }
 
     private void controlDeCaracteres(JTextField textField) {

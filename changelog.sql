@@ -1,3 +1,5 @@
+ALTER TABLE detalle_presupuesto ALTER COLUMN descuento TYPE numeric(12,4);
+ALTER TABLE detalle_presupuesto ALTER COLUMN precio_unitario TYPE numeric(12,4);
 --20151009
 ALTER TABLE detalle_nota_debito ALTER COLUMN iva_id SET NOT NULL;
 COMMENT ON COLUMN detalle_nota_debito.iva_id IS '';

@@ -133,13 +133,13 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="cbFacturaTipo" min="-2" pref="59" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="labelN_factura" min="-2" max="-2" attributes="0"/>
+                                  <Component id="labelNumFactura" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="tfFacturaCuarto" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="tfFacturaOcteto" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
-                                  <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="labelCAE" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="tfCAE" min="-2" pref="142" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
@@ -220,7 +220,7 @@
                   <Group type="103" groupAlignment="2" attributes="0">
                       <Component id="cbFacturaTipo" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="tfFacturaCuarto" alignment="2" min="-2" max="-2" attributes="0"/>
-                      <Component id="labelN_factura" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Component id="labelNumFactura" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="labelLetra" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Group type="103" alignment="2" groupAlignment="0" attributes="0">
                           <Group type="103" alignment="0" groupAlignment="3" attributes="0">
@@ -231,7 +231,7 @@
                               <Component id="tfFacturaOcteto" alignment="2" min="-2" max="-2" attributes="0"/>
                               <Component id="dcFechaFactura" alignment="2" min="-2" max="-2" attributes="0"/>
                               <Component id="labeFecha" alignment="2" min="-2" max="-2" attributes="0"/>
-                              <Component id="jLabel3" alignment="2" min="-2" max="-2" attributes="0"/>
+                              <Component id="labelCAE" alignment="2" min="-2" max="-2" attributes="0"/>
                               <Component id="tfCAE" alignment="2" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -270,7 +270,7 @@
         </DimensionLayout>
       </Layout>
       <SubComponents>
-        <Component class="javax.swing.JLabel" name="labelN_factura">
+        <Component class="javax.swing.JLabel" name="labelNumFactura">
           <Properties>
             <Property name="text" type="java.lang.String" value="N&#xba; factura"/>
           </Properties>
@@ -549,7 +549,7 @@
         </Component>
         <Component class="javax.swing.JComboBox" name="cbVendedor">
         </Component>
-        <Component class="javax.swing.JLabel" name="jLabel3">
+        <Component class="javax.swing.JLabel" name="labelCAE">
           <Properties>
             <Property name="text" type="java.lang.String" value="CAE"/>
           </Properties>

@@ -122,7 +122,7 @@ public class FacturaVentaController {
      * @param owner Papi de {@link jgestion.gui.JDFacturaVenta}
      * @param modal bla bla...
      * @param listener Object encargado de manejar los Eventos de la GUI (Action, Mouse, Key, Focus)
-     * @param factVenta1_PresupNotaCredito2_Remito3 Es para settear algunos Labels, TextFields según
+     * @param factVenta1_NotaCredito2_Remito3_presu4 Es para settear algunos Labels, TextFields según
      * la entidad que va usar la GUI.
      * @param setVisible Si la GUI debe hacerse visible cuando se invoca este método. Se pone
      * <code>false</code> cuando se va usar en MODO_VISTA, así 1ro se settean los datos
@@ -132,14 +132,14 @@ public class FacturaVentaController {
      * @throws MessageException Mensajes personalizados de alerta y/o información para el usuario.
      */
     public void displayABM(Window owner, boolean modal, final Object listener,
-            final int factVenta1_PresupNotaCredito2_Remito3, boolean setVisible, boolean loadDefaultData)
+            final int factVenta1_NotaCredito2_Remito3_presu4, boolean setVisible, boolean loadDefaultData)
             throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.VENTA);
         UsuarioHelper uh = new UsuarioHelper();
         if (uh.getSucursales().isEmpty()) {
             throw new MessageException(JGestion.resourceBundle.getString("unassigned.sucursal"));
         }
-        if (factVenta1_PresupNotaCredito2_Remito3 == 1) {
+        if (factVenta1_NotaCredito2_Remito3_presu4 == 1) {
             if (new UnidadDeNegocioJpaController().findAll().isEmpty()) {
                 throw new MessageException(JGestion.resourceBundle.getString("info.unidaddenegociosempty"));
             }
@@ -147,7 +147,7 @@ public class FacturaVentaController {
                 throw new MessageException(JGestion.resourceBundle.getString("unassigned.caja"));
             }
         }
-        jdFactura = new JDFacturaVenta(owner, modal, factVenta1_PresupNotaCredito2_Remito3);
+        jdFactura = new JDFacturaVenta(owner, modal, factVenta1_NotaCredito2_Remito3_presu4);
         jdFactura.setUIToFacturaVenta();
         //<editor-fold defaultstate="collapsed" desc="init Table, funciones generales de algunos botones">
         UTIL.getDefaultTableModel(jdFactura.getjTable1(),
@@ -223,7 +223,7 @@ public class FacturaVentaController {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (jdFactura.getCbSucursal().isFocusOwner()) {
-                    sucursalSelectedActionPerformanceOnComboBox(factVenta1_PresupNotaCredito2_Remito3, listener);
+                    sucursalSelectedActionPerformanceOnComboBox(factVenta1_NotaCredito2_Remito3_presu4, listener);
                 }
             }
         });
@@ -231,7 +231,7 @@ public class FacturaVentaController {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (jdFactura.getCbUnidadDeNegocio().isFocusOwner()) {
-                    sucursalSelectedActionPerformanceOnComboBox(factVenta1_PresupNotaCredito2_Remito3, listener);
+                    sucursalSelectedActionPerformanceOnComboBox(factVenta1_NotaCredito2_Remito3_presu4, listener);
                 }
             }
         });
@@ -312,7 +312,7 @@ public class FacturaVentaController {
                     }
                 }
             });
-            if (factVenta1_PresupNotaCredito2_Remito3 == 1) {
+            if (factVenta1_NotaCredito2_Remito3_presu4 == 1) {
                 ActionListenerManager.setUnidadDeNegocioSucursalActionListener(jdFactura.getCbUnidadDeNegocio(), false, jdFactura.getCbSucursal(), false, true);
                 ActionListenerManager.setCuentasIngresosSubcuentaActionListener(jdFactura.getCbCuenta(), false, jdFactura.getCbSubCuenta(), true, true);
                 try {
@@ -379,7 +379,7 @@ public class FacturaVentaController {
                 jdFactura.setTfNumMovimiento(jpaController.getNextMovimientoInterno().toString());
                 Sucursal s = getSelectedSucursalFromJDFacturaVenta();
                 setNumeroFactura(s, jpaController.getNextNumero(s, jdFactura.getCbFacturaTipo().getSelectedItem().toString().charAt(0)));
-            } else if (factVenta1_PresupNotaCredito2_Remito3 == 2) {
+            } else if (factVenta1_NotaCredito2_Remito3_presu4 == 2) {
                 //Se cargan todas las sucursales a las cuales tiene permido, las unidades de negocio, cuentas y sub cuentas son solo para FacturasVenta
                 UTIL.loadComboBox(jdFactura.getCbSucursal(), JGestionUtils.getWrappedSucursales(uh.getSucursales()), false);
                 try {
@@ -411,11 +411,9 @@ public class FacturaVentaController {
                         }
                     }
                 });
-            } else if (factVenta1_PresupNotaCredito2_Remito3 == 3) {
+            } else if (factVenta1_NotaCredito2_Remito3_presu4 == 3) {
                 //Se cargan todas las sucursales a las cuales tiene permido, las unidades de negocio, cuentas y sub cuentas son solo para FacturasVenta
                 UTIL.loadComboBox(jdFactura.getCbSucursal(), JGestionUtils.getWrappedSucursales(uh.getSucursales()), false);
-                jdFactura.getLabelNumMovimiento().setVisible(false);
-                jdFactura.getTfNumMovimiento().setVisible(false);
                 Sucursal s = getSelectedSucursalFromJDFacturaVenta();
                 setNumeroFactura(s, ((RemitoController) listener).getNextNumero(s));
             }

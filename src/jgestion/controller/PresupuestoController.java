@@ -20,7 +20,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import jgestion.JGestionUtils;
@@ -31,6 +30,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import utilities.general.UTIL;
 import utilities.general.EntityWrapper;
+import utilities.swing.components.NumberRenderer;
 
 /**
  *
@@ -55,14 +55,15 @@ public class PresupuestoController implements ActionListener {
      * Inicializa una {@link jgestion.gui.JDFacturaVenta} con un Object listener <code>this</code>.
      * Implementa la actionListener del botón Aceptar
      *
-     * @param frame
+     * @param owner
      * @param modal to be or not to be...
      * @param setVisible cuando se va levantar la gui desde el buscador es <code>false</code>
      * @param loadDefaultData
      * @throws MessageException
      */
-    public void initPresupuesto(JFrame frame, boolean modal, boolean setVisible, boolean loadDefaultData) throws MessageException {
-        facturaVentaController.displayABM(frame, modal, this, 2, setVisible, loadDefaultData);
+    public void initPresupuesto(Window owner, boolean modal, boolean setVisible, boolean loadDefaultData) throws MessageException {
+        facturaVentaController.displayABM(owner, modal, this, 4, setVisible, loadDefaultData);
+        facturaVentaController.getContenedor().setUIToPresupuesto();
         facturaVentaController.getContenedor().getBtnAceptar().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -86,30 +87,11 @@ public class PresupuestoController implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         //solo se hace cargo de persistir la entity Presupuesto
         //todo las demás acciones son manejadas (delegadas) -> FacturaVentaJpaController
-        if (e.getSource().getClass().equals(JButton.class)) {
-            JButton boton = (JButton) e.getSource();
-            if (boton.getName().equalsIgnoreCase("filtrarReRe")) {
-                try {
-                    armarQuery();
-                } catch (MessageException ex) {
-                    buscador.showMessage(ex.getMessage(), "Buscador - " + CLASS_NAME, 0);
-                } catch (Exception ex) {
-                    LOG.error(ex, ex);
-                    buscador.showMessage("Ocurrió un error", "Buscador - " + CLASS_NAME, 0);
-                }
-            } else {
-                if (!MODO_VISTA) {
-                }
-            }
-        } else {
-            if (!MODO_VISTA) {
-            }
-        }
     }
 
     /**
-     * Control que la {@link jgestion.entity.Presupuesto} esté necesariamente setteada, persiste y realiza el
-     * reporte.
+     * Control que la {@link jgestion.entity.Presupuesto} esté necesariamente setteada, persiste y
+     * realiza el reporte.
      *
      * @return <code>true</code> si la creación del reporte finalizó correctamente.
      * @throws MessageException
@@ -153,9 +135,9 @@ public class PresupuestoController implements ActionListener {
             newPresupuesto.setListaPrecios((ListaPrecios) jdFacturaVenta.getCbListaPrecio().getSelectedItem());
             newPresupuesto.setSucursal(((EntityWrapper<Sucursal>) jdFacturaVenta.getCbSucursal().getSelectedItem()).getEntity());
             newPresupuesto.setUsuario(UsuarioController.getCurrentUser());
-            if (((Valores.FormaPago) jdFacturaVenta.getCbFormaPago().getSelectedItem()).equals(Valores.FormaPago.CONTADO)) {
+            if (jdFacturaVenta.getCbFormaPago().getSelectedItem().equals(Valores.FormaPago.CONTADO)) {
                 newPresupuesto.setFormaPago((short) Valores.FormaPago.CONTADO.getId());
-            } else if (((Valores.FormaPago) jdFacturaVenta.getCbFormaPago().getSelectedItem()).equals(Valores.FormaPago.CTA_CTE)) {
+            } else if (jdFacturaVenta.getCbFormaPago().getSelectedItem().equals(Valores.FormaPago.CTA_CTE)) {
                 newPresupuesto.setFormaPago((short) Valores.FormaPago.CTA_CTE.getId());
                 newPresupuesto.setDias(Short.parseShort(jdFacturaVenta.getTfDias()));
             }
@@ -164,7 +146,7 @@ public class PresupuestoController implements ActionListener {
             newPresupuesto.setImporte(UTIL.parseToDouble(jdFacturaVenta.getTfTotal()));
             newPresupuesto.setIva10(UTIL.parseToDouble(jdFacturaVenta.getTfTotalIVA105()));
             newPresupuesto.setIva21(UTIL.parseToDouble(jdFacturaVenta.getTfTotalIVA21()));
-            newPresupuesto.setDetallePresupuestoList(new ArrayList<DetallePresupuesto>(dtm.getRowCount()));
+            newPresupuesto.setDetallePresupuestoList(new ArrayList<>(dtm.getRowCount()));
             // carga de detalleVenta
             DetallePresupuesto detalle;
             ProductoJpaController productoController = new ProductoJpaController();
@@ -172,7 +154,7 @@ public class PresupuestoController implements ActionListener {
                 detalle = new DetallePresupuesto();
                 detalle.setCantidad(Integer.valueOf(dtm.getValueAt(i, 3).toString()));
                 detalle.setPrecioUnitario((BigDecimal) dtm.getValueAt(i, 4));
-                detalle.setDescuento(Double.valueOf(dtm.getValueAt(i, 6).toString()));
+                detalle.setDescuento((BigDecimal) dtm.getValueAt(i, 6));
                 detalle.setTipoDesc(Integer.valueOf(dtm.getValueAt(i, 8).toString()));
                 Producto p = productoController.find((Integer) dtm.getValueAt(i, 9));
                 detalle.setProducto(p);
@@ -188,7 +170,7 @@ public class PresupuestoController implements ActionListener {
         try {
             Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_Presupuesto.jasper", "Presupuesto");
             r.addParameter("PRESUPUESTO_ID", presupuesto.getId());
-            r.printReport(true);
+            r.viewReport();
             return r.isReporteFinalizado();
         } catch (MissingReportException | JRException ex) {
             JOptionPane.showMessageDialog(null, ex.getLocalizedMessage(), "Error generando reporte", JOptionPane.ERROR_MESSAGE);
@@ -214,6 +196,7 @@ public class PresupuestoController implements ActionListener {
         buscador.hideCaja();
         buscador.hideUDNCuentaSubCuenta();
         buscador.hideVendedor();
+        buscador.getBtnToExcel().setVisible(false);
         buscador.getjTfOcteto().setVisible(false);
         UTIL.loadComboBox(buscador.getCbClieProv(), new ClienteController().findAll(), true);
         UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getSucursales(), true);
@@ -221,6 +204,18 @@ public class PresupuestoController implements ActionListener {
                 buscador.getjTable1(),
                 new String[]{"ObjectID", "Nº " + CLASS_NAME, "Cliente", "Importe", "Fecha", "Sucursal", "Usuario"},
                 new int[]{1, 15, 50, 50, 50, 80, 50});
+        buscador.getjTable1().getColumnModel().getColumn(3).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+        UTIL.hideColumnTable(buscador.getjTable1(), 0);
+        buscador.getbBuscar().addActionListener((ActionEvent e) -> {
+            try {
+                armarQuery();
+            } catch (MessageException ex) {
+                buscador.showMessage(ex.getMessage(), "Buscador - " + CLASS_NAME, 0);
+            } catch (Exception ex) {
+                LOG.error(ex, ex);
+                buscador.showMessage("Ocurrió un error", "Buscador - " + CLASS_NAME, 0);
+            }
+        });
         MODO_VISTA = true;
         buscador.setListeners(this);
         buscador.setVisible(true);
@@ -228,7 +223,6 @@ public class PresupuestoController implements ActionListener {
 
     private void armarQuery() throws MessageException {
         StringBuilder query = new StringBuilder("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o WHERE o.id > -1");
-
         //filtro por nº de ReRe
         if (buscador.getTfCuarto().length() > 0) {
             try {
@@ -268,13 +262,13 @@ public class PresupuestoController implements ActionListener {
             query.append(" AND o.formaPago = ").append(((Valores.FormaPago) buscador.getCbFormasDePago().getSelectedItem()).getId());
         }
         query.append(" ORDER BY o.id");
-        cargarDtmBuscador(query.toString());
+        List<Presupuesto> ll = jpaController.findAll(query.toString());
+        cargarDtmBuscador(ll);
     }
 
-    private void cargarDtmBuscador(String query) {
-        buscador.dtmRemoveAll();
+    private void cargarDtmBuscador(List<Presupuesto> l) {
         DefaultTableModel dtm = buscador.getDtm();
-        List<Presupuesto> l = jpaController.findAll(query);
+        dtm.setRowCount(0);
         for (Presupuesto presupuesto : l) {
             dtm.addRow(new Object[]{
                 presupuesto.getId(), // <--- no es visible
@@ -283,7 +277,8 @@ public class PresupuestoController implements ActionListener {
                 presupuesto.getImporte(),
                 UTIL.TIMESTAMP_FORMAT.format(presupuesto.getFechaalta()),
                 presupuesto.getSucursal().getNombre(),
-                presupuesto.getUsuario().getNick()});
+                presupuesto.getUsuario().getNick()
+            });
         }
     }
 
@@ -330,8 +325,9 @@ public class PresupuestoController implements ActionListener {
                     iva = new IvaController().findByProducto(detalle.getProducto().getId());
                 }
             }
-            BigDecimal productoConIVA = detalle.getPrecioUnitario().add(UTIL.getPorcentaje(detalle.getPrecioUnitario(), BigDecimal.valueOf(iva.getIva()))).setScale(4, RoundingMode.HALF_EVEN);
-//         "IVA","Cód. Producto","Producto","Cantidad","P. Unitario","P. final","Desc","Sub total"
+            BigDecimal productoConIVA = detalle.getPrecioUnitario().add(
+                    UTIL.getPorcentaje(detalle.getPrecioUnitario().subtract(detalle.getDescuento()),
+                            BigDecimal.valueOf(iva.getIva()))).setScale(4, RoundingMode.HALF_EVEN);
             dtm.addRow(new Object[]{
                 iva.getIva(),
                 detalle.getProducto().getCodigo(),
@@ -340,7 +336,7 @@ public class PresupuestoController implements ActionListener {
                 UTIL.PRECIO_CON_PUNTO.format(detalle.getPrecioUnitario()),
                 productoConIVA,
                 detalle.getDescuento(),
-                UTIL.PRECIO_CON_PUNTO.format((detalle.getCantidad() * productoConIVA.doubleValue()) - detalle.getDescuento()),
+                UTIL.PRECIO_CON_PUNTO.format((detalle.getCantidad() * productoConIVA.doubleValue())),
                 detalle.getTipoDesc(),
                 detalle.getProducto().getId(),
                 null
