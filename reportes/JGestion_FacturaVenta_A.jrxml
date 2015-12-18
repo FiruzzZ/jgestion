@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="JGestion_FacturaVenta_A" pageWidth="595" pageHeight="842" columnWidth="534" leftMargin="42" rightMargin="19" topMargin="28" bottomMargin="28" uuid="83e16d51-374d-4a42-96b9-969ea4f945cb">
 	<property name="ireport.zoom" value="1.5000000000000044"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="45"/>
+	<property name="ireport.y" value="3"/>
 	<parameter name="FACTURA_ID" class="java.lang.Integer"/>
 	<parameter name="REMITO" class="java.lang.String"/>
 	<parameter name="CHEQUE" class="java.lang.String"/>
@@ -199,6 +199,24 @@ ORDER BY pag, id]]>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{nick}]]></textFieldExpression>
 			</textField>
+			<staticText>
+				<reportElement uuid="d58c0a59-f57b-4f07-ae68-175ac24df31a" x="359" y="155" width="10" height="10">
+					<printWhenExpression><![CDATA[$F{contribuyente}.intValue() == 5]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[X]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="bb6dd73e-589a-400a-8299-242593fea6ec" x="359" y="143" width="10" height="10">
+					<printWhenExpression><![CDATA[$F{contribuyente}.intValue() == 4]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[X]]></text>
+			</staticText>
 		</band>
 	</pageHeader>
 	<columnHeader>
