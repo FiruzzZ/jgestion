@@ -8,6 +8,7 @@ import jgestion.entity.Proveedor;
 import jgestion.gui.JDBuscadorReRe;
 import jgestion.gui.JDNotaDebito;
 import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,6 +16,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -31,6 +33,7 @@ import org.apache.logging.log4j.Logger;
 import utilities.general.UTIL;
 import utilities.gui.SwingUtil;
 import utilities.general.EntityWrapper;
+import utilities.general.TableExcelExporter;
 import utilities.swing.components.FormatRenderer;
 import utilities.swing.components.NumberRenderer;
 
@@ -438,27 +441,23 @@ public class NotaDebitoProveedorController {
                 }
             }
         });
-        buscador.getBtnToExcel().setEnabled(false);
-        buscador.getBtnToExcel().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-//                try {
-//                    if (buscador.getjTable1().getRowCount() < 1) {
-//                        throw new MessageException("No hay info para exportar.");
-//                    }
-//                    File currentDirectory = openFileChooser("Archivo Excel", null, "xls");
-//                    if (currentDirectory != null) {
-//                        doReportFacturas(currentDirectory.getCanonicalPath());
-//                    }
-//                } catch (MissingReportException ex) {
-//                } catch (JRException ex) {
-//                } catch (IOException ex) {
-//                } catch (MessageException ex) {
-//                }
+        try {
+            if (buscador.getjTable1().getRowCount() < 1) {
+                throw new MessageException("No hay info para exportar.");
             }
-        });
+            File file = JGestionUtils.showSaveDialogFileChooser(buscador, "Archivo Excel (.xls)", null, "xls");
+            TableExcelExporter tee = new TableExcelExporter(file, buscador.getjTable1());
+            tee.export();
+            if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(buscador, "¿Abrir archivo generado?", null, JOptionPane.YES_NO_OPTION)) {
+                Desktop.getDesktop().open(file);
+            }
+        } catch (MessageException ex) {
+            JOptionPane.showMessageDialog(buscador, ex.getMessage());
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(buscador, "Algo salió mal: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            LOG.error(ex, ex);
+        }
         viewMode = true;
-//        buscador.setListeners(this);
         buscador.setLocationRelativeTo(owner);
         buscador.setVisible(true);
     }

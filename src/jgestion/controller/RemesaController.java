@@ -23,6 +23,7 @@ import generics.GenericBeanCollection;
 import jgestion.gui.JDBuscadorReRe;
 import jgestion.gui.JDReRe;
 import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -30,6 +31,8 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -62,6 +65,7 @@ import utilities.general.NumberToLetterConverter;
 import utilities.general.UTIL;
 import utilities.gui.SwingUtil;
 import utilities.general.EntityWrapper;
+import utilities.general.TableExcelExporter;
 import utilities.swing.components.FormatRenderer;
 import utilities.swing.components.NumberRenderer;
 
@@ -706,6 +710,27 @@ public class RemesaController implements FocusListener {
                     LOG.error("Error en Buscador Remesa", ex);
                     buscador.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 }
+            }
+        });
+        buscador.getbImprimir().addActionListener((evt) -> {
+
+        });
+        buscador.getBtnToExcel().addActionListener((evt) -> {
+            try {
+                if (buscador.getjTable1().getRowCount() < 1) {
+                    throw new MessageException("No hay info para exportar.");
+                }
+                File file = JGestionUtils.showSaveDialogFileChooser(buscador, "Archivo Excel (.xls)", null, "xls");
+                TableExcelExporter tee = new TableExcelExporter(file, buscador.getjTable1());
+                tee.export();
+                if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(buscador, "¿Abrir archivo generado?", null, JOptionPane.YES_NO_OPTION)) {
+                    Desktop.getDesktop().open(file);
+                }
+            } catch (MessageException ex) {
+                JOptionPane.showMessageDialog(buscador, ex.getMessage());
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(buscador, "Algo salió mal: " + ex. getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                LOG.error(ex, ex);
             }
         });
         buscador.setLocationRelativeTo(owner);

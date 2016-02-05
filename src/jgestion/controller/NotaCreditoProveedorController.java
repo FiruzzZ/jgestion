@@ -8,6 +8,7 @@ import jgestion.entity.NotaCreditoProveedor;
 import jgestion.entity.Producto;
 import jgestion.entity.Proveedor;
 import generics.AutoCompleteComboBox;
+import java.awt.Desktop;
 import jgestion.gui.JDBuscadorReRe;
 import jgestion.gui.JDFacturaCompra;
 import java.awt.Window;
@@ -20,6 +21,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -38,6 +40,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import utilities.general.UTIL;
 import utilities.general.EntityWrapper;
+import utilities.general.TableExcelExporter;
 import utilities.swing.components.NumberRenderer;
 
 /**
@@ -295,7 +298,7 @@ public class NotaCreditoProveedorController implements ActionListener {
         o.setFechaNotaCredito(jdFactura.getDcFechaFactura());
         o.setAnulada(false);
         //set entities
-        o.setProveedor(new ProveedorJpaController().find((Integer)((EntityWrapper<Proveedor>) jdFactura.getCbProveedor().getSelectedItem()).getId()));
+        o.setProveedor(new ProveedorJpaController().find((Integer) ((EntityWrapper<Proveedor>) jdFactura.getCbProveedor().getSelectedItem()).getId()));
         o.setUsuario(UsuarioController.getCurrentUser());
         o.setDesacreditado(BigDecimal.ZERO);
         o.setImporte(new BigDecimal(jdFactura.getTfTotalText()));
@@ -362,6 +365,22 @@ public class NotaCreditoProveedorController implements ActionListener {
         if (paraAnular) {
             //solo buscar facturas NO anuladas
             buscador.getCheckAnulada().setEnabled(false);
+        }
+        try {
+            if (buscador.getjTable1().getRowCount() < 1) {
+                throw new MessageException("No hay info para exportar.");
+            }
+            File file = JGestionUtils.showSaveDialogFileChooser(buscador, "Archivo Excel (.xls)", null, "xls");
+            TableExcelExporter tee = new TableExcelExporter(file, buscador.getjTable1());
+            tee.export();
+            if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(buscador, "¿Abrir archivo generado?", null, JOptionPane.YES_NO_OPTION)) {
+                Desktop.getDesktop().open(file);
+            }
+        } catch (MessageException ex) {
+            JOptionPane.showMessageDialog(buscador, ex.getMessage());
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(buscador, "Algo salió mal: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            LOG.error(ex, ex);
         }
         buscador.setListeners(this);
         buscador.setLocationRelativeTo(frame);

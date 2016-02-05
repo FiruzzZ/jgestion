@@ -14,10 +14,12 @@ import javax.persistence.EntityManager;
 import utilities.general.UTIL;
 import jgestion.gui.JDBuscadorReRe;
 import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JButton;
@@ -33,6 +35,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import utilities.gui.SwingUtil;
 import utilities.general.EntityWrapper;
+import utilities.general.TableExcelExporter;
 
 /**
  *
@@ -176,7 +179,7 @@ public class RemitoController implements ActionListener {
                     if (octeto < 1 && octeto > 99999999) {
                         throw new MessageException("Número de Remito no válido, debe ser mayor a 0 y menor o igual a 99999999");
                     }
-                    
+
                     Remito oldFactura = jpaController.findBy(facturaVentaController.getSelectedSucursalFromJDFacturaVenta(), octeto);
                     if (oldFactura != null) {
                         throw new MessageException("Ya existe un registro de Remito N° " + JGestionUtils.getNumeracion(oldFactura));
@@ -325,6 +328,24 @@ public class RemitoController implements ActionListener {
                 }
             }
         });
+        buscador.getBtnToExcel().addActionListener((evt) -> {
+            try {
+                if (buscador.getjTable1().getRowCount() < 1) {
+                    throw new MessageException("No hay info para exportar.");
+                }
+                File file = JGestionUtils.showSaveDialogFileChooser(buscador, "Archivo Excel (.xls)", null, "xls");
+                TableExcelExporter tee = new TableExcelExporter(file, buscador.getjTable1());
+                tee.export();
+                if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(buscador, "¿Abrir archivo generado?", null, JOptionPane.YES_NO_OPTION)) {
+                    Desktop.getDesktop().open(file);
+                }
+            } catch (MessageException ex) {
+                JOptionPane.showMessageDialog(buscador, ex.getMessage());
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(buscador, "Algo salió mal: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                LOG.error(ex, ex);
+            }
+        });
         UTIL.loadComboBox(buscador.getCbClieProv(), new ClienteController().findAll(), true);
         UTIL.loadComboBox(buscador.getCbSucursal(), JGestionUtils.getWrappedSucursales(new UsuarioHelper().getSucursales()), true);
         UTIL.loadComboBox(buscador.getCbVendedor(), JGestionUtils.getWrappedVendedor(new VendedorJpaController().findAll()), true);
@@ -443,10 +464,10 @@ public class RemitoController implements ActionListener {
         if (buscador.getDcHasta() != null) {
             query.append(" AND o.fecha_remito <='").append(buscador.getDcHasta()).append("'");
         }
-        if (buscador.getDcDesdeSistema()!= null) {
+        if (buscador.getDcDesdeSistema() != null) {
             query.append(" AND o.fecha_creacion >='").append(UTIL.yyyy_MM_dd.format(buscador.getDcDesdeSistema())).append("'");
         }
-        if (buscador.getDcHastaSistema()!= null) {
+        if (buscador.getDcHastaSistema() != null) {
             query.append(" AND o.fecha_creacion <='").append(UTIL.yyyy_MM_dd.format(UTIL.customDateByDays(buscador.getDcHastaSistema(), 1))).append("'");
         }
         if (buscador.getCbSucursal().getSelectedIndex() > 0) {

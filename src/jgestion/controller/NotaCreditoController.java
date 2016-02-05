@@ -1,6 +1,7 @@
 package jgestion.controller;
 
 import java.awt.Color;
+import java.awt.Desktop;
 import jgestion.controller.exceptions.DatabaseErrorException;
 import jgestion.controller.exceptions.MessageException;
 import jgestion.controller.exceptions.MissingReportException;
@@ -19,6 +20,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -35,6 +38,7 @@ import net.sf.jasperreports.engine.JRException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import utilities.general.EntityWrapper;
+import utilities.general.TableExcelExporter;
 import utilities.swing.components.NumberRenderer;
 
 /**
@@ -216,6 +220,24 @@ public class NotaCreditoController {
                         }
                     }
                 }
+            }
+        });
+        buscador.getBtnToExcel().addActionListener((evt) -> {
+            try {
+                if (buscador.getjTable1().getRowCount() < 1) {
+                    throw new MessageException("No hay info para exportar.");
+                }
+                File file = JGestionUtils.showSaveDialogFileChooser(buscador, "Archivo Excel (.xls)", null, "xls");
+                TableExcelExporter tee = new TableExcelExporter(file, buscador.getjTable1());
+                tee.export();
+                if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(buscador, "¿Abrir archivo generado?", null, JOptionPane.YES_NO_OPTION)) {
+                    Desktop.getDesktop().open(file);
+                }
+            } catch (MessageException ex) {
+                JOptionPane.showMessageDialog(buscador, ex.getMessage());
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(buscador, "Algo salió mal: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                LOG.error(ex, ex);
             }
         });
         if (toAnular) {
