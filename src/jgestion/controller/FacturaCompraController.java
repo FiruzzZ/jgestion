@@ -109,7 +109,7 @@ public class FacturaCompraController implements ActionListener {
         ActionListenerManager.setCuentasEgresosSubcuentaActionListener(jdFactura.getCbCuenta(), false, jdFactura.getCbSubCuenta(), true, true);
         UTIL.loadComboBox(jdFactura.getCbCaja(), uh.getCajas(true), false);
         UTIL.loadComboBox(jdFactura.getCbFacturaTipo(), TIPOS_FACTURA, false);
-        UTIL.loadComboBox(jdFactura.getCbFormaPago(), Valores.FormaPago.getFormasDePago(), false);
+        UTIL.loadComboBox(jdFactura.getCbFormaPago(), Valores.FormaPago.getFormasDePago(), true);
         UTIL.loadComboBox(jdFactura.getCbProductos(), new ProductoController().findWrappedProductoToCombo(true), false);
         UTIL.loadComboBox(jdFactura.getCbDominio(), JGestionUtils.getWrappedDominios(new DominioJpaController().findAll()), true);
 
@@ -539,7 +539,10 @@ public class FacturaCompraController implements ActionListener {
         if (jdFactura.getDcFechaFactura() == null) {
             throw new MessageException("Fecha de factura no válida");
         }
-
+        if (jdFactura.getCbFormaPago().getSelectedItem() instanceof Valores.FormaPago) {
+        } else {
+            throw new MessageException("Forma de pago no válida");
+        }
         if (!jdFactura.getCbFacturaTipo().getSelectedItem().toString().equalsIgnoreCase("X")
                 && !jdFactura.getCbFacturaTipo().getSelectedItem().toString().equalsIgnoreCase("O")) {
             if (jdFactura.getTfFacturaCuarto().length() > 4) {
@@ -844,28 +847,26 @@ public class FacturaCompraController implements ActionListener {
         }
         if (buscador.getCbSucursal().getSelectedIndex() > 0) {
             query.append(" AND o.sucursal.id = ").append(((EntityWrapper<Sucursal>) buscador.getCbSucursal().getSelectedItem()).getId());
-        } else {
-            if (buscador.getCbUnidadDeNegocio().getSelectedIndex() > 0) {
-                query.append(" AND (");
-                for (int i = 1; i < buscador.getCbSucursal().getItemCount(); i++) {
-                    EntityWrapper<Sucursal> cbw = (EntityWrapper<Sucursal>) buscador.getCbSucursal().getItemAt(i);
-                    query.append(" o.sucursal.id=").append(cbw.getId());
-                    if ((i + 1) < buscador.getCbSucursal().getItemCount()) {
-                        query.append(" OR ");
-                    }
+        } else if (buscador.getCbUnidadDeNegocio().getSelectedIndex() > 0) {
+            query.append(" AND (");
+            for (int i = 1; i < buscador.getCbSucursal().getItemCount(); i++) {
+                EntityWrapper<Sucursal> cbw = (EntityWrapper<Sucursal>) buscador.getCbSucursal().getItemAt(i);
+                query.append(" o.sucursal.id=").append(cbw.getId());
+                if ((i + 1) < buscador.getCbSucursal().getItemCount()) {
+                    query.append(" OR ");
                 }
-                query.append(")");
-            } else {
-                List<Sucursal> sucursales = new UsuarioHelper().getSucursales();
-                query.append(" AND (");
-                for (int i = 0; i < sucursales.size(); i++) {
-                    query.append(" o.sucursal.id=").append(sucursales.get(i).getId());
-                    if ((i + 1) < sucursales.size()) {
-                        query.append(" OR ");
-                    }
-                }
-                query.append(")");
             }
+            query.append(")");
+        } else {
+            List<Sucursal> sucursales = new UsuarioHelper().getSucursales();
+            query.append(" AND (");
+            for (int i = 0; i < sucursales.size(); i++) {
+                query.append(" o.sucursal.id=").append(sucursales.get(i).getId());
+                if ((i + 1) < sucursales.size()) {
+                    query.append(" OR ");
+                }
+            }
+            query.append(")");
         }
 
         if (buscador.getCbClieProv().getSelectedIndex() > 0) {
@@ -958,13 +959,13 @@ public class FacturaCompraController implements ActionListener {
         jdFactura.setTfFacturaOcteto(numFactura.substring(4));
         jdFactura.setTfNumMovimiento(String.valueOf(EL_OBJECT.getMovimientoInterno()));
         jdFactura.getCbCaja().addItem(EL_OBJECT.getCaja());
-        UTIL.loadComboBox(jdFactura.getCbFormaPago(), Valores.FormaPago.getFormasDePago(), false);
         jdFactura.setTfPercIIBB(UTIL.PRECIO_CON_PUNTO.format(EL_OBJECT.getPercDgr()));
         jdFactura.getTfPercIVA().setText(UTIL.PRECIO_CON_PUNTO.format(EL_OBJECT.getPercIva()));
         jdFactura.getTfOtrosImpuestosRecuperables().setText(UTIL.PRECIO_CON_PUNTO.format(EL_OBJECT.getImpuestosRecuperables()));
         jdFactura.getTfOtrosImpuestosNoRecuperables().setText(UTIL.PRECIO_CON_PUNTO.format(EL_OBJECT.getImpuestosNoRecuperables()));
         jdFactura.getTfDescuento().setText(UTIL.PRECIO_CON_PUNTO.format(EL_OBJECT.getDescuento()));
-        jdFactura.getCbFormaPago().setSelectedIndex(EL_OBJECT.getFormaPago() - 1);
+        UTIL.loadComboBox(jdFactura.getCbFormaPago(), Valores.FormaPago.getFormasDePago(), true);
+        UTIL.setSelectedItem(jdFactura.getCbFormaPago(), Valores.FormaPago.getFormaPago(EL_OBJECT.getFormaPago()));
         jdFactura.setTfDias(EL_OBJECT.getDiasCtaCte() != null ? EL_OBJECT.getDiasCtaCte().toString() : null);
         jdFactura.getTfObservacion().setText(EL_OBJECT.getObservacion());
         setDetalleData(EL_OBJECT);
