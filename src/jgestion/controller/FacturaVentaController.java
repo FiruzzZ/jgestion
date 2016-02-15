@@ -416,6 +416,9 @@ public class FacturaVentaController {
                 UTIL.loadComboBox(jdFactura.getCbSucursal(), JGestionUtils.getWrappedSucursales(uh.getSucursales()), false);
                 Sucursal s = getSelectedSucursalFromJDFacturaVenta();
                 setNumeroFactura(s, ((RemitoController) listener).getNextNumero(s));
+            } else if (factVenta1_NotaCredito2_Remito3_presu4 == 4) {
+                //Se cargan todas las sucursales a las cuales tiene permido, las unidades de negocio, cuentas y sub cuentas son solo para FacturasVenta
+                UTIL.loadComboBox(jdFactura.getCbSucursal(), JGestionUtils.getWrappedSucursales(uh.getSucursales()), false);
             }
         }
         jdFactura.getBtnAnular().addActionListener(new ActionListener() {
