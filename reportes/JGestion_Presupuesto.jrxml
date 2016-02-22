@@ -333,8 +333,13 @@ new DecimalFormat("00000000").format($F{numero})]]></textFieldExpression>
 					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[new Double(($F{precio_unitario}.doubleValue() +
-($F{precio_unitario}.doubleValue() * ($F{iva}.doubleValue()/100))) * $F{cantidad}.intValue())]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{precio_unitario}.add(
+$F{precio_unitario}.multiply(
+    BigDecimal.valueOf($F{iva}.doubleValue()/100))
+    .setScale(4, RoundingMode.HALF_UP)
+)
+.multiply(BigDecimal.valueOf($F{cantidad}))
+]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement uuid="8dc367bb-588c-462c-a768-4501d0fa977d" x="327" y="0" width="52" height="15"/>
@@ -354,8 +359,9 @@ new DecimalFormat("00000000").format($F{numero})]]></textFieldExpression>
 					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[new Double($F{precio_unitario}.doubleValue() +
-($F{precio_unitario}.doubleValue() * ($F{iva}.doubleValue()/100))
+				<textFieldExpression><![CDATA[$F{precio_unitario}.add(
+$F{precio_unitario}.multiply(BigDecimal.valueOf($F{iva}.doubleValue()/100))
+.setScale(4, RoundingMode.HALF_UP)
 )]]></textFieldExpression>
 			</textField>
 			<textField>

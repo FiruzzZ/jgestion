@@ -49,6 +49,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import javax.persistence.NoResultException;
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
@@ -60,7 +61,9 @@ import jgestion.ActionListenerManager;
 import jgestion.JGestionUtils;
 import jgestion.JGestion;
 import jgestion.Wrapper;
+import jgestion.entity.DetallePresupuesto;
 import jgestion.entity.FacturaElectronica;
+import jgestion.entity.Presupuesto;
 import jgestion.jpa.controller.FacturaElectronicaJpaController;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.logging.log4j.LogManager;
@@ -122,8 +125,8 @@ public class FacturaVentaController {
      * @param owner Papi de {@link jgestion.gui.JDFacturaVenta}
      * @param modal bla bla...
      * @param listener Object encargado de manejar los Eventos de la GUI (Action, Mouse, Key, Focus)
-     * @param factVenta1_NotaCredito2_Remito3_presu4 Es para settear algunos Labels, TextFields según
-     * la entidad que va usar la GUI.
+     * @param factVenta1_NotaCredito2_Remito3_presu4 Es para settear algunos Labels, TextFields
+     * según la entidad que va usar la GUI.
      * @param setVisible Si la GUI debe hacerse visible cuando se invoca este método. Se pone
      * <code>false</code> cuando se va usar en MODO_VISTA, así 1ro se settean los datos
      * correspondiendtes a la entidad que la va utilizar y luego se puede hacer visible.
@@ -175,9 +178,9 @@ public class FacturaVentaController {
                 try {
                     addProductoToDetails();
                 } catch (MessageException ex) {
-                    jdFactura.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 2);
+                    jdFactura.showMessage(ex.getMessage(), null, 2);
                 } catch (Exception ex) {
-                    jdFactura.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 0);
+                    jdFactura.showMessage(ex.getMessage(), "Algo salió mal", 0);
                     LOG.error(ex, ex);
                 }
             }
@@ -286,7 +289,7 @@ public class FacturaVentaController {
             });// </editor-fold>
             UTIL.loadComboBox(jdFactura.getCbCliente(), new ClienteJpaController().findAll(), false);
             UTIL.loadComboBox(jdFactura.getCbListaPrecio(), new ListaPreciosController().findAll(), false);
-            UTIL.loadComboBox(jdFactura.getCbFormaPago(), Valores.FormaPago.getFormasDePago(), false);
+            UTIL.loadComboBox(jdFactura.getCbFormaPago(), Valores.FormaPago.getFormasDePago(), true);
             UTIL.loadComboBox(jdFactura.getCbVendedor(), JGestionUtils.getWrappedVendedor(new VendedorJpaController().findActivos()), true);
             jdFactura.getCbListaPrecio().addActionListener(new ActionListener() {
                 @Override
@@ -535,11 +538,11 @@ public class FacturaVentaController {
 
         // <editor-fold defaultstate="collapsed" desc="ctrl tfPrecioUnitario">
         try {
-            precioUnitarioSinIVA = new BigDecimal(jdFactura.getTfPrecioUnitario());
+            precioUnitarioSinIVA = new BigDecimal(jdFactura.getTfPrecioUnitario()).setScale(4, RoundingMode.HALF_UP);
             if (precioUnitarioSinIVA.intValue() < 0) {
                 throw new MessageException("El precio unitario no puede ser menor a 0");
             }
-            if (!isPrecioVentaMinimoValido(precioUnitarioSinIVA.doubleValue())) {
+            if (!isPrecioVentaMinimoValido(precioUnitarioSinIVA)) {
                 throw new MessageException("El precio unitario de venta ($" + Contabilidad.PU_FORMAT.format(precioUnitarioSinIVA) + ") no puede"
                         + " ser menor al mínimo de Venta establecido ($" + Contabilidad.PU_FORMAT.format(selectedProducto.getMinimoPrecioDeVenta()) + ")"
                         + "\nPara poder vender el producto al precio deseado, debe cambiar el \"precio de venta\" del producto."
@@ -577,7 +580,7 @@ public class FacturaVentaController {
                     jdFactura.getCbDesc().getSelectedIndex() + 1,
                     descuentoUnitario);
 
-            if (!isPrecioVentaMinimoValido(precioUnitarioSinIVA.subtract(descuentoUnitario).doubleValue())) {
+            if (!isPrecioVentaMinimoValido(precioUnitarioSinIVA.subtract(descuentoUnitario))) {
                 throw new MessageException("El descuento deseado produce un precio de venta ($" + UTIL.DECIMAL_FORMAT.format(precioUnitarioSinIVA.subtract(descuentoUnitario)) + ")"
                         + "\nmenor al mínimo de Venta establecido ($" + selectedProducto.getMinimoPrecioDeVenta() + ")"
                         + "\nPara poder realizar este descuento, debe cambiar este mínimo de venta ajustando el \"precio de venta\" del producto."
@@ -591,15 +594,17 @@ public class FacturaVentaController {
         precioUnitarioSinIVA = precioUnitarioSinIVA.subtract(descuentoUnitario);
 
         if (productoEnOferta == null) {
-        } else //el precio en oferta ya incluye IVA
-        //así que hay que hacerle la inversa 
-        if ((selectedProducto.getIva().getIva() > 0)) {
+        } else if ((selectedProducto.getIva().getIva() > 0)) {
+            //el precio en oferta ya incluye IVA
+            //así que hay que hacerle la inversa 
             double d = ((selectedProducto.getIva().getIva() / 100) + 1);
             precioUnitarioSinIVA = precioUnitarioSinIVA.divide(BigDecimal.valueOf(d));
         }
         //quitando decimes indeseados..
         precioUnitarioSinIVA = precioUnitarioSinIVA.setScale(4, RoundingMode.HALF_UP);
         BigDecimal alicuota = BigDecimal.valueOf(selectedProducto.getIva().getIva());
+        BigDecimal precioUnitarioConIVA = precioUnitarioSinIVA
+                .multiply((alicuota.divide(new BigDecimal("100")).add(BigDecimal.ONE))).setScale(4, RoundingMode.HALF_UP);
         //carga detallesVenta en tabla
         jdFactura.getDtm().addRow(new Object[]{
             selectedProducto.getIva().getIva(),
@@ -607,14 +612,9 @@ public class FacturaVentaController {
             selectedProducto.getNombre() + "(" + selectedProducto.getIva().getIva() + ")",
             cantidad,
             precioUnitarioSinIVA, //columnIndex == 4
-            precioUnitarioSinIVA
-            .multiply((alicuota.divide(new BigDecimal("100")).add(BigDecimal.ONE)))
-            .setScale(4, RoundingMode.HALF_UP),
+            precioUnitarioConIVA,
             descuentoUnitario.multiply(BigDecimal.valueOf(cantidad)),
-            precioUnitarioSinIVA
-            .multiply(BigDecimal.valueOf(cantidad))
-            .multiply((alicuota.divide(new BigDecimal("100")).add(BigDecimal.ONE)))
-            .setScale(2, RoundingMode.HALF_UP), //subTotal
+            precioUnitarioConIVA.multiply(BigDecimal.valueOf(cantidad)).setScale(2, RoundingMode.HALF_UP), //subTotal
             (descuentoUnitario.intValue() == 0) ? -1 : (jdFactura.getCbDesc().getSelectedIndex() + 1),//Tipo de descuento
             selectedProducto.getId(),
             productoEnOferta //columnIndex == 10
@@ -803,6 +803,9 @@ public class FacturaVentaController {
             throw new MessageException("Debe crear una Caja para poder registrar la Factura Venta."
                     + "\nMenú: Tesorería -> ABM Cajas");
         }
+        if (jdFactura.getCbFormaPago().getSelectedIndex() < 1) {
+            throw new MessageException("Forma de pago no válida");
+        }
         if (Valores.FormaPago.CTA_CTE.equals(jdFactura.getCbFormaPago().getSelectedItem())) {
             try {
                 if (Integer.valueOf(jdFactura.getTfDias()) < 1) {
@@ -925,7 +928,7 @@ public class FacturaVentaController {
         }
 
         //setting fields
-        newFacturaVenta.setFormaPago(((Valores.FormaPago) jdFactura.getCbFormaPago().getSelectedItem()).getId());
+        newFacturaVenta.setFormaPago((Valores.FormaPago) jdFactura.getCbFormaPago().getSelectedItem());
         newFacturaVenta.setImporte(BigDecimal.valueOf(UTIL.parseToDouble(jdFactura.getTfTotal())));
         newFacturaVenta.setGravado(BigDecimal.valueOf(UTIL.parseToDouble(jdFactura.getTfTotalGravado())));
         newFacturaVenta.setNoGravado(new BigDecimal(UTIL.parseToDouble(jdFactura.getTfTotalNoGravado())));
@@ -1836,11 +1839,11 @@ public class FacturaVentaController {
      * @param precioUnitario
      * @return true si
      */
-    private boolean isPrecioVentaMinimoValido(double precioUnitario) {
+    private boolean isPrecioVentaMinimoValido(BigDecimal precioUnitario) {
         if (productoEnOferta != null) {
             return true;
         } else {
-            return (precioUnitario >= selectedProducto.getMinimoPrecioDeVenta().doubleValue());
+            return precioUnitario.compareTo(selectedProducto.getMinimoPrecioDeVenta()) >= 0;
         }
     }
 
@@ -2050,5 +2053,80 @@ public class FacturaVentaController {
     public FacturaVenta displayBuscador(Window window) throws MessageException {
         displayBuscador(window, true, false);
         return EL_OBJECT;
+    }
+
+    public void facturarSegunPresupuesto(Window owner) throws MessageException {
+        Presupuesto p = new PresupuestoController().initBuscador(owner, true);
+        if (p == null) {
+            return;
+        }
+//        try {
+        checkPreciosKeptEquals(p);
+//        } catch (MessageException ex) {
+
+//        }
+        displayABM(owner, true, this, 1, false, true);
+        setFacturaUIFrom(p);
+        jdFactura.setVisible(true);
+    }
+
+    private void checkPreciosKeptEquals(Presupuesto p) throws MessageException {
+        ListaPrecios lp = p.getListaPrecios();
+        String preciosCambiados = "";
+        for (DetallePresupuesto detalle : p.getDetallePresupuestoList()) {
+            Producto pro = detalle.getProducto();
+            if (pro.getPrecioVenta() != null) {
+                if (detalle.getPrecioUnitario().equals(pro.getPrecioVenta())) {
+                    preciosCambiados += "\nProducto: " + pro.getNombre()
+                            + "\nPrecioVenta: Presupuestado=" + UTIL.DECIMAL_FORMAT.format(detalle.getPrecioUnitario())
+                            + " -> actual=" + UTIL.DECIMAL_FORMAT.format(pro.getPrecioVenta());
+                }
+            }
+        }
+        if (!preciosCambiados.isEmpty()) {
+            throw new MessageException("Lo presupuestado no coincide con los precios actuales de venta." + preciosCambiados);
+        }
+    }
+
+    private void setFacturaUIFrom(Presupuesto presupuesto) throws MessageException {
+        jdFactura.getCbCliente().addItem(presupuesto.getCliente());
+        Sucursal s = presupuesto.getSucursal();
+        jdFactura.getCbSucursal().addItem(new EntityWrapper<>(s, s.getId(), s.getNombre()));
+        jdFactura.getCbListaPrecio().addItem(presupuesto.getListaPrecios());
+
+        //Los tipos de factura se tienen q cargar antes, sinó modifica el Nº de factura y muestra el siguiente
+        //y no el de Factura seleccionada
+        JGestionUtils.cargarComboTiposFacturas(jdFactura.getCbFacturaTipo(), presupuesto.getCliente());
+        jdFactura.getTfObservacion().setText("Presupuesto: " + JGestionUtils.getNumeracion(presupuesto, true));
+        UTIL.loadComboBox(jdFactura.getCbFormaPago(), Valores.FormaPago.getFormasDePago(), true);
+        UTIL.setSelectedItem(jdFactura.getCbFormaPago(), Valores.FormaPago.getFormaPago(presupuesto.getFormaPago()));
+        if (Valores.FormaPago.getFormaPago(presupuesto.getFormaPago()) == Valores.FormaPago.CTA_CTE) {
+            jdFactura.setTfDias(presupuesto.getDias().toString());
+        }
+        for (DetallePresupuesto detalle : presupuesto.getDetallePresupuestoList()) {
+            BigDecimal cantidad = BigDecimal.valueOf(detalle.getCantidad());
+            BigDecimal precioUnitarioSinIVA = detalle.getPrecioUnitario();
+            BigDecimal descuentoUnitario = detalle.getDescuento();
+            Producto pro = detalle.getProducto();
+            BigDecimal alicuota = BigDecimal.valueOf(pro.getIva().getIva());
+            BigDecimal precioUnitarioConIVA = precioUnitarioSinIVA
+                    .multiply((alicuota.divide(new BigDecimal("100")).add(BigDecimal.ONE))).setScale(4, RoundingMode.HALF_UP);
+            jdFactura.getDtm().addRow(new Object[]{
+                pro.getIva().getIva(),
+                pro.getCodigo(),
+                pro.getNombre() + "(" + pro.getIva().getIva() + ")",
+                cantidad,
+                precioUnitarioSinIVA, //columnIndex == 4
+                precioUnitarioConIVA,
+                descuentoUnitario.multiply(cantidad),
+                precioUnitarioConIVA.multiply(cantidad).setScale(2, RoundingMode.HALF_UP), //subTotal
+                detalle.getTipoDesc(),
+                pro.getId(),
+                null //columnIndex == 10
+            });
+            refreshResumen(jdFactura);
+
+        }
+        refreshResumen(jdFactura);
     }
 }

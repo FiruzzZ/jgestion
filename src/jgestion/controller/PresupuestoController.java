@@ -14,12 +14,15 @@ import jgestion.gui.JDFacturaVenta;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseListener;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import jgestion.JGestionUtils;
@@ -180,14 +183,22 @@ public class PresupuestoController implements ActionListener {
     }
 
     public void initBuscador(Window owner) throws MessageException {
+        initBuscador(owner, false);
+    }
+
+    public Presupuesto initBuscador(Window owner, boolean selectorMode) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.VENTA);
         buscador = new JDBuscadorReRe(owner, "Buscador - " + CLASS_NAME, true, "Cliente", "Nº " + CLASS_NAME);
         buscador.getjTable1().addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 if (evt.getClickCount() >= 2) {
-                    selectedPresupuesto = jpaController.find((Integer) buscador.getDtm().getValueAt(buscador.getjTable1().getSelectedRow(), 0));
-                    setDatos(selectedPresupuesto);
+                    selectedPresupuesto = jpaController.find((Integer) UTIL.getSelectedValueFromModel(buscador.getjTable1(), 0));
+                    if (selectorMode) {
+                        buscador.dispose();
+                    } else {
+                        setDatos(selectedPresupuesto);
+                    }
                 }
             }
         });
@@ -219,6 +230,7 @@ public class PresupuestoController implements ActionListener {
         MODO_VISTA = true;
         buscador.setListeners(this);
         buscador.setVisible(true);
+        return selectedPresupuesto;
     }
 
     private void armarQuery() throws MessageException {
@@ -351,4 +363,5 @@ public class PresupuestoController implements ActionListener {
         jdFacturaVenta.setLocationRelativeTo(buscador);
         jdFacturaVenta.setVisible(true);
     }
+
 }

@@ -508,6 +508,7 @@ public class AFIPWSController {
                 }
             }
         });
+        abm.setVisible(true);
     }
 
     public List<Integer> getPuntoVentas() throws WSAFIPErrorResponseException {

@@ -130,7 +130,9 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenuItem23 = new javax.swing.JMenuItem();
         menuItemSalir = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
-        jMenuItem2 = new javax.swing.JMenuItem();
+        jMenu30 = new javax.swing.JMenu();
+        miFacturaVenta = new javax.swing.JMenuItem();
+        miSegunPresupuesto = new javax.swing.JMenuItem();
         jMenu23 = new javax.swing.JMenu();
         jMenuItem14 = new javax.swing.JMenuItem();
         jMenuItem80 = new javax.swing.JMenuItem();
@@ -323,14 +325,26 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenu2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jMenu2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 
-        jMenuItem2.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F2, 0));
-        jMenuItem2.setText("Facturación");
-        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+        jMenu30.setText("Facturación");
+
+        miFacturaVenta.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F2, 0));
+        miFacturaVenta.setText("Facturar");
+        miFacturaVenta.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem2ActionPerformed(evt);
+                miFacturaVentaActionPerformed(evt);
             }
         });
-        jMenu2.add(jMenuItem2);
+        jMenu30.add(miFacturaVenta);
+
+        miSegunPresupuesto.setText("Según Presupuesto..");
+        miSegunPresupuesto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miSegunPresupuestoActionPerformed(evt);
+            }
+        });
+        jMenu30.add(miSegunPresupuesto);
+
+        jMenu2.add(jMenu30);
 
         jMenu23.setText("Recibo");
 
@@ -1477,14 +1491,14 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         refreshConnectionDB();
     }//GEN-LAST:event_jMenuItem20ActionPerformed
 
-    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+    private void miFacturaVentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miFacturaVentaActionPerformed
         try {
             new FacturaVentaController().displayABM(this, true, null, 1, true, true);
         } catch (MessageException ex) {
             showError(ex.getMessage());
         }
         refreshConnectionDB();
-    }//GEN-LAST:event_jMenuItem2ActionPerformed
+    }//GEN-LAST:event_miFacturaVentaActionPerformed
 
     private void jMenuItem21ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem21ActionPerformed
         try {
@@ -2136,6 +2150,14 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         FacturaElectronicaController.initSolicitudCAEs();
     }//GEN-LAST:event_miAFIPSolicitarCAEsPendientesActionPerformed
 
+    private void miSegunPresupuestoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miSegunPresupuestoActionPerformed
+        try {
+            new FacturaVentaController().facturarSegunPresupuesto(this);
+        } catch (MessageException ex) {
+            ex.displayMessage(this);
+        }
+    }//GEN-LAST:event_miSegunPresupuestoActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JMenu jMenu1;
@@ -2161,6 +2183,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenu jMenu28;
     private javax.swing.JMenu jMenu29;
     private javax.swing.JMenu jMenu3;
+    private javax.swing.JMenu jMenu30;
     private javax.swing.JMenu jMenu4;
     private javax.swing.JMenu jMenu5;
     private javax.swing.JMenu jMenu6;
@@ -2183,7 +2206,6 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenuItem jMenuItem17;
     private javax.swing.JMenuItem jMenuItem18;
     private javax.swing.JMenuItem jMenuItem19;
-    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem20;
     private javax.swing.JMenuItem jMenuItem21;
     private javax.swing.JMenuItem jMenuItem22;
@@ -2289,6 +2311,8 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenu menuTesoreria;
     private javax.swing.JMenuItem miAFIPFECompConsultar;
     private javax.swing.JMenuItem miAFIPSolicitarCAEsPendientes;
+    private javax.swing.JMenuItem miFacturaVenta;
+    private javax.swing.JMenuItem miSegunPresupuesto;
     // End of variables declaration//GEN-END:variables
     private boolean activa = true;
     private CajaMovimientosController cajaMovimientoController;

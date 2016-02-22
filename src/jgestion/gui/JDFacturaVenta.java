@@ -880,16 +880,19 @@ public class JDFacturaVenta extends javax.swing.JDialog {
 
     private void cbFormaPagoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbFormaPagoActionPerformed
         //habilitando el textfield para poner la cantidad de días de cta cte
-        if (cbFormaPago.getItemCount() > 0) {
+        if (cbFormaPago.getSelectedIndex() > 0) {
             Valores.FormaPago formaPago = (Valores.FormaPago) cbFormaPago.getSelectedItem();
             boolean habilitarDias = formaPago.equals(Valores.FormaPago.CTA_CTE);
             tfDias.setEnabled(habilitarDias);
             tfDias.setRequestFocusEnabled(tfDias.isEnabled());
             tfDias.setText("");
-
             //deshabilita la selección de caja
             //ya que cuando es CtaCte o Cheque, no hay movimiento de Caja
             cbCaja.setEnabled(!habilitarDias);
+        } else {
+            tfDias.setEnabled(false);
+            tfDias.setRequestFocusEnabled(false);
+            tfDias.setText("");
         }
 }//GEN-LAST:event_cbFormaPagoActionPerformed
 

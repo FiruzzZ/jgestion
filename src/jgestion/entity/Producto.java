@@ -347,6 +347,6 @@ public class Producto implements Serializable {
      * @return precio mínimo.
      */
     public BigDecimal getMinimoPrecioDeVenta() {
-        return this.precioVenta != null ? this.precioVenta : this.costoCompra;
+        return precioVenta != null ? precioVenta : costoCompra;
     }
 }
