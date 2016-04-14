@@ -14,6 +14,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -1098,7 +1099,10 @@ public class Contabilidad {
         }
 
         if (buscadorReRe.getCbClieProv().getSelectedIndex() > 0) {
-            queryWhereFactuVenta.append(" AND o.cliente.id = ").append(((EntityWrapper<Cliente>) buscadorReRe.getCbClieProv().getSelectedItem()).getId());
+            Serializable clienteID = ((EntityWrapper<Cliente>) buscadorReRe.getCbClieProv().getSelectedItem()).getId();
+            queryWhereFactuVenta.append(" AND o.cliente.id = ").append(clienteID);
+            queryWhereNotaCredito.append(" AND o.cliente.id = ").append(clienteID);
+            queryWhereNotaDebito.append(" AND o.cliente.id = ").append(clienteID);
         }
         queryWhereFactuVenta.append(" AND o.anulada = ").append(buscadorReRe.getCheckAnulada().isSelected());
         queryWhereNotaCredito.append(" AND o.anulada = ").append(buscadorReRe.getCheckAnulada().isSelected());

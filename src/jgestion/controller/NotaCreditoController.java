@@ -282,10 +282,10 @@ public class NotaCreditoController {
             }
         }
         if (buscador.getDcDesde() != null) {
-            query.append(" AND o.").append("fechaNotaCredito").append(" >= '").append(buscador.getDcDesde()).append("'");
+            query.append(" AND o.").append("fechaNotaCredito").append(" >= '").append(UTIL.yyyy_MM_dd.format(buscador.getDcDesde())).append("'");
         }
         if (buscador.getDcHasta() != null) {
-            query.append(" AND o.").append("fechaNotaCredito").append(" <= '").append(buscador.getDcHasta()).append("'");
+            query.append(" AND o.").append("fechaNotaCredito").append(" <= '").append(UTIL.yyyy_MM_dd.format(buscador.getDcHasta())).append("'");
         }
         if (buscador.getDcDesdeSistema() != null) {
             query.append(" AND o.").append("fechaCarga").append(" >= '").append(UTIL.yyyy_MM_dd.format(buscador.getDcDesdeSistema())).append("'");

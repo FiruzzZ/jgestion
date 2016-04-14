@@ -45,6 +45,9 @@ public class Recibo implements Serializable {
     @Column(name = "fecha_recibo", nullable = false)
     @Temporal(TemporalType.DATE)
     private Date fechaRecibo;
+    /**
+     * estado = false => anulado
+     */
     @Basic(optional = false)
     @Column(name = "estado", nullable = false)
     private boolean estado;
