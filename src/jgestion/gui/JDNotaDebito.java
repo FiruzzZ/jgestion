@@ -1,11 +1,9 @@
 package jgestion.gui;
 
 import com.toedter.calendar.JDateChooser;
-import java.awt.Color;
 import java.awt.Window;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;

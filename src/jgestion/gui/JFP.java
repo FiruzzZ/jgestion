@@ -76,9 +76,6 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
     private static final long serialVersionUID = 777666000L;
 
-    /**
-     * Creates new form JFP
-     */
     public JFP() {
         loginUser();
         initComponents();
@@ -87,10 +84,12 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         Dimension frameSize = getSize();
         setLocation((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
         jMenuItem11.setVisible(false); // Menú -> Datos Generales -> Contribuyente
+        String nombre = new DatosEmpresaJpaController().findDatosEmpresa().getNombre();
         setTitle(JGestion.resourceBundle.getString("application.title")
                 + " v" + JGestion.resourceBundle.getString("application.version")
                 + JGestion.resourceBundle.getString("application.buildnumber")
-         + " - " + UsuarioController.getCurrentUser().getNick());
+                + " | " + nombre
+                + " - " + UsuarioController.getCurrentUser().getNick());
     }
 
     private void loginUser() {
@@ -193,10 +192,11 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
         jMenu14 = new javax.swing.JMenu();
         jMenu27 = new javax.swing.JMenu();
-        jMenuItem3 = new javax.swing.JMenuItem();
-        jMenuItem49 = new javax.swing.JMenuItem();
-        jMenuItem77 = new javax.swing.JMenuItem();
-        jMenuItem71 = new javax.swing.JMenuItem();
+        miAnularIngresoFactura = new javax.swing.JMenuItem();
+        miAnularIngresoRecibo = new javax.swing.JMenuItem();
+        miAnularIngresoRemito = new javax.swing.JMenuItem();
+        miAnularIngresoNC = new javax.swing.JMenuItem();
+        miAnularIngresoND = new javax.swing.JMenuItem();
         jMenu28 = new javax.swing.JMenu();
         jMenuItem38 = new javax.swing.JMenuItem();
         jMenuItem88 = new javax.swing.JMenuItem();
@@ -776,37 +776,45 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
         jMenu27.setText("Ingresos");
 
-        jMenuItem3.setText("Facturas");
-        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+        miAnularIngresoFactura.setText("Facturas");
+        miAnularIngresoFactura.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem3ActionPerformed(evt);
+                miAnularIngresoFacturaActionPerformed(evt);
             }
         });
-        jMenu27.add(jMenuItem3);
+        jMenu27.add(miAnularIngresoFactura);
 
-        jMenuItem49.setText("Nota de crédito");
-        jMenuItem49.addActionListener(new java.awt.event.ActionListener() {
+        miAnularIngresoRecibo.setText("Recibo");
+        miAnularIngresoRecibo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem49ActionPerformed(evt);
+                miAnularIngresoReciboActionPerformed(evt);
             }
         });
-        jMenu27.add(jMenuItem49);
+        jMenu27.add(miAnularIngresoRecibo);
 
-        jMenuItem77.setText("Recibo");
-        jMenuItem77.addActionListener(new java.awt.event.ActionListener() {
+        miAnularIngresoRemito.setText("Remito");
+        miAnularIngresoRemito.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem77ActionPerformed(evt);
+                miAnularIngresoRemitoActionPerformed(evt);
             }
         });
-        jMenu27.add(jMenuItem77);
+        jMenu27.add(miAnularIngresoRemito);
 
-        jMenuItem71.setText("Remito");
-        jMenuItem71.addActionListener(new java.awt.event.ActionListener() {
+        miAnularIngresoNC.setText("Nota de crédito");
+        miAnularIngresoNC.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem71ActionPerformed(evt);
+                miAnularIngresoNCActionPerformed(evt);
             }
         });
-        jMenu27.add(jMenuItem71);
+        jMenu27.add(miAnularIngresoNC);
+
+        miAnularIngresoND.setText("Nota de débito");
+        miAnularIngresoND.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miAnularIngresoNDActionPerformed(evt);
+            }
+        });
+        jMenu27.add(miAnularIngresoND);
 
         jMenu14.add(jMenu27);
 
@@ -1680,13 +1688,13 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         refreshConnectionDB();
     }//GEN-LAST:event_jMenuItem31ActionPerformed
 
-    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+    private void miAnularIngresoFacturaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miAnularIngresoFacturaActionPerformed
         try {
             new FacturaVentaController().displayBuscador(this, false, true);
         } catch (MessageException ex) {
             ex.displayMessage(this);
         }
-    }//GEN-LAST:event_jMenuItem3ActionPerformed
+    }//GEN-LAST:event_miAnularIngresoFacturaActionPerformed
 
     private void jMenuItem39ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem39ActionPerformed
         new ProductoController().initMovimientoProducto(this, false);
@@ -1780,13 +1788,13 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         }
     }//GEN-LAST:event_jMenuItem48ActionPerformed
 
-    private void jMenuItem49ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem49ActionPerformed
+    private void miAnularIngresoNCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miAnularIngresoNCActionPerformed
         try {
             new NotaCreditoController().initBuscador(this, true);
         } catch (MessageException ex) {
             ex.displayMessage(this);
         }
-    }//GEN-LAST:event_jMenuItem49ActionPerformed
+    }//GEN-LAST:event_miAnularIngresoNCActionPerformed
 
     private void menuIitemCuentasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuIitemCuentasActionPerformed
         new CuentaController().initContenedor(this);
@@ -1917,13 +1925,13 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
 
     }//GEN-LAST:event_jMenuItem70ActionPerformed
 
-    private void jMenuItem71ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem71ActionPerformed
+    private void miAnularIngresoRemitoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miAnularIngresoRemitoActionPerformed
         try {
             new RemitoController().initBuscadorToAnular(this);
         } catch (MessageException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Advertencia", 2);
         }
-    }//GEN-LAST:event_jMenuItem71ActionPerformed
+    }//GEN-LAST:event_miAnularIngresoRemitoActionPerformed
 
     private void jMenuItem72ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem72ActionPerformed
         new Contabilidad().displayMovimientosGenerales(this);
@@ -1969,9 +1977,9 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         new Contabilidad().showInformePorUnidadesDeNegocios(this);
     }//GEN-LAST:event_jMenuItem76ActionPerformed
 
-    private void jMenuItem77ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem77ActionPerformed
+    private void miAnularIngresoReciboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miAnularIngresoReciboActionPerformed
         new ReciboController().showBuscador(this, false, true);
-    }//GEN-LAST:event_jMenuItem77ActionPerformed
+    }//GEN-LAST:event_miAnularIngresoReciboActionPerformed
 
     private void jMenuItem78ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem78ActionPerformed
         try {
@@ -2158,6 +2166,14 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         }
     }//GEN-LAST:event_miSegunPresupuestoActionPerformed
 
+    private void miAnularIngresoNDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miAnularIngresoNDActionPerformed
+        try {
+            new NotaDebitoController().initBuscador(this, false, true);
+        } catch (MessageException ex) {
+            ex.displayMessage(this);
+        }
+    }//GEN-LAST:event_miAnularIngresoNDActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JMenu jMenu1;
@@ -2216,7 +2232,6 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenuItem jMenuItem27;
     private javax.swing.JMenuItem jMenuItem28;
     private javax.swing.JMenuItem jMenuItem29;
-    private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem30;
     private javax.swing.JMenuItem jMenuItem31;
     private javax.swing.JMenuItem jMenuItem32;
@@ -2237,7 +2252,6 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenuItem jMenuItem46;
     private javax.swing.JMenuItem jMenuItem47;
     private javax.swing.JMenuItem jMenuItem48;
-    private javax.swing.JMenuItem jMenuItem49;
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem50;
     private javax.swing.JMenuItem jMenuItem53;
@@ -2260,13 +2274,11 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenuItem jMenuItem69;
     private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JMenuItem jMenuItem70;
-    private javax.swing.JMenuItem jMenuItem71;
     private javax.swing.JMenuItem jMenuItem72;
     private javax.swing.JMenuItem jMenuItem73;
     private javax.swing.JMenuItem jMenuItem74;
     private javax.swing.JMenuItem jMenuItem75;
     private javax.swing.JMenuItem jMenuItem76;
-    private javax.swing.JMenuItem jMenuItem77;
     private javax.swing.JMenuItem jMenuItem78;
     private javax.swing.JMenuItem jMenuItem79;
     private javax.swing.JMenuItem jMenuItem8;
@@ -2311,6 +2323,11 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenu menuTesoreria;
     private javax.swing.JMenuItem miAFIPFECompConsultar;
     private javax.swing.JMenuItem miAFIPSolicitarCAEsPendientes;
+    private javax.swing.JMenuItem miAnularIngresoFactura;
+    private javax.swing.JMenuItem miAnularIngresoNC;
+    private javax.swing.JMenuItem miAnularIngresoND;
+    private javax.swing.JMenuItem miAnularIngresoRecibo;
+    private javax.swing.JMenuItem miAnularIngresoRemito;
     private javax.swing.JMenuItem miFacturaVenta;
     private javax.swing.JMenuItem miSegunPresupuesto;
     // End of variables declaration//GEN-END:variables

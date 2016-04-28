@@ -429,7 +429,8 @@ public class FacturaVentaController {
             public void actionPerformed(ActionEvent e) {
                 try {
                     if (EL_OBJECT.getAnulada()) {
-                        throw new MessageException("Ya está ANULADA!");
+                        throw new MessageException("Comprobante ya está ANULADA!"
+                            + "\n" + JGestionUtils.getRandomAgression());
                     }
                     String factu_compro = EL_OBJECT.getMovimientoInterno() == 0 ? "Factura Venta" : "Comprobante";
                     String msg_extra_para_ctacte = EL_OBJECT.getFormaPago() == Valores.FormaPago.CTA_CTE.getId() ? "\n- Recibos de pago de Cta.Cte." : "";

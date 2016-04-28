@@ -95,7 +95,7 @@ public class ReciboJpaController extends JGestionJpaImpl<Recibo, Integer> {
                     //se resta la entrega ($) que implicaba este detalle con respecto a CADA factura
                     ctaCteCliente = new CtacteClienteController().findBy(dr.getFacturaVenta());
                 } else {
-                    ctaCteCliente = new CtacteClienteController().findByNotaDebito(dr.getNotaDebito().getId());
+                    ctaCteCliente = new CtacteClienteJpaController().findByNotaDebito(dr.getNotaDebito());
                 }
                 ctaCteCliente.setEntregado(ctaCteCliente.getEntregado().subtract(dr.getMontoEntrega()));
                 // y si había sido pagada en su totalidad..

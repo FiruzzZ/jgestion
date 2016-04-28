@@ -572,36 +572,44 @@
                     <Property name="text" type="java.lang.String" value="Ingresos"/>
                   </Properties>
                   <SubComponents>
-                    <MenuItem class="javax.swing.JMenuItem" name="jMenuItem3">
+                    <MenuItem class="javax.swing.JMenuItem" name="miAnularIngresoFactura">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="Facturas"/>
                       </Properties>
                       <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem3ActionPerformed"/>
+                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="miAnularIngresoFacturaActionPerformed"/>
                       </Events>
                     </MenuItem>
-                    <MenuItem class="javax.swing.JMenuItem" name="jMenuItem49">
-                      <Properties>
-                        <Property name="text" type="java.lang.String" value="Nota de cr&#xe9;dito"/>
-                      </Properties>
-                      <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem49ActionPerformed"/>
-                      </Events>
-                    </MenuItem>
-                    <MenuItem class="javax.swing.JMenuItem" name="jMenuItem77">
+                    <MenuItem class="javax.swing.JMenuItem" name="miAnularIngresoRecibo">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="Recibo"/>
                       </Properties>
                       <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem77ActionPerformed"/>
+                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="miAnularIngresoReciboActionPerformed"/>
                       </Events>
                     </MenuItem>
-                    <MenuItem class="javax.swing.JMenuItem" name="jMenuItem71">
+                    <MenuItem class="javax.swing.JMenuItem" name="miAnularIngresoRemito">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="Remito"/>
                       </Properties>
                       <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem71ActionPerformed"/>
+                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="miAnularIngresoRemitoActionPerformed"/>
+                      </Events>
+                    </MenuItem>
+                    <MenuItem class="javax.swing.JMenuItem" name="miAnularIngresoNC">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="Nota de cr&#xe9;dito"/>
+                      </Properties>
+                      <Events>
+                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="miAnularIngresoNCActionPerformed"/>
+                      </Events>
+                    </MenuItem>
+                    <MenuItem class="javax.swing.JMenuItem" name="miAnularIngresoND">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="Nota de d&#xe9;bito"/>
+                      </Properties>
+                      <Events>
+                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="miAnularIngresoNDActionPerformed"/>
                       </Events>
                     </MenuItem>
                   </SubComponents>

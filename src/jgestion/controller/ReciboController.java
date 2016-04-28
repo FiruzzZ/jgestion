@@ -44,6 +44,7 @@ import jgestion.jpa.controller.CajaMovimientosJpaController;
 import jgestion.jpa.controller.ChequePropioJpaController;
 import jgestion.jpa.controller.ChequeTercerosJpaController;
 import jgestion.jpa.controller.ComprobanteRetencionJpaController;
+import jgestion.jpa.controller.CtacteClienteJpaController;
 import jgestion.jpa.controller.CuentabancariaMovimientosJpaController;
 import jgestion.jpa.controller.EspecieJpaController;
 import jgestion.jpa.controller.NotaCreditoJpaController;
@@ -643,7 +644,7 @@ public class ReciboController implements ActionListener, FocusListener {
     }
 
     private void actualizarMontoEntrega(NotaDebito notaDebito, BigDecimal entrega) {
-        CtacteCliente ctacte = new CtacteClienteController().findByNotaDebito(notaDebito.getId());
+        CtacteCliente ctacte = new CtacteClienteJpaController().findByNotaDebito(notaDebito);
         ctacte.setEntregado(ctacte.getEntregado().add(entrega));
         if (notaDebito.getImporte().compareTo(ctacte.getEntregado()) == 0) {
             ctacte.setEstado(Valores.CtaCteEstado.PAGADA.getId());

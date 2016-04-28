@@ -7,6 +7,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import jgestion.entity.NotaDebito;
 
 /**
  *
@@ -17,10 +18,10 @@ public class CtacteClienteJpaController extends JGestionJpaImpl<CtacteCliente, I
     public CtacteClienteJpaController() {
     }
 
-    public CtacteCliente findByNotaDebito(Integer id) {
+    public CtacteCliente findByNotaDebito(NotaDebito nd) {
         try {
             return (CtacteCliente) getEntityManager().createQuery("SELECT o FROM " + getEntityClass().getSimpleName() + " o "
-                    + " where o.notaDebito.id = " + id).getSingleResult();
+                    + " where o.notaDebito.id = " + nd.getId()).getSingleResult();
         } catch (NoResultException e) {
             return null;
         }

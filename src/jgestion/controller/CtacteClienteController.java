@@ -92,10 +92,6 @@ public class CtacteClienteController implements ActionListener {
         return jpaController.find(id);
     }
 
-    public CtacteCliente findByNotaDebito(Integer notaDebitoID) {
-        return jpaController.findByNotaDebito(notaDebitoID);
-    }
-
     /**
      * Busca la Cta. Cte. relacionada al comprobante y retorna (si existe).
      *

@@ -32,11 +32,14 @@ import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import jgestion.JGestionUtils;
+import jgestion.entity.DetalleRecibo;
 import jgestion.entity.FacturaElectronica;
 import jgestion.jpa.controller.ClienteJpaController;
+import jgestion.jpa.controller.CtacteClienteJpaController;
 import jgestion.jpa.controller.FacturaElectronicaJpaController;
 import jgestion.jpa.controller.IvaJpaController;
 import jgestion.jpa.controller.NotaDebitoJpaController;
+import jgestion.jpa.controller.ReciboJpaController;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -90,31 +93,17 @@ public class NotaDebitoController {
 
     void initComprobanteUI(Window owner, boolean modal, boolean loadDefaultData) {
         abm = new JDNotaDebito(owner, modal, false);
-        abm.getCbCliente().addActionListener(new ActionListener() {
-            @Override
-            @SuppressWarnings("unchecked")
-            public void actionPerformed(ActionEvent e) {
-                if (abm.getCbCliente().getItemCount() > 0) {
-                    try {
-                        JGestionUtils.cargarComboTiposFacturas(abm.getCbFacturaTipo(), ((EntityWrapper<Cliente>) abm.getCbCliente().getSelectedItem()).getEntity());
-                    } catch (MessageException ex) {
-                        ex.displayMessage(abm);
-                    }
+        abm.getCbCliente().addActionListener((evt) -> {
+            if (abm.getCbCliente().getItemCount() > 0) {
+                try {
+                    JGestionUtils.cargarComboTiposFacturas(abm.getCbFacturaTipo(), ((EntityWrapper<Cliente>) abm.getCbCliente().getSelectedItem()).getEntity());
+                } catch (MessageException ex) {
+                    ex.displayMessage(abm);
                 }
             }
         });
-        abm.getCbSucursal().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sucursalSelectedActionPerformanceOnComboBox();
-            }
-        });
-        abm.getCbIVA().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                calcularSubTotalItem();
-            }
-        });
+        abm.getCbSucursal().addActionListener((evt) -> sucursalSelectedActionPerformanceOnComboBox());
+        abm.getCbIVA().addActionListener((evt) -> calcularSubTotalItem());
         abm.getTfImporte().addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
@@ -207,6 +196,35 @@ public class NotaDebitoController {
             public void actionPerformed(ActionEvent e) {
                 EL_OBJECT = null;
                 abm.dispose();
+            }
+        });
+        abm.getBtnAnular().addActionListener((evt) -> {
+            try {
+                if (EL_OBJECT.getAnulada()) {
+                    throw new MessageException("Comprobante ya está ANULADA!"
+                            + "\n" + JGestionUtils.getRandomAgression());
+                }
+                CtacteClienteJpaController cccJpaController = new CtacteClienteJpaController();
+                CtacteCliente ccc = cccJpaController.findByNotaDebito(EL_OBJECT);
+                if (ccc.getEntregado().compareTo(BigDecimal.ZERO) > 0) {
+                    String recibos = "";
+                    for (DetalleRecibo d : new ReciboJpaController().findDetalleReciboBy(EL_OBJECT)) {
+                        recibos += "\n" + JGestionUtils.getNumeracion(d.getNotaDebito());
+                    }
+                    throw new MessageException("El comprobante posee pagos, debe anular previamente"
+                            + " el/los Recibos relacionados:"
+                            + recibos);
+                }
+                EL_OBJECT.setAnulada(true);
+                ccc.setEstado(Valores.CtaCteEstado.ANULADA.getId());
+                jpaController.merge(EL_OBJECT);
+                cccJpaController.merge(ccc);
+                JOptionPane.showMessageDialog(abm, "Comprobante ANULADO", JGestionUtils.getRandomMotivation(), JOptionPane.INFORMATION_MESSAGE);
+                abm.dispose();
+            } catch (MessageException ex) {
+                ex.displayMessage(abm);
+            } catch (Exception ex) {
+                LOG.error("aceptando NotaDebito >" + EL_OBJECT, ex);
             }
         });
     }
@@ -419,7 +437,7 @@ public class NotaDebitoController {
         dtm.setRowCount(0);
         List<NotaDebito> l = jpaController.findAll(query);
         for (NotaDebito notaDebito : l) {
-            CtacteCliente ccc = new CtacteClienteController().findByNotaDebito(notaDebito.getId());
+            CtacteCliente ccc = new CtacteClienteJpaController().findByNotaDebito(notaDebito);
             dtm.addRow(new Object[]{
                 notaDebito.getId(), // <--- no es visible
                 JGestionUtils.getNumeracion(notaDebito),
@@ -434,12 +452,12 @@ public class NotaDebitoController {
         }
     }
 
-    public void initBuscador(Window frame, final boolean modal, final boolean toAnular) throws MessageException {
+    public void initBuscador(Window owner, final boolean modal, final boolean toAnular) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.VENTA);
         if (toAnular) {
             UsuarioController.checkPermiso(PermisosController.PermisoDe.ANULAR_COMPROBANTES);
         }
-        buscador = new JDBuscadorReRe(frame, "Buscador - Notas de Débito", modal, "Cliente", "Nº Nota");
+        buscador = new JDBuscadorReRe(owner, "Buscador - Notas de Débito", modal, "Cliente", "Nº Nota");
         buscador.setParaNotaDebito();
         UTIL.loadComboBox(buscador.getCbClieProv(), new ClienteController().findAll(), true);
         UTIL.loadComboBox(buscador.getCbSucursal(), JGestionUtils.getWrappedSucursales(new UsuarioHelper().getSucursales()), true);
@@ -533,18 +551,18 @@ public class NotaDebitoController {
             } catch (MessageException ex) {
                 JOptionPane.showMessageDialog(buscador, ex.getMessage());
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(buscador, "Algo salió mal: " + ex. getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(buscador, "Algo salió mal: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 LOG.error(ex, ex);
             }
         });
         viewMode = true;
-        buscador.setLocationRelativeTo(frame);
+        buscador.setLocationRelativeTo(owner);
         buscador.setVisible(true);
     }
 
     @SuppressWarnings("unchecked")
     private String armarQuery() throws MessageException {
-        StringBuilder query = new StringBuilder("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o"
+        StringBuilder query = new StringBuilder(jpaController.getSelectFrom()
                 + " WHERE o.anulada = " + buscador.isCheckAnuladaSelected());
 
         long numero;
