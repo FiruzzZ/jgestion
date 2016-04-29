@@ -37,8 +37,8 @@ import jgestion.ActionListenerManager;
 import jgestion.JGestionUtils;
 import jgestion.jpa.controller.UnidadDeNegocioJpaController;
 import org.jdesktop.swingx.treetable.AbstractTreeTableModel;
+import utilities.general.EntityWrapper;
 import utilities.general.UTIL;
-import utilities.swing.components.ComboBoxWrapper;
 import utilities.swing.components.NumberRenderer;
 
 /**
@@ -65,9 +65,9 @@ public class JXTreeTableDemo extends javax.swing.JDialog {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Object o = cbUnidadDeNegocio.getSelectedItem();
-                if (o instanceof ComboBoxWrapper) {
+                if (o instanceof EntityWrapper) {
                     @SuppressWarnings("unchecked")
-                    ComboBoxWrapper<UnidadDeNegocio> c = (ComboBoxWrapper<UnidadDeNegocio>) o;
+                    EntityWrapper<UnidadDeNegocio> c = (EntityWrapper<UnidadDeNegocio>) o;
                     Set<Sucursal> uni = c.getEntity().getSucursales();
                     List<Sucursal> x = new ArrayList<Sucursal>();
                     for (Sucursal sucursal : uni) {
@@ -446,21 +446,21 @@ public class JXTreeTableDemo extends javax.swing.JDialog {
         query.append(" AND o.fechaVenta >='").append(yyyyMMdd.format(desde)).append("'");
         query.append(" AND o.fechaVenta <='").append(yyyyMMdd.format(hasta)).append("'");
         if (getCbUnidadDeNegocio().getSelectedIndex() > 0) {
-            query.append(" AND o.unidadDeNegocio.id = ").append(((ComboBoxWrapper<UnidadDeNegocio>) getCbUnidadDeNegocio().getSelectedItem()).getId());
+            query.append(" AND o.unidadDeNegocio.id = ").append(((EntityWrapper<UnidadDeNegocio>) getCbUnidadDeNegocio().getSelectedItem()).getId());
         }
         if (getCbCuenta().getSelectedIndex() > 0) {
-            query.append(" AND o.cuenta.id = ").append(((ComboBoxWrapper<Cuenta>) getCbCuenta().getSelectedItem()).getId());
+            query.append(" AND o.cuenta.id = ").append(((EntityWrapper<Cuenta>) getCbCuenta().getSelectedItem()).getId());
         }
         if (getCbSubCuenta().getSelectedIndex() > 0) {
-            query.append(" AND o.subCuenta.id = ").append(((ComboBoxWrapper<SubCuenta>) getCbSubCuenta().getSelectedItem()).getId());
+            query.append(" AND o.subCuenta.id = ").append(((EntityWrapper<SubCuenta>) getCbSubCuenta().getSelectedItem()).getId());
         }
         if (getCbSucursal().getSelectedIndex() > 0) {
-            query.append(" AND o.sucursal.id = ").append(((ComboBoxWrapper<Sucursal>) getCbSucursal().getSelectedItem()).getId());
+            query.append(" AND o.sucursal.id = ").append(((EntityWrapper<Sucursal>) getCbSucursal().getSelectedItem()).getId());
         } else {
             if (getCbUnidadDeNegocio().getSelectedIndex() > 0) {
                 query.append(" AND (");
                 for (int i = 1; i < getCbSucursal().getItemCount(); i++) {
-                    ComboBoxWrapper<Sucursal> cbw = (ComboBoxWrapper<Sucursal>) getCbSucursal().getItemAt(i);
+                    EntityWrapper<Sucursal> cbw = (EntityWrapper<Sucursal>) getCbSucursal().getItemAt(i);
                     query.append(" o.sucursal.id=").append(cbw.getId());
                     if ((i + 1) < getCbSucursal().getItemCount()) {
                         query.append(" OR ");
@@ -496,21 +496,21 @@ public class JXTreeTableDemo extends javax.swing.JDialog {
         query.append(" AND o.fechaCompra >='").append(yyyyMMdd.format(desde)).append("'");
         query.append(" AND o.fechaCompra <='").append(yyyyMMdd.format(hasta)).append("'");
         if (getCbUnidadDeNegocio().getSelectedIndex() > 0) {
-            query.append(" AND o.unidadDeNegocio.id = ").append(((ComboBoxWrapper<UnidadDeNegocio>) getCbUnidadDeNegocio().getSelectedItem()).getId());
+            query.append(" AND o.unidadDeNegocio.id = ").append(((EntityWrapper<UnidadDeNegocio>) getCbUnidadDeNegocio().getSelectedItem()).getId());
         }
         if (getCbCuenta().getSelectedIndex() > 0) {
-            query.append(" AND o.cuenta.id = ").append(((ComboBoxWrapper<Cuenta>) getCbCuenta().getSelectedItem()).getId());
+            query.append(" AND o.cuenta.id = ").append(((EntityWrapper<Cuenta>) getCbCuenta().getSelectedItem()).getId());
         }
         if (getCbSubCuenta().getSelectedIndex() > 0) {
-            query.append(" AND o.subCuenta.id = ").append(((ComboBoxWrapper<SubCuenta>) getCbSubCuenta().getSelectedItem()).getId());
+            query.append(" AND o.subCuenta.id = ").append(((EntityWrapper<SubCuenta>) getCbSubCuenta().getSelectedItem()).getId());
         }
         if (getCbSucursal().getSelectedIndex() > 0) {
-            query.append(" AND o.sucursal.id = ").append(((ComboBoxWrapper<Sucursal>) getCbSucursal().getSelectedItem()).getId());
+            query.append(" AND o.sucursal.id = ").append(((EntityWrapper<Sucursal>) getCbSucursal().getSelectedItem()).getId());
         } else {
             if (getCbUnidadDeNegocio().getSelectedIndex() > 0) {
                 query.append(" AND (");
                 for (int i = 1; i < getCbSucursal().getItemCount(); i++) {
-                    ComboBoxWrapper<Sucursal> cbw = (ComboBoxWrapper<Sucursal>) getCbSucursal().getItemAt(i);
+                    EntityWrapper<Sucursal> cbw = (EntityWrapper<Sucursal>) getCbSucursal().getItemAt(i);
                     query.append(" o.sucursal.id=").append(cbw.getId());
                     if ((i + 1) < getCbSucursal().getItemCount()) {
                         query.append(" OR ");
@@ -546,13 +546,13 @@ public class JXTreeTableDemo extends javax.swing.JDialog {
         query.append(" AND o.fechaMovimiento >='").append(yyyyMMdd.format(desde)).append("'");
         query.append(" AND o.fechaMovimiento <='").append(yyyyMMdd.format(hasta)).append("'");
         if (getCbUnidadDeNegocio().getSelectedIndex() > 0) {
-            query.append(" AND o.unidadDeNegocio.id = ").append(((ComboBoxWrapper<UnidadDeNegocio>) getCbUnidadDeNegocio().getSelectedItem()).getId());
+            query.append(" AND o.unidadDeNegocio.id = ").append(((EntityWrapper<UnidadDeNegocio>) getCbUnidadDeNegocio().getSelectedItem()).getId());
         }
         if (getCbCuenta().getSelectedIndex() > 0) {
-            query.append(" AND o.cuenta.id = ").append(((ComboBoxWrapper<Cuenta>) getCbCuenta().getSelectedItem()).getId());
+            query.append(" AND o.cuenta.id = ").append(((EntityWrapper<Cuenta>) getCbCuenta().getSelectedItem()).getId());
         }
         if (getCbSubCuenta().getSelectedIndex() > 0) {
-            query.append(" AND o.subCuenta.id = ").append(((ComboBoxWrapper<SubCuenta>) getCbSubCuenta().getSelectedItem()).getId());
+            query.append(" AND o.subCuenta.id = ").append(((EntityWrapper<SubCuenta>) getCbSubCuenta().getSelectedItem()).getId());
         }
         System.out.println(query.toString());
         return DAO.getEntityManager().createQuery(query.toString()).getResultList();
@@ -571,13 +571,13 @@ public class JXTreeTableDemo extends javax.swing.JDialog {
         query.append(" AND o.fechaMovimiento >='").append(yyyyMMdd.format(desde)).append("'");
         query.append(" AND o.fechaMovimiento <='").append(yyyyMMdd.format(hasta)).append("'");
         if (getCbUnidadDeNegocio().getSelectedIndex() > 0) {
-            query.append(" AND o.unidadDeNegocio.id = ").append(((ComboBoxWrapper<UnidadDeNegocio>) getCbUnidadDeNegocio().getSelectedItem()).getId());
+            query.append(" AND o.unidadDeNegocio.id = ").append(((EntityWrapper<UnidadDeNegocio>) getCbUnidadDeNegocio().getSelectedItem()).getId());
         }
         if (getCbCuenta().getSelectedIndex() > 0) {
-            query.append(" AND o.cuenta.id = ").append(((ComboBoxWrapper<Cuenta>) getCbCuenta().getSelectedItem()).getId());
+            query.append(" AND o.cuenta.id = ").append(((EntityWrapper<Cuenta>) getCbCuenta().getSelectedItem()).getId());
         }
         if (getCbSubCuenta().getSelectedIndex() > 0) {
-            query.append(" AND o.subCuenta.id = ").append(((ComboBoxWrapper<SubCuenta>) getCbSubCuenta().getSelectedItem()).getId());
+            query.append(" AND o.subCuenta.id = ").append(((EntityWrapper<SubCuenta>) getCbSubCuenta().getSelectedItem()).getId());
         }
         System.out.println(query.toString());
         return DAO.getEntityManager().createQuery(query.toString()).getResultList();
@@ -615,7 +615,7 @@ public class JXTreeTableDemo extends javax.swing.JDialog {
             //obtener facturas filtradas...
             for (int i = 1; i < getCbUnidadDeNegocio().getItemCount(); i++) {
                 @SuppressWarnings("unchecked")
-                ComboBoxWrapper<UnidadDeNegocio> udn = (ComboBoxWrapper<UnidadDeNegocio>) getCbUnidadDeNegocio().getItemAt(i);
+                EntityWrapper<UnidadDeNegocio> udn = (EntityWrapper<UnidadDeNegocio>) getCbUnidadDeNegocio().getItemAt(i);
                 CuentaNode udnNode = new CuentaNode(udn.getText(), null);
 
                 CuentaNode ingresos = new CuentaNode("Ingresos", null);
