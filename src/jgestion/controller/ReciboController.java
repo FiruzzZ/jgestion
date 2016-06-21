@@ -67,7 +67,7 @@ import utilities.swing.components.NumberRenderer;
  *
  * @author FiruzzZ
  */
-public class ReciboController implements ActionListener, FocusListener {
+public class ReciboController {
 
     private static final Logger LOG = LogManager.getLogger();
     private static final String CLASS_NAME = Recibo.class.getSimpleName();
@@ -508,10 +508,6 @@ public class ReciboController implements ActionListener, FocusListener {
         jd.setVisible(true);
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-    }
-
     private void checkConstraints() throws MessageException {
         if (jdReRe.getDcFechaReRe().getDate() == null) {
             throw new MessageException("Fecha de " + jpaController.getEntityClass().getSimpleName() + " no válida");
@@ -564,8 +560,6 @@ public class ReciboController implements ActionListener, FocusListener {
         re.setUsuario(UsuarioController.getCurrentUser());
         re.setEstado(true);
         re.setFechaRecibo(jdReRe.getDcFechaReRe().getDate());
-        re.setDetalle(new ArrayList<>(jdReRe.getDtmAPagar().getRowCount()));
-        re.setPagos(new ArrayList<>(jdReRe.getDtmPagos().getRowCount()));
         re.setPorConciliar(toConciliar);
         re.setCliente((Cliente) jdReRe.getCbClienteProveedor().getSelectedItem());
         DefaultTableModel dtm = jdReRe.getDtmAPagar();
@@ -907,7 +901,7 @@ public class ReciboController implements ActionListener, FocusListener {
 
     private void cargarFacturasCtaCtesYNotasDebito(Cliente cliente) {
         jdReRe.limpiarDetalles();
-        List<CtacteCliente> l = new CtacteClienteController().findByCliente(cliente, Valores.CtaCteEstado.PENDIENTE.getId());
+        List<CtacteCliente> l = new CtacteClienteController().findBy(cliente, Valores.CtaCteEstado.PENDIENTE);
         UTIL.loadComboBox(jdReRe.getCbCtaCtes(), JGestionUtils.getWrappedCtacteCliente(l), false);
     }
 
@@ -1111,26 +1105,6 @@ public class ReciboController implements ActionListener, FocusListener {
             }
         }
         recibo.setPagosEntities(pagos);
-    }
-
-    @Override
-    public void focusGained(FocusEvent e) {
-        //..........
-    }
-
-    @Override
-    public void focusLost(FocusEvent e) {
-        if (buscador != null) {
-            if (e.getSource().getClass().equals(JTextField.class)) {
-                JTextField tf = (JTextField) e.getSource();
-                if (tf.getName().equalsIgnoreCase("tfocteto")) {
-                    if (buscador.getTfOcteto().length() > 0) {
-                        buscador.setTfOcteto(UTIL.AGREGAR_CEROS(buscador.getTfOcteto(), 8));
-                    }
-                } else if (tf.getName().equalsIgnoreCase("tfFactu8")) {
-                }
-            }
-        }
     }
 
     /**

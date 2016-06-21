@@ -88,10 +88,6 @@ public class CtacteClienteController implements ActionListener {
         jpaController.persist(ccp);
     }
 
-    public CtacteCliente find(Integer id) {
-        return jpaController.find(id);
-    }
-
     /**
      * Busca la Cta. Cte. relacionada al comprobante y retorna (si existe).
      *
@@ -102,14 +98,14 @@ public class CtacteClienteController implements ActionListener {
         return jpaController.findByFactura(facturaVenta.getId());
     }
 
-    List<CtacteCliente> findByCliente(Cliente cliente, short estadoCtaCte) {
+    public List<CtacteCliente> findBy(Cliente cliente, Valores.CtaCteEstado estadoCtaCte) {
         List<CtacteCliente> facturaVentaList = jpaController.findAll(
                 "SELECT o FROM " + CtacteCliente.class.getSimpleName() + " o"
-                + " WHERE o.estado = " + estadoCtaCte + " AND o.factura.cliente.id =" + cliente.getId()
+                + " WHERE o.estado = " + estadoCtaCte.getId() + " AND o.factura.cliente.id =" + cliente.getId()
                 + " ORDER BY o.factura.sucursal.puntoVenta, o.factura.numero");
         List<CtacteCliente> notaDebitoList = jpaController.findAll(
                 "SELECT o FROM " + CtacteCliente.class.getSimpleName() + " o"
-                + " WHERE o.estado = " + estadoCtaCte + " AND o.notaDebito.cliente.id =" + cliente.getId()
+                + " WHERE o.estado = " + estadoCtaCte.getId() + " AND o.notaDebito.cliente.id =" + cliente.getId()
                 + " ORDER BY o.notaDebito.sucursal.puntoVenta, o.notaDebito.numero");
         facturaVentaList.addAll(notaDebitoList);
         return facturaVentaList;
@@ -167,7 +163,7 @@ public class CtacteClienteController implements ActionListener {
                 Integer selectedRow = resumenCtaCtes.getjTableResumen().getSelectedRow();
                 if (selectedRow > 0) {
                     //selecciona una factura (a CtaCteCliente)
-                    cargarComboBoxRecibosDeCtaCte(find((Integer) (resumenCtaCtes.getDtmResumen().getValueAt(selectedRow, 0))));
+                    cargarComboBoxRecibosDeCtaCte(jpaController.find((Integer) (resumenCtaCtes.getDtmResumen().getValueAt(selectedRow, 0))));
                 }
             }
 
@@ -175,7 +171,7 @@ public class CtacteClienteController implements ActionListener {
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
                     Integer selectedRow = resumenCtaCtes.getjTableResumen().getSelectedRow();
-                    CtacteCliente ccc = find((Integer) (resumenCtaCtes.getDtmResumen().getValueAt(selectedRow, 0)));
+                    CtacteCliente ccc = jpaController.find((Integer) (resumenCtaCtes.getDtmResumen().getValueAt(selectedRow, 0)));
                     if (ccc.getFactura() != null) {
                         FacturaVenta factura = ccc.getFactura();
                         try {

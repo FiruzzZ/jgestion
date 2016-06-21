@@ -44,9 +44,20 @@ public class JPATesting {
             LOG.error("Error:" + ex.getLocalizedMessage(), ex);
         }
     }
-    
+
     public JPATesting() throws Exception {
-        
+        Cliente cl = new ClienteJpaController().find(1);
+        Integer numero = 99999;
+        List<CtacteCliente> cc = new CtacteClienteController().findBy(cl, Valores.CtaCteEstado.PENDIENTE);
+        Recibo r = new Recibo();
+        r.setCliente(cl);
+        r.setCaja(new CajaController().findCajaEntities().get(0));
+        r.setFechaRecibo(new Date());
+        r.setNumero(numero);
+        r.setSucursal(new SucursalJpaController().findAll().get(0));
+        r.setTipo('B');
+        r.setUsuario(UsuarioController.getCurrentUser());
+        new ReciboJpaController().persist(r);
     }
 
     private void updateCostoCompraYPrecioVentaSegunDetalleCompra() {

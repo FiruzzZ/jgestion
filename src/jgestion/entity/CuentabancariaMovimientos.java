@@ -54,10 +54,10 @@ public class CuentabancariaMovimientos implements Serializable {
     @JoinColumn(nullable = false)
     @ManyToOne(optional = false)
     private Usuario usuario;
-    @JoinColumn(nullable = false, name = "operaciones_bancarias_id")
+    @JoinColumn(nullable = false, name = "operaciones_bancarias_id", updatable = false)
     @ManyToOne(optional = false)
     private OperacionesBancarias operacionesBancarias;
-    @JoinColumn(nullable = false)
+    @JoinColumn(nullable = false, updatable = false)
     @ManyToOne(optional = false)
     private CuentaBancaria cuentaBancaria;
     @ManyToOne

@@ -3,6 +3,7 @@ package jgestion.entity;
 import jgestion.controller.ReciboController;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.*;
@@ -73,6 +74,8 @@ public class Recibo implements Serializable {
     private Cliente cliente;
 
     public Recibo() {
+        detalle = new ArrayList<>();
+        pagos = new ArrayList<>();
     }
 
     public char getTipo() {
