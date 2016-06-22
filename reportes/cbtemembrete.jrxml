@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="cbtemembrete" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="1ec79934-07fb-4be8-9933-0e01f27fea72">
 	<property name="ireport.zoom" value="1.2100000000000088"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="373"/>
+	<property name="ireport.y" value="0"/>
 	<parameter name="CBTE_TIPO" class="java.lang.Object" isForPrompting="false">
 		<defaultValueExpression><![CDATA["A"]]></defaultValueExpression>
 	</parameter>
@@ -294,7 +294,7 @@
 				<text><![CDATA[Apellido y Nombre/ Razón Social:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="5cd02bb4-99cf-4297-ae9c-d270c090c457" x="294" y="30" width="50" height="15"/>
+				<reportElement uuid="5cd02bb4-99cf-4297-ae9c-d270c090c457" x="244" y="30" width="50" height="15"/>
 				<textElement verticalAlignment="Top"/>
 				<text><![CDATA[Domilicilio:]]></text>
 			</staticText>
@@ -318,7 +318,7 @@
 				<textFieldExpression><![CDATA[$P{CLIE_NOMBRE}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true">
-				<reportElement uuid="20304df6-6885-4da9-9869-27fe51c6ff6d" x="344" y="30" width="211" height="15"/>
+				<reportElement uuid="20304df6-6885-4da9-9869-27fe51c6ff6d" stretchType="RelativeToBandHeight" x="294" y="30" width="261" height="24"/>
 				<textElement verticalAlignment="Top">
 					<font isBold="true"/>
 				</textElement>
