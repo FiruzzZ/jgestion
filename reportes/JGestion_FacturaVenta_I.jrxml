@@ -262,9 +262,10 @@ AND dc.factura = $P{FACTURA_ID}]]>
 				<textElement textAlignment="Right"/>
 				<textFieldExpression><![CDATA[new BigDecimal(
     ($F{precio_unitario}.doubleValue() +
-    ($F{precio_unitario}.doubleValue() * ($F{iva}.doubleValue()/100)))
-    * $F{cantidad}.intValue()
-).setScale(2, RoundingMode.HALF_DOWN)]]></textFieldExpression>
+    ($F{precio_unitario}.doubleValue() * ($F{iva}.doubleValue()/100))))
+.setScale(4, RoundingMode.HALF_UP)
+.multiply(BigDecimal.valueOf($F{cantidad}.intValue()))
+.setScale(2, RoundingMode.HALF_UP)]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

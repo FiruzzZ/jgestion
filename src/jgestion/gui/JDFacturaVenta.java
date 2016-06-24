@@ -676,6 +676,7 @@ public class JDFacturaVenta extends javax.swing.JDialog {
         tfTotal.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         tfTotal.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         tfTotal.setText("0.00");
+        tfTotal.setToolTipText("<html>Importe total\n<br>Este importe puede variar entre un <b>Consumidor Final o Tipo B</b>\n<br>y un <b>Responsable Inscripto, tipo A</b>\n");
 
         jLabel24.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel24.setText("Total");

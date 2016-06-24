@@ -230,11 +230,11 @@ public class ReciboController {
                     EntityWrapper<?> cbw = (EntityWrapper<?>) jdReRe.getCbCtaCtes().getSelectedItem();
                     if (cbw.getEntity() instanceof CtacteCliente) {
                         selectedCtaCte = (CtacteCliente) cbw.getEntity();
-                        jdReRe.setTfImporte(UTIL.PRECIO_CON_PUNTO.format(selectedCtaCte.getImporte()));
+                        jdReRe.setTfImporte(UTIL.PRECIO_CON_PUNTO.format(selectedCtaCte.getCbteImporte()));
                         jdReRe.setTfPagado(UTIL.PRECIO_CON_PUNTO.format(selectedCtaCte.getEntregado()));
-                        jdReRe.setTfSaldo(UTIL.PRECIO_CON_PUNTO.format(selectedCtaCte.getImporte().subtract(selectedCtaCte.getEntregado())));
+                        jdReRe.setTfSaldo(UTIL.PRECIO_CON_PUNTO.format(selectedCtaCte.getCbteImporte().subtract(selectedCtaCte.getEntregado())));
                         //se autocompleta el monto de entrega igual al saldo restante del cbte
-                        jdReRe.setTfEntrega(UTIL.PRECIO_CON_PUNTO.format(selectedCtaCte.getImporte().subtract(selectedCtaCte.getEntregado())));
+                        jdReRe.setTfEntrega(UTIL.PRECIO_CON_PUNTO.format(selectedCtaCte.getCbteImporte().subtract(selectedCtaCte.getEntregado())));
                         jdReRe.getTfEntrega().setEditable(true);
                     }
                 } catch (ClassCastException | NullPointerException ex) {

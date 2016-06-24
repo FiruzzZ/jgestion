@@ -430,7 +430,7 @@ public class FacturaVentaController {
                 try {
                     if (EL_OBJECT.getAnulada()) {
                         throw new MessageException("Comprobante ya está ANULADA!"
-                            + "\n" + JGestionUtils.getRandomAgression());
+                                + "\n" + JGestionUtils.getRandomAgression());
                     }
                     String factu_compro = EL_OBJECT.getMovimientoInterno() == 0 ? "Factura Venta" : "Comprobante";
                     String msg_extra_para_ctacte = EL_OBJECT.getFormaPago() == Valores.FormaPago.CTA_CTE.getId() ? "\n- Recibos de pago de Cta.Cte." : "";
@@ -613,7 +613,7 @@ public class FacturaVentaController {
             selectedProducto.getNombre() + "(" + selectedProducto.getIva().getIva() + ")",
             cantidad,
             precioUnitarioSinIVA, //columnIndex == 4
-            precioUnitarioConIVA,
+            precioUnitarioConIVA, // ya redondeado!
             descuentoUnitario.multiply(BigDecimal.valueOf(cantidad)),
             precioUnitarioConIVA.multiply(BigDecimal.valueOf(cantidad)).setScale(2, RoundingMode.HALF_UP), //subTotal
             (descuentoUnitario.intValue() == 0) ? -1 : (jdFactura.getCbDesc().getSelectedIndex() + 1),//Tipo de descuento
@@ -733,7 +733,11 @@ public class FacturaVentaController {
         contenedor.setTfTotalOtrosImps(UTIL.DECIMAL_FORMAT.format(otrosImps));
         redondeoTotal = gravado.add(iva10).add(iva21).add(otrosImps).subtract(redondeoTotal);
         contenedor.getTfDiferenciaRedondeo().setText(UTIL.DECIMAL_FORMAT.format(redondeoTotal));
-        contenedor.setTfTotal(UTIL.DECIMAL_FORMAT.format(subTotal));
+        if (contenedor.getCbFacturaTipo().getSelectedItem().toString().equalsIgnoreCase("A")) {
+            contenedor.setTfTotal(UTIL.DECIMAL_FORMAT.format(gravado.add(iva10).add(iva21).add(otrosImps)));
+        } else {
+            contenedor.setTfTotal(UTIL.DECIMAL_FORMAT.format(subTotal));
+        }
         LOG.debug("Gravado=" + gravado + ", NoGrav=" + noGravado + ", Desc.=" + desc
                 + ", IVA105=" + iva10.toPlainString()
                 + ", IVA21=" + iva21.toPlainString()
@@ -1899,6 +1903,16 @@ public class FacturaVentaController {
                     detalle.getProducto().setIva(iva);
                 }
             }
+            BigDecimal alicuota = BigDecimal.valueOf(detalle.getProducto().getIva().getIva());
+            BigDecimal precioUnitarioConIVA = detalle.getPrecioUnitario()
+                    .multiply((alicuota.divide(new BigDecimal("100")).add(BigDecimal.ONE))).setScale(4, RoundingMode.HALF_UP);
+//            precioUnitarioConIVA, // ya redondeado!
+//            descuentoUnitario.multiply(BigDecimal.valueOf(cantidad)),
+//            precioUnitarioConIVA.multiply(BigDecimal.valueOf(cantidad)).setScale(2, RoundingMode.HALF_UP), //subTotal
+//            (descuentoUnitario.intValue() == 0) ? -1 : (jdFactura.getCbDesc().getSelectedIndex() + 1),//Tipo de descuento
+//            selectedProducto.getId(),
+//            productoEnOferta //columnIndex == 10
+//        });
             try {
                 //"IVA","Cód. Producto","Producto","Cantidad","P. Unitario","P. final","Desc","Sub total"
                 dtm.addRow(new Object[]{
@@ -1907,14 +1921,9 @@ public class FacturaVentaController {
                     detalle.getProducto().getNombre() + "(" + detalle.getProducto().getIva().getIva() + ")",
                     detalle.getCantidad(),
                     detalle.getPrecioUnitario(),
-                    detalle.getPrecioUnitario()
-                    .multiply(BigDecimal.valueOf(detalle.getProducto().getIva().getIva() / 100).add(BigDecimal.ONE))
-                    .setScale(4, RoundingMode.HALF_UP),
+                    precioUnitarioConIVA,
                     detalle.getDescuento(),
-                    detalle.getPrecioUnitario()
-                    .multiply(BigDecimal.valueOf(detalle.getCantidad()))
-                    .multiply(BigDecimal.valueOf(detalle.getProducto().getIva().getIva() / 100).add(BigDecimal.ONE))
-                    .setScale(2, RoundingMode.HALF_UP),
+                    precioUnitarioConIVA.multiply(BigDecimal.valueOf(detalle.getCantidad())).setScale(2, RoundingMode.HALF_UP),
                     detalle.getTipoDesc(),
                     detalle.getProducto().getId(),
                     null

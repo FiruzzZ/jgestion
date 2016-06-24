@@ -22,9 +22,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 /**
- * Representa una relación contable OneToOne entre {@link Cliente} y
- * {@link FacturaVenta} (resultado de una venta a {@link FormaPago#CTA_CTE}) o
- * {@link NotaDebito}
+ * Representa una relación contable OneToOne entre {@link Cliente} y {@link FacturaVenta} (resultado
+ * de una venta a {@link FormaPago#CTA_CTE}) o {@link NotaDebito}
  *
  * @author FiruzzZ
  */
@@ -169,5 +168,9 @@ public class CtacteCliente implements Serializable {
 
     public CtaCteEstado getEstadoEnum() {
         return Valores.CtaCteEstado.getCtaCteEstado(this.estado);
+    }
+
+    public BigDecimal getCbteImporte() {
+        return factura != null ? factura.getImporte() : notaDebito.getImporte();
     }
 }

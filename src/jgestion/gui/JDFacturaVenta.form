@@ -999,6 +999,7 @@
             </Property>
             <Property name="horizontalAlignment" type="int" value="4"/>
             <Property name="text" type="java.lang.String" value="0.00"/>
+            <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;Importe total&#xa;&lt;br&gt;Este importe puede variar entre un &lt;b&gt;Consumidor Final o Tipo B&lt;/b&gt;&#xa;&lt;br&gt;y un &lt;b&gt;Responsable Inscripto, tipo A&lt;/b&gt;&#xa;"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel24">
