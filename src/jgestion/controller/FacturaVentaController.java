@@ -733,7 +733,8 @@ public class FacturaVentaController {
         contenedor.setTfTotalOtrosImps(UTIL.DECIMAL_FORMAT.format(otrosImps));
         redondeoTotal = gravado.add(iva10).add(iva21).add(otrosImps).subtract(redondeoTotal);
         contenedor.getTfDiferenciaRedondeo().setText(UTIL.DECIMAL_FORMAT.format(redondeoTotal));
-        if (contenedor.getCbFacturaTipo().getSelectedItem().toString().equalsIgnoreCase("A")) {
+        Object selectedItem = contenedor.getCbFacturaTipo().getSelectedItem();
+        if (selectedItem != null && "A".equalsIgnoreCase(selectedItem.toString())) {
             contenedor.setTfTotal(UTIL.DECIMAL_FORMAT.format(gravado.add(iva10).add(iva21).add(otrosImps)));
         } else {
             contenedor.setTfTotal(UTIL.DECIMAL_FORMAT.format(subTotal));
