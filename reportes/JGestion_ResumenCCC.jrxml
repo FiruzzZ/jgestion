@@ -56,7 +56,7 @@ ORDER BY fecha]]>
 		<variableExpression><![CDATA[$F{haber}]]></variableExpression>
 	</variable>
 	<variable name="saldo_1" class="java.math.BigDecimal" calculation="Sum">
-		<variableExpression><![CDATA[$F{saldo}]]></variableExpression>
+		<variableExpression><![CDATA[$F{anulada} ? BigDecimal.ZERO : $F{saldo}]]></variableExpression>
 	</variable>
 	<background>
 		<band splitType="Stretch"/>
