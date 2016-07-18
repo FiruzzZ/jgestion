@@ -318,6 +318,10 @@ public class NotaCreditoController {
         DefaultTableModel dtm = buscador.getDtm();
         dtm.setRowCount(0);
         List<NotaCredito> l = jpaController.findAll(query);
+        if (l.isEmpty()) {
+            JOptionPane.showMessageDialog(null, JGestionUtils.getProperty("warn.noResultSearch"));
+            return;
+        }
         for (NotaCredito o : l) {
             dtm.addRow(new Object[]{
                 o.getId(), // <--- no es visible

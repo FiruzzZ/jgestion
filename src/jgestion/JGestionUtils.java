@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.ResourceBundle;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -63,6 +64,7 @@ import utilities.general.UTIL;
  */
 public class JGestionUtils {
 
+    private static final ResourceBundle resourceBundle = ResourceBundle.getBundle("resources");
     /**
      * Conserva el path del directorio del último archivo seleccionado
      */
@@ -71,6 +73,9 @@ public class JGestionUtils {
     public JGestionUtils() {
     }
 
+    public static String getProperty(String key) {
+        return resourceBundle.getString(key);
+    }
     private static final String[] yyy = {
         "",
         "",
@@ -135,7 +140,7 @@ public class JGestionUtils {
     public static List<EntityWrapper<?>> getWrappedCtacteProveedor(List<CtacteProveedor> list) {
         List<EntityWrapper<?>> l = new ArrayList<>(list.size());
         for (CtacteProveedor o : list) {
-                l.add(new EntityWrapper<>(o, o.getId(), o.getFactura() != null ? getNumeracion(o.getFactura()) : getNumeracion(o.getNotaDebito())));
+            l.add(new EntityWrapper<>(o, o.getId(), o.getFactura() != null ? getNumeracion(o.getFactura()) : getNumeracion(o.getNotaDebito())));
         }
         return l;
     }
