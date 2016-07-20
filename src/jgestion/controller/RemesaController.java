@@ -37,6 +37,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import javax.persistence.EntityManager;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -614,8 +615,9 @@ public class RemesaController implements FocusListener {
             nd = selectedCtaCte.getNotaDebito();
         }
         for (int i = 0; i < jdReRe.getDtmAPagar().getRowCount(); i++) {
-            if (jdReRe.getDtmAPagar().getValueAt(i, 0).equals(nd)
-                    || jdReRe.getDtmAPagar().getValueAt(i, 0).equals(fc)) {
+            DetalleRemesa oldRemesa = (DetalleRemesa) jdReRe.getDtmAPagar().getValueAt(i, 0);
+            if ((Objects.nonNull(fc) && Objects.equals(oldRemesa.getFacturaCompra(), fc))
+                    || (Objects.nonNull(nd) && nd.equals(oldRemesa.getNotaDebitoProveedor()))) {
                 if (fc != null) {
                     throw new MessageException("La factura " + JGestionUtils.getNumeracion(fc) + " ya se ha agregada al detalle");
                 } else {
@@ -729,7 +731,7 @@ public class RemesaController implements FocusListener {
             } catch (MessageException ex) {
                 JOptionPane.showMessageDialog(buscador, ex.getMessage());
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(buscador, "Algo salió mal: " + ex. getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(buscador, "Algo salió mal: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 LOG.error(ex, ex);
             }
         });
