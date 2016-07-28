@@ -635,6 +635,16 @@
                         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem88ActionPerformed"/>
                       </Events>
                     </MenuItem>
+                    <MenuItem class="javax.swing.JMenuItem" name="miAnularEgresoNotaCredito">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="Nota de Cr&#xe9;dito"/>
+                      </Properties>
+                    </MenuItem>
+                    <MenuItem class="javax.swing.JMenuItem" name="miAnularEgresoNotaDebito">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="Nota de D&#xe9;bito"/>
+                      </Properties>
+                    </MenuItem>
                   </SubComponents>
                 </Menu>
               </SubComponents>

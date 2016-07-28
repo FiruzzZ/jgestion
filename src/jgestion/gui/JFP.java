@@ -200,6 +200,8 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenu28 = new javax.swing.JMenu();
         jMenuItem38 = new javax.swing.JMenuItem();
         jMenuItem88 = new javax.swing.JMenuItem();
+        miAnularEgresoNotaCredito = new javax.swing.JMenuItem();
+        miAnularEgresoNotaDebito = new javax.swing.JMenuItem();
         menuCtaCte = new javax.swing.JMenu();
         jMenuItem37 = new javax.swing.JMenuItem();
         jMenuItem30 = new javax.swing.JMenuItem();
@@ -835,6 +837,12 @@ public class JFP extends javax.swing.JFrame implements Runnable {
             }
         });
         jMenu28.add(jMenuItem88);
+
+        miAnularEgresoNotaCredito.setText("Nota de Crédito");
+        jMenu28.add(miAnularEgresoNotaCredito);
+
+        miAnularEgresoNotaDebito.setText("Nota de Débito");
+        jMenu28.add(miAnularEgresoNotaDebito);
 
         jMenu14.add(jMenu28);
 
@@ -1843,7 +1851,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
 
     private void jMenuItem55ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem55ActionPerformed
         try {
-            new RemesaController().showBuscador(this, true, false);
+            new RemesaController().displayBuscador(this, true, false);
         } catch (MessageException ex) {
             ex.displayMessage(this);
         }
@@ -1910,7 +1918,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
 
     private void jMenuItem69ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem69ActionPerformed
         try {
-            new NotaCreditoProveedorController().initABM(this, true);
+            new NotaCreditoProveedorController().displayABM(this, true);
         } catch (MessageException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Advertencia", 2);
         }
@@ -1918,7 +1926,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
 
     private void jMenuItem70ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem70ActionPerformed
         try {
-            new NotaCreditoProveedorController().initBuscador(this, true, false);
+            new NotaCreditoProveedorController().displayBuscador(this, true, false);
         } catch (MessageException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Advertencia", 2);
         }
@@ -1983,7 +1991,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
 
     private void jMenuItem78ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem78ActionPerformed
         try {
-            new RemesaController().initRemesaAConciliar(this);
+            new RemesaController().displayRemesaAConciliar(this);
         } catch (MessageException ex) {
             ex.displayMessage(this);
         }
@@ -2015,7 +2023,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
 
     private void jMenuItem83ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem83ActionPerformed
         try {
-            new NotaDebitoProveedorController().initContenedor(this, true);
+            new NotaDebitoProveedorController().displayABM(this, true);
         } catch (MessageException ex) {
             ex.displayMessage(this);
         }
@@ -2023,7 +2031,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
 
     private void jMenuItem85ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem85ActionPerformed
         try {
-            new NotaDebitoProveedorController().initBuscador(this, false, false);
+            new NotaDebitoProveedorController().displayBuscador(this, false, false);
         } catch (MessageException ex) {
             ex.displayMessage(this);
         }
@@ -2031,7 +2039,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
 
     private void jMenuItem88ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem88ActionPerformed
         try {
-            new RemesaController().showBuscador(null, false, true);
+            new RemesaController().displayBuscador(null, false, true);
         } catch (MessageException ex) {
             ex.displayMessage(this);
         }
@@ -2323,6 +2331,8 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenu menuTesoreria;
     private javax.swing.JMenuItem miAFIPFECompConsultar;
     private javax.swing.JMenuItem miAFIPSolicitarCAEsPendientes;
+    private javax.swing.JMenuItem miAnularEgresoNotaCredito;
+    private javax.swing.JMenuItem miAnularEgresoNotaDebito;
     private javax.swing.JMenuItem miAnularIngresoFactura;
     private javax.swing.JMenuItem miAnularIngresoNC;
     private javax.swing.JMenuItem miAnularIngresoND;

@@ -739,7 +739,6 @@ public class Contabilidad {
         buscadorReRe.hideFactura();
         buscadorReRe.hideUDNCuentaSubCuenta();
         buscadorReRe.hideVendedor();
-        buscadorReRe.getbImprimir().setVisible(true);
         buscadorReRe.getBtnToExcel().setVisible(false);
         UTIL.loadComboBox(buscadorReRe.getCbClieProv(), JGestionUtils.getWrappedClientes(new ClienteController().findAll()), true);
         UTIL.loadComboBox(buscadorReRe.getCbCaja(), new CajaController().findCajasPermitidasByUsuario(UsuarioController.getCurrentUser(), true), true);

@@ -687,7 +687,6 @@ public class FacturaCompraController implements ActionListener {
         buscador = new JDBuscadorReRe(frame, "Buscador - Factura compra", modal, "Proveedor", "Nº Factura");
         buscador.hideFactura();
         buscador.hideVendedor();
-        buscador.getbImprimir().setVisible(true);
         ActionListenerManager.setUnidadDeNegocioSucursalActionListener(buscador.getCbUnidadDeNegocio(), true, buscador.getCbSucursal(), true, true);
         ActionListenerManager.setCuentasEgresosSubcuentaActionListener(buscador.getCbCuenta(), true, buscador.getCbSubCuenta(), true, true);
         UTIL.loadComboBox(buscador.getCbClieProv(), JGestionUtils.getWrappedProveedores(new ProveedorJpaController().findAllLite()), true);
@@ -773,8 +772,8 @@ public class FacturaCompraController implements ActionListener {
     }
 
     private void cargarTablaBuscador(String query) {
-        buscador.dtmRemoveAll();
         DefaultTableModel dtm = buscador.getDtm();
+        dtm.setRowCount(0);
         @SuppressWarnings("unchecked")
         List<FacturaCompra> l = jpaController.findAll(query);
         for (FacturaCompra facturaCompra : l) {

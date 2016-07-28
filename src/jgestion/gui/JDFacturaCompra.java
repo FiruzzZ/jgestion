@@ -1536,14 +1536,7 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         tfDias.setEnabled(enable);
         checkActualizaStock.setEnabled(enable);
         tfPercIIBB.setEnabled(enable);
-        tfProductoCodigo.setEnabled(enable);
-        cbProductos.setEnabled(enable);
-        tfCantidad.setEnabled(enable);
-        cbCambioPrecio.setEnabled(enable);
-        bBuscarProducto.setEnabled(enable);
-        tfPrecioUnitario.setEnabled(enable);
-        btnADD.setEnabled(enable);
-        btnDEL.setEnabled(enable);
+        enableDetalle(enable);
         btnAceptar.setEnabled(enable);
         btnCancelar.setEnabled(enable);
         btnAnular.setEnabled(enable);
@@ -1613,6 +1606,7 @@ public class JDFacturaCompra extends javax.swing.JDialog {
     }
 
     public void setUIToNotaCredito() {
+        setTitle("Nota de Credito - Proveedores");
         ((TitledBorder) panelDatosCompra.getBorder()).setTitle("Datos de Nota Crédito");
         labelFacturaTipo.setVisible(false);
         cbFacturaTipo.setVisible(false);
@@ -1716,5 +1710,9 @@ public class JDFacturaCompra extends javax.swing.JDialog {
 
     public JComboBox getCbDominio() {
         return cbDominio;
+    }
+
+    public void enableDetalle(boolean enable) {
+        SwingUtil.setComponentsEnabled(panelProducto.getComponents(), enable, true);
     }
 }

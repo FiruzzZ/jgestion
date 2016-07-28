@@ -24,6 +24,7 @@ import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import jgestion.JGestionUtils;
+import jgestion.entity.CtacteProveedor;
 import jgestion.jpa.controller.CtacteProveedorJpaController;
 import jgestion.jpa.controller.IvaJpaController;
 import jgestion.jpa.controller.NotaDebitoProveedorJpaController;
@@ -50,15 +51,13 @@ public class NotaDebitoProveedorController {
     private static final int LIMITE_DE_ITEMS = 15;
     private JDBuscadorReRe buscador;
     private boolean viewMode = false;
-    private boolean editMode = false;
 
     public NotaDebitoProveedorController() {
         jpaController = new NotaDebitoProveedorJpaController();
     }
 
-    public void initContenedor(Window owner, boolean modal) throws MessageException {
-        initNotaDebitoUI(owner, modal, true);
-        abm.setLocationRelativeTo(owner);
+    public void displayABM(Window owner, boolean modal) throws MessageException {
+        initABM(owner, modal, true);
         abm.setVisible(true);
     }
 
@@ -77,9 +76,10 @@ public class NotaDebitoProveedorController {
         }
     }
 
-    void initNotaDebitoUI(Window owner, boolean modal, boolean loadDefaultData) throws MessageException {
+    void initABM(Window owner, boolean modal, boolean loadDefaultData) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.COMPRA);
         abm = new JDNotaDebito(owner, modal, true);
+        abm.setLocationRelativeTo(owner);
         abm.getCbCliente().addActionListener(new ActionListener() {
             @Override
             @SuppressWarnings("unchecked")
@@ -148,22 +148,21 @@ public class NotaDebitoProveedorController {
                 refreshResumen();
             }
         });
-        abm.getBtnAceptar().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    if (editMode) {
-                        jpaController.merge(EL_OBJECT);
-                    } else {
-                        setAndPersist();
-                    }
+        abm.getBtnAceptar().addActionListener(event -> {
+            try {
+                boolean editing = EL_OBJECT.getId() != null;
+                setAndPersist();
+                if (editing) {
+                    abm.getBtnCancelar().doClick();
+                } else {
                     EL_OBJECT = null;
                     resetUI();
-                } catch (MessageException ex) {
-                    ex.displayMessage(abm);
-                } catch (Exception ex) {
-                    LOG.error("aceptando NotaDebito >" + EL_OBJECT, ex);
                 }
+            } catch (MessageException ex) {
+                ex.displayMessage(abm);
+            } catch (Exception ex) {
+                LOG.error("aceptando NotaDebito >" + EL_OBJECT, ex);
+                JOptionPane.showMessageDialog(abm, "Algo salió mal: " + ex.getMessage(), null, JOptionPane.ERROR_MESSAGE);
             }
         });
         abm.getBtnCancelar().addActionListener(new ActionListener() {
@@ -178,18 +177,20 @@ public class NotaDebitoProveedorController {
     private void setAndPersist() throws MessageException {
         if (viewMode) {
         } else {
-            EL_OBJECT = getEntity();
+            getEntity();
             String msg = EL_OBJECT.getId() == null ? " registrada" : " modificada";
             if (EL_OBJECT.getId() == null) {
-                try {
-                    jpaController.persist(EL_OBJECT);
-                    new CtacteProveedorController().addToCtaCte(EL_OBJECT);
-                } catch (Exception ex) {
-                    LOG.error("creando Nota debito Proveedor > " + EL_OBJECT, ex);
-                    JOptionPane.showMessageDialog(abm, ex.getMessage(), "Algo salió mal", JOptionPane.ERROR_MESSAGE);
-                }
+                jpaController.persist(EL_OBJECT);
+                new CtacteProveedorController().addToCtaCte(EL_OBJECT);
+            } else {
+                jpaController.merge(EL_OBJECT);
+                CtacteProveedorJpaController ccpDao = new CtacteProveedorJpaController();
+                CtacteProveedor ccp = ccpDao.findBy(EL_OBJECT);
+                ccp.setFechaCarga(EL_OBJECT.getFechaNotaDebito());
+                ccp.setImporte(EL_OBJECT.getImporte());
+                ccpDao.merge(ccp);
             }
-            JOptionPane.showMessageDialog(abm, JGestionUtils.getNumeracion(EL_OBJECT) + msg);
+            JOptionPane.showMessageDialog(null, JGestionUtils.getNumeracion(EL_OBJECT) + msg);
         }
     }
 
@@ -203,34 +204,38 @@ public class NotaDebitoProveedorController {
 
     private NotaDebitoProveedor getEntity() throws MessageException {
         checkConstraints();
-        NotaDebitoProveedor o = new NotaDebitoProveedor();
-        o.setProveedor(((EntityWrapper<Proveedor>) abm.getCbCliente().getSelectedItem()).getEntity());
-        o.setFechaNotaDebito(abm.getDcFechaFactura().getDate());
-        o.setTipo(abm.getCbFacturaTipo().getSelectedItem().toString().charAt(0));
-        o.setNumero(Long.valueOf(abm.getTfFacturaCuarto().getText() + UTIL.AGREGAR_CEROS(abm.getTfFacturaOcteto().getText(), 8)));
+        if (EL_OBJECT == null) {
+            EL_OBJECT = new NotaDebitoProveedor();
+        } else {
+            EL_OBJECT.getDetalle().clear();
+        }
+        EL_OBJECT.setProveedor(((EntityWrapper<Proveedor>) abm.getCbCliente().getSelectedItem()).getEntity());
+        EL_OBJECT.setFechaNotaDebito(abm.getDcFechaFactura().getDate());
+        EL_OBJECT.setTipo(abm.getCbFacturaTipo().getSelectedItem().toString().charAt(0));
+        EL_OBJECT.setNumero(Long.valueOf(abm.getTfFacturaCuarto().getText() + UTIL.AGREGAR_CEROS(abm.getTfFacturaOcteto().getText(), 8)));
         String obs = abm.getTfObservacion().getText().trim();
         if (obs.isEmpty()) {
             obs = null;
         }
-        o.setObservacion(obs);
-        o.setAnulada(false);
-        o.setImporte(new BigDecimal(UTIL.parseToDouble(abm.getTfTotal().getText())));
-        o.setGravado(new BigDecimal(UTIL.parseToDouble(abm.getTfGravado().getText())));
-        o.setNoGravado(new BigDecimal(UTIL.parseToDouble(abm.getTfTotalNoGravado().getText())));
-        o.setIva10(new BigDecimal(UTIL.parseToDouble(abm.getTfTotalIVA105().getText())));
-        o.setIva21(new BigDecimal(UTIL.parseToDouble(abm.getTfTotalIVA21().getText())));
-        o.setOtrosIvas(new BigDecimal(UTIL.parseToDouble(abm.getTfTotalOtrosImps().getText())));
-        o.setImpuestosRecuperables(BigDecimal.ZERO);
-        o.setUsuario(UsuarioController.getCurrentUser());
+        EL_OBJECT.setObservacion(obs);
+        EL_OBJECT.setAnulada(false);
+        EL_OBJECT.setImporte(new BigDecimal(UTIL.parseToDouble(abm.getTfTotal().getText())));
+        EL_OBJECT.setGravado(new BigDecimal(UTIL.parseToDouble(abm.getTfGravado().getText())));
+        EL_OBJECT.setNoGravado(new BigDecimal(UTIL.parseToDouble(abm.getTfTotalNoGravado().getText())));
+        EL_OBJECT.setIva10(new BigDecimal(UTIL.parseToDouble(abm.getTfTotalIVA105().getText())));
+        EL_OBJECT.setIva21(new BigDecimal(UTIL.parseToDouble(abm.getTfTotalIVA21().getText())));
+        EL_OBJECT.setOtrosIvas(new BigDecimal(UTIL.parseToDouble(abm.getTfTotalOtrosImps().getText())));
+        EL_OBJECT.setImpuestosRecuperables(BigDecimal.ZERO);
+        EL_OBJECT.setUsuario(UsuarioController.getCurrentUser());
         DefaultTableModel dtm = (DefaultTableModel) abm.getjTable1().getModel();
         List<DetalleNotaDebitoProveedor> detalle = new ArrayList<>(dtm.getRowCount());
         for (int row = 0; row < dtm.getRowCount(); row++) {
             DetalleNotaDebitoProveedor d = (DetalleNotaDebitoProveedor) dtm.getValueAt(row, 0);
-            d.setNotaDebitoProveedor(o);
+            d.setNotaDebitoProveedor(EL_OBJECT);
             detalle.add(d);
         }
-        o.setDetalle(detalle);
-        return o;
+        EL_OBJECT.setDetalle(detalle);
+        return EL_OBJECT;
     }
 
     private void checkConstraints() throws MessageException {
@@ -272,7 +277,7 @@ public class NotaDebitoProveedorController {
         char tipo = abm.getCbFacturaTipo().getSelectedItem().toString().charAt(0);
         Long numero = Long.valueOf(abm.getTfFacturaCuarto().getText() + UTIL.AGREGAR_CEROS(abm.getTfFacturaOcteto().getText(), 8));
         NotaDebitoProveedor old = jpaController.findBy(proveedor, tipo, numero);
-        if (old != null) {
+        if (old != null && (EL_OBJECT == null || !old.getId().equals(EL_OBJECT.getId()))) {
             throw new MessageException("Ya existe la " + JGestionUtils.getNumeracion(old) + " de este proveedor"
                     + "\nFecha: " + UTIL.DATE_FORMAT.format(old.getFechaNotaDebito())
                     + "\nImporte: $" + UTIL.DECIMAL_FORMAT.format(old.getImporte()));
@@ -356,20 +361,21 @@ public class NotaDebitoProveedorController {
         }
     }
 
-    public void initBuscador(Window owner, final boolean modal, final boolean toAnular) throws MessageException {
+    public void displayBuscador(Window owner, final boolean modal, final boolean toAnular) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.VENTA);
         if (toAnular) {
             UsuarioController.checkPermiso(PermisosController.PermisoDe.ANULAR_COMPROBANTES);
         }
         buscador = new JDBuscadorReRe(owner, "Buscador - Notas de Débito de Proveedores", modal, "Proveedor", "Nº Nota");
+        buscador.getbExtra().setVisible(true);
         buscador.setParaNotaDebito();
         List<Proveedor> ll = new ProveedorJpaController().findAllLite();
         UTIL.loadComboBox(buscador.getCbClieProv(), JGestionUtils.getWrappedProveedores(ll), true);
         UTIL.loadComboBox(buscador.getCbSucursal(), JGestionUtils.getWrappedSucursales(new UsuarioHelper().getSucursales()), true);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
-                new String[]{"id", "Nº Nota Débito", "Proveedor", "Importe", "Fecha", "Saldo", "Usuario", "Fecha (Sistema)"},
-                new int[]{1, 90, 100, 50, 50, 80, 50, 80},
+                new String[]{"id", "Nº Nota Débito", "Proveedor", "Importe", "Fecha", "Saldo (rest.)", "Usuario", "Fecha (Sistema)"},
+                new int[]{1, 90, 150, 50, 50, 80, 50, 80},
                 new Class<?>[]{Integer.class, null, null, BigDecimal.class, Date.class, BigDecimal.class, null, Date.class});
         buscador.getjTable1().getColumnModel().getColumn(3).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         buscador.getjTable1().getColumnModel().getColumn(4).setCellRenderer(FormatRenderer.getDateRenderer());
@@ -383,7 +389,7 @@ public class NotaDebitoProveedorController {
                         try {
                             EL_OBJECT = jpaController.find((Integer) buscador.getDtm().getValueAt(buscador.getjTable1().getSelectedRow(), 0));
                             viewMode = true;
-                            show(EL_OBJECT, toAnular);
+                            displaABM(EL_OBJECT, toAnular, false);
                         } catch (MessageException ex) {
                             buscador.showMessage(ex.getMessage(), "Error de datos", 0);
                         }
@@ -406,58 +412,60 @@ public class NotaDebitoProveedorController {
             }
         });
         buscador.getbImprimir().setEnabled(false);
-        buscador.getbImprimir().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    String jpql = armarQuery();
-                    cargarTablaBuscador(jpql);
+        buscador.getbImprimir().addActionListener(event -> {
+            try {
+                cargarTablaBuscador(armarQuery());
 //                    doReportFacturas(null);
 //                } catch (MissingReportException ex) {
 //                    JOptionPane.showMessageDialog(null, ex.getMessage());
-                } catch (MessageException ex) {
-                    ex.displayMessage(buscador);
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(null, ex.getMessage());
-                    LOG.error(ex.getLocalizedMessage(), ex);
-                }
+            } catch (MessageException ex) {
+                ex.displayMessage(buscador);
+            } catch (Exception ex) {
+                LOG.error(ex.getLocalizedMessage(), ex);
+                JOptionPane.showMessageDialog(null, ex.getMessage());
             }
         });
         //editar button
-        buscador.getbExtra().setEnabled(false);
-        buscador.getbExtra().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (buscador.getjTable1().getSelectedRow() > -1) {
-//                    try {
-//                        setDatosToEdit();
-//                        String query = armarQuery();
-//                        cargarTablaBuscador(query);
-//                    } catch (MessageException ex) {
-//                        buscador.showMessage(ex.getMessage(), "Error de datos", 0);
-//                    }
-                } else {
-                    buscador.showMessage("Seleccione la fila que corresponde a la Factura que desea editar", null, JOptionPane.WARNING_MESSAGE);
+        buscador.getbExtra().addActionListener(event -> {
+            if (buscador.getjTable1().getSelectedRow() > -1) {
+                try {
+                    EL_OBJECT = jpaController.find((Integer) buscador.getDtm().getValueAt(buscador.getjTable1().getSelectedRow(), 0));
+                    if (EL_OBJECT.isAnulada()) {
+                        throw new MessageException("No se puede editar un comprobante ANULADO");
+                    }
+                    CtacteProveedor ccp = new CtacteProveedorJpaController().findBy(EL_OBJECT);
+                    if (ccp.getEntregado().compareTo(BigDecimal.ZERO) > 0) {
+                        throw new MessageException("No se puede editar porque existen acreditaciones del comprobante."
+                                + "\nVease Remesas");
+                    }
+                    viewMode = false;
+                    displaABM(EL_OBJECT, false, true);
+                    cargarTablaBuscador(armarQuery());
+                } catch (MessageException ex) {
+                    buscador.showMessage(ex.getMessage(), null, 0);
                 }
+            } else {
+                buscador.showMessage("Seleccione la fila del comprobante que desea editar", null, JOptionPane.WARNING_MESSAGE);
             }
         });
-        try {
-            if (buscador.getjTable1().getRowCount() < 1) {
-                throw new MessageException("No hay info para exportar.");
+        buscador.getBtnToExcel().addActionListener(event -> {
+            try {
+                if (buscador.getjTable1().getRowCount() < 1) {
+                    throw new MessageException("No hay info para exportar.");
+                }
+                File file = JGestionUtils.showSaveDialogFileChooser(buscador, "Archivo Excel (.xls)", null, "xls");
+                TableExcelExporter tee = new TableExcelExporter(file, buscador.getjTable1());
+                tee.export();
+                if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(buscador, "¿Abrir archivo generado?", null, JOptionPane.YES_NO_OPTION)) {
+                    Desktop.getDesktop().open(file);
+                }
+            } catch (MessageException ex) {
+                JOptionPane.showMessageDialog(buscador, ex.getMessage());
+            } catch (Exception ex) {
+                LOG.error(ex, ex);
+                JOptionPane.showMessageDialog(buscador, "Algo salió mal: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
-            File file = JGestionUtils.showSaveDialogFileChooser(buscador, "Archivo Excel (.xls)", null, "xls");
-            TableExcelExporter tee = new TableExcelExporter(file, buscador.getjTable1());
-            tee.export();
-            if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(buscador, "¿Abrir archivo generado?", null, JOptionPane.YES_NO_OPTION)) {
-                Desktop.getDesktop().open(file);
-            }
-        } catch (MessageException ex) {
-            JOptionPane.showMessageDialog(buscador, ex.getMessage());
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(buscador, "Algo salió mal: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            LOG.error(ex, ex);
-        }
-        viewMode = true;
+        });
         buscador.setLocationRelativeTo(owner);
         buscador.setVisible(true);
     }
@@ -499,19 +507,22 @@ public class NotaDebitoProveedorController {
         return query.toString();
     }
 
-    private void show(NotaDebitoProveedor notaDebito, boolean toAnular) throws MessageException {
-        initNotaDebitoUI(buscador, true, false);
-        SwingUtil.setComponentsEnabled(abm.getPanelDatosFacturacion().getComponents(), false, true, (Class<? extends Component>[]) null);
-        SwingUtil.setComponentsEnabled(abm.getPanelDetalle().getComponents(), false, true, (Class<? extends Component>[]) null);
+    private void displaABM(NotaDebitoProveedor notaDebito, boolean toAnular, boolean toEdit) throws MessageException {
+        initABM(buscador, true, toEdit);
+        SwingUtil.setComponentsEnabled(abm.getPanelDatosFacturacion().getComponents(), toEdit, true);
+        SwingUtil.setComponentsEnabled(abm.getPanelDetalle().getComponents(), toEdit, true);
         abm.getBtnAnular().setVisible(toAnular);
-        setPanel(notaDebito);
+        setComprobanteUI(notaDebito, toEdit);
         abm.setVisible(true);
     }
 
-    @SuppressWarnings("unchecked")
-    private void setPanel(NotaDebitoProveedor o) {
+    private void setComprobanteUI(NotaDebitoProveedor o, boolean toEdit) {
         Proveedor c = o.getProveedor();
-        abm.getCbCliente().addItem(new EntityWrapper<>(c, c.getId(), c.getNombre()));
+        if (toEdit) {
+            UTIL.setSelectedItem(abm.getCbCliente(), o.getProveedor());
+        } else {
+            abm.getCbCliente().addItem(new EntityWrapper<>(c, c.getId(), c.getNombre()));
+        }
         abm.getDcFechaFactura().setDate(o.getFechaNotaDebito());
         abm.getTfObservacion().setText(o.getObservacion());
         UTIL.loadComboBox(abm.getCbFacturaTipo(), FacturaCompraController.TIPOS_FACTURA, false);

@@ -94,7 +94,7 @@ public class RemesaController implements FocusListener {
         return DAO.getEntityManager();
     }
 
-    public void initRemesaAConciliar(Window owner) throws MessageException {
+    public void displayRemesaAConciliar(Window owner) throws MessageException {
         displayABMRemesa(owner, true, false);
         jdReRe.setTitle("Remesa a conciliar");
         toConciliar = true;
@@ -236,7 +236,7 @@ public class RemesaController implements FocusListener {
                 } else if (formaPago == 2) {
                     displayABMChequeTerceros();
                 } else if (formaPago == 3) {
-                    displayABMNotaCredito();
+                    displayNotaCreditoSelector();
                 } else if (formaPago == 4) {
                     displayABMRetencion();
                 } else if (formaPago == 5) {
@@ -347,10 +347,9 @@ public class RemesaController implements FocusListener {
         }
     }
 
-    private void displayABMNotaCredito() {
+    private void displayNotaCreditoSelector() {
         try {
-            NotaCreditoProveedor notaCredito = new NotaCreditoProveedorController().
-                    initBuscador(jdReRe, false, ((EntityWrapper<Proveedor>) jdReRe.getCbClienteProveedor().getSelectedItem()).getEntity(), true);
+            NotaCreditoProveedor notaCredito = new NotaCreditoProveedorController().displayBuscador(jdReRe, false, ((EntityWrapper<Proveedor>) jdReRe.getCbClienteProveedor().getSelectedItem()).getEntity(), true);
             if (notaCredito != null) {
                 DefaultTableModel dtm = jdReRe.getDtmPagos();
                 for (int row = 0; row < dtm.getRowCount(); row++) {
@@ -662,7 +661,7 @@ public class RemesaController implements FocusListener {
         updateTotales();
     }
 
-    public void showBuscador(Window owner, boolean modal, final boolean toAnular) throws MessageException {
+    public void displayBuscador(Window owner, boolean modal, final boolean toAnular) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.COMPRA);
         if (toAnular) {
             UsuarioController.checkPermiso(PermisosController.PermisoDe.ANULAR_COMPROBANTES);
@@ -697,7 +696,7 @@ public class RemesaController implements FocusListener {
                     int rowIndex = buscador.getjTable1().getSelectedRow();
                     Integer id = (Integer) buscador.getjTable1().getModel().getValueAt(rowIndex, 0);
                     selectedRemesa = jpaController.find(id);
-                    showRemesaViewerMode(toAnular);
+                    displayRemesaViewerMode(toAnular);
                 }
             }
         });
@@ -741,7 +740,7 @@ public class RemesaController implements FocusListener {
 
     public void showBuscadorToConciliar(Window owner) throws MessageException {
         conciliando = true;
-        showBuscador(owner, true, false);
+        displayBuscador(owner, true, false);
     }
 
     private void cargarFacturasCtaCtesYNotasDebito(Proveedor proveedor) {
@@ -878,7 +877,7 @@ public class RemesaController implements FocusListener {
         }
     }
 
-    private void showRemesaViewerMode(boolean toAnular) {
+    private void displayRemesaViewerMode(boolean toAnular) {
         try {
             setComprobanteUI(selectedRemesa);
             if (selectedRemesa.isPorConciliar()) {

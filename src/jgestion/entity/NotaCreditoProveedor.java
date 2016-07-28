@@ -111,7 +111,7 @@ public class NotaCreditoProveedor implements Serializable {
         this.id = id;
     }
 
-    public boolean getAnulada() {
+    public boolean isAnulada() {
         return anulada;
     }
 

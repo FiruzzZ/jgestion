@@ -31,13 +31,11 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
     public JDBuscadorReRe(Window owner, String title, boolean modal, String labelClieProv, String labelReRe) {
         super(owner, modal ? DEFAULT_MODALITY_TYPE : ModalityType.MODELESS);
         initComponents();
-//        jTable1.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         init(title, labelClieProv, labelReRe);
     }
 
     private void init(String title, String labelClieProv, String labelReRe) {
         this.setTitle(title);
-        bImprimir.setVisible(false);
         this.labelClieProv.setText(labelClieProv);
         this.labelReRe.setText(labelReRe);
         rootPane.setDefaultButton(bBuscar);
@@ -631,10 +629,6 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
         dcDesde.setDate(null);
         dcHasta.setDate(null);
         checkAnulada.setSelected(false);
-        dtmRemoveAll();
-    }
-
-    public void dtmRemoveAll() {
         getDtm().setRowCount(0);
     }
 
@@ -749,7 +743,6 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
         cbSubCuenta.setVisible(false);
     }
 
-    @SuppressWarnings("unchecked")
     public void setParaNotaDebito() {
         hideCaja();
         hideFactura();

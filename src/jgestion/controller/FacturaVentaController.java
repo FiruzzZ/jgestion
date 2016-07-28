@@ -1065,7 +1065,6 @@ public class FacturaVentaController {
                 }
             }
         });
-        buscador.getbImprimir().setVisible(true);
         buscador.getbImprimir().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

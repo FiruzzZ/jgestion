@@ -504,8 +504,8 @@ public class RemitoController implements ActionListener {
     }
 
     private void cargarTablaBuscador(String nativeSQL) {
-        buscador.dtmRemoveAll();
         DefaultTableModel dtm = buscador.getDtm();
+        dtm.setRowCount(0);
         List<Remito> list = jpaController.findByNativeQuery(nativeSQL);
         for (Remito remito : list) {
             dtm.addRow(new Object[]{

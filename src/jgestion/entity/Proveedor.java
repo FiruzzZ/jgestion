@@ -303,11 +303,6 @@ public class Proveedor implements Serializable {
         return true;
     }
 
-//    @Override
-//    public String toString() {
-//        return this.getNombre();
-//    }
-
     @Override
     public String toString() {
         return "Proveedor{" + "id=" + id + ", nombre=" + nombre + ", direccion=" + direccion + ", sucursal=" + sucursal + ", tele1=" + tele1 + ", tele2=" + tele2 + ", email=" + email + ", contacto=" + contacto + ", cuit=" + cuit + ", retencionDgr=" + retencionDgr + ", retencionIva=" + retencionIva + ", fechaalta=" + fechaalta + ", observacion=" + observacion + ", estado=" + estado + ", codigopostal=" + codigopostal + ", codigo=" + codigo + ", interno1=" + interno1 + ", interno2=" + interno2 + ", provincia=" + provincia + ", webpage=" + webpage + ", limiteCtaCte=" + limiteCtaCte + '}';
