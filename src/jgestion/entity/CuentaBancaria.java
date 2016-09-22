@@ -40,7 +40,7 @@ public class CuentaBancaria implements Serializable {
     @Column(name = "saldo", nullable = false, precision = 12, scale = 2)
     private BigDecimal saldo;
     @JoinColumn(nullable = false)
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false)
     private Banco banco;
 
     public CuentaBancaria() {

@@ -292,7 +292,7 @@ public class JXTreeTableDemo extends javax.swing.JDialog {
 
                     List<FacturaCompra> fcList = getFacturasCompra(month);
                     for (FacturaCompra o : fcList) {
-                        BigDecimal importe = BigDecimal.valueOf(-o.getImporte());
+                        BigDecimal importe = o.getImporte().negate();
                         if (o.getUnidadDeNegocio() == null && o.getCuenta() == null) {
                             egresosSinUNDniCuenta = egresosSinUNDniCuenta.add(importe);
                             continue;

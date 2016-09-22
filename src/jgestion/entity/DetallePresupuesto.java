@@ -46,7 +46,7 @@ public class DetallePresupuesto implements Serializable {
     @Column(name = "descuento", nullable = false, precision = 12, scale = 4)
     private BigDecimal descuento;
     @JoinColumn(name = "presupuesto", referencedColumnName = "id", nullable = false)
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false)
     private Presupuesto presupuesto;
     @JoinColumn(name = "producto", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)

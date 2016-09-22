@@ -167,7 +167,7 @@ public class CtacteCliente implements Serializable {
     }
 
     public CtaCteEstado getEstadoEnum() {
-        return Valores.CtaCteEstado.getCtaCteEstado(this.estado);
+        return Valores.CtaCteEstado.find(this.estado);
     }
 
     public BigDecimal getCbteImporte() {

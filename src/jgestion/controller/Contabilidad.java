@@ -471,14 +471,14 @@ public class Contabilidad {
         Double entregado;
         for (FacturaCompra factura : l) {
             if (!factura.getAnulada()) {
-                totalIngresos += factura.getImporte();
+                totalIngresos += factura.getImporte().doubleValue();
                 if (Valores.FormaPago.CONTADO.getId() == factura.getFormaPago()) {
                     cccpc = null;
-                    efectivo = factura.getImporte();
+                    efectivo = factura.getImporte().doubleValue();
                 } else if (Valores.FormaPago.CTA_CTE.getId() == factura.getFormaPago()) {
                     try {
                         entregado = new CtacteProveedorJpaController().findBy(factura).getEntregado().doubleValue();
-                        cccpc = (factura.getImporte() - entregado);
+                        cccpc = (factura.getImporte().doubleValue() - entregado);
                         efectivo = entregado > 0 ? entregado : null;
                     } catch (NoResultException ex) {
                         errores += "\nFactura (id " + factura.getId() + ") N° " + JGestionUtils.getNumeracion(factura) + ", no se encontró la Cta Cte.";

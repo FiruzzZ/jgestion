@@ -61,7 +61,7 @@ public class CtacteProveedorController implements ActionListener {
         ccp.setEstado(Valores.CtaCteEstado.PENDIENTE.getId());
         ccp.setFactura(o);
         ccp.setFechaCarga(o.getFechaCompra());
-        ccp.setImporte(BigDecimal.valueOf(o.getImporte()));
+        ccp.setImporte(o.getImporte());
         new CtacteProveedorJpaController().persist(ccp);
     }
 
@@ -110,8 +110,38 @@ public class CtacteProveedorController implements ActionListener {
         resumenCtaCtes.getjTableResumen().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
-                jTableResumenMouseReleased(e);
+                Integer selectedRow = resumenCtaCtes.getjTableResumen().getSelectedRow();
+                if (selectedRow > 0) {
+                    CtacteProveedor cc = new CtacteProveedorJpaController().find(
+                            (Integer) UTIL.getSelectedValueFromModel(resumenCtaCtes.getjTableResumen(), 0));
+                    //selecciona una factura CtaCteCliente
+                    cargarComboBoxRemesasDeCtaCte(cc);
+                }
             }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    CtacteProveedor cc = new CtacteProveedorJpaController().find(
+                            (Integer) UTIL.getSelectedValueFromModel(resumenCtaCtes.getjTableResumen(), 0));
+                    if (cc.getFactura() != null) {
+                        FacturaCompra factura = cc.getFactura();
+                        try {
+                            new FacturaCompraController().show(factura, false);
+                        } catch (MessageException ex) {
+                            ex.displayMessage(null);
+                        }
+                    } else {
+                        try {
+                            NotaDebitoProveedor notaDebito = cc.getNotaDebito();
+                            new NotaDebitoProveedorController().displaABM(notaDebito, false, false);
+                        } catch (MessageException ex) {
+                            ex.displayMessage(null);
+                        }
+                    }
+                }
+            }
+
         });
         UTIL.loadComboBox(resumenCtaCtes.getCbClieProv(), JGestionUtils.getWrappedProveedores(new ProveedorJpaController().findAll()), false);
         UTIL.loadComboBox(resumenCtaCtes.getCbReRes(), null, true);
@@ -179,15 +209,6 @@ public class CtacteProveedorController implements ActionListener {
         JDialogTable jd = new JDialogTable(owner, "Detalle de crédito: " + p.getNombre(), true, tabla);
         jd.setSize(600, 400);
         jd.setVisible(true);
-    }
-
-    private void jTableResumenMouseReleased(MouseEvent e) {
-        Integer selectedRow = resumenCtaCtes.getjTableResumen().getSelectedRow();
-        if (selectedRow > 0) {
-            //selecciona una factura CtaCteCliente
-            cargarComboBoxRemesasDeCtaCte((CtacteProveedor) DAO.getEntityManager().find(CtacteProveedor.class,
-                    Integer.valueOf((resumenCtaCtes.getDtmResumen().getValueAt(selectedRow, 0)).toString())));
-        }
     }
 
     @Override
@@ -324,14 +345,12 @@ public class CtacteProveedorController implements ActionListener {
 
     private void setDatosRemesaSelected() {
         try {
-            @SuppressWarnings("unchecked")
             Remesa remesa = ((EntityWrapper<Remesa>) resumenCtaCtes.getCbReRes().getSelectedItem()).getEntity();
             resumenCtaCtes.setTfReciboFecha(UTIL.DATE_FORMAT.format(remesa.getFechaRemesa()));
             resumenCtaCtes.setTfReciboMonto(UTIL.DECIMAL_FORMAT.format(remesa.getMonto()));
             cargarDtmDetallesDeCtaCte(remesa);
         } catch (ClassCastException ex) {
             // si el comboBox está vacio
-            System.out.println("Remesa NULL!");
             resumenCtaCtes.setTfReciboFecha("");
             resumenCtaCtes.setTfReciboMonto("");
             UTIL.limpiarDtm(resumenCtaCtes.getDtmDetalle());
@@ -339,8 +358,8 @@ public class CtacteProveedorController implements ActionListener {
     }
 
     private void cargarDtmDetallesDeCtaCte(Remesa remesa) {
-        javax.swing.table.DefaultTableModel dtm = resumenCtaCtes.getDtmDetalle();
-        UTIL.limpiarDtm(dtm);
+        DefaultTableModel dtm = (DefaultTableModel) resumenCtaCtes.getjTableDetalle().getModel();
+        dtm.setRowCount(0);
         List<DetalleRemesa> detalleReList = remesa.getDetalle();
         for (DetalleRemesa detalleRe : detalleReList) {
             dtm.addRow(new Object[]{

@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.*;
+import jgestion.controller.Valores;
 
 /**
  *
@@ -34,7 +35,7 @@ public class FacturaCompra implements Serializable {
     private char tipo;
     @Basic(optional = false)
     @Column(name = "importe", nullable = false, precision = 12, scale = 2)
-    private double importe;
+    private BigDecimal importe;
     @Basic(optional = false)
     @Column(name = "fecha_compra", nullable = false)
     @Temporal(TemporalType.DATE)
@@ -154,11 +155,11 @@ public class FacturaCompra implements Serializable {
         this.tipo = tipo;
     }
 
-    public double getImporte() {
+    public BigDecimal getImporte() {
         return importe;
     }
 
-    public void setImporte(double importe) {
+    public void setImporte(BigDecimal importe) {
         this.importe = importe;
     }
 
@@ -434,5 +435,9 @@ public class FacturaCompra implements Serializable {
                 + ", usuario=" + (usuario == null ? null : usuario.getId()) + ", caja=" + (caja == null ? null : caja.getId()) + ", anulada=" + anulada
                 + ", observacion=" + observacion
                 + '}';
+    }
+
+    public Valores.FormaPago getFormaPagoEnum() {
+        return Valores.FormaPago.find(formaPago);
     }
 }

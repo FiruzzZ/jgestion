@@ -247,7 +247,7 @@ public class DominioController implements ActionListener {
                             JGestionUtils.getNumeracion(facturaCompra),
                             facturaCompra.getDominio().getNombre(),
                             facturaCompra.getProveedor().getNombre(),
-                            BigDecimal.valueOf(facturaCompra.getImporte()),
+                            facturaCompra.getImporte(),
                             UTIL.DATE_FORMAT.format(facturaCompra.getFechaCompra()),
                             facturaCompra.getSucursal().getNombre(),
                             facturaCompra.getCaja(),

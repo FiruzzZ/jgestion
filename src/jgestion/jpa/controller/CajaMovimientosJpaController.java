@@ -49,7 +49,7 @@ public class CajaMovimientosJpaController extends JGestionJpaImpl<CajaMovimiento
     public CajaMovimientosJpaController() {
     }
 
-    public void asentarMovimiento(FacturaCompra facturaCompra) throws Exception {
+    public void asentarMovimiento(FacturaCompra facturaCompra) throws MessageException {
         CajaMovimientos cm = findCajaMovimientoAbierta(facturaCompra.getCaja());
         EntityManager em = getEntityManager();
         try {
@@ -59,15 +59,12 @@ public class CajaMovimientosJpaController extends JGestionJpaImpl<CajaMovimiento
             newDetalleCajaMovimiento.setCajaMovimientos(cajaMovimientoActual);
             newDetalleCajaMovimiento.setIngreso(false);
             //el importe de las FacturaCompra son siempre negativos..
-            newDetalleCajaMovimiento.setMonto(BigDecimal.valueOf(-facturaCompra.getImporte()));
+            newDetalleCajaMovimiento.setMonto(facturaCompra.getImporte().negate());
             newDetalleCajaMovimiento.setNumero(facturaCompra.getId());
             newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosController.FACTU_COMPRA);
             newDetalleCajaMovimiento.setDescripcion(JGestionUtils.getNumeracion(facturaCompra) + " " + facturaCompra.getProveedor().getNombre());
             newDetalleCajaMovimiento.setUsuario(UsuarioController.getCurrentUser());
             new DetalleCajaMovimientosController().create(newDetalleCajaMovimiento);
-        } catch (Exception e) {
-            em.getTransaction().rollback();
-            throw e;
         } finally {
             if (em != null) {
                 em.close();
@@ -353,7 +350,7 @@ public class CajaMovimientosJpaController extends JGestionJpaImpl<CajaMovimiento
                 newDetalleCajaMovimiento = new DetalleCajaMovimientos();
                 newDetalleCajaMovimiento.setCajaMovimientos(cajaMovimientoDestino);
                 newDetalleCajaMovimiento.setIngreso(true);
-                newDetalleCajaMovimiento.setMonto(BigDecimal.valueOf(facturaCompra.getImporte()));
+                newDetalleCajaMovimiento.setMonto(facturaCompra.getImporte());
                 newDetalleCajaMovimiento.setNumero(facturaCompra.getId());
                 newDetalleCajaMovimiento.setTipo(DetalleCajaMovimientosController.ANULACION);
                 newDetalleCajaMovimiento.setDescripcion(JGestionUtils.getNumeracion(facturaCompra) + " [ANULADA]");

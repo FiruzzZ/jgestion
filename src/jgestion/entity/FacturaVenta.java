@@ -274,7 +274,7 @@ public class FacturaVenta implements Serializable {
     }
 
     public FormaPago getFormaPagoEnum() {
-        return FormaPago.getFormaPago(formaPago);
+        return FormaPago.find(formaPago);
     }
 
     public void setFormaPago(FormaPago formaPago) {

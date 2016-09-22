@@ -2109,8 +2109,8 @@ public class FacturaVentaController {
         JGestionUtils.cargarComboTiposFacturas(jdFactura.getCbFacturaTipo(), presupuesto.getCliente());
         jdFactura.getTfObservacion().setText("Presupuesto: " + JGestionUtils.getNumeracion(presupuesto, true));
         UTIL.loadComboBox(jdFactura.getCbFormaPago(), Valores.FormaPago.getFormasDePago(), true);
-        UTIL.setSelectedItem(jdFactura.getCbFormaPago(), Valores.FormaPago.getFormaPago(presupuesto.getFormaPago()));
-        if (Valores.FormaPago.getFormaPago(presupuesto.getFormaPago()) == Valores.FormaPago.CTA_CTE) {
+        UTIL.setSelectedItem(jdFactura.getCbFormaPago(), Valores.FormaPago.find(presupuesto.getFormaPago()));
+        if (Valores.FormaPago.find(presupuesto.getFormaPago()) == Valores.FormaPago.CTA_CTE) {
             jdFactura.setTfDias(presupuesto.getDias().toString());
         }
         for (DetallePresupuesto detalle : presupuesto.getDetallePresupuestoList()) {

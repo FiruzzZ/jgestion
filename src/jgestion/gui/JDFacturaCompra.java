@@ -25,6 +25,9 @@ import utilities.gui.SwingUtil;
  */
 public class JDFacturaCompra extends javax.swing.JDialog {
 
+    private boolean viewMode;
+    private boolean editMode;
+
     /**
      * View para carga de FacturasCompra y Ordenes de Compra
      *
@@ -1715,4 +1718,17 @@ public class JDFacturaCompra extends javax.swing.JDialog {
     public void enableDetalle(boolean enable) {
         SwingUtil.setComponentsEnabled(panelProducto.getComponents(), enable, true);
     }
+
+    public void modoEdicion() {
+        viewMode = false;
+        editMode = true;
+        SwingUtil.setComponentsEnabled(panelDatosCompra.getComponents(), true, true);
+        SwingUtil.setComponentsEnabled(panelOpcionesCompra.getComponents(), true, true);
+        SwingUtil.setComponentsEnabled(panelProducto.getComponents(), false, true);
+    }
+
+    public boolean isEditMode() {
+        return editMode;
+    }
+
 }

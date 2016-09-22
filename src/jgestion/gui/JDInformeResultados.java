@@ -267,7 +267,7 @@ public class JDInformeResultados extends javax.swing.JDialog {
 
                     List<FacturaCompra> fcList = getFacturasCompra(month);
                     for (FacturaCompra o : fcList) {
-                        BigDecimal importe = BigDecimal.valueOf(-o.getImporte());
+                        BigDecimal importe = o.getImporte().negate();
                         if (o.getUnidadDeNegocio() == null) {
                             egresosSinUNDniCuenta = egresosSinUNDniCuenta.add(importe);
                             continue;

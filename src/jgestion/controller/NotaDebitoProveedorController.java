@@ -507,7 +507,7 @@ public class NotaDebitoProveedorController {
         return query.toString();
     }
 
-    private void displaABM(NotaDebitoProveedor notaDebito, boolean toAnular, boolean toEdit) throws MessageException {
+    void displaABM(NotaDebitoProveedor notaDebito, boolean toAnular, boolean toEdit) throws MessageException {
         initABM(buscador, true, toEdit);
         SwingUtil.setComponentsEnabled(abm.getPanelDatosFacturacion().getComponents(), toEdit, true);
         SwingUtil.setComponentsEnabled(abm.getPanelDetalle().getComponents(), toEdit, true);

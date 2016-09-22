@@ -25,7 +25,7 @@ public abstract class Valores {
             this.nombre = nombre;
         }
 
-        public static FormaPago getFormaPago(int formaPagoID) {
+        public static FormaPago find(int formaPagoID) {
             for (FormaPago formaPago : FormaPago.values()) {
                 if (formaPago.getId() == formaPagoID) {
                     return formaPago;
@@ -70,7 +70,7 @@ public abstract class Valores {
             return this.id;
         }
 
-        public static CtaCteEstado getCtaCteEstado(int id) {
+        public static CtaCteEstado find(int id) {
             for (CtaCteEstado ctaCteEstado : CtaCteEstado.values()) {
                 if (ctaCteEstado.getId() == id) {
                     return ctaCteEstado;

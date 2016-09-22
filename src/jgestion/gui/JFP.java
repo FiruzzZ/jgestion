@@ -1436,7 +1436,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
         try {
-            new FacturaCompraController().initABMFacturaCompra(this, true);
+            new FacturaCompraController().displayABMFacturaCompra(this, true);
         } catch (MessageException ex) {
             showError(ex.getMessage());
         }

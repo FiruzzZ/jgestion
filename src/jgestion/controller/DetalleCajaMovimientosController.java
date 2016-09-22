@@ -119,6 +119,9 @@ public class DetalleCajaMovimientosController {
     public void remove(DetalleCajaMovimientos o) {
         EntityManager em = getEntityManager();
         em.getTransaction().begin();
+        if (!em.contains(o)) {
+            o = em.merge(o);
+        }
         em.remove(o);
         em.getTransaction().commit();
         em.close();

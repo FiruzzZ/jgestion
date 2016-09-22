@@ -44,7 +44,7 @@ public class DetalleNotaCreditoProveedor implements Serializable {
     @ManyToOne(optional = false, fetch = FetchType.EAGER, cascade = {CascadeType.REFRESH})
     private Producto producto;
     @JoinColumn(name = "nota_credito_proveedor", nullable = false)
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false)
     private NotaCreditoProveedor notaCreditoProveedor;
 
     public DetalleNotaCreditoProveedor() {

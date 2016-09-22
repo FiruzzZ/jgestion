@@ -47,7 +47,7 @@ public class RemesaPagos implements Serializable {
     @Column(name = "forma_pago", nullable = false)
     private int formaPago;
     @JoinColumn(nullable = false)
-    @ManyToOne(optional = false, fetch= FetchType.LAZY)
+    @ManyToOne(optional = false)
     private Remesa remesa;
 
     public RemesaPagos() {
