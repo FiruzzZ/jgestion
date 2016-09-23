@@ -1,6 +1,5 @@
 package jgestion.jpa.controller;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import jgestion.entity.ComprobanteRetencion;
 import jgestion.entity.ReciboPagos;
@@ -23,8 +22,6 @@ import jgestion.controller.exceptions.MessageException;
 import jgestion.entity.enums.ChequeEstado;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -50,14 +47,18 @@ public class ReciboJpaController extends JGestionJpaImpl<Recibo, Integer> {
     public Integer getNextNumero(Sucursal sucursal, char tipo) {
         EntityManager em = getEntityManager();
         Integer next;
-        if (Character.toUpperCase(tipo) == 'A') {
-            next = sucursal.getRecibo_a();
-        } else if (Character.toUpperCase(tipo) == 'B') {
-            next = sucursal.getRecibo_b();
-        } else if (Character.toUpperCase(tipo) == 'C') {
-            next = sucursal.getRecibo_c();
-        } else {
-            throw new IllegalArgumentException("Parameter tipo not valid, no corresponde a ningún tipo de Recibo.");
+        switch (Character.toUpperCase(tipo)) {
+            case 'A':
+                next = sucursal.getRecibo_a();
+                break;
+            case 'B':
+                next = sucursal.getRecibo_b();
+                break;
+            case 'C':
+                next = sucursal.getRecibo_c();
+                break;
+            default:
+                throw new IllegalArgumentException("Parameter tipo not valid, no corresponde a ningún tipo de Recibo.");
         }
         Object o = em.createQuery("SELECT MAX(o.numero) FROM " + getAlias()
                 + " WHERE o.tipo ='" + Character.toUpperCase(tipo) + "'"
@@ -312,26 +313,5 @@ public class ReciboJpaController extends JGestionJpaImpl<Recibo, Integer> {
             entityManager.persist(rp);
         }
         entityManager.getTransaction().commit();
-    }
-
-    public void conciliar(Recibo recibo) {
-        getEntityManager();
-        if (!entityManager.getTransaction().isActive()) {
-            entityManager.getTransaction().begin();
-        }
-        Recibo old = find(recibo.getSucursal(), recibo.getNumero());
-        old.setDetalle(recibo.getDetalle());
-        old.setPorConciliar(false);
-        old.setMonto(recibo.getMonto());
-        old.setFechaRecibo(recibo.getFechaRecibo());
-        for (DetalleRecibo d : old.getDetalle()) {
-            d.setRecibo(old);
-            entityManager.persist(d);
-        }
-        entityManager.merge(old);
-        entityManager.getTransaction().commit();
-        recibo.setId(old.getId());
-        recibo.setDetalle(old.getDetalle());
-        closeEntityManager();
     }
 }

@@ -1,3 +1,5 @@
+--20160923
+alter table recibo drop column por_conciliar;
 --20151116
 ALTER TABLE detalle_presupuesto ALTER COLUMN descuento TYPE numeric(12,4);
 ALTER TABLE detalle_presupuesto ALTER COLUMN precio_unitario TYPE numeric(12,4);

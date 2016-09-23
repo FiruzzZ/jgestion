@@ -19,23 +19,16 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author FiruzzZ
  */
 @Entity
-@Table(name = "operaciones_bancarias", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"nombre"})})
-@XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "OperacionesBancarias.findAll", query = "SELECT o FROM OperacionesBancarias o"),
-    @NamedQuery(name = "OperacionesBancarias.findById", query = "SELECT o FROM OperacionesBancarias o WHERE o.id = :id")
-})
+@Table(name = "operaciones_bancarias")
 public class OperacionesBancarias implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
     @Column(name = "id", nullable = false)
     private Integer id;
     @Basic(optional = false)
-    @Column(name = "nombre", nullable = false, length = 60)
+    @Column(name = "nombre", nullable = false, length = 60, unique = true)
     @OrderBy(value = "nombre")
     private String nombre;
 
@@ -89,6 +82,7 @@ public class OperacionesBancarias implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.OperacionesBancarias[ id=" + id + " ]";
+        return "OperacionesBancarias{" + "id=" + id + ", nombre=" + nombre + '}';
     }
+
 }

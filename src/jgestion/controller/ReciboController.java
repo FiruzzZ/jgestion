@@ -78,8 +78,6 @@ public class ReciboController {
     private final ReciboJpaController jpaController = new ReciboJpaController();
     private boolean unlockedNumeracion = false;
     private boolean viewMode;
-    private boolean toConciliar = false;
-    private boolean conciliando = false;
 
     public ReciboController() {
     }
@@ -184,7 +182,7 @@ public class ReciboController {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    if (!conciliando && selectedRecibo != null) {
+                    if (selectedRecibo != null) {
                         // cuando se re-imprime un recibo elegido desde el buscador
                         doReportRecibo(selectedRecibo);
                     } else {
@@ -193,9 +191,6 @@ public class ReciboController {
                         doReportRecibo(recibo);
                         resetPanel();
                         jdReRe.limpiarDetalles();
-                        if (conciliando) {
-                            jdReRe.dispose();
-                        }
                     }
                 } catch (MessageException ex) {
                     jdReRe.showMessage(ex.getMessage(), CLASS_NAME, 2);
@@ -316,20 +311,30 @@ public class ReciboController {
      */
     private void showUIPagos(int formaPago) throws MessageException {
 
-        if (formaPago == 0) {
-            showABMEfectivo(null);
-        } else if (formaPago == 1) {
-            showABMChequePropio();
-        } else if (formaPago == 2) {
-            showABMChequeTerceros();
-        } else if (formaPago == 3) {
-            showABMNotaCredito();
-        } else if (formaPago == 4) {
-            showABMRetencion(null);
-        } else if (formaPago == 5) {
-            showABMTransferencia();
-        } else if (formaPago == 6) {
-            showABMEspecie(null);
+        switch (formaPago) {
+            case 0:
+                showABMEfectivo(null);
+                break;
+            case 1:
+                showABMChequePropio();
+                break;
+            case 2:
+                showABMChequeTerceros();
+                break;
+            case 3:
+                showABMNotaCredito();
+                break;
+            case 4:
+                showABMRetencion(null);
+                break;
+            case 5:
+                showABMTransferencia();
+                break;
+            case 6:
+                showABMEspecie(null);
+                break;
+            default:
+                throw new MessageException("Forma de pago no válida: " + formaPago);
         }
     }
 
@@ -515,10 +520,8 @@ public class ReciboController {
         if (jdReRe.getDtmPagos().getRowCount() < 1) {
             throw new MessageException("No ha ingresado ningún pago");
         }
-        if (!toConciliar) {
-            if (jdReRe.getDtmAPagar().getRowCount() < 1) {
-                throw new MessageException("No ha hecho ninguna entrega");
-            }
+        if (jdReRe.getDtmAPagar().getRowCount() < 1) {
+            throw new MessageException("No ha seleccionado ningún comprobante a pagar");
         }
         if (unlockedNumeracion) {
             try {
@@ -552,7 +555,7 @@ public class ReciboController {
         }
         re.setTipo(jdReRe.getCbTipo().getSelectedItem().toString().charAt(0));
         re.setSucursal(getSelectedSucursalFromJD());
-        if (unlockedNumeracion || conciliando) {
+        if (unlockedNumeracion) {
             re.setNumero(Integer.valueOf(jdReRe.getTfOcteto()));
         } else {
             re.setNumero(jpaController.getNextNumero(re.getSucursal(), re.getTipo()));
@@ -560,7 +563,6 @@ public class ReciboController {
         re.setUsuario(UsuarioController.getCurrentUser());
         re.setEstado(true);
         re.setFechaRecibo(jdReRe.getDcFechaReRe().getDate());
-        re.setPorConciliar(toConciliar);
         re.setCliente((Cliente) jdReRe.getCbClienteProveedor().getSelectedItem());
         DefaultTableModel dtm = jdReRe.getDtmAPagar();
         BigDecimal monto = BigDecimal.ZERO;
@@ -590,28 +592,21 @@ public class ReciboController {
             importePagado = importePagado.add((BigDecimal) dtm.getValueAt(row, 3));
         }
         boolean asentarDiferenciaEnCaja = false;
-        if (!re.isPorConciliar() || conciliando) {
-            if (0 != jdReRe.getTfTotalAPagar().getText().compareTo(jdReRe.getTfTotalPagado().getText())) {
-                if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(jdReRe, "El importe a pagar no coincide con el detalle de pagos."
-                        + "¿Desea que la diferencia ($" + UTIL.DECIMAL_FORMAT.format(re.getMonto().subtract(importePagado)) + ") sea reflejada en la Caja?", "Arqueo de valores", JOptionPane.YES_NO_OPTION)) {
-                    asentarDiferenciaEnCaja = true;
-                } else {
-                    throw new MessageException("Operación cancelada");
-                }
+        if (0 != jdReRe.getTfTotalAPagar().getText().compareTo(jdReRe.getTfTotalPagado().getText())) {
+            if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(jdReRe, "El importe a pagar no coincide con el detalle de pagos."
+                    + "¿Desea que la diferencia ($" + UTIL.DECIMAL_FORMAT.format(re.getMonto().subtract(importePagado)) + ") sea reflejada en la Caja?", "Arqueo de valores", JOptionPane.YES_NO_OPTION)) {
+                asentarDiferenciaEnCaja = true;
+            } else {
+                throw new MessageException("Operación cancelada");
             }
         }
         re.setPagosEntities(pagos);
-
         //persisting.....
-        if (conciliando) {
-            jpaController.conciliar(re);
-        } else {
-            try {
-                jpaController.persist(re);
-            } catch (DAOException ex) {
-                LOG.fatal("Error persistiendo Recibo.id=" + re.getId(), ex);
-                throw new MessageException(ex.getMessage());
-            }
+        try {
+            jpaController.persist(re);
+        } catch (DAOException ex) {
+            LOG.fatal("Error persistiendo Recibo.id=" + re.getId(), ex);
+            throw new MessageException(ex.getMessage());
         }
         for (DetalleRecibo detalle : re.getDetalle()) {
             if (detalle.getFacturaVenta() != null) {
@@ -759,21 +754,10 @@ public class ReciboController {
         showBuscador(toAnular);
     }
 
-    public void showBuscadorToConciliar(Window owner) {
-        conciliando = true;
-        showBuscador(owner, true, false);
-    }
-
     private void showReciboViewerMode(boolean toAnular) {
         try {
             setComprobanteUI(selectedRecibo);
-            if (selectedRecibo.isPorConciliar()) {
-                viewMode = false;
-                SwingUtil.setComponentsEnabled(jdReRe.getPanelAPagar().getComponents(), true, true, (Class<? extends Component>[]) null);
-                jdReRe.getCbCtaCtes().setSelectedIndex(0);
-            } else {
-                viewMode = true;
-            }
+            viewMode = true;
             jdReRe.getbAceptar().setEnabled(false);
             jdReRe.getbCancelar().setEnabled(false);
             jdReRe.getbAnular().setEnabled(toAnular);
@@ -797,9 +781,7 @@ public class ReciboController {
 //        bloquearVentana(true);
         //por no redundar en DATOOOOOOOOOSS...!!!
         Cliente cliente;
-        if (recibo.isPorConciliar()) {
-            cliente = recibo.getCliente();
-        } else if (recibo.getDetalle().get(0).getFacturaVenta() != null) {
+        if (recibo.getDetalle().get(0).getFacturaVenta() != null) {
             cliente = new FacturaVentaController().find(recibo.getDetalle().get(0).getFacturaVenta().getId()).getCliente();
         } else {
             cliente = new NotaDebitoJpaController().find(recibo.getDetalle().get(0).getNotaDebito().getId()).getCliente();
@@ -818,9 +800,6 @@ public class ReciboController {
         SwingUtil.setComponentsEnabled(jdReRe.getPanelDatos().getComponents(), false, true);
         SwingUtil.setComponentsEnabled(jdReRe.getPanelAPagar().getComponents(), false, true);
         SwingUtil.setComponentsEnabled(jdReRe.getPanelPagos().getComponents(), false, true);
-        if (recibo.isPorConciliar()) {
-            jdReRe.getDcFechaReRe().setEnabled(true);
-        }
         jdReRe.setTfImporte(null);
         jdReRe.setTfPagado(null);
         jdReRe.setTfSaldo(null);
@@ -892,9 +871,6 @@ public class ReciboController {
                 }
             }
         });
-        if (conciliando) {
-            buscador.setTitle(buscador.getTitle() + " para Conciliar");
-        }
         buscador.setVisible(true);
         return selectedRecibo;
     }
@@ -932,8 +908,7 @@ public class ReciboController {
                 + " JOIN caja c ON (o.caja = c.id)"
                 + " JOIN sucursal s ON (o.sucursal = s.id)"
                 + " JOIN usuario u ON (o.usuario = u.id)"
-                + " WHERE o.id is not null "
-                + " AND o.por_conciliar=" + conciliando);
+                + " WHERE o.id is not null ");
         long numero;
         //filtro por nº de ReRe
         if (buscador.getTfOcteto().length() > 0) {
@@ -1200,16 +1175,6 @@ public class ReciboController {
         unlockedNumeracion = true;
         displayABMRecibos(owner, true, false);
         jdReRe.setTfOctetoEditable(true);
-        jdReRe.setVisible(true);
-    }
-
-    public void showABMReciboAConciliar(Window owner) throws MessageException {
-        displayABMRecibos(owner, true, false);
-        jdReRe.setTitle("Recibo a conciliar");
-        toConciliar = true;
-        conciliando = false;
-        jdReRe.getbImprimir().setEnabled(false);
-        SwingUtil.setComponentsEnabled(jdReRe.getPanelAPagar().getComponents(), false, true, (Class<? extends Component>[]) null);
         jdReRe.setVisible(true);
     }
 }

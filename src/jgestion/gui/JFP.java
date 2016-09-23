@@ -132,10 +132,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenu30 = new javax.swing.JMenu();
         miFacturaVenta = new javax.swing.JMenuItem();
         miSegunPresupuesto = new javax.swing.JMenuItem();
-        jMenu23 = new javax.swing.JMenu();
         jMenuItem14 = new javax.swing.JMenuItem();
-        jMenuItem80 = new javax.swing.JMenuItem();
-        jMenuItem81 = new javax.swing.JMenuItem();
         jMenuItem5 = new javax.swing.JMenuItem();
         jMenuItem47 = new javax.swing.JMenuItem();
         jMenuItem82 = new javax.swing.JMenuItem();
@@ -348,34 +345,13 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
         jMenu2.add(jMenu30);
 
-        jMenu23.setText("Recibo");
-
-        jMenuItem14.setText("Alta");
+        jMenuItem14.setText("Recibo");
         jMenuItem14.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem14ActionPerformed(evt);
             }
         });
-        jMenu23.add(jMenuItem14);
-
-        jMenuItem80.setText("A Conciliar");
-        jMenuItem80.setEnabled(false);
-        jMenuItem80.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem80ActionPerformed(evt);
-            }
-        });
-        jMenu23.add(jMenuItem80);
-
-        jMenuItem81.setText("Buscar para Conciliar");
-        jMenuItem81.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem81ActionPerformed(evt);
-            }
-        });
-        jMenu23.add(jMenuItem81);
-
-        jMenu2.add(jMenu23);
+        jMenu2.add(jMenuItem14);
 
         jMenuItem5.setText("Remito");
         jMenuItem5.addActionListener(new java.awt.event.ActionListener() {
@@ -2049,18 +2025,6 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         new Contabilidad().showInformeResultados(this);
     }//GEN-LAST:event_jMenuItem89ActionPerformed
 
-    private void jMenuItem80ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem80ActionPerformed
-        try {
-            new ReciboController().showABMReciboAConciliar(this);
-        } catch (MessageException ex) {
-            ex.displayMessage(this);
-        }
-    }//GEN-LAST:event_jMenuItem80ActionPerformed
-
-    private void jMenuItem81ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem81ActionPerformed
-        new ReciboController().showBuscadorToConciliar(this);
-    }//GEN-LAST:event_jMenuItem81ActionPerformed
-
     private void jMenuItem91ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem91ActionPerformed
         try {
             new CuentabancariaMovimientosController().getConciliacion(this).setVisible(true);
@@ -2199,7 +2163,6 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenu jMenu20;
     private javax.swing.JMenu jMenu21;
     private javax.swing.JMenu jMenu22;
-    private javax.swing.JMenu jMenu23;
     private javax.swing.JMenu jMenu24;
     private javax.swing.JMenu jMenu25;
     private javax.swing.JMenu jMenu26;
@@ -2290,8 +2253,6 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenuItem jMenuItem78;
     private javax.swing.JMenuItem jMenuItem79;
     private javax.swing.JMenuItem jMenuItem8;
-    private javax.swing.JMenuItem jMenuItem80;
-    private javax.swing.JMenuItem jMenuItem81;
     private javax.swing.JMenuItem jMenuItem82;
     private javax.swing.JMenuItem jMenuItem83;
     private javax.swing.JMenuItem jMenuItem84;
