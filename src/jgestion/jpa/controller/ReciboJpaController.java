@@ -30,6 +30,7 @@ import javax.persistence.criteria.Root;
 import jgestion.JGestionUtils;
 import jgestion.controller.exceptions.DAOException;
 import jgestion.entity.DetalleRecibo_;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
@@ -233,6 +234,7 @@ public class ReciboJpaController extends JGestionJpaImpl<Recibo, Integer> {
                     pagosPost.add(pago);
                 } else if (object instanceof CuentabancariaMovimientos) {
                     CuentabancariaMovimientos pago = (CuentabancariaMovimientos) object;
+                    pago.setOperacionesBancarias(entityManager.find(pago.getOperacionesBancarias().getClass(), pago.getOperacionesBancarias().getId()));
                     entityManager.persist(pago);
                     pagosPost.add(pago);
                 } else if (object instanceof Especie) {
@@ -243,7 +245,7 @@ public class ReciboJpaController extends JGestionJpaImpl<Recibo, Integer> {
             }
             entityManager.getTransaction().commit();
         } catch (Exception ex) {
-            System.out.println("Error persistiendo Recibo.id=" + recibo.getId());
+            LogManager.getLogger().fatal("Error persistiendo Recibo.id=" + recibo.getId());
             entityManager = getEntityManager();
             if (!entityManager.getTransaction().isActive()) {
                 entityManager.getTransaction().begin();
@@ -260,8 +262,10 @@ public class ReciboJpaController extends JGestionJpaImpl<Recibo, Integer> {
                     } catch (Exception exx) {
                         throw new RuntimeException(exx);
                     }
-                    Object toDelete = entityManager.find(object.getClass(), id);
-                    entityManager.remove(toDelete);
+                    if (id != null) {
+                        Object toDelete = entityManager.find(object.getClass(), id);
+                        entityManager.remove(toDelete);
+                    }
                 } else if (object instanceof NotaCredito) {
                     NotaCredito pago = (NotaCredito) object;
                     pago.setRecibo(null);
