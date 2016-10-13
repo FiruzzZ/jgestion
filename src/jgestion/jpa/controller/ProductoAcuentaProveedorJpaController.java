@@ -4,6 +4,7 @@ import java.util.List;
 import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Root;
 import jgestion.entity.Producto;
 import jgestion.entity.ProductoAcuentaProveedor;
@@ -63,8 +64,9 @@ public class ProductoAcuentaProveedorJpaController extends JGestionJpaImpl<Produ
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<ProductoAcuentaProveedor> cq = cb.createQuery(getEntityClass());
         Root<ProductoAcuentaProveedor> from = cq.from(getEntityClass());
+        Path<Integer> cantidadPath = from.get(ProductoAcuentaProveedor_.cantidad);//Netbeans 8.2 error
         cq.where(cb.equal(from.get(ProductoAcuentaProveedor_.proveedor), proveedor),
-                cb.greaterThan(from.get(ProductoAcuentaProveedor_.cantidad), 0)
+                cb.greaterThan(cantidadPath, 0)
         );
         return getEntityManager().createQuery(cq).getResultList();
     }
