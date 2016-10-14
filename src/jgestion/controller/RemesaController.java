@@ -670,6 +670,7 @@ public class RemesaController implements FocusListener {
         if (toAnular) {
             buscador.setTitle(buscador.getTitle() + " para ANULAR");
         }
+        buscador.getCheckAnulada().setEnabled(!toAnular);
         if (conciliando) {
             buscador.getCheckAnulada().setEnabled(false);
             buscador.setTitle(buscador.getTitle() + " para Conciliar");
@@ -820,8 +821,10 @@ public class RemesaController implements FocusListener {
             }
             query.append(")");
         }
-        if (buscador.isCheckAnuladaSelected()) {
+        if (buscador.getCheckAnulada().isSelected()) {
             query.append(" AND o.estado = false");
+        } else {
+            query.append(" AND o.estado = true");
         }
         if (buscador.getCbClieProv().getSelectedIndex() > 0) {
             query.append(" AND o.proveedor.id = "
