@@ -8,7 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 /**
- *
+ * Patenes de vehículos
  * @author FiruzzZ
  */
 @Entity

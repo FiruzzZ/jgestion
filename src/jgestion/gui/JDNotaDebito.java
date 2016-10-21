@@ -96,7 +96,7 @@ public class JDNotaDebito extends javax.swing.JDialog {
         setTitle("Nota de Débito");
         setResizable(false);
 
-        panelDatosFacturacion.setBorder(javax.swing.BorderFactory.createTitledBorder("Datos facturación"));
+        panelDatosFacturacion.setBorder(javax.swing.BorderFactory.createTitledBorder("Datos comprobante"));
 
         labelN_factura.setText("Nº");
 
@@ -566,6 +566,8 @@ public class JDNotaDebito extends javax.swing.JDialog {
                     .addComponent(btnAnular, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
+
+        panelDatosFacturacion.getAccessibleContext().setAccessibleName("Datos comprobante");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents

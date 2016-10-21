@@ -20,8 +20,7 @@ import javax.persistence.UniqueConstraint;
  * @author FiruzzZ
  */
 @Entity
-@Table(name = "unidad_de_negocio", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"nombre"})})
+@Table(name = "unidad_de_negocio")
 public class UnidadDeNegocio implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -29,7 +28,7 @@ public class UnidadDeNegocio implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Basic(optional = false)
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 50)
     private String nombre;
     @OneToMany
     @JoinTable(

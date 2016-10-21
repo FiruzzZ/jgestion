@@ -65,7 +65,6 @@ public class NotaDebitoProveedorController {
         try {
             BigDecimal subTotal = new BigDecimal(abm.getTfImporte().getText());
             if (abm.getCbIVA().isEnabled()) {
-                @SuppressWarnings("unchecked")
                 Iva iva = abm.getCbIVA().isEnabled() ? ((EntityWrapper<Iva>) abm.getCbIVA().getSelectedItem()).getEntity() : null;
                 BigDecimal porcentaje = UTIL.getPorcentaje(subTotal, BigDecimal.valueOf(iva.getIva()));
                 subTotal = subTotal.add(porcentaje);
@@ -92,12 +91,7 @@ public class NotaDebitoProveedorController {
                 }
             }
         });
-        abm.getCbIVA().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                calcularSubTotal();
-            }
-        });
+        abm.getCbIVA().addActionListener(e -> calcularSubTotal());
         abm.getTfImporte().addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -150,7 +144,7 @@ public class NotaDebitoProveedorController {
         });
         abm.getBtnAceptar().addActionListener(event -> {
             try {
-                boolean editing = EL_OBJECT.getId() != null;
+                boolean editing = EL_OBJECT != null;
                 setAndPersist();
                 if (editing) {
                     abm.getBtnCancelar().doClick();
@@ -165,12 +159,9 @@ public class NotaDebitoProveedorController {
                 JOptionPane.showMessageDialog(abm, "Algo salió mal: " + ex.getMessage(), null, JOptionPane.ERROR_MESSAGE);
             }
         });
-        abm.getBtnCancelar().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                EL_OBJECT = null;
-                abm.dispose();
-            }
+        abm.getBtnCancelar().addActionListener(e -> {
+            EL_OBJECT = null;
+            abm.dispose();
         });
     }
 

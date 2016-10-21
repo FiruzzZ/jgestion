@@ -25,8 +25,6 @@ import javax.persistence.UniqueConstraint;
 @Entity
 @Table(name = "comprobante_retencion", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"propio", "numero"})})
-@NamedQueries({
-    @NamedQuery(name = "ComprobanteRetencion.findAll", query = "SELECT c FROM ComprobanteRetencion c")})
 public class ComprobanteRetencion implements Serializable {
 
     private static final long serialVersionUID = 1L;

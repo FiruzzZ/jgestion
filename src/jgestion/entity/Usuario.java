@@ -11,8 +11,6 @@ import javax.persistence.*;
  * @author Administrador
  */
 @Entity
-@Table(name = "usuario", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"nick"})})
 public class Usuario implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -22,7 +20,7 @@ public class Usuario implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Basic(optional = false)
-    @Column(name = "nick", nullable = false, length = 50)
+    @Column(name = "nick", nullable = false, length = 20, unique = true)
     private String nick;
     @Basic(optional = false)
     @Column(name = "pass", nullable = false, length = 50)

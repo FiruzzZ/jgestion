@@ -1,14 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package jgestion.entity;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -16,9 +11,6 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @Entity
 @Table(name = "credito_proveedor")
-@XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "CreditoProveedor.findAll", query = "SELECT c FROM CreditoProveedor c")})
 public class CreditoProveedor implements Serializable {
 
     private static final long serialVersionUID = 1L;
