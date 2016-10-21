@@ -320,7 +320,7 @@ public class NotaDebitoProveedorController {
         abm.getTfTotalIVA105().setText(UTIL.DECIMAL_FORMAT.format(iva10));
         abm.getTfTotalIVA21().setText(UTIL.DECIMAL_FORMAT.format(iva21));
         abm.getTfTotalOtrosImps().setText(UTIL.DECIMAL_FORMAT.format(otrosImps));
-        redondeoTotal = gravado.add(iva10).add(iva21).add(otrosImps).subtract(redondeoTotal);
+//        redondeoTotal = gravado.add(iva10).add(iva21).add(otrosImps).subtract(redondeoTotal);
         abm.getTfDiferenciaRedondeo().setText(UTIL.DECIMAL_FORMAT.format(redondeoTotal));
         abm.getTfTotal().setText(UTIL.DECIMAL_FORMAT.format(subTotal));
         LOG.debug("Gravado:" + gravado + ", Desc.:" + desc + ", IVA105:" + iva10 + ", IVA21:" + iva21 + ", OtrosImp.:" + otrosImps + ", Redondeo:" + redondeoTotal);
