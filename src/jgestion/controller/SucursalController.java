@@ -670,14 +670,15 @@ public class SucursalController implements ActionListener {
         actual = new RemitoJpaController().getNextNumero(sucursal);
         actual = actual.equals(sucursal.getRemito()) ? actual : actual - 1;
         paneln.setTfInicialRemito(UTIL.AGREGAR_CEROS(actual, 8));
-
-        actual = new NotaCreditoJpaController().getNextNumero(sucursal, 'A');
+        
+        final NotaCreditoJpaController notaCreditoJpaController = new NotaCreditoJpaController();
+        actual = notaCreditoJpaController.getNextNumero(sucursal, 'A');
         actual = actual.equals(sucursal.getNotaCredito_a()) ? actual : actual - 1;
         paneln.setTfInicialNotaCreditoA(UTIL.AGREGAR_CEROS(actual, 8));
-        actual = new NotaCreditoJpaController().getNextNumero(sucursal, 'B');
+        actual = notaCreditoJpaController.getNextNumero(sucursal, 'B');
         actual = actual.equals(sucursal.getNotaCredito_b()) ? actual : actual - 1;
         paneln.getTfInicialNotaCreditoB().setText(UTIL.AGREGAR_CEROS(actual, 8));
-        actual = new NotaCreditoJpaController().getNextNumero(sucursal, 'C');
+        actual = notaCreditoJpaController.getNextNumero(sucursal, 'C');
         actual = actual.equals(sucursal.getNotaCredito_c()) ? actual : actual - 1;
         paneln.getTfInicialNotaCreditoC().setText(UTIL.AGREGAR_CEROS(actual, 8));
 
@@ -697,12 +698,12 @@ public class SucursalController implements ActionListener {
                     paneln.getTfFactuA_AFIP().setText(afipwsController.getUltimoCompActualizado(sucursal.getPuntoVenta(), 1) + "");
                     paneln.getTfFactuB_AFIP().setText(afipwsController.getUltimoCompActualizado(sucursal.getPuntoVenta(), 6) + "");
                     paneln.getTfFactuC_AFIP().setText(afipwsController.getUltimoCompActualizado(sucursal.getPuntoVenta(), 11) + "");
-                    paneln.getTfInicialNotaCreditoAAFIP().setText(afipwsController.getUltimoCompActualizado(sucursal.getPuntoVenta(), 2) + "");
-                    paneln.getTfInicialNotaCreditoBAFIP().setText(afipwsController.getUltimoCompActualizado(sucursal.getPuntoVenta(), 7) + "");
-                    paneln.getTfInicialNotaCreditoCAFIP().setText(afipwsController.getUltimoCompActualizado(sucursal.getPuntoVenta(), 12) + "");
-                    paneln.getTfInicialNotaDebitoAAFIP().setText(afipwsController.getUltimoCompActualizado(sucursal.getPuntoVenta(), 3) + "");
-                    paneln.getTfInicialNotaDebitoBAFIP().setText(afipwsController.getUltimoCompActualizado(sucursal.getPuntoVenta(), 8) + "");
-                    paneln.getTfInicialNotaDebitoCAFIP().setText(afipwsController.getUltimoCompActualizado(sucursal.getPuntoVenta(), 13) + "");
+                    paneln.getTfInicialNotaCreditoAAFIP().setText(afipwsController.getUltimoCompActualizado(sucursal.getPuntoVenta(), 3) + "");
+                    paneln.getTfInicialNotaCreditoBAFIP().setText(afipwsController.getUltimoCompActualizado(sucursal.getPuntoVenta(), 8) + "");
+                    paneln.getTfInicialNotaCreditoCAFIP().setText(afipwsController.getUltimoCompActualizado(sucursal.getPuntoVenta(), 13) + "");
+                    paneln.getTfInicialNotaDebitoAAFIP().setText(afipwsController.getUltimoCompActualizado(sucursal.getPuntoVenta(), 2) + "");
+                    paneln.getTfInicialNotaDebitoBAFIP().setText(afipwsController.getUltimoCompActualizado(sucursal.getPuntoVenta(), 7) + "");
+                    paneln.getTfInicialNotaDebitoCAFIP().setText(afipwsController.getUltimoCompActualizado(sucursal.getPuntoVenta(), 12) + "");
                 } catch (MessageException ex) {
                     ex.displayMessage(jd);
                 } catch (Exception ex) {
