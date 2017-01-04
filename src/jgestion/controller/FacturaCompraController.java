@@ -523,7 +523,7 @@ public class FacturaCompraController implements ActionListener {
         if (toAnular) {
             UsuarioController.checkPermiso(PermisosController.PermisoDe.ANULAR_COMPROBANTES);
         }
-        buscador = new JDBuscadorReRe(frame, "Buscador - Factura compra", modal, "Proveedor", "Nº Factura");
+        buscador = new JDBuscadorReRe(frame, "Buscador " + (toAnular ? "(Para anular)" : "") + " - Factura compra", modal, "Proveedor", "Nº Factura");
         buscador.hideFactura();
         buscador.hideVendedor();
         ActionListenerManager.setUnidadDeNegocioSucursalActionListener(buscador.getCbUnidadDeNegocio(), true, buscador.getCbSucursal(), true, true);
@@ -575,7 +575,7 @@ public class FacturaCompraController implements ActionListener {
                     if (buscador.getjTable1().getSelectedRow() > -1) {
                         FacturaCompra f = jpaController.find(Integer.valueOf(buscador.getDtm().getValueAt(buscador.getjTable1().getSelectedRow(), 0).toString()));
                         try {
-                            show(f, false);
+                            show(f, toAnular);
                         } catch (MessageException ex) {
                             ex.displayMessage(buscador);
                         }
