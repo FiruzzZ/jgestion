@@ -497,7 +497,7 @@
                   <EmptySpace min="-2" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Component id="jLabel2" alignment="0" min="-2" max="-2" attributes="0"/>
-                      <Component id="tfTotalOtrosImpuestos" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Component id="tfTotalOtrosIVA" alignment="0" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
@@ -553,7 +553,7 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="2" attributes="0">
                       <Component id="tfTotalIVA21" alignment="2" min="-2" max="-2" attributes="0"/>
-                      <Component id="tfTotalOtrosImpuestos" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Component id="tfTotalOtrosIVA" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="tfTotalImpuestosNoRecuperables" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="tfTotalIVA105" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="tfGravado" alignment="2" min="-2" max="-2" attributes="0"/>
@@ -648,10 +648,10 @@
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel2">
           <Properties>
-            <Property name="text" type="java.lang.String" value="IVA 27%"/>
+            <Property name="text" type="java.lang.String" value="Otros IVA"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="tfTotalOtrosImpuestos">
+        <Component class="javax.swing.JTextField" name="tfTotalOtrosIVA">
           <Properties>
             <Property name="editable" type="boolean" value="false"/>
             <Property name="columns" type="int" value="6"/>

@@ -94,7 +94,7 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         jLabel16 = new javax.swing.JLabel();
         tfTotalIVA105 = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
-        tfTotalOtrosImpuestos = new javax.swing.JTextField();
+        tfTotalOtrosIVA = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
         tfTotalImpuestosNoRecuperables = new javax.swing.JTextField();
         jLabel30 = new javax.swing.JLabel();
@@ -439,16 +439,16 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         tfTotalIVA105.setFocusable(false);
         tfTotalIVA105.setRequestFocusEnabled(false);
 
-        jLabel2.setText("IVA 27%");
+        jLabel2.setText("Otros IVA");
 
-        tfTotalOtrosImpuestos.setEditable(false);
-        tfTotalOtrosImpuestos.setColumns(6);
-        tfTotalOtrosImpuestos.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        tfTotalOtrosImpuestos.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        tfTotalOtrosImpuestos.setText("0");
-        tfTotalOtrosImpuestos.setToolTipText("Otros Impuestos Recuperables (Ej.: IVA 27%)");
-        tfTotalOtrosImpuestos.setFocusable(false);
-        tfTotalOtrosImpuestos.setRequestFocusEnabled(false);
+        tfTotalOtrosIVA.setEditable(false);
+        tfTotalOtrosIVA.setColumns(6);
+        tfTotalOtrosIVA.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        tfTotalOtrosIVA.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        tfTotalOtrosIVA.setText("0");
+        tfTotalOtrosIVA.setToolTipText("Otros Impuestos Recuperables (Ej.: IVA 27%)");
+        tfTotalOtrosIVA.setFocusable(false);
+        tfTotalOtrosIVA.setRequestFocusEnabled(false);
 
         jLabel5.setText("Imp. No Recu");
 
@@ -513,7 +513,7 @@ public class JDFacturaCompra extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelResumenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel2)
-                    .addComponent(tfTotalOtrosImpuestos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(tfTotalOtrosIVA, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelResumenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel5)
@@ -557,7 +557,7 @@ public class JDFacturaCompra extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelResumenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(tfTotalIVA21, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(tfTotalOtrosImpuestos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(tfTotalOtrosIVA, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(tfTotalImpuestosNoRecuperables, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(tfTotalIVA105, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(tfGravado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1219,7 +1219,7 @@ public class JDFacturaCompra extends javax.swing.JDialog {
     private javax.swing.JTextField tfTotalIVA21;
     private javax.swing.JTextField tfTotalImpuestosNoRecuperables;
     private javax.swing.JTextField tfTotalNoGravado;
-    private javax.swing.JTextField tfTotalOtrosImpuestos;
+    private javax.swing.JTextField tfTotalOtrosIVA;
     private javax.swing.JTextField tfTotalPercIIBB;
     private javax.swing.JTextField tfTotalPercIVA;
     // End of variables declaration//GEN-END:variables
@@ -1390,8 +1390,8 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         return tfTotalIVA21.getText().trim();
     }
 
-    public JTextField getTfTotalOtrosImpuestos() {
-        return tfTotalOtrosImpuestos;
+    public JTextField getTfTotalOtrosIVA() {
+        return tfTotalOtrosIVA;
     }
 
     public JTextField getTfTotalImpuestosNoRecuperables() {
@@ -1520,7 +1520,7 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         tfTotalIVA21.setText("0");
         tfTotalPercIIBB.setText("0");
         tfTotalPercIVA.setText("0");
-        tfTotalOtrosImpuestos.setText("0");
+        tfTotalOtrosIVA.setText("0");
         tfTotal.setText("0");
     }
 
@@ -1680,7 +1680,7 @@ public class JDFacturaCompra extends javax.swing.JDialog {
                 + "<br>Neto      : <b>$" + tfGravado.getText() + "</b>"
                 + "<br>IVA 10.5% : <b>$" + tfTotalIVA105.getText() + "</b>"
                 + "<br>IVA 21%   : <b>$" + tfTotalIVA21.getText() + "</b>"
-                + "<br>Otros Imp.: <b>$" + tfTotalOtrosImpuestos.getText() + "</b>"
+                + "<br>Otros Imp.: <b>$" + tfTotalOtrosIVA.getText() + "</b>"
                 + "<br>No Gravado: <b>$" + tfTotalNoGravado.getText() + "</b>"
                 + "<br>TOTAL     : <b>$" + tfTotal.getText() + "</b>"
                 + "</html>";

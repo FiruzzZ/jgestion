@@ -323,7 +323,7 @@ public class NotaCreditoProveedorController implements ActionListener {
         o.setIva10(new BigDecimal(jdFactura.getTfTotalIVA105()));
         o.setIva21(new BigDecimal(jdFactura.getTfTotalIVA21()));
         BigDecimal impRecuperables = new BigDecimal(jdFactura.getTfOtrosImpuestosRecuperables().getText().trim());
-        BigDecimal otrosIvas = new BigDecimal(jdFactura.getTfTotalOtrosImpuestos().getText().trim());
+        BigDecimal otrosIvas = new BigDecimal(jdFactura.getTfTotalOtrosIVA().getText().trim());
         o.setImpuestosRecuperables(impRecuperables.add(otrosIvas));
         //carga detalleCompra
         DefaultTableModel dtm = jdFactura.getDtm();
