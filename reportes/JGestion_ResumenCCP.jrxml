@@ -14,10 +14,10 @@
 	<queryString>
 		<![CDATA[SELECT *
 FROM (
-SELECT proveedor.nombre, proveedor.id proveedor_id, fv.tipo, fv.numero, fv.fecha_compra fecha, ccc.dias, (CAST(fv.fecha_compra AS date) + ccc.dias) as vto, ccc.importe as DEBE, ccc.entregado as HABER, (ccc.importe - ccc.entregado) as saldo, ccc.estado
+SELECT proveedor.nombre, proveedor.id proveedor_id, fv.tipo, fv.numero, fv.fecha_compra fecha, ccc.dias, (CAST(fv.fecha_compra AS date) + ccc.dias) as vto, ccc.importe as DEBE, ccc.entregado as HABER, (ccc.importe - ccc.entregado) as saldo, ccc.estado, fv.anulada
 FROM ctacte_proveedor ccc JOIN factura_compra fv ON ccc.factura = fv.id JOIN proveedor ON proveedor.id = fv.proveedor
 UNION
-SELECT proveedor.nombre, proveedor.id proveedor_id, fv.tipo, fv.numero, fv.fecha_nota_debito fecha, ccc.dias, (CAST(fv.fecha_nota_debito AS date) + ccc.dias) as vto, ccc.importe as DEBE, ccc.entregado as HABER, (ccc.importe - ccc.entregado) as saldo, ccc.estado
+SELECT proveedor.nombre, proveedor.id proveedor_id, fv.tipo, fv.numero, fv.fecha_nota_debito fecha, ccc.dias, (CAST(fv.fecha_nota_debito AS date) + ccc.dias) as vto, ccc.importe as DEBE, ccc.entregado as HABER, (ccc.importe - ccc.entregado) as saldo, ccc.estado, fv.anulada
 FROM ctacte_proveedor ccc JOIN nota_debito_proveedor fv ON ccc.notadebito_id = fv.id JOIN proveedor ON fv.proveedor_id = proveedor.id
 ) ccc
 WHERE true $P!{FILTERS}
@@ -25,10 +25,8 @@ ORDER BY ccc.fecha]]>
 	</queryString>
 	<field name="nombre" class="java.lang.String"/>
 	<field name="proveedor_id" class="java.lang.Integer"/>
-	<field name="tipo" class="java.lang.String">
-		<fieldDescription><![CDATA[1 factu_compra, 2 factu_venta, 3 remesa, 4 recibo, 5 movimiento caja, 6 devolucion (anulacion), 7 apertura caja, 8 mov. varios, 9 mov interno (MVI), 10 cheque terceros, 11 cheques propios]]></fieldDescription>
-	</field>
-	<field name="numero" class="java.math.BigDecimal"/>
+	<field name="tipo" class="java.lang.String"/>
+	<field name="numero" class="java.lang.Long"/>
 	<field name="fecha" class="java.sql.Date"/>
 	<field name="dias" class="java.lang.Integer"/>
 	<field name="vto" class="java.sql.Date"/>
@@ -36,6 +34,7 @@ ORDER BY ccc.fecha]]>
 	<field name="haber" class="java.math.BigDecimal"/>
 	<field name="saldo" class="java.math.BigDecimal"/>
 	<field name="estado" class="java.lang.Integer"/>
+	<field name="anulada" class="java.lang.Boolean"/>
 	<variable name="SA" class="java.lang.Double">
 		<variableExpression><![CDATA[new Double($V{SA}.doubleValue() +
     (($F{estado}.intValue() != 3)? $F{saldo}.doubleValue() : 0))]]></variableExpression>
@@ -47,19 +46,19 @@ ORDER BY ccc.fecha]]>
 	<title>
 		<band height="79" splitType="Stretch">
 			<subreport>
-				<reportElement uuid="88b914c4-5846-4158-8534-f0bec45b57ef" x="0" y="0" width="555" height="79"/>
+				<reportElement x="0" y="0" width="555" height="79" uuid="88b914c4-5846-4158-8534-f0bec45b57ef"/>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "JGestion_DatosEmpresa.jasper"]]></subreportExpression>
 			</subreport>
 			<textField pattern="dd/MM/yyyy HH:mm:ss">
-				<reportElement uuid="f2a8b3ce-8005-4181-9eaa-5f9e28469ace" x="431" y="0" width="124" height="11"/>
+				<reportElement x="431" y="0" width="124" height="11" uuid="f2a8b3ce-8005-4181-9eaa-5f9e28469ace"/>
 				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement uuid="1db7e0e2-0705-4a3d-b0e7-2b2cbb69e413" x="431" y="11" width="124" height="11"/>
+				<reportElement x="431" y="11" width="124" height="11" uuid="1db7e0e2-0705-4a3d-b0e7-2b2cbb69e413"/>
 				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
@@ -70,27 +69,26 @@ ORDER BY ccc.fecha]]>
 	<pageHeader>
 		<band height="43" splitType="Stretch">
 			<rectangle>
-				<reportElement uuid="888551f9-6219-406b-96dd-0f7ff32d64e7" x="0" y="0" width="555" height="43"/>
+				<reportElement x="0" y="0" width="555" height="43" uuid="888551f9-6219-406b-96dd-0f7ff32d64e7"/>
 			</rectangle>
 			<staticText>
-				<reportElement uuid="20285939-abaf-425f-b737-e4c35ba5b6a9" x="0" y="23" width="43" height="15"/>
+				<reportElement x="0" y="23" width="43" height="15" uuid="20285939-abaf-425f-b737-e4c35ba5b6a9"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle"/>
 				<text><![CDATA[Desde:]]></text>
 			</staticText>
 			<textField>
-				<reportElement uuid="0a02a197-4f7c-4661-8f75-b507e04c5e2d" x="234" y="0" width="321" height="23"/>
+				<reportElement x="234" y="0" width="321" height="23" uuid="0a02a197-4f7c-4661-8f75-b507e04c5e2d"/>
 				<textElement verticalAlignment="Middle">
 					<font size="14"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{nombre}]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
-				<reportElement uuid="949a2195-8169-4242-ab06-9779af59d78b" x="43" y="23" width="100" height="15"/>
-				<textElement/>
+				<reportElement x="43" y="23" width="100" height="15" uuid="949a2195-8169-4242-ab06-9779af59d78b"/>
 				<textFieldExpression><![CDATA[$P{FILTER_DATE}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement uuid="ea4940ce-b2e9-4430-a724-03e48c3c7c19" x="0" y="0" width="234" height="23"/>
+				<reportElement x="0" y="0" width="234" height="23" uuid="ea4940ce-b2e9-4430-a724-03e48c3c7c19"/>
 				<textElement textAlignment="Center" verticalAlignment="Top">
 					<font size="16" isBold="true"/>
 				</textElement>
@@ -101,7 +99,7 @@ ORDER BY ccc.fecha]]>
 	<columnHeader>
 		<band height="20" splitType="Stretch">
 			<staticText>
-				<reportElement uuid="f51289bb-5cc8-4588-acb1-99540c9e1758" mode="Opaque" x="202" y="0" width="55" height="20" backcolor="#CCCCCC"/>
+				<reportElement mode="Opaque" x="202" y="0" width="55" height="20" backcolor="#CCCCCC" uuid="f51289bb-5cc8-4588-acb1-99540c9e1758"/>
 				<box>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -114,7 +112,7 @@ ORDER BY ccc.fecha]]>
 				<text><![CDATA[VTO.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="91250d6c-7016-434b-820e-d275b3fe12e8" mode="Opaque" x="257" y="0" width="70" height="20" backcolor="#CCCCCC"/>
+				<reportElement mode="Opaque" x="257" y="0" width="70" height="20" backcolor="#CCCCCC" uuid="91250d6c-7016-434b-820e-d275b3fe12e8"/>
 				<box>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -127,7 +125,7 @@ ORDER BY ccc.fecha]]>
 				<text><![CDATA[DEBE]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="26629668-3579-4ecf-947e-8d9a5b73e3ef" mode="Opaque" x="0" y="0" width="105" height="20" backcolor="#CCCCCC"/>
+				<reportElement mode="Opaque" x="0" y="0" width="105" height="20" backcolor="#CCCCCC" uuid="26629668-3579-4ecf-947e-8d9a5b73e3ef"/>
 				<box>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -140,7 +138,7 @@ ORDER BY ccc.fecha]]>
 				<text><![CDATA[FACTURA]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="25b8e761-14c5-42b7-9354-005ec716b68c" mode="Opaque" x="327" y="0" width="63" height="20" backcolor="#CCCCCC"/>
+				<reportElement mode="Opaque" x="327" y="0" width="63" height="20" backcolor="#CCCCCC" uuid="25b8e761-14c5-42b7-9354-005ec716b68c"/>
 				<box>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -153,7 +151,7 @@ ORDER BY ccc.fecha]]>
 				<text><![CDATA[HABER]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="b8d6102e-ec67-453f-90c7-61d07b0881db" mode="Opaque" x="390" y="0" width="75" height="20" backcolor="#CCCCCC"/>
+				<reportElement mode="Opaque" x="390" y="0" width="75" height="20" backcolor="#CCCCCC" uuid="b8d6102e-ec67-453f-90c7-61d07b0881db"/>
 				<box>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -166,7 +164,7 @@ ORDER BY ccc.fecha]]>
 				<text><![CDATA[SALDO]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="18e36c80-d4aa-4f9c-b498-c8f5fb7024b2" mode="Opaque" x="160" y="0" width="42" height="20" backcolor="#CCCCCC"/>
+				<reportElement mode="Opaque" x="160" y="0" width="42" height="20" backcolor="#CCCCCC" uuid="18e36c80-d4aa-4f9c-b498-c8f5fb7024b2"/>
 				<box>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -179,7 +177,7 @@ ORDER BY ccc.fecha]]>
 				<text><![CDATA[DÍAS]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="c9bdbed0-c0c9-48b0-ba94-6f3e049dd95d" mode="Opaque" x="465" y="0" width="90" height="20" backcolor="#CCCCCC"/>
+				<reportElement mode="Opaque" x="465" y="0" width="90" height="20" backcolor="#CCCCCC" uuid="c9bdbed0-c0c9-48b0-ba94-6f3e049dd95d"/>
 				<box>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -192,7 +190,7 @@ ORDER BY ccc.fecha]]>
 				<text><![CDATA[S. ACUM]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="284650cc-87a4-4ae1-a8f7-231ddb18de4e" mode="Opaque" x="105" y="0" width="55" height="20" backcolor="#CCCCCC"/>
+				<reportElement mode="Opaque" x="105" y="0" width="55" height="20" backcolor="#CCCCCC" uuid="284650cc-87a4-4ae1-a8f7-231ddb18de4e"/>
 				<box>
 					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
@@ -209,14 +207,14 @@ ORDER BY ccc.fecha]]>
 	<detail>
 		<band height="15" splitType="Stretch">
 			<staticText>
-				<reportElement uuid="008edf84-6699-4179-bd45-16f953b0af36" x="410" y="0" width="55" height="15">
+				<reportElement x="410" y="0" width="55" height="15" uuid="008edf84-6699-4179-bd45-16f953b0af36">
 					<printWhenExpression><![CDATA[new Boolean($F{estado}.intValue() == 3)]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<text><![CDATA[ANULADA]]></text>
 			</staticText>
 			<textField>
-				<reportElement uuid="c69ccd7e-7371-47a6-8182-3ca464d9ae14" x="0" y="0" width="105" height="15"/>
+				<reportElement x="0" y="0" width="105" height="15" uuid="c69ccd7e-7371-47a6-8182-3ca464d9ae14"/>
 				<textElement verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{tipo}.concat(
 $F{numero}.toString().length() == 9 ?
@@ -229,28 +227,28 @@ $F{numero}.toString().substring( 0, 4) + "-" + $F{numero}.toString().substring(4
 )]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd/MM/yyyy">
-				<reportElement uuid="21f5ec31-dcd3-4265-b0bf-652379f4a0aa" x="105" y="0" width="55" height="15"/>
+				<reportElement x="105" y="0" width="55" height="15" uuid="21f5ec31-dcd3-4265-b0bf-652379f4a0aa"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{fecha}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement uuid="5635cd00-8ca6-4189-9080-3394249a96f5" x="160" y="0" width="42" height="15"/>
+				<reportElement x="160" y="0" width="42" height="15" uuid="5635cd00-8ca6-4189-9080-3394249a96f5"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{dias}]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd/MM/yyyy">
-				<reportElement uuid="05ba62ff-5c3d-45f5-8a1c-15b52bbf3521" x="202" y="0" width="55" height="15"/>
+				<reportElement x="202" y="0" width="55" height="15" uuid="05ba62ff-5c3d-45f5-8a1c-15b52bbf3521"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{vto}]]></textFieldExpression>
 			</textField>
 			<textField pattern="¤ #,##0.00">
-				<reportElement uuid="1df91d0b-5a09-4ae2-88b7-22d1f7a91c2f" x="257" y="0" width="68" height="15"/>
+				<reportElement x="257" y="0" width="68" height="15" uuid="1df91d0b-5a09-4ae2-88b7-22d1f7a91c2f"/>
 				<box rightPadding="2"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{debe}]]></textFieldExpression>
 			</textField>
 			<textField pattern="¤ #,##0.00">
-				<reportElement uuid="dc9e9fce-b875-4cb5-9490-46ce54879d4a" x="325" y="0" width="65" height="15">
+				<reportElement x="325" y="0" width="65" height="15" uuid="dc9e9fce-b875-4cb5-9490-46ce54879d4a">
 					<printWhenExpression><![CDATA[new Boolean($F{estado}.intValue() != 3)]]></printWhenExpression>
 				</reportElement>
 				<box rightPadding="2"/>
@@ -258,7 +256,7 @@ $F{numero}.toString().substring( 0, 4) + "-" + $F{numero}.toString().substring(4
 				<textFieldExpression><![CDATA[$F{haber}]]></textFieldExpression>
 			</textField>
 			<textField pattern="¤ #,##0.00">
-				<reportElement uuid="2b7be46d-1d48-4932-bcfe-53db60703b07" x="390" y="0" width="75" height="15">
+				<reportElement x="390" y="0" width="75" height="15" uuid="2b7be46d-1d48-4932-bcfe-53db60703b07">
 					<printWhenExpression><![CDATA[new Boolean($F{estado}.intValue() != 3)]]></printWhenExpression>
 				</reportElement>
 				<box rightPadding="2"/>
@@ -266,7 +264,7 @@ $F{numero}.toString().substring( 0, 4) + "-" + $F{numero}.toString().substring(4
 				<textFieldExpression><![CDATA[$F{saldo}]]></textFieldExpression>
 			</textField>
 			<textField pattern="¤ #,##0.00">
-				<reportElement uuid="2e252beb-74e9-43e0-bf7c-392509e1d5f4" x="465" y="0" width="90" height="15">
+				<reportElement x="465" y="0" width="90" height="15" uuid="2e252beb-74e9-43e0-bf7c-392509e1d5f4">
 					<printWhenExpression><![CDATA[new Boolean($F{estado}.intValue() != 3)]]></printWhenExpression>
 				</reportElement>
 				<box rightPadding="2"/>
@@ -274,14 +272,14 @@ $F{numero}.toString().substring( 0, 4) + "-" + $F{numero}.toString().substring(4
 				<textFieldExpression><![CDATA[$V{SA}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement uuid="3360d1ac-12e5-46f8-9e43-ccff39b807a9" x="339" y="0" width="51" height="15">
+				<reportElement x="339" y="0" width="51" height="15" uuid="3360d1ac-12e5-46f8-9e43-ccff39b807a9">
 					<printWhenExpression><![CDATA[new Boolean($F{estado}.intValue() == 3)]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<text><![CDATA[ANULADA]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="98218b77-d5f0-4f3f-949a-4e1a56fc2497" x="482" y="0" width="51" height="15">
+				<reportElement x="482" y="0" width="51" height="15" uuid="98218b77-d5f0-4f3f-949a-4e1a56fc2497">
 					<printWhenExpression><![CDATA[new Boolean($F{estado}.intValue() == 3)]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
@@ -292,7 +290,7 @@ $F{numero}.toString().substring( 0, 4) + "-" + $F{numero}.toString().substring(4
 	<summary>
 		<band height="3" splitType="Stretch">
 			<line>
-				<reportElement uuid="7fa8b1e9-3da6-482c-b7cf-9efb7dc66333" x="0" y="0" width="555" height="1"/>
+				<reportElement x="0" y="0" width="555" height="1" uuid="7fa8b1e9-3da6-482c-b7cf-9efb7dc66333"/>
 			</line>
 		</band>
 	</summary>

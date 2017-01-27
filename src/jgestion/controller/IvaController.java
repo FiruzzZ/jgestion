@@ -1,5 +1,6 @@
 package jgestion.controller;
 
+import java.awt.Window;
 import jgestion.controller.exceptions.MessageException;
 import jgestion.controller.exceptions.IllegalOrphanException;
 import jgestion.controller.exceptions.NonexistentEntityException;
@@ -22,6 +23,8 @@ import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 import jgestion.jpa.controller.IvaJpaController;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -29,6 +32,7 @@ import jgestion.jpa.controller.IvaJpaController;
  */
 public class IvaController implements ActionListener {
 
+    private static final Logger LOG = LogManager.getLogger();
     private JDMiniABM abm;
     private final String[] colsName = {"Nº", "IVA (%)"};
     private final int[] colsWidth = {20, 20};
@@ -75,14 +79,9 @@ public class IvaController implements ActionListener {
         }
     }
 
-    public List<Iva> findIvaEntities() {
+    public List<Iva> findAll() {
         return findIvaEntities(true, -1, -1);
     }
-
-    public List<Iva> findIvaEntities(int maxResults, int firstResult) {
-        return findIvaEntities(false, maxResults, firstResult);
-    }
-
     private List<Iva> findIvaEntities(boolean all, int maxResults, int firstResult) {
         if (all) {
             return jpaController.findAll();
@@ -96,7 +95,7 @@ public class IvaController implements ActionListener {
     }
     // </editor-fold>
 
-    public void initABM(JFrame owner, boolean modal) throws MessageException {
+    public void initABM(Window owner, boolean modal) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.ABM_PRODUCTOS);
         abm = new JDMiniABM(owner, modal);
         abm.setLocationRelativeTo(owner);
@@ -158,7 +157,6 @@ public class IvaController implements ActionListener {
                     if (EL_OBJECT == null) {
                         throw new MessageException("Debe seleccionar la fila que desea borrar");
                     }
-                    jpaController.remove(EL_OBJECT);
                     destroy(EL_OBJECT.getId());
                     clearPanelFields();
                     cargarTablaIvas(abm.getjTable1(), null);
@@ -168,9 +166,10 @@ public class IvaController implements ActionListener {
                 } catch (IllegalOrphanException ex) {
                     abm.showMessage("El IVA " + EL_OBJECT.getIva() + " no puede ser eliminado por estar relacionado a los siguientes Productos\n"
                             + ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 0);
-                } catch (Exception ex) {
+                } catch (NonexistentEntityException ex) {
                     abm.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 0);
-                    ex.printStackTrace();
+
+                } catch (Exception ex) {
                 }
             } else if (boton.getName().equalsIgnoreCase("cancelar")) {
                 clearPanelFields();

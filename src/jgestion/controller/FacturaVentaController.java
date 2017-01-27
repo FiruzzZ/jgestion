@@ -899,7 +899,7 @@ public class FacturaVentaController {
         try {
             newFacturaVenta.setCuenta(((EntityWrapper<Cuenta>) jdFactura.getCbCuenta().getSelectedItem()).getEntity());
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(jdFactura, "Cuenta no válida");
+            newFacturaVenta.setCuenta(null);
         }
         if (jdFactura.getCbSubCuenta().getSelectedIndex() > 0) {
             try {
@@ -1194,10 +1194,10 @@ public class FacturaVentaController {
                 setAndPersist(facturar);
             }
         } catch (MessageException ex) {
-            jdFactura.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 0);
+            ex.displayMessage(jdFactura);
         } catch (Exception ex) {
-            jdFactura.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 0);
             LOG.error(ex, ex);
+            jdFactura.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 0);
         } finally {
             jdFactura.getBtnFacturar().setEnabled(true);
             jdFactura.getBtnAceptar().setEnabled(true);

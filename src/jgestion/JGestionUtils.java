@@ -456,15 +456,19 @@ public class JGestionUtils {
         } else if (de.getContribuyente().getFactuA() && o.getContribuyente().getFactuA()) {
             cb.addItem("A");
         } else if (de.getContribuyente().getFactuB()
-                //cuando un RESP INSCRIPTO le factura a un Mono, debe darle B no C
+                //cuando un RESP INSCRIPTO le factura a un Mono o Exento, debe darle B
                 && (o.getContribuyente().getFactuB() || o.getContribuyente().getFactuC())) {
             cb.addItem("B");
-        } else if (de.getContribuyente().getFactuC() && o.getContribuyente().getFactuC()) {
+        } else if (de.getContribuyente().getFactuC()) {
             cb.addItem("C");
-        } else if (de.getContribuyente().getFactuM() && o.getContribuyente().getFactuM()) {
+        }
+        if (de.getContribuyente().getFactuM() && o.getContribuyente().getFactuM()) {
             cb.addItem("M");
-        } else {
-            throw new MessageException("No hay definido un tipo de comprobante para el contribuyente " + o.getContribuyente().getNombre());
+        }
+        if (cb.getItemCount() == 0) {
+            throw new MessageException("No hay definido un tipo de comprobante entre los contribuyentes:"
+                    + " Empresa: " + de.getContribuyente().getNombre()
+                    + " Proveedor/Cliente: " + o.getContribuyente().getNombre());
         }
     }
 

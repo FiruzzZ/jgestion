@@ -248,7 +248,7 @@ public class ProductoController implements ActionListener, KeyListener {
                 }
             }
         });
-        UTIL.loadComboBox(panel.getCbIVA(), new IvaController().findIvaEntities(), false);
+        UTIL.loadComboBox(panel.getCbIVA(), new IvaController().findAll(), false);
         UTIL.loadComboBox(panel.getCbMarcas(), JGestionUtils.getWrappedMarcas(new MarcaController().findAll()), false);
         UTIL.loadComboBox(panel.getCbMedicion(), new UnidadmedidaJpaController().findUnidadmedidaEntities(), false);
         UTIL.loadComboBox(panel.getCbRubro(), new RubroController().findRubros(), false);

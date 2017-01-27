@@ -157,7 +157,7 @@ public class CajaMovimientosController implements ActionListener {
         jpaController.persist(nextCaja);
     }
 
-    public void initCierreCaja(JFrame frame, boolean modal) {
+    public void displayCierreCaja(JFrame frame, boolean modal) {
         // <editor-fold defaultstate="collapsed" desc="checking Permiso">
         try {
             UsuarioController.checkPermiso(PermisosController.PermisoDe.CERRAR_CAJAS);

@@ -100,8 +100,12 @@ public class ChequePropioController implements ActionListener {
         if (isEditing && EL_OBJECT == null) {
             throw new MessageException("Debe elegir una fila de la tabla");
         }
+        List<EntityWrapper<Banco>> bancoConCuenta = JGestionUtils.getWrappedBancos(new BancoController().findWithCuentasBancarias(true));
+        if (bancoConCuenta.isEmpty()) {
+            throw new MessageException("Debe crear una Cuenta Bancaria para poder registrar cheques propios."
+                    + "\nDatos Generales > Bancos/Cuentas Bancarias");
+        }
         initPanelABM(isEditing && EL_OBJECT != null, proveedor);
-
         if (isEditing) {
             panelABM.getCbEmisor().setEnabled(true);
             setPanel(EL_OBJECT);
@@ -447,7 +451,7 @@ public class ChequePropioController implements ActionListener {
         panelABM.getCbBancos().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (panelABM.getCbBancos().getItemCount() > 0 && panelABM.getCbBancos().getSelectedIndex() >= 0) {
+                if (panelABM.getCbBancos().getItemCount() > 0 && panelABM.getCbBancos().getSelectedItem() instanceof EntityWrapper) {
                     Banco banco = getSelectedBancoFromPanel();
 //                    UTIL.loadComboBox(panelABM.getCbBancoSucursales(), new BancoSucursalController().findBy(banco), false);
                     UTIL.loadComboBox(panelABM.getCbCuentaBancaria(), JGestionUtils.getWrappedCuentasBancarias(banco.getCuentasbancaria()), false);

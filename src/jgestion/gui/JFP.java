@@ -1527,10 +1527,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void jMenuItem25ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem25ActionPerformed
-        if (cajaMovimientoController == null) {
-            cajaMovimientoController = new CajaMovimientosController();
-        }
-        cajaMovimientoController.initCierreCaja(this, false);
+        new CajaMovimientosController().displayCierreCaja(this, false);
         refreshConnectionDB();
     }//GEN-LAST:event_jMenuItem25ActionPerformed
 
@@ -2303,7 +2300,6 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenuItem miSegunPresupuesto;
     // End of variables declaration//GEN-END:variables
     private boolean activa = true;
-    private CajaMovimientosController cajaMovimientoController;
 
     private void refreshConnectionDB() {
         DAO.getEntityManager().clear();

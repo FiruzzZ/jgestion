@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="JGestion_membrete" pageWidth="340" pageHeight="67" columnWidth="340" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
-	<property name="ireport.zoom" value="2.3579476910000023"/>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="JGestion_membrete" pageWidth="265" pageHeight="80" orientation="Landscape" whenNoDataType="BlankPage" columnWidth="265" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="2056b303-997b-4519-a95b-1ecae1e3c1c8">
+	<property name="ireport.zoom" value="1.7715610000000017"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<queryString>
@@ -20,20 +20,20 @@ FROM datos_empresa]]>
 	<field name="tele2" class="java.lang.Long"/>
 	<field name="web_page" class="java.lang.String"/>
 	<title>
-		<band height="66" splitType="Stretch">
+		<band height="66">
 			<image scaleImage="FillFrame" hAlign="Center" vAlign="Middle" isUsingCache="false">
-				<reportElement x="0" y="0" width="76" height="66"/>
+				<reportElement x="0" y="0" width="76" height="66" uuid="8f538a16-fc59-4c17-906b-df829b61a512"/>
 				<imageExpression><![CDATA[net.sf.jasperreports.engine.util.JRImageLoader.loadImage((byte[]) $F{logo})]]></imageExpression>
 			</image>
 			<textField isStretchWithOverflow="true">
-				<reportElement x="76" y="0" width="264" height="18"/>
+				<reportElement x="76" y="0" width="190" height="22" uuid="883cdc42-943d-42d4-80b8-948677a832e8"/>
 				<textElement textAlignment="Center">
 					<font size="9" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{nombre}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="false">
-				<reportElement x="76" y="18" width="264" height="48"/>
+				<reportElement x="76" y="22" width="190" height="44" uuid="7476c2cd-de24-444a-8817-f46b170341fd"/>
 				<textElement verticalAlignment="Top">
 					<font size="6"/>
 				</textElement>

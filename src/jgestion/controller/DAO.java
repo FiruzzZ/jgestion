@@ -18,6 +18,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import javax.persistence.*;
+import jgestion.entity.Sistema;
+import jgestion.entity.TipoDocumento;
+import jgestion.jpa.controller.JGestionJpaImpl;
+import jgestion.jpa.controller.TipoDocumentoJpaController;
 import org.apache.logging.log4j.LogManager;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -332,24 +336,44 @@ public abstract class DAO implements Runnable {
         if (properties.getProperty("populate", "false").equals("false")) {
             return;
         }
-        LogManager.getLogger();//(DAO.class).trace("Iniciando carga de DefaultData: populating..");
+        LogManager.getLogger();
         EntityManager em = null;
         JDSystemMessages ventanaSystemMessage = new JDSystemMessages(null, true);
-
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            //<editor-fold defaultstate="collapsed" desc="Creación tablas (que no son entities!): sistema, cheque_estado">
-            if (em.createNativeQuery("select id from sistema").getResultList().isEmpty()) {
-                em.createNativeQuery("INSERT INTO sistema VALUES (DEFAULT, DEFAULT, DEFAULT, NULL);"
-                ).executeUpdate();
+            //<editor-fold defaultstate="collapsed" desc="Creación tablas (que no son entities!): cheque_estado">
+            if (em.createNativeQuery("SELECT to_regclass('cheque_estado')").getSingleResult() == null) {
+                LogManager.getLogger().trace("creando tabla: cheque_estado");
+                em.createNativeQuery("CREATE TABLE cheque_estado ("
+                        + "  id integer NOT NULL,"
+                        + "  nombre character varying(20) NOT NULL,"
+                        + "  CONSTRAINT cheque_estado_pkey PRIMARY KEY (id),"
+                        + "  CONSTRAINT cheque_estado_nombre_key UNIQUE (nombre)"
+                        + ")").executeUpdate();
             }
             //</editor-fold>
-
+            //<editor-fold defaultstate="collapsed" desc="Creación de Estados de Cheques">
+            if (em.createNativeQuery("SELECT * FROM cheque_estado").getResultList().isEmpty()) {
+                LogManager.getLogger().trace("Creando cheque_estado's..");
+                StringBuilder sb = null;
+                //fill with Enum's
+                for (ChequeEstado chequeEstado : ChequeEstado.values()) {
+                    sb = new StringBuilder("INSERT INTO cheque_estado VALUES(");
+                    sb.append(chequeEstado.getId()).append(",'").append(chequeEstado.toString()).append("');");
+                }
+                em.createNativeQuery(sb.toString()).executeUpdate();
+            }
+            //</editor-fold>
+            JGestionJpaImpl<Sistema, Integer> sistemaDao = new JGestionJpaImpl<Sistema, Integer>() {
+            };
+            if (sistemaDao.findAll().isEmpty()) {
+                Sistema o = new Sistema(1, false, "Sistema en mantenimiento");
+                sistemaDao.persist(o);
+            }
             // <editor-fold defaultstate="collapsed" desc="Creación de Usuario: admin Pws: adminadmin">
             if (em.createQuery("SELECT count(o) FROM Usuario o").getSingleResult().toString().equalsIgnoreCase("0")) {
-                ventanaSystemMessage.agregar("Creando base de datos.. (Iniciando datos necesarios)");
-                ventanaSystemMessage.agregar("Ceando usuario por defecto: admin contraseña: adminadmin");
+                LogManager.getLogger().trace("Creando usuario por defecto: admin contraseña: adminadmin");
                 Usuario u = new Usuario();
                 u.setId(1);
                 u.setActivo(true);
@@ -367,11 +391,11 @@ public abstract class DAO implements Runnable {
             // <editor-fold defaultstate="collapsed" desc="Creación de Contribuyente">
             if (em.createQuery("SELECT count(o) FROM Contribuyente o").getSingleResult().toString().equalsIgnoreCase("0")) {
                 ventanaSystemMessage.agregar("Creando contribuyentes..");
-                System.out.println("CREANDO Contribuyentes..");
+                LogManager.getLogger().trace("CREANDO Contribuyentes..");
                 //FACTURAS TIPO     A     B     C     M      X
                 em.persist(new Contribuyente(1, "CONSUMIDOR FINAL", false, true, false, false, false));
                 em.persist(new Contribuyente(2, "EXENTO", false, true, false, false, false));
-                em.persist(new Contribuyente(3, "MONOTRIBUTISTA", false, true, false, false, false));
+                em.persist(new Contribuyente(3, "MONOTRIBUTISTA", false, false, true, false, false));
                 em.persist(new Contribuyente(4, "RESP. INSCRIP", true, false, false, false, false));
                 em.persist(new Contribuyente(5, "RESP. NO INSCRIP", false, true, false, false, false));
             }
@@ -379,7 +403,8 @@ public abstract class DAO implements Runnable {
 
             // <editor-fold defaultstate="collapsed" desc="Creación de Iva's">
             if (em.createQuery("SELECT COUNT(o) FROM Iva o ").getSingleResult().toString().equalsIgnoreCase("0")) {
-                System.out.println("CREANDO Iva..");
+                ventanaSystemMessage.agregar("Creando IVA's..");
+                LogManager.getLogger().trace("CREANDO IVA's..");
                 em.persist(new Iva(1, 21.0f));
                 em.persist(new Iva(2, 10.5f));
             }// </editor-fold>
@@ -387,21 +412,22 @@ public abstract class DAO implements Runnable {
             // <editor-fold defaultstate="collapsed" desc="Creación DatosEmpresa">
             if (em.createQuery("SELECT COUNT(o) FROM DatosEmpresa o").getSingleResult().toString().equalsIgnoreCase("0")) {
                 ventanaSystemMessage.agregar("Creando DatosEmpresa..");
-                System.out.println("Creando DatosEmpresa..");
+                LogManager.getLogger().trace("Creando DatosEmpresa..");
                 DatosEmpresa d = new DatosEmpresa(1, "JGestion", 30000000001l, "Dirección", 540000000, new Date());
+                d.setContribuyente(new ContribuyenteController().findContribuyente(1));
                 d.setLogo(null);
                 em.persist(d);
             }// </editor-fold>
 
             // <editor-fold defaultstate="collapsed" desc="Creación Unidadmedida -> UNITARIO">
             if (em.createQuery("SELECT COUNT(o) FROM Unidadmedida o").getSingleResult().toString().equalsIgnoreCase("0")) {
-                System.out.println("Creando Unidadmedida..");
+                LogManager.getLogger().trace("Creando Unidadmedida..");
                 em.persist(new Unidadmedida(1, "UNITARIO"));
             }// </editor-fold>
 
             //<editor-fold defaultstate="collapsed" desc="Creación de Bancos">
             if (em.createQuery("SELECT COUNT(o) FROM " + Banco.class.getSimpleName() + " o ").getSingleResult().toString().equalsIgnoreCase("0")) {
-                System.out.println("Creando Bancos..");
+                LogManager.getLogger().trace("Creando Bancos..");
                 em.createNativeQuery("insert into banco (nombre, webpage) values "
                         + "('ABN AMRO','www.abnamro.com.ar'),('American Express Bank','www.americanexpress.com.ar'),('BACS','www.bacs.com.ar'),('Banco B.I. Creditanstalt','www.bicreditanstalt.com.ar'),('Banco Bradesco','www.bradesco.com.br'),"
                         + "('Banco Cetelem','www.cetelem.com.ar'),('Banco Ciudad','www.bancociudad.com.ar'),('Banco CMF','www.cmfb.com.ar'),('Banco Cofidis','www.cofidis.com'),('Banco Columbia','www.bancocolumbia.com.ar'),"
@@ -415,25 +441,25 @@ public abstract class DAO implements Runnable {
                         + "('Banco Santa Cruz','www.bancosantacruz.com.ar'),('Banco Santander Río','www.santanderrio.com.ar'),('Banco Supervielle','www.supervielle.com.ar'),('Bank of America','www.bankofamerica.com'),('Bank of Tokyo-Mitsubishi UFJ','www.bk.mufg.jp/english/'),"
                         + "('BBVA Banco Francés','www.bancofrances.com.ar'),('BICE','www.bice.com.ar'),('BNP Paribas','www.bnpparibas.com.ar'),('Citibank','www.citibank.com/argentina'),('Deutsche Bank','www.db.com'),('HSBC Bank','www.hsbc.com.ar'),"
                         + "('JPMorgan','www.jpmorgan.com'),('MBA Lazard Banco De Inversiones','www.mba-lazard.com'),('Nuevo Banco de Entre Ríos','www.nuevobersa.com.ar'),('Nuevo Banco de La Rioja','www.nblr.com.ar'),('Nuevo Banco de Santa Fe','www.bancobsf.com.ar'),"
-                        + "('Nuevo Banco del Chaco','www.nbch.com.ar'),('RCI Banque','www.rcibanque.com'),('Standard Bank','www.standardbank.com.ar'), ('ICBC', 'www.icbc.com.ar');").executeUpdate();
+                        + "('Nuevo Banco del Chaco','www.nbch.com.ar'),('RCI Banque','www.rcibanque.com'),('Standard Bank','www.standardbank.com.ar'), ('ICBC', 'www.icbc.com.ar');")
+                        .executeUpdate();
             }
             //</editor-fold>
 
             // <editor-fold defaultstate="collapsed" desc="MovimientoConcepto.EFECTIVO">
             if (em.createQuery("SELECT COUNT(o) FROM " + Cuenta.class.getSimpleName() + " o").getSingleResult().toString().equalsIgnoreCase("0")) {
-                System.out.println("Creando " + Cuenta.class.getSimpleName());
+                LogManager.getLogger().trace("Creando " + Cuenta.class.getSimpleName());
                 Cuenta o = new Cuenta();
                 o.setId(1);
                 o.setNombre("EFECTIVO");
                 em.persist(o);
             }// </editor-fold>
 
-            // <editor-fold defaultstate="collapsed" desc="Creanción Provincias, Departamentos (de Mnes.) y Municipios (de Mnes.)">
+            // <editor-fold defaultstate="collapsed" desc="Creación Provincias, Departamentos (de Mnes.) y Municipios (de Mnes.)">
             if (em.createQuery("SELECT COUNT(o) FROM Provincia o").getSingleResult().toString().equalsIgnoreCase("0")) {
-                ventanaSystemMessage.agregar("Creando Provincias..");
-                ventanaSystemMessage.agregar("Creando Departamentos.. (de Misiones)");
-                ventanaSystemMessage.agregar("Creando Municipios..");
-                System.out.println("Creando Provincias, Departamentos, Municipios");
+                LogManager.getLogger().trace("Creando Provincias..");
+                LogManager.getLogger().trace("Creando Departamentos.. (de Misiones)");
+                LogManager.getLogger().trace("Creando Municipios..");
                 getJDBCConnection().createStatement().execute(
                         " INSERT INTO provincia (idprovincia, nombre) VALUES "
                         + "(1,'Buenos Aires'), (2,'Catamarca'), (3,'Chaco'), (4,'Chubut'),"
@@ -464,38 +490,32 @@ public abstract class DAO implements Runnable {
                         + "(20,'SANTA ANA');");
                 getJDBCConnection().commit();
                 getJDBCConnection().close();
-//            DAO.getEntityManager().getTransaction().commit();
             }// </editor-fold>
 
-            //<editor-fold defaultstate="collapsed" desc="Creación de Estados de Cheques">
-            if (em.createNativeQuery("SELECT * FROM cheque_estado").getResultList().isEmpty()) {
-                System.out.println("Creando cheque_estado's..");
-                StringBuilder sb = null;
-                //fill with Enum's
-                for (ChequeEstado chequeEstado : ChequeEstado.values()) {
-                    sb = new StringBuilder("INSERT INTO cheque_estado VALUES(");
-                    sb.append(chequeEstado.getId()).append(",'").append(chequeEstado.toString()).append("');");
-                }
-                em.createNativeQuery(sb.toString()).executeUpdate();
-            }
-            //</editor-fold>
-
+            //<editor-fold defaultstate="collapsed" desc="Creación de Operaciones bancarias">
             if (em.createNativeQuery("SELECT * FROM operaciones_bancarias").getResultList().isEmpty()) {
-                System.out.println("Creando cheque_estado's..");
-                StringBuilder sb;
-                sb = new StringBuilder("INSERT INTO operaciones_bancarias VALUES ");
+                LogManager.getLogger().trace("Creando Operaciones Bancarias..");
+                StringBuilder sb = new StringBuilder("INSERT INTO operaciones_bancarias VALUES ");
                 sb.append("(").append(OperacionesBancariasController.DEPOSITO).append(",'DEPÓSITO'),");
                 sb.append("(").append(OperacionesBancariasController.EXTRACCION).append(",'EXTRACCIÓN'),");
                 sb.append("(").append(OperacionesBancariasController.TRANSFERENCIA).append(",'TRANSFERENCIA');");
                 em.createNativeQuery(sb.toString()).executeUpdate();
                 em.createNativeQuery("SELECT SETVAL('operaciones_bancarias_id_seq'::regclass, 3);").getResultList();
             }
+            //</editor-fold>
+
+            if (new TipoDocumentoJpaController().findAll().isEmpty()) {
+                LogManager.getLogger().trace("Creando Tipos de documentos..");
+                em.persist(new TipoDocumento(1, "DNI", 96));
+                em.persist(new TipoDocumento(2, "CUIT", 80));
+                em.persist(new TipoDocumento(3, "CUIL", 86));
+            }
             em.getTransaction().commit();
         } catch (Exception ex) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            LogManager.getLogger();//(DAO.class.getName()).log(Level.ERROR, null, ex);
+            LogManager.getLogger().fatal(ex, ex);
             throw ex;
         } finally {
             if (em != null) {

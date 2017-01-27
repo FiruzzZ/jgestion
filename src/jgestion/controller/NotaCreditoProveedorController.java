@@ -479,7 +479,7 @@ public class NotaCreditoProveedorController implements ActionListener {
         jdFactura.addTotalesRefreshListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
-                if (((TextComponent) e.getComponent()).isEditable()) {
+                if (((JTextComponent) e.getComponent()).isEditable()) {
                     facturaCompraController.refreshResumen();
                 }
             }
