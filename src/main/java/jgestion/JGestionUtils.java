@@ -1,5 +1,6 @@
 package jgestion;
 
+import generics.ProjectUtils;
 import jgestion.entity.NotaDebitoProveedor;
 import jgestion.entity.Vendedor;
 import jgestion.entity.Presupuesto;
@@ -74,7 +75,7 @@ public class JGestionUtils {
     }
 
     public static String getProperty(String key) {
-        return resourceBundle.getString(key);
+        return ProjectUtils.getProperty(key);
     }
     private static final String[] yyy = {
         "",

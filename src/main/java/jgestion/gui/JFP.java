@@ -5,6 +5,7 @@
  */
 package jgestion.gui;
 
+import generics.ProjectUtils;
 import jgestion.controller.DatosEmpresaJpaController;
 import jgestion.controller.RemesaController;
 import jgestion.controller.CajaController;
@@ -61,6 +62,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.swing.*;
 import jgestion.JGestion;
+import jgestion.JGestionUtils;
 import jgestion.controller.AFIPWSController;
 import jgestion.controller.FacturaElectronicaController;
 import jgestion.controller.RemitoCompraController;
@@ -85,9 +87,9 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         setLocation((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
         jMenuItem11.setVisible(false); // Menú -> Datos Generales -> Contribuyente
         String nombre = new DatosEmpresaJpaController().findDatosEmpresa().getNombre();
-        setTitle(JGestion.resourceBundle.getString("application.title")
-                + " v" + JGestion.resourceBundle.getString("application.version")
-                + JGestion.resourceBundle.getString("application.buildnumber")
+        setTitle(ProjectUtils.getProperty("application.title")
+                + " v" + ProjectUtils.getProperty("application.version")
+                + ProjectUtils.getBuildNumber()
                 + " | " + nombre
                 + " - " + UsuarioController.getCurrentUser().getNick());
     }
