@@ -6,3 +6,4 @@
 /app.log
 /ws/tar.xml
 /ws/cert*
+/nbproject/
