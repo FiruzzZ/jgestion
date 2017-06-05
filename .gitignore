@@ -7,3 +7,4 @@
 /ws/tar.xml
 /ws/cert*
 /nbproject/
+/target/
