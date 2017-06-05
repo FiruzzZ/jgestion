@@ -18,6 +18,7 @@ import jgestion.gui.JDBuscador;
 import jgestion.controller.exceptions.MessageException;
 import jgestion.controller.exceptions.MissingReportException;
 import generics.GenericBeanCollection;
+import generics.ProjectUtils;
 import java.awt.Component;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
@@ -714,7 +715,7 @@ public class CajaMovimientosController implements ActionListener {
                 }
             }
         });
-        buscador.getBtnToExcel().setIcon(new ImageIcon(getClass().getResource("/iconos/impresora.png")));
+        buscador.getBtnToExcel().setIcon(ProjectUtils.getIcon("impresora.png"));
         buscador.getBtnToExcel().setText("Imp. Comprobante");
         buscador.getBtnToExcel().addActionListener(new ActionListener() {
             @Override

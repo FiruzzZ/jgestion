@@ -24,6 +24,7 @@ import jgestion.entity.Usuario;
 import jgestion.entity.UsuarioAcciones;
 import jgestion.entity.enums.ChequeEstado;
 import generics.GenericBeanCollection;
+import generics.ProjectUtils;
 import jgestion.gui.JDABM;
 import jgestion.gui.JDChequesManager;
 import jgestion.gui.PanelABMCheques;
@@ -596,10 +597,10 @@ public class ChequeTercerosController implements ActionListener {
                 if (chequeID != null) {
                     ChequeTerceros cheque = jpaController.find(chequeID);
                     if (cheque.getEstado() == ChequeEstado.ANULADO.getId()) {
-                        jdChequeManager.getbAnular().setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/24px_undo_arrow.png")));
+                        jdChequeManager.getbAnular().setIcon(ProjectUtils.getIcon("24px_undo_arrow.png"));
                         jdChequeManager.getbAnular().setText("Des-Anular");
                     } else {
-                        jdChequeManager.getbAnular().setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/cancelar.png")));
+                        jdChequeManager.getbAnular().setIcon(ProjectUtils.getIcon("cancelar.png"));
                         jdChequeManager.getbAnular().setText("Anular");
                     }
                 }

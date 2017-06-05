@@ -1,5 +1,6 @@
 package jgestion.controller;
 
+import generics.ProjectUtils;
 import jgestion.controller.exceptions.MissingReportException;
 import generics.WaitingDialog;
 import java.awt.Dialog;
@@ -63,7 +64,7 @@ public class Reportes implements Runnable {
     private JRBeanCollectionDataSource dataSource;
     private static final Logger LOG = LogManager.getLogger();
     private JasperPrint jPrint;
-    private final Icon impresoraIcon = new ImageIcon(getClass().getResource("/iconos/impresora.png"));
+    private final Icon impresoraIcon = ProjectUtils.getIcon("impresora.png");
     private boolean dinamycReport;
     private Thread reportThread;
 

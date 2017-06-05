@@ -33,7 +33,7 @@ public class CustomABMJDialog extends JDialog {
     private static final boolean customTextPosition = false;
     public static final int HORIZONTAL_TEXT_POSITION = SwingUtilities.CENTER;
     public static final int VERTICAL_TEXT_POSITION = SwingUtilities.BOTTOM;
-    private static final String RESOURCE_FOLDER_PATH = "/iconos/";
+    private static final String RESOURCE_FOLDER_PATH = ProjectUtils.ICONS_FOLDER;
     private String messageToHTML;
     private Color topButtonForegroundColor = null;
     private Color topButtonBackgroundColor = null;

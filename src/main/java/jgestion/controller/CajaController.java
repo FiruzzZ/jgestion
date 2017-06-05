@@ -1,5 +1,6 @@
 package jgestion.controller;
 
+import generics.ProjectUtils;
 import java.awt.Window;
 import jgestion.controller.exceptions.IllegalOrphanException;
 import jgestion.controller.exceptions.MessageException;
@@ -281,10 +282,10 @@ public class CajaController implements ActionListener {
 
     private void setLockIcon(boolean estado) {
         if (estado) {
-            abm.getBtnLock().setIcon(new ImageIcon(getClass().getResource("/iconos/lock.png"))); //
+            abm.getBtnLock().setIcon(ProjectUtils.getIcon("lock.png"));
             abm.getBtnLock().setText("Baja");
         } else {
-            abm.getBtnLock().setIcon(new ImageIcon(getClass().getResource("/iconos/unlock.png"))); //
+            abm.getBtnLock().setIcon(ProjectUtils.getIcon("unlock.png"));
             abm.getBtnLock().setText("Activar");
         }
     }

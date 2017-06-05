@@ -1,5 +1,6 @@
 package jgestion;
 
+import generics.ProjectUtils;
 import generics.WaitingDialog;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -119,7 +120,7 @@ public abstract class ShutDownListener {
                     }
                 }
             });
-            lostConnectionDialog.getLabelMessage().setIcon(new ImageIcon(getClass().getResource("/iconos/gnome-panel-force-quit.png")));
+            lostConnectionDialog.getLabelMessage().setIcon(ProjectUtils.getIcon("gnome-panel-force-quit.png"));
             lostConnectionDialog.setLocationRelativeTo(null);
         }
         if (!lostConnectionDialog.isVisible()) {
