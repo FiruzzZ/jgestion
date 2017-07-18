@@ -22,12 +22,14 @@
 		<![CDATA[SELECT s.puntoventa, recibo.numero, recibo.tipo, recibo.estado, recibo.fecha_carga, recibo.fecha_recibo, d.fecha_inicio_actividad as empresa_fecha_inicio_actividad, d.nombre as empresa_nombre, d.cuit as empresa_cuit,
  d.direccion as empresa_dir, d.tele1 as empresa_tele1, d.tele2 as empresa_tele2, d.logo as empresa_logo,
 c.nombre as clie_nombre, c.direccion as clie_direccion, c.tele1 as clie_tele1, c.num_doc as clie_cuit, con.nombre as clie_contrib, emp_con.nombre as empresa_condicion_iva
-FROM datos_empresa d join contribuyente emp_con ON d.contribuyente_id = emp_con.id, contribuyente con, detalle_recibo dr
-JOIN recibo ON (recibo.id = dr.recibo)
-JOIN sucursal s ON (recibo.sucursal = s.id), cliente c
-WHERE c.contribuyente = con.id
-AND d.id = 1
-AND recibo.id =  $P{RECIBO_ID}]]>
+FROM recibo
+JOIN detalle_recibo dr ON recibo.id = dr.recibo
+JOIN cliente c ON c.id = recibo.cliente_id
+JOIN sucursal s ON recibo.sucursal = s.id
+JOIN contribuyente con ON c.contribuyente = con.id,
+datos_empresa d
+join contribuyente emp_con ON d.contribuyente_id = emp_con.id
+WHERE d.id = 1 AND recibo.id =  $P{RECIBO_ID}]]>
 	</queryString>
 	<field name="puntoventa" class="java.lang.Integer"/>
 	<field name="numero" class="java.math.BigDecimal"/>
