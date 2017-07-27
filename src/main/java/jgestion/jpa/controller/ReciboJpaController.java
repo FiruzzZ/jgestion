@@ -58,6 +58,9 @@ public class ReciboJpaController extends JGestionJpaImpl<Recibo, Integer> {
             case 'C':
                 next = sucursal.getRecibo_c();
                 break;
+            case 'X':
+                next = sucursal.getRecibo_x();
+                break;
             default:
                 throw new IllegalArgumentException("Parameter tipo not valid, no corresponde a ningún tipo de Recibo.");
         }

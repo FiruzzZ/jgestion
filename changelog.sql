@@ -1,3 +1,5 @@
+--20170727
+alter table sucursal add column recibo_x numeric(8,0) not null default 1;
 --20160923
 alter table recibo drop column por_conciliar;
 --20151116

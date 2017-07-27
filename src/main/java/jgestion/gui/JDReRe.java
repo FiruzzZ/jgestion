@@ -196,7 +196,7 @@ public class JDReRe extends javax.swing.JDialog {
 
         labelLetra.setText("Tipo");
 
-        cbTipo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "A", "B", "C" }));
+        cbTipo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "A", "B", "C", "X" }));
         cbTipo.setName("facturaLetra"); // NOI18N
 
         javax.swing.GroupLayout panelDatosLayout = new javax.swing.GroupLayout(panelDatos);

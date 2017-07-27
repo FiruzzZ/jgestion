@@ -10,7 +10,8 @@ import javax.persistence.*;
  */
 @Entity
 @NamedQueries({
-    @NamedQuery(name = "Sucursal.findAll", query = "SELECT s FROM Sucursal s ORDER BY s.nombre"),
+    @NamedQuery(name = "Sucursal.findAll", query = "SELECT s FROM Sucursal s ORDER BY s.nombre")
+    ,
     @NamedQuery(name = "Sucursal.findById", query = "SELECT s FROM Sucursal s WHERE s.id = :id")
 })
 @Access(AccessType.FIELD)
@@ -93,6 +94,9 @@ public class Sucursal implements Serializable {
     @Basic(optional = false)
     @Column(name = "recibo_c", precision = 8, nullable = false)
     private Integer recibo_c;
+    @Basic(optional = false)
+    @Column(name = "recibo_x", precision = 8, nullable = false)
+    private Integer recibo_x;
     @Basic(optional = false)
     @Column(precision = 8, nullable = false)
     private Integer remito;
@@ -314,6 +318,14 @@ public class Sucursal implements Serializable {
         this.recibo_c = recibo_c;
     }
 
+    public Integer getRecibo_x() {
+        return recibo_x;
+    }
+
+    public void setRecibo_x(Integer recibo_x) {
+        this.recibo_x = recibo_x;
+    }
+
     public Integer getRemito() {
         return remito;
     }
@@ -352,11 +364,15 @@ public class Sucursal implements Serializable {
     @Override
     public String toString() {
         return "Sucursal{" + "id=" + id + ", nombre=" + nombre + ", direccion=" + direccion
-                + ", tele1=" + tele1 + ", tele2=" + tele2 + ", estado=" + estado + ", interno1=" + interno1
-                + ", interno2=" + interno2 + ", encargado=" + encargado + ", email=" + email
-                + ", departamento=" + departamento + ", municipio=" + municipio + ", provincia=" + provincia
-                + ", puntoVenta=" + puntoVenta + ", factura_a=" + factura_a + ", factura_b=" + factura_b + ", factura_c=" + factura_c
-                + ", notaCredito=" + notaCredito_a + ", notaDebitoA=" + notaDebitoA + ", notaDebitoB=" + notaDebitoB
-                + ", recibo=" + recibo_a + ", remito=" + remito + '}';
+                + ", tele1=" + tele1 + ", tele2=" + tele2 + ", estado=" + estado
+                + ", interno1=" + interno1 + ", interno2=" + interno2 + ", encargado=" + encargado
+                + ", email=" + email + ", departamento=" + departamento + ", municipio=" + municipio
+                + ", provincia=" + provincia + ", puntoVenta=" + puntoVenta + ", factura_a=" + factura_a
+                + ", factura_b=" + factura_b + ", factura_c=" + factura_c + ", notaCredito_a=" + notaCredito_a
+                + ", notaCredito_b=" + notaCredito_b + ", notaCredito_c=" + notaCredito_c
+                + ", notaDebitoA=" + notaDebitoA + ", notaDebitoB=" + notaDebitoB + ", notaDebitoC=" + notaDebitoC
+                + ", recibo_a=" + recibo_a + ", recibo_b=" + recibo_b + ", recibo_c=" + recibo_c + ", recibo_x="
+                + recibo_x + ", remito=" + remito + ", webServices=" + webServices + '}';
     }
+
 }

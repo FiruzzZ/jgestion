@@ -92,6 +92,8 @@ public class PanelABMSucursal extends javax.swing.JPanel {
         tfInicialReciboA = new javax.swing.JTextField();
         jLabel20 = new javax.swing.JLabel();
         tfInicialNotaCreditoA = new javax.swing.JTextField();
+        jLabel30 = new javax.swing.JLabel();
+        tfInicialReciboX = new javax.swing.JTextField();
         checkHabilitarPuntoVenta = new javax.swing.JCheckBox();
 
         jLabel6.setText("Provincia");
@@ -292,6 +294,13 @@ public class PanelABMSucursal extends javax.swing.JPanel {
         tfInicialNotaCreditoA.setText("1");
         tfInicialNotaCreditoA.setSelectionStart(0);
 
+        jLabel30.setText("\"X\"");
+
+        tfInicialReciboX.setColumns(8);
+        tfInicialReciboX.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        tfInicialReciboX.setText("1");
+        tfInicialReciboX.setSelectionStart(0);
+
         javax.swing.GroupLayout panelPuntoVentaLayout = new javax.swing.GroupLayout(panelPuntoVenta);
         panelPuntoVenta.setLayout(panelPuntoVentaLayout);
         panelPuntoVentaLayout.setHorizontalGroup(
@@ -343,7 +352,11 @@ public class PanelABMSucursal extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel26)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(tfInicialReciboC, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(tfInicialReciboC, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel30)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(tfInicialReciboX, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(panelPuntoVentaLayout.createSequentialGroup()
                         .addComponent(tfInicialNotaDebitoA, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -360,9 +373,9 @@ public class PanelABMSucursal extends javax.swing.JPanel {
                         .addComponent(checkWebServices)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelPuntoVentaLayout.createSequentialGroup()
-                .addContainerGap(17, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 398, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(18, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panelPuntoVentaLayout.setVerticalGroup(
             panelPuntoVentaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -396,7 +409,9 @@ public class PanelABMSucursal extends javax.swing.JPanel {
                     .addComponent(tfInicialReciboB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(panelPuntoVentaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel26)
-                        .addComponent(tfInicialReciboC, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(tfInicialReciboC, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel30)
+                        .addComponent(tfInicialReciboX, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelPuntoVentaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(tfInicialNotaCreditoA, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -432,10 +447,12 @@ public class PanelABMSucursal extends javax.swing.JPanel {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(10, 10, 10)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(panelPuntoVenta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
+                        .addGap(10, 10, 10)
+                        .addComponent(panelPuntoVenta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.TRAILING)
@@ -613,6 +630,7 @@ public class PanelABMSucursal extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel28;
     private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel30;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
@@ -635,6 +653,7 @@ public class PanelABMSucursal extends javax.swing.JPanel {
     private javax.swing.JTextField tfInicialReciboA;
     private javax.swing.JTextField tfInicialReciboB;
     private javax.swing.JTextField tfInicialReciboC;
+    private javax.swing.JTextField tfInicialReciboX;
     private javax.swing.JTextField tfInicialRemito;
     private javax.swing.JTextField tfInterno1;
     private javax.swing.JTextField tfInterno2;
@@ -775,6 +794,10 @@ public class PanelABMSucursal extends javax.swing.JPanel {
 
     public JTextField getTfInicialReciboC() {
         return tfInicialReciboC;
+    }
+
+    public JTextField getTfInicialReciboX() {
+        return tfInicialReciboX;
     }
 
     public JTextField getTfInicialNotaCreditoA() {

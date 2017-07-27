@@ -176,7 +176,7 @@ public class SucursalController implements ActionListener {
         }
         Integer puntoVenta;
         Integer factura_a, factura_b, factura_c, notaCredito_a, notaCredito_b, notaCredito_c,
-                notaDebitoA, notaDebitoB, notaDebitoC, recibo_a, recibo_b, recibo_c, remito;
+                notaDebitoA, notaDebitoB, notaDebitoC, recibo_a, recibo_b, recibo_c, recibo_x, remito;
         // <editor-fold defaultstate="collapsed" desc="CTRLS">
         String nombre = panel.getTfNombre().toUpperCase().trim();
         if (nombre.isEmpty()) {
@@ -289,6 +289,14 @@ public class SucursalController implements ActionListener {
             throw new MessageException("Número de Recibo 'C' no válido (debe estar compuesto solo por números)");
         }
         try {
+            recibo_x = Integer.valueOf(panel.getTfInicialReciboX().getText().trim());
+            if (recibo_x < 1 || recibo_x > 99999999) {
+                throw new MessageException("Número de Recibo 'X' no válido (debe estar compuesto solo por números, mayor a cero y menor o igual a 99999999)");
+            }
+        } catch (Exception e) {
+            throw new MessageException("Número de Recibo 'X' no válido (debe estar compuesto solo por números)");
+        }
+        try {
             remito = Integer.valueOf(panel.getTfInicialRemito().getText().trim());
             if (remito < 1 || remito > 99999999) {
                 throw new MessageException("Número de Remito no válido (debe estar compuesto solo por números, mayor a cero y menor o igual a 99999999)");
@@ -355,6 +363,7 @@ public class SucursalController implements ActionListener {
         entity.setRecibo_a(recibo_a);
         entity.setRecibo_b(recibo_b);
         entity.setRecibo_c(recibo_c);
+        entity.setRecibo_x(recibo_x);
         entity.setRemito(remito);
     }
 
@@ -405,7 +414,7 @@ public class SucursalController implements ActionListener {
             if (!sucursal.getRecibo_b().equals(oldInstance.getRecibo_b())) {
                 next = new ReciboJpaController().getNextNumero(sucursal, 'B');
                 if (next > sucursal.getRecibo_b()) {
-                    throw new MessageException("Existen registros de Recibo 'B' superior a " + UTIL.AGREGAR_CEROS(sucursal.getRecibo_a(), 8) + "."
+                    throw new MessageException("Existen registros de Recibo 'B' superior a " + UTIL.AGREGAR_CEROS(sucursal.getRecibo_b(), 8) + "."
                             + "\n" + buttonMessage
                             + "\n" + anterior + "Recibo");
                 }
@@ -413,7 +422,15 @@ public class SucursalController implements ActionListener {
             if (!sucursal.getRecibo_c().equals(oldInstance.getRecibo_c())) {
                 next = new ReciboJpaController().getNextNumero(sucursal, 'C');
                 if (next > sucursal.getRecibo_c()) {
-                    throw new MessageException("Existen registros de Recibo 'C' superior a " + UTIL.AGREGAR_CEROS(sucursal.getRecibo_a(), 8) + "."
+                    throw new MessageException("Existen registros de Recibo 'C' superior a " + UTIL.AGREGAR_CEROS(sucursal.getRecibo_c(), 8) + "."
+                            + "\n" + buttonMessage
+                            + "\n" + anterior + "Recibo");
+                }
+            }
+            if (!sucursal.getRecibo_x().equals(oldInstance.getRecibo_x())) {
+                next = new ReciboJpaController().getNextNumero(sucursal, 'X');
+                if (next > sucursal.getRecibo_x()) {
+                    throw new MessageException("Existen registros de Recibo 'X' superior a " + UTIL.AGREGAR_CEROS(sucursal.getRecibo_x(), 8) + "."
                             + "\n" + buttonMessage
                             + "\n" + anterior + "Recibo");
                 }
@@ -445,7 +462,15 @@ public class SucursalController implements ActionListener {
             if (!sucursal.getNotaDebitoB().equals(oldInstance.getNotaDebitoB())) {
                 next = new NotaDebitoJpaController().getNextNumero(sucursal, "B");
                 if (next > sucursal.getNotaDebitoB()) {
-                    throw new MessageException("Existen registros de Nota de Débito \"B\" superior a " + UTIL.AGREGAR_CEROS(sucursal.getNotaDebitoA(), 8) + "."
+                    throw new MessageException("Existen registros de Nota de Débito \"B\" superior a " + UTIL.AGREGAR_CEROS(sucursal.getNotaDebitoB(), 8) + "."
+                            + "\n" + buttonMessage
+                            + "\n" + anterior + "Nota de Débito");
+                }
+            }
+            if (!sucursal.getNotaDebitoC().equals(oldInstance.getNotaDebitoC())) {
+                next = new NotaDebitoJpaController().getNextNumero(sucursal, "C");
+                if (next > sucursal.getNotaDebitoC()) {
+                    throw new MessageException("Existen registros de Nota de Débito \"C\" superior a " + UTIL.AGREGAR_CEROS(sucursal.getNotaDebitoC(), 8) + "."
                             + "\n" + buttonMessage
                             + "\n" + anterior + "Nota de Débito");
                 }
@@ -488,6 +513,7 @@ public class SucursalController implements ActionListener {
         panel.getTfInicialReciboA().setText(UTIL.AGREGAR_CEROS(s.getRecibo_a(), 8));
         panel.getTfInicialReciboB().setText(UTIL.AGREGAR_CEROS(s.getRecibo_b(), 8));
         panel.getTfInicialReciboC().setText(UTIL.AGREGAR_CEROS(s.getRecibo_c(), 8));
+        panel.getTfInicialReciboX().setText(UTIL.AGREGAR_CEROS(s.getRecibo_x(), 8));
         panel.getTfInicialRemito().setText(UTIL.AGREGAR_CEROS(s.getRemito(), 8));
         panel.setTfDireccion(s.getDireccion());
         panel.setTfEncargado(s.getEncargado());
@@ -666,11 +692,13 @@ public class SucursalController implements ActionListener {
         actual = new ReciboJpaController().getNextNumero(sucursal, 'C');
         actual = actual.equals(sucursal.getRecibo_c()) ? actual : actual - 1;
         paneln.setTfInicialReciboC(UTIL.AGREGAR_CEROS(actual, 8));
+        actual = actual.equals(sucursal.getRecibo_x()) ? actual : actual - 1;
+        paneln.setTfInicialReciboX(UTIL.AGREGAR_CEROS(actual, 8));
 
         actual = new RemitoJpaController().getNextNumero(sucursal);
         actual = actual.equals(sucursal.getRemito()) ? actual : actual - 1;
         paneln.setTfInicialRemito(UTIL.AGREGAR_CEROS(actual, 8));
-        
+
         final NotaCreditoJpaController notaCreditoJpaController = new NotaCreditoJpaController();
         actual = notaCreditoJpaController.getNextNumero(sucursal, 'A');
         actual = actual.equals(sucursal.getNotaCredito_a()) ? actual : actual - 1;
