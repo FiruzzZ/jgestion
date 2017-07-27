@@ -74,13 +74,15 @@ public abstract class DAO implements Runnable {
             String persistenceUnitName = "JGestionPU";
             LogManager.getLogger();//(DAO.class).trace("Initializing EntityManagerFactory= " + persistenceUnitName);
             String server, port, database;
-            server = properties.getProperty("server");
-            port = properties.getProperty("port");
-            database = properties.getProperty("database");
-            if (properties.getProperty("create-tables", "false").equals("true")) {
-                properties.setProperty("eclipselink.ddl-generation", "create-tables");
+            if (properties != null) {
+                server = properties.getProperty("server");
+                port = properties.getProperty("port");
+                database = properties.getProperty("database");
+                if (properties.getProperty("create-tables", "false").equals("true")) {
+                    properties.setProperty("eclipselink.ddl-generation", "create-tables");
+                }
+                properties.setProperty("javax.persistence.jdbc.url", "jdbc:postgresql://" + server + ":" + port + "/" + database);
             }
-            properties.setProperty("javax.persistence.jdbc.url", "jdbc:postgresql://" + server + ":" + port + "/" + database);
             emf = Persistence.createEntityManagerFactory(persistenceUnitName, properties);
             getJDBCConnection();
         }
