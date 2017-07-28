@@ -196,7 +196,7 @@ public class JDReRe extends javax.swing.JDialog {
 
         labelLetra.setText("Tipo");
 
-        cbTipo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "A", "B", "C", "X" }));
+        cbTipo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "<Elegir>", "A", "B", "C", "X" }));
         cbTipo.setName("facturaLetra"); // NOI18N
 
         javax.swing.GroupLayout panelDatosLayout = new javax.swing.GroupLayout(panelDatos);
@@ -213,7 +213,7 @@ public class JDReRe extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelDatosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelDatosLayout.createSequentialGroup()
-                        .addComponent(cbTipo, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(cbTipo, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(labelReRe)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)

@@ -430,6 +430,9 @@ public class RemesaController implements FocusListener {
                 throw new MessageException("No ha hecho ninguna entrega");
             }
         }
+        if (jdReRe.getCbTipo().getSelectedIndex() < 1) {
+            throw new MessageException("Debe seleccionar el tipo/letra del comprobante");
+        }
         if (jdReRe.getDtmPagos().getRowCount() < 1) {
             throw new MessageException("No ha ingresado ningún pago");
         }

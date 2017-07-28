@@ -517,6 +517,9 @@ public class ReciboController {
         if (jdReRe.getDcFechaReRe().getDate() == null) {
             throw new MessageException("Fecha de " + jpaController.getEntityClass().getSimpleName() + " no válida");
         }
+        if(jdReRe.getCbTipo().getSelectedIndex() < 1) {
+            throw new MessageException("Debe seleccionar el tipo/letra del comprobante");
+        }
         if (jdReRe.getDtmPagos().getRowCount() < 1) {
             throw new MessageException("No ha ingresado ningún pago");
         }
@@ -1086,10 +1089,16 @@ public class ReciboController {
      * Carga el POSIBLE siguiente N°, en caso de multiples instancias no pincha ni corta.
      */
     private void setNextNumeroReRe() {
-        Sucursal sucursal = getSelectedSucursalFromJD();
-        Integer nextRe = jpaController.getNextNumero(sucursal, jdReRe.getCbTipo().getSelectedItem().toString());
-        jdReRe.setTfCuarto(UTIL.AGREGAR_CEROS(sucursal.getPuntoVenta(), 4));
-        jdReRe.setTfOcteto(UTIL.AGREGAR_CEROS(nextRe, 8));
+        if (jdReRe.getCbTipo().getSelectedIndex() > 0) {
+            final String cbteTipo = jdReRe.getCbTipo().getSelectedItem().toString();
+            Sucursal sucursal = getSelectedSucursalFromJD();
+            Integer nextRe = jpaController.getNextNumero(sucursal, cbteTipo);
+            jdReRe.setTfCuarto(UTIL.AGREGAR_CEROS(sucursal.getPuntoVenta(), 4));
+            jdReRe.setTfOcteto(UTIL.AGREGAR_CEROS(nextRe, 8));
+        } else {
+            jdReRe.setTfCuarto("-");
+            jdReRe.setTfOcteto("-");
+        }
     }
 
     private void doReportRecibo(Recibo recibo) throws Exception {
