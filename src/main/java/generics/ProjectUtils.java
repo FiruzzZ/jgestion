@@ -16,6 +16,20 @@ public final class ProjectUtils {
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle("resources");
     public static final String ICONS_FOLDER = "iconsfolder";
     public static final String REPORTS_FOLDER = "reportsfolder";
+    public static final String DATE_FORMAT = getProperty("dateFormat");
+    /**
+     * Hora sin segundos
+     */
+    public static final String TIME_FORMAT = getProperty("timeFormat");
+    /**
+     * Hora con segundos
+     */
+    public static final String TIMEF_FORMAT = getProperty("timefFormat");
+    /**
+     * formato para Mes y año (sin días)
+     */
+    public static final String PERIODO_FORMAT = getProperty("periodoFormat");
+    public static final String TIMESTAMP_FORMAT = getProperty("timestampFormat");
 
     public static String getProperty(String key) {
         return resourceBundle.getString(key);
