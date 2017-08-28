@@ -294,7 +294,7 @@ public class FacturaVentaController {
             jdFactura.getCbListaPrecio().addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    if (!selectedListaPrecios.equals((ListaPrecios) jdFactura.getCbListaPrecio().getSelectedItem())) {
+                    if (!selectedListaPrecios.equals(jdFactura.getCbListaPrecio().getSelectedItem())) {
                         if (jdFactura.getjTable1().getModel().getRowCount() > 0) {
                             //consulta al usuario antes de limpiar el detalle de factura
                             if (JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog(jdFactura,

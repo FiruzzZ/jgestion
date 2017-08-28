@@ -20,7 +20,7 @@ import org.apache.logging.log4j.LogManager;
 
 /**
  *
- * @author Administrador
+ * @author FiruzzZ
  */
 public class DatosEmpresaJpaController implements ActionListener {
 
