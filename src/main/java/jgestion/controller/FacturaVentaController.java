@@ -1547,7 +1547,13 @@ public class FacturaVentaController {
 
     void doReportFactura(FacturaVenta facturaVenta) throws MissingReportException, JRException, MessageException {
         if (!facturaVenta.getSucursal().isWebServices()) {
-            Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_FacturaVenta_" + facturaVenta.getTipo() + ".jasper", "Factura Venta");
+            char tipo;
+            if (facturaVenta.getTipo() == 'C') {
+                tipo = 'B';
+            } else {
+                tipo = facturaVenta.getTipo();
+            }
+            Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_FacturaVenta_" + tipo + ".jasper", "Factura Venta");
             r.addParameter("FACTURA_ID", facturaVenta.getId());
             if (facturaVenta.getRemito() != null) {
                 r.addParameter("REMITO", JGestionUtils.getNumeracion(facturaVenta.getRemito()));
