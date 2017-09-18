@@ -29,8 +29,15 @@ import jgestion.controller.exceptions.MessageException;
 import jgestion.controller.exceptions.MissingReportException;
 import jgestion.controller.exceptions.NonexistentEntityException;
 import generics.GenericBeanCollection;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.Window;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -537,7 +544,7 @@ public class ProductoController implements ActionListener, KeyListener {
     Producto getProductoSelected() {
         int selectedRow = contenedor.getjTable1().getSelectedRow();
         if (selectedRow > -1) {
-            return DAO.getEntityManager().find(Producto.class, Integer.valueOf((contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
+            return jpaController.find(Integer.valueOf((contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
         } else {
             return null;
         }

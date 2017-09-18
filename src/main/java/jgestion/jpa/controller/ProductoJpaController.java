@@ -4,6 +4,7 @@ import jgestion.entity.Producto;
 import jgestion.entity.Producto_;
 import jgestion.entity.Rubro;
 import java.util.List;
+import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -32,19 +33,28 @@ public class ProductoJpaController extends JGestionJpaImpl<Producto, Integer> {
 //        Root<Producto> from = cq.from(getEntityClass());
 //        cb.equal(from.get(Producto_.codigo), codigoProducto);
 //        return getEntityManager().createQuery(cq).getSingleResult();
-        return getEntityManager().
-                createQuery("SELECT o FROM Producto o WHERE o.codigo='" + codigo + "'", getEntityClass()).
-                setHint(QueryHints.REFRESH, Boolean.TRUE).
-                getSingleResult();
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery("SELECT o FROM Producto o WHERE o.codigo='" + codigo + "'", getEntityClass()).
+                    setHint(QueryHints.REFRESH, Boolean.TRUE).
+                    getSingleResult();
+        } finally {
+            em.close();
+        }
     }
 
     @Override
     public List<Producto> findAll() {
-        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        CriteriaQuery<Producto> cq = cb.createQuery(getEntityClass());
-        Root<Producto> from = cq.from(getEntityClass());
-        cq.select(from).orderBy(cb.asc(from.get(Producto_.nombre)));
-        return getEntityManager().createQuery(cq).getResultList();
+        EntityManager em = getEntityManager();
+        try {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Producto> cq = cb.createQuery(getEntityClass());
+            Root<Producto> from = cq.from(getEntityClass());
+            cq.select(from).orderBy(cb.asc(from.get(Producto_.nombre)));
+            return em.createQuery(cq).getResultList();
+        } finally {
+            em.close();
+        }
     }
 
     public List<Producto> findByBienDeCambio(Boolean bienDeCambio) {

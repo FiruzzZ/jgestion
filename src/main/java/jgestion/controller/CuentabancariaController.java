@@ -144,7 +144,7 @@ public class CuentabancariaController {
 
     private JDialog settingABM(JDialog parent, boolean isEditing) {
         panelABM = new PanelABMCuentabancaria();
-        UTIL.loadComboBox(panelABM.getCbBancos(), JGestionUtils.getWrappedBancos(new BancoController().findEntities()), false);
+        UTIL.loadComboBox(panelABM.getCbBancos(), JGestionUtils.getWrappedBancos(new BancoController().findAll()), false);
         if (isEditing) {
             setPanelABM(EL_OBJECT);
         }

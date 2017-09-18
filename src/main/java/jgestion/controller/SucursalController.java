@@ -33,6 +33,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
@@ -163,10 +164,10 @@ public class SucursalController implements ActionListener {
     }
 
     public void mouseReleased(MouseEvent e) {
-        Integer selectedRow = ((javax.swing.JTable) e.getSource()).getSelectedRow();
+        Integer selectedRow = ((JTable) e.getSource()).getSelectedRow();
         if (selectedRow > -1) {
             entity = (Sucursal) DAO.getEntityManager().find(Sucursal.class,
-                    Integer.valueOf((((javax.swing.JTable) e.getSource()).getValueAt(selectedRow, 0)).toString()));
+                    Integer.valueOf((((JTable) e.getSource()).getValueAt(selectedRow, 0)).toString()));
         }
     }
 

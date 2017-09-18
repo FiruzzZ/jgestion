@@ -152,7 +152,7 @@ public class ChequeTercerosController implements ActionListener {
         panelABM.setUIChequeTerceros();
         panelABM.setPersistible(persistir);
         panelABM.setSinComprobante(selectableCliente);
-        UTIL.loadComboBox(panelABM.getCbBancos(), new BancoController().findEntities(), true);
+        UTIL.loadComboBox(panelABM.getCbBancos(), new BancoController().findAll(), true);
 //        UTIL.loadComboBox(panelABM.getCbBancoSucursales(), null, null, "<Seleccionar un Banco>");
         UTIL.loadComboBox(panelABM.getCbEmisor(), new ClienteController().findAll(), selectableCliente);
         panelABM.getbAddBanco().addActionListener(new ActionListener() {
@@ -166,7 +166,7 @@ public class ChequeTercerosController implements ActionListener {
                 } catch (MessageException ex) {
                     abm.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 2);
                 }
-                UTIL.loadComboBox(panelABM.getCbBancos(), new BancoController().findEntities(), true);
+                UTIL.loadComboBox(panelABM.getCbBancos(), new BancoController().findAll(), true);
             }
         });
         panelABM.getbAddEmisor().addActionListener(new ActionListener() {
@@ -555,7 +555,7 @@ public class ChequeTercerosController implements ActionListener {
         jdChequeManager.getLabelSucursales().setVisible(false);
         jdChequeManager.getCbCuentaBancaria().setVisible(false);
         jdChequeManager.getLabelCuentaBancaria().setVisible(false);
-        UTIL.loadComboBox(jdChequeManager.getCbBancos(), JGestionUtils.getWrappedBancos(new BancoController().findEntities()), true);
+        UTIL.loadComboBox(jdChequeManager.getCbBancos(), JGestionUtils.getWrappedBancos(new BancoController().findAll()), true);
         AutoCompleteDecorator.decorate(jdChequeManager.getCbBancos());
         UTIL.loadComboBox(jdChequeManager.getCbEstados(), Arrays.asList(ChequeEstado.values()), true);
         UTIL.loadComboBox(jdChequeManager.getCbOrderBy(), Arrays.asList(orderByToComboBoxList), false);

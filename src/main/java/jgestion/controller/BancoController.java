@@ -116,7 +116,7 @@ public class BancoController {
             }
             em.remove(banco);
             em.getTransaction().commit();
-            } catch (RollbackException ex) {
+        } catch (RollbackException ex) {
             if (ex.getCause() instanceof DatabaseException) {
                 PSQLException ps = (PSQLException) ex.getCause().getCause();
                 if (ps.getMessage().contains("viola la llave foránea") || ps.getMessage().contains("violates foreign key constraint")) {
@@ -131,18 +131,18 @@ public class BancoController {
         }
     }
 
-    public List<Banco> findEntities() {
-        return findBancoEntities(true, -1, -1);
+    public List<Banco> findAll() {
+        return findAll(true, -1, -1);
     }
 
-    public List<Banco> findBancoEntities(int maxResults, int firstResult) {
-        return findBancoEntities(false, maxResults, firstResult);
+    public List<Banco> findAll(int maxResults, int firstResult) {
+        return findAll(false, maxResults, firstResult);
     }
 
-    private List<Banco> findBancoEntities(boolean all, int maxResults, int firstResult) {
+    private List<Banco> findAll(boolean all, int maxResults, int firstResult) {
         EntityManager em = getEntityManager();
         try {
-            Query q = em.createQuery("select object(o) from Banco as o");
+            Query q = em.createQuery("select o from Banco o");
             if (!all) {
                 q.setMaxResults(maxResults);
                 q.setFirstResult(firstResult);
@@ -276,16 +276,16 @@ public class BancoController {
             UTIL.limpiarDtm(dtm);
             List<Banco> l;
             if (query == null) {
-                l = (List<Banco>) findEntities();
+                l = (List<Banco>) findAll();
             } else {
                 l = (List<Banco>) DAO.getNativeQueryResultList(query, EL_OBJECT.getClass());
             }
             for (Banco o : l) {
                 dtm.addRow(new Object[]{
-                            o.getId(),
-                            o.getNombre(),
-                            o.getWebpage()
-                        });
+                    o.getId(),
+                    o.getNombre(),
+                    o.getWebpage()
+                });
             }
         }
     }
@@ -372,9 +372,9 @@ public class BancoController {
     private Banco getSelectedFromContenedor() {
         Integer selectedRow = contenedor.getjTable1().getSelectedRow();
         if (selectedRow > -1) {
-            return (Banco) DAO.getEntityManager().find(Banco.class,
+            return (Banco) getEntityManager().find(Banco.class,
                     Integer.valueOf(
-                    (contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
+                            (contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
         } else {
             return null;
         }
@@ -386,13 +386,13 @@ public class BancoController {
             idQuery = "o.id!=" + o.getId() + " AND ";
         }
         try {
-            DAO.getEntityManager().createNativeQuery("SELECT * FROM " + CLASS_NAME + " o "
+            getEntityManager().createNativeQuery("SELECT * FROM " + CLASS_NAME + " o "
                     + " WHERE " + idQuery + " o.nombre='" + o.getNombre() + "' ", o.getClass()).getSingleResult();
             throw new MessageException("Ya existe otra " + CLASS_NAME + " con este nombre.");
         } catch (NoResultException ex) {
         }
         try {
-            DAO.getEntityManager().createNativeQuery("SELECT * FROM " + CLASS_NAME + " o "
+            getEntityManager().createNativeQuery("SELECT * FROM " + CLASS_NAME + " o "
                     + " WHERE " + idQuery + " o.webpage='" + o.getNombre() + "' ", o.getClass()).getSingleResult();
             throw new MessageException("Ya existe otra " + CLASS_NAME + " con esta página web.");
         } catch (NoResultException ex) {
@@ -416,15 +416,29 @@ public class BancoController {
 
     @SuppressWarnings("unchecked")
     public List<Banco> findWithCuentasBancarias(boolean activa) {
-        return DAO.getEntityManager().createQuery("SELECT o.banco FROM " + CuentaBancaria.class.getSimpleName() + " o WHERE o.activa=" + activa + " GROUP BY o.banco").getResultList();
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery("SELECT o.banco FROM " + CuentaBancaria.class.getSimpleName() 
+                    + " o WHERE o.activa=" + activa + " GROUP BY o.banco").getResultList();
+        } finally {
+            em.close();
+        }
     }
 
     /**
-     * Same result using {@link #findWithCuentasBancarias(Boolean.FALSE)} &&  {@link #findWithCuentasBancarias(Boolean.TRUE)} 
+     * Same result using
+     * {@link #findWithCuentasBancarias(Boolean.FALSE)} &&  {@link #findWithCuentasBancarias(Boolean.TRUE)}
+     *
      * @return
      */
     @SuppressWarnings("unchecked")
     public List<Banco> findAllWithCuentasBancarias() {
-        return DAO.getEntityManager().createQuery("SELECT o.banco FROM " + CuentaBancaria.class.getSimpleName() + " o GROUP BY o.banco").getResultList();
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery("SELECT o.banco FROM " + CuentaBancaria.class.getSimpleName() 
+                    + " o GROUP BY o.banco").getResultList();
+        } finally {
+            em.close();
+        }
     }
 }

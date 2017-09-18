@@ -388,8 +388,7 @@ public class ClienteController implements ActionListener {
                 try {
                     int selectedRow = contenedor.getjTable1().getSelectedRow();
                     if (selectedRow > -1) {
-                        EL_OBJECT = DAO.getEntityManager().find(Cliente.class,
-                                Integer.valueOf((contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
+                        EL_OBJECT = jpaController.find(Integer.valueOf((contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
                     } else {
                         EL_OBJECT = null;
                     }

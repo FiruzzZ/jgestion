@@ -70,8 +70,7 @@ public class ProveedorController implements ActionListener {
                     try {
                         Integer selectedRow = contenedor.getjTable1().getSelectedRow();
                         if (selectedRow > -1) {
-                            EL_OBJECT = DAO.getEntityManager().find(Proveedor.class,
-                                    Integer.valueOf((contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
+                            EL_OBJECT = jpaController.find(Integer.valueOf((contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
                             initABM(true);
                         }
                     } catch (MessageException ex) {

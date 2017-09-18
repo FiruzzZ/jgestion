@@ -27,7 +27,7 @@ public class PanelOperacionBancariaTransferencia extends javax.swing.JPanel {
         List<EntityWrapper<Banco>> l = JGestionUtils.getWrappedBancos(new BancoController().findWithCuentasBancarias(true));
         UTIL.loadComboBox(cbBancos, l, false);
         UTIL.loadComboBox(cbDestinoBancosCuentaPropia, l, false);
-        UTIL.loadComboBox(cbDestinoBancosExternos, JGestionUtils.getWrappedBancos(new BancoController().findEntities()), false);
+        UTIL.loadComboBox(cbDestinoBancosExternos, JGestionUtils.getWrappedBancos(new BancoController().findAll()), false);
     }
 
     /**

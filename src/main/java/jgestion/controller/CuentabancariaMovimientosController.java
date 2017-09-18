@@ -358,10 +358,6 @@ public class CuentabancariaMovimientosController {
                     }
                     Banco banco = ((EntityWrapper<Banco>) panelTransf.getCbDestinoBancosExternos().getSelectedItem()).getEntity();
                     String descrip = banco.getNombre() + " N°" + cuenta + ", " + panelTransf.getTfDescripcionMov().getText().trim();
-
-//                    if (descrip.isEmpty()) {
-//                        throw new MessageException("Descripción de transferencia no válida");
-//                    }
                     Date fechaOP = panelTransf.getDcFechaOperacion().getDate();
                     OperacionesBancarias op = new OperacionesBancariasController().getOperacion(OperacionesBancariasController.TRANSFERENCIA);
                     CuentabancariaMovimientos cbm = new CuentabancariaMovimientos(fechaOP, descrip, null, importe, BigDecimal.ZERO, false, UsuarioController.getCurrentUser(), op, destino, null, null, false);

@@ -265,6 +265,7 @@ public class BancoSucursalController implements Serializable {
 
     /**
      * Arma la query, la cual va filtrar los datos en el JDContenedor
+     *
      * @param filtro
      */
     private void armarQuery(String filtro) throws DatabaseErrorException {
@@ -287,13 +288,13 @@ public class BancoSucursalController implements Serializable {
             }
             for (BancoSucursal o : l) {
                 dtm.addRow(new Object[]{
-                            o.getId(),
-                            o.getCodigo(),
-                            o.getNombre(),
-                            o.getBanco().getNombre(),
-                            o.getDireccion(),
-                            o.getTelefono()
-                        });
+                    o.getId(),
+                    o.getCodigo(),
+                    o.getNombre(),
+                    o.getBanco().getNombre(),
+                    o.getDireccion(),
+                    o.getTelefono()
+                });
             }
         }
     }
@@ -302,7 +303,7 @@ public class BancoSucursalController implements Serializable {
      * @see BancoJpaController#initABM(javax.swing.JDialog, boolean)
      * @param parent
      * @return
-     * @throws MessageException 
+     * @throws MessageException
      */
     public JDialog initABM(JDialog parent) throws MessageException {
         return initABM(parent, false);
@@ -310,10 +311,11 @@ public class BancoSucursalController implements Serializable {
 
     /**
      * Crea una instancia modal del ABM
+     *
      * @param parent
      * @param isEditing
      * @return una ventana ABM
-     * @throws MessageException 
+     * @throws MessageException
      */
     private JDialog initABM(JDialog parent, boolean isEditing) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.DATOS_GENERAL);
@@ -328,7 +330,7 @@ public class BancoSucursalController implements Serializable {
 
     private JDialog getJDialogABM(JDialog parent, boolean isEditing) {
         panelABM = new PanelABMBancoSucursales();
-        UTIL.loadComboBox(panelABM.getCbBancos(), new BancoController().findEntities(), false);
+        UTIL.loadComboBox(panelABM.getCbBancos(), new BancoController().findAll(), false);
         abm = new JDABM(parent, "ABM - " + CLASS_NAME, true, panelABM);
         if (isEditing) {
             setPanelABM(EL_OBJECT);
@@ -374,13 +376,18 @@ public class BancoSucursalController implements Serializable {
     }
 
     private BancoSucursal getSelectedFromContenedor() {
-        Integer selectedRow = contenedor.getjTable1().getSelectedRow();
-        if (selectedRow > -1) {
-            return (BancoSucursal) DAO.getEntityManager().find(BancoSucursal.class,
-                    Integer.valueOf(
-                    (contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
-        } else {
-            return null;
+        EntityManager em = getEntityManager();
+        try {
+            Integer selectedRow = contenedor.getjTable1().getSelectedRow();
+            if (selectedRow > -1) {
+                return em.find(BancoSucursal.class,
+                        Integer.valueOf(
+                                (contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
+            } else {
+                return null;
+            }
+        } finally {
+            em.close();
         }
     }
 
@@ -390,6 +397,7 @@ public class BancoSucursalController implements Serializable {
      * <li>El nombre de la sucursal sea único para ese banco</li>
      * <li>El código sea único</li>
      * </ul>
+     *
      * @param o
      * @throws MessageException
      */
@@ -398,18 +406,20 @@ public class BancoSucursalController implements Serializable {
         if (o.getId() != null) {
             idQuery = "o.id<>" + o.getId() + " AND ";
         }
+        EntityManager em = getEntityManager();
         try {
-            DAO.getEntityManager().createQuery("SELECT o FROM " + CLASS_NAME + " o "
+            em.createQuery("SELECT o FROM " + CLASS_NAME + " o "
                     + " WHERE " + idQuery + " o.nombre='" + o.getNombre() + "' AND o.banco.id=" + o.getBanco().getId(), o.getClass()).getSingleResult();
             throw new MessageException("Ya existe otra Sucursal de Banco con este nombre.");
         } catch (NoResultException ex) {
         }
         try {
-            DAO.getEntityManager().createQuery("SELECT o FROM " + CLASS_NAME + " o "
+            em.createQuery("SELECT o FROM " + CLASS_NAME + " o "
                     + " WHERE " + idQuery + " o.codigo='" + o.getCodigo() + "' ", o.getClass()).getSingleResult();
             throw new MessageException("Ya existe otra Sucursal de Banco con este código.");
         } catch (NoResultException ex) {
         }
+        em.close();
     }
 
     private void setPanelABM(BancoSucursal bancoSucursal) {
@@ -441,7 +451,7 @@ public class BancoSucursalController implements Serializable {
 
         if (panelABM.getTfTelefono().getText() != null) {
             try {
-                if(panelABM.getTfTelefono().getText().trim().length() > 12) {
+                if (panelABM.getTfTelefono().getText().trim().length() > 12) {
                     throw new MessageException("Número de teléfono no puede tener mas de 12 dígitos.");
                 }
                 telefono = Long.valueOf(panelABM.getTfTelefono().getText());

@@ -94,6 +94,9 @@
               </Border>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="mouseReleased" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jLabelFotoMouseReleased"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="bBuscarFoto">
           <Properties>

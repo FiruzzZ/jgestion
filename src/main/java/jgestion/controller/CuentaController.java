@@ -13,6 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
 import javax.swing.JOptionPane;
@@ -34,7 +35,9 @@ public class CuentaController {
     public static final Cuenta SIN_CLASIFICAR; //antes llamado EFECTIVO
 
     static {
-        SIN_CLASIFICAR = DAO.getEntityManager().find(Cuenta.class, 1);
+        EntityManager em = DAO.getEntityManager();
+        SIN_CLASIFICAR = em.find(Cuenta.class, 1);
+        em.close();
     }
 
     public void destroy(Integer id) throws NonexistentEntityException, IllegalOrphanException {
@@ -220,9 +223,11 @@ public class CuentaController {
         }
 
         try {
-            DAO.getEntityManager().createQuery("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o "
-                    + " WHERE " + idQuery + " o.nombre='" + o.getNombre() + "'").getSingleResult().equals(o.getClass());
-            throw new MessageException("Ya existe un registro con el nombre \"" + o.getNombre() + "\"");
+            Cuenta old = jpaController.findByQuery("SELECT o FROM " + jpaController.getAlias()
+                    + " WHERE " + idQuery + " o.nombre='" + o.getNombre() + "'");
+            if (old != null) {
+                throw new MessageException("Ya existe un registro con el nombre \"" + o.getNombre() + "\"");
+            }
         } catch (NoResultException ex) {
         }
     }

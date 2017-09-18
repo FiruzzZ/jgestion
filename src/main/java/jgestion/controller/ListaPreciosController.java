@@ -162,12 +162,14 @@ public class ListaPreciosController implements ActionListener, MouseListener, Ke
     private void cargarDTM(DefaultTableModel dtm, String query) {
         UTIL.limpiarDtm(dtm);
         List<ListaPrecios> l;
+        EntityManager em = DAO.getEntityManager();
         if (query == null || query.length() < 1) {
-            l = DAO.getEntityManager().createNamedQuery(CLASS_NAME + ".findAll").getResultList();
+            l = em.createNamedQuery(CLASS_NAME + ".findAll").getResultList();
         } else {
             // para cuando se usa el Buscador del ABM
-            l = DAO.getEntityManager().createNativeQuery(query, ListaPrecios.class).getResultList();
+            l = em.createNativeQuery(query, ListaPrecios.class).getResultList();
         }
+        em.close();
         for (ListaPrecios o : l) {
             dtm.addRow(new Object[]{
                 o.getId(),
@@ -317,14 +319,15 @@ public class ListaPreciosController implements ActionListener, MouseListener, Ke
         if (object.getId() != null) {
             idQuery = "o.id!=" + object.getId() + " AND ";
         }
+        EntityManager em = DAO.getEntityManager();
         try {
-            DAO.getEntityManager().createNativeQuery("SELECT * FROM lista_precios o "
+            em.createQuery("SELECT o.id FROM ListaPrecios o "
                     + " WHERE " + idQuery + " o.nombre='" + object.getNombre() + "' ", ListaPrecios.class).getSingleResult();
             //si no sale NoResultException... es porque
             throw new MessageException("Ya existe otra " + CLASS_NAME + " con este nombre.");
         } catch (NoResultException ex) {
         }
-
+        em.close();
         //persistiendo......
         if (object.getId() == null) {
             create(object);

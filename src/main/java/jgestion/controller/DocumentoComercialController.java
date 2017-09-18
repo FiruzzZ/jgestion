@@ -176,9 +176,11 @@ public class DocumentoComercialController {
         }
 
         try {
-            DAO.getEntityManager().createQuery("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o "
-                    + " WHERE " + idQuery + " o.nombre='" + o.getNombre() + "'").getSingleResult().equals(o.getClass());
-            throw new MessageException("Ya existe un registro con el nombre \"" + o.getNombre() + "\"");
+            Integer old = (Integer) jpaController.findAttribute("SELECT o.id FROM " + jpaController.getAlias()
+                    + " WHERE " + idQuery + " o.nombre='" + o.getNombre() + "'");
+            if (old != null) {
+                throw new MessageException("Ya existe un registro con el nombre \"" + o.getNombre() + "\"");
+            }
         } catch (NoResultException ex) {
         }
     }
