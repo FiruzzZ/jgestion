@@ -26,6 +26,7 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import jgestion.jpa.controller.BancoJpaController;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import utilities.general.UTIL;
@@ -45,14 +46,14 @@ public class BancoSucursalController implements Serializable {
     private JDContenedor contenedor;
     private boolean permitirFiltroVacio;
     private EntityManager entityManager;
-    private static Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOG = LogManager.getLogger();
 
     public BancoSucursalController() {
     }
 
     public EntityManager getEntityManager() {
         if (entityManager == null || !entityManager.isOpen()) {
-            LOGGER.trace(this.getClass() + " -> getting EntityManager");
+            LOG.trace(this.getClass() + " -> getting EntityManager");
             entityManager = DAO.getEntityManager();
         }
         return entityManager;
@@ -229,7 +230,7 @@ public class BancoSucursalController implements Serializable {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    LOGGER.error(ex.getMessage(), ex);
+                    LOG.error(ex.getMessage(), ex);
                 }
             }
         });
@@ -243,7 +244,7 @@ public class BancoSucursalController implements Serializable {
                 } catch (IllegalOrphanException ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (NonexistentEntityException ex) {
-                    LOGGER.error(ex.getMessage(), ex);
+                    LOG.error(ex.getMessage(), ex);
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
                 }
             }
@@ -330,7 +331,7 @@ public class BancoSucursalController implements Serializable {
 
     private JDialog getJDialogABM(JDialog parent, boolean isEditing) {
         panelABM = new PanelABMBancoSucursales();
-        UTIL.loadComboBox(panelABM.getCbBancos(), new BancoController().findAll(), false);
+        UTIL.loadComboBox(panelABM.getCbBancos(), new BancoJpaController().findAll(), false);
         abm = new JDABM(parent, "ABM - " + CLASS_NAME, true, panelABM);
         if (isEditing) {
             setPanelABM(EL_OBJECT);
@@ -360,7 +361,7 @@ public class BancoSucursalController implements Serializable {
                 } catch (MessageException ex) {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
-                    LOGGER.error(ex.getMessage(), ex);
+                    LOG.error(ex.getMessage(), ex);
                 }
             }
         });

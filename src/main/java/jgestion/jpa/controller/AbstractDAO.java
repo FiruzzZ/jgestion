@@ -11,7 +11,10 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Root;
+import javax.persistence.metamodel.SingularAttribute;
 import org.eclipse.persistence.config.QueryHints;
 
 /**
@@ -25,6 +28,11 @@ import org.eclipse.persistence.config.QueryHints;
 public abstract class AbstractDAO<T, ID extends Serializable> implements GenericDAO<T, ID> {
 
     private final Class<T> entityClass;
+    /**
+     * Para cuando se necesita mantener la session abierta.
+     * <br>Ej: recuperar objectos en LAZY load; manipular varios JPAControllers simultaneamente;
+     */
+    private boolean keepItOpen = false;
 
     @SuppressWarnings({"unchecked Type Arguments", "unchecked"})
     public AbstractDAO() {
@@ -47,6 +55,14 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
      */
     public String getAlias() {
         return getAlias("o");
+    }
+
+    public final boolean isKeepItOpen() {
+        return keepItOpen;
+    }
+
+    public final void setKeepItOpen(boolean keepItOpen) {
+        this.keepItOpen = keepItOpen;
     }
 
     /**
@@ -125,22 +141,39 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
 
     @Override
     public List<T> findAll() {
-        //        Criteria cq = getEntityManager().createCriteria(entityClass);
-        //        return cq.list();
-        CriteriaQuery<T> cq = getEntityManager().getCriteriaBuilder().createQuery(entityClass);
-        cq.select(cq.from(entityClass));
-        return getEntityManager().createQuery(cq).setHint(QueryHints.REFRESH, true).getResultList();
+        return findAll((Order) null);
+//        CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
+//        cq.select(cq.from(entityClass));
+//        return getEntityManager().createQuery(cq).getResultList();
+    }
+
+    public List<T> findAll(Order... orders) {
+        try {
+            CriteriaQuery<T> query = getEntityManager().getCriteriaBuilder().createQuery(entityClass);
+            for (Order order : orders) {
+                if (order != null) {
+                    query.orderBy(order);
+                }
+            }
+            return getEntityManager().createQuery(query).setHint(QueryHints.REFRESH, Boolean.TRUE).getResultList();
+        } finally {
+            closeEntityManager();
+        }
     }
 
     @Override
     public List<T> findRange(int first, int max) {
-        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-        CriteriaQuery<T> cq = cb.createQuery(entityClass);
-        cq.select(cq.from(entityClass));
-        TypedQuery<T> q = getEntityManager().createQuery(cq);
-        q.setMaxResults(max);
-        q.setFirstResult(first);
-        return q.getResultList();
+        try {
+            CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+            CriteriaQuery<T> cq = cb.createQuery(entityClass);
+            cq.select(cq.from(entityClass));
+            TypedQuery<T> q = getEntityManager().createQuery(cq);
+            q.setMaxResults(max);
+            q.setFirstResult(first);
+            return q.getResultList();
+        } finally {
+            closeEntityManager();
+        }
     }
 
     @Override
@@ -158,8 +191,54 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
 
     @Override
     public T findByQuery(String query) {
+        return findByQuery(query, null);
+    }
+
+    /**
+     * Similar a {@link #findByQuery(java.lang.String) } pero con retorno flexible!
+     *
+     * @param query
+     * @param parameters
+     * @return
+     */
+    public T findByQuery(String query, Map<String, Object> parameters) {
         try {
-            return (T) getEntityManager().createQuery(query).getSingleResult();
+            TypedQuery<T> q = getEntityManager().createQuery(query, entityClass);
+            if (parameters != null) {
+                for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+                    q.setParameter(entry.getKey(), entry.getValue());
+                }
+            }
+            return q.getSingleResult();
+        } catch (NoResultException e) {
+            return null; //hibenate behaviour huhuhahaha!
+        } finally {
+            closeEntityManager();
+        }
+    }
+
+    /**
+     * to warranty an unique result this method set the parameter {@link Query#setMaxResults(int)}
+     * == 1
+     *
+     * @param query
+     * @return
+     */
+    public T findByLimitedQuery(String query) {
+        return findByLimitedQuery(query, null);
+    }
+
+    public T findByLimitedQuery(String query, Map<String, Object> parameters) {
+        try {
+            Query q = getEntityManager().createQuery(query);
+            if (parameters != null) {
+                for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+                    q.setParameter(entry.getKey(), entry.getValue());
+                }
+            }
+            return (T) q.setMaxResults(1).getSingleResult();
+        } catch (NoResultException e) {
+            return null; //hibenate behaviour huhuhahaha!
         } finally {
             closeEntityManager();
         }
@@ -178,12 +257,15 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
     @Override
     public List<T> findByNamedQueryAndNamedParams(final String name,
             final Map<String, ? extends Object> params) {
-        TypedQuery<T> query = getEntityManager().createNamedQuery(name, entityClass);
-
-        for (final Map.Entry<String, ? extends Object> param : params.entrySet()) {
-            query.setParameter(param.getKey(), param.getValue());
+        try {
+            TypedQuery<T> query = getEntityManager().createNamedQuery(name, entityClass);
+            for (final Map.Entry<String, ? extends Object> param : params.entrySet()) {
+                query.setParameter(param.getKey(), param.getValue());
+            }
+            return query.getResultList();
+        } finally {
+            closeEntityManager();
         }
-        return query.getResultList();
     }
 
     /**
@@ -197,21 +279,25 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
      */
     @SuppressWarnings("unchecked")
     public List<T> findByNativeQuery(String sqlString, String stringSetMapping, Map<String, Object> hints) {
-        Query query;
-        if (stringSetMapping == null) {
-            query = getEntityManager().createNativeQuery(sqlString, entityClass);
-        } else {
-            query = getEntityManager().createNativeQuery(sqlString, stringSetMapping);
-        }
-        if (hints == null || hints.isEmpty() || !hints.containsKey(QueryHints.REFRESH)) {
-            query.setHint(QueryHints.REFRESH, Boolean.TRUE);
-        }
-        if (hints != null) {
-            for (Map.Entry<String, Object> entry : hints.entrySet()) {
-                query.setHint(entry.getKey(), entry.getValue());
+        try {
+            Query query;
+            if (stringSetMapping == null) {
+                query = getEntityManager().createNativeQuery(sqlString, entityClass);
+            } else {
+                query = getEntityManager().createNativeQuery(sqlString, stringSetMapping);
             }
+            if (hints == null || hints.isEmpty() || !hints.containsKey(QueryHints.REFRESH)) {
+                query.setHint(QueryHints.REFRESH, Boolean.TRUE);
+            }
+            if (hints != null) {
+                for (Map.Entry<String, Object> entry : hints.entrySet()) {
+                    query.setHint(entry.getKey(), entry.getValue());
+                }
+            }
+            return query.getResultList();
+        } finally {
+            closeEntityManager();
         }
-        return query.getResultList();
     }
 
     /**
@@ -245,16 +331,20 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
      */
     @Override
     public List<T> findAll(String qlString) {
-        TypedQuery<T> typedQuery = getEntityManager().createQuery(qlString, entityClass);
-        typedQuery.setHint(QueryHints.REFRESH, Boolean.TRUE);
-        return typedQuery.getResultList();
+        try {
+            TypedQuery<T> typedQuery = getEntityManager().createQuery(qlString, entityClass);
+            typedQuery.setHint(QueryHints.REFRESH, Boolean.TRUE);
+            return typedQuery.getResultList();
+        } finally {
+            closeEntityManager();
+        }
     }
 
     public void closeEntityManager() {
-        if (!getEntityManager().isOpen()) {
-            getEntityManager().close();
-        } else {
-            System.out.println("EntityManager en: " + this + " ya estaba cerrado");
+        if (!isKeepItOpen()) {
+            if (!getEntityManager().isOpen()) {
+                getEntityManager().close();
+            }
         }
     }
 
@@ -301,7 +391,11 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
     }
 
     public final Date getServerDate() {
-        return (Date) getEntityManager().createNativeQuery("SELECT CURRENT_TIMESTAMP").getSingleResult();
+        try {
+            return (Date) getEntityManager().createNativeQuery("SELECT CURRENT_TIMESTAMP").getSingleResult();
+        } finally {
+            closeEntityManager();
+        }
     }
 
     /**
@@ -310,4 +404,13 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
      * @param o
      */
     public abstract void loadLazies(T o);
+
+    protected Order getOrder(SingularAttribute sa, boolean asc) {
+        CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+        return asc ? criteriaBuilder.asc(getExpression(sa)) : criteriaBuilder.desc(getExpression(sa));
+    }
+
+    protected Expression getExpression(SingularAttribute sa) {
+        return getEntityManager().getCriteriaBuilder().createQuery(getEntityClass()).from(getEntityClass()).get(sa);
+    }
 }

@@ -9,6 +9,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 import jgestion.JGestionUtils;
+import jgestion.jpa.controller.BancoJpaController;
 import utilities.general.UTIL;
 import utilities.gui.SwingUtil;
 import utilities.general.EntityWrapper;
@@ -27,7 +28,7 @@ public class PanelOperacionBancariaTransferencia extends javax.swing.JPanel {
         List<EntityWrapper<Banco>> l = JGestionUtils.getWrappedBancos(new BancoController().findWithCuentasBancarias(true));
         UTIL.loadComboBox(cbBancos, l, false);
         UTIL.loadComboBox(cbDestinoBancosCuentaPropia, l, false);
-        UTIL.loadComboBox(cbDestinoBancosExternos, JGestionUtils.getWrappedBancos(new BancoController().findAll()), false);
+        UTIL.loadComboBox(cbDestinoBancosExternos, JGestionUtils.getWrappedBancos(new BancoJpaController().findAll()), false);
     }
 
     /**

@@ -24,6 +24,7 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import jgestion.JGestionUtils;
 import jgestion.entity.OperacionesBancarias;
+import jgestion.jpa.controller.BancoJpaController;
 import jgestion.jpa.controller.ChequePropioJpaController;
 import jgestion.jpa.controller.ChequeTercerosJpaController;
 import jgestion.jpa.controller.CuentabancariaJpaController;
@@ -89,23 +90,16 @@ public class CuentabancariaController {
                 try {
                     if (contenedor.getjTable1().getSelectedRow() > -1) {
                         CuentaBancaria cb = getSelectedFromContenedor();
-                        remove(cb);
-                        contenedor.showMessage("Eliminado..", jpaController.getEntityClass().getSimpleName(), 1);
+                        jpaController.remove(cb);
+                        contenedor.showMessage("Eliminada..", jpaController.getEntityClass().getSimpleName(), 1);
                     }
-                } catch (MessageException ex) {
-                    contenedor.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 2);
                 } catch (Exception ex) {
-                    contenedor.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 0);
                     LOG.error(ex.getMessage(), ex);
+                    contenedor.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 0);
                 }
             }
         });
         contenedor.getbImprimir().setVisible(false);
-//        contenedor.getbImprimir().addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//            }
-//        });
         UTIL.getDefaultTableModel(contenedor.getjTable1(), new String[]{"id", "Banco", "N° Cuenta", "Activa"}, new int[]{1, 200, 120, 20}, new Class<?>[]{null, null, null, Boolean.class});
         UTIL.hideColumnTable(contenedor.getjTable1(), 0);
         //no permite filtro de vacio en el inicio
@@ -144,7 +138,7 @@ public class CuentabancariaController {
 
     private JDialog settingABM(JDialog parent, boolean isEditing) {
         panelABM = new PanelABMCuentabancaria();
-        UTIL.loadComboBox(panelABM.getCbBancos(), JGestionUtils.getWrappedBancos(new BancoController().findAll()), false);
+        UTIL.loadComboBox(panelABM.getCbBancos(), JGestionUtils.getWrappedBancos(new BancoJpaController().findAll()), false);
         if (isEditing) {
             setPanelABM(EL_OBJECT);
         }
@@ -219,14 +213,6 @@ public class CuentabancariaController {
         }
     }
 
-    private void armarQuery(String filtro) {
-        String query = null;
-        if (filtro != null && filtro.length() > 0) {
-            query = "SELECT * FROM " + jpaController.getEntityClass().getSimpleName() + " o WHERE o.numero >= " + filtro;
-        }
-        cargarContenedorTabla(query);
-    }
-
     private void cargarContenedorTabla(String query) {
         if (contenedor != null) {
             DefaultTableModel dtm = contenedor.getDTM();
@@ -240,14 +226,6 @@ public class CuentabancariaController {
             for (CuentaBancaria o : l) {
                 dtm.addRow(new Object[]{o.getId(), o.getBanco().getNombre(), o.getNumero(), o.getActiva()});
             }
-        }
-    }
-
-    private void remove(CuentaBancaria find) throws MessageException {
-        try {
-            jpaController.remove(find);
-        } catch (Exception e) {
-            throw new MessageException(e.getLocalizedMessage());
         }
     }
 

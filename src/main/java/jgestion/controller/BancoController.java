@@ -25,6 +25,7 @@ import javax.persistence.RollbackException;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.table.DefaultTableModel;
+import jgestion.jpa.controller.BancoJpaController;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -45,123 +46,11 @@ public class BancoController {
     private JDABM abm;
     private PanelABMBancoSucursales panelABM;
     private boolean permitirFiltroVacio;
-    private EntityManager entityManager;
     private static final Logger LOG = LogManager.getLogger();
+    private BancoJpaController jpaController = new BancoJpaController();
 
     public BancoController() {
     }
-
-    //<editor-fold defaultstate="collapsed" desc="DAO - CRUD Methods">
-    public EntityManager getEntityManager() {
-        if (entityManager == null || !entityManager.isOpen()) {
-            LOG.trace(this.getClass() + " -> getting EntityManager");
-            entityManager = DAO.getEntityManager();
-        }
-        return entityManager;
-    }
-
-    public void create(Banco banco) {
-        try {
-            DAO.create(banco);
-        } catch (Exception ex) {
-            LogManager.getLogger();//(BancoController.class.getName()).fatal(ex, ex);
-        }
-    }
-
-    public void edit(Banco banco) throws NonexistentEntityException, Exception {
-        EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            banco = em.merge(banco);
-            em.getTransaction().commit();
-        } catch (Exception ex) {
-            String msg = ex.getLocalizedMessage();
-            if (msg == null || msg.length() == 0) {
-                Integer id = banco.getId();
-                if (findBanco(id) == null) {
-                    throw new NonexistentEntityException("The banco with id " + id + " no longer exists.");
-                }
-            }
-            throw ex;
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
-    }
-
-    public void destroy(Integer id) throws NonexistentEntityException, IllegalOrphanException, MessageException {
-        EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            Banco banco;
-            try {
-                banco = em.getReference(Banco.class, id);
-                //check if exist a BancoSucursal bound to this Banco
-                List<BancoSucursal> bancoSucursalEntitiesBound = new BancoSucursalController().findBy(banco);
-                if (bancoSucursalEntitiesBound != null
-                        && !bancoSucursalEntitiesBound.isEmpty()) {
-                    List<String> msg = new ArrayList<String>(bancoSucursalEntitiesBound.size() + 1);
-                    msg.add("Este " + CLASS_NAME + " está relacionado a " + bancoSucursalEntitiesBound.size() + " sucursal/es:");
-                    for (BancoSucursal bancoSucursal : bancoSucursalEntitiesBound) {
-                        msg.add(bancoSucursal.getNombre() + ", " + bancoSucursal.getDireccion());
-                    }
-                    throw new IllegalOrphanException(msg);
-                }
-                banco.getId();
-            } catch (EntityNotFoundException enfe) {
-                throw new NonexistentEntityException("The banco with id " + id + " no longer exists.", enfe);
-            }
-            em.remove(banco);
-            em.getTransaction().commit();
-        } catch (RollbackException ex) {
-            if (ex.getCause() instanceof DatabaseException) {
-                PSQLException ps = (PSQLException) ex.getCause().getCause();
-                if (ps.getMessage().contains("viola la llave foránea") || ps.getMessage().contains("violates foreign key constraint")) {
-                    throw new MessageException("No se puede eliminar porque existen otros registros que están relacionados a este");
-                }
-            }
-            throw ex;
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
-    }
-
-    public List<Banco> findAll() {
-        return findAll(true, -1, -1);
-    }
-
-    public List<Banco> findAll(int maxResults, int firstResult) {
-        return findAll(false, maxResults, firstResult);
-    }
-
-    private List<Banco> findAll(boolean all, int maxResults, int firstResult) {
-        EntityManager em = getEntityManager();
-        try {
-            Query q = em.createQuery("select o from Banco o");
-            if (!all) {
-                q.setMaxResults(maxResults);
-                q.setFirstResult(firstResult);
-            }
-            return q.getResultList();
-        } finally {
-            em.close();
-        }
-    }
-
-    public Banco findBanco(Integer id) {
-        EntityManager em = getEntityManager();
-        try {
-            return em.find(Banco.class, id);
-        } finally {
-            em.close();
-        }
-    }
-    //</editor-fold>
 
     public JDialog initContenedor(JFrame owner, boolean modal, boolean modoBuscador) throws DatabaseErrorException {
         contenedor = new JDContenedor(owner, modal, "ABM - " + CLASS_NAME);
@@ -232,19 +121,15 @@ public class BancoController {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    destroy(Integer.valueOf(UTIL.getSelectedValue(contenedor.getjTable1(), 0).toString()));
+                    jpaController.remove(jpaController.find(Integer.valueOf(UTIL.getSelectedValue(contenedor.getjTable1(), 0).toString())));
                     try {
                         cargarContenedorTabla(null);
                     } catch (DatabaseErrorException ex) {
                         contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                     }
                     contenedor.showMessage("Eliminado..", CLASS_NAME, 1);
-                } catch (MessageException ex) {
-                    contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                } catch (IllegalOrphanException ex) {
-                    contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                } catch (NonexistentEntityException ex) {
-                    LogManager.getLogger();//(BancoController.class.getName()).log(Level.ERROR, null, ex);
+                } catch (Exception ex) {
+                    LOG.error(ex, ex);
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
                 }
             }
@@ -276,9 +161,9 @@ public class BancoController {
             UTIL.limpiarDtm(dtm);
             List<Banco> l;
             if (query == null) {
-                l = (List<Banco>) findAll();
+                l = jpaController.findAll();
             } else {
-                l = (List<Banco>) DAO.getNativeQueryResultList(query, EL_OBJECT.getClass());
+                l = jpaController.findByNativeQuery(query);
             }
             for (Banco o : l) {
                 dtm.addRow(new Object[]{
@@ -337,10 +222,10 @@ public class BancoController {
                     checkConstraints(EL_OBJECT);
                     String msg;
                     if (EL_OBJECT.getId() == null) {
-                        create(EL_OBJECT);
+                        jpaController.persist(EL_OBJECT);
                         msg = "Creado..";
                     } else {
-                        edit(EL_OBJECT);
+                        jpaController.merge(EL_OBJECT);
                         msg = "Modificado..";
                     }
                     EL_OBJECT = null;
@@ -372,9 +257,7 @@ public class BancoController {
     private Banco getSelectedFromContenedor() {
         Integer selectedRow = contenedor.getjTable1().getSelectedRow();
         if (selectedRow > -1) {
-            return (Banco) getEntityManager().find(Banco.class,
-                    Integer.valueOf(
-                            (contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
+            return jpaController.find(Integer.valueOf((contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
         } else {
             return null;
         }
@@ -385,17 +268,10 @@ public class BancoController {
         if (o.getId() != null) {
             idQuery = "o.id!=" + o.getId() + " AND ";
         }
-        try {
-            getEntityManager().createNativeQuery("SELECT * FROM " + CLASS_NAME + " o "
-                    + " WHERE " + idQuery + " o.nombre='" + o.getNombre() + "' ", o.getClass()).getSingleResult();
-            throw new MessageException("Ya existe otra " + CLASS_NAME + " con este nombre.");
-        } catch (NoResultException ex) {
-        }
-        try {
-            getEntityManager().createNativeQuery("SELECT * FROM " + CLASS_NAME + " o "
-                    + " WHERE " + idQuery + " o.webpage='" + o.getNombre() + "' ", o.getClass()).getSingleResult();
-            throw new MessageException("Ya existe otra " + CLASS_NAME + " con esta página web.");
-        } catch (NoResultException ex) {
+        Integer old = (Integer) jpaController.findAttribute("SELECT o.id FROM " + jpaController.getAlias()
+                + " WHERE " + idQuery + " o.nombre='" + o.getNombre() + "' ");
+        if (old != null) {
+            throw new MessageException("Ya existe un banco con este nombre.");
         }
     }
 
@@ -414,15 +290,9 @@ public class BancoController {
         o.setWebpage(webpage);
     }
 
-    @SuppressWarnings("unchecked")
     public List<Banco> findWithCuentasBancarias(boolean activa) {
-        EntityManager em = getEntityManager();
-        try {
-            return em.createQuery("SELECT o.banco FROM " + CuentaBancaria.class.getSimpleName() 
-                    + " o WHERE o.activa=" + activa + " GROUP BY o.banco").getResultList();
-        } finally {
-            em.close();
-        }
+        return jpaController.findAll("SELECT o.banco FROM " + CuentaBancaria.class.getSimpleName()
+                + " o WHERE o.activa=" + activa + " GROUP BY o.banco");
     }
 
     /**
@@ -431,14 +301,8 @@ public class BancoController {
      *
      * @return
      */
-    @SuppressWarnings("unchecked")
     public List<Banco> findAllWithCuentasBancarias() {
-        EntityManager em = getEntityManager();
-        try {
-            return em.createQuery("SELECT o.banco FROM " + CuentaBancaria.class.getSimpleName() 
-                    + " o GROUP BY o.banco").getResultList();
-        } finally {
-            em.close();
-        }
+        return jpaController.findAll("SELECT o.banco FROM " + CuentaBancaria.class.getSimpleName()
+                + " o GROUP BY o.banco");
     }
 }

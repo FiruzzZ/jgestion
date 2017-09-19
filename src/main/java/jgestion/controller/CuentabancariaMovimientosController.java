@@ -381,8 +381,8 @@ public class CuentabancariaMovimientosController {
     }
 
     private String armarQuery() {
-        StringBuilder query = new StringBuilder("SELECT o FROM " + jpaController.getEntityClass().getSimpleName() + " o "
-                + "WHERE o.id is not null ");
+        StringBuilder query = new StringBuilder("SELECT o FROM " + jpaController.getAlias()
+                + " WHERE o.id is not null ");
         if (manager.getCbBancos().getSelectedIndex() > 0) {
             query.append(" AND o.cuentaBancaria.banco.id=").append(((EntityWrapper<?>) manager.getCbBancos().getSelectedItem()).getId());
         } else {

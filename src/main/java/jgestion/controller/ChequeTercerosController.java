@@ -54,6 +54,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import jgestion.JGestionUtils;
+import jgestion.jpa.controller.BancoJpaController;
 import jgestion.jpa.controller.ChequeTercerosJpaController;
 import jgestion.jpa.controller.CuentabancariaMovimientosJpaController;
 import jgestion.jpa.controller.UsuarioJpaController;
@@ -152,7 +153,7 @@ public class ChequeTercerosController implements ActionListener {
         panelABM.setUIChequeTerceros();
         panelABM.setPersistible(persistir);
         panelABM.setSinComprobante(selectableCliente);
-        UTIL.loadComboBox(panelABM.getCbBancos(), new BancoController().findAll(), true);
+        UTIL.loadComboBox(panelABM.getCbBancos(), new BancoJpaController().findAll(), true);
 //        UTIL.loadComboBox(panelABM.getCbBancoSucursales(), null, null, "<Seleccionar un Banco>");
         UTIL.loadComboBox(panelABM.getCbEmisor(), new ClienteController().findAll(), selectableCliente);
         panelABM.getbAddBanco().addActionListener(new ActionListener() {
@@ -166,7 +167,7 @@ public class ChequeTercerosController implements ActionListener {
                 } catch (MessageException ex) {
                     abm.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 2);
                 }
-                UTIL.loadComboBox(panelABM.getCbBancos(), new BancoController().findAll(), true);
+                UTIL.loadComboBox(panelABM.getCbBancos(), new BancoJpaController().findAll(), true);
             }
         });
         panelABM.getbAddEmisor().addActionListener(new ActionListener() {
@@ -555,7 +556,7 @@ public class ChequeTercerosController implements ActionListener {
         jdChequeManager.getLabelSucursales().setVisible(false);
         jdChequeManager.getCbCuentaBancaria().setVisible(false);
         jdChequeManager.getLabelCuentaBancaria().setVisible(false);
-        UTIL.loadComboBox(jdChequeManager.getCbBancos(), JGestionUtils.getWrappedBancos(new BancoController().findAll()), true);
+        UTIL.loadComboBox(jdChequeManager.getCbBancos(), JGestionUtils.getWrappedBancos(new BancoJpaController().findAll()), true);
         AutoCompleteDecorator.decorate(jdChequeManager.getCbBancos());
         UTIL.loadComboBox(jdChequeManager.getCbEstados(), Arrays.asList(ChequeEstado.values()), true);
         UTIL.loadComboBox(jdChequeManager.getCbOrderBy(), Arrays.asList(orderByToComboBoxList), false);
