@@ -68,13 +68,8 @@ public class StockController {
 
     public void modificarStockBySucursal(Producto producto, Sucursal sucursal, int cantidad) {
         Stock stock;
-        try {
-            stock = jpaController.findBy(producto, sucursal);
-            stock.setStockSucu(stock.getStockSucu() + cantidad);
-            stock.setUsuario(UsuarioController.getCurrentUser());
-            stock.setFechaCarga(jpaController.getServerDate());
-            jpaController.merge(stock);
-        } catch (NoResultException e) {
+        stock = jpaController.findBy(producto, sucursal);
+        if (stock == null) {
             stock = new Stock();
             stock.setProducto(producto);
             stock.setSucursal(sucursal);
@@ -82,6 +77,11 @@ public class StockController {
             stock.setFechaCarga(jpaController.getServerDate());
             stock.setUsuario(UsuarioController.getCurrentUser());
             jpaController.persist(stock);
+        } else {
+            stock.setStockSucu(stock.getStockSucu() + cantidad);
+            stock.setUsuario(UsuarioController.getCurrentUser());
+            stock.setFechaCarga(jpaController.getServerDate());
+            jpaController.merge(stock);
         }
         producto.setStockactual(producto.getStockactual() + cantidad);
         new ProductoJpaController().merge(producto);
