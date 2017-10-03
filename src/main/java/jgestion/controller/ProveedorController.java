@@ -364,21 +364,27 @@ public class ProveedorController implements ActionListener {
             idQuery = "o.id <>" + o.getId() + " AND ";
         }
         try {
-            jpaController.findByQuery(jpaController.getSelectFrom()
+            Proveedor p = jpaController.findByQuery(jpaController.getSelectFrom()
                     + " WHERE " + idQuery + " UPPER(o.nombre)='" + o.getNombre().toUpperCase() + "' ");
-            throw new MessageException("Ya existe un " + CLASS_NAME + " con este nombre.");
+            if (p != null) {
+                throw new MessageException("Ya existe un " + CLASS_NAME + " con este nombre.");
+            }
         } catch (NoResultException ex) {
         }
         try {
-            jpaController.findByQuery(jpaController.getSelectFrom()
+            Proveedor p = jpaController.findByQuery(jpaController.getSelectFrom()
                     + " WHERE " + idQuery + " o.cuit=" + o.getCuit());
-            throw new MessageException("Ya existe un " + CLASS_NAME + " con esta CUIT/CUIL/DNI.");
+            if (p != null) {
+                throw new MessageException("Ya existe un " + CLASS_NAME + " con esta CUIT/CUIL/DNI.");
+            }
         } catch (NoResultException ex) {
         }
         try {
-            jpaController.findByQuery(jpaController.getSelectFrom()
+            Proveedor p = jpaController.findByQuery(jpaController.getSelectFrom()
                     + " WHERE " + idQuery + " o.codigo='" + o.getCodigo() + "'");
-            throw new MessageException("Ya existe un " + CLASS_NAME + " con este código.");
+            if (p != null) {
+                throw new MessageException("Ya existe un " + CLASS_NAME + " con este código.");
+            }
         } catch (NoResultException ex) {
         }
     }
