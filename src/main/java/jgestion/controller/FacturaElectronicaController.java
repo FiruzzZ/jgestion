@@ -80,14 +80,14 @@ public class FacturaElectronicaController {
                             } else if (fe.getCbteTipo() == 2 || fe.getCbteTipo() == 7 || fe.getCbteTipo() == 12 || fe.getCbteTipo() == 52) {
                                 tipo = fe.getCbteTipo() == 2 ? 'A'
                                         : fe.getCbteTipo() == 7 ? 'B'
-                                                : fe.getCbteTipo() == 12 ? 'C' : 'M';
+                                        : fe.getCbteTipo() == 12 ? 'C' : 'M';
                                 NotaDebito nc = new NotaDebitoJpaController().findBy(s, tipo, (int) fe.getCbteNumero());
                                 comprobante = nc;
                                 cbteNumero = JGestionUtils.getNumeracion(nc);
                             } else if (fe.getCbteTipo() == 3 || fe.getCbteTipo() == 8 || fe.getCbteTipo() == 13 || fe.getCbteTipo() == 53) {
                                 tipo = fe.getCbteTipo() == 3 ? 'A'
                                         : fe.getCbteTipo() == 8 ? 'B'
-                                                : fe.getCbteTipo() == 13 ? 'C' : 'M';
+                                        : fe.getCbteTipo() == 13 ? 'C' : 'M';
                                 NotaCredito nc = new NotaCreditoJpaController().findBy(s, tipo, (int) fe.getCbteNumero());
                                 comprobante = nc;
                                 cbteNumero = JGestionUtils.getNumeracion(nc, true);
@@ -191,6 +191,15 @@ public class FacturaElectronicaController {
 
     void doReport(FacturaVenta cbte) throws MissingReportException, JRException, MessageException {
         FacturaElectronica fe = findBy(cbte);
+        if (fe == null) {
+            if (cbte.getSucursal().isWebServices()) {
+                FacturaElectronica fee = FacturaElectronicaController.createFrom(cbte);
+                new FacturaElectronicaJpaController().persist(fee);
+//            FacturaElectronicaController.initSolicitudCAEs();
+                throw new MessageException("No se generó correctamente el registro de FE de este comprobante."
+                        + "\nIntente obtener el CAE nuevamente.." + fee.getId());
+            }
+        }
         if (fe.getCae() == null) {
             throw new MessageException("el comprobante " + JGestionUtils.getNumeracion(cbte) + " aún no posee CAE");
         }

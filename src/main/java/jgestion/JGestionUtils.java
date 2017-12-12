@@ -1,5 +1,6 @@
 package jgestion;
 
+import afip.ws.produccion.fev1.CbteTipo;
 import generics.ProjectUtils;
 import jgestion.entity.NotaDebitoProveedor;
 import jgestion.entity.Vendedor;
@@ -263,6 +264,14 @@ public class JGestionUtils {
         for (CuentaBancaria o : list) {
             l.add(new EntityWrapper<>(o, o.getId(), o.getNumero()));
         }
+        return l;
+    }
+
+    public static List<EntityWrapper<?>> wrapComprobantesTipo(List<CbteTipo> list) {
+        List<EntityWrapper<?>> l = new ArrayList<>(list.size());
+        list.forEach((o) -> {
+            l.add(new EntityWrapper<>(o, o.getId(), o.getDesc() + " (" + o.getId() + ")"));
+        });
         return l;
     }
 

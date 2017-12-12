@@ -33,7 +33,6 @@ public class CustomABMJDialog extends JDialog {
     private static final boolean customTextPosition = false;
     public static final int HORIZONTAL_TEXT_POSITION = SwingUtilities.CENTER;
     public static final int VERTICAL_TEXT_POSITION = SwingUtilities.BOTTOM;
-    private static final String RESOURCE_FOLDER_PATH = ProjectUtils.ICONS_FOLDER;
     private String messageToHTML;
     private Color topButtonForegroundColor = null;
     private Color topButtonBackgroundColor = null;
@@ -264,7 +263,7 @@ public class CustomABMJDialog extends JDialog {
         toolBarPanel.setLayout(new GridLayout(1, 1));
         toolBarPanel.add(jToolBar);
         try {
-            btnNuevo.setIcon(new ImageIcon(getClass().getResource(RESOURCE_FOLDER_PATH + "add.png")));
+            btnNuevo.setIcon(ProjectUtils.getIcon("add.png"));
         } catch (NullPointerException e) {
             System.out.println("Icono nuevo no encontrado");
         }
@@ -273,7 +272,7 @@ public class CustomABMJDialog extends JDialog {
         btnNuevo.setFocusable(false);
         btnNuevo.setMargin(insets);
         try {
-            btnBorrar.setIcon(new ImageIcon(getClass().getResource(RESOURCE_FOLDER_PATH + "delete.png")));
+            btnBorrar.setIcon(ProjectUtils.getIcon("delete.png"));
         } catch (NullPointerException e) {
             System.out.println("Icono borrar no encontrado");
         }
@@ -283,7 +282,7 @@ public class CustomABMJDialog extends JDialog {
         btnBorrar.setMargin(insets);
 
         try {
-            btnEditar.setIcon(new ImageIcon(getClass().getResource(RESOURCE_FOLDER_PATH + "book_edit.png")));
+            btnEditar.setIcon(ProjectUtils.getIcon("book_edit.png"));
         } catch (NullPointerException e) {
             System.out.println("Icono editar no encontrado");
         }
@@ -292,20 +291,26 @@ public class CustomABMJDialog extends JDialog {
         btnEditar.setFocusable(false);
         btnEditar.setMargin(insets);
         try {
-            btnBuscar.setIcon(new ImageIcon(getClass().getResource(RESOURCE_FOLDER_PATH + "buscar.png")));
+            btnBuscar.setIcon(ProjectUtils.getIcon("buscar.png"));
         } catch (NullPointerException e) {
             System.out.println("Icono buscar no encontrado");
         }
         btnBuscar.setMnemonic('b');
         btnBuscar.setText("Buscar");
         btnBuscar.setFocusable(false);
-
-        btnAceptar.setIcon(new ImageIcon(getClass().getResource(RESOURCE_FOLDER_PATH + "24px_ok.png")));
+        try {
+            btnAceptar.setIcon(ProjectUtils.getIcon("24px_ok.png"));
+        } catch (NullPointerException e) {
+            System.out.println("Icono ok no encontrado");
+        }
         btnAceptar.setMnemonic('a');
         btnAceptar.setText("Aceptar");
         btnAceptar.setMargin(insets);
-
-        btnCancelar.setIcon(new ImageIcon(getClass().getResource(RESOURCE_FOLDER_PATH + "24px_cancel.png")));
+        try {
+            btnCancelar.setIcon(ProjectUtils.getIcon("24px_cancel.png"));
+        } catch (NullPointerException e) {
+            System.out.println("Icono cancel no encontrado");
+        }
         btnCancelar.setMnemonic('c');
         btnCancelar.setText("Cancelar");
         btnCancelar.setMargin(insets);

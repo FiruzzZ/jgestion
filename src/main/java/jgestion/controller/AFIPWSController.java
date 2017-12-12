@@ -491,18 +491,16 @@ public class AFIPWSController {
     public void consultarCAEs() throws WSAFIPErrorResponseException {
         final PanelAFIPWSConsultarCbte p = new PanelAFIPWSConsultarCbte();
         UTIL.loadComboBox(p.getCbSucursal(), JGestionUtils.getWrappedSucursales(new UsuarioHelper().getSucursales()), false);
-        UTIL.loadComboBox(p.getCbCbte(), aFIPClient.getComprobantesTipoList(), false);
+        UTIL.loadComboBox(p.getCbCbte(), JGestionUtils.wrapComprobantesTipo(aFIPClient.getComprobantesTipoList()), false);
         CustomABMJDialog abm = new CustomABMJDialog(null, p, "Consultar Comprobantes", true, "Bla bla bla..");
         abm.getBtnAceptar().addActionListener(new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    FacturaElectronica feComprobante = getFEComprobante(
-                            Integer.valueOf(p.getTfPtoVta().getText()),
+                    FacturaElectronica feComprobante = getFEComprobante(Integer.valueOf(p.getTfPtoVta().getText()),
                             Integer.valueOf(p.getTfNumero().getText()),
-                            ((CbteTipo) p.getCbCbte().getSelectedItem()).getId());
-
+                            (int) UTIL.getEntityWrapped(p.getCbCbte()).getId());
                 } catch (WSAFIPErrorResponseException ex) {
                     LOG.error(ex, ex);
                 }
