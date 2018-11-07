@@ -3,6 +3,8 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org</groupId>
     <artifactId>jgestion</artifactId>
+    <name>JGestion</name>
+    <description>Management system of fingerprint reading and loggin, activities payment, grocery store</description>
     <version>1</version>
     <packaging>jar</packaging>
     <properties>
@@ -11,6 +13,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
     <build>
+        <finalName>${project.name}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -93,6 +96,8 @@
                         </goals>
                         <configuration>
                             <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                            <includeScope>compile</includeScope>
+                            <includeScope>runtime</includeScope>
                             <overWriteReleases>false</overWriteReleases>
                             <overWriteSnapshots>false</overWriteSnapshots>
                             <overWriteIfNewer>true</overWriteIfNewer>
@@ -159,7 +164,7 @@
         <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports</artifactId>
-            <version>5.6.1</version>
+            <version>6.6.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.lucene</groupId>
@@ -274,7 +279,7 @@
             <groupId>dom4j</groupId>
             <artifactId>dom4j</artifactId>
             <version>1.6.1</version>
-<!--            <exclusions>
+            <!--            <exclusions>
                 <exclusion>
                     <groupId>xml-apis</groupId>
                     <artifactId>xml-apis</artifactId>
@@ -351,7 +356,7 @@
         <dependency>
             <groupId>ar.com.fdvs</groupId>
             <artifactId>DynamicJasper</artifactId>
-            <version>4.0.4</version>
+            <version>5.1.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
@@ -395,7 +400,90 @@
             <scope>test</scope>
             <type>jar</type>
         </dependency>
+        <dependency>
+            <groupId>org.hotswapagent</groupId>
+            <artifactId>hotswap-agent</artifactId>
+            <version>1.3.0</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.hibernate</groupId>
+                    <artifactId>hibernate-entitymanager</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.hotswapagent</groupId>
+                    <artifactId>hotswap-agent-hibernate-plugin</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.hotswapagent</groupId>
+                    <artifactId>hotswap-agent-hibernate3-plugin</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.hotswapagent</groupId>
+                    <artifactId>hotswap-agent-spring-plugin</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.hotswapagent</groupId>
+                    <artifactId>hotswap-agent-wildfly-el-plugin</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.hotswapagent</groupId>
+                    <artifactId>hotswap-agent-tomcat-plugin</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.hotswapagent</groupId>
+                    <artifactId>hotswap-agent-mojarra-plugin</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.hotswapagent</groupId>
+                    <artifactId>hotswap-agent-jbossmodules-plugin</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.hotswapagent</groupId>
+                    <artifactId>hotswap-agent-jersey1-plugin</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.hotswapagent</groupId>
+                    <artifactId>hotswap-agent-jersey2-plugin</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.hotswapagent</groupId>
+                    <artifactId>hotswap-agent-myfaces-plugin</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.hotswapagent</groupId>
+                    <artifactId>hotswap-agent-owb-plugin</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.hotswapagent</groupId>
+                    <artifactId>hotswap-agent-resteasy-registry-plugin</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.hotswapagent</groupId>
+                    <artifactId>hotswap-agent-omnifaces-plugin</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.hotswapagent</groupId>
+                    <artifactId>hotswap-agent-jetty-plugin</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.hotswapagent</groupId>
+                    <artifactId>hotswap-agent-weld-plugin</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.hotswapagent</groupId>
+                    <artifactId>hotswap-agent-zk-plugin</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.hotswapagent</groupId>
+                    <artifactId>hotswap-agent-seam-plugin</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.hotswapagent</groupId>
+                    <artifactId>hotswap-agent-deltaspike-plugin</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
     </dependencies>
-    <name>JGestion</name>
-    <description>Management system of fingerprint reading and loggin, activities payment, grocery store</description>
+ 
 </project>
