@@ -22,12 +22,8 @@ public class NotaCreditoProveedorJpaController extends JGestionJpaImpl<NotaCredi
         return entityManager;
     }
 
-    public NotaCreditoProveedor findBy(long numero, Proveedor proveedor) {
-        try {
-            return (NotaCreditoProveedor) getEntityManager().createQuery("SELECT o FROM " + getEntityClass().getSimpleName() + " o "
-                    + "WHERE o.numero = " + numero + " AND o.proveedor.id=" + proveedor.getId()).getSingleResult();
-        } catch (NoResultException e) {
-            return null;
-        }
+    public NotaCreditoProveedor findBy(char tipo, long numero, Proveedor proveedor) {
+        return findByQuery("SELECT o FROM " + getEntityClass().getSimpleName() + " o "
+                + "WHERE o.tipo='" + Character.toUpperCase(tipo) + "' AND o.numero = " + numero + " AND o.proveedor.id=" + proveedor.getId());
     }
 }

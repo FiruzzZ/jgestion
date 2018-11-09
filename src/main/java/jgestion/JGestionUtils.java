@@ -71,6 +71,14 @@ public class JGestionUtils {
      * Conserva el path del directorio del último archivo seleccionado
      */
     public volatile static String LAST_DIRECTORY_PATH;
+    private static DatosEmpresa DATOS_EMPRESA;
+
+    private static DatosEmpresa getDatosEmpresa() {
+        if (DATOS_EMPRESA == null) {
+            DATOS_EMPRESA = new DatosEmpresaJpaController().findDatosEmpresa();
+        }
+        return DATOS_EMPRESA;
+    }
 
     public JGestionUtils() {
     }
@@ -376,7 +384,7 @@ public class JGestionUtils {
     public static String getNumeracion(NotaCreditoProveedor o, boolean conGuion) {
         String guion = conGuion ? "-" : "";
         String numero = UTIL.AGREGAR_CEROS(o.getNumero(), 12);
-        return numero.substring(0, 4) + guion + numero.substring(4);
+        return "NC" + o.getTipo() + numero.substring(0, 4) + guion + numero.substring(4);
     }
 
     public static String getNumeracion(Remesa o, boolean conGuion) {
@@ -450,7 +458,7 @@ public class JGestionUtils {
 
     public static void cargarComboTiposFacturas(JComboBox cb, Cliente o) throws MessageException {
         cb.removeAllItems();
-        DatosEmpresa de = new DatosEmpresaJpaController().findDatosEmpresa();
+        DatosEmpresa de = getDatosEmpresa();
         if (de.getContribuyente().equals(o.getContribuyente())) {
             if (o.getContribuyente().getFactuA()) {
                 cb.addItem("A");

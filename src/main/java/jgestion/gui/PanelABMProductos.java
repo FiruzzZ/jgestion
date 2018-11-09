@@ -5,6 +5,7 @@
  */
 package jgestion.gui;
 
+import com.toedter.calendar.JDateChooser;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.event.ActionListener;
@@ -583,8 +584,8 @@ public class PanelABMProductos extends javax.swing.JPanel {
         return cbSucursal;
     }
 
-    public Date getDateUltimaCompra() {
-        return dateUltimaCompra.getDate();
+    public JDateChooser getDateUltimaCompra() {
+        return dateUltimaCompra;
     }
 
     public JButton getbBuscarFoto() {

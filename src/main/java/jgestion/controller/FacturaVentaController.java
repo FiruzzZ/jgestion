@@ -192,13 +192,14 @@ public class FacturaVentaController {
                 deleteProductoFromLista(jdFactura);
             }
         });
-        //contenedor Clientes
         jdFactura.getBtnCliente().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 ClienteController ctrl = new ClienteController();
-                ctrl.initContenedor(null, true).setVisible(true);
-                UTIL.loadComboBox(jdFactura.getCbCliente(), ctrl.findAll(), false);
+                ctrl.initContenedor(jdFactura, true).setVisible(true);
+                final List<Cliente> ll = ctrl.findAll();
+                UTIL.loadComboBox(jdFactura.getCbCliente(), ll, false);
+                UTIL.setSelectedItem(jdFactura.getCbCliente(), ll.get(0));
             }
         });
         jdFactura.getBtnCancelar().addActionListener(new ActionListener() {
@@ -327,8 +328,12 @@ public class FacturaVentaController {
                 jdFactura.getCbCliente().addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
+                        Cliente cliente = (Cliente) jdFactura.getCbCliente().getSelectedItem();
+                        if (cliente == null) {
+                            return;
+                        }
                         try {
-                            JGestionUtils.cargarComboTiposFacturas(jdFactura.getCbFacturaTipo(), (Cliente) jdFactura.getCbCliente().getSelectedItem());
+                            JGestionUtils.cargarComboTiposFacturas(jdFactura.getCbFacturaTipo(), cliente);
                             remitoToFacturar = null;
                             jdFactura.setTfRemito("Sin Remito");
                         } catch (ClassCastException ex) {
@@ -1420,13 +1425,11 @@ public class FacturaVentaController {
         try {
             jdFactura.getCbUnidadDeNegocio().addItem(new EntityWrapper<>(udn, udn.getId(), udn.getNombre()));
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Unidad de Negocios no especificada");
         }
         jdFactura.getCbSucursal().addItem(new EntityWrapper<>(s, s.getId(), s.getNombre()));
         try {
             jdFactura.getCbCuenta().addItem(new EntityWrapper<>(cuenta, cuenta.getId(), cuenta.getNombre()));
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Cuenta no especificada");
         }
         try {
             jdFactura.getCbSubCuenta().addItem(new EntityWrapper<>(subCuenta, subCuenta.getId(), subCuenta.getNombre()));

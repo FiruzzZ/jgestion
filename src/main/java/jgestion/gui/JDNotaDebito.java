@@ -46,9 +46,8 @@ public class JDNotaDebito extends javax.swing.JDialog {
         cbFacturaTipo = new javax.swing.JComboBox();
         jLabel1 = new javax.swing.JLabel();
         cbCliente = new javax.swing.JComboBox();
-        btnCliente = new javax.swing.JButton();
         dcFechaFactura = new com.toedter.calendar.JDateChooser();
-        jLabel2 = new javax.swing.JLabel();
+        labelSucursal = new javax.swing.JLabel();
         cbSucursal = new javax.swing.JComboBox();
         tfObservacion = new javax.swing.JTextField();
         labelObservacion = new javax.swing.JLabel();
@@ -89,7 +88,7 @@ public class JDNotaDebito extends javax.swing.JDialog {
         jLabel5 = new javax.swing.JLabel();
         tfSubTotal = new javax.swing.JTextField();
         labelConceptoCharactersCount = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
+        labelCantidad = new javax.swing.JLabel();
         tfCantidad = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -142,7 +141,7 @@ public class JDNotaDebito extends javax.swing.JDialog {
             }
         });
 
-        labelLetra.setText("Letra");
+        labelLetra.setText("Tipo");
 
         cbFacturaTipo.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         cbFacturaTipo.setEnabled(false);
@@ -152,13 +151,10 @@ public class JDNotaDebito extends javax.swing.JDialog {
 
         cbCliente.setName("cliente"); // NOI18N
 
-        btnCliente.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/16px_add.png"))); // NOI18N
-        btnCliente.setName("btnClientes"); // NOI18N
-
         dcFechaFactura.setMaxSelectableDate(new java.util.Date(4070923260000L));
         dcFechaFactura.setMinSelectableDate(new java.util.Date(-2208969732000L));
 
-        jLabel2.setText("Sucursal");
+        labelSucursal.setText("Sucursal");
 
         cbSucursal.setName("sucursal"); // NOI18N
 
@@ -182,7 +178,7 @@ public class JDNotaDebito extends javax.swing.JDialog {
                 .addGroup(panelDatosFacturacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(labelObservacion)
                     .addComponent(jLabel1)
-                    .addComponent(jLabel2)
+                    .addComponent(labelSucursal)
                     .addComponent(jLabel7))
                 .addGroup(panelDatosFacturacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelDatosFacturacionLayout.createSequentialGroup()
@@ -190,9 +186,7 @@ public class JDNotaDebito extends javax.swing.JDialog {
                         .addGroup(panelDatosFacturacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(panelDatosFacturacionLayout.createSequentialGroup()
                                 .addComponent(cbCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 364, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(labelLetra)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(cbFacturaTipo, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -216,7 +210,7 @@ public class JDNotaDebito extends javax.swing.JDialog {
                                 .addComponent(tfObservacion, javax.swing.GroupLayout.PREFERRED_SIZE, 503, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(labelObservacionCharactersCount)))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(109, Short.MAX_VALUE))
         );
         panelDatosFacturacionLayout.setVerticalGroup(
             panelDatosFacturacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -224,20 +218,17 @@ public class JDNotaDebito extends javax.swing.JDialog {
                 .addGroup(panelDatosFacturacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(jLabel1)
                     .addComponent(cbCliente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(cbFacturaTipo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(labelLetra))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelDatosFacturacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelDatosFacturacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(cbSucursal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel2))
-                    .addGroup(panelDatosFacturacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                        .addComponent(tfFacturaCuarto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(labelN_factura)
-                        .addComponent(tfFacturaOcteto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(dcFechaFactura, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(labeFecha)))
+                .addGroup(panelDatosFacturacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(dcFechaFactura, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(labeFecha)
+                    .addComponent(tfFacturaOcteto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(tfFacturaCuarto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(labelN_factura)
+                    .addComponent(cbSucursal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(labelSucursal))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelDatosFacturacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(tfObservacion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -464,7 +455,7 @@ public class JDNotaDebito extends javax.swing.JDialog {
         labelConceptoCharactersCount.setFocusable(false);
         labelConceptoCharactersCount.setRequestFocusEnabled(false);
 
-        jLabel6.setText("Cantidad");
+        labelCantidad.setText("Cantidad");
 
         tfCantidad.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
 
@@ -481,7 +472,7 @@ public class JDNotaDebito extends javax.swing.JDialog {
                         .addComponent(btnDEL, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(panelDetalleLayout.createSequentialGroup()
                         .addGroup(panelDetalleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel6)
+                            .addComponent(labelCantidad)
                             .addComponent(jLabel3))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(panelDetalleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -520,7 +511,7 @@ public class JDNotaDebito extends javax.swing.JDialog {
                     .addComponent(cbIVA, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel5)
                     .addComponent(tfSubTotal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6)
+                    .addComponent(labelCantidad)
                     .addComponent(tfCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(panelDetalleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
@@ -567,8 +558,6 @@ public class JDNotaDebito extends javax.swing.JDialog {
                 .addContainerGap())
         );
 
-        panelDatosFacturacion.getAccessibleContext().setAccessibleName("Datos comprobante");
-
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
@@ -602,7 +591,6 @@ public class JDNotaDebito extends javax.swing.JDialog {
     private javax.swing.JButton btnAceptar;
     private javax.swing.JButton btnAnular;
     private javax.swing.JButton btnCancelar;
-    private javax.swing.JButton btnCliente;
     private javax.swing.JButton btnDEL;
     private javax.swing.JComboBox cbCliente;
     private javax.swing.JComboBox cbFacturaTipo;
@@ -611,7 +599,6 @@ public class JDNotaDebito extends javax.swing.JDialog {
     private com.toedter.calendar.JDateChooser dcFechaFactura;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel17;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel24;
     private javax.swing.JLabel jLabel25;
@@ -623,17 +610,18 @@ public class JDNotaDebito extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel30;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JLabel labeFecha;
+    private javax.swing.JLabel labelCantidad;
     private javax.swing.JLabel labelConceptoCharactersCount;
     private javax.swing.JLabel labelLetra;
     private javax.swing.JLabel labelN_factura;
     private javax.swing.JLabel labelObservacion;
     private javax.swing.JLabel labelObservacionCharactersCount;
+    private javax.swing.JLabel labelSucursal;
     private javax.swing.JPanel panelDatosFacturacion;
     private javax.swing.JPanel panelDetalle;
     private javax.swing.JTextField tfCAE;
@@ -656,7 +644,9 @@ public class JDNotaDebito extends javax.swing.JDialog {
 
     private void setToProveedor() {
         jLabel1.setText("Proveedor");
-        jLabel2.setVisible(false);
+        labelSucursal.setText("N°");
+        labelN_factura.setVisible(false);
+        cbFacturaTipo.setEnabled(true);
         cbSucursal.setVisible(false);
         tfFacturaCuarto.setEditable(true);
         tfFacturaCuarto.setText("");
@@ -666,6 +656,8 @@ public class JDNotaDebito extends javax.swing.JDialog {
         tfFacturaOcteto.setText("");
         tfFacturaOcteto.setFocusable(true);
         tfFacturaOcteto.setRequestFocusEnabled(true);
+        labelCantidad.setVisible(false);
+        tfCantidad.setVisible(false);
     }
 
     public JButton getBtnADD() {
@@ -682,10 +674,6 @@ public class JDNotaDebito extends javax.swing.JDialog {
 
     public JButton getBtnCancelar() {
         return btnCancelar;
-    }
-
-    public JButton getBtnCliente() {
-        return btnCliente;
     }
 
     public JButton getBtnDEL() {

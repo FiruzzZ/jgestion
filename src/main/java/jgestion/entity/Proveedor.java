@@ -10,13 +10,11 @@ import javax.persistence.*;
  * @author FiruzzZ
  */
 @Entity
-@Table(name = "proveedor", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"cuit"}),
-    @UniqueConstraint(columnNames = {"codigo"})
-})
 @NamedQueries({
-    @NamedQuery(name = "Proveedor.findAll", query = "SELECT p FROM Proveedor p"),
-    @NamedQuery(name = "Proveedor.findById", query = "SELECT p FROM Proveedor p WHERE p.id = :id"),
+    @NamedQuery(name = "Proveedor.findAll", query = "SELECT p FROM Proveedor p")
+    ,
+    @NamedQuery(name = "Proveedor.findById", query = "SELECT p FROM Proveedor p WHERE p.id = :id")
+    ,
     @NamedQuery(name = "Proveedor.findByNombre", query = "SELECT p FROM Proveedor p WHERE p.nombre = :nombre")
 })
 public class Proveedor implements Serializable {
@@ -44,7 +42,7 @@ public class Proveedor implements Serializable {
     @Column(name = "contacto", length = 100)
     private String contacto;
     @Basic(optional = false)
-    @Column(name = "cuit", nullable = false)
+    @Column(name = "cuit", nullable = false, unique = true)
     private long cuit;
     @Column(name = "retencion_dgr")
     private Boolean retencionDgr;
@@ -60,19 +58,19 @@ public class Proveedor implements Serializable {
     private int estado;
     @Column(name = "codigopostal")
     private Integer codigopostal;
-    @Column(name = "codigo", length = 20)
+    @Column(name = "codigo", length = 20, unique = true)
     private String codigo;
     @Column(name = "interno1")
     private Integer interno1;
     @Column(name = "interno2")
     private Integer interno2;
-    @JoinColumn(name = "contribuyente", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "contribuyente", nullable = false)
     @ManyToOne(optional = false)
     private Contribuyente contribuyente;
     @JoinColumn(name = "departamento", referencedColumnName = "iddepto")
     @ManyToOne(optional = false)
     private Departamento departamento;
-    @JoinColumn(name = "municipio", referencedColumnName = "id")
+    @JoinColumn(name = "municipio")
     @ManyToOne
     private Municipio municipio;
     @JoinColumn(name = "provincia", referencedColumnName = "idprovincia", nullable = false)

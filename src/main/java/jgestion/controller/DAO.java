@@ -398,7 +398,7 @@ public abstract class DAO implements Runnable {
                 em.persist(new Contribuyente(1, "CONSUMIDOR FINAL", false, true, false, false, false));
                 em.persist(new Contribuyente(2, "EXENTO", false, true, false, false, false));
                 em.persist(new Contribuyente(3, "MONOTRIBUTISTA", false, false, true, false, false));
-                em.persist(new Contribuyente(4, "RESP. INSCRIP", true, false, false, false, false));
+                em.persist(new Contribuyente(4, "RESP. INSCRIP", true, true, false, false, false));
                 em.persist(new Contribuyente(5, "RESP. NO INSCRIP", false, true, false, false, false));
             }
             // </editor-fold>
@@ -489,7 +489,8 @@ public abstract class DAO implements Runnable {
                         + "(14,'HIPOLITO YRIGOYEN'),(15,'MOJON GRANDE'),(15,'SAN JAVIER'),(15,'Florentino Ameghino'),(16,'SAN PEDRO'),(17,'ALBA POSSE'),"
                         + "(17,'COLONIA AURORA'),(17,'25 DE MAYO'),(18,'AZARA'),(18,'APÓSTOLES'),(18,'SAN JOSE'),(18,'TRES CAPONES'),(19,'DOS DE MAYO'),"
                         + "(19,'CAMPO GRANDE'),(20,'MARTIRES'),(20,'BOMPLAN'),(20,'CERRO CORA'),(20,'CANDELARIA'),(20,'LORETO'),(20,'PROFUNDIDAD'),"
-                        + "(20,'SANTA ANA');");
+                        + "(20,'SANTA ANA');"
+                        + "SELECT setval('public.depto_iddepto_seq', (SELECT count(1) FROM depto), true);");
                 getJDBCConnection().commit();
                 getJDBCConnection().close();
             }// </editor-fold>

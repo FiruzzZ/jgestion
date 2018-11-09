@@ -206,7 +206,9 @@ public class DatosEmpresaJpaController implements ActionListener {
 
     private void setearJD() {
         jd.setTfNombre(EL_OBJECT.getNombre());
-        UTIL.setSelectedItem(jd.getCbContribuyente(), EL_OBJECT.getContribuyente());
+        if (EL_OBJECT.getContribuyente() != null) {
+            UTIL.setSelectedItem(jd.getCbContribuyente(), EL_OBJECT.getContribuyente());
+        }
         jd.setTfCUIT(String.valueOf(EL_OBJECT.getCuit()));
         jd.setDcInicioActividad(EL_OBJECT.getFechaInicioActividad());
         jd.setTfDireccion(EL_OBJECT.getDireccion());

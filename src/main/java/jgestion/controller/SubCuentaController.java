@@ -16,6 +16,7 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import jgestion.Wrapper;
 import jgestion.jpa.controller.SubCuentaJpaController;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -63,7 +64,7 @@ public class SubCuentaController {
                 if (EL_OBJECT == null) {
                     EL_OBJECT = new SubCuenta();
                 }
-                EL_OBJECT.setNombre(panelABMSubCuenta.getTfNombre().getText().trim());
+                EL_OBJECT.setNombre(StringUtils.trimToNull(panelABMSubCuenta.getTfNombre().getText().trim()));
                 EL_OBJECT.setCuenta(((EntityWrapper<Cuenta>) panelABMSubCuenta.getCbCuenta().getSelectedItem()).getEntity());
                 try {
                     abm.getbAceptar().setEnabled(false);
@@ -196,6 +197,12 @@ public class SubCuentaController {
     }
 
     private void checkConstraints(SubCuenta o) throws MessageException {
+        if (o.getNombre() == null) {
+            throw new MessageException("Nombre no válido");
+        }
+        if (o.getNombre().length() > 50) {
+            throw new MessageException("Nombre no puede superar los 50 caracteres (" + o.getNombre().length() + ")");
+        }
         String idQuery = "";
         if (o.getId() != null) {
             idQuery = "o.id <> " + o.getId() + " AND ";

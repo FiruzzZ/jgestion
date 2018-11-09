@@ -148,43 +148,6 @@ public class NotaCreditoProveedorController implements ActionListener {
                         facturaCompraController.actionPerformed(e);
                     }
                     //</editor-fold>
-                } else if (buscador != null && buscador.isActive()) {
-                    //<editor-fold defaultstate="collapsed" desc="Buscador">
-                    if (boton.equals(buscador.getbBuscar())) {
-                        try {
-                            String query = armarQuery(false);
-                            cargarTablaBuscador(query);
-                        } catch (MessageException ex) {
-                            ex.displayMessage(buscador);
-                        }
-                    } else if (boton.equals(buscador.getbImprimir())) {
-                        try {
-                            String query = armarQuery(false);
-                            cargarTablaBuscador(query);
-                        } catch (MessageException ex) {
-                            ex.displayMessage(buscador);
-                        }
-                    } else if (boton.equals(buscador.getbExtra())) {
-                        if (buscador.getjTable1().getSelectedRow() > -1) {
-                            try {
-                                EL_OBJECT = jpaController.find((Integer) buscador.getDtm().getValueAt(buscador.getjTable1().getSelectedRow(), 0));
-                                if (EL_OBJECT.isAnulada()) {
-                                    throw new MessageException("No se puede editar un comprobante ANULADO");
-                                }
-                                if (EL_OBJECT.getDesacreditado().compareTo(BigDecimal.ZERO) > 0) {
-                                    throw new MessageException("No se puede editar porque ya fue acreditada");
-                                }
-                                setComprobanteUI(EL_OBJECT, false, true);
-                                cargarTablaBuscador(armarQuery(false));
-                            } catch (MessageException ex) {
-                                buscador.showMessage(ex.getMessage(), null, 0);
-                            }
-                        } else {
-                            buscador.showMessage("Seleccione la fila del comprobante que desea editar", null, JOptionPane.WARNING_MESSAGE);
-                        }
-
-                    }
-                    //</editor-fold>
                 }
             }// </editor-fold>
         } catch (Exception ex) {
@@ -232,9 +195,7 @@ public class NotaCreditoProveedorController implements ActionListener {
             query.append(" AND o.remesa ").append(buscador.getCbFormasDePago().getSelectedItem().toString().equalsIgnoreCase("si") ? " is not null" : " is null");
         }
 
-        query.append(
-                " ORDER BY o.fechaCarga");
-        LOG.debug("Buscador.query=" + query.toString());
+        query.append(" ORDER BY o.fechaCarga");
         return query.toString();
     }
 
@@ -299,17 +260,18 @@ public class NotaCreditoProveedorController implements ActionListener {
         if (total.compareTo(BigDecimal.ZERO) <= 0) {
             throw new MessageException("Monto del comprobante no válido, debe ser mayor a cero.");
         }
-
+        char tipo = jdFactura.getCbFacturaTipo().getSelectedItem().toString().charAt(0);
         long numeroFactura = Long.valueOf(jdFactura.getTfFacturaCuarto() + jdFactura.getTfFacturaOcteto());
-        NotaCreditoProveedor old = jpaController.findBy(numeroFactura, ((EntityWrapper<Proveedor>) jdFactura.getCbProveedor().getSelectedItem()).getEntity());
+        NotaCreditoProveedor old = jpaController.findBy(tipo, numeroFactura, ((EntityWrapper<Proveedor>) jdFactura.getCbProveedor().getSelectedItem()).getEntity());
         if (old != null && (EL_OBJECT == null || !old.getId().equals(EL_OBJECT.getId()))) {
-            throw new MessageException("Ya existe la Nota de Credito Nº: " + JGestionUtils.getNumeracion(old, true)
+            throw new MessageException("Ya existe la Nota de Credito: " + JGestionUtils.getNumeracion(old, true)
                     + " del Proveedor " + old.getProveedor().getNombre());
         }
     }
 
     private void setEntityAndPersist() {
         NotaCreditoProveedor o = new NotaCreditoProveedor();
+        o.setTipo(jdFactura.getCbFacturaTipo().getSelectedItem().toString().charAt(0));
         o.setNumero(Long.valueOf(jdFactura.getTfFacturaCuarto() + jdFactura.getTfFacturaOcteto()));
         o.setFechaNotaCredito(jdFactura.getDcFechaFactura());
         o.setAnulada(false);
@@ -339,7 +301,7 @@ public class NotaCreditoProveedorController implements ActionListener {
         if (EL_OBJECT == null) {
             jpaController.persist(o);
             if (jdFactura.getCheckActualizaStock().isSelected()) {
-                CreditoProveedor cp = new CreditoProveedor(null, true, o.getImporte(), "NC N°" + JGestionUtils.getNumeracion(o, true), o.getProveedor());
+                CreditoProveedor cp = new CreditoProveedor(null, true, o.getImporte(), JGestionUtils.getNumeracion(o, true), o.getProveedor());
                 new CreditoProveedorJpaController().persist(cp);
             }
         } else {
@@ -350,7 +312,6 @@ public class NotaCreditoProveedorController implements ActionListener {
 
     public void displayBuscador(Window owner, final boolean modal, final boolean paraAnular) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.COMPRA);
-
         buscador = new JDBuscadorReRe(owner, null, modal, "Proveedor", null);
         buscador.getbExtra().setVisible(true);
         buscador.setParaNotaCreditoProveedor();
@@ -364,7 +325,41 @@ public class NotaCreditoProveedorController implements ActionListener {
         tc.getColumn(3).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         UTIL.hideColumnTable(buscador.getjTable1(), 0);
         UTIL.setHorizonalAlignment(buscador.getjTable1(), String.class, SwingConstants.RIGHT);
-
+        buscador.getbBuscar().addActionListener(evt -> {
+            try {
+                String query = armarQuery(false);
+                cargarTablaBuscador(query);
+            } catch (MessageException ex) {
+                ex.displayMessage(buscador);
+            }
+        });
+        buscador.getbImprimir().addActionListener(evt -> {
+            try {
+                String query = armarQuery(false);
+                cargarTablaBuscador(query);
+            } catch (MessageException ex) {
+                ex.displayMessage(buscador);
+            }
+        });
+        buscador.getbExtra().addActionListener(evt -> {
+            if (buscador.getjTable1().getSelectedRow() > -1) {
+                try {
+                    EL_OBJECT = jpaController.find((Integer) buscador.getDtm().getValueAt(buscador.getjTable1().getSelectedRow(), 0));
+                    if (EL_OBJECT.isAnulada()) {
+                        throw new MessageException("No se puede editar un comprobante ANULADO");
+                    }
+                    if (EL_OBJECT.getDesacreditado().compareTo(BigDecimal.ZERO) > 0) {
+                        throw new MessageException("No se puede editar porque ya fue acreditada");
+                    }
+                    setUI(EL_OBJECT, false, true);
+                    cargarTablaBuscador(armarQuery(false));
+                } catch (MessageException ex) {
+                    buscador.showMessage(ex.getMessage(), null, 0);
+                }
+            } else {
+                buscador.showMessage("Seleccione la fila del comprobante que desea editar", null, JOptionPane.WARNING_MESSAGE);
+            }
+        });
         buscador.getjTable1().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -372,7 +367,7 @@ public class NotaCreditoProveedorController implements ActionListener {
                     if (buscador.getjTable1().getSelectedRow() > -1) {
                         EL_OBJECT = jpaController.find((Integer) buscador.getDtm().getValueAt(buscador.getjTable1().getSelectedRow(), 0));
                         try {
-                            setComprobanteUI(EL_OBJECT, paraAnular, false);
+                            setUI(EL_OBJECT, paraAnular, false);
                         } catch (MessageException ex) {
                             ex.displayMessage(buscador);
                         } catch (Exception ex) {
@@ -410,7 +405,7 @@ public class NotaCreditoProveedorController implements ActionListener {
         buscador.setVisible(true);
     }
 
-    private void setComprobanteUI(NotaCreditoProveedor notaCredito, boolean paraAnular, boolean toEdit) throws MessageException {
+    private void setUI(NotaCreditoProveedor notaCredito, boolean paraAnular, boolean toEdit) throws MessageException {
         initComprobanteUI(buscador, true);
         if (paraAnular && toEdit) {
             throw new MessageException("Para anular o para editar? decidite..!");
@@ -429,6 +424,7 @@ public class NotaCreditoProveedorController implements ActionListener {
             UTIL.setSelectedItem(jdFactura.getCbProveedor(), notaCredito.getProveedor());
         }
         jdFactura.setDcFechaFactura(notaCredito.getFechaNotaCredito());
+        UTIL.setSelectedItem(jdFactura.getCbFacturaTipo(), notaCredito.getTipo());
         String numFactura = UTIL.AGREGAR_CEROS(notaCredito.getNumero(), 12);
         jdFactura.setTfFacturaCuarto(numFactura.substring(0, 4));
         jdFactura.setTfFacturaOcteto(numFactura.substring(4));
@@ -502,16 +498,16 @@ public class NotaCreditoProveedorController implements ActionListener {
         dtm.setRowCount(0);
         @SuppressWarnings("unchecked")
         List<NotaCreditoProveedor> l = jpaController.findAll(query);
-        for (NotaCreditoProveedor facturaCompra : l) {
+        for (NotaCreditoProveedor o : l) {
             dtm.addRow(new Object[]{
-                facturaCompra.getId(),
-                JGestionUtils.getNumeracion(facturaCompra, true),
-                facturaCompra.getProveedor().getNombre(),
-                facturaCompra.getImporte(),
-                UTIL.DATE_FORMAT.format(facturaCompra.getFechaNotaCredito()),
-                (facturaCompra.getRemesa() != null ? JGestionUtils.getNumeracion(facturaCompra.getRemesa(), true) : null),
-                facturaCompra.getUsuario(),
-                UTIL.TIMESTAMP_FORMAT.format(facturaCompra.getFechaCarga())
+                o.getId(),
+                JGestionUtils.getNumeracion(o, true),
+                o.getProveedor().getNombre(),
+                o.getImporte(),
+                UTIL.DATE_FORMAT.format(o.getFechaNotaCredito()),
+                (o.getRemesa() != null ? JGestionUtils.getNumeracion(o.getRemesa(), true) : null),
+                o.getUsuario(),
+                UTIL.TIMESTAMP_FORMAT.format(o.getFechaCarga())
             });
         }
     }
@@ -552,7 +548,7 @@ public class NotaCreditoProveedorController implements ActionListener {
                         buscador.dispose();
                     } else {
                         try {
-                            setComprobanteUI(EL_OBJECT, paraAnular, false);
+                            setUI(EL_OBJECT, paraAnular, false);
                             //refresh post anulación...
                             if (EL_OBJECT == null) {
                                 cargarTablaBuscador(armarQuery(selectingMode));

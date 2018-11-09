@@ -110,8 +110,8 @@
                                   <Component id="labelObservacionCharactersCount" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
-                                  <Component id="cbCaja" min="-2" pref="200" max="-2" attributes="1"/>
-                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="dcFechaFactura" min="-2" pref="120" max="-2" attributes="1"/>
+                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                   <Component id="labelFacturaTipo" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="cbFacturaTipo" min="-2" pref="59" max="-2" attributes="0"/>
@@ -121,17 +121,6 @@
                                   <Component id="tfFacturaCuarto" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="tfFacturaOcteto" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <Group type="102" alignment="0" attributes="0">
-                                  <Component id="dcFechaFactura" min="-2" pref="120" max="-2" attributes="1"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="labelFormaPago" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="cbFormaPago" min="-2" pref="97" max="-2" attributes="1"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="labelDias" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="tfDias" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="cbProveedor" min="-2" pref="270" max="-2" attributes="0"/>
@@ -160,8 +149,21 @@
                           <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                       </Group>
                       <Group type="102" attributes="0">
-                          <Component id="cbDominio" min="-2" pref="464" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="cbDominio" min="-2" pref="464" max="-2" attributes="0"/>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <Component id="cbCaja" min="-2" pref="200" max="-2" attributes="1"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="labelFormaPago" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="cbFormaPago" min="-2" pref="90" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="labelDias" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="tfDias" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                          <EmptySpace pref="20" max="32767" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
@@ -193,21 +195,23 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="2" attributes="0">
                       <Component id="dcFechaFactura" alignment="2" min="-2" max="-2" attributes="0"/>
-                      <Component id="labelFormaPago" alignment="2" min="-2" max="-2" attributes="0"/>
-                      <Component id="tfDias" alignment="2" min="-2" max="-2" attributes="0"/>
-                      <Component id="labelDias" alignment="2" min="-2" max="-2" attributes="0"/>
-                      <Component id="cbFormaPago" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="labelFecha" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" alignment="2" groupAlignment="2" attributes="0">
+                          <Component id="labelFacturaTipo" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="tfFacturaCuarto" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="tfFacturaOcteto" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="labelFacturaNumero" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="cbFacturaTipo" alignment="2" min="-2" max="-2" attributes="0"/>
+                      </Group>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="2" attributes="0">
                       <Component id="labelCaja" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="cbCaja" alignment="2" min="-2" max="-2" attributes="0"/>
-                      <Component id="labelFacturaTipo" alignment="2" min="-2" max="-2" attributes="0"/>
-                      <Component id="tfFacturaCuarto" alignment="2" min="-2" max="-2" attributes="0"/>
-                      <Component id="tfFacturaOcteto" alignment="2" min="-2" max="-2" attributes="0"/>
-                      <Component id="labelFacturaNumero" alignment="2" min="-2" max="-2" attributes="0"/>
-                      <Component id="cbFacturaTipo" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Component id="labelFormaPago" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Component id="cbFormaPago" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Component id="labelDias" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Component id="tfDias" alignment="2" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="2" attributes="0">
@@ -226,11 +230,6 @@
         </DimensionLayout>
       </Layout>
       <SubComponents>
-        <Component class="javax.swing.JLabel" name="labelFormaPago">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="Forma Pago"/>
-          </Properties>
-        </Component>
         <Component class="javax.swing.JComboBox" name="cbProveedor">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
@@ -250,41 +249,10 @@
             <Property name="text" type="java.lang.String" value="Proveedor"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JLabel" name="labelDias">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="D&#xed;as"/>
-          </Properties>
-        </Component>
         <Component class="javax.swing.JLabel" name="labelFecha">
           <Properties>
             <Property name="text" type="java.lang.String" value="Fecha"/>
           </Properties>
-        </Component>
-        <Component class="javax.swing.JComboBox" name="cbFormaPago">
-          <Properties>
-            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="0"/>
-            </Property>
-          </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cbFormaPagoActionPerformed"/>
-            <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="cbFormaPagoFocusLost"/>
-          </Events>
-        </Component>
-        <Component class="javax.swing.JTextField" name="tfDias">
-          <Properties>
-            <Property name="columns" type="int" value="3"/>
-            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-              <Font name="Tahoma" size="11" style="1"/>
-            </Property>
-            <Property name="horizontalAlignment" type="int" value="0"/>
-            <Property name="enabled" type="boolean" value="false"/>
-            <Property name="name" type="java.lang.String" value="dias" noResource="true"/>
-            <Property name="requestFocusEnabled" type="boolean" value="false"/>
-          </Properties>
-          <Events>
-            <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="tfDiasKeyTyped"/>
-          </Events>
         </Component>
         <Component class="com.toedter.calendar.JDateChooser" name="dcFechaFactura">
           <Properties>
@@ -437,6 +405,35 @@
             <Property name="text" type="java.lang.String" value="Dominio"/>
           </Properties>
         </Component>
+        <Component class="javax.swing.JLabel" name="labelFormaPago">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Forma Pago"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JComboBox" name="cbFormaPago">
+          <Properties>
+            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+              <StringArray count="0"/>
+            </Property>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="labelDias">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="D&#xed;as"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="tfDias">
+          <Properties>
+            <Property name="columns" type="int" value="3"/>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Tahoma" size="11" style="1"/>
+            </Property>
+            <Property name="horizontalAlignment" type="int" value="0"/>
+            <Property name="enabled" type="boolean" value="false"/>
+            <Property name="name" type="java.lang.String" value="dias" noResource="true"/>
+            <Property name="requestFocusEnabled" type="boolean" value="false"/>
+          </Properties>
+        </Component>
       </SubComponents>
     </Container>
     <Container class="javax.swing.JScrollPane" name="jScrollPane1">
@@ -522,7 +519,7 @@
                           <Component id="tfTotalPercIVA" min="-2" pref="66" max="-2" attributes="0"/>
                       </Group>
                   </Group>
-                  <EmptySpace pref="39" max="32767" attributes="0"/>
+                  <EmptySpace pref="48" max="32767" attributes="0"/>
                   <Group type="103" groupAlignment="1" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
                           <Component id="tfTotal" min="-2" max="-2" attributes="0"/>
@@ -801,7 +798,7 @@
                       <Component id="jLabel20" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Component id="tfPercIVA" alignment="0" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace min="0" pref="12" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="11" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -1165,7 +1162,7 @@
         <Component class="javax.swing.JButton" name="btnADD">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/iconos/add.png"/>
+              <Image iconType="3" name="/iconos/16px_add_circular.png"/>
             </Property>
             <Property name="toolTipText" type="java.lang.String" value="Agregar producto"/>
             <Property name="name" type="java.lang.String" value="add" noResource="true"/>
@@ -1189,7 +1186,7 @@
         <Component class="javax.swing.JButton" name="btnDEL">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/iconos/delete.png"/>
+              <Image iconType="3" name="/iconos/16px_delete_circular.png"/>
             </Property>
             <Property name="toolTipText" type="java.lang.String" value="Quitar producto"/>
             <Property name="name" type="java.lang.String" value="del" noResource="true"/>

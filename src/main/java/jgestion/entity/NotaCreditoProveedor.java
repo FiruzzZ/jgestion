@@ -29,8 +29,7 @@ import javax.xml.bind.annotation.XmlTransient;
  */
 @Entity
 @Table(name = "nota_credito_proveedor", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"proveedor", "numero"})})
-@XmlRootElement
+    @UniqueConstraint(name = "nota_credito_proveedor_uniqueness_numeracion", columnNames = {"proveedor", "numero", "tipo"})})
 @NamedQueries({
     @NamedQuery(name = "NotaCreditoProveedor.findAll", query = "SELECT n FROM NotaCreditoProveedor n")})
 public class NotaCreditoProveedor implements Serializable {
@@ -43,13 +42,17 @@ public class NotaCreditoProveedor implements Serializable {
     private Integer id;
     @Basic(optional = false)
     @Column(nullable = false)
+    private char tipo;
+    @Basic(optional = false)
+    @Column(nullable = false)
     private Long numero;
     @Basic(optional = false)
     @Column(nullable = false)
     private boolean anulada;
     /**
-     * Antes se podía ir desacreditando en porciones una nota de crédito, ya no mas.
-     * Cuando una nota de credito sea utilizada {@link #desacreditado} == {@link #importe}
+     * Antes se podía ir desacreditando en porciones una nota de crédito, ya no mas. Cuando una nota
+     * de credito sea utilizada {@link #desacreditado} == {@link #importe}
+     *
      * @deprecated
      */
     @Deprecated
@@ -111,6 +114,14 @@ public class NotaCreditoProveedor implements Serializable {
         this.id = id;
     }
 
+    public char getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(char tipo) {
+        this.tipo = tipo;
+    }
+
     public boolean isAnulada() {
         return anulada;
     }
@@ -118,10 +129,12 @@ public class NotaCreditoProveedor implements Serializable {
     public void setAnulada(boolean anulada) {
         this.anulada = anulada;
     }
-/**
-     * Antes se podía ir desacreditando en porciones una nota de crédito, ya no mas.
-     * Cuando una nota de credito sea utilizada {@link #desacreditado} == {@link #importe}
-     * @return 
+
+    /**
+     * Antes se podía ir desacreditando en porciones una nota de crédito, ya no mas. Cuando una nota
+     * de credito sea utilizada {@link #desacreditado} == {@link #importe}
+     *
+     * @return
      * @deprecated
      */
     @Deprecated
@@ -130,9 +143,10 @@ public class NotaCreditoProveedor implements Serializable {
     }
 
     /**
-     * Antes se podía ir desacreditando en porciones una nota de crédito, ya no mas.
-     * Cuando una nota de credito sea utilizada {@link #desacreditado} == {@link #importe}
-     * @param desacreditado 
+     * Antes se podía ir desacreditando en porciones una nota de crédito, ya no mas. Cuando una nota
+     * de credito sea utilizada {@link #desacreditado} == {@link #importe}
+     *
+     * @param desacreditado
      * @deprecated
      */
     @Deprecated
@@ -275,6 +289,6 @@ public class NotaCreditoProveedor implements Serializable {
 
     @Override
     public String toString() {
-        return "NotaCreditoProveedor{" + "id=" + id + ", numero=" + numero + ", anulada=" + anulada + ", desacreditado=" + desacreditado + ", fechaCarga=" + fechaCarga + ", fechaNotaCreditoProveedor=" + fechaNotaCredito + ", gravado=" + gravado + ", importe=" + importe + ", impuestosRecuperables=" + impuestosRecuperables + ", iva10=" + iva10 + ", iva21=" + iva21 + ", noGravado=" + noGravado + ", observacion=" + observacion + ", usuario=" + usuario + ", proveedor=" + proveedor + ", detalleNotaCreditoProveedorList=" + detalleNotaCreditoProveedorList + '}';
+        return "NotaCreditoProveedor{" + "id=" + id + ", tipo=" + tipo + ", numero=" + numero + ", anulada=" + anulada + ", desacreditado=" + desacreditado + ", fechaCarga=" + fechaCarga + ", fechaNotaCreditoProveedor=" + fechaNotaCredito + ", gravado=" + gravado + ", importe=" + importe + ", impuestosRecuperables=" + impuestosRecuperables + ", iva10=" + iva10 + ", iva21=" + iva21 + ", noGravado=" + noGravado + ", observacion=" + observacion + ", usuario=" + usuario + ", proveedor=" + proveedor + ", detalleNotaCreditoProveedorList=" + detalleNotaCreditoProveedorList + '}';
     }
 }
