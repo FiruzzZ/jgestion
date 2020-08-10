@@ -1,6 +1,6 @@
 package jgestion.controller;
 
-import afip.ws.exception.WSAFIPErrorResponseException;
+import com.wsafip.exception.WSAFIPErrorResponseException;
 import generics.GenericBeanCollection;
 import generics.WaitingDialog;
 import java.awt.event.ComponentAdapter;
@@ -65,7 +65,7 @@ public class FacturaElectronicaController {
                         }
                         waiting.appendMessage("CAE pendientes: " + l.size(), true, true);
                         waiting.appendMessage("obteniendo ticket de acceso..", true, true);
-                        AFIPWSController afipwsController = new AFIPWSController(null);
+                        AFIPWSController afipwsController = new AFIPWSController();
                         Object comprobante = null;
                         for (FacturaElectronica fe : l) {
                             String cbteNumero = null;

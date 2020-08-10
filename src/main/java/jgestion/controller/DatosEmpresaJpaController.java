@@ -115,7 +115,7 @@ public class DatosEmpresaJpaController implements ActionListener {
         jd.setListener(this);
         EL_OBJECT = findDatosEmpresa();
         if (EL_OBJECT != null) {
-            setearJD();
+            setUI();
         }
         jd.setLocationRelativeTo(owner);
         jd.setVisible(true);
@@ -204,7 +204,7 @@ public class DatosEmpresaJpaController implements ActionListener {
 
     }
 
-    private void setearJD() {
+    private void setUI() {
         jd.setTfNombre(EL_OBJECT.getNombre());
         if (EL_OBJECT.getContribuyente() != null) {
             UTIL.setSelectedItem(jd.getCbContribuyente(), EL_OBJECT.getContribuyente());

@@ -1,6 +1,6 @@
 package jgestion.controller;
 
-import afip.ws.exception.WSAFIPErrorResponseException;
+import com.wsafip.exception.WSAFIPErrorResponseException;
 import jgestion.jpa.controller.ProvinciaJpaController;
 import generics.WaitingDialog;
 import java.awt.GridLayout;
@@ -478,7 +478,7 @@ public class SucursalController implements ActionListener {
             }
             if (panel.getCheckWebServices().isSelected()) {
                 try {
-                    AFIPWSController afipwsController = new AFIPWSController(null);
+                    AFIPWSController afipwsController = new AFIPWSController();
                     List<Integer> puntosVenta = afipwsController.getPuntoVentas();
                     if (!puntosVenta.contains(sucursal.getPuntoVenta())) {
                         throw new MessageException("El punto de venta: " + sucursal.getPuntoVenta()
@@ -723,7 +723,7 @@ public class SucursalController implements ActionListener {
         if (sucursal.isWebServices()) {
             WaitingDialog.initWaitingDialog(jd, "AFIP WebServices", "Recuperando últimos números de comprobantes", () -> {
                 try {
-                    AFIPWSController afipwsController = new AFIPWSController(null);
+                    AFIPWSController afipwsController = new AFIPWSController();
                     paneln.getTfFactuA_AFIP().setText(afipwsController.getUltimoCompActualizado(sucursal.getPuntoVenta(), 1) + "");
                     paneln.getTfFactuB_AFIP().setText(afipwsController.getUltimoCompActualizado(sucursal.getPuntoVenta(), 6) + "");
                     paneln.getTfFactuC_AFIP().setText(afipwsController.getUltimoCompActualizado(sucursal.getPuntoVenta(), 11) + "");

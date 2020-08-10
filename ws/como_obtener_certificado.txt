@@ -21,6 +21,9 @@ Los pasos a seguir son los siguientes:
   
   openssl req -new -key privada -subj "/C=AR/O=subj_o/CN=subj_cn/serialNumber=CUIT subj_cuit" -out pedido
   
+  (Si utiliza Git for Windows bash)
+  openssl req -new -key privada -subj "//C=AR\O=subj_o\CN=subj_cn\serialNumber=CUIT subj_cuit" -out pedido
+
   Reemplace:
     subj_o por el nombre de su empresa.
     subj_cn por su nombre o server hostname.

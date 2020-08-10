@@ -81,6 +81,8 @@ public class Permisos implements Serializable {
     private boolean anularComprobantes;
     @Column(name = "cheques_administrador", nullable = false)
     private boolean chequesAdministrador;
+    @Column(nullable = false)
+    private boolean configuracion;
 
     public Permisos() {
     }
@@ -235,6 +237,14 @@ public class Permisos implements Serializable {
 
     public void setChequesAdministrador(boolean chequesAdministrador) {
         this.chequesAdministrador = chequesAdministrador;
+    }
+
+    public boolean isConfiguracion() {
+        return configuracion;
+    }
+
+    public void setConfiguracion(boolean configuracion) {
+        this.configuracion = configuracion;
     }
 
     /**

@@ -1,21 +1,43 @@
 package jgestion.controller;
 
-import afip.ws.exception.WSAFIPErrorResponseException;
-import afip.ws.wsaa.WSAA;
-
 //entorno de test/homologación
 //import afip.ws.jaxws.*;
 //import afip.ws.wsfe.AFIPTestClient;
 //entorno de producción
-import afip.ws.produccion.fev1.*;
-import afip.ws.wsfe.AFIPFEVClient;
-
+import com.wsafip.AFIPWSFECliente;
+import com.wsafip.AlicIva;
+import com.wsafip.ArrayOfAlicIva;
+import com.wsafip.ArrayOfCbteAsoc;
+import com.wsafip.ArrayOfFECAEDetRequest;
+import com.wsafip.ArrayOfTributo;
+import com.wsafip.CbteTipo;
+import com.wsafip.ConceptoTipo;
+import com.wsafip.DocTipo;
+import com.wsafip.FECAECabRequest;
+import com.wsafip.FECAECabResponse;
+import com.wsafip.FECAEDetRequest;
+import com.wsafip.FECAEDetResponse;
+import com.wsafip.FECAERequest;
+import com.wsafip.FECAEResponse;
+import com.wsafip.FECompConsResponse;
+import com.wsafip.FECompConsultaReq;
+import com.wsafip.FECompConsultaResponse;
+import com.wsafip.IvaTipo;
+import com.wsafip.Moneda;
+import com.wsafip.Obs;
+import com.wsafip.PtoVenta;
+import com.wsafip.Tributo;
+import com.wsafip.WSAA;
+import com.wsafip.exception.WSAFIPErrorResponseException;
 import generics.CustomABMJDialog;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.security.UnrecoverableKeyException;
@@ -27,9 +49,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
+import javax.swing.JOptionPane;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import jgestion.JGestionUtils;
 import jgestion.controller.exceptions.MessageException;
 import jgestion.entity.Cliente;
@@ -41,9 +68,11 @@ import jgestion.entity.FacturaVenta;
 import jgestion.entity.NotaCredito;
 import jgestion.entity.NotaDebito;
 import jgestion.gui.PanelAFIPWSConsultarCbte;
+import jgestion.jpa.controller.ConfiguracionDAO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import utilities.general.UTIL;
 
@@ -61,10 +90,11 @@ public class AFIPWSController {
     private static final String WS_CLIENT_PROPERTIES = WS_FOLDER + "wsaa_client.properties";
     private static final Logger LOG = LogManager.getLogger();
 
-//    private AFIPTestClient aFIPClient;
-    private AFIPFEVClient aFIPClient;
+    private AFIPWSFECliente aFIPClient;
     private String eventos;
-    private Document TA_XML;
+    private Document ticketAccess;
+    private final boolean productionEnvi;
+    private final String pwdPKCS12;
 
     /**
      * Se encarga de instanciar un con un TickerAccess no expirado (si existiera uno pero ya
@@ -77,45 +107,49 @@ public class AFIPWSController {
      * @throws IOException
      * @throws Exception
      */
+    public AFIPWSController() throws MessageException, ParserConfigurationException, SAXException, IOException {
+        this(new ConfiguracionDAO().getAFIPClave());
+    }
+
     public AFIPWSController(String pwdPKCS12) throws MessageException, ParserConfigurationException, SAXException, IOException {
-        if (!aFIPClient.areServicesAvailable()) {
-            String s = "";
-            s += "Applicación: " + (aFIPClient.getAppServer() ? " NO" : " OK");
-            s += "Autenticación: " + (aFIPClient.getAuthServer() ? " NO" : " OK");
-            s += "Base de Datos: " + (aFIPClient.getDbServer() ? " NO" : " OK");
-            throw new MessageException("Los servicios de la AFIP no se encuentran disponibles." + s);
+        this.pwdPKCS12 = pwdPKCS12;
+        productionEnvi = new ConfiguracionDAO().isAFIPWSProduction();
+        if (!AFIPWSFECliente.areServicesAvailable(true)) {
+//            loadTicketAccessFromDB();
+//            aFIPClient = new AFIPWSFECliente(TA_XML, true);
+            throw new MessageException("Los servicios de la AFIP no se encuentran disponibles.");
         }
-        boolean expired = true;
-        File ticketAccessXMLFile = new File(TICKET_ACCESS_XML);
-        if (ticketAccessXMLFile.exists()) {
-            TA_XML = getDocument(ticketAccessXMLFile);
-            Date expirationTime = WSAA.getExpirationTime(TA_XML);
-            expired = expirationTime.before(JGestionUtils.getServerDate());
-        }
-        if (expired) {
-            try {
-                File f = new File(WS_CLIENT_PROPERTIES);
-                if (!f.exists()) {
-                    throw new MessageException("No se encontró el archivo de propiedades de WS: " + WS_CLIENT_PROPERTIES);
-                }
-                Properties config = new Properties();
-                config.load(new FileInputStream(WS_CLIENT_PROPERTIES));
-                //en el archivo de propiedad no se hace referencia a ningún path específico, solo al nombre del archivo PKCS#12
-                config.setProperty("keystore", WS_FOLDER + config.getProperty("keystore"));
-                WSAA wsaa = new WSAA(config);
-                String tarXML = wsaa.getLoginTicketResponse(null, pwdPKCS12, null);
-                UTIL.createFile(tarXML, ticketAccessXMLFile.getCanonicalPath());
-            } catch (UnrecoverableKeyException ex) {
-                throw new MessageException("No es posible crear el certificado porque la contraseña del archivo PCKS#12 no es correcta"
-                        + "\n" + ex.getMessage());
-            } catch (Exception ex) {
-                LOG.error("obteniendo TA", ex);
-                throw new MessageException("Error", ex.getMessage());
-            }
-        }
-        TA_XML = getDocument(ticketAccessXMLFile);
-//        aFIPClient = new AFIPTestClient(TA_XML);
-        aFIPClient = new AFIPFEVClient(TA_XML);
+        loadTicketAccessFromDB();
+//        boolean expired = true;
+//        File ticketAccessXMLFile = new File(TICKET_ACCESS_XML);
+//        if (ticketAccessXMLFile.exists()) {
+//            TA_XML = getDocument(ticketAccessXMLFile);
+//            Date expirationTime = WSAA.getExpirationTime(TA_XML);
+//            expired = expirationTime.before(JGestionUtils.getServerDate());
+//        }
+//        if (expired) {
+//            try {
+//                File f = new File(WS_CLIENT_PROPERTIES);
+//                if (!f.exists()) {
+//                    throw new MessageException("No se encontró el archivo de propiedades de WS: " + WS_CLIENT_PROPERTIES);
+//                }
+//                Properties config = new Properties();
+//                config.load(new FileInputStream(WS_CLIENT_PROPERTIES));
+//                //en el archivo de propiedad no se hace referencia a ningún path específico, solo al nombre del archivo PKCS#12
+//                config.setProperty("keystore", WS_FOLDER + config.getProperty("keystore"));
+//                WSAA wsaa = new WSAA(config);
+//                String tarXML = wsaa.getLoginTicketResponse();
+//                UTIL.createFile(tarXML, ticketAccessXMLFile.getCanonicalPath());
+//            } catch (UnrecoverableKeyException ex) {
+//                throw new MessageException("No es posible crear el certificado porque la contraseña del archivo PCKS#12 no es correcta"
+//                        + "\n" + ex.getMessage());
+//            } catch (Exception ex) {
+//                LOG.error("obteniendo TA", ex);
+//                throw new MessageException("Error", ex.getMessage());
+//            }
+//        }
+//        TA_XML = getDocument(ticketAccessXMLFile);
+        aFIPClient = new AFIPWSFECliente(ticketAccess, true);
     }
 
     /**
@@ -133,9 +167,9 @@ public class AFIPWSController {
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder documentBuilder;
         documentBuilder = documentBuilderFactory.newDocumentBuilder();
-        TA_XML = documentBuilder.parse(file);
-        TA_XML.normalize();
-        return TA_XML;
+        ticketAccess = documentBuilder.parse(file);
+        ticketAccess.normalize();
+        return ticketAccess;
     }
 
     /**
@@ -148,7 +182,7 @@ public class AFIPWSController {
     public int getUltimoCompActualizado(int ptoVta, int cbteTipo) throws WSAFIPErrorResponseException {
         CbteTipo cbteTipoo = new CbteTipo();
         cbteTipoo.setId(cbteTipo);
-        return aFIPClient.getUltimoCompActualizado(ptoVta, cbteTipoo);
+        return aFIPClient.getUltimoCompAutorizado(ptoVta, cbteTipoo);
     }
 
     public FacturaElectronica requestCAE(FacturaElectronica fe, NotaDebito cbte) throws WSAFIPErrorResponseException, MessageException {
@@ -272,7 +306,7 @@ public class AFIPWSController {
         double monCotizacion = 1;
         CbteTipo cbteTipo = new CbteTipo();
         cbteTipo.setId(fe.getCbteTipo());
-        final int nextOne = aFIPClient.getUltimoCompActualizado(fe.getPtoVta(), cbteTipo) + 1;
+        final int nextOne = aFIPClient.getUltimoCompAutorizado(fe.getPtoVta(), cbteTipo) + 1;
         if (!Objects.equals(nextOne + "", fe.getCbteNumero() + "")) {
             throw new MessageException("El número de Factura: " + fe.getCbteNumero() + " no coincide con el esperado por AFIP: " + nextOne);
         }
@@ -501,8 +535,10 @@ public class AFIPWSController {
                     FacturaElectronica feComprobante = getFEComprobante(Integer.valueOf(p.getTfPtoVta().getText()),
                             Integer.valueOf(p.getTfNumero().getText()),
                             (int) UTIL.getEntityWrapped(p.getCbCbte()).getId());
+                    JOptionPane.showMessageDialog(null, "CAE: " + feComprobante.getCae());
                 } catch (WSAFIPErrorResponseException ex) {
                     LOG.error(ex, ex);
+                    JOptionPane.showMessageDialog(null, ex.getMessage(), "AFIP WS", JOptionPane.WARNING_MESSAGE);
                 }
             }
         });
@@ -516,4 +552,80 @@ public class AFIPWSController {
         }
         return l;
     }
+
+    private void renewTicketAccess() throws MessageException {
+        if (ticketAccess == null || isTAExpiration()) {
+            try {
+                Properties config = new Properties();
+                config.setProperty("keystore", WS_FOLDER + config.getProperty("keystore", "cert.p12"));
+                config.setProperty("service", "wsfe");
+                config.setProperty("keystore-password", pwdPKCS12);
+                config.setProperty("endpoint", productionEnvi ? AFIPWSFECliente.PRO_ENDPOINT : AFIPWSFECliente.TEST_ENDPOINT);
+                config.setProperty("destination", productionEnvi ? AFIPWSFECliente.PRO_DESTINATION_SERVER : AFIPWSFECliente.TEST_DESTINATION_SERVER);
+                config.setProperty("tickettime", "3600");
+                WSAA wsaa = new WSAA(config);
+                String tarXML = wsaa.getLoginTicketResponse();
+                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                DocumentBuilder builder = factory.newDocumentBuilder();
+                ticketAccess = builder.parse(new InputSource(new StringReader(tarXML)));
+            } catch (UnrecoverableKeyException ex) {
+                throw new MessageException("No es posible crear el certificado porque la contraseña del archivo PCKS#12 no es correcta"
+                        + "\n" + ex.getMessage());
+            } catch (Exception ex) {
+                LOG.error("obteniendo TA", ex);
+                throw new MessageException("Error", ex.getMessage());
+            }
+        }
+    }
+
+    public void loadTicketAccessFromDB() throws MessageException {
+        ConfiguracionDAO configDAO = new ConfiguracionDAO();
+        String afipwsToken = configDAO.getAFIPWSTicketAccess();
+        if (afipwsToken != null && !afipwsToken.isEmpty()) {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            try {
+                DocumentBuilder builder = factory.newDocumentBuilder();
+                ticketAccess = builder.parse(new InputSource(new ByteArrayInputStream(afipwsToken.getBytes("UTF-8"))));
+//                ticketAccess = builder.parse(new InputSource(new StringReader(afipwsToken)));
+            } catch (Exception ex) {
+                LOG.fatal("Error recuperando ticketaccess from db", ex);
+                throw new MessageException("Error recuperando ticket de acceso de AFIP:"
+                        + "\n" + ex.getLocalizedMessage());
+            }
+        }
+        if (ticketAccess == null || isTAExpiration()) {
+            renewTicketAccess();
+            saveTicketAccess(ticketAccess);
+        }
+        aFIPClient = new AFIPWSFECliente(ticketAccess, productionEnvi);
+    }
+
+    public void saveTicketAccess(Document ta) throws TransformerFactoryConfigurationError, MessageException {
+        TransformerFactory tf = TransformerFactory.newInstance();
+        StringWriter writer = new StringWriter();
+        try {
+            tf.newTransformer().transform(new DOMSource(ta), new StreamResult(writer));
+            new ConfiguracionDAO().updateAFIPWSTicketAccess(writer.getBuffer().toString());
+        } catch (Exception ex) {
+            LOG.fatal("Error guardando ticketaccess to db", ex);
+            throw new MessageException("Error guardando ticket de acceso de AFIP:"
+                    + "\n" + ex.getLocalizedMessage());
+        }
+    }
+
+    private boolean isTAExpiration() {
+        Date expirationTime;
+        try {
+            expirationTime = WSAA.getExpirationTime(ticketAccess);
+            return expirationTime.before(JGestionUtils.getServerDate());
+        } catch (SAXException | ParserConfigurationException ex) {
+            LOG.error(ex, ex);
+        }
+        return true;
+    }
+
+    public void saveAFIPClave(String pwd) {
+        new ConfiguracionDAO().saveAFIPClave(pwd);
+    }
+
 }

@@ -151,10 +151,9 @@
             <type>jar</type>
         </dependency>
         <dependency>
-            <groupId>wsafip</groupId>
+            <groupId>com</groupId>
             <artifactId>wsafip</artifactId>
-            <version>1.0</version>
-            <type>jar</type>
+            <version>1</version>
         </dependency>
         <dependency>
             <groupId>com.toedter</groupId>

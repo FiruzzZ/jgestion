@@ -12,6 +12,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
@@ -24,6 +26,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import jgestion.controller.AFIPWSController;
+import jgestion.jpa.controller.ConfiguracionDAO;
 
 /**
  *
@@ -31,8 +34,13 @@ import jgestion.controller.AFIPWSController;
  */
 public class JDWSAASetting extends javax.swing.JDialog {
 
-    private File privateKeyFile;
+    /**
+     * CRT X509 (otorgado por AFIP)
+     */
     private File CRTFile;
+    /**
+     * p12 = private + X509
+     */
     private File PKCS12File;
 
     /**
@@ -43,17 +51,10 @@ public class JDWSAASetting extends javax.swing.JDialog {
      */
     public JDWSAASetting(Window parent, boolean modal) {
         super(parent, modal ? DEFAULT_MODALITY_TYPE : ModalityType.MODELESS);
+        setLocationRelativeTo(parent);
         initComponents();
-        privateKeyFile = new File("./ws/cert.pem");
         CRTFile = new File("./ws/cert.crt");
         PKCS12File = new File("./ws/cert.p12");
-        if (privateKeyFile != null) {
-            try {
-                tfPrivateKeyPath.setText(privateKeyFile.exists() ? privateKeyFile.getCanonicalPath() : "...");
-            } catch (IOException ex) {
-                //ignore...
-            }
-        }
         if (CRTFile != null) {
             try {
                 tfCRTPath.setText(CRTFile.exists() ? CRTFile.getCanonicalPath() : "..");
@@ -79,9 +80,6 @@ public class JDWSAASetting extends javax.swing.JDialog {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        tfPrivateKeyPath = new javax.swing.JTextField();
-        btnBuscarClavePrivada = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         btnBuscarCRT = new javax.swing.JButton();
         tfCRTPath = new javax.swing.JTextField();
@@ -95,24 +93,13 @@ public class JDWSAASetting extends javax.swing.JDialog {
         informationLabel = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
+        tfPassP12 = new javax.swing.JPasswordField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Certificación AFIP (WSAA)");
 
         jLabel1.setText("<html>Configuración de archivos para la utilización de los servicios Web de la AFIP</html>");
-
-        jLabel2.setText("Ubicación del archivo de Clave Privada (Private Key)");
-
-        tfPrivateKeyPath.setEditable(false);
-
-        btnBuscarClavePrivada.setText("Buscar");
-        btnBuscarClavePrivada.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnBuscarClavePrivadaActionPerformed(evt);
-            }
-        });
 
         jLabel3.setText("Ubicación del archivo de certificado digital X.509 (.CRT) otorgado por la AFIP");
 
@@ -147,7 +134,7 @@ public class JDWSAASetting extends javax.swing.JDialog {
         jLabel5.setText("<html><p>Si Ud. no dispone de estos archivos, presione en el botón Ayuda o dentro de la carpeta JGestion/WS/ se encuentra el archivo \"como_obtener_certificado.txt\".</p></html>");
 
         jLabel6.setForeground(new java.awt.Color(51, 51, 255));
-        jLabel6.setText("<html><p>Una copia de estos 3 archivos serán guardados en la carpeta  \"./JGestion/ws/\", así como el TicketAccess (TA) generado por el AFIP.</p></html>");
+        jLabel6.setText("<html><p>Una copia de estos 2 archivos serán guardados en la carpeta  \"./JGestion/ws/\", así como el TicketAccess (TA) generado por el AFIP.</p></html>");
 
         jLabel8.setText("Contraseña del certificado PKCS#12");
 
@@ -170,33 +157,34 @@ public class JDWSAASetting extends javax.swing.JDialog {
                         .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, 486, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton1))
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(tfPrivateKeyPath, javax.swing.GroupLayout.PREFERRED_SIZE, 474, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnBuscarClavePrivada))
-                    .addComponent(jLabel3)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(tfCRTPath, javax.swing.GroupLayout.PREFERRED_SIZE, 474, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnBuscarCRT))
-                    .addComponent(jLabel4)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(tfPKCS12Path, javax.swing.GroupLayout.PREFERRED_SIZE, 474, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnBuscarPKCS12))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel8)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(informationLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 298, Short.MAX_VALUE)
                         .addComponent(jLabel7)
                         .addGap(255, 255, 255))
-                    .addComponent(btnObtenerTicketAccess, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jProgressBar1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 251, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel3)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(tfCRTPath, javax.swing.GroupLayout.PREFERRED_SIZE, 474, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnBuscarCRT))
+                            .addComponent(jLabel4)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(tfPKCS12Path, javax.swing.GroupLayout.PREFERRED_SIZE, 474, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnBuscarPKCS12))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel8)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(tfPassP12, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnObtenerTicketAccess, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jProgressBar1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 251, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -208,13 +196,7 @@ public class JDWSAASetting extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton1))
-                .addGap(54, 54, 54)
-                .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(tfPrivateKeyPath, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnBuscarClavePrivada))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -229,14 +211,14 @@ public class JDWSAASetting extends javax.swing.JDialog {
                 .addGap(3, 3, 3)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel8)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(tfPassP12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnObtenerTicketAccess)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel7)
@@ -248,18 +230,6 @@ public class JDWSAASetting extends javax.swing.JDialog {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void btnBuscarClavePrivadaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarClavePrivadaActionPerformed
-        try {
-            privateKeyFile = openFileChooser("Clave Privada (Private Key)", privateKeyFile);
-            if (privateKeyFile != null) {
-                tfPrivateKeyPath.setText(privateKeyFile.getCanonicalPath());
-            }
-        } catch (IOException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage());
-            Logger.getLogger(JDWSAASetting.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }//GEN-LAST:event_btnBuscarClavePrivadaActionPerformed
 
     private void btnBuscarCRTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarCRTActionPerformed
         try {
@@ -281,29 +251,24 @@ public class JDWSAASetting extends javax.swing.JDialog {
             jProgressBar1.setStringPainted(true);
             jProgressBar1.setValue(1);
             jProgressBar1.setString("Copiando archivos..");
-            if (!privateKeyFile.exists()) {
-                createFile(privateKeyFile, "./ws/cert.pem");
-            }
             jProgressBar1.setValue(2);
-            if (!CRTFile.exists()) {
-                createFile(CRTFile, "./ws/cert.crt");
+            String cert = "./ws/cert.crt";
+            if (CRTFile.exists()) {
+                createFile(CRTFile, cert);
             }
             jProgressBar1.setValue(3);
-            if (!PKCS12File.exists()) {
-                createFile(PKCS12File, "./ws/cert.p12");
+            String p12 = "./ws/cert.p12";
+            if (PKCS12File.exists()) {
+                createFile(PKCS12File, p12);
             }
             jProgressBar1.setValue(4);
             jProgressBar1.setString("Invocando ticket..");
-            AFIPWSController af = new AFIPWSController(jTextField1.getText());
+            AFIPWSController af = new AFIPWSController(String.valueOf(tfPassP12.getPassword()));
+            af.saveAFIPClave(String.valueOf(tfPassP12.getPassword()));
             jProgressBar1.setValue(6);
             jProgressBar1.setString("Creando ticket..");
             jProgressBar1.setValue(8);
-
-            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder documentBuilder;
-            documentBuilder = documentBuilderFactory.newDocumentBuilder();
-            org.w3c.dom.Document TA_XML = documentBuilder.parse(new File("./ws/tar.xml"));
-            TA_XML.normalize();
+            af.loadTicketAccessFromDB();
             jProgressBar1.setValue(10);
             jProgressBar1.setIndeterminate(false);
         } catch (Exception ex) {
@@ -393,7 +358,6 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
                 }
             }
         }
-        System.out.println("TRACE: File created at:" + toFile.getAbsolutePath());
     }
 
     public static void createFile(String bytesFile, String pathName)
@@ -405,62 +369,13 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
         System.out.println("TRACE: File created at:" + file.getAbsolutePath());
     }
 
-    public File getCRTFile() {
-        return CRTFile;
-    }
-
-    public File getPKCS12File() {
-        return PKCS12File;
-    }
-
-    public JButton getBtnBuscarCRT() {
-        return btnBuscarCRT;
-    }
-
-    public JButton getBtnBuscarClavePrivada() {
-        return btnBuscarClavePrivada;
-    }
-
-    public JButton getBtnBuscarPKCS12() {
-        return btnBuscarPKCS12;
-    }
-
-    public JButton getBtnObtenerTicketAccess() {
-        return btnObtenerTicketAccess;
-    }
-
-    public JLabel getInformationLabel() {
-        return informationLabel;
-    }
-
-    public JProgressBar getjProgressBar1() {
-        return jProgressBar1;
-    }
-
-    public File getPrivateKeyFile() {
-        return privateKeyFile;
-    }
-
-    public JTextField getTfCRTPath() {
-        return tfCRTPath;
-    }
-
-    public JTextField getTfPKCS12Path() {
-        return tfPKCS12Path;
-    }
-
-    public JTextField getTfPrivateKeyPath() {
-        return tfPrivateKeyPath;
-    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBuscarCRT;
-    private javax.swing.JButton btnBuscarClavePrivada;
     private javax.swing.JButton btnBuscarPKCS12;
     private javax.swing.JButton btnObtenerTicketAccess;
     private javax.swing.JLabel informationLabel;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -468,9 +383,8 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JProgressBar jProgressBar1;
-    private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField tfCRTPath;
     private javax.swing.JTextField tfPKCS12Path;
-    private javax.swing.JTextField tfPrivateKeyPath;
+    private javax.swing.JPasswordField tfPassP12;
     // End of variables declaration//GEN-END:variables
 }

@@ -52,6 +52,7 @@ public class DatosEmpresa implements Serializable {
     @Column(name = "fecha_inicio_actividad", nullable = false)
     @Temporal(TemporalType.DATE)
     private Date fechaInicioActividad;
+    @JoinColumn(nullable = false)
     @ManyToOne(optional = false)
     private Contribuyente contribuyente;
 

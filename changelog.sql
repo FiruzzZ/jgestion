@@ -1,3 +1,18 @@
+--20200806
+DROP TABLE public.configuracion;
+CREATE TABLE public.configuracion (
+  key character varying(50) NOT NULL,
+  value text NOT NULL,
+  description character varying(2000) NOT NULL,
+  CONSTRAINT configuracion_pkey PRIMARY KEY (key)
+);
+ALTER TABLE public.configuracion OWNER TO postgres;
+GRANT ALL ON TABLE public.configuracion TO jgestion;
+COMMENT ON COLUMN public.configuracion.value IS 'para booleanos {true, false}, fechas tipo ISO yyyy-MM-dd';
+insert into configuracion (key, description, value) values ('afip_fe_pkcs12', 'Clave PK12', 'cualquiera');
+insert into configuracion (key, description, value) values ('afip_ws_production', 'AFIP WS Production enviroment true/false', 'false');
+insert into configuracion (key, description, value) values ('afip_fe_ticket', 'AFIP WS (XML TicketAccess)', '');
+ALTER TABLE public.permisos ADD COLUMN configuracion boolean NOT NULL DEFAULT false;
 --20181108
 ALTER TABLE nota_credito_proveedor ADD COLUMN tipo character(1) NOT NULL DEFAULT 'B';
 ALTER table nota_credito_proveedor alter column tipo drop default;

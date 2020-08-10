@@ -194,6 +194,7 @@
                   </Group>
                   <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
+                      <Component id="checkConfiguracion" min="-2" max="-2" attributes="0"/>
                       <Component id="checkCuentasBancarias" min="-2" max="-2" attributes="0"/>
                       <Component id="checkVentaNumeracionManual" min="-2" max="-2" attributes="0"/>
                       <Component id="checkABMOfertas" min="-2" max="-2" attributes="0"/>
@@ -237,7 +238,9 @@
                       <Component id="checkAnularComprobantes" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Component id="checkChequesAdmin" alignment="0" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace pref="50" max="32767" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="checkConfiguracion" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace pref="27" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -340,6 +343,11 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Adm. de Cheques"/>
             <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;Administrador de Cheques Global.&#xa;&lt;br&gt;Permite al usuario administrar cheques que no est&#xe1;n en su cartera.&lt;/html&gt;"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="checkConfiguracion">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Configuracion"/>
           </Properties>
         </Component>
       </SubComponents>

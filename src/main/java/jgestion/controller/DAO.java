@@ -411,16 +411,6 @@ public abstract class DAO implements Runnable {
                 em.persist(new Iva(2, 10.5f));
             }// </editor-fold>
 
-            // <editor-fold defaultstate="collapsed" desc="Creación DatosEmpresa">
-            if (em.createQuery("SELECT COUNT(o) FROM DatosEmpresa o").getSingleResult().toString().equalsIgnoreCase("0")) {
-                ventanaSystemMessage.agregar("Creando DatosEmpresa..");
-                LogManager.getLogger().trace("Creando DatosEmpresa..");
-                DatosEmpresa d = new DatosEmpresa(1, "JGestion", 30000000001l, "Dirección", 540000000, new Date());
-                d.setContribuyente(new ContribuyenteController().findContribuyente(1));
-                d.setLogo(null);
-                em.persist(d);
-            }// </editor-fold>
-
             // <editor-fold defaultstate="collapsed" desc="Creación Unidadmedida -> UNITARIO">
             if (em.createQuery("SELECT COUNT(o) FROM Unidadmedida o").getSingleResult().toString().equalsIgnoreCase("0")) {
                 LogManager.getLogger().trace("Creando Unidadmedida..");
@@ -514,6 +504,15 @@ public abstract class DAO implements Runnable {
                 em.persist(new TipoDocumento(3, "CUIL", 86));
             }
             em.getTransaction().commit();
+             // <editor-fold defaultstate="collapsed" desc="Creación DatosEmpresa">
+            if (new DatosEmpresaJpaController().findDatosEmpresa() == null) {
+                ventanaSystemMessage.agregar("Creando DatosEmpresa..");
+                LogManager.getLogger().trace("Creando DatosEmpresa..");
+                DatosEmpresa d = new DatosEmpresa(1, "JGestion", 30000000007L, "Dirección 777", 540000000, new Date());
+                d.setContribuyente(new ContribuyenteController().findContribuyente(4));
+                d.setLogo(null);
+                new DatosEmpresaJpaController().create(d);
+            }// </editor-fold>
         } catch (Exception ex) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();

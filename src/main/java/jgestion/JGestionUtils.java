@@ -1,6 +1,6 @@
 package jgestion;
 
-import afip.ws.produccion.fev1.CbteTipo;
+import com.wsafip.CbteTipo;
 import generics.ProjectUtils;
 import jgestion.entity.NotaDebitoProveedor;
 import jgestion.entity.Vendedor;

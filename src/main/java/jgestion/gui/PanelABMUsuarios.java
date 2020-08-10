@@ -61,6 +61,7 @@ public class PanelABMUsuarios extends javax.swing.JPanel {
         checkCuentasBancarias = new javax.swing.JCheckBox();
         checkAnularComprobantes = new javax.swing.JCheckBox();
         checkChequesAdmin = new javax.swing.JCheckBox();
+        checkConfiguracion = new javax.swing.JCheckBox();
         jScrollPane1 = new javax.swing.JScrollPane();
         tableCajas = new javax.swing.JTable();
         jLabel8 = new javax.swing.JLabel();
@@ -134,6 +135,8 @@ public class PanelABMUsuarios extends javax.swing.JPanel {
         checkChequesAdmin.setText("Adm. de Cheques");
         checkChequesAdmin.setToolTipText("<html>Administrador de Cheques Global.\n<br>Permite al usuario administrar cheques que no están en su cartera.</html>");
 
+        checkConfiguracion.setText("Configuracion");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -165,6 +168,7 @@ public class PanelABMUsuarios extends javax.swing.JPanel {
                     .addComponent(checkAnularComprobantes))
                 .addGap(14, 14, 14)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(checkConfiguracion)
                     .addComponent(checkCuentasBancarias)
                     .addComponent(checkVentaNumeracionManual)
                     .addComponent(checkABMOfertas)
@@ -200,7 +204,9 @@ public class PanelABMUsuarios extends javax.swing.JPanel {
                     .addComponent(checkCuentasBancarias)
                     .addComponent(checkAnularComprobantes)
                     .addComponent(checkChequesAdmin))
-                .addContainerGap(50, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(checkConfiguracion)
+                .addContainerGap(27, Short.MAX_VALUE))
         );
 
         tableCajas.setModel(new javax.swing.table.DefaultTableModel(
@@ -352,6 +358,7 @@ public class PanelABMUsuarios extends javax.swing.JPanel {
     private javax.swing.JCheckBox checkChequesAdmin;
     private javax.swing.JCheckBox checkClientes;
     private javax.swing.JCheckBox checkCompra;
+    private javax.swing.JCheckBox checkConfiguracion;
     private javax.swing.JCheckBox checkCuentasBancarias;
     private javax.swing.JCheckBox checkDatosGeneral;
     private javax.swing.JCheckBox checkListaPrecios;
@@ -490,6 +497,10 @@ public class PanelABMUsuarios extends javax.swing.JPanel {
 
     public JCheckBox getCheckChequesAdmin() {
         return checkChequesAdmin;
+    }
+
+    public JCheckBox getCheckConfiguracion() {
+        return checkConfiguracion;
     }
 
     public void setEnableTfNick(boolean habilitar) {

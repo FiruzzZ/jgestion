@@ -64,6 +64,7 @@ import javax.swing.*;
 import jgestion.JGestion;
 import jgestion.JGestionUtils;
 import jgestion.controller.AFIPWSController;
+import jgestion.controller.ConfiguracionController;
 import jgestion.controller.FacturaElectronicaController;
 import jgestion.controller.RemitoCompraController;
 import org.apache.logging.log4j.Level;
@@ -251,6 +252,8 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenuItemAutAccess = new javax.swing.JMenuItem();
         miAFIPFECompConsultar = new javax.swing.JMenuItem();
         miAFIPSolicitarCAEsPendientes = new javax.swing.JMenuItem();
+        jSeparator7 = new javax.swing.JPopupMenu.Separator();
+        miConfiguraciones = new javax.swing.JMenuItem();
         jMenuReportes = new javax.swing.JMenu();
         jMenu24 = new javax.swing.JMenu();
         jMenuItem67 = new javax.swing.JMenuItem();
@@ -300,7 +303,7 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenu1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jMenu1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 
-        jMenuItem23.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F3, java.awt.event.InputEvent.ALT_MASK));
+        jMenuItem23.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F3, java.awt.event.InputEvent.ALT_DOWN_MASK));
         jMenuItem23.setText("Cerrar sesión                 ");
         jMenuItem23.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1165,6 +1168,15 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenuAFIPWS.add(miAFIPSolicitarCAEsPendientes);
 
         jMenu9.add(jMenuAFIPWS);
+        jMenu9.add(jSeparator7);
+
+        miConfiguraciones.setText("Configuraciones");
+        miConfiguraciones.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miConfiguracionesActionPerformed(evt);
+            }
+        });
+        jMenu9.add(miConfiguraciones);
 
         jMenuBar1.add(jMenu9);
 
@@ -1414,9 +1426,9 @@ public class JFP extends javax.swing.JFrame implements Runnable {
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
         try {
-            new FacturaCompraController().displayABM(this, true);
+            new FacturaCompraController().displayABMFacturaCompra(this, true);
         } catch (MessageException ex) {
-            ex.displayMessage(this);
+            showError(ex.getMessage());
         }
         refreshConnectionDB();
     }//GEN-LAST:event_jMenuItem4ActionPerformed
@@ -2118,7 +2130,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
 
     private void miAFIPFECompConsultarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miAFIPFECompConsultarActionPerformed
         try {
-            new AFIPWSController(null).consultarCAEs();
+            new AFIPWSController().consultarCAEs();
         } catch (Exception ex) {
             JGestion.LOG.error(ex, ex);
             JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
@@ -2144,6 +2156,14 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
             ex.displayMessage(this);
         }
     }//GEN-LAST:event_miAnularIngresoNDActionPerformed
+
+    private void miConfiguracionesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miConfiguracionesActionPerformed
+        try {
+            new ConfiguracionController().getABM(this).setVisible(true);
+        } catch (MessageException ex) {
+            ex.displayMessage(this);
+        }
+    }//GEN-LAST:event_miConfiguracionesActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktopPane1;
@@ -2283,6 +2303,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JPopupMenu.Separator jSeparator4;
     private javax.swing.JPopupMenu.Separator jSeparator5;
     private javax.swing.JPopupMenu.Separator jSeparator6;
+    private javax.swing.JPopupMenu.Separator jSeparator7;
     private javax.swing.JLabel labelConnetionState;
     private javax.swing.JMenu menuCtaCte;
     private javax.swing.JMenuItem menuIitemCuentas;
@@ -2298,6 +2319,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenuItem miAnularIngresoND;
     private javax.swing.JMenuItem miAnularIngresoRecibo;
     private javax.swing.JMenuItem miAnularIngresoRemito;
+    private javax.swing.JMenuItem miConfiguraciones;
     private javax.swing.JMenuItem miFacturaVenta;
     private javax.swing.JMenuItem miSegunPresupuesto;
     // End of variables declaration//GEN-END:variables

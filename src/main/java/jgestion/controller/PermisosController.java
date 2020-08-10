@@ -40,7 +40,8 @@ public class PermisosController {
         ORDENES_IO,
         VENTA_NUMERACION_MANUAL,
         ANULAR_COMPROBANTES,
-        CHEQUES_ADMINISTRADOR;
+        CHEQUES_ADMINISTRADOR, 
+        CONFIGURACION;
     }
 
     public PermisosController() {

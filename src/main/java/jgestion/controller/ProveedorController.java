@@ -463,6 +463,6 @@ public class ProveedorController implements ActionListener {
     }
 
     public void displayPAP(Window owner) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        JOptionPane.showMessageDialog(null, "Función no implementada aún");
     }
 }
