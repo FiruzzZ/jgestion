@@ -6,6 +6,7 @@
  */
 package jgestion.gui;
 
+import generics.ProjectUtils;
 import java.awt.Window;
 import java.util.Properties;
 import jgestion.JGestion;
@@ -23,8 +24,8 @@ public class JDAbout extends javax.swing.JDialog {
         super(owner, ModalityType.APPLICATION_MODAL);
         initComponents();
         Properties pro = System.getProperties();
-        ta.setText(JGestion.resourceBundle.getString("softwareTitle")
-                + "\nVersión: " + JGestion.resourceBundle.getString("softwareVersion")
+        ta.setText(JGestion.resourceBundle.getString("application.title")
+                + "\nVersión: " + JGestion.resourceBundle.getString("application.version") + ProjectUtils.getBuildNumber()
                 + "\nJVM: " + pro.getProperty("java.version")
                 + "\nOS: " + pro.getProperty("os.name") + " " + pro.getProperty("os.version")
                 + "\nUserDir: " + pro.getProperty("user.dir"));
@@ -51,7 +52,7 @@ public class JDAbout extends javax.swing.JDialog {
         jLabel1.setBackground(new java.awt.Color(255, 255, 255));
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/aya_logo_300-180.png"))); // NOI18N
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/splash.png"))); // NOI18N
 
         ta.setColumns(20);
         ta.setEditable(false);

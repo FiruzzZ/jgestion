@@ -21,18 +21,14 @@ import generics.GenericBeanCollection;
 import utilities.general.UTIL;
 import jgestion.gui.JDBuscadorReRe;
 import jgestion.gui.JDFacturaCompra;
-import java.awt.Component;
 import java.awt.Window;
 import java.awt.event.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
 import javax.persistence.NoResultException;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
@@ -95,7 +91,7 @@ public class FacturaCompraController implements ActionListener {
     public FacturaCompraController() {
     }
 
-    public void displayABMFacturaCompra(Window owner, boolean modal) throws MessageException {
+    public void displayABM(Window owner, boolean modal) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.COMPRA);
         if (new UnidadDeNegocioJpaController().findAll().isEmpty()) {
             throw new MessageException(JGestion.resourceBundle.getString("info.unidaddenegociosempty"));
@@ -187,7 +183,6 @@ public class FacturaCompraController implements ActionListener {
             precioUnitario.multiply(BigDecimal.valueOf(cantidad)).setScale(2, RoundingMode.HALF_EVEN),
             tipoValorizacionStock
         });
-
         refreshResumen();
     }
 
@@ -250,8 +245,8 @@ public class FacturaCompraController implements ActionListener {
         BigDecimal otrosIVA = BigDecimal.ZERO;
         BigDecimal ivas = BigDecimal.ZERO;
         DefaultTableModel dtm = jdFactura.getDtm();
-        if (jdFactura.getCbFacturaTipo().getSelectedItem().toString().equalsIgnoreCase("A")
-                || jdFactura.getCbFacturaTipo().getSelectedItem().toString().equalsIgnoreCase("M")) {
+        final String tipo = jdFactura.getCbFacturaTipo().getSelectedItem().toString();
+        if (tipo.equalsIgnoreCase("A") || tipo.equalsIgnoreCase("M")) {
             for (int i = (dtm.getRowCount() - 1); i > -1; i--) {
                 String iva = dtm.getValueAt(i, 0).toString();
                 BigDecimal subTotalSinIVA = (BigDecimal) dtm.getValueAt(i, 5);
@@ -575,9 +570,9 @@ public class FacturaCompraController implements ActionListener {
         buscador.getjTable1().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() >= 2) {
+                if (e.getClickCount() == 2) {
                     if (buscador.getjTable1().getSelectedRow() > -1) {
-                        FacturaCompra f = jpaController.find(Integer.valueOf(buscador.getDtm().getValueAt(buscador.getjTable1().getSelectedRow(), 0).toString()));
+                        FacturaCompra f = jpaController.find((Integer) UTIL.getSelectedValueFromModel(buscador.getjTable1(), 0));
                         try {
                             show(f, toAnular);
                         } catch (MessageException ex) {
@@ -647,7 +642,7 @@ public class FacturaCompraController implements ActionListener {
     public void show(FacturaCompra f, boolean paraAnular) throws MessageException {
         initComprobanteUI(buscador, true, false);
         SwingUtil.setComponentsEnabled(jdFactura.getComponents(), false, true);
-        setData(f, paraAnular);
+        setUI(f, paraAnular);
         jdFactura.setVisible(true);
     }
 
@@ -751,7 +746,7 @@ public class FacturaCompraController implements ActionListener {
     private void setDatosToEdit() {
         try {
             initComprobanteUI(buscador, true, true);
-            setData(EL_OBJECT, false);
+            setUI(EL_OBJECT, false);
             jdFactura.modoEdicion();
             jdFactura.setVisible(true);
         } catch (MessageException ex) {
@@ -883,9 +878,8 @@ public class FacturaCompraController implements ActionListener {
      * @param paraAnular
      * @throws MessageException
      */
-    void setData(FacturaCompra fc, boolean paraAnular) throws MessageException {
+    void setUI(FacturaCompra fc, boolean paraAnular) throws MessageException {
         EL_OBJECT = fc;
-        LOG.trace(EL_OBJECT.toString());
         if (paraAnular) {
             jdFactura.getBtnAnular().setEnabled(paraAnular);
             jdFactura.getBtnAnular().addActionListener(new ActionListener() {
@@ -1095,7 +1089,7 @@ public class FacturaCompraController implements ActionListener {
                                 initComprobanteUI(buscador, true, false);
                             }
                             jdFactura.setLocationRelativeTo(buscador);
-                            setData(EL_OBJECT, false);
+                            setUI(EL_OBJECT, false);
                             SwingUtil.setComponentsEnabled(jdFactura.getComponents(), false, true);
                             jdFactura.setVisible(true);
                         } catch (MessageException ex) {
@@ -1113,7 +1107,6 @@ public class FacturaCompraController implements ActionListener {
                     int column = e.getColumn();
                     TableModel model = (TableModel) e.getSource();
                     Object data = model.getValueAt(row, column);
-                    System.out.println(row + "/" + column + " =" + data);
                     FacturaCompra selected = jpaController.find((Integer) model.getValueAt(row, 0));
                     if (data != null) {
                         if (column == 8) {

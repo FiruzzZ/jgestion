@@ -1,3 +1,8 @@
+--20181108
+ALTER TABLE nota_credito_proveedor ADD COLUMN tipo character(1) NOT NULL DEFAULT 'B';
+ALTER table nota_credito_proveedor alter column tipo drop default;
+ALTER TABLE nota_credito_proveedor DROP CONSTRAINT unq_nota_credito_proveedor_0;
+ALTER TABLE nota_credito_proveedor add constraint nota_credito_proveedor_uniqueness_numeracion UNIQUE (proveedor, tipo, numero);
 --20170727
 alter table sucursal add column recibo_x numeric(8,0) not null default 1;
 --20160923

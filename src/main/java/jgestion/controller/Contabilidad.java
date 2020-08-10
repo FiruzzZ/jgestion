@@ -306,22 +306,23 @@ public class Contabilidad {
                 DefaultTableModel dtm = (DefaultTableModel) jdBalanceUI.getjTable1().getModel();
                 for (int row = 0; row < dtm.getRowCount(); row++) {
                     if (dtm.getValueAt(row, 2) != null) {
-                        in = in.add(BigDecimal.valueOf((Double) dtm.getValueAt(row, 2)));
+                        in = in.add((BigDecimal) dtm.getValueAt(row, 2));
                     }
                     if (dtm.getValueAt(row, 3) != null) {
-                        eg = eg.add(BigDecimal.valueOf((Double) dtm.getValueAt(row, 3)));
+                        eg = eg.add((BigDecimal) dtm.getValueAt(row, 3));
                     }
                     if (dtm.getValueAt(row, 4) != null) {
-                        ef = ef.add(BigDecimal.valueOf((Double) dtm.getValueAt(row, 4)));
+                        ef = ef.add((BigDecimal) dtm.getValueAt(row, 4));
                     }
                     if (dtm.getValueAt(row, 5) != null) {
-                        cc = cc.add(BigDecimal.valueOf((Double) dtm.getValueAt(row, 5)));
+                        cc = cc.add((BigDecimal) dtm.getValueAt(row, 5));
                     }
                 }
                 jdBalanceUI.getTfIngresos().setText(UTIL.DECIMAL_FORMAT.format(in));
                 jdBalanceUI.getTfEgresos().setText(UTIL.DECIMAL_FORMAT.format(eg));
                 jdBalanceUI.getTfEfectivo().setText(UTIL.DECIMAL_FORMAT.format(ef));
                 jdBalanceUI.getTfCtaCte().setText(UTIL.DECIMAL_FORMAT.format(cc));
+                jdBalanceUI.getTfTotal().setText(UTIL.DECIMAL_FORMAT.format(in.subtract(eg)));
             }
         });
         //</editor-fold>
@@ -466,20 +467,20 @@ public class Contabilidad {
     private List<Object[]> getFacturaCompraList(List<FacturaCompra> l) throws MessageException {
         String errores = "";
         List<Object[]> data = new ArrayList<>(l.size());
-        Double totalIngresos, efectivo = null, cccpc = null;
-        totalIngresos = 0.0;
-        Double entregado;
+        BigDecimal totalIngresos, efectivo = null, cccpc = null;
+        totalIngresos = BigDecimal.ZERO;
+        BigDecimal entregado;
         for (FacturaCompra factura : l) {
             if (!factura.getAnulada()) {
-                totalIngresos += factura.getImporte().doubleValue();
+                totalIngresos = totalIngresos.add(factura.getImporte());
                 if (Valores.FormaPago.CONTADO.getId() == factura.getFormaPago()) {
                     cccpc = null;
-                    efectivo = factura.getImporte().doubleValue();
+                    efectivo = factura.getImporte();
                 } else if (Valores.FormaPago.CTA_CTE.getId() == factura.getFormaPago()) {
                     try {
-                        entregado = new CtacteProveedorJpaController().findBy(factura).getEntregado().doubleValue();
-                        cccpc = (factura.getImporte().doubleValue() - entregado);
-                        efectivo = entregado > 0 ? entregado : null;
+                        entregado = new CtacteProveedorJpaController().findBy(factura).getEntregado();
+                        cccpc = (factura.getImporte().subtract(entregado));
+                        efectivo = entregado.compareTo(BigDecimal.ZERO) > 0 ? entregado : null;
                     } catch (NoResultException ex) {
                         errores += "\nFactura (id " + factura.getId() + ") N° " + JGestionUtils.getNumeracion(factura) + ", no se encontró la Cta Cte.";
                     }
@@ -898,11 +899,11 @@ public class Contabilidad {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    List<?> data = getComprobantesCompra();
+                    List<Object[]> data = getComprobantesCompra();
                     DefaultTableModel dtm = buscadorReRe.getDtm();
                     dtm.setRowCount(0);
-                    for (Object o : data) {
-                        dtm.addRow((Object[]) o);
+                    for (Object[] o : data) {
+                        dtm.addRow(o);
 
                     }
                 } catch (MessageException ex) {
@@ -918,7 +919,7 @@ public class Contabilidad {
     }
 
     @SuppressWarnings("unchecked")
-    private List<?> getComprobantesCompra() throws MessageException, DatabaseErrorException {
+    private List<Object[]> getComprobantesCompra() throws MessageException, DatabaseErrorException {
         StringBuilder queryFactuCompra = new StringBuilder(300);
 
         long numero;
@@ -990,15 +991,15 @@ public class Contabilidad {
         }
 
         String sql
-                = " SELECT 'F' || o.tipo || to_char(o.numero, '0000-00000000') as comprobante,	o.fecha_compra as fecha, proveedor.nombre, proveedor.cuit,"
-                + " cast(case when o.gravado <=0 then (o.importe-o.iva10-o.iva21-o.perc_iva-o.impuestos_recuperables) else o.gravado end as numeric(12,2)),	cast(o.iva10 as numeric(12,2)),	cast(o.iva21 as numeric(12,2)), o.otros_ivas, "
+                = " SELECT 'F' || o.tipo || to_char(o.numero, '0000-00000000') as comprobante,	o.fecha_compra as fecha, proveedor.nombre, proveedor.cuit"
+                + ", cast(case when o.gravado <=0 then (o.importe-o.iva10-o.iva21-o.perc_iva-o.impuestos_recuperables) else o.gravado end as numeric(12,2))"
+                + ", cast(o.iva10 as numeric(12,2)),	cast(o.iva21 as numeric(12,2)), o.otros_ivas, "
                 + "	cast(o.perc_dgr as numeric(12,2)), cast(o.perc_iva as numeric(12,2)), cast( o.impuestos_recuperables as numeric(12,2)), cast( o.impuestos_norecuperables as numeric(12,2)), cast( o.no_gravado as numeric(12,2)), cast( o.descuento as numeric(12,2)), cast( o.importe as numeric(12,2))"
                 + " FROM factura_compra o, proveedor"
                 + " WHERE o.anulada = false AND o.proveedor = proveedor.id "
                 + queryFactuCompra.toString()
                 + " ORDER BY o.fecha_compra ASC ";
-        System.out.println("QUERY: " + sql);
-        List<?> l = DAO.getNativeQueryResultList(sql, (String) null);
+        List<Object[]> l = (List<Object[]>) DAO.getNativeQueryResultList(sql, (String) null);
         return l;
     }
 

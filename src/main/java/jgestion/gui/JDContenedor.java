@@ -29,8 +29,8 @@ public class JDContenedor extends javax.swing.JDialog {
     public JDContenedor(Window owner, boolean modal, String title) {
         super(owner, modal ? DEFAULT_MODALITY_TYPE : ModalityType.MODELESS);
         initComponents();
-        this.setTitle(title);
-        this.setLocationRelativeTo(owner);
+        setTitle(title);
+        setLocationRelativeTo(owner);
     }
 
     /**
@@ -45,7 +45,6 @@ public class JDContenedor extends javax.swing.JDialog {
         bNuevo = new javax.swing.JButton();
         bModificar = new javax.swing.JButton();
         bBorrar = new javax.swing.JButton();
-        bSalir = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         bImprimir = new javax.swing.JButton();
@@ -77,10 +76,6 @@ public class JDContenedor extends javax.swing.JDialog {
         bBorrar.setText("Borrar");
         bBorrar.setName("del"); // NOI18N
 
-        bSalir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/32px-Crystal_Clear_action_editdelete.png"))); // NOI18N
-        bSalir.setText("Salir");
-        bSalir.setName("exit"); // NOI18N
-
         jTable1.setModel(new javax.swing.table.DefaultTableModel());
         jTable1.setName("jTableContenedor"); // NOI18N
         jTable1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
@@ -93,7 +88,7 @@ public class JDContenedor extends javax.swing.JDialog {
 
         labelMensaje.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
 
-        jLabel2.setText("Filtrar:");
+        jLabel2.setText("Filtro");
 
         tfFiltro.setName("tfFiltro"); // NOI18N
 
@@ -105,13 +100,12 @@ public class JDContenedor extends javax.swing.JDialog {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 474, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(bNuevo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(bBorrar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(bModificar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(bSalir)
                             .addComponent(bImprimir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel2)
@@ -139,13 +133,11 @@ public class JDContenedor extends javax.swing.JDialog {
                 .addComponent(bBorrar)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(bImprimir)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 82, Short.MAX_VALUE)
-                .addComponent(bSalir)
-                .addContainerGap())
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
                 .addGap(46, 46, 46)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 305, Short.MAX_VALUE)
-                .addContainerGap(11, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -158,17 +150,12 @@ public class JDContenedor extends javax.swing.JDialog {
     private javax.swing.JButton bImprimir;
     private javax.swing.JButton bModificar;
     private javax.swing.JButton bNuevo;
-    private javax.swing.JButton bSalir;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JLabel labelMensaje;
     private javax.swing.JTextField tfFiltro;
     // End of variables declaration//GEN-END:variables
-
-    public void setDTM(javax.swing.table.DefaultTableModel dtmNEW) {
-        jTable1.setModel(dtmNEW);
-    }
 
     /**
      * Agrega un escuchador a el textField, la botonera de la derecha y la tabla
@@ -185,7 +172,6 @@ public class JDContenedor extends javax.swing.JDialog {
         bModificar.addActionListener((ActionListener) o);
         bBorrar.addActionListener((ActionListener) o);
         bImprimir.addActionListener((ActionListener) o);
-        bSalir.addActionListener((ActionListener) o);
         try {
             jTable1.addMouseListener((MouseListener) o);
         } catch (ClassCastException ex) {
@@ -195,10 +181,6 @@ public class JDContenedor extends javax.swing.JDialog {
 
     public JTable getjTable1() {
         return jTable1;
-    }
-
-    public Object getSelectedValue(int fila, int columna) {
-        return jTable1.getModel().getValueAt(fila, columna);
     }
 
     /**
@@ -281,15 +263,10 @@ public class JDContenedor extends javax.swing.JDialog {
         return bNuevo;
     }
 
-    public JButton getbSalir() {
-        return bSalir;
-    }
-
     public void setButtonsVisible(boolean visible) {
         bNuevo.setVisible(visible);
         bModificar.setVisible(visible);
         bBorrar.setVisible(visible);
         bImprimir.setVisible(visible);
-        bSalir.setVisible(visible);
     }
 }

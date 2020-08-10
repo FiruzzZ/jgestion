@@ -658,12 +658,12 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
 
     public void setParaNotaCreditoCliente() {
         setParaNotaCreditoProveedor();
-        this.setTitle("Buscador de Notas de Crédito de Clientes");
+        setTitle("Buscador de Notas de Crédito de Clientes");
         labelN_Factura.setText("N° Recibo");
     }
 
     public void setParaNotaCreditoProveedor() {
-        this.setTitle("Buscador de Notas de Crédito de Proveedores");
+        setTitle("Buscador de Notas de Crédito de Proveedores");
         labelReRe.setText("Nº Nota Crédito");
         hideCaja();
         labelSucursal.setVisible(false);

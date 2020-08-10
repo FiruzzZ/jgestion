@@ -178,11 +178,11 @@ public class DepartamentoController implements ActionListener, MouseListener, Ke
 
         for (Departamento o : l) {
             dtm.addRow(new Object[]{
-                        o.getId(),
-                        o.getNombre(),
-                        o.getProvincia().getNombre(),
-                        o.getCodigoArea(),
-                        o.getAbreviatura(),});
+                o.getId(),
+                o.getNombre(),
+                o.getProvincia().getNombre(),
+                o.getCodigoArea(),
+                o.getAbreviatura(),});
         }
     }
 
@@ -278,29 +278,7 @@ public class DepartamentoController implements ActionListener, MouseListener, Ke
                 }
             }
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="abm">
-            if (abm != null && abm.isActive() && panel != null) {
-                if (boton.getName().equalsIgnoreCase("aceptar")) {
-                    try {
-                        setEntity();
-                        String msjAccion = (entity.getId() == null) ? "registrado" : "modificado";;
-                        checkConstraints(entity);
-                        abm.showMessage(msjAccion, CLASS_NAME, 1);
-                        cargarTablaContenedor(contenedor.getDTM(), null);
-                    } catch (MessageException ex) {
-                        abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                    } catch (Exception ex) {
-                        abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                        LogManager.getLogger();//(DepartamentoController.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                } else if (boton.getName().equalsIgnoreCase("cancelar")) {
-                    abm.dispose();
-                    panel = null;
-                    abm = null;
-                    entity = null;
-                }
-            }
-            //</editor-fold>
+
         } // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="JTextField">
         if (e.getSource() instanceof JTextField) {
@@ -351,6 +329,25 @@ public class DepartamentoController implements ActionListener, MouseListener, Ke
         if (e != null) {
             abm.setLocationRelativeTo((java.awt.Component) e.getSource());
         }
+        abm.getbAceptar().addActionListener(evt -> {
+            try {
+                setEntity();
+                String msjAccion = (entity.getId() == null) ? "registrado" : "modificado";;
+                checkConstraints(entity);
+                abm.showMessage(msjAccion, CLASS_NAME, 1);
+                cargarTablaContenedor(contenedor.getDTM(), null);
+            } catch (MessageException ex) {
+                abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
+            } catch (Exception ex) {
+                abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
+            }
+        });
+        abm.getbCancelar().addActionListener(evt -> {
+            abm.dispose();
+            panel = null;
+            abm = null;
+            entity = null;
+        });
         abm.setListener(this);
         abm.setVisible(true);
     }

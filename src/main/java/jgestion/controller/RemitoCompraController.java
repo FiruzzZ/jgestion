@@ -267,7 +267,6 @@ public class RemitoCompraController {
         buscador.getbImprimir().setVisible(true);
         UTIL.loadComboBox(buscador.getCbClieProv(), JGestionUtils.getWrappedProveedores(new ProveedorJpaController().findAllLite()), true);
         UTIL.loadComboBox(buscador.getCbSucursal(), JGestionUtils.getWrappedSucursales(new UsuarioHelper().getSucursales()), true);
-//        UTIL.loadComboBox(buscador.getCbFormasDePago(), Valores.FormaPago.getFormasDePago(), true);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
                 new String[]{"remitoID", "Nº Remito", "Proveedor", "Fecha", "Sucursal", "A Cuenta", "Usuario", "Fecha (Sistema)"},

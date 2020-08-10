@@ -45,6 +45,7 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 import javax.persistence.NoResultException;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -60,6 +61,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import utilities.general.UTIL;
 import utilities.general.EntityWrapper;
+import utilities.gui.SwingUtil;
 import utilities.swing.components.NumberRenderer;
 
 /**
@@ -74,7 +76,7 @@ public class ProductoController implements ActionListener, KeyListener {
     private JDABM abm;
     private final String[] colsName = {"id", "Código", "Nombre", "Marca", "Stock Gral.", "Costo C.", "Precio V."};
     private final int[] colsWidth = {1, 50, 200, 50, 20, 50, 50};
-    private PanelABMProductos panel;
+    private PanelABMProductos panelABM;
     private Producto EL_OBJECT;
     /**
      * almacena temporalmente el archivo de la imagen del producto
@@ -99,16 +101,34 @@ public class ProductoController implements ActionListener, KeyListener {
         contenedor.setSize(contenedor.getWidth() + 200, contenedor.getHeight());
         contenedor.getTfFiltro().setToolTipText("Filtra por nombre del " + CLASS_NAME);
         contenedor.setModoBuscador(modoBuscador);
+        contenedor.getjTable1().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    Integer productoID = (Integer) UTIL.getSelectedValueFromModel(contenedor.getjTable1(), 0);
+                    if (productoID == null) {
+                        return;
+                    }
+                    boolean escritura = false;
+                    try {
+                        UsuarioController.checkPermiso(PermisosController.PermisoDe.ABM_PRODUCTOS);
+                        escritura = true;
+                    } catch (MessageException ex) {
+                    }
+                    displayABM(jpaController.find(productoID), escritura);
+                }
+            }
+        });
         contenedor.getbNuevo().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
                     UsuarioController.checkPermiso(PermisosController.PermisoDe.ABM_PRODUCTOS);
                     displayABM(null);
-                } catch (IOException ex) {
-                    LOG.error(ex.getLocalizedMessage(), ex);
                 } catch (MessageException ex) {
-                    contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
+                    ex.displayMessage(contenedor);
+                } catch (Exception ex) {
+                    LOG.error(ex.getLocalizedMessage(), ex);
                 }
             }
         });
@@ -123,7 +143,7 @@ public class ProductoController implements ActionListener, KeyListener {
                     }
                     displayABM(jpaController.find(productoID));
                 } catch (MessageException ex) {
-                    contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
+                    ex.displayMessage(contenedor);
                 } catch (Exception ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
                     LOG.error(ex.getLocalizedMessage(), ex);
@@ -136,15 +156,12 @@ public class ProductoController implements ActionListener, KeyListener {
                 try {
                     UsuarioController.checkPermiso(PermisosController.PermisoDe.ABM_PRODUCTOS);
                     eliminarProducto();
-                    contenedor.showMessage("Producto eliminado..", CLASS_NAME, 1);
+                    contenedor.showMessage("Producto eliminado", CLASS_NAME, 1);
                 } catch (NonexistentEntityException ex) {
                     LOG.error(ex.getLocalizedMessage(), ex);
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                } catch (DatabaseErrorException ex) {
-                    LOG.error(ex.getLocalizedMessage(), ex);
-                    contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
                 } catch (MessageException ex) {
-                    contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
+                    ex.displayMessage(contenedor);
                 }
             }
         });
@@ -193,24 +210,29 @@ public class ProductoController implements ActionListener, KeyListener {
         contenedor.setVisible(true);
     }
 
-    public void displayABM(Producto toEdit) throws IOException {
+    public void displayABM(Producto toEdit, boolean editable) {
         EL_OBJECT = toEdit;
         fotoFile = null;
         initPanelABM();
-        abm = new JDABM(contenedor, "ABM - " + CLASS_NAME + "s", true, panel);
+        abm = new JDABM(contenedor, "ABM - " + CLASS_NAME + "s", true, panelABM);
         if (toEdit != null) {
             setPanelABM(EL_OBJECT);
         }
+        SwingUtil.setComponentsEnabled(panelABM.getComponents(), editable, panelABM.getDateUltimaCompra());
         abm.setLocationRelativeTo(contenedor);
         abm.setListener(this);
         abm.setVisible(true);
     }
 
+    public void displayABM(Producto toEdit) {
+        displayABM(toEdit, true);
+    }
+
     private void initPanelABM() {
-        panel = new PanelABMProductos();
-        panel.hideSucursal();
-        panel.setListeners(this);
-        panel.getbBuscarFoto().addActionListener(new ActionListener() {
+        panelABM = new PanelABMProductos();
+        panelABM.hideSucursal();
+        panelABM.setListeners(this);
+        panelABM.getbBuscarFoto().addActionListener(new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -222,15 +244,15 @@ public class ProductoController implements ActionListener, KeyListener {
                 }
             }
         });
-        panel.getbQuitarFoto().addActionListener(new ActionListener() {
+        panelABM.getbQuitarFoto().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                panel.getjLabelFoto().setText("[ Sin imagen ]");
-                panel.getjLabelFoto().setIcon(null);
+                panelABM.getjLabelFoto().setText("[ Sin imagen ]");
+                panelABM.getjLabelFoto().setIcon(null);
                 fotoFile = null;
             }
         });
-        panel.getBtnAddRubros().addActionListener(new ActionListener() {
+        panelABM.getBtnAddRubros().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -238,14 +260,14 @@ public class ProductoController implements ActionListener, KeyListener {
                     JDialog jd = rubroController.getABM(abm);
                     jd.setLocationRelativeTo(abm);
                     jd.setVisible(true);
-                    UTIL.loadComboBox(panel.getCbRubro(), rubroController.findRubros(), false);
-                    UTIL.loadComboBox(panel.getCbSubRubro(), rubroController.findRubros(), true);
+                    UTIL.loadComboBox(panelABM.getCbRubro(), rubroController.findRubros(), false);
+                    UTIL.loadComboBox(panelABM.getCbSubRubro(), rubroController.findRubros(), true);
                 } catch (MessageException ex) {
                     abm.showMessage(ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
                 }
             }
         });
-        panel.getbStockGral().addActionListener(new ActionListener() {
+        panelABM.getbStockGral().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -255,53 +277,43 @@ public class ProductoController implements ActionListener, KeyListener {
                 }
             }
         });
-        UTIL.loadComboBox(panel.getCbIVA(), new IvaController().findAll(), false);
-        UTIL.loadComboBox(panel.getCbMarcas(), JGestionUtils.getWrappedMarcas(new MarcaController().findAll()), false);
-        UTIL.loadComboBox(panel.getCbMedicion(), new UnidadmedidaJpaController().findUnidadmedidaEntities(), false);
-        UTIL.loadComboBox(panel.getCbRubro(), new RubroController().findRubros(), false);
-        UTIL.loadComboBox(panel.getCbSubRubro(), new RubroController().findRubros(), true);
+        UTIL.loadComboBox(panelABM.getCbIVA(), new IvaController().findAll(), false);
+        UTIL.loadComboBox(panelABM.getCbMarcas(), JGestionUtils.getWrappedMarcas(new MarcaController().findAll()), false);
+        UTIL.loadComboBox(panelABM.getCbMedicion(), new UnidadmedidaJpaController().findUnidadmedidaEntities(), false);
+        UTIL.loadComboBox(panelABM.getCbRubro(), new RubroController().findRubros(), false);
+        UTIL.loadComboBox(panelABM.getCbSubRubro(), new RubroController().findRubros(), true);
     }
 
-    private void cargarContenedorTabla(String jpql) {
-        if (contenedor != null) {
-            DefaultTableModel dtm = contenedor.getDTM();
-            dtm.setRowCount(0);
-            List<Object[]> l = jpaController.findAttributes(jpql);
-            for (Object[] o : l) {
-                dtm.addRow(o);
-            }
-        }
-    }
-
-    private void setPanelABM(Producto producto) throws IOException {
-        UTIL.setSelectedItem(panel.getCbMarcas(), producto.getMarca().getNombre());
-        UTIL.setSelectedItem(panel.getCbIVA(), producto.getIva());
-        UTIL.setSelectedItem(panel.getCbMedicion(), producto.getIdunidadmedida().getNombre());
-        UTIL.setSelectedItem(panel.getCbRubro(), producto.getRubro().getNombre());
+    private void setPanelABM(Producto producto) {
+        UTIL.setSelectedItem(panelABM.getCbMarcas(), producto.getMarca().getNombre());
+        UTIL.setSelectedItem(panelABM.getCbIVA(), producto.getIva());
+        UTIL.setSelectedItem(panelABM.getCbMedicion(), producto.getIdunidadmedida().getNombre());
+        UTIL.setSelectedItem(panelABM.getCbRubro(), producto.getRubro().getNombre());
         if (producto.getSubrubro() != null) {
-            UTIL.setSelectedItem(panel.getCbSubRubro(), producto.getSubrubro().getNombre());
+            UTIL.setSelectedItem(panelABM.getCbSubRubro(), producto.getSubrubro().getNombre());
         }
-        panel.setTfCodigo(producto.getCodigo());
-        panel.setTfNombre(producto.getNombre());
-        panel.setTfStockMinimo(String.valueOf(producto.getStockminimo()));
-        panel.setTfStockMax(String.valueOf(producto.getStockmaximo()));
-        panel.setTfStockActual(String.valueOf(producto.getStockactual()));
-        panel.getCheckUpdatePrecioVenta().setSelected(producto.getUpdatePrecioVenta());
-        panel.getCheckBienDeCambio().setSelected(producto.isBienDeCambio());
+        panelABM.setTfCodigo(producto.getCodigo());
+        panelABM.setTfNombre(producto.getNombre());
+        panelABM.setTfStockMinimo(String.valueOf(producto.getStockminimo()));
+        panelABM.setTfStockMax(String.valueOf(producto.getStockmaximo()));
+        panelABM.setTfStockActual(String.valueOf(producto.getStockactual()));
+        panelABM.getCheckUpdatePrecioVenta().setSelected(producto.getUpdatePrecioVenta());
+        panelABM.getCheckBienDeCambio().setSelected(producto.isBienDeCambio());
         if (producto.getPrecioVenta() != null) {
-            panel.setTfPrecio(producto.getPrecioVenta().toString());
+            panelABM.setTfPrecio(producto.getPrecioVenta().toString());
         }
-        panel.getTaDescripcion().setText(producto.getDescripcion());
-        panel.setTfCostoCompra(producto.getCostoCompra().toString());
-        panel.setDateUltimaCompra(producto.getUltimaCompra());
+        panelABM.getTaDescripcion().setText(producto.getDescripcion());
+        panelABM.setTfCostoCompra(producto.getCostoCompra().toString());
+        panelABM.setDateUltimaCompra(producto.getUltimaCompra());
         if (producto.getFoto() != null) {
             if (producto.getFoto().length > 0) {
-                fotoFile = UTIL.imageToFile(producto.getFoto(), null);
                 try {
-                    UTIL.setImageAsIconLabel(panel.getjLabelFoto(), fotoFile);
+                    fotoFile = UTIL.imageToFile(producto.getFoto(), null);
+                    UTIL.setImageAsIconLabel(panelABM.getjLabelFoto(), fotoFile);
                 } catch (Exception ex) {
+                    LOG.error("Error cargando imagen de: " + producto.getId() + ", " + producto.getNombre(), ex);
                     JOptionPane.showMessageDialog(null, "Error recuperando imagen: " + ex.getMessage());
-                    ex.printStackTrace();
+
                 }
             }
         }
@@ -312,29 +324,28 @@ public class ProductoController implements ActionListener, KeyListener {
         if (EL_OBJECT == null) {
             EL_OBJECT = new Producto();
         }
-        String codigo = panel.getTfCodigo().trim();
-        String nombre = panel.getTfNombre().trim();
+        String codigo = panelABM.getTfCodigo().trim();
+        String nombre = panelABM.getTfNombre().trim();
         Rubro rubro;
         // <editor-fold defaultstate="collapsed" desc="CTRL restrictions......">
         if (codigo.length() < 1) {
             throw new MessageException("Código no válido");
         }
         if (nombre.length() < 1) {
-            throw new MessageException("Ingrese un nombre");
+            throw new MessageException("Nombre no válido");
         }
         if (nombre.length() > 250) {
             throw new MessageException("Nombre del producto ridículamente largo (máximo 250 caracteres)");
         }
-
         try {
-            if (Integer.valueOf(panel.getTfStockMinimo()) < 0) {
+            if (Integer.valueOf(panelABM.getTfStockMinimo()) < 0) {
                 throw new MessageException("Stock mínimo no válido. Debe ser mayor o igual a 0");
             }
         } catch (NumberFormatException ex) {
             throw new MessageException("Número de stock mínimo no válido");
         }
         try {
-            if (Integer.valueOf(panel.getTfStockMax()) < 0) {
+            if (Integer.valueOf(panelABM.getTfStockMax()) < 0) {
                 throw new MessageException("Stock máximo no válido. Debe ser mayor o igual a 0");
 
             }
@@ -342,8 +353,8 @@ public class ProductoController implements ActionListener, KeyListener {
             throw new MessageException("número de stock máximo no válido");
         }
         try {
-            if (panel.getTfPrecio().length() > 0) {
-                if (Double.valueOf(panel.getTfPrecio()) < 0) {
+            if (panelABM.getTfPrecio().length() > 0) {
+                if (Double.valueOf(panelABM.getTfPrecio()) < 0) {
                     throw new MessageException("El precio no puede ser menor a 0");
                 }
             }
@@ -351,24 +362,24 @@ public class ProductoController implements ActionListener, KeyListener {
             throw new MessageException("monto de Precio no válido");
         }
         try {
-            EL_OBJECT.setMarca(((EntityWrapper<Marca>) panel.getCbMarcas().getSelectedItem()).getEntity());
+            EL_OBJECT.setMarca(((EntityWrapper<Marca>) panelABM.getCbMarcas().getSelectedItem()).getEntity());
         } catch (ClassCastException ex) {
             throw new MessageException("Debe especificar una Marca");
         }
         try {
-            EL_OBJECT.setIva((Iva) panel.getCbIVA().getSelectedItem());
+            EL_OBJECT.setIva((Iva) panelABM.getCbIVA().getSelectedItem());
         } catch (ClassCastException ex) {
             throw new MessageException("Debe especificar un IVA");
         }
         try {
-            EL_OBJECT.setIdunidadmedida((Unidadmedida) panel.getCbMedicion().getSelectedItem());
+            EL_OBJECT.setIdunidadmedida((Unidadmedida) panelABM.getCbMedicion().getSelectedItem());
         } catch (ClassCastException ex) {
             throw new MessageException("Debe especificar una Unidad de medida");
         }
         try {
-            rubro = (Rubro) panel.getCbRubro().getSelectedItem();
-            if (panel.getCbSubRubro().getSelectedIndex() > 0) {
-                if (rubro.equals((Rubro) panel.getCbSubRubro().getSelectedItem())) {
+            rubro = (Rubro) panelABM.getCbRubro().getSelectedItem();
+            if (panelABM.getCbSubRubro().getSelectedIndex() > 0) {
+                if (rubro.equals((Rubro) panelABM.getCbSubRubro().getSelectedItem())) {
                     throw new MessageException("El Rubro y Subrubro no pueden ser iguales");
                 }
             }
@@ -381,17 +392,17 @@ public class ProductoController implements ActionListener, KeyListener {
         // NOT NULL's
         EL_OBJECT.setCodigo(codigo);
         EL_OBJECT.setNombre(nombre);
-        EL_OBJECT.setStockminimo(Integer.valueOf(panel.getTfStockMinimo()));
-        EL_OBJECT.setStockmaximo(Integer.valueOf(panel.getTfStockMax()));
+        EL_OBJECT.setStockminimo(Integer.valueOf(panelABM.getTfStockMinimo()));
+        EL_OBJECT.setStockmaximo(Integer.valueOf(panelABM.getTfStockMax()));
         EL_OBJECT.setRubro(rubro);
-        if (panel.getCbSubRubro().getSelectedIndex() > 0) {
-            EL_OBJECT.setSubrubro((Rubro) panel.getCbSubRubro().getSelectedItem());
+        if (panelABM.getCbSubRubro().getSelectedIndex() > 0) {
+            EL_OBJECT.setSubrubro((Rubro) panelABM.getCbSubRubro().getSelectedItem());
         } else {
             EL_OBJECT.setSubrubro(null);
         }
-        EL_OBJECT.setPrecioVenta(panel.getTfPrecio().length() > 0 ? new BigDecimal(panel.getTfPrecio()) : BigDecimal.ZERO);
-        EL_OBJECT.setUpdatePrecioVenta(panel.getCheckUpdatePrecioVenta().isSelected());
-        EL_OBJECT.setBienDeCambio(panel.getCheckBienDeCambio().isSelected());
+        EL_OBJECT.setPrecioVenta(panelABM.getTfPrecio().length() > 0 ? new BigDecimal(panelABM.getTfPrecio()) : BigDecimal.ZERO);
+        EL_OBJECT.setUpdatePrecioVenta(panelABM.getCheckUpdatePrecioVenta().isSelected());
+        EL_OBJECT.setBienDeCambio(panelABM.getCheckBienDeCambio().isSelected());
         // no setteable desde la GUI
         // default's....
         EL_OBJECT.setRemunerativo(true);
@@ -401,12 +412,12 @@ public class ProductoController implements ActionListener, KeyListener {
         }
 
         // NULLABLE'sssssssss
-        EL_OBJECT.setDescripcion((panel.getTaDescrip().trim().isEmpty() ? null : panel.getTaDescrip()));
+        EL_OBJECT.setDescripcion((panelABM.getTaDescrip().trim().isEmpty() ? null : panelABM.getTaDescrip()));
         if (fotoFile != null) {
             //si se elijió algún archivo imagen ...
             EL_OBJECT.setFoto(UTIL.getBytesFromFile(fotoFile));
         } else {
-            if (panel.getjLabelFoto().getIcon() == null) {
+            if (panelABM.getjLabelFoto().getIcon() == null) {
                 //si se quitó la que había seleccionado o la que estaba antiguamente
                 EL_OBJECT.setFoto(null);
             }
@@ -435,13 +446,16 @@ public class ProductoController implements ActionListener, KeyListener {
      */
     private void armarQueryContenedor(String filtro) {
         String query = "SELECT p.id, p.codigo, p.nombre, p.marca.nombre, p.stockactual, p.costoCompra, p.precioVenta"
-                + " FROM " + jpaController.getEntityClass().getSimpleName() + " p ";
+                + " FROM " + jpaController.getAlias("p");
         if (filtro != null && filtro.length() > 0) {
             query += " WHERE UPPER(p.nombre) LIKE '%" + filtro.toUpperCase() + "%' "
                     + "OR UPPER(p.codigo) LIKE '%" + filtro.toUpperCase() + "%'";
         }
         query += " ORDER BY p.nombre";
-        cargarContenedorTabla(query);
+        DefaultTableModel dtm = contenedor.getDTM();
+        dtm.setRowCount(0);
+        List<Object[]> l = jpaController.findAttributes(query);
+        l.forEach(o -> dtm.addRow(o));
     }
 
     private void checkConstraints(Producto object) throws MessageException, Exception {
@@ -475,7 +489,7 @@ public class ProductoController implements ActionListener, KeyListener {
             fotoFile = filec.getSelectedFile();
             JGestionUtils.LAST_DIRECTORY_PATH = fotoFile.getCanonicalPath();
             if (UTIL.isImagenExtension(fotoFile)) {
-                UTIL.setImageAsIconLabel(panel.getjLabelFoto(), fotoFile);
+                UTIL.setImageAsIconLabel(panelABM.getjLabelFoto(), fotoFile);
             } else {
                 abm.showMessage("El archivo debe ser una imagen (bmp, jpg, jpeg, png, tif)", "Extensión de archivo", 0);
             }
@@ -513,13 +527,13 @@ public class ProductoController implements ActionListener, KeyListener {
                 }
             } else if (boton.getName().equalsIgnoreCase("cancelar")) {
                 abm.dispose();
-                panel = null;
+                panelABM = null;
                 abm = null;
                 EL_OBJECT = null;
             } else if (boton.getName().equalsIgnoreCase("marcas")) {
                 try {
                     new MarcaController().getABM(abm, true);
-                    UTIL.loadComboBox(panel.getCbMarcas(), JGestionUtils.getWrappedMarcas(new MarcaController().findAll()), false);
+                    UTIL.loadComboBox(panelABM.getCbMarcas(), JGestionUtils.getWrappedMarcas(new MarcaController().findAll()), false);
                 } catch (Exception ex) {
                     abm.showMessage(ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
                 }
@@ -624,7 +638,7 @@ public class ProductoController implements ActionListener, KeyListener {
         jdStockGral.setVisible(true);
     }
 
-    private void eliminarProducto() throws MessageException, NonexistentEntityException, DatabaseErrorException {
+    private void eliminarProducto() throws MessageException, NonexistentEntityException {
         if (EL_OBJECT == null) {
             if (contenedor != null && contenedor.getjTable1().getSelectedRow() != -1) {
                 EL_OBJECT = jpaController.find((Integer) contenedor.getSelectedValue(0));

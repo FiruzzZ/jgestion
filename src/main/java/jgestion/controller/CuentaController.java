@@ -122,12 +122,12 @@ public class CuentaController {
                     }
                     JOptionPane.showMessageDialog(contenedor, "Registro eliminado");
                 } catch (MessageException ex) {
-                    contenedor.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 2);
+                    ex.displayMessage(contenedor);
                 } catch (NonexistentEntityException ex) {
                     contenedor.showMessage("El registro que intenta borrar ya no existe mas capo..", jpaController.getEntityClass().getSimpleName(), 0);
                 } catch (Exception ex) {
-                    contenedor.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 0);
                     LOG.error(ex.getLocalizedMessage(), ex);
+                    contenedor.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 0);
                 }
             }
         });
@@ -193,11 +193,10 @@ public class CuentaController {
                     EL_OBJECT = null;
                     abm.dispose();
                 } catch (MessageException ex) {
-                    JOptionPane.showMessageDialog(abm, ex.getMessage(), ex.getClass().toString(), JOptionPane.WARNING_MESSAGE);
-                    LOG.error(ex, ex);
+                    ex.displayMessage(abm);
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(abm, ex.getMessage(), ex.getClass().toString(), JOptionPane.WARNING_MESSAGE);
                     LOG.error(ex, ex);
+                    JOptionPane.showMessageDialog(abm, ex.getMessage(), ex.getClass().toString(), JOptionPane.WARNING_MESSAGE);
                 } finally {
                     abm.getbAceptar().setEnabled(true);
                 }
@@ -213,7 +212,7 @@ public class CuentaController {
         abm.setVisible(true);
     }
 
-    private void checkConstraints(Cuenta o) throws MessageException, Exception {
+    private void checkConstraints(Cuenta o) throws MessageException{
         if (o.getNombre().isEmpty()) {
             throw new MessageException("Nombre no válido.");
         }

@@ -655,7 +655,7 @@ public class UsuarioController implements ActionListener, MouseListener, KeyList
      * para checkear el permiso.
      */
     public static void checkPermiso(PermisoDe permisoToCheck) throws MessageException {
-        CURRENT_USER = (Usuario) DAO.findEntity(Usuario.class, CURRENT_USER.getId());
+        CURRENT_USER = new UsuarioJpaController().find(CURRENT_USER.getId());
         if (CURRENT_USER == null) {
             throw new MessageException("Error chequeando los permisos del usuario.\nVerificar conexión con la Base de datos");
         }

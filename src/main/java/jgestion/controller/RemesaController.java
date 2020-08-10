@@ -275,7 +275,7 @@ public class RemesaController implements FocusListener {
                 pp.add(new GenericBeanCollection("CH " + pago.getBanco().getNombre() + " N°" + pago.getNumero(), pago.getImporte()));
             } else if (object instanceof NotaCreditoProveedor) {
                 NotaCreditoProveedor pago = (NotaCreditoProveedor) object;
-                pp.add(new GenericBeanCollection("NC " + JGestionUtils.getNumeracion(pago, true), pago.getImporte()));
+                pp.add(new GenericBeanCollection(JGestionUtils.getNumeracion(pago, true), pago.getImporte()));
             } else if (object instanceof ComprobanteRetencion) {
                 ComprobanteRetencion pago = (ComprobanteRetencion) object;
                 pp.add(new GenericBeanCollection("RE " + pago.getNumero(), pago.getImporte()));
@@ -356,7 +356,7 @@ public class RemesaController implements FocusListener {
                     if (dtm.getValueAt(row, 0) instanceof NotaCreditoProveedor) {
                         NotaCreditoProveedor old = (NotaCreditoProveedor) dtm.getValueAt(row, 0);
                         if (notaCredito.equals(old)) {
-                            throw new MessageException("La nota de crédito  N° " + JGestionUtils.getNumeracion(old, true) + " ya está agregada");
+                            throw new MessageException("La nota de crédito  " + JGestionUtils.getNumeracion(old, true) + " ya está agregada");
                         }
                     }
                 }

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.6.0.final using JasperReports Library version 6.6.0  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="JGestion_ComprobanteMovimientosVarios" pageWidth="595" pageHeight="842" whenNoDataType="NoPages" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="93a5b21a-b709-4d36-ab01-78250a8e08cd">
+	<property name="ireport.zoom" value="1.4641000000000006"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ENTITY_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+     dcm."fechamovimiento",
+     dcm."fecha",
+     dcm."monto",
+     dcm."ingreso",
+     dcm."id",
+     dcm."descripcion",
+     usuario."nick"
+FROM
+     usuario INNER JOIN detalle_caja_movimientos dcm ON usuario."id" = dcm."usuario"
+     AND dcm.id = $P{ENTITY_ID}]]>
+	</queryString>
+	<field name="fechamovimiento" class="java.sql.Date"/>
+	<field name="fecha" class="java.sql.Timestamp"/>
+	<field name="monto" class="java.math.BigDecimal"/>
+	<field name="ingreso" class="java.lang.Boolean"/>
+	<field name="id" class="java.lang.Integer"/>
+	<field name="descripcion" class="java.lang.String"/>
+	<field name="nick" class="java.lang.String"/>
+	<title>
+		<band height="80">
+			<textField pattern="dd/MM/yyyy HH:mm:ss">
+				<reportElement x="443" y="1" width="112" height="20" uuid="4a3cf669-5462-473b-ba08-3640ccc282fc"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement x="0" y="0" width="431" height="80" uuid="55c64236-46ee-4026-8d7c-d3aedcb0d5ab"/>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "JGestion_DatosEmpresa.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="109">
+			<rectangle>
+				<reportElement x="0" y="28" width="555" height="80" uuid="a24eb215-87a2-4434-8388-c06926e7c3b4"/>
+			</rectangle>
+			<textField>
+				<reportElement x="0" y="0" width="555" height="25" uuid="bcf35997-edc3-4be8-9e79-a93290e827b7"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Movimientos Varios N°" + $F{id}]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤ #,##0.00">
+				<reportElement mode="Transparent" x="66" y="68" width="215" height="20" uuid="7b5f2b70-c3fa-48c7-b17b-ee5dc7d3933f"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{monto}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement mode="Transparent" x="66" y="28" width="215" height="20" uuid="507052ab-1c7d-4223-ad4d-18fd8c65b1fe"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fecha}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Transparent" x="66" y="88" width="489" height="20" uuid="1f48b854-b870-483f-bd7e-9e9acecd812c"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{descripcion}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Transparent" x="66" y="48" width="215" height="20" uuid="1b6c6ebb-e19c-4fc7-a077-b97a797c3c53"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nick}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="48" width="64" height="20" uuid="260f5835-90f0-4c64-9951-bd3021994398"/>
+				<textElement textAlignment="Right">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Usuario:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="28" width="64" height="20" uuid="2f29c3ca-7840-47e8-87fa-215f1f5dd9f2"/>
+				<textElement textAlignment="Right">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="68" width="64" height="20" uuid="52834de8-3904-4ee2-902a-df0090c2b0b9"/>
+				<textElement textAlignment="Right">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Importe:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="88" width="64" height="20" uuid="fd235524-2b06-46d2-9d4f-ebcfe76fbf2f"/>
+				<textElement textAlignment="Right">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Concepto:]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+</jasperReport>
