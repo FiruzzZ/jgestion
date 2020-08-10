@@ -3,6 +3,7 @@ package jgestion.controller;
 import com.wsafip.exception.WSAFIPErrorResponseException;
 import jgestion.jpa.controller.ProvinciaJpaController;
 import generics.WaitingDialog;
+import java.awt.EventQueue;
 import java.awt.GridLayout;
 import java.awt.Window;
 import jgestion.jpa.controller.NotaCreditoJpaController;
@@ -735,10 +736,19 @@ public class SucursalController implements ActionListener {
                     paneln.getTfInicialNotaDebitoCAFIP().setText(afipwsController.getUltimoCompActualizado(sucursal.getPuntoVenta(), 12) + "");
                 } catch (MessageException ex) {
                     ex.displayMessage(jd);
+                } catch (WSAFIPErrorResponseException ex) {
+                    EventQueue.invokeLater(() -> {
+                        JOptionPane.showMessageDialog(panel, "Error recuperando números de últimos comprobantes"
+                                + "\n" + ex.getMessage().substring(0, ex.getMessage().indexOf("Ver metodo")),
+                                "AFIP WS", JOptionPane.ERROR_MESSAGE);
+                    });
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(panel, "Error recuperando números de últimos comprobantes\n" + ex.getMessage(),
-                            "AFIP Web Services", JOptionPane.ERROR_MESSAGE);
                     LOG.error("Recuperando últimos comprobantes de Sucursal.id=" + sucursal.getId(), ex);
+                    EventQueue.invokeLater(() -> {
+                        JOptionPane.showMessageDialog(panel, "Error recuperando números de últimos comprobantes"
+                                + "\n" + ex.getMessage(),
+                                "AFIP WS", JOptionPane.ERROR_MESSAGE);
+                    });
                 }
             });
         } else {

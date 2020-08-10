@@ -86,12 +86,8 @@ public class AFIPWSController {
      * ./ws/
      */
     private static final String WS_FOLDER = "." + File.separator + "ws" + File.separator;
-    private static final String TICKET_ACCESS_XML = WS_FOLDER + "tar.xml";
-    private static final String WS_CLIENT_PROPERTIES = WS_FOLDER + "wsaa_client.properties";
     private static final Logger LOG = LogManager.getLogger();
-
     private AFIPWSFECliente aFIPClient;
-    private String eventos;
     private Document ticketAccess;
     private final boolean productionEnvi;
     private final String pwdPKCS12;
@@ -115,40 +111,9 @@ public class AFIPWSController {
         this.pwdPKCS12 = pwdPKCS12;
         productionEnvi = new ConfiguracionDAO().isAFIPWSProduction();
         if (!AFIPWSFECliente.areServicesAvailable(true)) {
-//            loadTicketAccessFromDB();
-//            aFIPClient = new AFIPWSFECliente(TA_XML, true);
             throw new MessageException("Los servicios de la AFIP no se encuentran disponibles.");
         }
         loadTicketAccessFromDB();
-//        boolean expired = true;
-//        File ticketAccessXMLFile = new File(TICKET_ACCESS_XML);
-//        if (ticketAccessXMLFile.exists()) {
-//            TA_XML = getDocument(ticketAccessXMLFile);
-//            Date expirationTime = WSAA.getExpirationTime(TA_XML);
-//            expired = expirationTime.before(JGestionUtils.getServerDate());
-//        }
-//        if (expired) {
-//            try {
-//                File f = new File(WS_CLIENT_PROPERTIES);
-//                if (!f.exists()) {
-//                    throw new MessageException("No se encontró el archivo de propiedades de WS: " + WS_CLIENT_PROPERTIES);
-//                }
-//                Properties config = new Properties();
-//                config.load(new FileInputStream(WS_CLIENT_PROPERTIES));
-//                //en el archivo de propiedad no se hace referencia a ningún path específico, solo al nombre del archivo PKCS#12
-//                config.setProperty("keystore", WS_FOLDER + config.getProperty("keystore"));
-//                WSAA wsaa = new WSAA(config);
-//                String tarXML = wsaa.getLoginTicketResponse();
-//                UTIL.createFile(tarXML, ticketAccessXMLFile.getCanonicalPath());
-//            } catch (UnrecoverableKeyException ex) {
-//                throw new MessageException("No es posible crear el certificado porque la contraseña del archivo PCKS#12 no es correcta"
-//                        + "\n" + ex.getMessage());
-//            } catch (Exception ex) {
-//                LOG.error("obteniendo TA", ex);
-//                throw new MessageException("Error", ex.getMessage());
-//            }
-//        }
-//        TA_XML = getDocument(ticketAccessXMLFile);
         aFIPClient = new AFIPWSFECliente(ticketAccess, true);
     }
 
@@ -451,10 +416,6 @@ public class AFIPWSController {
         return aFIPClient.getIVATipoList();
     }
 
-    String getEventos() {
-        return eventos;
-    }
-
     /**
      * Convert a Date to a formatted XML Date String (yyyyMMdd)
      *
@@ -537,7 +498,9 @@ public class AFIPWSController {
                             (int) UTIL.getEntityWrapped(p.getCbCbte()).getId());
                     JOptionPane.showMessageDialog(null, "CAE: " + feComprobante.getCae());
                 } catch (WSAFIPErrorResponseException ex) {
-                    LOG.error(ex, ex);
+                    if (!ex.getMessage().contains("code:602")) {
+                        LOG.error(ex, ex);
+                    }
                     JOptionPane.showMessageDialog(null, ex.getMessage(), "AFIP WS", JOptionPane.WARNING_MESSAGE);
                 }
             }
