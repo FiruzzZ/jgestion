@@ -17,6 +17,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
+import jgestion.controller.Valores;
 import utilities.gui.SwingUtil;
 
 /**
@@ -247,6 +248,12 @@ public class JDFacturaCompra extends javax.swing.JDialog {
 
         labelFormaPago.setText("Forma Pago");
 
+        cbFormaPago.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cbFormaPagoItemStateChanged(evt);
+            }
+        });
+
         labelDias.setText("Días");
 
         tfDias.setColumns(3);
@@ -348,12 +355,11 @@ public class JDFacturaCompra extends javax.swing.JDialog {
                 .addGroup(panelDatosCompraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(dcFechaFactura, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(labelFecha)
-                    .addGroup(panelDatosCompraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                        .addComponent(labelFacturaTipo)
-                        .addComponent(tfFacturaCuarto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(tfFacturaOcteto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(labelFacturaNumero)
-                        .addComponent(cbFacturaTipo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(labelFacturaTipo)
+                    .addComponent(tfFacturaCuarto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(tfFacturaOcteto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(labelFacturaNumero)
+                    .addComponent(cbFacturaTipo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelDatosCompraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(labelCaja)
@@ -1090,6 +1096,12 @@ public class JDFacturaCompra extends javax.swing.JDialog {
     private void btnDELFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_btnDELFocusLost
         tfProductoCodigo.requestFocusInWindow();
     }//GEN-LAST:event_btnDELFocusLost
+
+    private void cbFormaPagoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbFormaPagoItemStateChanged
+        boolean b = cbFormaPago.isEnabled() && Valores.FormaPago.CTA_CTE.equals(cbFormaPago.getSelectedItem());
+        tfDias.setEnabled(b);
+        tfDias.setRequestFocusEnabled(b);
+    }//GEN-LAST:event_cbFormaPagoItemStateChanged
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton bBuscarProducto;
