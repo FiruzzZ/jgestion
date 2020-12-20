@@ -162,6 +162,8 @@ public class ProveedorController implements ActionListener {
 
     public JDialog initContenedor(Window owner, boolean modal) {
         contenedor = new JDContenedor(owner, modal, "ABM - " + CLASS_NAME);
+        contenedor.getbImprimir().setVisible(false);
+        contenedor.setSize(contenedor.getWidth() + 200, contenedor.getHeight());
         contenedor.getTfFiltro().addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
@@ -397,7 +399,10 @@ public class ProveedorController implements ActionListener {
     private void armarQuery(String filtro) {
         String query = null;
         if (filtro != null && filtro.length() > 0) {
-            query = "SELECT * FROM " + CLASS_NAME + " o WHERE o.nombre ILIKE '%" + filtro + "%' ORDER BY o.nombre";
+            query = "SELECT * FROM " + CLASS_NAME + " o"
+                    + " WHERE o.nombre ILIKE '%" + filtro + "%'"
+                    + " or cast(o.cuit as varchar) ilike '" + filtro + "%'"
+                    + " ORDER BY o.nombre";
         }
         cargarContenedorTabla(contenedor.getDTM(), query);
     }

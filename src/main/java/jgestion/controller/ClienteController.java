@@ -55,6 +55,8 @@ public class ClienteController implements ActionListener {
 
     public JDialog initContenedor(Window owner, boolean modal) {
         contenedor = new JDContenedor(owner, modal, "ABM - " + CLASS_NAME + "s");
+        contenedor.getbImprimir().setVisible(false);
+        contenedor.setSize(contenedor.getWidth() + 200, contenedor.getHeight());
         contenedor.getTfFiltro().addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
@@ -501,7 +503,10 @@ public class ClienteController implements ActionListener {
     private void armarQuery(String filtro) {
         String query = null;
         if (filtro != null && filtro.length() > 0) {
-            query = "SELECT * FROM " + CLASS_NAME + " o WHERE o.nombre ILIKE '%" + filtro + "%'";
+            query = "SELECT * FROM " + CLASS_NAME + " o "
+                    + " WHERE o.nombre ILIKE '%" + filtro + "%'"
+                    + " or o.num_doc::varchar ilike '" + filtro + "%' "
+                    + " order by o.nombre";
         }
         cargarContenedorTabla(contenedor.getDTM(), query);
     }
