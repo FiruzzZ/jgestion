@@ -129,7 +129,8 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         labelConnetionState = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
-        jMenuItem23 = new javax.swing.JMenuItem();
+        miLogout = new javax.swing.JMenuItem();
+        jSeparator8 = new javax.swing.JPopupMenu.Separator();
         menuItemSalir = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         jMenu30 = new javax.swing.JMenu();
@@ -303,14 +304,15 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         jMenu1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jMenu1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 
-        jMenuItem23.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F3, java.awt.event.InputEvent.ALT_DOWN_MASK));
-        jMenuItem23.setText("Cerrar sesión                 ");
-        jMenuItem23.addActionListener(new java.awt.event.ActionListener() {
+        miLogout.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F3, java.awt.event.InputEvent.ALT_DOWN_MASK));
+        miLogout.setText("Cerrar sesión                 ");
+        miLogout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem23ActionPerformed(evt);
+                miLogoutActionPerformed(evt);
             }
         });
-        jMenu1.add(jMenuItem23);
+        jMenu1.add(miLogout);
+        jMenu1.add(jSeparator8);
 
         menuItemSalir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/application-exit.png"))); // NOI18N
         menuItemSalir.setText("Salir");
@@ -1573,7 +1575,6 @@ public class JFP extends javax.swing.JFrame implements Runnable {
     }//GEN-LAST:event_jMenuItem27ActionPerformed
 
     private void menuItemSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemSalirActionPerformed
-        System.out.println("login OFF.........");
         cerrandoAplicacion();
     }//GEN-LAST:event_menuItemSalirActionPerformed
 
@@ -1609,11 +1610,11 @@ public class JFP extends javax.swing.JFrame implements Runnable {
         refreshConnectionDB();
     }//GEN-LAST:event_jMenuItem32ActionPerformed
 
-    private void jMenuItem23ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem23ActionPerformed
+    private void miLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miLogoutActionPerformed
         activa = false;
         UsuarioController.cerrarSessionActual();
         loginUser();
-    }//GEN-LAST:event_jMenuItem23ActionPerformed
+    }//GEN-LAST:event_miLogoutActionPerformed
 
     private void jMenuItem30ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem30ActionPerformed
         try {
@@ -2215,7 +2216,6 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenuItem jMenuItem20;
     private javax.swing.JMenuItem jMenuItem21;
     private javax.swing.JMenuItem jMenuItem22;
-    private javax.swing.JMenuItem jMenuItem23;
     private javax.swing.JMenuItem jMenuItem24;
     private javax.swing.JMenuItem jMenuItem25;
     private javax.swing.JMenuItem jMenuItem26;
@@ -2304,6 +2304,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JPopupMenu.Separator jSeparator5;
     private javax.swing.JPopupMenu.Separator jSeparator6;
     private javax.swing.JPopupMenu.Separator jSeparator7;
+    private javax.swing.JPopupMenu.Separator jSeparator8;
     private javax.swing.JLabel labelConnetionState;
     private javax.swing.JMenu menuCtaCte;
     private javax.swing.JMenuItem menuIitemCuentas;
@@ -2321,6 +2322,7 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JMenuItem miAnularIngresoRemito;
     private javax.swing.JMenuItem miConfiguraciones;
     private javax.swing.JMenuItem miFacturaVenta;
+    private javax.swing.JMenuItem miLogout;
     private javax.swing.JMenuItem miSegunPresupuesto;
     // End of variables declaration//GEN-END:variables
     private boolean activa = true;
@@ -2330,10 +2332,10 @@ private void jMenuItem56ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     }
 
     private void cerrandoAplicacion() {
-        System.out.println("cerrandoAplicacion");
         activa = false;
         dispose();
-//        Runtime.getRuntime().exit(0);
+        DAO.closeAllConnections();
+        System.exit(0);
     }
 
     private void showError(String message) {
