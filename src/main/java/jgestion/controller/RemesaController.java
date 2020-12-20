@@ -580,16 +580,15 @@ public class RemesaController implements FocusListener {
     private void addEntregaToDetalle() throws MessageException {
         Date comprobanteFecha;
         if (jdReRe.getDcFechaReRe().getDate() == null) {
-            throw new MessageException("Debe especificar una fecha de " + jpaController.getEntityClass().getSimpleName() + " antes de agregar comprobaste a pagar.");
+            throw new MessageException("Debe especificar una fecha de remesa antes de agregar comprobaste a pagar.");
         }
         if (selectedCtaCte.getFactura() != null) {
             comprobanteFecha = selectedCtaCte.getFactura().getFechaCompra();
         } else {
             comprobanteFecha = selectedCtaCte.getNotaDebito().getFechaNotaDebito();
         }
-        //hay que ignorar las HH:MM:ss:mmmm de las fechas para hacer las comparaciones
-        if (UTIL.getDateYYYYMMDD(jdReRe.getDcFechaReRe().getDate()).before(UTIL.getDateYYYYMMDD(comprobanteFecha))) {
-            throw new MessageException("La fecha de " + jpaController.getEntityClass().getSimpleName() + " no puede ser anterior"
+        if (UTIL.compararIgnorandoTimeFields(jdReRe.getDcFechaReRe().getDate(), comprobanteFecha) < 0) {
+            throw new MessageException("La fecha de remesa no puede ser anterior"
                     + "\n a la fecha del comprobante ("
                     + UTIL.DATE_FORMAT.format(comprobanteFecha) + ")");
         }

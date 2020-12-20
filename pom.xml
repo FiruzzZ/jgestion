@@ -145,9 +145,9 @@
             <type>jar</type>
         </dependency>
         <dependency>
-            <groupId>utilitiez</groupId>
+            <groupId>com</groupId>
             <artifactId>utilitiez</artifactId>
-            <version>1.0</version>
+            <version>1</version>
             <type>jar</type>
         </dependency>
         <dependency>

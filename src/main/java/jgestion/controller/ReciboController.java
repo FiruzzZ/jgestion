@@ -517,7 +517,7 @@ public class ReciboController {
         if (jdReRe.getDcFechaReRe().getDate() == null) {
             throw new MessageException("Fecha de " + jpaController.getEntityClass().getSimpleName() + " no válida");
         }
-        if(jdReRe.getCbTipo().getSelectedIndex() < 1) {
+        if (jdReRe.getCbTipo().getSelectedIndex() < 1) {
             throw new MessageException("Debe seleccionar el tipo/letra del comprobante");
         }
         if (jdReRe.getDtmPagos().getRowCount() < 1) {
@@ -657,7 +657,7 @@ public class ReciboController {
     private void addEntregaToDetalle() throws MessageException {
         Date comprobanteFecha;
         if (jdReRe.getDcFechaReRe().getDate() == null) {
-            throw new MessageException("Debe especificar una fecha de " + CLASS_NAME + " antes de agregar comprobantes a pagar.");
+            throw new MessageException("Debe especificar una fecha del Recibo antes de agregar comprobantes a pagar.");
         }
         if (selectedCtaCte == null) {
             throw new MessageException("No hay Factura o Nota de Débito seleccionada.");
@@ -667,9 +667,8 @@ public class ReciboController {
         } else {
             comprobanteFecha = selectedCtaCte.getNotaDebito().getFechaNotaDebito();
         }
-        //hay que ignorar las HH:MM:ss:mmmm de las fechas para hacer las comparaciones
-        if (UTIL.getDateYYYYMMDD(jdReRe.getDcFechaReRe().getDate()).before(UTIL.getDateYYYYMMDD(comprobanteFecha))) {
-            throw new MessageException("La fecha de " + CLASS_NAME + " no puede ser anterior"
+        if (UTIL.compararIgnorandoTimeFields(jdReRe.getDcFechaReRe().getDate(), comprobanteFecha) < 0) {
+            throw new MessageException("La fecha del Recibo no puede ser anterior"
                     + "\n a la fecha del comprobante ("
                     + UTIL.DATE_FORMAT.format(comprobanteFecha) + ")");
         }
