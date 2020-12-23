@@ -28,7 +28,7 @@
           <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="panelDatosFacturacion" alignment="0" max="32767" attributes="1"/>
+                  <Component id="panelDatosFacturacion" alignment="0" min="-2" max="-2" attributes="1"/>
                   <Component id="panelProducto" alignment="0" max="32767" attributes="1"/>
                   <Component id="jScrollPane1" alignment="1" max="32767" attributes="1"/>
                   <Component id="jPanel6" alignment="1" max="32767" attributes="1"/>
@@ -98,9 +98,9 @@
                       <Component id="labelObservacion" min="-2" max="-2" attributes="0"/>
                       <Component id="labelListaPrecios" alignment="1" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel1" alignment="1" min="-2" max="-2" attributes="0"/>
-                      <Component id="labelCaja" alignment="1" min="-2" max="-2" attributes="0"/>
                       <Component id="labelLetra" alignment="1" min="-2" max="-2" attributes="0"/>
                       <Component id="labelCuenta" min="-2" max="-2" attributes="0"/>
+                      <Component id="labelFormaPago" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
@@ -162,31 +162,26 @@
                                   <Component id="labelObservacionCharactersCount" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <Group type="102" attributes="0">
-                                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                      <Component id="cbCaja" pref="200" max="32767" attributes="1"/>
-                                      <Component id="cbCuenta" pref="200" max="32767" attributes="1"/>
-                                  </Group>
+                                  <Component id="cbCuenta" min="-2" pref="200" max="-2" attributes="1"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <Group type="102" attributes="0">
-                                          <Component id="labelFormaPago" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace min="-2" max="-2" attributes="0"/>
-                                          <Component id="cbFormaPago" min="-2" pref="140" max="-2" attributes="1"/>
-                                          <EmptySpace min="-2" max="-2" attributes="0"/>
-                                          <Component id="labelDias" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="tfDias" min="-2" pref="43" max="-2" attributes="0"/>
-                                      </Group>
-                                      <Group type="102" alignment="0" attributes="0">
-                                          <Component id="labelSubCuenta" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="cbSubCuenta" min="-2" pref="200" max="-2" attributes="1"/>
-                                          <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="labelVendedor" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="cbVendedor" min="-2" pref="173" max="-2" attributes="0"/>
-                                      </Group>
-                                  </Group>
+                                  <Component id="labelSubCuenta" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="cbSubCuenta" min="-2" pref="200" max="-2" attributes="1"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="labelVendedor" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="cbVendedor" min="-2" pref="173" max="-2" attributes="0"/>
+                              </Group>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <Component id="cbFormaPago" min="-2" pref="140" max="-2" attributes="1"/>
+                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                  <Component id="labelCaja" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="cbCaja" min="-2" pref="193" max="-2" attributes="1"/>
+                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                  <Component id="labelDias" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="tfDias" min="-2" pref="43" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                       </Group>

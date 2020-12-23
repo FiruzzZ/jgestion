@@ -77,8 +77,6 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         labelObservacion = new javax.swing.JLabel();
         tfObservacion = new javax.swing.JTextField();
         labelObservacionCharactersCount = new javax.swing.JLabel();
-        cbDominio = new javax.swing.JComboBox();
-        labelDominio = new javax.swing.JLabel();
         labelFormaPago = new javax.swing.JLabel();
         cbFormaPago = new javax.swing.JComboBox();
         labelDias = new javax.swing.JLabel();
@@ -244,8 +242,6 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         labelObservacionCharactersCount.setFocusable(false);
         labelObservacionCharactersCount.setRequestFocusEnabled(false);
 
-        labelDominio.setText("Dominio");
-
         labelFormaPago.setText("Forma Pago");
 
         cbFormaPago.addItemListener(new java.awt.event.ItemListener() {
@@ -269,14 +265,13 @@ public class JDFacturaCompra extends javax.swing.JDialog {
             panelDatosCompraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelDatosCompraLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(panelDatosCompraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(labelCaja, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(labelUnidad, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(labelCuenta, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(labelObservacion, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(labelProveedor, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(labelDominio, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(labelFecha, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addGroup(panelDatosCompraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(labelUnidad)
+                    .addComponent(labelCuenta)
+                    .addComponent(labelObservacion)
+                    .addComponent(labelProveedor)
+                    .addComponent(labelFecha)
+                    .addComponent(labelFormaPago))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelDatosCompraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelDatosCompraLayout.createSequentialGroup()
@@ -317,19 +312,16 @@ public class JDFacturaCompra extends javax.swing.JDialog {
                                     .addComponent(cbSubCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(panelDatosCompraLayout.createSequentialGroup()
-                        .addGroup(panelDatosCompraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(cbDominio, javax.swing.GroupLayout.PREFERRED_SIZE, 464, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(panelDatosCompraLayout.createSequentialGroup()
-                                .addComponent(cbCaja, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(labelFormaPago)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(cbFormaPago, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(labelDias)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(tfDias, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addContainerGap(20, Short.MAX_VALUE))))
+                        .addComponent(cbFormaPago, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(labelCaja)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cbCaja, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(labelDias)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(tfDias, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(50, Short.MAX_VALUE))))
         );
         panelDatosCompraLayout.setVerticalGroup(
             panelDatosCompraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -362,21 +354,17 @@ public class JDFacturaCompra extends javax.swing.JDialog {
                     .addComponent(cbFacturaTipo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelDatosCompraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                    .addComponent(labelCaja)
                     .addComponent(cbCaja, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(labelFormaPago)
                     .addComponent(cbFormaPago, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(labelDias)
-                    .addComponent(tfDias, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(tfDias, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(labelCaja))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelDatosCompraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(labelObservacion)
                     .addComponent(tfObservacion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(labelObservacionCharactersCount))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelDatosCompraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cbDominio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(labelDominio))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -736,7 +724,7 @@ public class JDFacturaCompra extends javax.swing.JDialog {
                 .addComponent(jLabel21)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(tfDescuento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(32, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         panelProducto.setBorder(javax.swing.BorderFactory.createTitledBorder("Producto"));
@@ -1115,7 +1103,6 @@ public class JDFacturaCompra extends javax.swing.JDialog {
     private javax.swing.JComboBox cbCambioPrecio;
     private javax.swing.JComboBox cbCuenta;
     private javax.swing.JComboBox cbDesc;
-    private javax.swing.JComboBox cbDominio;
     private javax.swing.JComboBox cbFacturaTipo;
     private javax.swing.JComboBox cbFormaPago;
     private javax.swing.JComboBox cbProductos;
@@ -1152,7 +1139,6 @@ public class JDFacturaCompra extends javax.swing.JDialog {
     private javax.swing.JLabel labelCuenta;
     private javax.swing.JLabel labelDescuento;
     private javax.swing.JLabel labelDias;
-    private javax.swing.JLabel labelDominio;
     private javax.swing.JLabel labelFacturaNumero;
     private javax.swing.JLabel labelFacturaTipo;
     private javax.swing.JLabel labelFecha;
@@ -1526,11 +1512,6 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         labelCodigoNoRegistrado.setVisible(visible);
     }
 
-    public void setUIToFacturaCompra() {
-        labelDominio.setVisible(true);
-        cbDominio.setVisible(true);
-    }
-
     /**
      * Esconde todo lo innecesario para realizar Ordenes de despacho. labelPrecioActual y
      * tfProductoPrecioActual se usan para mostrar el stock general del producto seleccionado.
@@ -1578,8 +1559,6 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         cbCuenta.setVisible(false);
         labelSubCuenta.setVisible(false);
         cbSubCuenta.setVisible(false);
-        labelDominio.setVisible(false);
-        cbDominio.setVisible(false);
     }
 
     public void setUIToNotaCredito() {
@@ -1607,8 +1586,6 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         cbSubCuenta.setVisible(false);
         checkActualizaStock.setText("Acreditar importe de Nota");
         checkActualizaStock.setToolTipText(null);
-        labelDominio.setVisible(false);
-        cbDominio.setVisible(false);
         pack();
     }
 
@@ -1682,10 +1659,6 @@ public class JDFacturaCompra extends javax.swing.JDialog {
 
     public JPanel getPanelOpcionesCompra() {
         return panelOpcionesCompra;
-    }
-
-    public JComboBox getCbDominio() {
-        return cbDominio;
     }
 
     public void enableDetalle(boolean enable) {

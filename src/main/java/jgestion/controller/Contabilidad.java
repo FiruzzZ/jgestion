@@ -52,6 +52,7 @@ import jgestion.entity.DetalleListaPrecios;
 import jgestion.entity.DetalleVenta;
 import jgestion.entity.FacturaCompra;
 import jgestion.entity.FacturaVenta;
+import jgestion.entity.Iva;
 import jgestion.entity.ListaPrecios;
 import jgestion.entity.Marca;
 import jgestion.entity.NotaCredito;
@@ -97,10 +98,18 @@ import utilities.swing.components.NumberRenderer;
  */
 public class Contabilidad {
 
-    /**
-     * #0.0000
-     */
-    public static final DecimalFormat PU_FORMAT;
+    private static final BigDecimal BIG_DECIMAL_100 = BigDecimal.valueOf(100);
+
+    public static BigDecimal getPrecioConIva(BigDecimal precioUnitarioSinIVA, Iva iva) {
+        return getPrecioConIva(precioUnitarioSinIVA, iva.getIva());
+    }
+
+    public static BigDecimal getPrecioConIva(BigDecimal precioUnitarioSinIVA, double iva) {
+        BigDecimal alicuota = BigDecimal.valueOf(iva);
+        return JGestionUtils.setScale(precioUnitarioSinIVA
+                .multiply((alicuota.divide(BIG_DECIMAL_100).add(BigDecimal.ONE))));
+    }
+
     private JDBalance jdBalanceUI;
     private PanelBalanceGeneral panelBalanceGeneral;
     private static final String columnNamesBalanceGeneral[] = {"FECHA", "DESCRIPCIÓN", "INGRESOS", "EGRESOS", "TOTAL ACUM."};
@@ -110,11 +119,6 @@ public class Contabilidad {
 //    private static final Class[] columnClassBalanceCompraVenta = {Object.class, Object.class, String.class, String.class, String.class, String.class};
     private static final Logger LOG = LogManager.getLogger();
 
-    static {
-        DecimalFormatSymbols simbolos = new DecimalFormatSymbols();
-        simbolos.setDecimalSeparator('.');
-        PU_FORMAT = new DecimalFormat("#0.0000", simbolos);
-    }
     private JDBuscadorReRe buscadorReRe;
     private JDBuscador buscador;
     private PanelProductosCostoVenta panelito;
@@ -585,7 +589,7 @@ public class Contabilidad {
      * @param monto
      * @param tipoDeMargen 1 = %, 2 = $
      * @param margen
-     * @return
+     * @return value is scaled with {@link JGestionUtils#setScale(java.math.BigDecimal)}
      */
     public static BigDecimal GET_MARGEN(BigDecimal monto, int tipoDeMargen, BigDecimal margen) {
         if (margen.compareTo(BigDecimal.ZERO) == 0) {
@@ -594,7 +598,7 @@ public class Contabilidad {
         BigDecimal total;
         switch (tipoDeMargen) {
             case 1: { // margen en %
-                total = monto.multiply(margen).divide(new BigDecimal("100"));
+                total = monto.multiply(margen).divide(BIG_DECIMAL_100);
                 break;
             }
             case 2: { // margen en $ (monto fijo).. no hay mucha science...
@@ -604,7 +608,7 @@ public class Contabilidad {
             default:
                 return null;
         }
-        return total;
+        return JGestionUtils.setScale(total);
     }
 
     /**

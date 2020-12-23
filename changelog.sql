@@ -1,3 +1,6 @@
+--20201222
+insert into configuracion (key, description, value) values ('cantidad_decimales', 'Cantidad de decimales para todos los cálculos/precios', '2');
+insert into configuracion (key, description, value) values ('permitir_stock_negativo', 'Permite realizar ventas y que el stock resultante sea menor a cero', 'false');
 --20200806
 DROP TABLE public.configuracion;
 CREATE TABLE public.configuracion (

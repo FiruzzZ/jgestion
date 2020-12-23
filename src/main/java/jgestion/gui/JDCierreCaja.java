@@ -53,7 +53,7 @@ public class JDCierreCaja extends javax.swing.JDialog {
         labelCAJACERRADA = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Cierre de Cajas");
+        setTitle("Movimientos de Cajas");
         setMinimumSize(new java.awt.Dimension(625, 372));
 
         jLabel15.setText("Cajas");

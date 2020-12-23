@@ -2,10 +2,14 @@ package jgestion.jpa.controller;
 
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
@@ -15,6 +19,7 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.SingularAttribute;
+import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
 
 /**
@@ -33,10 +38,20 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
      * <br>Ej: recuperar objectos en LAZY load; manipular varios JPAControllers simultaneamente;
      */
     private boolean keepItOpen = false;
+    private boolean forceRefresh = false;
 
+    /**
+     *
+     * @param forceRefresh shortcut for {@link #setForceRefresh(boolean)} and allows pipeline
+     */
     @SuppressWarnings({"unchecked Type Arguments", "unchecked"})
-    public AbstractDAO() {
+    public AbstractDAO(boolean forceRefresh) {
+        this.forceRefresh = forceRefresh;
         entityClass = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+    }
+
+    public AbstractDAO() {
+        this(false);
     }
 
     protected abstract EntityManager getEntityManager();
@@ -110,6 +125,28 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
         getEntityManager().getTransaction().commit();
     }
 
+    /**
+     * Persist them all in the same transaction
+     *
+     * @param entities
+     */
+    @Override
+    public void persist(Collection<T> entities) {
+        EntityTransaction tx = null;
+        EntityManager em = getEntityManager();
+        try {
+            tx = em.getTransaction();
+            tx.begin();
+            entities.forEach(t -> em.persist(t));
+            tx.commit();
+            closeEntityManager();
+        } finally {
+            if (tx != null && tx.isActive() && tx.getRollbackOnly()) {
+                tx.rollback();
+            }
+        }
+    }
+
     @Override
     public T merge(T entity) {
         getEntityManager().getTransaction().begin();
@@ -119,13 +156,39 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
     }
 
     @Override
+    public Collection<T> merge(Collection<T> entities) {
+        EntityTransaction tx = null;
+        EntityManager em = getEntityManager();
+        try {
+            tx = em.getTransaction();
+            tx.begin();
+            Collection<T> merged = new ArrayList<>(entities.size());
+            entities.forEach(t -> merged.add(em.merge(t)));
+            tx.commit();
+            closeEntityManager();
+            return merged;
+        } finally {
+            if (tx != null && tx.isActive() && tx.getRollbackOnly()) {
+                tx.rollback();
+            }
+        }
+    }
+
+    @Override
     public void remove(T entity) {
-//        getEntityManager().delete(getEntityManager().merge(entity)); //Hibernate
         if (!getEntityManager().getTransaction().isActive()) {
             getEntityManager().getTransaction().begin();
         }
         getEntityManager().remove(getEntityManager().merge(entity));
         getEntityManager().getTransaction().commit();
+    }
+
+    @Override
+    public void remove(Collection<T> entities) {
+        getEntityManager().getTransaction().begin();
+        entities.forEach(t -> getEntityManager().remove(t));
+        getEntityManager().getTransaction().commit();
+        closeEntityManager();
     }
 
     @Override
@@ -135,16 +198,32 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
 
     @Override
     public T find(ID id) {
-//        return (T) getEntityManager().get(entityClass, id); // Hibernate
-        return getEntityManager().find(entityClass, id);
+        try {
+            HashMap<String, Object> pp = new HashMap<>();
+            if (forceRefresh) {
+                pp.put(QueryHints.REFRESH, HintValues.TRUE);
+            }
+            return getEntityManager().find(entityClass, id, pp);
+        } finally {
+            closeEntityManager();
+        }
+    }
+
+    /**
+     *
+     * @param entity
+     * @see javax.persistence.EntityManager#detach(java.lang.Object)
+     */
+    @Override
+    public void detach(T entity) {
+        EntityManager em = getEntityManager();
+        em.detach(entity);
+        em.close();
     }
 
     @Override
     public List<T> findAll() {
         return findAll((Order) null);
-//        CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
-//        cq.select(cq.from(entityClass));
-//        return getEntityManager().createQuery(cq).getResultList();
     }
 
     public List<T> findAll(Order... orders) {
@@ -236,6 +315,9 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
                     q.setParameter(entry.getKey(), entry.getValue());
                 }
             }
+            if (forceRefresh) {
+                q.setHint(QueryHints.REFRESH, HintValues.TRUE);
+            }
             return (T) q.setMaxResults(1).getSingleResult();
         } catch (NoResultException e) {
             return null; //hibenate behaviour huhuhahaha!
@@ -261,6 +343,9 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
             TypedQuery<T> query = getEntityManager().createNamedQuery(name, entityClass);
             for (final Map.Entry<String, ? extends Object> param : params.entrySet()) {
                 query.setParameter(param.getKey(), param.getValue());
+            }
+            if (forceRefresh) {
+                query.setHint(QueryHints.REFRESH, HintValues.TRUE);
             }
             return query.getResultList();
         } finally {
@@ -349,15 +434,27 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
     }
 
     /**
-     * Convenience method to return a single instance that matches the query, or null if the query
+     * Convenience method to return a single attribute that matches the query, or null if the query
      * returns no results.
      *
-     * @param jpql
+     * @param query
      * @return the single result or null
      */
-    public Object findAttribute(String jpql) {
+    public Object findAttribute(String query) {
+        return findAttribute(query, null);
+    }
+
+    /**
+     *
+     * @param query
+     * @param parameters
+     * @return
+     * @see AbstractDAO#findAttribute(java.lang.String)
+     */
+    public Object findAttribute(String query, Map<String, Object> parameters) {
         try {
-            return getEntityManager().createQuery(jpql).getSingleResult();
+            Query q = buildQuery(query, parameters);
+            return q.getSingleResult();
         } catch (NoResultException ex) {
             return null;//same behavior than Hibernate
         } finally {
@@ -365,26 +462,24 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public List<Object[]> findAttributes(String jpql) {
-        try {
-            return findAttributes(jpql, null, null);
-        } finally {
-            closeEntityManager();
-        }
+    public List<Object[]> findAttributes(String query) {
+        return findAttributes(query, null, null);
     }
 
-    @SuppressWarnings("unchecked")
-    public List<Object[]> findAttributes(String jpql, Integer first, Integer max) {
+    public List<Object[]> findAttributes(String query, Integer first, Integer max) {
+        return findAttributes(query, first, max, null);
+    }
+
+    public List<Object[]> findAttributes(String query, Integer first, Integer max, Map<String, Object> parameters) {
         try {
-            Query query = getEntityManager().createQuery(jpql);
+            Query q = buildQuery(query, parameters);
             if (first != null) {
-                query.setFirstResult(first);
+                q.setFirstResult(first);
             }
             if (max != null) {
-                query.setMaxResults(max);
+                q.setMaxResults(max);
             }
-            return query.getResultList();
+            return q.getResultList();
         } finally {
             closeEntityManager();
         }
@@ -412,5 +507,30 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
 
     protected Expression getExpression(SingularAttribute sa) {
         return getEntityManager().getCriteriaBuilder().createQuery(getEntityClass()).from(getEntityClass()).get(sa);
+    }
+
+    public final boolean isForceRefresh() {
+        return forceRefresh;
+    }
+
+    /**
+     * can be override to allow pipeline with implementations
+     * @param forceRefresh
+     * @return
+     */
+    public AbstractDAO<T, ID> setForceRefresh(boolean forceRefresh) {
+        this.forceRefresh = forceRefresh;
+        return this;
+    }
+
+    private Query buildQuery(String query, Map<String, Object> parameters) {
+        Query q = getEntityManager().createQuery(query);
+        if (parameters != null) {
+            parameters.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
+        }
+        if (forceRefresh) {
+            q.setHint(QueryHints.REFRESH, HintValues.TRUE);
+        }
+        return q;
     }
 }

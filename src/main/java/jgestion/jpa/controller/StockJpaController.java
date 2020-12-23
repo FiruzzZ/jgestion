@@ -13,6 +13,10 @@ public class StockJpaController extends JGestionJpaImpl<Stock, Integer> {
     public StockJpaController() {
     }
 
+    public StockJpaController(boolean forceRefresh) {
+        super(forceRefresh);
+    }
+
     public Stock findBy(Producto producto, Sucursal sucursal) {
         return findByQuery(getSelectFrom()
                 + " WHERE o.producto.id=" + producto.getId()

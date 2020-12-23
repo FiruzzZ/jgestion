@@ -38,6 +38,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -48,6 +49,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.TableCellRenderer;
 import jgestion.controller.DatosEmpresaJpaController;
 import jgestion.controller.UsuarioController;
 import jgestion.controller.exceptions.MessageException;
@@ -56,9 +58,11 @@ import jgestion.entity.Contribuyente;
 import jgestion.entity.DatosEmpresa;
 import jgestion.entity.RemitoCompra;
 import jgestion.entity.TipoDocumento;
+import jgestion.jpa.controller.ConfiguracionDAO;
 import jgestion.jpa.controller.JGestionJpaImpl;
 import utilities.general.EntityWrapper;
 import utilities.general.UTIL;
+import utilities.swing.components.NumberRenderer;
 
 /**
  *
@@ -72,12 +76,24 @@ public class JGestionUtils {
      */
     public volatile static String LAST_DIRECTORY_PATH;
     private static DatosEmpresa DATOS_EMPRESA;
+    private static int cantidadDecimales;
 
     private static DatosEmpresa getDatosEmpresa() {
         if (DATOS_EMPRESA == null) {
             DATOS_EMPRESA = new DatosEmpresaJpaController().findDatosEmpresa();
         }
         return DATOS_EMPRESA;
+    }
+
+    private static int loadCantidadDecimales() {
+        if (cantidadDecimales == 0) {
+            cantidadDecimales = new ConfiguracionDAO().getCantidadDecimales();
+        }
+        return cantidadDecimales;
+    }
+
+    public static TableCellRenderer getCurrencyRenderer() {
+        return NumberRenderer.getCurrencyRenderer(loadCantidadDecimales());
     }
 
     public JGestionUtils() {
@@ -496,5 +512,67 @@ public class JGestionUtils {
             l.add(new EntityWrapper<>(iva, iva.getId(), iva.getIva().toString() + "%"));
         }
         return l;
+    }
+
+    /**
+     * Set scale by global config and {@link RoundingMode#HALF_UP}
+     *
+     * @param valor
+     * @return scaled valor
+     * @see ConfiguracionDAO#getCantidadDecimales()
+     */
+    public final static BigDecimal setScale(BigDecimal valor) {
+        if (cantidadDecimales == 0) {
+            loadCantidadDecimales();
+        }
+        return valor.setScale(cantidadDecimales, RoundingMode.HALF_UP);
+    }
+
+    /**
+     *
+     * @param valor
+     * @return scaled valor
+     * @see #setScale(java.math.BigDecimal)
+     */
+    public final static BigDecimal setScale(double valor) {
+        return setScale(BigDecimal.valueOf(valor));
+    }
+
+    /**
+     * Get the text in the textfield, trim it and tries to create a BigDecimal with it
+     *
+     * @param tf from which the text will be converted to BigDecimal
+     * @param defaultValue if the textfield is empty this is returned
+     * @return the created BigDecimal or {@code defaultValue} if text is empty
+     * @see #setScale(java.math.BigDecimal)
+     */
+    public final static BigDecimal setScale(JTextField tf, BigDecimal defautlValue) {
+        if (tf.getText().trim().isEmpty()) {
+            return defautlValue;
+        }
+        return setScale(new BigDecimal(tf.getText().trim()));
+    }
+
+    /**
+     * Get the text in the textfield, trim it and tries to create a BigDecimal with it
+     *
+     * @param tf from which the text will be converted to BigDecimal
+     * @return the created BigDecimal or {@code null} if text is empty
+     * @see #setScale(java.math.BigDecimal)
+     * @see #setScale(javax.swing.JTextField, java.math.BigDecimal)
+     */
+    public final static BigDecimal setScale(JTextField tf) {
+        return setScale(tf, null);
+    }
+
+    /**
+     * trim it and tries to create a BigDecimal with it
+     *
+     * @param valor
+     * @return
+     * @see #setScale(java.math.BigDecimal)
+     */
+    public final static BigDecimal setScale(String valor) {
+        return setScale(new BigDecimal(valor.trim()));
     }
 }

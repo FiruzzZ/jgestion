@@ -1,5 +1,6 @@
 package jgestion.jpa.controller;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -24,9 +25,15 @@ public interface GenericDAO<T, ID> {
 
     void persist(T person);
 
+    void persist(Collection<T> entities);
+
     T merge(T person);
 
+    Collection<T> merge(Collection<T> entities);
+
     void remove(T person);
+
+    void remove(Collection<T> entities);
 
     void refresh(T entity);
 
@@ -83,4 +90,18 @@ public interface GenericDAO<T, ID> {
      * @return a instances.
      */
     T findByQuery(String query);
+
+    /**
+     * detach the entity
+     *
+     * @param entity
+     */
+    public void detach(T entity);
+
+    /**
+     * La implementación de este método debe cargar todos los atributos mappeados como LAZY
+     *
+     * @param entity
+     */
+    public void loadLazies(T entity);
 }

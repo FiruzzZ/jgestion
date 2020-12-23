@@ -45,6 +45,7 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import javax.persistence.NoResultException;
 import javax.swing.*;
@@ -57,6 +58,7 @@ import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import utilities.general.UTIL;
@@ -200,8 +202,8 @@ public class ProductoController implements ActionListener, KeyListener {
         });
         UTIL.getDefaultTableModel(contenedor.getjTable1(), colsName, colsWidth);
         contenedor.getjTable1().getColumnModel().getColumn(4).setCellRenderer(NumberRenderer.getIntegerRenderer());
-        contenedor.getjTable1().getColumnModel().getColumn(5).setCellRenderer(NumberRenderer.getCurrencyRenderer(4));
-        contenedor.getjTable1().getColumnModel().getColumn(6).setCellRenderer(NumberRenderer.getCurrencyRenderer(4));
+        contenedor.getjTable1().getColumnModel().getColumn(5).setCellRenderer(JGestionUtils.getCurrencyRenderer());
+        contenedor.getjTable1().getColumnModel().getColumn(6).setCellRenderer(JGestionUtils.getCurrencyRenderer());
         UTIL.hideColumnTable(contenedor.getjTable1(), 0);
         //no permite filtro de vacio en el inicio
         permitirFiltroVacio = false;
@@ -216,7 +218,7 @@ public class ProductoController implements ActionListener, KeyListener {
         initPanelABM();
         abm = new JDABM(contenedor, "ABM - " + CLASS_NAME + "s", true, panelABM);
         if (toEdit != null) {
-            setPanelABM(EL_OBJECT);
+            setUI(EL_OBJECT);
         }
         SwingUtil.setComponentsEnabled(panelABM.getComponents(), editable, panelABM.getDateUltimaCompra());
         abm.setLocationRelativeTo(contenedor);
@@ -284,7 +286,7 @@ public class ProductoController implements ActionListener, KeyListener {
         UTIL.loadComboBox(panelABM.getCbSubRubro(), new RubroController().findRubros(), true);
     }
 
-    private void setPanelABM(Producto producto) {
+    private void setUI(Producto producto) {
         UTIL.setSelectedItem(panelABM.getCbMarcas(), producto.getMarca().getNombre());
         UTIL.setSelectedItem(panelABM.getCbIVA(), producto.getIva());
         UTIL.setSelectedItem(panelABM.getCbMedicion(), producto.getIdunidadmedida().getNombre());
@@ -300,10 +302,10 @@ public class ProductoController implements ActionListener, KeyListener {
         panelABM.getCheckUpdatePrecioVenta().setSelected(producto.getUpdatePrecioVenta());
         panelABM.getCheckBienDeCambio().setSelected(producto.isBienDeCambio());
         if (producto.getPrecioVenta() != null) {
-            panelABM.setTfPrecio(producto.getPrecioVenta().toString());
+            panelABM.setTfPrecio(JGestionUtils.setScale(producto.getPrecioVenta()).toString());
         }
         panelABM.getTaDescripcion().setText(producto.getDescripcion());
-        panelABM.setTfCostoCompra(producto.getCostoCompra().toString());
+        panelABM.setTfCostoCompra(JGestionUtils.setScale(producto.getCostoCompra()).toString());
         panelABM.setDateUltimaCompra(producto.getUltimaCompra());
         if (producto.getFoto() != null) {
             if (producto.getFoto().length > 0) {
@@ -352,14 +354,14 @@ public class ProductoController implements ActionListener, KeyListener {
         } catch (NumberFormatException ex) {
             throw new MessageException("número de stock máximo no válido");
         }
+        BigDecimal precioVenta;
         try {
-            if (panelABM.getTfPrecio().length() > 0) {
-                if (Double.valueOf(panelABM.getTfPrecio()) < 0) {
-                    throw new MessageException("El precio no puede ser menor a 0");
-                }
+            precioVenta = JGestionUtils.setScale(panelABM.getTfPrecio(), BigDecimal.ZERO);
+            if (precioVenta.compareTo(BigDecimal.ZERO) == -1) {
+                throw new MessageException("El precio no puede ser menor a 0");
             }
-        } catch (NumberFormatException ex) {
-            throw new MessageException("monto de Precio no válido");
+        } catch (Exception ex) {
+            throw new MessageException("Precio Venta no válido");
         }
         try {
             EL_OBJECT.setMarca(((EntityWrapper<Marca>) panelABM.getCbMarcas().getSelectedItem()).getEntity());
@@ -400,7 +402,7 @@ public class ProductoController implements ActionListener, KeyListener {
         } else {
             EL_OBJECT.setSubrubro(null);
         }
-        EL_OBJECT.setPrecioVenta(panelABM.getTfPrecio().length() > 0 ? new BigDecimal(panelABM.getTfPrecio()) : BigDecimal.ZERO);
+        EL_OBJECT.setPrecioVenta(precioVenta);
         EL_OBJECT.setUpdatePrecioVenta(panelABM.getCheckUpdatePrecioVenta().isSelected());
         EL_OBJECT.setBienDeCambio(panelABM.getCheckBienDeCambio().isSelected());
         // no setteable desde la GUI
@@ -412,7 +414,7 @@ public class ProductoController implements ActionListener, KeyListener {
         }
 
         // NULLABLE'sssssssss
-        EL_OBJECT.setDescripcion((panelABM.getTaDescrip().trim().isEmpty() ? null : panelABM.getTaDescrip()));
+        EL_OBJECT.setDescripcion(StringUtils.trimToNull(panelABM.getTaDescrip()));
         if (fotoFile != null) {
             //si se elijió algún archivo imagen ...
             EL_OBJECT.setFoto(UTIL.getBytesFromFile(fotoFile));
@@ -573,7 +575,8 @@ public class ProductoController implements ActionListener, KeyListener {
      * @param valoracionStock 1 = ULTIMA_COMPRA, 2 = ANTIGUO (o sea no cambia nada), 3 = PPP
      */
     void valorizarStock(Producto producto, BigDecimal newPrecioUnitario, int cantidad, int valoracionStock) {
-        if (valoracionStock == ULTIMA_COMPRA) {
+        newPrecioUnitario = JGestionUtils.setScale(newPrecioUnitario);
+        if (Objects.equals(valoracionStock, ULTIMA_COMPRA)) {
             producto.setCostoCompra(newPrecioUnitario);
 
         } else if (valoracionStock == PPP) {
@@ -591,7 +594,7 @@ public class ProductoController implements ActionListener, KeyListener {
 
         producto.setUltimaCompra(new Date());
         if (producto.getUpdatePrecioVenta()) {
-            producto.setPrecioVenta(producto.getCostoCompra());
+            producto.setPrecioVenta(JGestionUtils.setScale(producto.getCostoCompra()));
         }
         LOG.debug("valorizacionStock(): costoCompra=" + producto.getCostoCompra() + ", precioVenta=" + producto.getPrecioVenta());
         jpaController.merge(producto);

@@ -91,14 +91,13 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="labelCaja" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="1" attributes="0">
                       <Component id="labelUnidad" alignment="1" min="-2" max="-2" attributes="0"/>
                       <Component id="labelCuenta" alignment="1" min="-2" max="-2" attributes="0"/>
                       <Component id="labelObservacion" alignment="1" min="-2" max="-2" attributes="0"/>
                       <Component id="labelProveedor" alignment="1" min="-2" max="-2" attributes="0"/>
-                      <Component id="labelDominio" alignment="1" min="-2" max="-2" attributes="0"/>
                       <Component id="labelFecha" alignment="1" min="-2" max="-2" attributes="0"/>
+                      <Component id="labelFormaPago" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
@@ -149,21 +148,16 @@
                           <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                       </Group>
                       <Group type="102" attributes="0">
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="cbDominio" min="-2" pref="464" max="-2" attributes="0"/>
-                              <Group type="102" alignment="0" attributes="0">
-                                  <Component id="cbCaja" min="-2" pref="200" max="-2" attributes="1"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="labelFormaPago" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="cbFormaPago" min="-2" pref="90" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="labelDias" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="tfDias" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                          </Group>
-                          <EmptySpace pref="20" max="32767" attributes="0"/>
+                          <Component id="cbFormaPago" min="-2" pref="120" max="-2" attributes="0"/>
+                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                          <Component id="labelCaja" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="cbCaja" min="-2" pref="205" max="-2" attributes="1"/>
+                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                          <Component id="labelDias" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="tfDias" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace pref="50" max="32767" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
@@ -204,23 +198,18 @@
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="2" attributes="0">
-                      <Component id="labelCaja" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="cbCaja" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="labelFormaPago" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="cbFormaPago" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="labelDias" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="tfDias" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Component id="labelCaja" alignment="2" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="2" attributes="0">
                       <Component id="labelObservacion" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="tfObservacion" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="labelObservacionCharactersCount" alignment="2" min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <EmptySpace max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="cbDominio" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="labelDominio" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="32767" attributes="0"/>
               </Group>
@@ -394,13 +383,6 @@
             <Property name="text" type="java.lang.String" value="0/100"/>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="requestFocusEnabled" type="boolean" value="false"/>
-          </Properties>
-        </Component>
-        <Component class="javax.swing.JComboBox" name="cbDominio">
-        </Component>
-        <Component class="javax.swing.JLabel" name="labelDominio">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="Dominio"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="labelFormaPago">
@@ -838,7 +820,7 @@
                   <Component id="jLabel21" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="tfDescuento" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="32" max="32767" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>

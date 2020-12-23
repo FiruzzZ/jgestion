@@ -249,7 +249,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{o4}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField pattern="dd/MM/yy">
 				<reportElement x="419" y="0" width="70" height="15" uuid="591536f0-4758-4262-82c4-f2a999fdd409"/>
 				<textElement textAlignment="Center">
 					<font size="9"/>
@@ -270,7 +270,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{o8}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField pattern="dd/MM/yy HH:mm:ss">
 				<reportElement x="704" y="0" width="98" height="15" uuid="cdc2c2b2-10e6-4b61-9542-8980998321b7"/>
 				<textElement>
 					<font size="9"/>

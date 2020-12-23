@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.6.0.final using JasperReports Library version 5.5.2  -->
+<!-- Created with Jaspersoft Studio version 6.6.0.final using JasperReports Library version 6.6.0  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="JGestion_CierreCaja" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="6edc25db-101e-4251-8a7c-afa902a7ff31">
 	<property name="ireport.zoom" value="1.2100000000000009"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="jgestion_buque"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<parameter name="CURRENT_USER" class="java.lang.String"/>
 	<parameter name="CAJA_MOVIMIENTO_ID" class="java.lang.Integer"/>
 	<parameter name="USUARIO_CIERRE" class="java.lang.String"/>
@@ -18,26 +20,81 @@ WHERE o.caja = caja.id AND dcm.caja_movimientos = o.id AND dcm.usuario = u.id
 AND o.id = $P{CAJA_MOVIMIENTO_ID}
 ORDER BY dcm.id]]>
 	</queryString>
-	<field name="nombre" class="java.lang.String"/>
-	<field name="cajamovimiento_id" class="java.lang.Integer"/>
-	<field name="id" class="java.lang.Integer"/>
-	<field name="caja" class="java.lang.Integer"/>
-	<field name="fecha_apertura" class="java.sql.Date"/>
-	<field name="fecha_cierre" class="java.sql.Date"/>
-	<field name="sistema_fecha_apertura" class="java.sql.Timestamp"/>
-	<field name="sistema_fecha_cierre" class="java.sql.Timestamp"/>
-	<field name="monto_apertura" class="java.lang.Double"/>
-	<field name="monto_cierre" class="java.lang.Double"/>
-	<field name="usuario_cierre" class="java.lang.Integer"/>
-	<field name="caja_movimientos" class="java.lang.Integer"/>
-	<field name="ingreso" class="java.lang.Boolean"/>
-	<field name="tipo" class="java.lang.Integer"/>
-	<field name="numero" class="java.math.BigDecimal"/>
-	<field name="monto" class="java.lang.Double"/>
-	<field name="fecha" class="java.sql.Timestamp"/>
-	<field name="usuario" class="java.lang.Integer"/>
-	<field name="descripcion" class="java.lang.String"/>
-	<field name="nick" class="java.lang.String"/>
+	<field name="nombre" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="nombre"/>
+	</field>
+	<field name="cajamovimiento_id" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.label" value="cajamovimiento_id"/>
+	</field>
+	<field name="id" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.label" value="id"/>
+	</field>
+	<field name="fecha_apertura" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.label" value="fecha_apertura"/>
+	</field>
+	<field name="fecha_cierre" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.label" value="fecha_cierre"/>
+	</field>
+	<field name="monto_apertura" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.label" value="monto_apertura"/>
+	</field>
+	<field name="monto_cierre" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.label" value="monto_cierre"/>
+	</field>
+	<field name="sistema_fecha_apertura" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.label" value="sistema_fecha_apertura"/>
+	</field>
+	<field name="sistema_fecha_cierre" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.label" value="sistema_fecha_cierre"/>
+	</field>
+	<field name="caja" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.label" value="caja"/>
+	</field>
+	<field name="usuario_cierre" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.label" value="usuario_cierre"/>
+	</field>
+	<field name="COLUMN_12" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.label" value="id"/>
+	</field>
+	<field name="descripcion" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="descripcion"/>
+	</field>
+	<field name="fecha" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.label" value="fecha"/>
+	</field>
+	<field name="fechamovimiento" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.label" value="fechamovimiento"/>
+	</field>
+	<field name="ingreso" class="java.lang.Boolean">
+		<property name="com.jaspersoft.studio.field.label" value="ingreso"/>
+	</field>
+	<field name="monto" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.label" value="monto"/>
+	</field>
+	<field name="numero" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.label" value="numero"/>
+	</field>
+	<field name="tipo" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.label" value="tipo"/>
+	</field>
+	<field name="caja_movimientos" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.label" value="caja_movimientos"/>
+	</field>
+	<field name="movimiento_concepto" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.label" value="movimiento_concepto"/>
+	</field>
+	<field name="subcuenta_id" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.label" value="subcuenta_id"/>
+	</field>
+	<field name="unidad_de_negocio_id" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.label" value="unidad_de_negocio_id"/>
+	</field>
+	<field name="usuario" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.label" value="usuario"/>
+	</field>
+	<field name="nick" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="nick"/>
+	</field>
 	<variable name="TOTAL_INGRESOS" class="java.lang.Double" calculation="Sum">
 		<variableExpression><![CDATA[$F{ingreso}.booleanValue() ?
     (($F{tipo}.intValue() == 7) ? new Double(0) : $F{monto})
@@ -88,8 +145,11 @@ ORDER BY dcm.id]]>
 				<reportElement x="210" y="114" width="31" height="16" uuid="91ddeef3-c503-4a76-b256-1e7a88981a19"/>
 				<text><![CDATA[Cierre:]]></text>
 			</staticText>
-			<textField pattern="dd/MM/yyyy HH:mm:ss" isBlankWhenNull="true">
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
 				<reportElement x="68" y="114" width="120" height="16" uuid="e3b69f06-5d26-4e92-95d3-5413f0b53db4"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$F{fecha_cierre}]]></textFieldExpression>
 			</textField>
 			<textField pattern="¤#,##0.00;¤-#,##0.00">
@@ -106,8 +166,11 @@ ORDER BY dcm.id]]>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{monto_cierre}]]></textFieldExpression>
 			</textField>
-			<textField pattern="dd/MM/yyyy HH:mm:ss">
+			<textField pattern="dd/MM/yyyy">
 				<reportElement x="68" y="98" width="120" height="16" uuid="084de0ef-73c3-47dc-9e01-c6a2eb628dbc"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$F{fecha_apertura}]]></textFieldExpression>
 			</textField>
 			<line>

@@ -12,6 +12,7 @@ import javax.persistence.Id;
  * @author FiruzzZ
  */
 @Entity
+@Deprecated
 public class Dominio implements Serializable {
 
     private static final long serialVersionUID = 1L;

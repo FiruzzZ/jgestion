@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.6.0.final using JasperReports Library version 6.6.0  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="JGestion_FacturaVenta_I" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="49c52b62-3f66-471d-9068-6c68d7bc3c1e">
 	<property name="ireport.zoom" value="1.2100000000000009"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="jgestion_buque"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<parameter name="FACTURA_ID" class="java.lang.Integer"/>
 	<parameter name="REMITO" class="java.lang.String"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
@@ -10,29 +13,69 @@
 	</parameter>
 	<queryString>
 		<![CDATA[select f.numero, f.tipo, f.movimiento_interno, f.forma_pago,f.dias_cta_cte, f.fecha_venta, f.importe,f.descuento,
- pro.nombre AS proveedor, dc.cantidad, dc.precio_unitario, u.nick, p.nombre AS producto,p.codigo, iva.iva, s.nombre as sucursal, s.puntoventa
-from detalle_venta dc, producto p, iva, sucursal s, caja, usuario u, factura_venta f, cliente pro
+ pro.nombre AS proveedor, dc.cantidad, dc.precio_unitario, u.nick, p.nombre AS producto
+ ,p.codigo, iva.iva, s.nombre as sucursal, s.puntoventa
+ ,cast( configuracion.value as integer) cantidad_decimales
+from detalle_venta dc, producto p, iva, sucursal s, caja, usuario u, factura_venta f, cliente pro, configuracion
 where f.id = dc.factura AND  f.cliente = pro.id AND f.usuario = u.id AND f.caja = caja.id AND f.sucursal = s.id
 AND dc.producto = p.id AND p.iva = iva.id
-AND dc.factura = $P{FACTURA_ID}]]>
+AND dc.factura = $P{FACTURA_ID}
+and configuracion.key = 'cantidad_decimales']]>
 	</queryString>
-	<field name="numero" class="java.lang.Long"/>
-	<field name="tipo" class="java.lang.String"/>
-	<field name="movimiento_interno" class="java.lang.Integer"/>
-	<field name="forma_pago" class="java.lang.Integer"/>
-	<field name="dias_cta_cte" class="java.lang.Integer"/>
-	<field name="fecha_venta" class="java.sql.Date"/>
-	<field name="importe" class="java.lang.Double"/>
-	<field name="descuento" class="java.lang.Double"/>
-	<field name="proveedor" class="java.lang.String"/>
-	<field name="cantidad" class="java.lang.Integer"/>
-	<field name="precio_unitario" class="java.lang.Double"/>
-	<field name="nick" class="java.lang.String"/>
-	<field name="producto" class="java.lang.String"/>
-	<field name="codigo" class="java.lang.String"/>
-	<field name="iva" class="java.lang.Double"/>
-	<field name="sucursal" class="java.lang.String"/>
-	<field name="puntoventa" class="java.lang.Integer"/>
+	<field name="numero" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.label" value="numero"/>
+	</field>
+	<field name="tipo" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="tipo"/>
+	</field>
+	<field name="movimiento_interno" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.label" value="movimiento_interno"/>
+	</field>
+	<field name="forma_pago" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.label" value="forma_pago"/>
+	</field>
+	<field name="dias_cta_cte" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.label" value="dias_cta_cte"/>
+	</field>
+	<field name="fecha_venta" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.label" value="fecha_venta"/>
+	</field>
+	<field name="importe" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.label" value="importe"/>
+	</field>
+	<field name="descuento" class="java.lang.Double">
+		<property name="com.jaspersoft.studio.field.label" value="descuento"/>
+	</field>
+	<field name="proveedor" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="proveedor"/>
+	</field>
+	<field name="cantidad" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.label" value="cantidad"/>
+	</field>
+	<field name="precio_unitario" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.label" value="precio_unitario"/>
+	</field>
+	<field name="nick" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="nick"/>
+	</field>
+	<field name="producto" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="producto"/>
+	</field>
+	<field name="codigo" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="codigo"/>
+	</field>
+	<field name="iva" class="java.lang.Double">
+		<property name="com.jaspersoft.studio.field.label" value="iva"/>
+	</field>
+	<field name="sucursal" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="sucursal"/>
+	</field>
+	<field name="puntoventa" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.label" value="puntoventa"/>
+	</field>
+	<field name="cantidad_decimales" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.label" value="cantidad_decimales"/>
+	</field>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -146,6 +189,9 @@ AND dc.factura = $P{FACTURA_ID}]]>
 			</textField>
 			<textField>
 				<reportElement x="60" y="34" width="78" height="20" uuid="65ab8908-4781-4a09-8911-8f1da211febc"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$F{forma_pago}.intValue() ==1 ? "CONTADO"
  : ($F{forma_pago}.intValue() == 2? "CTA CTE" : "CHEQUE" )]]></textFieldExpression>
 			</textField>
@@ -224,40 +270,38 @@ AND dc.factura = $P{FACTURA_ID}]]>
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="20" splitType="Stretch">
+		<band height="15" splitType="Stretch">
 			<textField>
-				<reportElement x="0" y="0" width="134" height="20" uuid="ed1f5e5a-0f36-471b-a4ee-6e0c2959bdd4"/>
+				<reportElement x="0" y="0" width="134" height="15" uuid="ed1f5e5a-0f36-471b-a4ee-6e0c2959bdd4"/>
 				<textFieldExpression><![CDATA[$F{codigo}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true">
-				<reportElement x="134" y="0" width="217" height="20" uuid="415a1547-8a2f-44a3-94d8-2a283c877833"/>
-				<textFieldExpression><![CDATA[$F{producto}.concat("(").concat($F{iva}.toString()).concat(")")]]></textFieldExpression>
+				<reportElement x="134" y="0" width="217" height="15" uuid="415a1547-8a2f-44a3-94d8-2a283c877833"/>
+				<textFieldExpression><![CDATA[$F{producto}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="351" y="0" width="52" height="20" uuid="6b8318f4-c365-4709-b86b-cac4c0049c12"/>
+				<reportElement x="351" y="0" width="52" height="15" uuid="6b8318f4-c365-4709-b86b-cac4c0049c12"/>
 				<box rightPadding="3"/>
 				<textElement textAlignment="Right"/>
 				<textFieldExpression><![CDATA[$F{cantidad}]]></textFieldExpression>
 			</textField>
-			<textField pattern="¤ #,##0.0000">
-				<reportElement x="403" y="0" width="72" height="20" uuid="9dbee929-70fb-4a36-9f34-6e155481a202"/>
+			<textField pattern="¤#,##0.00;¤-#,##0.00">
+				<reportElement x="403" y="0" width="72" height="15" uuid="9dbee929-70fb-4a36-9f34-6e155481a202"/>
 				<box rightPadding="3"/>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression><![CDATA[new BigDecimal(
-    $F{precio_unitario}.doubleValue() +
-    ($F{precio_unitario}.doubleValue() * ($F{iva}.doubleValue()/100))
-)]]></textFieldExpression>
+				<textFieldExpression><![CDATA[ $F{precio_unitario} .add(
+    $F{precio_unitario}.add(BigDecimal.valueOf($F{iva}/100))
+).setScale($F{cantidad_decimales}, RoundingMode.HALF_UP)]]></textFieldExpression>
 			</textField>
-			<textField pattern="¤ #,##0.00">
-				<reportElement stretchType="RelativeToBandHeight" x="475" y="0" width="80" height="20" uuid="3470845b-cda4-4b9b-affb-2f107e570fff"/>
+			<textField pattern="¤#,##0.00;¤-#,##0.00">
+				<reportElement stretchType="RelativeToBandHeight" x="475" y="0" width="80" height="15" uuid="3470845b-cda4-4b9b-affb-2f107e570fff"/>
 				<box rightPadding="3"/>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression><![CDATA[new BigDecimal(
-    ($F{precio_unitario}.doubleValue() +
-    ($F{precio_unitario}.doubleValue() * ($F{iva}.doubleValue()/100))))
-.setScale(4, RoundingMode.HALF_UP)
-.multiply(BigDecimal.valueOf($F{cantidad}.intValue()))
-.setScale(2, RoundingMode.HALF_UP)]]></textFieldExpression>
+				<textFieldExpression><![CDATA[    $F{precio_unitario}.add(
+    $F{precio_unitario}.add(BigDecimal.valueOf($F{iva}/100))
+).setScale($F{cantidad_decimales}, RoundingMode.HALF_UP)
+.multiply(BigDecimal.valueOf($F{cantidad}))
+.setScale($F{cantidad_decimales}, RoundingMode.HALF_UP)]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
@@ -273,7 +317,7 @@ AND dc.factura = $P{FACTURA_ID}]]>
 				</textElement>
 				<text><![CDATA[TOTAL:]]></text>
 			</staticText>
-			<textField pattern="¤ #,##0.00">
+			<textField pattern="¤#,##0.00;¤-#,##0.00">
 				<reportElement x="475" y="1" width="80" height="20" uuid="20ce68d8-fb73-4543-88b7-6fa70ead52e5"/>
 				<box rightPadding="3"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">

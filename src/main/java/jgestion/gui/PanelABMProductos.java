@@ -536,8 +536,8 @@ public class PanelABMProductos extends javax.swing.JPanel {
         return jLabelFoto;
     }
 
-    public String getTfPrecio() {
-        return tfPrecio.getText().trim();
+    public JTextField getTfPrecio() {
+        return tfPrecio;
     }
 
     public String getTaDescrip() {

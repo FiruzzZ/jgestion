@@ -11,6 +11,10 @@ public abstract class JGestionJpaImpl<T, ID extends Serializable> extends Abstra
     public JGestionJpaImpl() {
     }
 
+    public JGestionJpaImpl(boolean forceRefresh) {
+        super(forceRefresh);
+    }
+
     @Override
     protected EntityManager getEntityManager() {
         if (entityManager == null || !entityManager.isOpen()) {
@@ -21,7 +25,7 @@ public abstract class JGestionJpaImpl<T, ID extends Serializable> extends Abstra
 
     @Override
     public void loadLazies(T o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
 }

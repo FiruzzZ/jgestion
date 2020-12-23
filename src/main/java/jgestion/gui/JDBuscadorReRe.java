@@ -32,6 +32,7 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
         super(owner, modal ? DEFAULT_MODALITY_TYPE : ModalityType.MODELESS);
         initComponents();
         init(title, labelClieProv, labelReRe);
+        jTable1.setAutoCreateRowSorter(true);
     }
 
     private void init(String title, String labelClieProv, String labelReRe) {
