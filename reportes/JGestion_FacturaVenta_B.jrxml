@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.6.0.final using JasperReports Library version 6.6.0  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="JGestion_FacturaVenta_B" pageWidth="595" pageHeight="842" columnWidth="534" leftMargin="42" rightMargin="19" topMargin="28" bottomMargin="28" uuid="d142408a-0f2e-4041-9fc9-7987df8c1dfb">
 	<property name="ireport.zoom" value="1.5000000000000002"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="jgestion_buque"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<parameter name="FACTURA_ID" class="java.lang.Integer"/>
 	<parameter name="REMITO" class="java.lang.String"/>
 	<parameter name="CHEQUE" class="java.lang.String"/>
@@ -10,49 +13,98 @@
 		<![CDATA[select 1 as pag, ss.* FROM ( SELECT dc.id, f.numero, f.tipo, f.movimiento_interno, f.forma_pago,f.dias_cta_cte, f.fecha_venta, f.importe, f.diferencia_redondeo, f.descuento,
  pro.nombre AS proveedor, pro.num_doc, pro.direccion, con.id as contribuyente
 , dc.cantidad, dc.precio_unitario, u.nick, p.nombre AS producto,p.codigo, iva.iva
-from detalle_venta dc, producto p, iva, sucursal s, caja, usuario u, factura_venta f, cliente pro, contribuyente con
+ ,cast( configuracion.value as integer) cantidad_decimales 
+from detalle_venta dc, producto p, iva, sucursal s, caja, usuario u, factura_venta f, cliente pro, contribuyente con, configuracion
 where f.id = dc.factura AND  f.cliente = pro.id AND f.usuario = u.id AND f.caja = caja.id AND f.sucursal = s.id AND pro.contribuyente = con.id
 AND dc.producto = p.id AND p.iva = iva.id
 AND dc.factura = $P{FACTURA_ID}
+and configuracion.key = 'cantidad_decimales'
 ORDER BY dc.id
 ) ss
 UNION
 select 2 as pag, ss.* FROM ( SELECT dc.id, f.numero, f.tipo, f.movimiento_interno, f.forma_pago,f.dias_cta_cte, f.fecha_venta, f.importe , f.diferencia_redondeo, f.descuento,
  pro.nombre AS proveedor, pro.num_doc, pro.direccion, con.id as contribuyente
 , dc.cantidad, dc.precio_unitario, u.nick, p.nombre AS producto,p.codigo, iva.iva
-from detalle_venta dc, producto p, iva, sucursal s, caja, usuario u, factura_venta f, cliente pro, contribuyente con
+ ,cast( configuracion.value as integer) cantidad_decimales 
+from detalle_venta dc, producto p, iva, sucursal s, caja, usuario u, factura_venta f, cliente pro, contribuyente con, configuracion
 where f.id = dc.factura AND  f.cliente = pro.id AND f.usuario = u.id AND f.caja = caja.id AND f.sucursal = s.id AND pro.contribuyente = con.id
 AND dc.producto = p.id AND p.iva = iva.id
 AND dc.factura = $P{FACTURA_ID}
+and configuracion.key = 'cantidad_decimales'
 ORDER BY dc.id
 ) ss
 ORDER BY pag, id]]>
 	</queryString>
-	<field name="pag" class="java.lang.Integer"/>
-	<field name="id" class="java.lang.Integer"/>
-	<field name="numero" class="java.math.BigDecimal"/>
-	<field name="tipo" class="java.lang.String"/>
-	<field name="movimiento_interno" class="java.lang.Integer"/>
-	<field name="forma_pago" class="java.lang.Integer"/>
-	<field name="dias_cta_cte" class="java.lang.Integer"/>
-	<field name="fecha_venta" class="java.sql.Date"/>
-	<field name="importe" class="java.math.BigDecimal"/>
-	<field name="diferencia_redondeo" class="java.math.BigDecimal"/>
-	<field name="descuento" class="java.math.BigDecimal"/>
-	<field name="proveedor" class="java.lang.String"/>
-	<field name="num_doc" class="java.math.BigDecimal"/>
-	<field name="direccion" class="java.lang.String"/>
-	<field name="contribuyente" class="java.lang.Integer"/>
-	<field name="cantidad" class="java.lang.Integer"/>
-	<field name="precio_unitario" class="java.math.BigDecimal"/>
-	<field name="nick" class="java.lang.String"/>
-	<field name="producto" class="java.lang.String"/>
-	<field name="codigo" class="java.lang.String"/>
-	<field name="iva" class="java.math.BigDecimal"/>
+	<field name="pag" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.label" value="pag"/>
+	</field>
+	<field name="id" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.label" value="id"/>
+	</field>
+	<field name="numero" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.label" value="numero"/>
+	</field>
+	<field name="tipo" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="tipo"/>
+	</field>
+	<field name="movimiento_interno" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.label" value="movimiento_interno"/>
+	</field>
+	<field name="forma_pago" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.label" value="forma_pago"/>
+	</field>
+	<field name="dias_cta_cte" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.label" value="dias_cta_cte"/>
+	</field>
+	<field name="fecha_venta" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.label" value="fecha_venta"/>
+	</field>
+	<field name="importe" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.label" value="importe"/>
+	</field>
+	<field name="diferencia_redondeo" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.label" value="diferencia_redondeo"/>
+	</field>
+	<field name="descuento" class="java.lang.Double">
+		<property name="com.jaspersoft.studio.field.label" value="descuento"/>
+	</field>
+	<field name="proveedor" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="proveedor"/>
+	</field>
+	<field name="num_doc" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.label" value="num_doc"/>
+	</field>
+	<field name="direccion" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="direccion"/>
+	</field>
+	<field name="contribuyente" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.label" value="contribuyente"/>
+	</field>
+	<field name="cantidad" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.label" value="cantidad"/>
+	</field>
+	<field name="precio_unitario" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.label" value="precio_unitario"/>
+	</field>
+	<field name="nick" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="nick"/>
+	</field>
+	<field name="producto" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="producto"/>
+	</field>
+	<field name="codigo" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="codigo"/>
+	</field>
+	<field name="iva" class="java.lang.Double">
+		<property name="com.jaspersoft.studio.field.label" value="iva"/>
+	</field>
+	<field name="cantidad_decimales" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.label" value="cantidad_decimales"/>
+	</field>
 	<variable name="precioUnitario" class="java.math.BigDecimal">
 		<variableExpression><![CDATA[$F{precio_unitario}.add(
-new BigDecimal($F{precio_unitario}.doubleValue() * ($F{iva}.floatValue()/100))
-).setScale(4, java.math.RoundingMode.HALF_EVEN)]]></variableExpression>
+$F{precio_unitario}.multiply(BigDecimal.valueOf($F{iva}/100) )
+).setScale($F{cantidad_decimales}, java.math.RoundingMode.HALF_UP)]]></variableExpression>
 	</variable>
 	<variable name="V_IMPORTE" class="java.math.BigDecimal" calculation="Sum">
 		<variableExpression><![CDATA[$V{precioUnitario}.multiply(BigDecimal.valueOf($F{cantidad}))]]></variableExpression>
@@ -64,19 +116,18 @@ new BigDecimal($F{precio_unitario}.doubleValue() * ($F{iva}.floatValue()/100))
 	<pageHeader>
 		<band height="180" splitType="Stretch">
 			<textField>
-				<reportElement uuid="86b0598a-7a54-4489-9e09-816d828e5a9e" x="51" y="94" width="483" height="16"/>
-				<textElement/>
+				<reportElement x="51" y="94" width="483" height="16" uuid="86b0598a-7a54-4489-9e09-816d828e5a9e"/>
 				<textFieldExpression><![CDATA[$F{proveedor}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement uuid="da800295-c44a-458d-8d6e-05113972d5e6" x="290" y="168" width="24" height="12"/>
+				<reportElement x="290" y="168" width="24" height="12" uuid="da800295-c44a-458d-8d6e-05113972d5e6"/>
 				<textElement>
 					<font size="9"/>
 				</textElement>
 				<text><![CDATA[Días:]]></text>
 			</staticText>
 			<textField>
-				<reportElement uuid="c85a62cf-7f1c-427c-b460-7b4229e8b5b1" x="314" y="168" width="41" height="12">
+				<reportElement x="314" y="168" width="41" height="12" uuid="c85a62cf-7f1c-427c-b460-7b4229e8b5b1">
 					<printWhenExpression><![CDATA[new Boolean ($F{dias_cta_cte}.intValue() > 0)]]></printWhenExpression>
 				</reportElement>
 				<textElement>
@@ -85,35 +136,32 @@ new BigDecimal($F{precio_unitario}.doubleValue() * ($F{iva}.floatValue()/100))
 				<textFieldExpression><![CDATA[$F{dias_cta_cte}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement uuid="52e86622-3d92-4913-8ee2-bfcc4de5568e" x="391" y="145" width="100" height="16"/>
-				<textElement/>
+				<reportElement x="391" y="145" width="100" height="16" uuid="52e86622-3d92-4913-8ee2-bfcc4de5568e"/>
 				<textFieldExpression><![CDATA[$F{num_doc}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement uuid="5f2da3dc-110d-42a1-813f-4abee0cc5f2b" x="51" y="120" width="483" height="16"/>
-				<textElement/>
+				<reportElement x="51" y="120" width="483" height="16" uuid="5f2da3dc-110d-42a1-813f-4abee0cc5f2b"/>
 				<textFieldExpression><![CDATA[$F{direccion}]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd  MM    yyyy">
-				<reportElement uuid="e1167d6d-a565-46c1-a13b-73ccb02483fe" x="391" y="37" width="107" height="20"/>
+				<reportElement x="391" y="37" width="107" height="20" uuid="e1167d6d-a565-46c1-a13b-73ccb02483fe"/>
 				<textElement verticalAlignment="Top">
 					<font size="14" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{fecha_venta}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="37111267-cf0b-47fc-ac2d-2196bd4cfcdb" x="391" y="165" width="115" height="15" isRemoveLineWhenBlank="true"/>
-				<textElement/>
+				<reportElement x="391" y="165" width="115" height="15" isRemoveLineWhenBlank="true" uuid="37111267-cf0b-47fc-ac2d-2196bd4cfcdb"/>
 				<textFieldExpression><![CDATA[$P{REMITO}]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement uuid="f2367992-1a59-4629-8ddf-09e46768e9f7" x="0" y="0" width="20" height="1"/>
+				<reportElement x="0" y="0" width="20" height="1" uuid="f2367992-1a59-4629-8ddf-09e46768e9f7"/>
 			</line>
 			<line>
-				<reportElement uuid="c93eb1f8-4e24-4c35-8656-c3bd353e4a09" x="0" y="0" width="1" height="20"/>
+				<reportElement x="0" y="0" width="1" height="20" uuid="c93eb1f8-4e24-4c35-8656-c3bd353e4a09"/>
 			</line>
 			<staticText>
-				<reportElement uuid="5a1374d7-fa51-47db-9181-15a74c31b589" x="130" y="143" width="10" height="10">
+				<reportElement x="130" y="143" width="10" height="10" uuid="5a1374d7-fa51-47db-9181-15a74c31b589">
 					<printWhenExpression><![CDATA[$F{contribuyente}.intValue() == 2]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -122,7 +170,7 @@ new BigDecimal($F{precio_unitario}.doubleValue() * ($F{iva}.floatValue()/100))
 				<text><![CDATA[X]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="777e4abb-d99f-454e-8560-296e2b32b145" x="130" y="155" width="10" height="10">
+				<reportElement x="130" y="155" width="10" height="10" uuid="777e4abb-d99f-454e-8560-296e2b32b145">
 					<printWhenExpression><![CDATA[$F{contribuyente}.intValue() == 1]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -131,7 +179,7 @@ new BigDecimal($F{precio_unitario}.doubleValue() * ($F{iva}.floatValue()/100))
 				<text><![CDATA[X]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="9883a3e2-ea2f-4a61-a546-23e01ac97c5a" x="276" y="143" width="10" height="10">
+				<reportElement x="276" y="143" width="10" height="10" uuid="9883a3e2-ea2f-4a61-a546-23e01ac97c5a">
 					<printWhenExpression><![CDATA[$F{contribuyente}.intValue() == 5]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -140,7 +188,7 @@ new BigDecimal($F{precio_unitario}.doubleValue() * ($F{iva}.floatValue()/100))
 				<text><![CDATA[X]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="81a64cb6-1569-4e6b-b456-fbdc8402c786" x="276" y="155" width="10" height="10">
+				<reportElement x="276" y="155" width="10" height="10" uuid="81a64cb6-1569-4e6b-b456-fbdc8402c786">
 					<printWhenExpression><![CDATA[$F{contribuyente}.intValue() == 3]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -149,7 +197,7 @@ new BigDecimal($F{precio_unitario}.doubleValue() * ($F{iva}.floatValue()/100))
 				<text><![CDATA[X]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="03d852b9-d86e-4dde-9655-5611d7c0bfa7" x="176" y="166" width="10" height="12">
+				<reportElement x="176" y="166" width="10" height="12" uuid="03d852b9-d86e-4dde-9655-5611d7c0bfa7">
 					<printWhenExpression><![CDATA[$F{forma_pago}.intValue() == 1]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -158,7 +206,7 @@ new BigDecimal($F{precio_unitario}.doubleValue() * ($F{iva}.floatValue()/100))
 				<text><![CDATA[X]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="2b7f44ae-4c1d-4b31-9b2f-49c7d177f3b9" x="246" y="166" width="10" height="12">
+				<reportElement x="246" y="166" width="10" height="12" uuid="2b7f44ae-4c1d-4b31-9b2f-49c7d177f3b9">
 					<printWhenExpression><![CDATA[$F{forma_pago}.intValue() == 2]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -167,21 +215,21 @@ new BigDecimal($F{precio_unitario}.doubleValue() * ($F{iva}.floatValue()/100))
 				<text><![CDATA[X]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="f803a917-b79d-4cfd-8bcf-aa8435ed86c4" x="433" y="0" width="46" height="12"/>
+				<reportElement x="433" y="0" width="46" height="12" uuid="f803a917-b79d-4cfd-8bcf-aa8435ed86c4"/>
 				<textElement textAlignment="Right">
 					<font size="7"/>
 				</textElement>
 				<text><![CDATA[Operador:]]></text>
 			</staticText>
 			<textField>
-				<reportElement uuid="d18aef2a-fdbf-41e8-9df8-d633454c7b71" x="479" y="0" width="55" height="12"/>
+				<reportElement x="479" y="0" width="55" height="12" uuid="d18aef2a-fdbf-41e8-9df8-d633454c7b71"/>
 				<textElement>
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{nick}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement uuid="e853bb4d-4145-4594-882d-5bb78f71d5bc" x="359" y="143" width="10" height="10">
+				<reportElement x="359" y="143" width="10" height="10" uuid="e853bb4d-4145-4594-882d-5bb78f71d5bc">
 					<printWhenExpression><![CDATA[$F{contribuyente}.intValue() == 4]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -190,7 +238,7 @@ new BigDecimal($F{precio_unitario}.doubleValue() * ($F{iva}.floatValue()/100))
 				<text><![CDATA[X]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="4bac308b-f1e1-4925-b8c0-1afe985b2a65" x="359" y="155" width="10" height="10">
+				<reportElement x="359" y="155" width="10" height="10" uuid="4bac308b-f1e1-4925-b8c0-1afe985b2a65">
 					<printWhenExpression><![CDATA[$F{contribuyente}.intValue() == 5]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -206,35 +254,35 @@ new BigDecimal($F{precio_unitario}.doubleValue() * ($F{iva}.floatValue()/100))
 	<detail>
 		<band height="12">
 			<textField>
-				<reportElement uuid="e3e2acac-fc43-49e8-940c-f23fe19a3948" x="0" y="0" width="35" height="12"/>
+				<reportElement x="0" y="0" width="35" height="12" uuid="e3e2acac-fc43-49e8-940c-f23fe19a3948"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{cantidad}]]></textFieldExpression>
 			</textField>
 			<textField pattern="¤ #,##0.00">
-				<reportElement uuid="1b9325c8-f4cf-4ab1-9cac-40d3687ea7bd" x="458" y="0" width="61" height="12"/>
+				<reportElement x="458" y="0" width="61" height="12" uuid="1b9325c8-f4cf-4ab1-9cac-40d3687ea7bd"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{precioUnitario}.doubleValue() * $F{cantidad}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true">
-				<reportElement uuid="015846d8-a709-4973-aea9-dc397939ab8b" x="142" y="0" width="249" height="12"/>
+				<reportElement x="142" y="0" width="249" height="12" uuid="015846d8-a709-4973-aea9-dc397939ab8b"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{producto}.concat("(").concat($F{iva}.toString()).concat(")")]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement uuid="a161dcc8-0d04-492f-9b18-82c98f60e1a2" x="42" y="0" width="100" height="12"/>
+				<reportElement x="42" y="0" width="100" height="12" uuid="a161dcc8-0d04-492f-9b18-82c98f60e1a2"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{codigo}]]></textFieldExpression>
 			</textField>
 			<textField pattern="¤ #,##0.0000">
-				<reportElement uuid="f6d968e7-dab6-4b31-a1ea-51064ed1d16f" x="391" y="0" width="61" height="12"/>
+				<reportElement x="391" y="0" width="61" height="12" uuid="f6d968e7-dab6-4b31-a1ea-51064ed1d16f"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
@@ -245,36 +293,35 @@ new BigDecimal($F{precio_unitario}.doubleValue() * ($F{iva}.floatValue()/100))
 	<columnFooter>
 		<band height="42">
 			<line>
-				<reportElement uuid="14b55c70-b295-4f2f-91b3-71052ac7304e" x="0" y="41" width="10" height="1"/>
+				<reportElement x="0" y="41" width="10" height="1" uuid="14b55c70-b295-4f2f-91b3-71052ac7304e"/>
 				<graphicElement>
 					<pen lineWidth="0.5"/>
 				</graphicElement>
 			</line>
 			<line>
-				<reportElement uuid="99102209-3691-4527-a99f-8b178c16243d" x="0" y="31" width="1" height="11"/>
+				<reportElement x="0" y="31" width="1" height="11" uuid="99102209-3691-4527-a99f-8b178c16243d"/>
 				<graphicElement>
 					<pen lineWidth="0.5"/>
 				</graphicElement>
 			</line>
 			<textField pattern="¤ #,##0.00">
-				<reportElement uuid="ec9c36ec-8c86-4d1d-83f7-f000baba1705" x="458" y="0" width="61" height="14"/>
+				<reportElement x="458" y="0" width="61" height="14" uuid="ec9c36ec-8c86-4d1d-83f7-f000baba1705"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{importe}]]></textFieldExpression>
 			</textField>
 			<textField pattern="¤ #,##0.00">
-				<reportElement uuid="ea4a27a1-643e-460b-80c6-fd025048c59c" x="286" y="0" width="46" height="14"/>
-				<textElement/>
+				<reportElement x="286" y="0" width="46" height="14" uuid="ea4a27a1-643e-460b-80c6-fd025048c59c"/>
 				<textFieldExpression><![CDATA[$F{diferencia_redondeo}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement uuid="5f97d16a-8746-4098-add2-6b577af288e2" x="219" y="0" width="67" height="14"/>
+				<reportElement x="219" y="0" width="67" height="14" uuid="5f97d16a-8746-4098-add2-6b577af288e2"/>
 				<textElement textAlignment="Right"/>
 				<text><![CDATA[Dif. Redondeo:]]></text>
 			</staticText>
 			<textField>
-				<reportElement uuid="f1331e07-dfeb-4040-9268-2c4305ed7b7d" x="0" y="31" width="100" height="11"/>
+				<reportElement x="0" y="31" width="100" height="11" uuid="f1331e07-dfeb-4040-9268-2c4305ed7b7d"/>
 				<textElement verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>

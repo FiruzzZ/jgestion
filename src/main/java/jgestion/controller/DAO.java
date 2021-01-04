@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import javax.persistence.*;
+import jgestion.entity.Configuracion;
 import jgestion.entity.Sistema;
 import jgestion.entity.TipoDocumento;
 import jgestion.jpa.controller.JGestionJpaImpl;
@@ -373,6 +374,13 @@ public abstract class DAO implements Runnable {
                 Sistema o = new Sistema(1, false, "Sistema en mantenimiento");
                 sistemaDao.persist(o);
             }
+            if (em.createQuery("SELECT count(o) FROM Configuracion o").getSingleResult().toString().equalsIgnoreCase("0")) {
+                em.persist(new Configuracion("afip_fe_pkcs12", "sin_definir", "Clave PK12"));
+                em.persist(new Configuracion("afip_fe_ticket", "", "AFIP WS (XML TicketAccess)"));
+                em.persist(new Configuracion("afip_ws_production", "false", "AFIP WS Production enviroment true/false"));
+                em.persist(new Configuracion("cantidad_decimales", "2", "Cantidad de decimales para todo los cálculos"));
+                em.persist(new Configuracion("permitir_stock_negativo", "false", "Permite realizar ventas y que el stock resultante sea menor a cero"));
+            }
             // <editor-fold defaultstate="collapsed" desc="Creación de Usuario: admin Pws: adminadmin">
             if (em.createQuery("SELECT count(o) FROM Usuario o").getSingleResult().toString().equalsIgnoreCase("0")) {
                 LogManager.getLogger().trace("Creando usuario por defecto: admin contraseña: adminadmin");
@@ -409,6 +417,7 @@ public abstract class DAO implements Runnable {
                 LogManager.getLogger().trace("CREANDO IVA's..");
                 em.persist(new Iva(1, 21.0f));
                 em.persist(new Iva(2, 10.5f));
+                em.persist(new Iva(3, 0f));
             }// </editor-fold>
 
             // <editor-fold defaultstate="collapsed" desc="Creación Unidadmedida -> UNITARIO">
@@ -504,7 +513,7 @@ public abstract class DAO implements Runnable {
                 em.persist(new TipoDocumento(3, "CUIL", 86));
             }
             em.getTransaction().commit();
-             // <editor-fold defaultstate="collapsed" desc="Creación DatosEmpresa">
+            // <editor-fold defaultstate="collapsed" desc="Creación DatosEmpresa">
             if (new DatosEmpresaJpaController().findDatosEmpresa() == null) {
                 ventanaSystemMessage.agregar("Creando DatosEmpresa..");
                 LogManager.getLogger().trace("Creando DatosEmpresa..");

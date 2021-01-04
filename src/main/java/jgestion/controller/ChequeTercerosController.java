@@ -989,15 +989,10 @@ public class ChequeTercerosController implements ActionListener {
         Reportes r = new Reportes("JGestion_ChequeTercerosRendicion.jasper", "Cheque Terceros Rendición N°" + cte.getId());
         r.addParameter("ENTITY_ID", cte.getId());
         r.addMembreteParameter();
-        r.printReport(true);
+        r.viewReport();
     }
 
-    @SuppressWarnings("unchecked")
     private ChequeTercerosEntrega createEntregaTerceros() throws MessageException {
-//        if (panelEntregaTerceros.getCbUsuarioEmisor().getSelectedIndex() < 1) {
-//            throw new MessageException("Usuario emisor no válido");
-//        }
-//        Usuario emisor = ((EntityWrapper<Usuario>) panelEntregaTerceros.getCbUsuarioEmisor().getSelectedItem()).getEntity();
         Usuario emisor = UsuarioController.getCurrentUser();
         Usuario receptor = ((EntityWrapper<Usuario>) panelEntregaTerceros.getCbUsuarioReceptor().getSelectedItem()).getEntity();
         if (emisor.equals(receptor)) {

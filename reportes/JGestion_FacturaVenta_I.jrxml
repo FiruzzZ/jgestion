@@ -289,16 +289,16 @@ and configuracion.key = 'cantidad_decimales']]>
 				<reportElement x="403" y="0" width="72" height="15" uuid="9dbee929-70fb-4a36-9f34-6e155481a202"/>
 				<box rightPadding="3"/>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression><![CDATA[ $F{precio_unitario} .add(
-    $F{precio_unitario}.add(BigDecimal.valueOf($F{iva}/100))
+				<textFieldExpression><![CDATA[$F{precio_unitario} .add(
+    $F{precio_unitario}.multiply(BigDecimal.valueOf($F{iva}/100))
 ).setScale($F{cantidad_decimales}, RoundingMode.HALF_UP)]]></textFieldExpression>
 			</textField>
 			<textField pattern="¤#,##0.00;¤-#,##0.00">
 				<reportElement stretchType="RelativeToBandHeight" x="475" y="0" width="80" height="15" uuid="3470845b-cda4-4b9b-affb-2f107e570fff"/>
 				<box rightPadding="3"/>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression><![CDATA[    $F{precio_unitario}.add(
-    $F{precio_unitario}.add(BigDecimal.valueOf($F{iva}/100))
+				<textFieldExpression><![CDATA[$F{precio_unitario}.add(
+    $F{precio_unitario}.multiply(BigDecimal.valueOf($F{iva}/100))
 ).setScale($F{cantidad_decimales}, RoundingMode.HALF_UP)
 .multiply(BigDecimal.valueOf($F{cantidad}))
 .setScale($F{cantidad_decimales}, RoundingMode.HALF_UP)]]></textFieldExpression>

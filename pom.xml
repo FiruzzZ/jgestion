@@ -131,7 +131,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>9.4.1209</version>
+            <version>42.2.18</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
@@ -338,9 +338,10 @@
             <version>1.1</version>
         </dependency>
         <dependency>
-            <groupId>javax.mail</groupId>
-            <artifactId>mail</artifactId>
-            <version>1.4.1</version>
+            <groupId>com.sun.mail</groupId>
+            <!--projecto sucesor del deprecado javax.mail -->
+            <artifactId>jakarta.mail</artifactId>
+            <version>1.6.5</version>
         </dependency>
         <dependency>
             <groupId>axis</groupId>
@@ -362,16 +363,6 @@
             <groupId>ar.com.fdvs</groupId>
             <artifactId>DynamicJasper</artifactId>
             <version>5.1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi</artifactId>
-            <version>3.11</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-ooxml</artifactId>
-            <version>3.11</version>
         </dependency>
         <dependency>
             <groupId>net.sf.supercsv</groupId>

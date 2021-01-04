@@ -124,7 +124,7 @@ public class JDBuscadorReRe extends javax.swing.JDialog {
             }
         });
 
-        labelReRe.setText("Nº ReReRe");
+        labelReRe.setText("Nº Recibo");
 
         tfCuarto.setColumns(4);
         tfCuarto.addFocusListener(new java.awt.event.FocusAdapter() {

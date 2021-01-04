@@ -24,11 +24,6 @@ import javax.persistence.UniqueConstraint;
     @UniqueConstraint(columnNames = {"tipodoc", "num_doc"}),
     @UniqueConstraint(columnNames = {"codigo"})
 })
-@NamedQueries({
-    @NamedQuery(name = "Cliente.findAll", query = "SELECT c FROM Cliente c order by c.nombre"),
-    @NamedQuery(name = "Cliente.findById", query = "SELECT c FROM Cliente c WHERE c.id = :id"),
-    @NamedQuery(name = "Cliente.findByCodigo", query = "SELECT c FROM Cliente c WHERE c.codigo = :codigo")
-})
 public class Cliente implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -41,7 +36,7 @@ public class Cliente implements Serializable {
     @Column(name = "nombre", nullable = false, length = 100)
     private String nombre;
     @Basic(optional = false)
-    @Column(name = "direccion", nullable = false, length = 150)
+    @Column(name = "direccion", length = 150)
     private String direccion;
     @JoinColumn(name = "tipodoc", nullable = false)
     @ManyToOne(optional = false)
@@ -77,11 +72,11 @@ public class Cliente implements Serializable {
     @JoinColumn(name = "departamento", referencedColumnName = "iddepto")
     @ManyToOne
     private Departamento departamento;
-    @JoinColumn(name = "provincia", referencedColumnName = "idprovincia", nullable = false)
-    @ManyToOne(optional = false)
+    @JoinColumn(name = "provincia", referencedColumnName = "idprovincia")
+    @ManyToOne
     private Provincia provincia;
-    @JoinColumn(name = "municipio", referencedColumnName = "id", nullable = false)
-    @ManyToOne(optional = false)
+    @JoinColumn(name = "municipio", referencedColumnName = "id")
+    @ManyToOne
     private Municipio municipio;
     @Basic(optional = false)
     @Column(name = "limite_ctacte", precision = 12, nullable = false)

@@ -22,7 +22,10 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.JTextComponent;
@@ -30,6 +33,7 @@ import jgestion.JGestionUtils;
 import jgestion.jpa.controller.JGestionJpaImpl;
 import jgestion.jpa.controller.ProductoJpaController;
 import net.sf.jasperreports.engine.JRException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import utilities.general.EntityWrapper;
 
@@ -55,14 +59,14 @@ public class OrdenController {
         return (int) jpaController.findAttribute("select COALESCE(MAX(o.numero)+1, 1) from Orden as o");
     }
 
-    public void initOrden(JFrame owner, boolean visible) throws MessageException {
+    public void initOrden(Window owner, boolean visible) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.ORDENES_IO);
         jdFactura = new JDFacturaCompra(owner, true);
         jdFactura.getBtnAnular().setVisible(false);
         jdFactura.setUIToOrden();
-        jdFactura.setTitle("ORDEN de Entrada/Salida");
+        jdFactura.setTitle("Orden de Entrada/Salida");
         UTIL.getDefaultTableModel(jdFactura.getjTable1(),
-                new String[]{"entity", "CÓDIGO", "PRODUCTO", "CANT."},
+                new String[]{"entity", "Código", "Producto", "Cant."},
                 new int[]{1, 80, 150, 20});
         UTIL.hideColumnTable(jdFactura.getjTable1(), 0);
         if (visible) {
@@ -70,12 +74,21 @@ public class OrdenController {
             UTIL.loadComboBox(jdFactura.getCbProductos(), new ProductoController().findWrappedProductoToCombo(true), false);
             // <editor-fold defaultstate="collapsed" desc="ajuste de foco, problemas de GUI">
             jdFactura.getTfCantidad().addFocusListener(new FocusAdapter() {
-
                 @Override
                 public void focusLost(FocusEvent e) {
                     jdFactura.getBtnADD().requestFocus();
                 }
-            });// </editor-fold>
+            });
+            jdFactura.getTfCantidad().addKeyListener(new KeyAdapter() {
+
+                @Override
+                public void keyReleased(KeyEvent e) {
+                    if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                        jdFactura.getBtnADD().doClick();
+                    }
+                }
+
+            });
             jdFactura.getCbProductos().setEditable(true);
             JTextComponent editor = (JTextComponent) jdFactura.getCbProductos().getEditor().getEditorComponent();
             // change the editor's documenteishon
@@ -108,7 +121,7 @@ public class OrdenController {
 
                 @Override
                 public void keyReleased(KeyEvent e) {
-                    if (e.getKeyCode() == 10) {
+                    if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                         try {
                             @SuppressWarnings("unchecked")
                             EntityWrapper<Producto> wrapper = (EntityWrapper<Producto>) jdFactura.getCbProductos().getSelectedItem();
@@ -177,9 +190,10 @@ public class OrdenController {
                     } catch (MessageException ex) {
                         jdFactura.showMessage(ex.getMessage(), "Error", 2);
                     } catch (Exception ex) {
+                        LogManager.getLogger().error(ex, ex);
                         jdFactura.showMessage(ex.getMessage(), "Error", 2);
-                        LogManager.getLogger();//(OrdenController.class.getSimpleName()).error(ex, ex);
                     }
+
                 }
             });
         }
@@ -205,7 +219,11 @@ public class OrdenController {
     private Orden setAndPersist() throws MessageException, Exception {
         int rowCant = jdFactura.getDtm().getRowCount();
         if (rowCant < 1) {
-            throw new MessageException("Y los productos a modificar?");
+            throw new MessageException("Debe cargar al menos un producto");
+        }
+        String observ = StringUtils.trimToNull(jdFactura.getTfObservacion().getText());
+        if (observ != null && observ.length() > 100) {
+            throw new MessageException("observación no puede tener mas de 100 caracteres");
         }
 
         Orden orden = new Orden();
@@ -218,7 +236,8 @@ public class OrdenController {
         }
         orden.setNumero(getNextNumeroOrden());
         orden.setUsuario(UsuarioController.getCurrentUser());
-        orden.setDetalleOrdenList(new ArrayList<DetalleOrden>(rowCant));
+        orden.setObservacion(observ);
+        orden.setDetalleOrdenList(new ArrayList<>(rowCant));
         for (int i = 0; i < rowCant; i++) {
             DetalleOrden detalleOrden = new DetalleOrden();
             detalleOrden.setOrden(orden);
@@ -240,8 +259,8 @@ public class OrdenController {
         UTIL.loadComboBox(panel.getCbSucursales(), JGestionUtils.getWrappedSucursales(new UsuarioHelper().getSucursales()), "<Todas>");
         buscador = new JDBuscador(owner, "Buscador de " + CLASS_NAME, true, panel);
         UTIL.getDefaultTableModel(buscador.getjTable1(),
-                new String[]{"entity", "Nº", "Sucursal", "Usuario", "Fecha"},
-                new int[]{1, 40, 60, 60, 80});
+                new String[]{"entity", "Nº", "Sucursal", "Usuario", "Fecha", "Observación"},
+                new int[]{1, 40, 60, 60, 80, 150});
         UTIL.hideColumnTable(buscador.getjTable1(), 0);
         buscador.getBtnImprimir().setVisible(false);
         buscador.getBtnToExcel().setVisible(false);
@@ -252,28 +271,20 @@ public class OrdenController {
                 if (e.getClickCount() > 1) {
                     try {
                         selectedOrden = (Orden) UTIL.getSelectedValue(buscador.getjTable1(), 0);
-                        setDatos(selectedOrden);
+                        initOrden(buscador, false);
+                        setUI(selectedOrden);
                     } catch (MessageException ex) {
                         //ignored...
                     }
                 }
             }
         });
-        buscador.getBtnBuscar().addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                armarQuery();
-            }
-        });
-
+        buscador.getBtnBuscar().addActionListener(evt -> armarQuery());
         buscador.setVisible(true);
     }
 
-    @SuppressWarnings("unchecked")
     private void armarQuery() {
         StringBuilder query = new StringBuilder(jpaController.getSelectFrom() + " WHERE o.id is not null ");
-
         if (panel.getCbSucursales().getSelectedIndex() > 0) {
             EntityWrapper<Sucursal> cbw = (EntityWrapper<Sucursal>) panel.getCbSucursales().getSelectedItem();
             query.append(" AND o.sucursal.id= ").append(cbw.getId());
@@ -289,12 +300,13 @@ public class OrdenController {
             query.append(")");
         }
         if (panel.getDcDesde().getDate() != null) {
-            query.append(" AND o.fecha >= '").append(panel.getDcDesde().getDate()).append("'");
+            query.append(" AND o.fecha >= '").append(UTIL.yyyy_MM_dd.format(panel.getDcDesde().getDate())).append("'");
         }
-        if (panel.getDcHasta().getDate() != null) {
-            query.append(" AND o.fecha <= '").append(panel.getDcHasta().getDate()).append("'");
+        Date hasta = panel.getDcHasta().getDate();
+        if (hasta != null) {
+            hasta = UTIL.addDays(hasta, 1);
+            query.append(" AND o.fecha < '").append(UTIL.yyyy_MM_dd.format(hasta)).append("'");
         }
-
         query.append(" ORDER BY o.id");
         cargarTablaBuscador(query.toString());
     }
@@ -308,28 +320,34 @@ public class OrdenController {
                 orden.getNumero(),
                 orden.getSucursal().getNombre(),
                 orden.getUsuario(),
-                UTIL.TIMESTAMP_FORMAT.format(orden.getFecha())
+                UTIL.TIMESTAMP_FORMAT.format(orden.getFecha()),
+                orden.getObservacion()
             });
         }
     }
 
-    private void setDatos(Orden orden) throws MessageException {
-        if (jdFactura == null) {
-            initOrden(null, false);
-            jdFactura.getBtnADD().setEnabled(false);
-            jdFactura.getBtnDEL().setEnabled(false);
-            jdFactura.getBtnAceptar().setEnabled(false);
-            jdFactura.getBtnCancelar().setEnabled(false);
-            jdFactura.getBtnAnular().setVisible(false);
-            jdFactura.getTfNumMovimiento().setVisible(true);
-            jdFactura.getCbProductos().setEnabled(false);
-            jdFactura.getTfProductoCodigo().setEnabled(false);
-            jdFactura.getTfCantidad().setEnabled(false);
-            jdFactura.pack();
-        }
+    private void setUI(Orden orden) throws MessageException {
+        jdFactura.getBtnADD().setEnabled(false);
+        jdFactura.getBtnDEL().setEnabled(false);
+        jdFactura.getBtnCancelar().setEnabled(false);
+        jdFactura.getBtnAnular().setVisible(false);
+        jdFactura.getTfNumMovimiento().setVisible(true);
+        jdFactura.getCbProductos().setEnabled(false);
+        jdFactura.getTfProductoCodigo().setEnabled(false);
+        jdFactura.getTfCantidad().setEnabled(false);
+        jdFactura.pack();
+        jdFactura.getBtnAceptar().setText("Imprimir");
+        jdFactura.getBtnAceptar().addActionListener(evt -> {
+            try {
+                doReport(selectedOrden.getId());
+            } catch (Exception ex) {
+                LogManager.getLogger().error(ex, ex);
+                jdFactura.showMessage(ex.getMessage(), "Error", 2);
+            }
+        });
         jdFactura.getTfNumMovimiento().setText(orden.getNumero() + "");
         jdFactura.getCbSucursal().removeAllItems();
-        jdFactura.getCbSucursal().addItem(new EntityWrapper<Sucursal>(orden.getSucursal(), orden.getId(), orden.getSucursal().getNombre()));
+        jdFactura.getCbSucursal().addItem(new EntityWrapper<>(orden.getSucursal(), orden.getId(), orden.getSucursal().getNombre()));
         DefaultTableModel dtm = (DefaultTableModel) jdFactura.getjTable1().getModel();
         dtm.setRowCount(0);
         for (DetalleOrden detalleOrden : orden.getDetalleOrdenList()) {
@@ -347,6 +365,6 @@ public class OrdenController {
         Reportes r = new Reportes("JGestion_ordenio.jasper", "Orden IO N°" + numeroOrden);
         r.addMembreteParameter();
         r.addParameter("ORDEN_ID", numeroOrden);
-        r.printReport(true);
+        r.viewReport();
     }
 }

@@ -35,16 +35,12 @@ public class PanelProductoListados extends javax.swing.JPanel {
         jLabel3 = new javax.swing.JLabel();
         cbRubros = new javax.swing.JComboBox();
         cbSubRubros = new javax.swing.JComboBox();
-        checkOrdenarPorFechaCreacion = new javax.swing.JCheckBox();
 
         jLabel1.setText("Marca");
 
         jLabel2.setText("Rubro");
 
         jLabel3.setText("Sub Rubro");
-
-        checkOrdenarPorFechaCreacion.setSelected(true);
-        checkOrdenarPorFechaCreacion.setText("Ordenar por fecha de creación");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -58,13 +54,10 @@ public class PanelProductoListados extends javax.swing.JPanel {
                     .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(cbMarcas, javax.swing.GroupLayout.PREFERRED_SIZE, 281, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(checkOrdenarPorFechaCreacion))
+                    .addComponent(cbMarcas, javax.swing.GroupLayout.PREFERRED_SIZE, 281, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(cbRubros, javax.swing.GroupLayout.PREFERRED_SIZE, 281, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(cbSubRubros, javax.swing.GroupLayout.PREFERRED_SIZE, 281, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(46, Short.MAX_VALUE))
+                .addContainerGap(237, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -72,8 +65,7 @@ public class PanelProductoListados extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(cbMarcas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(checkOrdenarPorFechaCreacion))
+                    .addComponent(cbMarcas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
@@ -91,7 +83,6 @@ public class PanelProductoListados extends javax.swing.JPanel {
     private javax.swing.JComboBox cbMarcas;
     private javax.swing.JComboBox cbRubros;
     private javax.swing.JComboBox cbSubRubros;
-    private javax.swing.JCheckBox checkOrdenarPorFechaCreacion;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -107,10 +98,6 @@ public class PanelProductoListados extends javax.swing.JPanel {
 
    public JComboBox getCbSubRubros() {
       return cbSubRubros;
-   }
-
-   public JCheckBox getCheckOrdenarPorFechaCreacion() {
-      return checkOrdenarPorFechaCreacion;
    }
 
 }

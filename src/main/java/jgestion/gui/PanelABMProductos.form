@@ -145,7 +145,11 @@
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="checkBienDeCambio" min="-2" max="-2" attributes="0"/>
+                      <Group type="102" attributes="0">
+                          <Component id="checkBienDeCambio" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                          <Component id="checkComisiona" min="-2" max="-2" attributes="0"/>
+                      </Group>
                       <Component id="dateUltimaCompra" alignment="0" min="-2" pref="120" max="-2" attributes="0"/>
                       <Group type="102" alignment="0" attributes="0">
                           <Group type="103" groupAlignment="1" max="-2" attributes="0">
@@ -269,7 +273,10 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="checkUpdatePrecioVenta" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="checkBienDeCambio" min="-2" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="checkBienDeCambio" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="checkComisiona" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Component id="jLabel13" min="-2" max="-2" attributes="0"/>
@@ -478,7 +485,7 @@
         <Component class="javax.swing.JCheckBox" name="checkBoxSucursalTodas">
           <Properties>
             <Property name="text" type="java.lang.String" value="Todas las Sucursales permitidas"/>
-            <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;&#xa;El Producto estar&#xe1; disponible para todas las Sucursales que el usuario tenga acceso&#xa;&lt;/html&gt;"/>
+            <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;&#xa;El Producto estar&#xe1; disponible para todas las Sucursales que el usuario tenga acceso.&#xa;&lt;br&gt;Si un producto es de exclusiva venta/comercializaci&#xf3;n de una sucursal, desactivar esta opci&#xf3;n y &#xa;&lt;br&gt;seleccionar la sucursal&#xa;&lt;/html&gt;"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JButton" name="bStockGral">
@@ -502,14 +509,14 @@
           <Properties>
             <Property name="selected" type="boolean" value="true"/>
             <Property name="text" type="java.lang.String" value="Actualizar Precio Venta seg&#xfa;n compras"/>
-            <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;&#xa;Chequeando est&#xe1; opci&#xf3;n, permite al sistema actualizar autom&#xe1;ticamente el &lt;b&gt;Precio de Venta&lt;/b&gt;&#xa;&lt;br&gt;seg&#xfa;n el &lt;b&gt;Costo de Compra&lt;/b&gt;.&#xa;&lt;br&gt;Cada vez que se registre una compra del producto, el &lt;b&gt;Costo de Compra&lt;/b&gt; se modifica y&#xa;&lt;br&gt;as&#xed; tambi&#xe9;n lo har&#xe1; el &lt;b&gt;Precio de Venta&lt;/b&gt;.&#xa;&lt;/html&gt;"/>
+            <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;&#xa;Est&#xe1; opci&#xf3;n permite al sistema actualizar autom&#xe1;ticamente el &lt;b&gt;Precio de Venta&lt;/b&gt;&#xa;&lt;br&gt;seg&#xfa;n el &lt;b&gt;Costo de Compra&lt;/b&gt;.&#xa;&lt;br&gt;Cada vez que se registre una compra del producto, el &lt;b&gt;Costo de Compra&lt;/b&gt; se modifica y&#xa;&lt;br&gt;as&#xed; tambi&#xe9;n lo har&#xe1; el &lt;b&gt;Precio de Venta&lt;/b&gt;.&#xa;&lt;/html&gt;"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JCheckBox" name="checkBienDeCambio">
           <Properties>
             <Property name="selected" type="boolean" value="true"/>
             <Property name="text" type="java.lang.String" value="Bien de Cambio"/>
-            <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;Son aquellos que puede ser &lt;b&gt;vendidos&lt;/b&gt;.&#xa;&lt;br&gt;Por los cuales estar&#xe1;n compuestos los comprobantes de Ingresos como &lt;b&gt;Facturas de Venta, Remitos y Nota de Cr&#xe9;dito&lt;/b&gt;."/>
+            <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;Son aquellos que pueden ser &lt;b&gt;vendidos/comercializables&lt;/b&gt;.&#xa;&lt;br&gt;Por los cuales estar&#xe1;n compuestos los comprobantes de Ingresos como &lt;b&gt;Facturas de Venta, Remitos y Nota de Cr&#xe9;dito&lt;/b&gt;.&#xa;&lt;br&gt;Los productos que se compran para uso/consumo interno de la empresa no son bienes de cambio"/>
           </Properties>
         </Component>
         <Container class="javax.swing.JScrollPane" name="jScrollPane1">
@@ -527,6 +534,12 @@
             </Component>
           </SubComponents>
         </Container>
+        <Component class="javax.swing.JCheckBox" name="checkComisiona">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Comisiona"/>
+            <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;&#xa;Determina si el producto genera ganancias/comisi&#xf3;n para el &lt;b&gt;vendedor&lt;/b&gt;&#xa;&lt;br&gt;Algunos productos tienen un margen de ganancias muy bajo, para estos casos desactivar esta opci&#xf3;n."/>
+          </Properties>
+        </Component>
       </SubComponents>
     </Container>
   </SubComponents>

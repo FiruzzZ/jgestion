@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
@@ -101,7 +102,7 @@ public class ReciboController {
         }
         jdReRe = new JDReRe(owner, modal);
         SwingUtil.setComponentsEnabled(jdReRe.getPanelPagos().getComponents(), false, true);
-        jdReRe.setUIForRecibos();
+        jdReRe.setUIRecibosClientes();
         UTIL.getDefaultTableModel(jdReRe.getTableAPagar(),
                 new String[]{"facturaID", "Factura", "Entrega"},
                 new int[]{1, 60, 50});
@@ -110,7 +111,11 @@ public class ReciboController {
         UTIL.loadComboBox(jdReRe.getCbSucursal(), JGestionUtils.getWrappedSucursales(uh.getSucursales()), false);
         UTIL.loadComboBox(jdReRe.getCbCaja(), uh.getCajas(true), false);
         UTIL.loadComboBox(jdReRe.getCbClienteProveedor(), new ClienteController().findAll(), true);
-        AutoCompleteDecorator.decorate(jdReRe.getCbClienteProveedor());
+        jdReRe.getBtnBuscarCliente().addActionListener(evt -> {
+            new ClienteController().displaySelector(t -> {
+                UTIL.setSelectedItem(jdReRe.getCbClienteProveedor(), t);
+            });
+        });
         UTIL.loadComboBox(jdReRe.getCbCtaCtes(), null, false);
         setNextNumeroReRe();
         jdReRe.getbAnular().addActionListener(new ActionListener() {
@@ -747,7 +752,7 @@ public class ReciboController {
             JOptionPane.showMessageDialog(null, ex.getMessage());
             return;
         }// </editor-fold>
-        buscador = new JDBuscadorReRe(owner, "Buscador - " + CLASS_NAME, modal, "Cliente", "Nº " + CLASS_NAME);
+        buscador = new JDBuscadorReRe(owner, "Buscador - " + CLASS_NAME, modal, "Cliente", "N° Recibo");
         if (toAnular) {
             buscador.setTitle(buscador.getTitle() + " para ANULAR");
             buscador.getCheckAnulada().setEnabled(false);
@@ -843,14 +848,7 @@ public class ReciboController {
                 }
             }
         });
-        buscador.getbImprimir().setVisible(true);
-        buscador.getbImprimir().addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(null, "No implementado aún");
-            }
-        });
+        buscador.getbImprimir().setVisible(false);
         buscador.getBtnToExcel().addActionListener(new ActionListener() {
 
             @Override

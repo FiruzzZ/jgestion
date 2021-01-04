@@ -427,6 +427,10 @@ public class DepartamentoController implements ActionListener, MouseListener, Ke
         cargarTablaContenedor(contenedor.getDTM(), query);
     }
 
+    public List<Departamento> findDeptosFromProvincia(Provincia p) {
+        return findDeptosFromProvincia(p.getId());
+    }
+
     public List<Departamento> findDeptosFromProvincia(int provinciaID) {
         return DAO.getEntityManager().createQuery("SELECT o FROM " + CLASS_NAME + " o WHERE o.provincia.id =" + provinciaID).getResultList();
     }

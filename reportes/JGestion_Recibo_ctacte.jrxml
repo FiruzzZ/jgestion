@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.6.0.final using JasperReports Library version 6.6.0  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="JGestion_Recibo" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="7a07d522-668d-4313-b92a-38ea76cf81e6">
 	<property name="ireport.zoom" value="1.9487171000000034"/>
 	<property name="ireport.x" value="213"/>
 	<property name="ireport.y" value="38"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="jgestion_buque"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<parameter name="RECIBO_ID" class="java.lang.Integer">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
@@ -19,8 +22,8 @@
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[SELECT s.puntoventa, recibo.numero, recibo.tipo, recibo.estado, recibo.fecha_carga, recibo.fecha_recibo, d.fecha_inicio_actividad as empresa_fecha_inicio_actividad, d.nombre as empresa_nombre, d.cuit as empresa_cuit,
- d.direccion as empresa_dir, d.tele1 as empresa_tele1, d.tele2 as empresa_tele2, d.logo as empresa_logo,
+		<![CDATA[SELECT s.puntoventa, recibo.numero, recibo.tipo, recibo.estado, recibo.fecha_carga, recibo.fecha_recibo
+, d.fecha_inicio_actividad, d.cuit as empresa_cuit,
 c.nombre as clie_nombre, c.direccion as clie_direccion, c.tele1 as clie_tele1, c.num_doc as clie_cuit, con.nombre as clie_contrib, emp_con.nombre as empresa_condicion_iva
 FROM recibo
 JOIN detalle_recibo dr ON recibo.id = dr.recibo
@@ -31,27 +34,49 @@ datos_empresa d
 join contribuyente emp_con ON d.contribuyente_id = emp_con.id
 WHERE d.id = 1 AND recibo.id =  $P{RECIBO_ID}]]>
 	</queryString>
-	<field name="puntoventa" class="java.lang.Integer"/>
-	<field name="numero" class="java.math.BigDecimal"/>
+	<field name="puntoventa" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.label" value="puntoventa"/>
+	</field>
+	<field name="numero" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.label" value="numero"/>
+	</field>
 	<field name="tipo" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="tipo"/>
 		<fieldDescription><![CDATA[1 factu_compra, 2 factu_venta, 3 remesa, 4 recibo, 5 movimiento caja, 6 devolucion (anulacion), 7 apertura caja, 8 mov. varios, 9 mov interno (MVI), 10 cheque terceros, 11 cheques propios]]></fieldDescription>
 	</field>
-	<field name="estado" class="java.lang.Boolean"/>
-	<field name="fecha_carga" class="java.sql.Timestamp"/>
-	<field name="fecha_recibo" class="java.sql.Date"/>
-	<field name="empresa_fecha_inicio_actividad" class="java.sql.Date"/>
-	<field name="empresa_nombre" class="java.lang.String"/>
-	<field name="empresa_cuit" class="java.lang.Long"/>
-	<field name="empresa_dir" class="java.lang.String"/>
-	<field name="empresa_tele1" class="java.lang.Long"/>
-	<field name="empresa_tele2" class="java.lang.Long"/>
-	<field name="empresa_logo" class="java.lang.Object"/>
-	<field name="clie_nombre" class="java.lang.String"/>
-	<field name="clie_direccion" class="java.lang.String"/>
-	<field name="clie_tele1" class="java.math.BigDecimal"/>
-	<field name="clie_cuit" class="java.math.BigDecimal"/>
-	<field name="clie_contrib" class="java.lang.String"/>
-	<field name="empresa_condicion_iva" class="java.lang.String"/>
+	<field name="estado" class="java.lang.Boolean">
+		<property name="com.jaspersoft.studio.field.label" value="estado"/>
+	</field>
+	<field name="fecha_carga" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.label" value="fecha_carga"/>
+	</field>
+	<field name="fecha_recibo" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.label" value="fecha_recibo"/>
+	</field>
+	<field name="fecha_inicio_actividad" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.label" value="fecha_inicio_actividad"/>
+	</field>
+	<field name="empresa_cuit" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.label" value="empresa_cuit"/>
+	</field>
+	<field name="clie_nombre" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="clie_nombre"/>
+	</field>
+	<field name="clie_direccion" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="clie_direccion"/>
+	</field>
+	<field name="clie_tele1" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.label" value="clie_tele1"/>
+	</field>
+	<field name="clie_cuit" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.label" value="clie_cuit"/>
+	</field>
+	<field name="clie_contrib" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="clie_contrib"/>
+	</field>
+	<field name="empresa_condicion_iva" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="empresa_condicion_iva"/>
+	</field>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -142,26 +167,6 @@ $F{numero}.toString().length() == 2 ?
 				</textElement>
 				<textFieldExpression><![CDATA[$F{empresa_cuit}]]></textFieldExpression>
 			</textField>
-			<textField pattern="" isBlankWhenNull="true">
-				<reportElement x="1" y="63" width="278" height="15" uuid="03a78d73-9fc2-43f6-825d-63d1786375e7"/>
-				<textElement verticalAlignment="Middle">
-					<font isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Razón Social: " + $F{empresa_nombre}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="1" y="78" width="278" height="12" uuid="36a319b2-d6cb-43f0-b105-1d7562f27a2c"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Domicilio Comercial: " +$F{empresa_dir}]]></textFieldExpression>
-			</textField>
-			<image scaleImage="FillFrame">
-				<reportElement x="79" y="1" width="125" height="60" isRemoveLineWhenBlank="true" uuid="f3bd30ad-35c2-42a7-a190-165b588ffb14">
-					<printWhenExpression><![CDATA[new Boolean ($F{empresa_logo} != null)]]></printWhenExpression>
-				</reportElement>
-				<imageExpression><![CDATA[net.sf.jasperreports.engine.util.JRImageLoader.loadImage((byte[]) $F{empresa_logo})]]></imageExpression>
-			</image>
 			<textField>
 				<reportElement x="357" y="82" width="100" height="12" uuid="ec61db06-31fb-443d-ae3e-dae87aa7eb13"/>
 				<textElement>
@@ -169,23 +174,12 @@ $F{numero}.toString().length() == 2 ?
 				</textElement>
 				<textFieldExpression><![CDATA[$F{empresa_cuit}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="1" y="90" width="278" height="12" uuid="d8661493-6aff-423e-a599-6257f5b73b71"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Teléfonos:".concat(
-    $F{empresa_tele2} == null ?
-    $F{empresa_tele1}.toString() :
-        $F{empresa_tele1}.toString().concat(" / ").concat($F{empresa_tele2}.toString())
-)]]></textFieldExpression>
-			</textField>
 			<textField pattern="dd/MM/yyyy">
 				<reportElement x="357" y="94" width="100" height="12" isRemoveLineWhenBlank="true" uuid="f742df4a-68c9-4b5e-adda-813ec51c25cb"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{empresa_fecha_inicio_actividad}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{fecha_inicio_actividad}]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd/MM/yyyy">
 				<reportElement x="386" y="43" width="143" height="20" uuid="3a359101-4454-489c-8db6-e0aaf7f6e74b"/>
@@ -193,13 +187,6 @@ $F{numero}.toString().length() == 2 ?
 					<font size="14" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{fecha_recibo}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="1" y="102" width="238" height="12" uuid="99f23621-96ad-4e0e-91c6-ab07ffab6f51"/>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Condición frente al IVA: "+$F{empresa_condicion_iva}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="279" y="106" width="275" height="14" uuid="5701a8f0-6866-4380-9a99-896bcecc39a1"/>
@@ -219,6 +206,11 @@ $F{numero}.toString().length() == 2 ?
 				</textElement>
 				<textFieldExpression><![CDATA[$F{tipo}]]></textFieldExpression>
 			</textField>
+			<subreport>
+				<reportElement positionType="FixRelativeToBottom" x="0" y="0" width="277" height="120" uuid="5ee89297-22f2-4c44-a60b-e6646de3b562"/>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "JGestion_membrete.jasper"]]></subreportExpression>
+			</subreport>
 		</band>
 	</title>
 	<pageHeader>

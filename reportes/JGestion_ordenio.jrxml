@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.6.0.final using JasperReports Library version 6.6.0  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="JGestion_ordenio" pageWidth="595" pageHeight="842" whenNoDataType="NoPages" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="4a71b68c-31be-4e4d-870b-edc964ca0143">
+	<property name="ireport.zoom" value="1.3310000000000004"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["D:\\Mis Documentos\\Reportes\\Sindicato\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ORDEN_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT orden.numero, orden.fecha, u.nick, s.nombre as sucursal, p.codigo as producto_codigo, p.nombre as producto_nombre, m.nombre as producto_marca, detalle.cantidad
+FROM orden
+JOIN detalle_orden detalle ON (orden.id = detalle.orden)
+JOIN producto p ON detalle.producto = p.id
+JOIN marca m ON p.marca = m.id
+JOIN sucursal s ON orden.sucursal = s.id
+JOIN usuario u ON orden.usuario = u.id
+WHERE orden.id = $P{ORDEN_ID}]]>
+	</queryString>
+	<field name="numero" class="java.lang.Integer"/>
+	<field name="fecha" class="java.sql.Timestamp"/>
+	<field name="nick" class="java.lang.String"/>
+	<field name="sucursal" class="java.lang.String"/>
+	<field name="producto_codigo" class="java.lang.String"/>
+	<field name="producto_nombre" class="java.lang.String"/>
+	<field name="producto_marca" class="java.lang.String"/>
+	<field name="cantidad" class="java.lang.Integer"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="80" splitType="Stretch">
+			<textField pattern="dd/MM/yyyy HH:mm:ss">
+				<reportElement x="457" y="65" width="98" height="15" uuid="370028e0-5150-4777-8146-ccb76d21e2cb"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement x="0" y="0" width="430" height="80" uuid="dfe9e70e-90dc-4566-9a54-d9b03756260d"/>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "JGestion_DatosEmpresa.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="45" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="555" height="20" uuid="7a26a9d4-a20c-444e-ac1d-77203146b19e"/>
+				<textElement textAlignment="Center">
+					<font size="14" isBold="true" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[Orden IO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="25" width="15" height="20" uuid="b31444e8-8877-43b2-b2c2-b2c3003c2e4a"/>
+				<text><![CDATA[N°:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="15" y="25" width="100" height="20" uuid="33248944-5360-4c15-a94b-1b50a3254337"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{numero}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="183" y="25" width="201" height="20" uuid="7a73ce6a-4804-4678-ab96-34b3c15d984d"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{sucursal}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="138" y="25" width="45" height="20" uuid="76031749-08a9-413e-9afc-b604b5c1bcb7"/>
+				<text><![CDATA[Sucursal:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="439" y="25" width="116" height="20" uuid="cb02a8a5-5021-4a72-a5a8-dbcf877c607c"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nick}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="395" y="25" width="44" height="20" uuid="7a750331-d138-43dd-b823-3674249da0cc"/>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[Usuario:]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="20" splitType="Stretch">
+			<rectangle>
+				<reportElement x="0" y="0" width="555" height="20" backcolor="#CCCCCC" uuid="972f2ac0-0df0-4693-8e23-9dece967d009"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="0" y="0" width="138" height="20" uuid="65f5afd4-b3a1-4785-89b9-fad5f4a5253b"/>
+				<textElement textAlignment="Center">
+					<font size="14"/>
+				</textElement>
+				<text><![CDATA[Código]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="138" y="0" width="331" height="20" uuid="bc7057a1-5265-481f-8e37-6ba6e69e71ba"/>
+				<textElement textAlignment="Center">
+					<font size="14"/>
+				</textElement>
+				<text><![CDATA[Producto]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="469" y="0" width="83" height="20" uuid="b0d0479b-71f8-4667-a479-d6701739fed4"/>
+				<textElement textAlignment="Center">
+					<font size="14"/>
+				</textElement>
+				<text><![CDATA[Cantidad]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="15" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="138" height="15" uuid="fa4dd64a-571c-4603-8148-80ae02a4fd07"/>
+				<textFieldExpression><![CDATA[$F{producto_codigo}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="138" y="0" width="331" height="15" uuid="cfce4a81-d3bc-4219-9ff0-3bb3f6978084"/>
+				<textFieldExpression><![CDATA[$F{producto_nombre}.concat(" - ").concat($F{producto_marca})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="469" y="0" width="83" height="15" uuid="56701834-2346-4d82-b805-bf9c8bb5d03e"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{cantidad}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band height="1">
+			<line>
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="555" height="1" uuid="8028a482-bc8a-4f85-9a35-8855e2a4a349"/>
+			</line>
+		</band>
+	</summary>
+</jasperReport>

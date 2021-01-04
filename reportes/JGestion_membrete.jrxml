@@ -24,25 +24,26 @@ FROM datos_empresa]]>
 		<band height="66">
 			<image scaleImage="FillFrame" hAlign="Center" vAlign="Middle" isUsingCache="false">
 				<reportElement x="0" y="0" width="76" height="66" uuid="8f538a16-fc59-4c17-906b-df829b61a512"/>
+				<box topPadding="2" leftPadding="2"/>
 				<imageExpression><![CDATA[$F{logo}]]></imageExpression>
 			</image>
 			<textField isStretchWithOverflow="true">
-				<reportElement x="76" y="0" width="190" height="22" uuid="883cdc42-943d-42d4-80b8-948677a832e8"/>
+				<reportElement x="76" y="0" width="189" height="22" uuid="883cdc42-943d-42d4-80b8-948677a832e8"/>
 				<textElement textAlignment="Center">
 					<font size="9" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{nombre}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="false">
-				<reportElement x="76" y="22" width="190" height="44" uuid="7476c2cd-de24-444a-8817-f46b170341fd"/>
+				<reportElement x="80" y="22" width="185" height="44" uuid="7476c2cd-de24-444a-8817-f46b170341fd"/>
 				<textElement verticalAlignment="Top">
 					<font size="6"/>
 				</textElement>
 				<textFieldExpression><![CDATA["CUIT: " + $F{cuit}
 +"\n" + $F{direccion}
 +"\nTel.: " + $F{tele1}.toString() + ($F{tele2} != null ? " / " + $F{tele2}.toString() : "")
-+"\n" +($F{email} != null ? "Email: " + $F{email} : "")+($F{web_page} != null ? "  Web: " + $F{web_page} : "")
-+($F{encargado} != null ? "\n" + $F{encargado} : "")]]></textFieldExpression>
++($F{email} != null ? "\nEmail: " + $F{email} : "")
++($F{web_page} != null ? "\nWeb: " + $F{web_page} : "")]]></textFieldExpression>
 			</textField>
 		</band>
 	</title>

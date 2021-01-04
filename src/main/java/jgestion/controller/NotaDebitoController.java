@@ -659,7 +659,7 @@ public class NotaDebitoController {
             Reportes r = new Reportes("JGestion_NotaDebito.jasper", jpaController.getEntityClass().getSimpleName() + " " + JGestionUtils.getNumeracion(o));
             r.addParameter("CBTE_ID", o.getId());
             r.addCurrent_User();
-            r.printReport(true);
+            r.viewReport();
         }
     }
 

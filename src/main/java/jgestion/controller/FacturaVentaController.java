@@ -67,6 +67,7 @@ import jgestion.entity.Presupuesto;
 import jgestion.entity.Stock;
 import jgestion.jpa.controller.ConfiguracionDAO;
 import jgestion.jpa.controller.FacturaElectronicaJpaController;
+import jgestion.jpa.controller.ListaPreciosJpaController;
 import jgestion.jpa.controller.StockJpaController;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.logging.log4j.LogManager;
@@ -298,7 +299,7 @@ public class FacturaVentaController {
                 }
             });// </editor-fold>
             UTIL.loadComboBox(jdFactura.getCbCliente(), new ClienteJpaController().findAll(), false);
-            UTIL.loadComboBox(jdFactura.getCbListaPrecio(), new ListaPreciosController().findAll(), false);
+            UTIL.loadComboBox(jdFactura.getCbListaPrecio(), new ListaPreciosJpaController().findAll(), false);
             UTIL.loadComboBox(jdFactura.getCbFormaPago(), Valores.FormaPago.getFormasDePago(), true);
             UTIL.loadComboBox(jdFactura.getCbVendedor(), JGestionUtils.getWrappedVendedor(new VendedorJpaController().findActivos()), true);
             jdFactura.getCbListaPrecio().addActionListener(new ActionListener() {
@@ -651,38 +652,39 @@ public class FacturaVentaController {
      * Setea la info del Producto en la instancia de {@link jgestion.gui.JDFacturaVenta}
      *
      * @param contenedor instancia de <code>gui.JDFacturaVenta</code>
-     * @param selectedProducto entity Producto
+     * @param producto
      */
-    private void setInformacionDeProducto(JDFacturaVenta contenedor, Producto selectedProducto) {
+    private void setInformacionDeProducto(JDFacturaVenta contenedor, Producto producto) {
         contenedor.setLabelCodigoNoRegistradoVisible(true);
         contenedor.setTfProductoIVA("");
         contenedor.setTfPrecioUnitario("");
-        if (selectedProducto != null) {
-            contenedor.setLabelCodigoNoRegistradoVisible(false);
-            contenedor.setTfProductoCodigo(selectedProducto.getCodigo());
-            UTIL.setSelectedItem(contenedor.getCbProductos(), selectedProducto.getNombre());
-            contenedor.getTfMarca().setText(selectedProducto.getMarca().getNombre());
-            contenedor.setTfProductoIVA(selectedProducto.getIva().getIva().toString());
-            BigDecimal precioUnitario = selectedProducto.getMinimoPrecioDeVenta();
-            //buscamos si el producto está en oferta
-            productoEnOferta = new HistorialOfertasJpaController().findOfertaVigente(selectedProducto);
-            ListaPrecios listaPreciosParaCatalogo = new ListaPreciosController().findListaPreciosParaCatalogo();
-            //Cuando el producto NO está en oferta o cuando NO hay lista designada para CatalogoWeb
-            if (productoEnOferta == null || listaPreciosParaCatalogo == null) {
-                //agrega el margen de ganancia según la ListaPrecio
-                precioUnitario = precioUnitario.add(BigDecimal.valueOf(Contabilidad.GET_MARGEN_SEGUN_LISTAPRECIOS(selectedListaPrecios, selectedProducto, null)));
-                contenedor.setTfPrecioUnitario(JGestionUtils.setScale(precioUnitario).toString());
-            } else {
-                if (listaPreciosParaCatalogo.equals(selectedListaPrecios)) {
-                    contenedor.setTfPrecioUnitario(JGestionUtils.setScale(productoEnOferta.getPrecio()).toString());
-                }
-            }
-            //Si el Producto está en OFERTA, deshabilitamos todos los campos para
-            //que no se pueda modificar el precio de la oferta.
-            contenedor.enableModificacionPrecios(productoEnOferta == null);
-            contenedor.setLabelOfertaVisible(productoEnOferta != null);
-            contenedor.getTfCantidad().requestFocus();
+        if (producto == null) {
+            return;
         }
+        contenedor.setLabelCodigoNoRegistradoVisible(false);
+        contenedor.setTfProductoCodigo(producto.getCodigo());
+        UTIL.setSelectedItem(contenedor.getCbProductos(), producto);
+        contenedor.getTfMarca().setText(producto.getMarca().getNombre());
+        contenedor.setTfProductoIVA(producto.getIva().getIva().toString());
+        BigDecimal precioUnitario = producto.getMinimoPrecioDeVenta();
+        //buscamos si el producto está en oferta
+        productoEnOferta = new HistorialOfertasJpaController().findOfertaVigente(producto);
+        ListaPrecios listaPreciosParaCatalogo = new ListaPreciosController().findListaPreciosParaCatalogo();
+        //Cuando el producto NO está en oferta o cuando NO hay lista designada para CatalogoWeb
+        if (productoEnOferta == null || listaPreciosParaCatalogo == null) {
+            //agrega el margen de ganancia según la ListaPrecio
+            precioUnitario = precioUnitario.add(BigDecimal.valueOf(Contabilidad.GET_MARGEN_SEGUN_LISTAPRECIOS(selectedListaPrecios, producto, null)));
+            contenedor.setTfPrecioUnitario(JGestionUtils.setScale(precioUnitario).toString());
+        } else {
+            if (listaPreciosParaCatalogo.equals(selectedListaPrecios)) {
+                contenedor.setTfPrecioUnitario(JGestionUtils.setScale(productoEnOferta.getPrecio()).toString());
+            }
+        }
+        //Si el Producto está en OFERTA, deshabilitamos todos los campos para
+        //que no se pueda modificar el precio de la oferta.
+        contenedor.enableModificacionPrecios(productoEnOferta == null);
+        contenedor.setLabelOfertaVisible(productoEnOferta != null);
+        contenedor.getTfCantidad().requestFocus();
     }
 
     /**
@@ -1044,7 +1046,7 @@ public class FacturaVentaController {
         buscador.getjTable1().getColumnModel().getColumn(4).setCellRenderer(NumberRenderer.getCurrencyRenderer()); //acá no se usa setScale porque total siempre va con 2 decimales
         buscador.getjTable1().getColumnModel().getColumn(5).setCellRenderer(FormatRenderer.getDateRenderer());
         buscador.getjTable1().getColumnModel().getColumn(9).setCellRenderer(FormatRenderer.getDateTimeRenderer());
-       
+
         UTIL.hideColumnTable(buscador.getjTable1(), 0);
         UTIL.setHorizonalAlignment(buscador.getjTable1(), String.class, SwingConstants.RIGHT);
         buscador.getjTable1().addMouseListener(new MouseAdapter() {
@@ -1554,25 +1556,7 @@ public class FacturaVentaController {
     }
 
     void doReportFactura(FacturaVenta facturaVenta) throws MissingReportException, JRException, MessageException {
-        if (!facturaVenta.getSucursal().isWebServices()) {
-            char tipo;
-            if (facturaVenta.getTipo() == 'C') {
-                tipo = 'B';
-            } else {
-                tipo = facturaVenta.getTipo();
-            }
-            Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_FacturaVenta_" + tipo + ".jasper", "Factura Venta");
-            r.addParameter("FACTURA_ID", facturaVenta.getId());
-            if (facturaVenta.getRemito() != null) {
-                r.addParameter("REMITO", JGestionUtils.getNumeracion(facturaVenta.getRemito()));
-            }
-            if (facturaVenta.getCheque() != null) {
-                r.addParameter("CHEQUE", UTIL.AGREGAR_CEROS(facturaVenta.getCheque().getNumero(), 12));
-            }
-            r.printReport(true);
-        } else {
-            new FacturaElectronicaController().doReport(facturaVenta);
-        }
+        new FacturaElectronicaController().doReport(facturaVenta);
     }
 
     private String getNextNumeroFacturaConGuion(char tipo) {

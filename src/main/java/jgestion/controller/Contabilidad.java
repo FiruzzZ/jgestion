@@ -82,6 +82,7 @@ import jgestion.jpa.controller.FacturaVentaJpaController;
 import jgestion.jpa.controller.NotaCreditoJpaController;
 import jgestion.jpa.controller.NotaDebitoJpaController;
 import jgestion.jpa.controller.ProveedorJpaController;
+import jgestion.jpa.controller.RubroJpaController;
 import jgestion.jpa.controller.VendedorJpaController;
 import net.sf.jasperreports.engine.JRException;
 import org.apache.logging.log4j.LogManager;
@@ -375,6 +376,9 @@ public class Contabilidad {
                         throw new MessageException(JGestion.resourceBundle.getString("warn.emptytable"));
                     }
                     File file = JGestionUtils.showSaveDialogFileChooser(jdBalanceUI, "Archivo Excel (.xls)", new File("balance.xls"), "xls");
+                    if (file == null) {
+                        return;
+                    }
                     TableExcelExporter tee = new TableExcelExporter(file, jdBalanceUI.getjTable1());
                     tee.export();
                     if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(buscador, "¿Abrir archivo generado?", null, JOptionPane.YES_NO_OPTION)) {
@@ -1261,8 +1265,9 @@ public class Contabilidad {
     public void displayProductosCostoVenta(Window owner) {
         panelito = new PanelProductosCostoVenta();
         UTIL.loadComboBox(panelito.getCbMarcas(), JGestionUtils.getWrappedMarcas(new MarcaController().findAll()), true);
-        UTIL.loadComboBox(panelito.getCbRubros(), JGestionUtils.getWrappedRubros(new RubroController().findRubros()), true);
-        UTIL.loadComboBox(panelito.getCbSubRubros(), JGestionUtils.getWrappedRubros(new RubroController().findRubros()), true);
+        List<EntityWrapper<Rubro>> rr = JGestionUtils.getWrappedRubros(new RubroJpaController().findAll());
+        UTIL.loadComboBox(panelito.getCbRubros(), rr, true);
+        UTIL.loadComboBox(panelito.getCbSubRubros(), rr, true);
         UTIL.loadComboBox(panelito.getCbVendedores(), JGestionUtils.getWrappedVendedor(new VendedorJpaController().findAll()), true);
         UTIL.loadComboBox(panelito.getCbClientes(), JGestionUtils.getWrappedClientes(new ClienteController().findAll()), true);
         UTIL.loadComboBox(panelito.getCbFormasDePago(), Valores.FormaPago.getFormasDePago(), true);

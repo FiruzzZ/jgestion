@@ -104,9 +104,9 @@
                       <Group type="102" attributes="0">
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="0" attributes="0">
-                                  <Component id="tfObservacion" min="-2" pref="424" max="-2" attributes="1"/>
+                                  <Component id="tfObservacion" min="-2" pref="400" max="-2" attributes="1"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="labelObservacionCharactersCount" min="-2" max="-2" attributes="0"/>
+                                  <Component id="labelObservacionCharactersCount" min="-2" pref="52" max="-2" attributes="0"/>
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="dcFechaFactura" min="-2" pref="120" max="-2" attributes="1"/>
@@ -1001,11 +1001,6 @@
                       <Group type="102" attributes="0">
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" attributes="0">
-                                  <Component id="cbProductos" min="-2" pref="341" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="cbCambioPrecio" min="-2" pref="101" max="-2" attributes="0"/>
-                              </Group>
-                              <Group type="102" alignment="0" attributes="1">
                                   <Component id="tfProductoCodigo" min="-2" pref="142" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="bBuscarProducto" min="-2" pref="66" max="-2" attributes="0"/>
@@ -1013,6 +1008,11 @@
                                   <Component id="labelPrecioActual" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="tfProductoPrecioActual" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="cbCambioPrecio" min="-2" pref="101" max="-2" attributes="0"/>
+                              </Group>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <Component id="cbProductos" min="-2" pref="341" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="labelCodigoNoRegistrado" min="-2" max="-2" attributes="0"/>
                               </Group>
@@ -1033,7 +1033,7 @@
                       <Component id="bBuscarProducto" alignment="2" min="-2" pref="23" max="-2" attributes="0"/>
                       <Component id="labelPrecioActual" alignment="2" min="-2" max="-2" attributes="0"/>
                       <Component id="tfProductoPrecioActual" alignment="2" min="-2" max="-2" attributes="0"/>
-                      <Component id="labelCodigoNoRegistrado" alignment="2" min="-2" max="-2" attributes="0"/>
+                      <Component id="cbCambioPrecio" alignment="2" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="1" attributes="0">
@@ -1041,7 +1041,7 @@
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="jLabel8" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="cbProductos" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="cbCambioPrecio" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="labelCodigoNoRegistrado" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
@@ -1130,7 +1130,6 @@
           </Properties>
           <Events>
             <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="xxx"/>
-            <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="tfPrecioUnitarioKeyReleased"/>
           </Events>
         </Component>
         <Component class="javax.swing.JTextField" name="tfProductoIVA">
@@ -1202,20 +1201,6 @@
             </Property>
           </Properties>
         </Component>
-        <Component class="javax.swing.JLabel" name="labelCodigoNoRegistrado">
-          <Properties>
-            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-              <Font name="Tahoma" size="12" style="1"/>
-            </Property>
-            <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-              <Color blue="0" green="33" red="ff" type="rgb"/>
-            </Property>
-            <Property name="text" type="java.lang.String" value="&#xa1;C&#xd3;DIGO NO REGISTRADO!"/>
-          </Properties>
-          <AuxValues>
-            <AuxValue name="JavaCodeGenerator_CreateCodePost" type="java.lang.String" value="labelCodigoNoRegistrado.setVisible(false);"/>
-          </AuxValues>
-        </Component>
         <Component class="javax.swing.JLabel" name="labelDescuento">
           <Properties>
             <Property name="text" type="java.lang.String" value="Desc"/>
@@ -1244,6 +1229,20 @@
             <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="tfProductoDescFocusLost"/>
             <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="tfProductoDescKeyTyped"/>
           </Events>
+        </Component>
+        <Component class="javax.swing.JLabel" name="labelCodigoNoRegistrado">
+          <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Tahoma" size="12" style="1"/>
+            </Property>
+            <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="0" green="33" red="ff" type="rgb"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="&#xa1;C&#xd3;DIGO NO REGISTRADO!"/>
+          </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_CreateCodePost" type="java.lang.String" value="labelCodigoNoRegistrado.setVisible(false);"/>
+          </AuxValues>
         </Component>
       </SubComponents>
     </Container>

@@ -10,13 +10,6 @@ import javax.persistence.*;
  * @author FiruzzZ
  */
 @Entity
-@NamedQueries({
-    @NamedQuery(name = "Proveedor.findAll", query = "SELECT p FROM Proveedor p")
-    ,
-    @NamedQuery(name = "Proveedor.findById", query = "SELECT p FROM Proveedor p WHERE p.id = :id")
-    ,
-    @NamedQuery(name = "Proveedor.findByNombre", query = "SELECT p FROM Proveedor p WHERE p.nombre = :nombre")
-})
 public class Proveedor implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -29,7 +22,7 @@ public class Proveedor implements Serializable {
     @Column(name = "nombre", nullable = false, length = 100)
     private String nombre;
     @Basic(optional = false)
-    @Column(name = "direccion", nullable = false, length = 200)
+    @Column(name = "direccion", length = 150)
     private String direccion;
     @Column(name = "sucursal")
     private Integer sucursal;
@@ -68,13 +61,13 @@ public class Proveedor implements Serializable {
     @ManyToOne(optional = false)
     private Contribuyente contribuyente;
     @JoinColumn(name = "departamento", referencedColumnName = "iddepto")
-    @ManyToOne(optional = false)
+    @ManyToOne
     private Departamento departamento;
     @JoinColumn(name = "municipio")
     @ManyToOne
     private Municipio municipio;
-    @JoinColumn(name = "provincia", referencedColumnName = "idprovincia", nullable = false)
-    @ManyToOne(optional = false)
+    @JoinColumn(name = "provincia", referencedColumnName = "idprovincia")
+    @ManyToOne
     private Provincia provincia;
     @Column(name = "webpage", length = 50)
     private String webpage;

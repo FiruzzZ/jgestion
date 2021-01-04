@@ -29,6 +29,9 @@ import jgestion.controller.exceptions.MessageException;
 import jgestion.controller.exceptions.MissingReportException;
 import jgestion.controller.exceptions.NonexistentEntityException;
 import generics.GenericBeanCollection;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -39,21 +42,31 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 import javax.persistence.NoResultException;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import jgestion.JGestionUtils;
+import jgestion.gui.JDImportarProductos;
+import jgestion.gui.JFP;
+import jgestion.jpa.controller.IvaJpaController;
+import jgestion.jpa.controller.ListaPreciosJpaController;
+import jgestion.jpa.controller.MarcaJpaController;
 import jgestion.jpa.controller.ProductoJpaController;
+import jgestion.jpa.controller.RubroJpaController;
+import jgestion.jpa.controller.UnidadmedidaJpaController;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -61,8 +74,18 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.poifs.filesystem.OfficeXmlFileException;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.jdesktop.swingx.decorator.ColorHighlighter;
+import org.jdesktop.swingx.decorator.HighlightPredicate;
 import utilities.general.UTIL;
 import utilities.general.EntityWrapper;
+import utilities.general.TableExcelExporter;
 import utilities.gui.SwingUtil;
 import utilities.swing.components.NumberRenderer;
 
@@ -76,8 +99,6 @@ public class ProductoController implements ActionListener, KeyListener {
     public static final String CLASS_NAME = Producto.class.getSimpleName();
     private JDContenedor contenedor;
     private JDABM abm;
-    private final String[] colsName = {"id", "Código", "Nombre", "Marca", "Stock Gral.", "Costo C.", "Precio V."};
-    private final int[] colsWidth = {1, 50, 200, 50, 20, 50, 50};
     private PanelABMProductos panelABM;
     private Producto EL_OBJECT;
     /**
@@ -200,7 +221,10 @@ public class ProductoController implements ActionListener, KeyListener {
                 }
             }
         });
-        UTIL.getDefaultTableModel(contenedor.getjTable1(), colsName, colsWidth);
+
+        UTIL.getDefaultTableModel(contenedor.getjTable1(),
+                new String[]{"id", "Código", "Nombre", "Marca", "Stock Gral.", "Costo C.", "Precio V."},
+                new int[]{1, 50, 200, 50, 30, 50, 50});
         contenedor.getjTable1().getColumnModel().getColumn(4).setCellRenderer(NumberRenderer.getIntegerRenderer());
         contenedor.getjTable1().getColumnModel().getColumn(5).setCellRenderer(JGestionUtils.getCurrencyRenderer());
         contenedor.getjTable1().getColumnModel().getColumn(6).setCellRenderer(JGestionUtils.getCurrencyRenderer());
@@ -222,7 +246,32 @@ public class ProductoController implements ActionListener, KeyListener {
         }
         SwingUtil.setComponentsEnabled(panelABM.getComponents(), editable, panelABM.getDateUltimaCompra());
         abm.setLocationRelativeTo(contenedor);
-        abm.setListener(this);
+        abm.getbAceptar().addActionListener(evt -> {
+            try {
+                setEntity();
+                String msj = EL_OBJECT.getId() == null ? "Registrado.." : "Modificado..";
+                checkConstraints(EL_OBJECT);
+                abm.showMessage(msj, CLASS_NAME, 1);
+                //si se está editando.. cierra la ventana post aceptación
+                if (EL_OBJECT.getId() != null) {
+                    abm.dispose();
+                }
+
+                armarQueryContenedor(null);
+                EL_OBJECT = null;
+            } catch (MessageException ex) {
+                abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
+            } catch (Exception ex) {
+                abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
+                LOG.error(ex.getLocalizedMessage(), ex);
+            }
+        });
+        abm.getbCancelar().addActionListener(evt -> {
+            abm.dispose();
+            panelABM = null;
+            abm = null;
+            EL_OBJECT = null;
+        });
         abm.setVisible(true);
     }
 
@@ -233,7 +282,14 @@ public class ProductoController implements ActionListener, KeyListener {
     private void initPanelABM() {
         panelABM = new PanelABMProductos();
         panelABM.hideSucursal();
-        panelABM.setListeners(this);
+        panelABM.getbMarcas().addActionListener(evt -> {
+            try {
+                new MarcaController().getABM(abm, true);
+                UTIL.loadComboBox(panelABM.getCbMarcas(), JGestionUtils.getWrappedMarcas(new MarcaController().findAll()), false);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, ex.getMessage(), "Algo salió mal", JOptionPane.WARNING_MESSAGE);
+            }
+        });
         panelABM.getbBuscarFoto().addActionListener(new ActionListener() {
 
             @Override
@@ -262,8 +318,9 @@ public class ProductoController implements ActionListener, KeyListener {
                     JDialog jd = rubroController.getABM(abm);
                     jd.setLocationRelativeTo(abm);
                     jd.setVisible(true);
-                    UTIL.loadComboBox(panelABM.getCbRubro(), rubroController.findRubros(), false);
-                    UTIL.loadComboBox(panelABM.getCbSubRubro(), rubroController.findRubros(), true);
+                    List<EntityWrapper<Rubro>> rr = JGestionUtils.getWrappedRubros(new RubroJpaController().findAll());
+                    UTIL.loadComboBox(panelABM.getCbRubro(), rr, false);
+                    UTIL.loadComboBox(panelABM.getCbSubRubro(), rr, true);
                 } catch (MessageException ex) {
                     abm.showMessage(ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
                 }
@@ -279,20 +336,21 @@ public class ProductoController implements ActionListener, KeyListener {
                 }
             }
         });
-        UTIL.loadComboBox(panelABM.getCbIVA(), new IvaController().findAll(), false);
+        UTIL.loadComboBox(panelABM.getCbIVA(), JGestionUtils.getWrappedIva(new IvaJpaController().findAll()), false);
         UTIL.loadComboBox(panelABM.getCbMarcas(), JGestionUtils.getWrappedMarcas(new MarcaController().findAll()), false);
-        UTIL.loadComboBox(panelABM.getCbMedicion(), new UnidadmedidaJpaController().findUnidadmedidaEntities(), false);
-        UTIL.loadComboBox(panelABM.getCbRubro(), new RubroController().findRubros(), false);
-        UTIL.loadComboBox(panelABM.getCbSubRubro(), new RubroController().findRubros(), true);
+        UTIL.loadComboBox(panelABM.getCbMedicion(), JGestionUtils.getWrappedUnidadesMedida(new UnidadmedidaJpaController().findAll()), false);
+        List<EntityWrapper<Rubro>> rr = JGestionUtils.getWrappedRubros(new RubroJpaController().findAll());
+        UTIL.loadComboBox(panelABM.getCbRubro(), rr, false);
+        UTIL.loadComboBox(panelABM.getCbSubRubro(), rr, true);
     }
 
     private void setUI(Producto producto) {
         UTIL.setSelectedItem(panelABM.getCbMarcas(), producto.getMarca().getNombre());
         UTIL.setSelectedItem(panelABM.getCbIVA(), producto.getIva());
-        UTIL.setSelectedItem(panelABM.getCbMedicion(), producto.getIdunidadmedida().getNombre());
-        UTIL.setSelectedItem(panelABM.getCbRubro(), producto.getRubro().getNombre());
+        UTIL.setSelectedItem(panelABM.getCbMedicion(), producto.getUnidadmedida());
+        UTIL.setSelectedItem(panelABM.getCbRubro(), producto.getRubro());
         if (producto.getSubrubro() != null) {
-            UTIL.setSelectedItem(panelABM.getCbSubRubro(), producto.getSubrubro().getNombre());
+            UTIL.setSelectedItem(panelABM.getCbSubRubro(), producto.getSubrubro());
         }
         panelABM.setTfCodigo(producto.getCodigo());
         panelABM.setTfNombre(producto.getNombre());
@@ -301,6 +359,7 @@ public class ProductoController implements ActionListener, KeyListener {
         panelABM.setTfStockActual(String.valueOf(producto.getStockactual()));
         panelABM.getCheckUpdatePrecioVenta().setSelected(producto.getUpdatePrecioVenta());
         panelABM.getCheckBienDeCambio().setSelected(producto.isBienDeCambio());
+        panelABM.getCheckComisiona().setSelected(producto.getRemunerativo());
         if (producto.getPrecioVenta() != null) {
             panelABM.setTfPrecio(JGestionUtils.setScale(producto.getPrecioVenta()).toString());
         }
@@ -321,8 +380,7 @@ public class ProductoController implements ActionListener, KeyListener {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private void setEntity() throws MessageException, IOException, Exception {
+    private void setEntity() throws MessageException {
         if (EL_OBJECT == null) {
             EL_OBJECT = new Producto();
         }
@@ -369,20 +427,20 @@ public class ProductoController implements ActionListener, KeyListener {
             throw new MessageException("Debe especificar una Marca");
         }
         try {
-            EL_OBJECT.setIva((Iva) panelABM.getCbIVA().getSelectedItem());
+            EL_OBJECT.setIva((Iva) UTIL.getEntityWrapped(panelABM.getCbIVA()).getEntity());
         } catch (ClassCastException ex) {
             throw new MessageException("Debe especificar un IVA");
         }
         try {
-            EL_OBJECT.setIdunidadmedida((Unidadmedida) panelABM.getCbMedicion().getSelectedItem());
+            EL_OBJECT.setUnidadmedida((Unidadmedida) UTIL.getEntityWrapped(panelABM.getCbMedicion()).getEntity());
         } catch (ClassCastException ex) {
             throw new MessageException("Debe especificar una Unidad de medida");
         }
         try {
-            rubro = (Rubro) panelABM.getCbRubro().getSelectedItem();
+            rubro = (Rubro) UTIL.getEntityWrapped(panelABM.getCbRubro()).getEntity();
             if (panelABM.getCbSubRubro().getSelectedIndex() > 0) {
-                if (rubro.equals((Rubro) panelABM.getCbSubRubro().getSelectedItem())) {
-                    throw new MessageException("El Rubro y Subrubro no pueden ser iguales");
+                if (rubro.equals(UTIL.getEntityWrapped(panelABM.getCbSubRubro()).getEntity())) {
+                    throw new MessageException("Rubro y Sub rubro no pueden ser iguales");
                 }
             }
         } catch (ClassCastException ex) {
@@ -405,9 +463,8 @@ public class ProductoController implements ActionListener, KeyListener {
         EL_OBJECT.setPrecioVenta(precioVenta);
         EL_OBJECT.setUpdatePrecioVenta(panelABM.getCheckUpdatePrecioVenta().isSelected());
         EL_OBJECT.setBienDeCambio(panelABM.getCheckBienDeCambio().isSelected());
-        // no setteable desde la GUI
+        EL_OBJECT.setRemunerativo(panelABM.getCheckComisiona().isSelected());
         // default's....
-        EL_OBJECT.setRemunerativo(true);
         if (EL_OBJECT.getCostoCompra() == null) {
             // este se actualiza cuando se cargan FacturaCompra's
             EL_OBJECT.setCostoCompra(BigDecimal.ZERO);
@@ -417,7 +474,11 @@ public class ProductoController implements ActionListener, KeyListener {
         EL_OBJECT.setDescripcion(StringUtils.trimToNull(panelABM.getTaDescrip()));
         if (fotoFile != null) {
             //si se elijió algún archivo imagen ...
-            EL_OBJECT.setFoto(UTIL.getBytesFromFile(fotoFile));
+            try {
+                EL_OBJECT.setFoto(UTIL.getBytesFromFile(fotoFile));
+            } catch (IOException ex) {
+                throw new MessageException("Error cargan imagen", ex.getMessage());
+            }
         } else {
             if (panelABM.getjLabelFoto().getIcon() == null) {
                 //si se quitó la que había seleccionado o la que estaba antiguamente
@@ -456,7 +517,7 @@ public class ProductoController implements ActionListener, KeyListener {
         query += " ORDER BY p.nombre";
         DefaultTableModel dtm = contenedor.getDTM();
         dtm.setRowCount(0);
-        List<Object[]> l = jpaController.findAttributes(query);
+        List<Object[]> l = jpaController.findAttributes(query, 0, filtro == null ? 50 : null);
         l.forEach(o -> dtm.addRow(o));
     }
 
@@ -509,36 +570,11 @@ public class ProductoController implements ActionListener, KeyListener {
                     contenedor = null;
                 }
             } else if (boton.getName().equalsIgnoreCase("aceptar")) {
-                try {
-                    setEntity();
-                    String msj = EL_OBJECT.getId() == null ? "Registrado.." : "Modificado..";
-                    checkConstraints(EL_OBJECT);
-                    abm.showMessage(msj, CLASS_NAME, 1);
-                    //si se está editando.. cierra la ventana post aceptación
-                    if (EL_OBJECT.getId() != null) {
-                        abm.dispose();
-                    }
 
-                    armarQueryContenedor(null);
-                    EL_OBJECT = null;
-                } catch (MessageException ex) {
-                    abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                } catch (Exception ex) {
-                    abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                    LOG.error(ex.getLocalizedMessage(), ex);
-                }
             } else if (boton.getName().equalsIgnoreCase("cancelar")) {
-                abm.dispose();
-                panelABM = null;
-                abm = null;
-                EL_OBJECT = null;
+
             } else if (boton.getName().equalsIgnoreCase("marcas")) {
-                try {
-                    new MarcaController().getABM(abm, true);
-                    UTIL.loadComboBox(panelABM.getCbMarcas(), JGestionUtils.getWrappedMarcas(new MarcaController().findAll()), false);
-                } catch (Exception ex) {
-                    abm.showMessage(ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
-                }
+
             }
         } // </editor-fold>
     }
@@ -551,9 +587,10 @@ public class ProductoController implements ActionListener, KeyListener {
      */
     Producto findProductoByCodigo(String codigoProducto) {
         try {
+            jpaController.setForceRefresh(true);
             return jpaController.findByCodigo(codigoProducto);
-        } catch (NoResultException ex) {
-            return null;
+        } finally {
+            jpaController.setForceRefresh(false);
         }
     }
 
@@ -655,21 +692,12 @@ public class ProductoController implements ActionListener, KeyListener {
         armarQueryContenedor(null);
     }
 
-    private Producto getSelectedFromContenedor() {
-        Integer selectedRow = contenedor.getjTable1().getSelectedRow();
-        if (selectedRow > -1) {
-            return jpaController.find(Integer.valueOf((contenedor.getDTM().getValueAt(selectedRow, 0)).toString()));
-        } else {
-            return null;
-        }
-    }
-
     private void doDynamicReportProductos() throws Exception {
         if (jpaController.count() == 0) {
             throw new MessageException("No existen " + CLASS_NAME + "s para imprimir un listado.");
         }
         final PanelProductoReporteOptions p = new PanelProductoReporteOptions();
-        UTIL.loadComboBox(p.getCbListaPrecio(), JGestionUtils.getWrappedListaPrecios(new ListaPreciosController().findAll()), false);
+        UTIL.loadComboBox(p.getCbListaPrecio(), JGestionUtils.getWrappedListaPrecios(new ListaPreciosJpaController().findAll()), false);
         final JDABM jd = new JDABM(contenedor, "Reporte de Productos", true, p);
         jd.getbAceptar().addActionListener(new ActionListener() {
             @Override
@@ -738,13 +766,14 @@ public class ProductoController implements ActionListener, KeyListener {
         jd.setVisible(true);
     }
 
-    public void initMovimientoProducto(JFrame frame, boolean modal) {
+    public void initMovimientoProducto(Window owner, boolean modal) {
         panelito = new PanelBuscadorMovimientosPro();
         UTIL.loadComboBox(panelito.getCbMarcas(), JGestionUtils.getWrappedMarcas(new MarcaController().findAll()), true);
-        UTIL.loadComboBox(panelito.getCbRubros(), JGestionUtils.getWrappedRubros(new RubroController().findRubros()), true);
-        UTIL.loadComboBox(panelito.getCbSubRubros(), JGestionUtils.getWrappedRubros(new RubroController().findRubros()), true);
+        List<EntityWrapper<Rubro>> rr = JGestionUtils.getWrappedRubros(new RubroJpaController().findAll());
+        UTIL.loadComboBox(panelito.getCbRubros(), rr, true);
+        UTIL.loadComboBox(panelito.getCbSubRubros(), rr, true);
         UTIL.loadComboBox(panelito.getCbSucursales(), JGestionUtils.getWrappedSucursales(new UsuarioHelper().getSucursales()), true);
-        buscador = new JDBuscador(frame, "Movimientos de productos", modal, panelito);
+        buscador = new JDBuscador(owner, "Movimientos de productos", modal, panelito);
         buscador.getPanelInferior().setVisible(true);
         buscador.addResumeItem("Total", new JTextField(8));
         buscador.agrandar(200, 0);
@@ -752,9 +781,9 @@ public class ProductoController implements ActionListener, KeyListener {
                 buscador.getjTable1(),
                 new String[]{"RAZÓN", "CÓDIGO", "NOMBRE", "MARCA", "CANTIDAD", "PRECIO U.", "LETRA", "NÚMERO", "INTERNO", "FECHA (HORA)", "RUBRO/S.RUB", "SUCURSAL"},
                 new int[]{25, 50, 150, 30, 20, 10, 40, 40, 20, 60, 30, 30},
-                new Class<?>[]{null, null, null, null, null, null, null, null, null, null, null, null});
+                new Class<?>[]{null, null, null, null, Integer.class, Number.class, null, null, null, null, null, null});
         TableColumnModel tm = buscador.getjTable1().getColumnModel();
-        tm.getColumn(5).setCellRenderer(NumberRenderer.getCurrencyRenderer(4));
+        tm.getColumn(5).setCellRenderer(JGestionUtils.getCurrencyRenderer());
         buscador.getBtnBuscar().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -812,14 +841,14 @@ public class ProductoController implements ActionListener, KeyListener {
     private void cargarTablaMovimientosProductos(String query) {
         UTIL.limpiarDtm(buscador.getjTable1());
         List<?> l = DAO.getEntityManager().createNativeQuery(query).getResultList();
-        BigDecimal total = BigDecimal.ZERO.setScale(4, RoundingMode.HALF_EVEN);
+        BigDecimal total = JGestionUtils.setScale(0);
         for (Object object : l) {
             Object[] o = (Object[]) object;
             if ((Boolean) o[10]) { // es decir.. si factura.anulada == true
                 o[0] = "ANULADA " + String.valueOf(o[0]);
                 o[4] = -Integer.valueOf(o[4].toString());
             }
-            BigDecimal precioUnitario = (BigDecimal) o[5];
+            BigDecimal precioUnitario = JGestionUtils.setScale((BigDecimal) o[5]);
             total = total.add(precioUnitario);
             UTIL.getDtm(buscador.getjTable1()).addRow(new Object[]{
                 o[0],
@@ -829,7 +858,7 @@ public class ProductoController implements ActionListener, KeyListener {
                 o[4], //cantidad
                 precioUnitario,
                 o[7],
-                o[8].toString().replaceAll(" ", ""),
+                StringUtils.trimToEmpty((String) o[8]),
                 o[9],
                 UTIL.TIMESTAMP_FORMAT.format(((Date) o[6])),
                 o[11],
@@ -841,7 +870,9 @@ public class ProductoController implements ActionListener, KeyListener {
 
     private String armarQueryMovimientosProductos() {
         String mainQuery = "SELECT * FROM ( ";
-        String ingresoQuery = "SELECT 'COMPRA'::character varying(6) AS razon, p.codigo, p.nombre, marca.nombre AS marca, d.cantidad, d.precio_unitario, f.fechaalta, f.tipo, to_char(f.numero, '0000-00000000') as numero, f.movimiento_interno as movimiento, f.anulada, rubro.nombre AS rubro, sucursal.nombre as sucursal"
+        String ingresoQuery = "SELECT 'COMPRA'::character varying(6) AS razon, p.codigo, p.nombre, marca.nombre AS marca, d.cantidad, d.precio_unitario"
+                + ", f.fechaalta, f.tipo, to_char(f.numero, '0000-00000000') as numero, f.movimiento_interno as movimiento, f.anulada"
+                + ", rubro.nombre AS rubro, sucursal.nombre as sucursal"
                 + " FROM producto p"
                 + " JOIN detalle_compra d ON p.id = d.producto"
                 + " JOIN factura_compra f ON f.id = d.factura"
@@ -849,7 +880,11 @@ public class ProductoController implements ActionListener, KeyListener {
                 + " JOIN rubro ON p.rubro = rubro.idrubro"
                 + " JOIN sucursal ON f.sucursal = sucursal.id"
                 + " WHERE p.codigo IS NOT NULL";
-        String egresoQuery = "SELECT 'VENTA'::character varying(6) AS razon, p.codigo, p.nombre, marca.nombre AS marca, - d.cantidad, d.precio_unitario, f.fechaalta, f.tipo, to_char(sucursal.puntoventa, '0000') || '-' || to_char(f.numero, '00000000') as numero, f.movimiento_interno AS movimiento, f.anulada, rubro.nombre AS rubro, sucursal.nombre as sucursal"
+        String egresoQuery = "SELECT 'VENTA'::character varying(6) AS razon, p.codigo, p.nombre, marca.nombre AS marca, - d.cantidad, d.precio_unitario"
+                + ", f.fechaalta, f.tipo"
+                + ", CASE WHEN f.numero = 0 THEN null ELSE to_char(sucursal.puntoventa, '0000') || '-' || to_char(f.numero, '00000000') END as numero"
+                + ", f.movimiento_interno AS movimiento, f.anulada"
+                + ", rubro.nombre AS rubro, sucursal.nombre as sucursal"
                 + " FROM producto p"
                 + " JOIN detalle_venta d ON p.id = d.producto"
                 + " JOIN factura_venta f ON f.id = d.factura"
@@ -871,8 +906,6 @@ public class ProductoController implements ActionListener, KeyListener {
         }
         mainQuery += ") as t ";
         mainQuery += " ORDER BY fechaalta";
-        LOG.debug(mainQuery);
-
         return mainQuery;
     }
 
@@ -913,34 +946,23 @@ public class ProductoController implements ActionListener, KeyListener {
      * @return a List of {@link Producto} or <tt>null</tt> if something goes wrong.
      */
     public List<Producto> findProductoToCombo(Boolean bienDeCambio) {
-        try {
-            List<Producto> resultList = jpaController.findByNativeQuery(
-                    "SELECT p.id, p.codigo, p.nombre "
-                    + " FROM Producto p"
-                    + (bienDeCambio != null ? " WHERE  p.bien_De_Cambio=" + bienDeCambio : "")
-                    + " ORDER BY p.nombre");
-            return resultList;
-        } catch (Exception ex) {
-            LOG.error(ex.getLocalizedMessage(), ex);
-        }
-        return null;
+        List<Producto> resultList = jpaController.findAllLite(bienDeCambio);
+        return resultList;
     }
 
     public List<EntityWrapper<Producto>> findWrappedProductoToCombo(Boolean bienDeCambio) {
-        List<Producto> ff = findProductoToCombo(bienDeCambio);
-        List<EntityWrapper<Producto>> l = new ArrayList<EntityWrapper<Producto>>(ff.size());
-        for (Producto producto : ff) {
-            l.add(new EntityWrapper<Producto>(producto, producto.getId(), producto.getNombre()));
-        }
-        return l;
+        return findProductoToCombo(bienDeCambio).stream()
+                .map(o -> new EntityWrapper<>(o, o.getId(), o.getNombre()))
+                .collect(Collectors.toList());
     }
 
     public void initListadoProducto(JFrame owner) {
         panelProductoListados = new PanelProductoListados();
         buscador = new JDBuscador(owner, "Productos - Listados", false, panelProductoListados);
         UTIL.loadComboBox(panelProductoListados.getCbMarcas(), JGestionUtils.getWrappedMarcas(new MarcaController().findAll()), "<Todas>");
-        UTIL.loadComboBox(panelProductoListados.getCbRubros(), new RubroController().findRubros(), "<Todos>");
-        UTIL.loadComboBox(panelProductoListados.getCbSubRubros(), new RubroController().findRubros(), "<Todos>");
+        List<EntityWrapper<Rubro>> rr = JGestionUtils.getWrappedRubros(new RubroJpaController().findAll());
+        UTIL.loadComboBox(panelProductoListados.getCbRubros(), rr, "<Todos>");
+        UTIL.loadComboBox(panelProductoListados.getCbSubRubros(), rr, "<Todos>");
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
                 new String[]{"NOMBRE", "CÓDIGO", "MARCA", "RUBRO", "SUB RUBRO"},
@@ -966,6 +988,26 @@ public class ProductoController implements ActionListener, KeyListener {
                 }
             }
         });
+        buscador.getBtnToExcel().addActionListener(evt -> {
+            if (buscador.getjTable1().getRowCount() < 1) {
+                JOptionPane.showMessageDialog(buscador, "Nada que exportar");
+                return;
+            }
+            try {
+                File file = SwingUtil.showSaveDialogExcelFileChooser(buscador, null);
+                if (file == null) {
+                    return;
+                }
+                TableExcelExporter tee = new TableExcelExporter(file, buscador.getjTable1());
+                tee.export();
+                if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(buscador, "¿Abrir archivo generado?", null, JOptionPane.YES_NO_OPTION)) {
+                    Desktop.getDesktop().open(file);
+                }
+            } catch (IOException ex) {
+                LOG.error("Exportando productos", ex);
+                JOptionPane.showMessageDialog(null, "Error de sistema: \n" + ex.getLocalizedMessage());
+            }
+        });
         buscador.setVisible(true);
     }
 
@@ -983,19 +1025,13 @@ public class ProductoController implements ActionListener, KeyListener {
         }
 
         if (panelProductoListados.getCbRubros().getSelectedIndex() > 0) {
-            query += " AND p.rubro = " + ((Rubro) panelProductoListados.getCbRubros().getSelectedItem()).getId();
+            query += " AND p.rubro = " + UTIL.getEntityWrapped(panelProductoListados.getCbRubros()).getId();
         }
 
         if (panelProductoListados.getCbSubRubros().getSelectedIndex() > 0) {
-            query += " AND p.subrubro = " + ((Rubro) panelProductoListados.getCbSubRubros().getSelectedItem()).getId();
+            query += " AND p.subrubro = " + UTIL.getEntityWrapped(panelProductoListados.getCbSubRubros()).getId();
         }
-
-        if (panelProductoListados.getCheckOrdenarPorFechaCreacion().isSelected()) {
-            query += " ORDER BY p.fecha_alta ASC";
-        } else {
-            query += " ORDER BY p.nombre";
-
-        }
+        query += " ORDER BY p.nombre";
         cargarTablaProductosListado((List<Producto>) DAO.getNativeQueryResultList(query, Producto.class));
 
         if (imprimirReport) {
@@ -1011,7 +1047,7 @@ public class ProductoController implements ActionListener, KeyListener {
                 producto.getCodigo(),
                 producto.getMarca().getNombre(),
                 producto.getRubro().getNombre(),
-                (producto.getSubrubro() != null ? producto.getSubrubro() : null)
+                (producto.getSubrubro() != null ? producto.getSubrubro().getNombre() : null)
             });
         }
     }
@@ -1036,4 +1072,5 @@ public class ProductoController implements ActionListener, KeyListener {
     List<Producto> findProductoByIva(Iva iva) {
         return DAO.getEntityManager().createQuery("SELECT o FROM " + CLASS_NAME + " o WHERE o.iva.id=" + iva.getId()).getResultList();
     }
+
 }

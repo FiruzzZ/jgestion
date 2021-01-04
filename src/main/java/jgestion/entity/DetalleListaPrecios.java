@@ -1,4 +1,3 @@
-
 package jgestion.entity;
 
 import java.io.Serializable;
@@ -9,14 +8,16 @@ import javax.persistence.*;
  * @author Administrador
  */
 @Entity
-@Table(name = "detalle_lista_precios")
-@NamedQueries({@NamedQuery(name = "DetalleListaPrecios.findAll", query = "SELECT d FROM DetalleListaPrecios d"), @NamedQuery(name = "DetalleListaPrecios.findById", query = "SELECT d FROM DetalleListaPrecios d WHERE d.id = :id"), @NamedQuery(name = "DetalleListaPrecios.findByMargen", query = "SELECT d FROM DetalleListaPrecios d WHERE d.margen = :margen")})
+@Table(name = "detalle_lista_precios", uniqueConstraints = {
+    @UniqueConstraint(name = "detalle_lista_precios_rubro_unique", columnNames = {"lista_precio", "rubro"})
+})
 public class DetalleListaPrecios implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
     @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Basic(optional = false)
     @Column(name = "margen", nullable = false, precision = 5, scale = 2)
@@ -38,6 +39,12 @@ public class DetalleListaPrecios implements Serializable {
     public DetalleListaPrecios(Integer id, Double margen) {
         this.id = id;
         this.margen = margen;
+    }
+
+    public DetalleListaPrecios(Double margen, ListaPrecios listaPrecio, Rubro rubro) {
+        this.margen = margen;
+        this.listaPrecio = listaPrecio;
+        this.rubro = rubro;
     }
 
     public Integer getId() {

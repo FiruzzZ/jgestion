@@ -1,3 +1,16 @@
+--20201225
+alter table cliente alter column direccion drop not null;
+alter table cliente alter column provincia drop not null;
+alter table cliente alter column departamento drop not null;
+alter table cliente alter column municipio drop not null;
+alter table proveedor alter column direccion drop not null;
+alter table proveedor alter column provincia drop not null;
+alter table proveedor alter column departamento drop not null;
+alter table proveedor alter column municipio drop not null;
+alter table producto alter column nombre set data type varchar(150);
+alter table producto alter column codigo set data type varchar(15);
+alter table orden add column observacion varchar(100);
+ALTER TABLE public.detalle_lista_precios ADD CONSTRAINT detalle_lista_precios_rubro_unique UNIQUE (lista_precio, rubro);
 --20201222
 insert into configuracion (key, description, value) values ('cantidad_decimales', 'Cantidad de decimales para todos los cálculos/precios', '2');
 insert into configuracion (key, description, value) values ('permitir_stock_negativo', 'Permite realizar ventas y que el stock resultante sea menor a cero', 'false');

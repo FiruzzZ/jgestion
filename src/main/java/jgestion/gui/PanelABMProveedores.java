@@ -514,22 +514,6 @@ public class PanelABMProveedores extends javax.swing.JPanel {
         return cbProvincias;
     }
 
-    public Object getSelectedCondicIVA() {
-        return cbCondicIVA.getSelectedItem();
-    }
-
-    public Object getSelectedDepartamento() {
-        return cbDepartamentos.getSelectedItem();
-    }
-
-    public Object getSelectedMunicipio() {
-        return cbMunicipios.getSelectedItem();
-    }
-
-    public Object getSelectedProvincia() {
-        return cbProvincias.getSelectedItem();
-    }
-
     public String getTaObservacion() {
         return taObservacion.getText().trim();
     }

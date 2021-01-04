@@ -18,14 +18,20 @@ import jgestion.gui.PanelABMProveedores;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.math.BigDecimal;
+import java.util.Objects;
+import java.util.function.Consumer;
 import javax.persistence.NoResultException;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import jgestion.JGestionUtils;
 import jgestion.jpa.controller.ProveedorJpaController;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -135,25 +141,6 @@ public class ProveedorController implements ActionListener {
                     }
                 }
             } // </editor-fold>
-            // <editor-fold defaultstate="collapsed" desc="ComboBox">
-            else if (e.getSource().getClass().equals(JComboBox.class)) {
-                JComboBox combo = (JComboBox) e.getSource();
-                if (combo.equals(panelABM.getCbProvincias())) {
-                    if (combo.getSelectedIndex() > 0) {
-                        UTIL.loadComboBox(panelABM.getCbDepartamentos(), new DepartamentoController().findDeptosFromProvincia(((Provincia) combo.getSelectedItem()).getId()), true);
-                    } else {
-                        UTIL.loadComboBox(panelABM.getCbDepartamentos(), null, true);
-                    }
-
-                } else if (combo.equals(panelABM.getCbDepartamentos())) {
-                    if (combo.getSelectedIndex() > 0) {
-                        UTIL.loadComboBox(panelABM.getCbMunicipios(), new MunicipioController().findMunicipiosFromDepto(((Departamento) combo.getSelectedItem()).getId()), true);
-                    } else {
-                        UTIL.loadComboBox(panelABM.getCbMunicipios(), null, true);
-                    }
-                }
-            }
-            // </editor-fold>
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, ex.getLocalizedMessage(), "Error inesperado", JOptionPane.ERROR_MESSAGE);
             LOG.error("actionPerformed", ex);
@@ -183,7 +170,7 @@ public class ProveedorController implements ActionListener {
     }
 
     private void cargarContenedorTabla(DefaultTableModel dtm, String query) {
-        UTIL.limpiarDtm(dtm);
+        dtm.setRowCount(0);
         List<Proveedor> l;
         if (query == null) {
             l = jpaController.findAll();
@@ -209,60 +196,38 @@ public class ProveedorController implements ActionListener {
             throw new MessageException("Debe elegir una fila de la tabla");
         }
         panelABM = new PanelABMProveedores();
-        UTIL.loadComboBox(panelABM.getCbCondicIVA(), new ContribuyenteController().findAll(), false);
-        UTIL.loadComboBox(panelABM.getCbProvincias(), new ProvinciaJpaController().findAll(), true);
-        UTIL.loadComboBox(panelABM.getCbDepartamentos(), null, true);
+        UTIL.loadComboBox(panelABM.getCbCondicIVA(), JGestionUtils.getWrappedContribuyentes(new ContribuyenteController().findAll()), false);
+        JGestionUtils.setProvinciaLocalidadesComboListener(panelABM.getCbProvincias(), true, panelABM.getCbDepartamentos(), true, panelABM.getCbMunicipios(), true);
         UTIL.loadComboBox(panelABM.getCbMunicipios(), null, true);
         panelABM.setListener(this);
         if (isEditing) {
-            setPanel(EL_OBJECT);
+            setUI(EL_OBJECT);
         }
-        abm = new JDABM(contenedor, "ABM " + CLASS_NAME + "es", true, panelABM);
+        abm = new JDABM(contenedor, "ABM Proveedores", true, panelABM);
         abm.setListener(this);
         abm.setLocationRelativeTo(contenedor);
         abm.setVisible(true);
     }
 
-    private void setPanel(Proveedor o) {
+    private void setUI(Proveedor o) {
         panelABM.setTfCodigo(o.getCodigo());
         panelABM.setTfNombre(o.getNombre());
         panelABM.setTfDireccion(o.getDireccion());
         panelABM.setTfNumDocumento(String.valueOf(o.getCuit()));
         panelABM.getTfLimiteCtaCte().setText(o.getLimiteCtaCte().intValue() + "");
-        UTIL.setSelectedItem(panelABM.getCbCondicIVA(), o.getContribuyente().getNombre());
-        UTIL.setSelectedItem(panelABM.getCbProvincias(), o.getProvincia().getNombre());
-        UTIL.setSelectedItem(panelABM.getCbDepartamentos(), o.getDepartamento().getNombre());
-        UTIL.setSelectedItem(panelABM.getCbMunicipios(), o.getMunicipio().getNombre());
+        UTIL.setSelectedItem(panelABM.getCbCondicIVA(), o.getContribuyente());
+        UTIL.setSelectedItem(panelABM.getCbProvincias(), o.getProvincia(), true);
+        UTIL.setSelectedItem(panelABM.getCbDepartamentos(), o.getDepartamento(), true);
+        UTIL.setSelectedItem(panelABM.getCbMunicipios(), o.getMunicipio(), true);
 
-        if (o.getCodigopostal() != null) {
-            panelABM.setTfCP(o.getCodigopostal().toString());
-        }
-
-        if (o.getTele1() != null) {
-            panelABM.setTfTele1(o.getTele1().toString());
-            if (o.getInterno1() != null) {
-                panelABM.setTfInterno1(o.getInterno1().toString());
-            }
-        }
-
-        if (o.getTele2() != null) {
-            panelABM.setTfTele2(o.getTele2().toString());
-            if (o.getInterno2() != null) {
-                panelABM.setTfInterno2(o.getInterno2().toString());
-            }
-        }
-
-        if (o.getContacto() != null) {
-            panelABM.setTfContacto(o.getContacto());
-        }
-
-        if (o.getEmail() != null) {
-            panelABM.setTfEmail(o.getEmail());
-        }
-
-        if (o.getWebpage() != null) {
-            panelABM.setTfWEB(o.getWebpage());
-        }
+        panelABM.setTfCP(Objects.toString(o.getCodigopostal(), null));
+        panelABM.setTfTele1(Objects.toString(o.getTele1(), null));
+        panelABM.setTfInterno1(Objects.toString(o.getInterno1(), null));
+        panelABM.setTfTele2(Objects.toString(o.getTele2(), null));
+        panelABM.setTfInterno2(Objects.toString(o.getInterno2(), null));
+        panelABM.setTfContacto(o.getContacto());
+        panelABM.setTfEmail(o.getEmail());
+        panelABM.setTfWEB(o.getWebpage());
 
     }
 
@@ -290,15 +255,6 @@ public class ProveedorController implements ActionListener {
         if (panelABM.getTfDireccion() == null) {
             throw new MessageException("Debe indicar la dirección de la proveedor");
         }
-        if (panelABM.getCbProvincias().getSelectedIndex() < 1) {
-            throw new MessageException("Debe especificar una Provincia y Departamento");
-        }
-        if (panelABM.getCbDepartamentos().getSelectedIndex() < 1) {
-            throw new MessageException("Debe especificar un Departamento");
-        }
-        if (panelABM.getCbMunicipios().getSelectedIndex() < 1) {
-            throw new MessageException("Debe especificar un Municipio");
-        }
         if (panelABM.getTfInterno1() != null && panelABM.getTfTele1() == null) {
             throw new MessageException("Especifique un número de teléfono 1 para el interno 1");
         }
@@ -313,10 +269,18 @@ public class ProveedorController implements ActionListener {
             throw new MessageException("Límite Cta. Cte. no válido (ingrese solo números enteros, hasta 12 dígitos)");
         }
         //</editor-fold>
-        Provincia provincia = (Provincia) panelABM.getSelectedProvincia();
-        Departamento departamento = (Departamento) panelABM.getSelectedDepartamento();
-        Municipio municipio = (Municipio) panelABM.getSelectedMunicipio();
-
+        Provincia provincia = null;
+        Departamento departamento = null;
+        Municipio municipio = null;
+        if (panelABM.getCbProvincias().getSelectedIndex() > 0) {
+            provincia = (Provincia) UTIL.getEntityWrapped(panelABM.getCbProvincias()).getEntity();
+        }
+        if (panelABM.getCbDepartamentos().getSelectedIndex() > 0) {
+            departamento = (Departamento) UTIL.getEntityWrapped(panelABM.getCbDepartamentos()).getEntity();
+        }
+        if (panelABM.getCbMunicipios().getSelectedIndex() > 0) {
+            municipio = (Municipio) UTIL.getEntityWrapped(panelABM.getCbMunicipios()).getEntity();
+        }
         // NOT NULLABLE's
         EL_OBJECT.setCodigo(panelABM.getTfCodigo());
         EL_OBJECT.setNombre(panelABM.getTfNombre().toUpperCase());
@@ -324,7 +288,7 @@ public class ProveedorController implements ActionListener {
         EL_OBJECT.setProvincia(provincia);
         EL_OBJECT.setDepartamento(departamento);
         EL_OBJECT.setMunicipio(municipio);
-        EL_OBJECT.setContribuyente((Contribuyente) panelABM.getSelectedCondicIVA());
+        EL_OBJECT.setContribuyente((Contribuyente) UTIL.getEntityWrapped(panelABM.getCbCondicIVA()).getEntity());
         EL_OBJECT.setCuit(new Long(panelABM.getTfNumDocumento()));
         EL_OBJECT.setLimiteCtaCte(new BigDecimal(panelABM.getTfLimiteCtaCte().getText()));
         //NULLABLE's
@@ -435,6 +399,7 @@ public class ProveedorController implements ActionListener {
     public JDialog initProveedorToCliente(Window window) {
         initContenedor(window, true);
         contenedor.setButtonsVisible(false);
+        contenedor.getLabelMensaje().setVisible(true);
         contenedor.getLabelMensaje().setText("<html>Esta opción le permite crear un Cliente de los datos de un Proveedor</html>");
         contenedor.getbNuevo().setVisible(true);
         contenedor.getbNuevo().setText("Convertir");
@@ -453,8 +418,8 @@ public class ProveedorController implements ActionListener {
                 } catch (MessageException ex) {
                     JOptionPane.showMessageDialog(contenedor, ex.getMessage());
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(contenedor, ex.getMessage());
                     LogManager.getLogger().error(ex.getMessage(), ex);
+                    JOptionPane.showMessageDialog(contenedor, ex.getMessage());
                 }
             }
         });
@@ -469,5 +434,38 @@ public class ProveedorController implements ActionListener {
 
     public void displayPAP(Window owner) {
         JOptionPane.showMessageDialog(null, "Función no implementada aún");
+    }
+
+    public void displaySelector(Consumer<Proveedor> selected) {
+        initContenedor(null, true);
+        contenedor.setTitle("Selector de Proveedor");
+        contenedor.setButtonsVisible(false);
+        final Runnable onSelection = () -> {
+            Integer id = (Integer) UTIL.getSelectedValueFromModel(contenedor.getjTable1(), 0);
+            if (id != null) {
+                contenedor.dispose();
+                selected.accept(jpaController.find(id));
+            }
+        };
+        contenedor.getjTable1().addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent evt) {
+                if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+                    evt.consume();
+                    onSelection.run();
+                }
+            }
+
+        });
+        contenedor.getjTable1().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    onSelection.run();
+                }
+            }
+
+        });
+        contenedor.setVisible(true);
     }
 }

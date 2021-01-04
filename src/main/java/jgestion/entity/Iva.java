@@ -17,10 +17,6 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "iva")
-@NamedQueries({
-    @NamedQuery(name = "Iva.findAll", query = "SELECT i FROM Iva i"),
-    @NamedQuery(name = "Iva.findById", query = "SELECT i FROM Iva i WHERE i.id = :id")
-})
 public class Iva implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -30,7 +26,7 @@ public class Iva implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Basic(optional = false)
-    @Column(name = "iva", nullable = false, precision = 10, scale = 2)
+    @Column(name = "iva", nullable = false, precision = 5, scale = 2, unique = true)
     private Float iva;
 
     public Iva() {
@@ -79,6 +75,7 @@ public class Iva implements Serializable {
 
     @Override
     public String toString() {
-        return this.getIva().toString();
+        return "Iva{" + "id=" + id + ", iva=" + iva + '}';
     }
+
 }

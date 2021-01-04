@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -106,7 +107,6 @@ public class PresupuestoController implements ActionListener {
             jdFacturaVenta = facturaVentaController.getContenedor();
             String observacion;
 
-            // <editor-fold defaultstate="collapsed" desc="CONTROLES">
             if (jdFacturaVenta.getDcFechaFactura() == null) {
                 throw new MessageException("Fecha de factura no válida");
             }
@@ -121,8 +121,11 @@ public class PresupuestoController implements ActionListener {
             if (dtm.getRowCount() < 1) {
                 throw new MessageException(CLASS_NAME + " debe tener al menos un item.");
             }
-
-            if (((Valores.FormaPago) jdFacturaVenta.getCbFormaPago().getSelectedItem()).equals(Valores.FormaPago.CTA_CTE)) {
+            if (jdFacturaVenta.getCbFormaPago().getSelectedIndex() == 0) {
+                throw new MessageException("Seleccionar forma de pago");
+            }
+            Valores.FormaPago fp = (Valores.FormaPago) jdFacturaVenta.getCbFormaPago().getSelectedItem();
+            if (fp.equals(Valores.FormaPago.CTA_CTE)) {
                 try {
                     if (Short.valueOf(jdFacturaVenta.getTfDias()) < 1) {
                         throw new MessageException("Cantidad de días de Cta. Cte. no válida. Debe ser mayor a 0");
@@ -131,17 +134,14 @@ public class PresupuestoController implements ActionListener {
                     throw new MessageException("Cantidad de días de Cta. Cte. no válida");
                 }
             }
-            // </editor-fold>
 
             newPresupuesto = new Presupuesto();
             newPresupuesto.setCliente((Cliente) jdFacturaVenta.getCbCliente().getSelectedItem());
             newPresupuesto.setListaPrecios((ListaPrecios) jdFacturaVenta.getCbListaPrecio().getSelectedItem());
             newPresupuesto.setSucursal(((EntityWrapper<Sucursal>) jdFacturaVenta.getCbSucursal().getSelectedItem()).getEntity());
             newPresupuesto.setUsuario(UsuarioController.getCurrentUser());
-            if (jdFacturaVenta.getCbFormaPago().getSelectedItem().equals(Valores.FormaPago.CONTADO)) {
-                newPresupuesto.setFormaPago((short) Valores.FormaPago.CONTADO.getId());
-            } else if (jdFacturaVenta.getCbFormaPago().getSelectedItem().equals(Valores.FormaPago.CTA_CTE)) {
-                newPresupuesto.setFormaPago((short) Valores.FormaPago.CTA_CTE.getId());
+            newPresupuesto.setFormaPago((short) fp.getId());
+            if (fp.equals(Valores.FormaPago.CTA_CTE)) {
                 newPresupuesto.setDias(Short.parseShort(jdFacturaVenta.getTfDias()));
             }
             newPresupuesto.setObservacion(observacion);
@@ -161,7 +161,6 @@ public class PresupuestoController implements ActionListener {
                 detalle.setTipoDesc(Integer.valueOf(dtm.getValueAt(i, 8).toString()));
                 Producto p = productoController.find((Integer) dtm.getValueAt(i, 9));
                 detalle.setProducto(p);
-//                detalle.setPresupuesto(newPresupuesto); //innecesario
                 newPresupuesto.getDetallePresupuestoList().add(detalle);
             }
             jpaController.persist(newPresupuesto);
@@ -207,10 +206,12 @@ public class PresupuestoController implements ActionListener {
         buscador.hideCaja();
         buscador.hideUDNCuentaSubCuenta();
         buscador.hideVendedor();
+        buscador.getbImprimir().setVisible(false);
         buscador.getBtnToExcel().setVisible(false);
         buscador.getjTfOcteto().setVisible(false);
         UTIL.loadComboBox(buscador.getCbClieProv(), new ClienteController().findAll(), true);
         UTIL.loadComboBox(buscador.getCbSucursal(), new UsuarioHelper().getSucursales(), true);
+        UTIL.loadComboBox(buscador.getCbFormasDePago(), Arrays.asList(Valores.FormaPago.values()), true);
         UTIL.getDefaultTableModel(
                 buscador.getjTable1(),
                 new String[]{"ObjectID", "Nº " + CLASS_NAME, "Cliente", "Importe", "Fecha", "Sucursal", "Usuario"},
@@ -329,25 +330,25 @@ public class PresupuestoController implements ActionListener {
         for (DetallePresupuesto detalle : lista) {
             Iva iva = detalle.getProducto().getIva();
             if (iva == null) {
-                Producto findProducto = (Producto) DAO.findEntity(Producto.class, detalle.getProducto().getId());
+                Producto findProducto = new ProductoJpaController().find(detalle.getProducto().getId());
                 iva = findProducto.getIva();
-                LOG.debug("Producto con Iva NULL!!" + detalle.getProducto());
+                LOG.error("Producto con Iva NULL!" + detalle.getProducto());
                 while (iva == null || iva.getIva() == null) {
-                    System.out.print(".");
+                    LOG.error("Producto con Iva NULL!!" + detalle.getProducto());
                     iva = new IvaController().findByProducto(detalle.getProducto().getId());
                 }
             }
-            BigDecimal productoConIVA = detalle.getPrecioUnitario().add(
-                    UTIL.getPorcentaje(detalle.getPrecioUnitario().subtract(detalle.getDescuento()),
-                            BigDecimal.valueOf(iva.getIva()))).setScale(4, RoundingMode.HALF_EVEN);
+            BigDecimal pu = JGestionUtils.setScale(detalle.getPrecioUnitario());
+            BigDecimal desc = JGestionUtils.setScale(detalle.getDescuento());
+            BigDecimal productoConIVA = pu.add(UTIL.getPorcentaje(pu.subtract(desc),
+                    JGestionUtils.setScale(iva.getIva())));
             dtm.addRow(new Object[]{
                 iva.getIva(),
                 detalle.getProducto().getCodigo(),
                 detalle.getProducto().getNombre(),
                 detalle.getCantidad(),
-                UTIL.PRECIO_CON_PUNTO.format(detalle.getPrecioUnitario()),
-                productoConIVA,
-                detalle.getDescuento(),
+                UTIL.PRECIO_CON_PUNTO.format(pu),
+                productoConIVA, desc,
                 UTIL.PRECIO_CON_PUNTO.format((detalle.getCantidad() * productoConIVA.doubleValue())),
                 detalle.getTipoDesc(),
                 detalle.getProducto().getId(),

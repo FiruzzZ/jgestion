@@ -137,11 +137,11 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         labelPrecioActual = new javax.swing.JLabel();
         tfProductoPrecioActual = new javax.swing.JTextField();
         cbProductos = new javax.swing.JComboBox();
-        labelCodigoNoRegistrado = new javax.swing.JLabel();
-        labelCodigoNoRegistrado.setVisible(false);
         labelDescuento = new javax.swing.JLabel();
         cbDesc = new javax.swing.JComboBox();
         tfProductoDesc = new javax.swing.JTextField();
+        labelCodigoNoRegistrado = new javax.swing.JLabel();
+        labelCodigoNoRegistrado.setVisible(false);
         btnAnular = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -277,9 +277,9 @@ public class JDFacturaCompra extends javax.swing.JDialog {
                     .addGroup(panelDatosCompraLayout.createSequentialGroup()
                         .addGroup(panelDatosCompraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(panelDatosCompraLayout.createSequentialGroup()
-                                .addComponent(tfObservacion, javax.swing.GroupLayout.PREFERRED_SIZE, 424, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(tfObservacion, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(labelObservacionCharactersCount))
+                                .addComponent(labelObservacionCharactersCount, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(panelDatosCompraLayout.createSequentialGroup()
                                 .addComponent(dcFechaFactura, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -772,11 +772,6 @@ public class JDFacturaCompra extends javax.swing.JDialog {
                 xxx(evt);
             }
         });
-        tfPrecioUnitario.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                tfPrecioUnitarioKeyReleased(evt);
-            }
-        });
 
         tfProductoIVA.setEditable(false);
         tfProductoIVA.setColumns(4);
@@ -816,10 +811,6 @@ public class JDFacturaCompra extends javax.swing.JDialog {
         tfProductoPrecioActual.setFocusable(false);
         tfProductoPrecioActual.setRequestFocusEnabled(false);
 
-        labelCodigoNoRegistrado.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        labelCodigoNoRegistrado.setForeground(new java.awt.Color(255, 51, 0));
-        labelCodigoNoRegistrado.setText("¡CÓDIGO NO REGISTRADO!");
-
         labelDescuento.setText("Desc");
 
         cbDesc.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "%", "$" }));
@@ -842,6 +833,10 @@ public class JDFacturaCompra extends javax.swing.JDialog {
                 tfProductoDescKeyTyped(evt);
             }
         });
+
+        labelCodigoNoRegistrado.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        labelCodigoNoRegistrado.setForeground(new java.awt.Color(255, 51, 0));
+        labelCodigoNoRegistrado.setText("¡CÓDIGO NO REGISTRADO!");
 
         javax.swing.GroupLayout panelProductoLayout = new javax.swing.GroupLayout(panelProducto);
         panelProducto.setLayout(panelProductoLayout);
@@ -878,10 +873,6 @@ public class JDFacturaCompra extends javax.swing.JDialog {
                     .addGroup(panelProductoLayout.createSequentialGroup()
                         .addGroup(panelProductoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(panelProductoLayout.createSequentialGroup()
-                                .addComponent(cbProductos, javax.swing.GroupLayout.PREFERRED_SIZE, 341, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(cbCambioPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(panelProductoLayout.createSequentialGroup()
                                 .addComponent(tfProductoCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(bBuscarProducto, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -889,6 +880,10 @@ public class JDFacturaCompra extends javax.swing.JDialog {
                                 .addComponent(labelPrecioActual)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(tfProductoPrecioActual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(cbCambioPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(panelProductoLayout.createSequentialGroup()
+                                .addComponent(cbProductos, javax.swing.GroupLayout.PREFERRED_SIZE, 341, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(labelCodigoNoRegistrado)))
                         .addGap(0, 0, Short.MAX_VALUE)))
@@ -903,14 +898,14 @@ public class JDFacturaCompra extends javax.swing.JDialog {
                     .addComponent(bBuscarProducto, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(labelPrecioActual)
                     .addComponent(tfProductoPrecioActual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(labelCodigoNoRegistrado))
+                    .addComponent(cbCambioPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelProductoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(panelProductoLayout.createSequentialGroup()
                         .addGroup(panelProductoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel8)
                             .addComponent(cbProductos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(cbCambioPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(labelCodigoNoRegistrado))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(panelProductoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(panelProductoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -1012,12 +1007,6 @@ public class JDFacturaCompra extends javax.swing.JDialog {
             tfPrecioUnitario.requestFocus();
         }
     }//GEN-LAST:event_tfCantidadKeyReleased
-
-    private void tfPrecioUnitarioKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfPrecioUnitarioKeyReleased
-        if (evt.getKeyCode() == 10) {
-            cbCambioPrecio.requestFocus();
-        }
-    }//GEN-LAST:event_tfPrecioUnitarioKeyReleased
 
     private void cbCambioPrecioKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cbCambioPrecioKeyReleased
         if (evt.getKeyCode() == 10) {

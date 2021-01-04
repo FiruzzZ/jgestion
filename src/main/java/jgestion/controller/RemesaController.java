@@ -32,7 +32,6 @@ import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -61,7 +60,6 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 import utilities.general.NumberToLetterConverter;
 import utilities.general.UTIL;
 import utilities.gui.SwingUtil;
@@ -96,7 +94,7 @@ public class RemesaController implements FocusListener {
 
     public void displayRemesaAConciliar(Window owner) throws MessageException {
         displayABMRemesa(owner, true, false);
-        jdReRe.setTitle("Remesa a conciliar");
+        jdReRe.setTitle("Recibos a conciliar");
         toConciliar = true;
         conciliando = false;
         jdReRe.getbImprimir().setEnabled(false);
@@ -107,11 +105,15 @@ public class RemesaController implements FocusListener {
     public void displayABMRemesa(Window owner, boolean modal, boolean visible) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.COMPRA);
         jdReRe = new JDReRe(owner, modal);
-        jdReRe.setUIForRemesas();
+        jdReRe.setUIRecibosProveedores();
         UTIL.loadComboBox(jdReRe.getCbSucursal(), JGestionUtils.getWrappedSucursales(new UsuarioHelper().getSucursales()), false);
         UTIL.loadComboBox(jdReRe.getCbCaja(), new UsuarioHelper().getCajas(true), false);
         UTIL.loadComboBox(jdReRe.getCbClienteProveedor(), JGestionUtils.getWrappedProveedores(new ProveedorJpaController().findAll()), true);
-        AutoCompleteDecorator.decorate(jdReRe.getCbClienteProveedor());
+        jdReRe.getBtnBuscarCliente().addActionListener(evt -> {
+            new ProveedorController().displaySelector(t -> {
+                UTIL.setSelectedItem(jdReRe.getCbClienteProveedor(), t);
+            });
+        });
         UTIL.loadComboBox(jdReRe.getCbCtaCtes(), null, false);
         jdReRe.getbImprimir().addActionListener(new ActionListener() {
 
@@ -135,13 +137,13 @@ public class RemesaController implements FocusListener {
             public void actionPerformed(ActionEvent e) {
                 try {
                     anular(selectedRemesa);
-                    jdReRe.showMessage(CLASS_NAME + " anulada ..", CLASS_NAME, 1);
+                    jdReRe.showMessage("Recibo anulado..", "Anulación", 1);
                     armarQuery();
                 } catch (MessageException ex) {
                     ex.displayMessage(jdReRe);
                 } catch (Exception ex) {
-                    jdReRe.showMessage(ex.getMessage(), CLASS_NAME, 2);
                     LOG.error("Anulando Remesa.id=" + selectedRemesa.getId(), ex);
+                    jdReRe.showMessage(ex.getMessage(), "Algo salió mal", 2);
                 }
             }
         });
@@ -155,10 +157,10 @@ public class RemesaController implements FocusListener {
                     limpiarDetalle();
                     resetPanel();
                 } catch (MessageException ex) {
-                    jdReRe.showMessage(ex.getMessage(), CLASS_NAME, 2);
+                    ex.displayMessage(jdReRe);
                 } catch (Exception ex) {
-                    jdReRe.showMessage(ex.getMessage(), CLASS_NAME, 0);
                     LOG.error(ex.getMessage(), ex);
+                    jdReRe.showMessage(ex.getMessage(), CLASS_NAME, 0);
                 }
             }
         });
@@ -293,7 +295,7 @@ public class RemesaController implements FocusListener {
         }
         JRDataSource c = new JRBeanCollectionDataSource(cc);
         JRDataSource p = new JRBeanCollectionDataSource(pp);
-        Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_Remesa_ctacte.jasper", "Remesa N°" + JGestionUtils.getNumeracion(remesa, true));
+        Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_Remesa_ctacte.jasper", "Recibo N°" + JGestionUtils.getNumeracion(remesa, true));
         r.addParameter("REMESA_ID", remesa.getId());
         r.addParameter("PROVEEDOR_ID", proveedor.getId());
         r.addCurrent_User();
@@ -549,7 +551,7 @@ public class RemesaController implements FocusListener {
             } else {
                 proveedor = d.getNotaDebitoProveedor().getProveedor();
             }
-            CreditoProveedor cp = new CreditoProveedor(null, debe, diferencia, "Remesa N° " + JGestionUtils.getNumeracion(remesa, true), proveedor);
+            CreditoProveedor cp = new CreditoProveedor(null, debe, diferencia, "Recibo N° " + JGestionUtils.getNumeracion(remesa, true), proveedor);
             new CreditoProveedorJpaController().persist(cp);
         }
         return remesa;
@@ -580,7 +582,7 @@ public class RemesaController implements FocusListener {
     private void addEntregaToDetalle() throws MessageException {
         Date comprobanteFecha;
         if (jdReRe.getDcFechaReRe().getDate() == null) {
-            throw new MessageException("Debe especificar una fecha de remesa antes de agregar comprobaste a pagar.");
+            throw new MessageException("Debe especificar una fecha de recibo antes de agregar comprobaste a pagar.");
         }
         if (selectedCtaCte.getFactura() != null) {
             comprobanteFecha = selectedCtaCte.getFactura().getFechaCompra();
@@ -588,7 +590,7 @@ public class RemesaController implements FocusListener {
             comprobanteFecha = selectedCtaCte.getNotaDebito().getFechaNotaDebito();
         }
         if (UTIL.compararIgnorandoTimeFields(jdReRe.getDcFechaReRe().getDate(), comprobanteFecha) < 0) {
-            throw new MessageException("La fecha de remesa no puede ser anterior"
+            throw new MessageException("La fecha de recibo no puede ser anterior"
                     + "\n a la fecha del comprobante ("
                     + UTIL.DATE_FORMAT.format(comprobanteFecha) + ")");
         }
@@ -668,7 +670,7 @@ public class RemesaController implements FocusListener {
         if (toAnular) {
             UsuarioController.checkPermiso(PermisosController.PermisoDe.ANULAR_COMPROBANTES);
         }
-        buscador = new JDBuscadorReRe(owner, "Buscador - " + CLASS_NAME, modal, "Proveedor", "Nº " + CLASS_NAME);
+        buscador = new JDBuscadorReRe(owner, "Buscador - Recibos", modal, "Proveedor", "Nº Recibo");
         if (toAnular) {
             buscador.setTitle(buscador.getTitle() + " para ANULAR");
         }
@@ -716,15 +718,16 @@ public class RemesaController implements FocusListener {
                 }
             }
         });
-        buscador.getbImprimir().addActionListener((evt) -> {
-
-        });
+        buscador.getbImprimir().setVisible(false);
         buscador.getBtnToExcel().addActionListener((evt) -> {
             try {
                 if (buscador.getjTable1().getRowCount() < 1) {
                     throw new MessageException("No hay info para exportar.");
                 }
-                File file = JGestionUtils.showSaveDialogFileChooser(buscador, "Archivo Excel (.xls)", null, "xls");
+                File file = SwingUtil.showSaveDialogExcelFileChooser(buscador, null);
+                if (file == null) {
+                    return;
+                }
                 TableExcelExporter tee = new TableExcelExporter(file, buscador.getjTable1());
                 tee.export();
                 if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(buscador, "¿Abrir archivo generado?", null, JOptionPane.YES_NO_OPTION)) {
@@ -771,7 +774,7 @@ public class RemesaController implements FocusListener {
                 numero = Long.parseLong(buscador.getTfOcteto());
                 query.append(" AND o.numero = ").append(numero);
             } catch (NumberFormatException ex) {
-                throw new MessageException("Número de " + CLASS_NAME + " no válido");
+                throw new MessageException("Número de recibo no válido");
             }
         }
 
@@ -781,7 +784,7 @@ public class RemesaController implements FocusListener {
                 numero = Long.parseLong(buscador.getTfFactu4() + buscador.getTfFactu8());
                 query.append(" AND f.numero = ").append(numero);
             } catch (NumberFormatException ex) {
-                throw new MessageException("Número de " + CLASS_NAME + " no válido");
+                throw new MessageException("Número de recibo no válido");
             }
         }
         if (buscador.getDcDesde() != null) {
@@ -857,28 +860,7 @@ public class RemesaController implements FocusListener {
             return;
         }
         for (Object[] remesa : l) {
-            //new String[]{"ID", "Nº", "Monto", "Fecha", "Caja", "Usuario", "Fecha/Hora (Sist)"},
             dtm.addRow(remesa);
-//            Proveedor p;
-//            if (!remesa.getDetalle().isEmpty()) {
-//                if (remesa.getDetalle().get(0).getFacturaCompra() != null) {
-//                    p = remesa.getDetalle().get(0).getFacturaCompra().getProveedor();
-//                } else {
-//                    p = remesa.getDetalle().get(0).getNotaDebitoProveedor().getProveedor();
-//                }
-//            } else {
-//                p = remesa.getProveedor();
-//            }
-//            dtm.addRow(new Object[]{
-//                remesa.getId(),
-//                JGestionUtils.getNumeracion(remesa, true),
-//                remesa.getAnulada() == null ? p.getNombre() : "[ANULADA] " + UTIL.TIMESTAMP_FORMAT.format(remesa.getAnulada()),
-//                remesa.getMonto(),
-//                UTIL.DATE_FORMAT.format(remesa.getFechaRemesa()),
-//                remesa.getCaja().getNombre() + "(" + remesa.getCaja().getId() + ")",
-//                remesa.getUsuario(),
-//                UTIL.TIMESTAMP_FORMAT.format(remesa.getFechaCarga())
-//            });
         }
     }
 
@@ -1007,7 +989,7 @@ public class RemesaController implements FocusListener {
             throw new MessageException("Remesa is NULL");
         }
         if (!remesa.getEstado()) {
-            throw new MessageException("Esta " + CLASS_NAME + " ya está anulada");
+            throw new MessageException("Ya está anulada");
         }
         jpaController.anular(remesa);
     }
@@ -1046,7 +1028,7 @@ public class RemesaController implements FocusListener {
                 Especie o = new EspecieJpaController().find(pago.getComprobanteId());
                 pagos.add(o);
             } else {
-                throw new IllegalArgumentException("Forma Pago Remesa no válida:" + pago.getFormaPago());
+                throw new IllegalArgumentException("Forma Pago no válida:" + pago.getFormaPago());
             }
         }
         remesa.setPagosEntities(pagos);

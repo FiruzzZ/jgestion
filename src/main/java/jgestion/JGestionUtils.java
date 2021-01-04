@@ -44,6 +44,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -51,15 +52,22 @@ import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.TableCellRenderer;
 import jgestion.controller.DatosEmpresaJpaController;
+import jgestion.controller.DepartamentoController;
+import jgestion.controller.MunicipioController;
 import jgestion.controller.UsuarioController;
 import jgestion.controller.exceptions.MessageException;
 import jgestion.entity.Caja;
 import jgestion.entity.Contribuyente;
 import jgestion.entity.DatosEmpresa;
+import jgestion.entity.Departamento;
+import jgestion.entity.Municipio;
+import jgestion.entity.Provincia;
 import jgestion.entity.RemitoCompra;
 import jgestion.entity.TipoDocumento;
+import jgestion.entity.Unidadmedida;
 import jgestion.jpa.controller.ConfiguracionDAO;
 import jgestion.jpa.controller.JGestionJpaImpl;
+import jgestion.jpa.controller.ProvinciaJpaController;
 import utilities.general.EntityWrapper;
 import utilities.general.UTIL;
 import utilities.swing.components.NumberRenderer;
@@ -508,10 +516,26 @@ public class JGestionUtils {
 
     public static List<EntityWrapper<Iva>> getWrappedIva(List<Iva> list) {
         List<EntityWrapper<Iva>> l = new ArrayList<>(list.size());
-        for (Iva iva : list) {
+        list.forEach(iva -> {
             l.add(new EntityWrapper<>(iva, iva.getId(), iva.getIva().toString() + "%"));
-        }
+        });
         return l;
+    }
+
+    public static List<EntityWrapper<Provincia>> getWrappedProvincias(List<Provincia> list) {
+        return list.stream().map(o -> new EntityWrapper<>(o, o.getId(), o.getNombre())).collect(Collectors.toList());
+    }
+
+    public static List<EntityWrapper<Departamento>> getWrappedDepartamentos(List<Departamento> list) {
+        return list.stream().map(o -> new EntityWrapper<>(o, o.getId(), o.getNombre())).collect(Collectors.toList());
+    }
+
+    public static List<EntityWrapper<Municipio>> getWrappedMunicipios(List<Municipio> list) {
+        return list.stream().map(o -> new EntityWrapper<>(o, o.getId(), o.getNombre())).collect(Collectors.toList());
+    }
+
+    public static List<EntityWrapper<Unidadmedida>> getWrappedUnidadesMedida(List<Unidadmedida> list) {
+        return list.stream().map(o -> new EntityWrapper<>(o, o.getId(), o.getNombre())).collect(Collectors.toList());
     }
 
     /**
@@ -575,4 +599,45 @@ public class JGestionUtils {
     public final static BigDecimal setScale(String valor) {
         return setScale(new BigDecimal(valor.trim()));
     }
+
+    /**
+     * Implementación de listeners en combos para la carga de Provincias, localidades y municipios
+     *
+     * @param cbProvincia
+     * @param provinciaSelectable
+     * @param cbLocalidades
+     * @param localidadSelectable
+     * @param cbMunicipios
+     * @param municipiosSelectable
+     */
+    public static void setProvinciaLocalidadesComboListener(
+            final JComboBox<?> cbProvincia, final boolean provinciaSelectable,
+            final JComboBox<?> cbLocalidades, final boolean localidadSelectable,
+            final JComboBox<?> cbMunicipios, final boolean municipiosSelectable) {
+        UTIL.loadComboBox(cbProvincia, getWrappedProvincias(new ProvinciaJpaController().findAll()), provinciaSelectable);
+        cbProvincia.addActionListener(evt -> {
+            if (cbProvincia.getSelectedIndex() > -1) {
+                if (!provinciaSelectable || cbProvincia.getSelectedIndex() > 0) {
+                    Provincia p = ((EntityWrapper<Provincia>) cbProvincia.getSelectedItem()).getEntity();
+                    List<EntityWrapper<Departamento>> l = getWrappedDepartamentos(new DepartamentoController().findDeptosFromProvincia(p));
+                    UTIL.loadComboBox(cbLocalidades, l, localidadSelectable);
+                } else {
+                    UTIL.loadComboBox(cbLocalidades, null, localidadSelectable);
+                }
+            }
+        });
+        cbLocalidades.addActionListener(evt -> {
+            if (cbLocalidades.getSelectedIndex() > -1) {
+                if (!localidadSelectable || cbLocalidades.getSelectedIndex() > 0) {
+                    Departamento p = ((EntityWrapper<Departamento>) cbLocalidades.getSelectedItem()).getEntity();
+                    List<EntityWrapper<Municipio>> l = getWrappedMunicipios(new MunicipioController().findMunicipiosFromDepto(p.getId()));
+                    UTIL.loadComboBox(cbMunicipios, l, municipiosSelectable);
+                } else {
+                    UTIL.loadComboBox(cbMunicipios, null, municipiosSelectable);
+
+                }
+            }
+        });
+    }
+
 }

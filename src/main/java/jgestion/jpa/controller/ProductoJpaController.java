@@ -1,5 +1,8 @@
 package jgestion.jpa.controller;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
 import jgestion.entity.Producto;
 import jgestion.entity.Producto_;
 import jgestion.entity.Rubro;
@@ -8,6 +11,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import jgestion.entity.Marca;
 import org.eclipse.persistence.config.QueryHints;
 
 /**
@@ -21,40 +25,27 @@ public class ProductoJpaController extends JGestionJpaImpl<Producto, Integer> {
 
     @Override
     public Producto find(Integer id) {
-        Producto find = getEntityManager().find(getEntityClass(), id);
-        entityManager.setProperty(QueryHints.REFRESH, Boolean.TRUE);
-        entityManager.refresh(find);
-        return find;
+        boolean flag = false;
+        if (!isForceRefresh()) {
+            flag = true;
+            setForceRefresh(true);
+        }
+        Producto o = super.find(id);
+        if (flag) {
+            setForceRefresh(false);
+        }
+        return o;
     }
 
     public Producto findByCodigo(String codigo) {
-//        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-//        CriteriaQuery<Producto> cq = cb.createQuery(getEntityClass());
-//        Root<Producto> from = cq.from(getEntityClass());
-//        cb.equal(from.get(Producto_.codigo), codigoProducto);
-//        return getEntityManager().createQuery(cq).getSingleResult();
-        EntityManager em = getEntityManager();
-        try {
-            return em.createQuery("SELECT o FROM Producto o WHERE o.codigo='" + codigo + "'", getEntityClass()).
-                    setHint(QueryHints.REFRESH, Boolean.TRUE).
-                    getSingleResult();
-        } finally {
-            em.close();
-        }
+        HashMap<String, Object> p = new HashMap<>(1);
+        p.put("codigo", codigo);
+        return findByQuery(getSelectFrom() + " where o.codigo=:codigo", p);
     }
 
     @Override
     public List<Producto> findAll() {
-        EntityManager em = getEntityManager();
-        try {
-            CriteriaBuilder cb = em.getCriteriaBuilder();
-            CriteriaQuery<Producto> cq = cb.createQuery(getEntityClass());
-            Root<Producto> from = cq.from(getEntityClass());
-            cq.select(from).orderBy(cb.asc(from.get(Producto_.nombre)));
-            return em.createQuery(cq).getResultList();
-        } finally {
-            em.close();
-        }
+        return findAll(getOrder(Producto_.nombre, true));
     }
 
     public List<Producto> findByBienDeCambio(Boolean bienDeCambio) {
@@ -79,5 +70,29 @@ public class ProductoJpaController extends JGestionJpaImpl<Producto, Integer> {
         cq.where(cb.equal(from.get(Producto_.rubro), rubro));
         cq.orderBy(cb.asc(from.get(Producto_.nombre)));
         return getEntityManager().createQuery(cq).getResultList();
+    }
+
+    /**
+     * Id, codigo, nombre, marca, precioventa
+     *
+     * @param bienDeCambio
+     * @return
+     */
+    public List<Producto> findAllLite(Boolean bienDeCambio) {
+        List<Object[]> pp = findAttributes("SELECT o.id, o.codigo, o.nombre, o.marca, o.precioVenta FROM "
+                + getAlias()
+                + (bienDeCambio != null ? " WHERE  o.bienDeCambio=" + bienDeCambio : "")
+                + " ORDER BY o.nombre");
+        List<Producto> ll = new ArrayList<>(pp.size());
+        for (Object[] o : pp) {
+            Producto p = new Producto();
+            p.setId((Integer) o[0]);
+            p.setCodigo((String) o[1]);
+            p.setNombre((String) o[2]);
+            p.setMarca((Marca) o[3]);
+            p.setPrecioVenta((BigDecimal) o[4]);
+            ll.add(p);
+        }
+        return ll;
     }
 }

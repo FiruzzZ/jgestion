@@ -1,12 +1,8 @@
 package jgestion.controller;
 
+import java.awt.Window;
 import jgestion.controller.exceptions.MessageException;
-import jgestion.controller.exceptions.IllegalOrphanException;
-import jgestion.controller.exceptions.NonexistentEntityException;
 import jgestion.entity.ListaPrecios;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.persistence.EntityNotFoundException;
 import jgestion.entity.DetalleListaPrecios;
 import jgestion.entity.Rubro;
 import utilities.general.UTIL;
@@ -14,22 +10,26 @@ import jgestion.gui.JDABM;
 import jgestion.gui.JDContenedor;
 import jgestion.gui.PanelABMListaPrecio;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import javax.persistence.NoResultException;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import jgestion.controller.exceptions.ConstraintViolationJpaException;
+import jgestion.jpa.controller.ListaPreciosJpaController;
+import jgestion.jpa.controller.RubroJpaController;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 
 /**
  *
  * @author FiruzzZ
  */
-public class ListaPreciosController implements ActionListener, MouseListener, KeyListener {
+public class ListaPreciosController {
 
     public static final String CLASS_NAME = "ListaPrecios";
     private final String[] colsName = {"id", "Nombre", "M. General", "Margen (%)", "Cat. Web"};
@@ -40,108 +40,12 @@ public class ListaPreciosController implements ActionListener, MouseListener, Ke
     private PanelABMListaPrecio panel;
     private ListaPrecios EL_OBJECT;
     private List<Rubro> listaDeRubros;
+    private final ListaPreciosJpaController dao = new ListaPreciosJpaController();
 
-    // <editor-fold defaultstate="collapsed" desc="CRUD y demás">
-    public EntityManager getEntityManager() {
-        return DAO.getEntityManager();
+    public ListaPreciosController() {
     }
 
-    public void create(ListaPrecios listaPrecios) throws Exception {
-        DAO.create(listaPrecios);
-    }
-
-    public void edit(ListaPrecios listaPrecios) throws IllegalOrphanException, NonexistentEntityException, Exception {
-        EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            em.merge(listaPrecios);
-
-            em.getTransaction().commit();
-        } catch (Exception ex) {
-            String msg = ex.getLocalizedMessage();
-            if (msg == null || msg.length() == 0) {
-                Integer id = listaPrecios.getId();
-                if (findListaPrecios(id) == null) {
-                    throw new NonexistentEntityException("The listaPrecios with id " + id + " no longer exists.");
-                }
-            }
-            throw ex;
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
-    }
-
-    public void destroy(Integer id) throws IllegalOrphanException, NonexistentEntityException {
-        EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            ListaPrecios listaPrecios;
-            try {
-                listaPrecios = em.getReference(ListaPrecios.class, id);
-                listaPrecios.getId();
-            } catch (EntityNotFoundException enfe) {
-                throw new NonexistentEntityException("The listaPrecios with id " + id + " no longer exists.", enfe);
-            }
-            List<DetalleListaPrecios> detalleListaPreciosListOrphanCheck = listaPrecios.getDetalleListaPreciosList();
-            for (DetalleListaPrecios d : detalleListaPreciosListOrphanCheck) {
-                em.remove(d);
-            }
-
-            em.remove(listaPrecios);
-            em.getTransaction().commit();
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
-    }
-
-    public List<ListaPrecios> findAll() {
-        return findListaPreciosEntities(true, -1, -1);
-    }
-
-    public List<ListaPrecios> findListaPreciosEntities(int maxResults, int firstResult) {
-        return findListaPreciosEntities(false, maxResults, firstResult);
-    }
-
-    private List<ListaPrecios> findListaPreciosEntities(boolean all, int maxResults, int firstResult) {
-        EntityManager em = getEntityManager();
-        try {
-            Query q = em.createQuery("select object(o) from ListaPrecios as o ORDER BY o.nombre");
-            if (!all) {
-                q.setMaxResults(maxResults);
-                q.setFirstResult(firstResult);
-            }
-            return q.getResultList();
-        } finally {
-            em.close();
-        }
-    }
-
-    public ListaPrecios findListaPrecios(Integer id) {
-        EntityManager em = getEntityManager();
-        try {
-            return em.find(ListaPrecios.class, id);
-        } finally {
-            em.close();
-        }
-    }
-
-    public int getListaPreciosCount() {
-        EntityManager em = getEntityManager();
-        try {
-            Query q = em.createQuery("select count(o) from ListaPrecios as o");
-            return ((Long) q.getSingleResult()).intValue();
-        } finally {
-            em.close();
-        }
-    }// </editor-fold>
-
-    public void initContenedor(java.awt.Frame frame, boolean modal) {
+    public void initContenedor(Window frame, boolean modal) {
         // <editor-fold defaultstate="collapsed" desc="checking Permiso">
         try {
             UsuarioController.checkPermiso(PermisosController.PermisoDe.ABM_LISTA_PRECIOS);
@@ -149,79 +53,142 @@ public class ListaPreciosController implements ActionListener, MouseListener, Ke
             javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
             return;
         }// </editor-fold>
-        contenedor = new JDContenedor(frame, modal, "ABM " + CLASS_NAME);
+        contenedor = new JDContenedor(frame, modal, "ABM Lista de Precios");
         contenedor.hideBtmImprimir();
         contenedor.setSize(570 + 80, 300 + 50);
         UTIL.getDefaultTableModel(contenedor.getjTable1(), colsName, colsWidth, colsClass);
         UTIL.hideColumnTable(contenedor.getjTable1(), 0);
-        cargarDTM(contenedor.getDTM(), null);
-        contenedor.setListener(this);
+        cargarContenedor();
+        contenedor.getbNuevo().addActionListener(evt -> {
+            try {
+                EL_OBJECT = new ListaPrecios();
+                initABM();
+                abm.setVisible(true);
+            } catch (MessageException ex) {
+                ex.displayMessage(null);
+            } catch (Exception ex) {
+                LogManager.getLogger();
+                contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
+            }
+        });
+        contenedor.getbModificar().addActionListener(evt -> {
+            try {
+                EL_OBJECT = (ListaPrecios) UTIL.getSelectedValueFromModel(contenedor.getjTable1(), 0);
+                if (EL_OBJECT == null) {
+                    JOptionPane.showConfirmDialog(contenedor, "Debe seleccionar un registro", null, JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                initABM();
+                setUI(EL_OBJECT);
+                abm.setVisible(true);
+            } catch (MessageException ex) {
+                contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
+            } catch (Exception ex) {
+                LogManager.getLogger();
+                contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
+            }
+        });
+        contenedor.getbBorrar().addActionListener(evt -> {
+            try {
+                EL_OBJECT = (ListaPrecios) UTIL.getSelectedValueFromModel(contenedor.getjTable1(), 0);
+                if (EL_OBJECT == null) {
+                    JOptionPane.showConfirmDialog(contenedor, "Debe seleccionar un registro", null, JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                dao.remove(EL_OBJECT);
+                contenedor.showMessage("Lista de precios eliminada", CLASS_NAME, 1);
+                cargarContenedor();
+            } catch (ConstraintViolationJpaException ex) {
+                JOptionPane.showMessageDialog(contenedor, ex.getMessage());
+            } catch (Exception ex) {
+                LogManager.getLogger();
+                contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
+            }
+        });
+        contenedor.getbImprimir().setVisible(false);
         contenedor.setVisible(true);
     }
 
-    private void cargarDTM(DefaultTableModel dtm, String query) {
-        UTIL.limpiarDtm(dtm);
-        List<ListaPrecios> l;
-        EntityManager em = DAO.getEntityManager();
-        if (query == null || query.length() < 1) {
-            l = em.createNamedQuery(CLASS_NAME + ".findAll").getResultList();
-        } else {
-            // para cuando se usa el Buscador del ABM
-            l = em.createNativeQuery(query, ListaPrecios.class).getResultList();
-        }
-        em.close();
-        for (ListaPrecios o : l) {
+    private void cargarContenedor() {
+        DefaultTableModel dtm = contenedor.getDTM();
+        dtm.setRowCount(0);
+        List<ListaPrecios> l = dao.findAll(dao.getSelectFrom() + " WHERE upper(o.nombre) like '%" + contenedor.getTfFiltro().getText().toUpperCase() + "%'");
+        l.forEach(o -> {
             dtm.addRow(new Object[]{
-                o.getId(),
+                o,
                 o.getNombre(),
                 o.getMargenGeneral() ? "Si" : "No",
                 o.getMargen().toString(),
                 o.getParaCatalogoWeb()
             });
-        }
+        });
     }
 
-    private void initABM(boolean isEditing, ActionEvent e) throws MessageException {
+    private void initABM() throws MessageException {
         // <editor-fold defaultstate="collapsed" desc="checking Permiso">
         try {
             UsuarioController.checkPermiso(PermisosController.PermisoDe.ABM_LISTA_PRECIOS);
         } catch (MessageException ex) {
-            javax.swing.JOptionPane.showMessageDialog(null, ex.getMessage());
+            ex.displayMessage(null);
             return;
         }// </editor-fold>
-        if (isEditing && EL_OBJECT == null) {
-            throw new MessageException("Debe elegir una fila de la tabla");
-        }
 
         //lista usada para comparación entre tablas (Rubros y RubrosAfectados)
-        listaDeRubros = new RubroController().findRubros();
+        listaDeRubros = new RubroJpaController().findAll();
         panel = new PanelABMListaPrecio();
-        panel.setListener(this);
+        panel.getBtnADD().addActionListener(evt -> {
+            try {
+                addRubro();
+            } catch (MessageException ex) {
+                ex.displayMessage(null);
+            } catch (Exception ex) {
+                abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
+            }
+        });
+        panel.getBtnDEL().addActionListener(evt -> {
+            delRubro();
+        });
         UTIL.getDefaultTableModel(
                 panel.getjTable1(),
-                new String[]{"id", "Rubro"},
+                new String[]{"Object Rubro", "Rubro"},
                 new int[]{5, 200});
         UTIL.hideColumnTable(panel.getjTable1(), 0);
         UTIL.getDefaultTableModel(
                 panel.getjTable2(),
-                new String[]{"id", "Rubro", "Margen %"},
+                new String[]{"Object Rubro", "Rubro", "Margen %"},
                 new int[]{5, 80, 40});
         UTIL.hideColumnTable(panel.getjTable2(), 0);
 
-        if (isEditing) {
-            setPanel(EL_OBJECT);
-        }
-
         cargarRubros();
         abm = new JDABM(contenedor, "ABM " + CLASS_NAME, true, panel);
-        if (e != null) {
-            abm.setLocation(((java.awt.Component) e.getSource()).getLocation());
-        }
-        abm.setListener(this);
-        abm.setVisible(true);
+        abm.setLocationRelativeTo(null);
+        abm.getbAceptar().addActionListener(evt -> {
+            try {
+                String msg = EL_OBJECT.getId() == null ? "creada" : "modificada";
+                setEntity();
+                String msj = "Lista de precios " + msg;
+                checkConstraints(EL_OBJECT);
+                abm.showMessage(msj, CLASS_NAME, 1);
+                cargarContenedor();
+                if (EL_OBJECT.getId() != null) {
+                    abm.dispose();
+                }
+            } catch (MessageException ex) {
+                abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
+            } catch (Exception ex) {
+                LogManager.getLogger();
+                abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
+            }
+        });
+        abm.getbCancelar().addActionListener(evt -> {
+            abm.dispose();
+            panel = null;
+            abm = null;
+            EL_OBJECT = null;
+        });
     }
 
-    private void setPanel(ListaPrecios listaPrecios) {
+    private void setUI(ListaPrecios listaPrecios) {
         if (listaPrecios.getMargenGeneral()) {
             panel.setTfMargenGeneral(String.valueOf(listaPrecios.getMargen()));
         } else {
@@ -234,8 +201,8 @@ public class ListaPreciosController implements ActionListener, MouseListener, Ke
         cargarRubrosAfectados(listaPrecios.getDetalleListaPreciosList());
     }
 
-    private void setEntity() throws MessageException, Exception {
-        String nombre = panel.getTfNombre().trim();
+    private void setEntity() throws MessageException {
+        String nombre = StringUtils.trimToNull(panel.getTfNombre().toUpperCase());
         if (nombre.length() < 1) {
             throw new MessageException("Nombre no válido");
         }
@@ -249,131 +216,64 @@ public class ListaPreciosController implements ActionListener, MouseListener, Ke
                 throw new MessageException("Margen general no válido");
             }
         } else if (panel.getDTMAfectados().getRowCount() < 1) {
-            throw new MessageException("No hay rubros afectados en la lista de precios"
-                    + ", debe elegir al menos uno \no un marge general.");
+            throw new MessageException("No hay rubros afectados en la lista de precios,"
+                    + "\ndebe elegir al menos uno o un marge general.");
         }
 
         if (panel.getCheckCatalagoWEB().isSelected()) {
-            ListaPrecios uniqueCatalogo = findListaPreciosParaCatalogo();
-            if (EL_OBJECT != null && uniqueCatalogo != null) {
-                if (!EL_OBJECT.equals(uniqueCatalogo)) {
-                    throw new MessageException("Ya existe una Lista de Precios de referencia para el Catlálogo Web.\n"
-                            + uniqueCatalogo.getNombre());
-                }
+            ListaPrecios uniqueCatalogo = dao.findParaCatalogoWeb();
+            if (uniqueCatalogo != null && !uniqueCatalogo.equals(EL_OBJECT)) {
+                throw new MessageException("Ya existe una Lista de Precios de referencia para el Catlálogo Web.\n"
+                        + uniqueCatalogo.getNombre());
             }
         }
-        ////////////////////////////////////////////////////////
-        if (EL_OBJECT == null) {
-            EL_OBJECT = new ListaPrecios();
-        }
-
-        EL_OBJECT.setNombre(nombre.toUpperCase());
+        EL_OBJECT.setNombre(nombre);
         EL_OBJECT.setParaCatalogoWeb(panel.getCheckCatalagoWEB().isSelected());
         EL_OBJECT.setMargenGeneral(panel.getCheckMargenGeneral().isSelected());
-        //si elegió margen general
+        EL_OBJECT.setMargen(0.0);
         if (EL_OBJECT.getMargenGeneral()) {
+            //si elegió margen general
             EL_OBJECT.setMargen(Double.valueOf(panel.getTfMargenGeneral()));
-            //se borran los posibles detalles_lista_precios
-            if (EL_OBJECT.getId() != null) {
-                removeDetallesListaPrecios(EL_OBJECT.getId());
-            }
-            EL_OBJECT.setDetalleListaPreciosList(new ArrayList<DetalleListaPrecios>());
-        } else {
-            EL_OBJECT.setMargen(0.0);
-            DefaultTableModel dtm = panel.getDTMAfectados();
-            DetalleListaPrecios detalle = null;
-
-            if (EL_OBJECT.getDetalleListaPreciosList() != null
-                    && EL_OBJECT.getDetalleListaPreciosList().size() > 0) {
-                System.out.println(" != null && size() > 0 y que loco");
-                removeDetallesListaPrecios(EL_OBJECT.getId());
-            }
-            EL_OBJECT.setDetalleListaPreciosList(new ArrayList<DetalleListaPrecios>());
-            for (int i = dtm.getRowCount() - 1; i >= 0; i--) {
-                detalle = new DetalleListaPrecios();
-                detalle.setListaPrecio(EL_OBJECT);
-                detalle.setRubro((Rubro) dtm.getValueAt(i, 1));
-                detalle.setMargen(Double.valueOf(dtm.getValueAt(i, 2).toString()));
-                EL_OBJECT.getDetalleListaPreciosList().add(detalle);
-            }
-        }
-    }
-
-    private void removeDetallesListaPrecios(int id) throws Exception {
-        EntityManager em = getEntityManager();
-        try {
-            em.getTransaction().begin();
-            em.createNativeQuery("DELETE FROM detalle_lista_precios o where o.lista_precio = " + id).executeUpdate();
-            em.getTransaction().commit();
-        } catch (Exception e) {
-            throw e;
-        } finally {
-            if (em != null) {
-                em.close();
-            }
+            EL_OBJECT.getDetalleListaPreciosList().clear();
         }
     }
 
     private void checkConstraints(ListaPrecios object) throws MessageException, Exception {
-        String idQuery = "";
-        if (object.getId() != null) {
-            idQuery = "o.id!=" + object.getId() + " AND ";
-        }
-        EntityManager em = DAO.getEntityManager();
-        try {
-            em.createQuery("SELECT o.id FROM ListaPrecios o "
-                    + " WHERE " + idQuery + " o.nombre='" + object.getNombre() + "' ", ListaPrecios.class).getSingleResult();
-            //si no sale NoResultException... es porque
-            throw new MessageException("Ya existe otra " + CLASS_NAME + " con este nombre.");
-        } catch (NoResultException ex) {
-        }
-        em.close();
-        //persistiendo......
         if (object.getId() == null) {
-            create(object);
+            dao.persist(object);
         } else {
-            edit(object);
+            dao.merge(object);
         }
     }
 
-    private void cargarRubrosAfectados(List<DetalleListaPrecios> detalleListaPreciosList) {
-        if (detalleListaPreciosList != null) {
-            DefaultTableModel dtmRubrosAfectados = (DefaultTableModel) panel.getjTable2().getModel();
-            for (int i = dtmRubrosAfectados.getRowCount(); i > 0; i--) {
-                dtmRubrosAfectados.removeRow(i - 1);
-            }
-            for (DetalleListaPrecios detalleListaPrecios : detalleListaPreciosList) {
-                dtmRubrosAfectados.addRow(new Object[]{
-                    detalleListaPrecios.getRubro().getId(),
-                    detalleListaPrecios.getRubro(),
-                    detalleListaPrecios.getMargen(),});
-            }
-            cargarRubros();
-        }
+    private void cargarRubrosAfectados(List<DetalleListaPrecios> detalle) {
+        DefaultTableModel dtm = (DefaultTableModel) panel.getjTable2().getModel();
+        dtm.setRowCount(0);
+        detalle.sort((o1, o2) -> o1.getRubro().getNombre().compareToIgnoreCase(o2.getRubro().getNombre()));
+        detalle.forEach(detalleListaPrecios -> {
+            dtm.addRow(new Object[]{
+                detalleListaPrecios.getRubro(),
+                detalleListaPrecios.getRubro().getNombre(),
+                detalleListaPrecios.getMargen()});
+        });
+        cargarRubros();
     }
 
     private void cargarRubros() {
         DefaultTableModel dtmRubros = panel.getDTMRubros();
-        for (int i = dtmRubros.getRowCount(); i > 0; i--) {
-            dtmRubros.removeRow(i - 1);
-        }
-
+        dtmRubros.setRowCount(0);
         DefaultTableModel dtmRubrosAfectados = panel.getDTMAfectados();
-        boolean cargarRubroATabla = true;
         for (Rubro rubro : listaDeRubros) {
-            for (int i = dtmRubrosAfectados.getRowCount() - 1; i >= 0; i--) {
-                if (dtmRubrosAfectados.getValueAt(i, 1).toString().equals(rubro.getNombre())) {
+            boolean cargarRubroATabla = true;
+            for (int i = 0; i < dtmRubrosAfectados.getRowCount(); i++) {
+                if (dtmRubrosAfectados.getValueAt(i, 0).equals(rubro)) {
                     cargarRubroATabla = false;
                     break;
                 }
             }
             if (cargarRubroATabla) {
-                dtmRubros.addRow(new Object[]{
-                    rubro.getId(),
-                    rubro
-                });
+                dtmRubros.addRow(new Object[]{rubro, rubro.getNombre()});
             }
-            cargarRubroATabla = true;
         }
     }
 
@@ -381,20 +281,20 @@ public class ListaPreciosController implements ActionListener, MouseListener, Ke
         int selectedRow = panel.getjTable1().getSelectedRow();
         if (selectedRow > -1) {
             try {
-                if (Double.valueOf(panel.getTfMargenPorRubro()) < 0) {
-                    throw new MessageException("Margen del Rubro no puede ser menor a 0.");
+                if (Double.valueOf(panel.getTfMargenPorRubro()) <= 0) {
+                    throw new MessageException("Margen del Rubro debe ser mayor a cero");
                 }
             } catch (NumberFormatException e) {
                 throw new MessageException("Margen no válido");
             }
             DefaultTableModel dtmRubrosAfectados = panel.getDTMAfectados();
-            Rubro rubro = (Rubro) panel.getSelectedRubro();
+            Rubro rubro = (Rubro) UTIL.getSelectedValueFromModel(panel.getjTable1(), 0);
             dtmRubrosAfectados.addRow(new Object[]{
-                rubro.getId(),
                 rubro,
+                rubro.getNombre(),
                 panel.getTfMargenPorRubro()
             });
-
+            EL_OBJECT.getDetalleListaPreciosList().add(new DetalleListaPrecios(Double.valueOf(panel.getTfMargenPorRubro()), EL_OBJECT, rubro));
             //quitar el rubro seleccionado de la tabla izquierda
             panel.getDTMRubros().removeRow(selectedRow);
         } else {
@@ -405,148 +305,21 @@ public class ListaPreciosController implements ActionListener, MouseListener, Ke
     private void delRubro() {
         int selectedRow = panel.getjTable2().getSelectedRow();
         if (selectedRow > -1) {
+            Rubro rub = (Rubro) UTIL.getSelectedValueFromModel(panel.getjTable2(), 0);
+            for (ListIterator<DetalleListaPrecios> iterator = EL_OBJECT.getDetalleListaPreciosList().listIterator(); iterator.hasNext();) {
+                DetalleListaPrecios det = iterator.next();
+                if (det.getRubro().equals(rub)) {
+                    iterator.remove();
+                    break;
+                }
+            }
             DefaultTableModel dtmRubrosAfectados = panel.getDTMAfectados();
             dtmRubrosAfectados.removeRow(selectedRow);
             cargarRubros();
         }
     }
 
-    public void mouseClicked(MouseEvent e) {
-    }
-
-    public void mousePressed(MouseEvent e) {
-    }
-
-    public void mouseEntered(MouseEvent e) {
-    }
-
-    public void mouseExited(MouseEvent e) {
-    }
-
-    public void keyTyped(KeyEvent e) {
-    }
-
-    public void keyPressed(KeyEvent e) {
-    }
-
-    public void actionPerformed(ActionEvent e) {
-        // <editor-fold defaultstate="collapsed" desc="JButton">
-        if (e.getSource().getClass().equals(javax.swing.JButton.class)) {
-            javax.swing.JButton boton = (javax.swing.JButton) e.getSource();
-            if (boton.getName().equalsIgnoreCase("new")) {
-                try {
-                    EL_OBJECT = null;
-                    initABM(false, e);
-
-                } catch (MessageException ex) {
-                    contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                } catch (Exception ex) {
-                    contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    LogManager.getLogger();//(SucursalController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            } else if (boton.getName().equalsIgnoreCase("edit")) {
-                try {
-                    initABM(true, e);
-                } catch (MessageException ex) {
-                    contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                } catch (Exception ex) {
-                    contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    LogManager.getLogger();//(SucursalController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-
-            } else if (boton.getName().equalsIgnoreCase("del")) {
-                try {
-                    if (EL_OBJECT == null) {
-                        throw new MessageException("No hay " + CLASS_NAME + " seleccionada");
-                    }
-                    destroy(EL_OBJECT.getId());
-                    contenedor.showMessage("Lista de precios eliminada", CLASS_NAME, 1);
-                    cargarDTM(contenedor.getDTM(), null);
-                } catch (MessageException ex) {
-                    contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                } catch (NonexistentEntityException ex) {
-                    contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    LogManager.getLogger();//(SucursalController.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (Exception ex) {
-                    contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    LogManager.getLogger();//(SucursalController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            } else if (boton.getName().equalsIgnoreCase("Print")) {
-            } else if (boton.getName().equalsIgnoreCase("exit")) {
-                contenedor.dispose();
-                contenedor = null;
-            } else if (boton.getName().equalsIgnoreCase("aceptar")) {
-                try {
-                    String msg = EL_OBJECT == null ? "creada." : "modificada.";
-                    setEntity();
-                    String msj = "Lista de precios " + msg;
-                    checkConstraints(EL_OBJECT);
-                    abm.showMessage(msj, CLASS_NAME, 1);
-                    cargarDTM(contenedor.getDTM(), null);
-                    if (EL_OBJECT.getId() != null) {
-                        abm.dispose();
-                    }
-                } catch (MessageException ex) {
-                    abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                } catch (Exception ex) {
-                    abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                    LogManager.getLogger();//(SucursalController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            } else if (boton.getName().equalsIgnoreCase("cancelar")) {
-                abm.dispose();
-                panel = null;
-                abm = null;
-                EL_OBJECT = null;
-            } else if (boton.getName().equalsIgnoreCase("addRubro")) {
-                try {
-                    addRubro();
-                } catch (MessageException ex) {
-                    abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                } catch (Exception ex) {
-                    abm.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                    ex.printStackTrace();
-                }
-
-            } else if (boton.getName().equalsIgnoreCase("delRubro")) {
-                delRubro();
-            }
-            return;
-        }// </editor-fold>
-
-    }
-
-    public void mouseReleased(MouseEvent e) {
-        Integer selectedRow = ((javax.swing.JTable) e.getSource()).getSelectedRow();
-        DefaultTableModel dtm
-                = (DefaultTableModel) ((javax.swing.JTable) e.getSource()).getModel();
-        if (selectedRow > -1) {
-            EL_OBJECT = DAO.getEntityManager().find(ListaPrecios.class,
-                    Integer.valueOf((dtm.getValueAt(selectedRow, 0)).toString()));
-        }
-    }
-
-    public void keyReleased(KeyEvent e) {
-        if (e.getComponent().getClass().equals(javax.swing.JTextField.class)) {
-            javax.swing.JTextField tf = (javax.swing.JTextField) e.getComponent();
-            if (tf.getName().equalsIgnoreCase("tfFiltro")) {
-//                armarQuery(tf.getText().trim());
-            }
-        }
-    }
-
-    /**
-     * Retorna la ListaPrecio marcada como referencia para el Catalogo Web or <code>null</code> if
-     * there is not.
-     *
-     * @return una instancia de {@link ListaPrecios}
-     */
     public ListaPrecios findListaPreciosParaCatalogo() {
-        ListaPrecios o;
-        try {
-            o = (ListaPrecios) DAO.getEntityManager().createQuery("SELECT o FROM " + ListaPrecios.class.getSimpleName() + " o WHERE o.paraCatalogoWeb = TRUE").getSingleResult();
-        } catch (NoResultException e) {
-            o = null;
-        }
-        return o;
+        return dao.findParaCatalogoWeb();
     }
 }

@@ -1,5 +1,6 @@
 package jgestion.controller;
 
+import java.awt.Window;
 import jgestion.controller.exceptions.IllegalOrphanException;
 import jgestion.controller.exceptions.MessageException;
 import jgestion.controller.exceptions.NonexistentEntityException;
@@ -17,10 +18,10 @@ import javax.persistence.NoResultException;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.table.DefaultTableModel;
+import jgestion.jpa.controller.RubroJpaController;
 
 /**
- * Clase encargada del DAO y CRUD de los Rubro's de los Productos, Clientes y
- * Proveedores.
+ * Clase encargada del DAO y CRUD de los Rubro's de los Productos, Clientes y Proveedores.
  *
  * @author FiruzzZ
  */
@@ -30,15 +31,14 @@ public class RubroController implements ActionListener, MouseListener {
 //    public static final int DE_CLIENTE=2;
 //    public static final int DE_PROVEEDOR=3;
     public final String CLASS_NAME = "Rubro";
-    private final String[] colsName = {"Nº", "Nombre", "Código"};
-    private final int[] colsWidth = {20, 120, 80};
     private JDMiniABM abm;
     /**
-     * Con este, separamos los rubros que usan las distintas entidades. 1=
-     * productos, 2= clientes, 3 = proveedores
+     * Con este, separamos los rubros que usan las distintas entidades. 1= productos, 2= clientes, 3
+     * = proveedores
      */
     private final short TIPO;
     private Rubro rubro;
+    private RubroJpaController dao = new RubroJpaController();
 
     /**
      * @param tipo 1=Productos, 2=clientes, 3=Proveedores
@@ -46,70 +46,6 @@ public class RubroController implements ActionListener, MouseListener {
     public RubroController() {
         TIPO = 1;
     }
-
-    // <editor-fold defaultstate="collapsed" desc="CRUD...">
-    public EntityManager getEntityManager() {
-        return DAO.getEntityManager();
-    }
-
-    public void create(Rubro rubro) throws Exception {
-        DAO.create(rubro);
-    }
-
-    public void edit(Rubro rubro) {
-        DAO.merge(rubro);
-    }
-
-    public void destroy(Integer id) throws NonexistentEntityException, IllegalOrphanException {
-        EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            Rubro rubro;
-            //ctrl de Existencia.......
-            try {
-                rubro = em.getReference(Rubro.class, id);
-                rubro.getId();
-            } catch (EntityNotFoundException enfe) {
-                throw new NonexistentEntityException("The rubro with id " + id + " no longer exists.", enfe);
-            }
-            List<String> illegalOrphanMessages = null;
-            //contrl de clientes orphans
-
-            int cantOrphans = 0;
-            cantOrphans += getListDeForeignKeys(id);
-            cantOrphans += getListSubRubros(id);
-
-            if (cantOrphans > 0) {
-                if (illegalOrphanMessages == null) {
-                    illegalOrphanMessages = new java.util.ArrayList<String>();
-                }
-                illegalOrphanMessages.add("No puede eliminar este rubro porque hay " + cantOrphans + " " + rubroToString(cantOrphans) + " relacionados a este");
-            }
-            if (illegalOrphanMessages != null) {
-                throw new IllegalOrphanException(illegalOrphanMessages);
-            }
-            em.remove(rubro);
-            em.getTransaction().commit();
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
-    }
-
-    public List<Rubro> findRubros() {
-        return DAO.getEntityManager().createNamedQuery("Rubro.findByTipo").setParameter("tipo", TIPO).getResultList();
-    }
-
-    public Rubro findRubro(Integer id) {
-        EntityManager em = getEntityManager();
-        try {
-            return em.find(Rubro.class, id);
-        } finally {
-            em.close();
-        }
-    }// </editor-fold>
 
     private void checkConstraints(Rubro rubro) throws MessageException, Exception {
         String idQuery = "";
@@ -131,11 +67,10 @@ public class RubroController implements ActionListener, MouseListener {
             }
         }
 
-        //persistiendo......
         if (rubro.getId() == null) {
-            create(rubro);
+            dao.persist(rubro);
         } else {
-            edit(rubro);
+            dao.merge(rubro);
         }
     }
 
@@ -171,11 +106,6 @@ public class RubroController implements ActionListener, MouseListener {
                     abm.showMessage("Eliminado..", CLASS_NAME, 1);
                 } catch (MessageException ex) {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                } catch (NonexistentEntityException ex) {
-                    abm.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    ex.printStackTrace();
-                } catch (IllegalOrphanException ex) {
-                    abm.showMessage(ex.getMessage(), CLASS_NAME, 0);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -199,14 +129,7 @@ public class RubroController implements ActionListener, MouseListener {
         }// </editor-fold>
     }
 
-    public JDialog getABM(JDialog owner) throws MessageException {
-        UsuarioController.checkPermiso(PermisosController.PermisoDe.ABM_PRODUCTOS);
-        abm = new JDMiniABM(owner, true);
-        initABM();
-        return abm;
-    }
-
-    public JDialog getABM(JFrame owner) throws MessageException {
+    public JDialog getABM(Window owner) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.ABM_PRODUCTOS);
         abm = new JDMiniABM(owner, true);
         initABM();
@@ -216,11 +139,12 @@ public class RubroController implements ActionListener, MouseListener {
     private void initABM() throws MessageException {
         abm.hideFieldExtra();
         abm.hideBtnLock();
-        abm.setTitle("ABM - Rubros de " + rubroToString());
+        abm.setTitle("ABM - Rubros");
         abm.getTaInformacion().setText("Los Rubros (y SubRubros) son utilizados para clasificar y segmentar los "
                 + "distintos productos");
-        UTIL.getDefaultTableModel(abm.getjTable1(), colsName, colsWidth);
-        //oculta columna ID
+        UTIL.getDefaultTableModel(abm.getjTable1(),
+                new String[]{"Nº", "Nombre", "Código"},
+                new int[]{20, 120, 80});
         UTIL.hideColumnTable(abm.getjTable1(), 0);
         cargarDTM(abm.getDTM(), null);
         abm.setListeners(this);
@@ -251,100 +175,27 @@ public class RubroController implements ActionListener, MouseListener {
     }
 
     private void cargarDTM(DefaultTableModel dtm, String query) {
-        for (int i = dtm.getRowCount(); i > 0; i--) {
-            dtm.removeRow(i - 1);
-        }
-        java.util.List<Rubro> l;
+        dtm.setRowCount(0);
+        List<Rubro> l;
         if (query == null || query.length() < 10) {
-            l = DAO.getEntityManager().createNamedQuery(CLASS_NAME + ".findByTipo").setParameter("tipo", TIPO).getResultList();
-        } else // para cuando se usa el Buscador del ABM
-        {
-            l = DAO.getEntityManager().createNativeQuery(query, Rubro.class).getResultList();
+            l = dao.findAll();
+        } else {
+            // para cuando se usa el Buscador del ABM
+            l = dao.findByNativeQuery(query);
         }
-        for (Rubro o : l) {
-            dtm.addRow(new Object[]{
-                        o.getId(),
-                        o.getNombre(),
-                        o.getCodigo()
-                    });
-        }
+        l.forEach(o -> dtm.addRow(new Object[]{o.getId(), o.getNombre(), o.getCodigo()}));
     }
 
     private void setPanelFields(Rubro o) {
         abm.setTfNombre(o.getNombre());
-        if (o.getCodigo() != null) {
-            abm.setTfCodigo(o.getCodigo());
-        } else {
-            abm.setTfCodigo("");
-        }
+        abm.setTfCodigo(o.getCodigo());
     }
 
     private void eliminarRubro() throws MessageException, NonexistentEntityException, IllegalOrphanException {
         if (rubro == null) {
             throw new MessageException("No hay " + CLASS_NAME + " seleccionado");
         }
-        destroy(rubro.getId());
+        dao.remove(rubro);
     }
 
-    private int getListDeForeignKeys(int idRubro) {
-        try {
-
-            return DAO.getEntityManager().createNativeQuery("select * from " + rubroToString() + " where rubro=" + idRubro).getResultList().size();
-        } catch (NoResultException ex) {
-            return 0;
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return 0;
-    }
-
-    private int getListSubRubros(int idRubro) {
-        try {
-            return DAO.getEntityManager().createNativeQuery("select * from " + rubroToString() + " where subrubro=" + idRubro).getResultList().size();
-        } catch (NoResultException ex) {
-            return 0;
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return 0;
-    }
-
-    private String rubroToString(int rubrosDe) {
-        if (rubrosDe <= 1) {
-            switch (TIPO) {
-                case 1:
-                    return "Producto";
-                case 2:
-                    return "Cliente";
-                case 3:
-                    return "Proveedor";
-                default:
-                    return null;
-            }
-        } else {
-            switch (TIPO) {
-                case 1:
-                    return "Productos";
-                case 2:
-                    return "Clientes";
-                case 3:
-                    return "Proveedores";
-                default:
-                    return null;
-            }
-        }
-    }
-
-    private String rubroToString() {
-        switch (TIPO) {
-            case 1:
-                return "Producto";
-            case 2:
-                return "Cliente";
-            case 3:
-                return "Proveedor";
-            default:
-                return null;
-        }
-    }
 }

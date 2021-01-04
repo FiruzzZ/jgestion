@@ -4,19 +4,11 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 /**
- * Clase Marca, de la cual depende Producto para ser persistido
+ * un clasificador mas de {@link Producto}
  *
  * @author FiruzzZ
  */
 @Entity
-@Table(name = "marca", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"nombre"})})
-@NamedQueries({
-    @NamedQuery(name = "Marca.findAll", query = "SELECT m FROM Marca m ORDER BY m.nombre"),
-    @NamedQuery(name = "Marca.findById", query = "SELECT m FROM Marca m WHERE m.id = :id"),
-    @NamedQuery(name = "Marca.findByCodigo", query = "SELECT m FROM Marca m WHERE m.codigo = :codigo"),
-    @NamedQuery(name = "Marca.findByNombre", query = "SELECT m FROM Marca m WHERE m.nombre = :nombre")
-})
 public class Marca implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -25,10 +17,10 @@ public class Marca implements Serializable {
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column(name = "codigo", length = 50)
+    @Column(name = "codigo", length = 10, unique = true)
     private String codigo;
     @Basic(optional = false)
-    @Column(name = "nombre", nullable = false, length = 50)
+    @Column(name = "nombre", nullable = false, length = 50, unique = true)
     private String nombre;
 
     public Marca() {
@@ -65,13 +57,6 @@ public class Marca implements Serializable {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
-    }
-
-    @PostLoad
-    public void postLoad() {
-        if (this.getNombre() == null) {
-            System.out.println("PostLoad > " + this.toString());
-        }
     }
 
     @Override

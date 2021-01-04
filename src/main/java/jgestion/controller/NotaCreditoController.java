@@ -442,13 +442,11 @@ public class NotaCreditoController {
             Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_NotaCredito.jasper", "Nota de Crédito");
             r.addCurrent_User();
             r.addParameter("CBTE_ID", notaCredito.getId());
-            r.printReport(true);
+            r.viewReport();
         }
     }
 
     double getCreditoDisponible(Cliente cliente) {
-//        Object[] o = (Object[]) getEntityManager().createQuery(
-//                " SELECT sum(o.importe), sum (o.desacreditado) "
         BigDecimal o = (BigDecimal) DAO.getEntityManager().createQuery(
                 " SELECT sum(o.importe)"
                 + "FROM " + jpaController.getEntityClass().getSimpleName() + " o "

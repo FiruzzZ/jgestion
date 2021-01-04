@@ -22,6 +22,7 @@ import javax.swing.JFrame;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
+import jgestion.controller.exceptions.ConstraintViolationJpaException;
 import jgestion.jpa.controller.IvaJpaController;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -42,59 +43,6 @@ public class IvaController implements ActionListener {
     public IvaController() {
     }
 
-    // <editor-fold defaultstate="collapsed" desc="CRUD....">
-    public EntityManager getEntityManager() {
-        return DAO.getEntityManager();
-    }
-
-    public void destroy(Integer id) throws IllegalOrphanException, NonexistentEntityException {
-        EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            Iva iva;
-            try {
-                iva = em.getReference(Iva.class, id);
-                iva.getId();
-            } catch (EntityNotFoundException enfe) {
-                throw new NonexistentEntityException("The iva with id " + id + " no longer exists.", enfe);
-            }
-            List<String> illegalOrphanMessages = null;
-            List<Producto> productoListOrphanCheck = new ProductoController().findProductoByIva(iva);
-            for (Producto productoListOrphanCheckProducto : productoListOrphanCheck) {
-                if (illegalOrphanMessages == null) {
-                    illegalOrphanMessages = new ArrayList<String>();
-                }
-                illegalOrphanMessages.add("Código=" + productoListOrphanCheckProducto.getCodigo() + ", Nombre=" + productoListOrphanCheckProducto.getNombre());
-            }
-            if (illegalOrphanMessages != null) {
-                throw new IllegalOrphanException(illegalOrphanMessages);
-            }
-            em.remove(iva);
-            em.getTransaction().commit();
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
-    }
-
-    public List<Iva> findAll() {
-        return findIvaEntities(true, -1, -1);
-    }
-    private List<Iva> findIvaEntities(boolean all, int maxResults, int firstResult) {
-        if (all) {
-            return jpaController.findAll();
-        } else {
-            return jpaController.findRange(firstResult, maxResults);
-        }
-    }
-
-    public Iva find(Integer id) {
-        return jpaController.find(id);
-    }
-    // </editor-fold>
-
     public void initABM(Window owner, boolean modal) throws MessageException {
         UsuarioController.checkPermiso(PermisosController.PermisoDe.ABM_PRODUCTOS);
         abm = new JDMiniABM(owner, modal);
@@ -105,7 +53,7 @@ public class IvaController implements ActionListener {
         abm.hideFieldNombre();
         abm.hideBtnLock();
         abm.hideFieldExtra();
-        abm.setTitle("ABM - " + jpaController.getEntityClass().getSimpleName());
+        abm.setTitle("ABM - IVA's");
         UTIL.getDefaultTableModel(abm.getjTable1(), colsName, colsWidth, new Class<?>[]{null, String.class});
         UTIL.setHorizonalAlignment(abm.getjTable1(), String.class, SwingConstants.RIGHT);
         cargarTablaIvas(abm.getjTable1(), null);
@@ -115,7 +63,7 @@ public class IvaController implements ActionListener {
             public void mouseReleased(MouseEvent e) {
                 Integer selectedRow = ((javax.swing.JTable) e.getSource()).getSelectedRow();
                 if (selectedRow > -1) {
-                    EL_OBJECT = find(Integer.parseInt(UTIL.getSelectedValue(abm.getjTable1(), 0).toString()));
+                    EL_OBJECT = jpaController.find(Integer.parseInt(UTIL.getSelectedValueFromModel(abm.getjTable1(), 0).toString()));
                 }
                 if (EL_OBJECT != null) {
                     setPanelFields(EL_OBJECT);
@@ -157,19 +105,15 @@ public class IvaController implements ActionListener {
                     if (EL_OBJECT == null) {
                         throw new MessageException("Debe seleccionar la fila que desea borrar");
                     }
-                    destroy(EL_OBJECT.getId());
+                    jpaController.remove(EL_OBJECT);
                     clearPanelFields();
                     cargarTablaIvas(abm.getjTable1(), null);
                     abm.showMessage("Eliminado..", jpaController.getEntityClass().getSimpleName(), 1);
                 } catch (MessageException ex) {
                     abm.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 0);
-                } catch (IllegalOrphanException ex) {
-                    abm.showMessage("El IVA " + EL_OBJECT.getIva() + " no puede ser eliminado por estar relacionado a los siguientes Productos\n"
+                } catch (ConstraintViolationJpaException ex) {
+                    abm.showMessage("El registro no puede ser eliminado por estar relacionado a Productos\n"
                             + ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 0);
-                } catch (NonexistentEntityException ex) {
-                    abm.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 0);
-
-                } catch (Exception ex) {
                 }
             } else if (boton.getName().equalsIgnoreCase("cancelar")) {
                 clearPanelFields();
@@ -181,8 +125,6 @@ public class IvaController implements ActionListener {
                     cargarTablaIvas(abm.getjTable1(), null);
                 } catch (MessageException ex) {
                     abm.showMessage(ex.getMessage(), jpaController.getEntityClass().getSimpleName(), 2);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
                 }
             }
         }// </editor-fold>
@@ -205,7 +147,7 @@ public class IvaController implements ActionListener {
         }
     }
 
-    private void checkConstraints(Iva iva) throws MessageException, PreexistingEntityException, Exception {
+    private void checkConstraints(Iva iva) throws MessageException {
         DefaultTableModel dtm = abm.getDTM();
         for (int i = dtm.getRowCount() - 1; i > -1; i--) {
             if (Double.valueOf(iva.getIva()) == Double.valueOf(dtm.getValueAt(i, 1).toString())) {

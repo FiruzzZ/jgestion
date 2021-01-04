@@ -5,29 +5,12 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.*;
-import org.eclipse.persistence.config.QueryHints;
 
 /**
  *
  * @author FiruzzZ
  */
 @Entity
-@Table(name = "producto", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"nombre"}),
-    @UniqueConstraint(columnNames = {"codigo"})
-})
-@NamedQueries({
-    @NamedQuery(name = "Producto.findAll", query = "SELECT p FROM Producto p ORDER BY p.nombre",
-            hints
-            = @QueryHint(name = QueryHints.REFRESH, value = "true")),
-    @NamedQuery(name = "Producto.findById", query = "SELECT p FROM Producto p WHERE p.id = :id",
-            hints
-            = @QueryHint(name = QueryHints.REFRESH, value = "true")),
-    @NamedQuery(name = "Producto.findByCodigo", query = "SELECT p FROM Producto p WHERE p.codigo = :codigo",
-            hints
-            = @QueryHint(name = QueryHints.REFRESH, value = "true")),
-    @NamedQuery(name = "Producto.findByNombre", query = "SELECT p FROM Producto p WHERE p.nombre = :nombre")
-})
 @SqlResultSetMappings({
     //para los ComboBox
     @SqlResultSetMapping(name = "ProductoToBuscador", entities = {
@@ -56,9 +39,9 @@ public class Producto implements Serializable {
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column(name = "codigo", length = 50)
+    @Column(name = "codigo", length = 15, unique = true)
     private String codigo;
-    @Column(name = "nombre", length = 250)
+    @Column(name = "nombre", length = 150, unique = true)
     private String nombre;
     @Basic(optional = false)
     @Column(name = "stockmaximo", nullable = false)
@@ -75,8 +58,7 @@ public class Producto implements Serializable {
     private String ubicacion;
     @Column(name = "costo_compra", precision = 12, scale = 4)
     /**
-     * Cuando se crea el producto es setteado a 0. Después es modificado por las
-     * Facturas de compra.
+     * Cuando se crea el producto es setteado a 0. Después es modificado por las Facturas de compra.
      */
     private BigDecimal costoCompra;
     @Column(name = "descripcion", length = 2000)
@@ -88,6 +70,12 @@ public class Producto implements Serializable {
     private BigDecimal precioVenta;
     @Column(name = "foto")
     private byte[] foto;
+    /**
+     * Determina si el producto le produce ganancias/comisión a los {@link Vendedor}. No todos los
+     * productos que se comercializan tienen un margen de ganancia sufiente para la empresa y sus
+     * vendedores
+     *
+     */
     @Column(name = "remunerativo", nullable = false)
     private boolean remunerativo;
     @Basic(optional = false)
@@ -111,10 +99,9 @@ public class Producto implements Serializable {
     private Rubro subrubro;
     @JoinColumn(name = "idunidadmedida", nullable = false)
     @ManyToOne(optional = false)
-    private Unidadmedida idunidadmedida;
+    private Unidadmedida unidadmedida;
     /**
-     * Los que son comercializados (se venden), lo demás pueden ser compras de
-     * artículos de oficina.
+     * Los que son comercializados (se venden), lo demás pueden ser compras de artículos de oficina.
      */
     @Column(name = "bien_de_cambio", nullable = false)
     private boolean bienDeCambio;
@@ -225,10 +212,18 @@ public class Producto implements Serializable {
         this.foto = foto;
     }
 
+    /**
+     *
+     * @return {@link #remunerativo}
+     */
     public boolean getRemunerativo() {
         return remunerativo;
     }
 
+    /**
+     *
+     * @param remunerativo {@link #remunerativo}
+     */
     public void setRemunerativo(boolean remunerativo) {
         this.remunerativo = remunerativo;
     }
@@ -289,12 +284,12 @@ public class Producto implements Serializable {
         this.subrubro = subrubro;
     }
 
-    public Unidadmedida getIdunidadmedida() {
-        return idunidadmedida;
+    public Unidadmedida getUnidadmedida() {
+        return unidadmedida;
     }
 
-    public void setIdunidadmedida(Unidadmedida idunidadmedida) {
-        this.idunidadmedida = idunidadmedida;
+    public void setUnidadmedida(Unidadmedida unidadmedida) {
+        this.unidadmedida = unidadmedida;
     }
 
     public void setUpdatePrecioVenta(boolean updatePrecioVenta) {
@@ -335,7 +330,14 @@ public class Producto implements Serializable {
 
     @Override
     public String toString() {
-        return "Producto{" + "id=" + id + ", codigo=" + codigo + ", nombre=" + nombre + ", stockmaximo=" + stockmaximo + ", stockactual=" + stockactual + ", stockminimo=" + stockminimo + ", deposito=" + deposito + ", ubicacion=" + ubicacion + ", costoCompra=" + costoCompra + ", descripcion=" + descripcion + ", updatePrecioVenta=" + updatePrecioVenta + ", precioVenta=" + precioVenta + ", remunerativo=" + remunerativo + ", fechaAlta=" + fechaAlta + ", ultimaCompra=" + ultimaCompra + ", iva=" + iva + ", marca=" + marca + ", rubro=" + rubro + ", subrubro=" + subrubro + ", idunidadmedida=" + idunidadmedida + ", bienDeCambio=" + bienDeCambio + '}';
+        return "Producto{" + "id=" + id + ", codigo=" + codigo + ", nombre=" + nombre + ", stockmaximo=" + stockmaximo
+                + ", stockactual=" + stockactual + ", stockminimo=" + stockminimo + ", deposito=" + deposito
+                + ", ubicacion=" + ubicacion + ", costoCompra=" + costoCompra + ", descripcion=" + descripcion
+                + ", updatePrecioVenta=" + updatePrecioVenta + ", precioVenta=" + precioVenta
+                + ", remunerativo=" + remunerativo + ", fechaAlta=" + fechaAlta + ", ultimaCompra=" + ultimaCompra
+                + ", iva=" + iva + ", marca=" + marca + ", rubro=" + rubro + ", subrubro=" + subrubro
+                + ", idunidadmedida=" + unidadmedida + ", bienDeCambio=" + bienDeCambio
+                + '}';
     }
 
     /**

@@ -82,7 +82,7 @@
         <class>jgestion.entity.TipoDocumento</class>
         <class>jgestion.entity.Sistema</class>
         <properties>
-            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/jgestionahinco"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/jgestion"/>
             <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
             <property name="javax.persistence.jdbc.user" value="jgestion"/>
             <property name="javax.persistence.jdbc.password" value="jgestion"/>

@@ -1,8 +1,5 @@
 package jgestion.controller;
 
-import jgestion.controller.exceptions.IllegalOrphanException;
-import jgestion.controller.exceptions.MessageException;
-import jgestion.controller.exceptions.NonexistentEntityException;
 import utilities.general.UTIL;
 import jgestion.entity.Unidadmedida;
 import jgestion.gui.JDMiniABM;
@@ -11,119 +8,28 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.NoResultException;
+import java.util.Objects;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.table.DefaultTableModel;
+import jgestion.controller.exceptions.MessageException;
+import jgestion.jpa.controller.UnidadmedidaJpaController;
 import org.apache.logging.log4j.LogManager;
 
 /**
  *
  * @author FiruzzZ
  */
-public class UnidadmedidaJpaController implements ActionListener, MouseListener {
+public class UnidadmedidaController implements ActionListener, MouseListener {
 
     private String CLASS_NAME = "Unidadmedida";
     private final String[] colsName = {"Nº", "Nombre"};
     private final int[] colsWidth = {20, 20};
     private JDMiniABM abm;
     private Unidadmedida unidadMedida;
+    private UnidadmedidaJpaController dao = new UnidadmedidaJpaController();
 
-    public UnidadmedidaJpaController() {
-    }
-
-    public EntityManager getEntityManager() {
-        return DAO.getEntityManager();
-    }
-
-    public void create(Unidadmedida unidadmedida) throws Exception {
-        DAO.create(unidadmedida);
-    }
-
-    public void edit(Unidadmedida unidadmedida) throws NonexistentEntityException, Exception {
-        DAO.merge(unidadmedida);
-    }
-
-    public void destroy(Integer id) throws NonexistentEntityException, IllegalOrphanException {
-        EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            Unidadmedida unidadmedida;
-            try {
-                unidadmedida = em.getReference(Unidadmedida.class, id);
-                unidadmedida.getId();
-            } catch (EntityNotFoundException enfe) {
-                throw new NonexistentEntityException("The unidadmedida with id " + id + " no longer exists.", enfe);
-            }
-            List<String> illegalOrphanMessages = null;
-            //contrl de clientes orphans
-            int cantOrphans = getProductosList(id);
-            if (cantOrphans > 0) {
-                if (illegalOrphanMessages == null) {
-                    illegalOrphanMessages = new java.util.ArrayList<String>();
-                }
-                illegalOrphanMessages.add("No puede eliminar esta " + CLASS_NAME + " porque hay " + cantOrphans + " Producto/s relacionados a este");
-            }
-            if (illegalOrphanMessages != null) {
-                throw new IllegalOrphanException(illegalOrphanMessages);
-            }
-            em.remove(unidadmedida);
-            em.getTransaction().commit();
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
-    }
-
-    public List<Unidadmedida> findUnidadmedidaEntities() {
-        return findUnidadmedidaEntities(true, -1, -1);
-    }
-
-    public List<Unidadmedida> findUnidadmedidaEntities(int maxResults, int firstResult) {
-        return findUnidadmedidaEntities(false, maxResults, firstResult);
-    }
-
-    private List<Unidadmedida> findUnidadmedidaEntities(boolean all, int maxResults, int firstResult) {
-        EntityManager em = getEntityManager();
-        try {
-            Query q = em.createQuery("select object(o) from Unidadmedida as o");
-            if (!all) {
-                q.setMaxResults(maxResults);
-                q.setFirstResult(firstResult);
-            }
-            return q.getResultList();
-        } finally {
-            em.close();
-        }
-    }
-
-    public Unidadmedida findUnidadmedida(Integer id) {
-        EntityManager em = getEntityManager();
-        try {
-            return em.find(Unidadmedida.class, id);
-        } finally {
-            em.close();
-        }
-    }
-
-    public int getUnidadmedidaCount() {
-        EntityManager em = getEntityManager();
-        try {
-            return ((Long) em.createQuery("select count(o) from Unidadmedida as o").getSingleResult()).intValue();
-        } finally {
-            em.close();
-        }
-    }
-
-    private int getProductosList(Integer id) {
-        return DAO.getEntityManager().createNativeQuery(
-                "SELECT * FROM Producto o WHERE o.idunidadmedida = " + id).getResultList().size();
+    public UnidadmedidaController() {
     }
 
     @Override
@@ -138,18 +44,14 @@ public class UnidadmedidaJpaController implements ActionListener, MouseListener 
                     if (unidadMedida == null) {
                         throw new MessageException("Debe seleccionar la fila que desea borrar");
                     }
-                    destroy(unidadMedida.getId());
+                    dao.remove(unidadMedida);
                     clearPanelFields();
                     cargarDTM(abm.getDTM(), "");
                     abm.showMessage("Eliminado..", CLASS_NAME, 1);
                 } catch (MessageException ex) {
                     abm.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                } catch (NonexistentEntityException ex) {
-                    abm.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                } catch (IllegalOrphanException ex) {
-                    abm.showMessage(ex.getMessage(), CLASS_NAME, 0);
                 } catch (Exception ex) {
-                    LogManager.getLogger();//(this.getClass()).error(null, ex);
+                    LogManager.getLogger();
                 }
             } else if (boton.getName().equalsIgnoreCase("cancelar")) {
                 clearPanelFields();
@@ -196,15 +98,15 @@ public class UnidadmedidaJpaController implements ActionListener, MouseListener 
         }
         java.util.List<Unidadmedida> l;
         if (naviteQuery == null || naviteQuery.length() < 10) {
-            l = DAO.getEntityManager().createNamedQuery(CLASS_NAME + ".findAll").getResultList();
-        } else // para cuando se usa el Buscador del ABM
-        {
+            l = dao.findAll();
+        } else {
+            // para cuando se usa el Buscador del ABM
             l = DAO.getEntityManager().createNativeQuery(naviteQuery, Unidadmedida.class).getResultList();
         }
         for (Unidadmedida o : l) {
             dtm.addRow(new Object[]{
-                        o.getId(),
-                        o.getNombre(),});
+                o.getId(),
+                o.getNombre(),});
         }
     }
 
@@ -218,22 +120,15 @@ public class UnidadmedidaJpaController implements ActionListener, MouseListener 
         unidadMedida.setNombre(abm.getTfNombre().trim().toUpperCase());
     }
 
-    private void checkConstraints(Unidadmedida unidadMedida) throws MessageException, NonexistentEntityException, Exception {
-        String idQuery = "";
-        if (unidadMedida.getId() != null) {
-            idQuery = "o.id!=" + unidadMedida.getId() + " AND ";
+    private void checkConstraints(Unidadmedida unidadMedida) throws MessageException {
+        Unidadmedida old = dao.findByNombre(unidadMedida.getNombre());
+        if (old != null && !Objects.equals(unidadMedida, old)) {
+            throw new MessageException("Ya existe una unidad de medida con este nombre");
         }
-        try {
-            DAO.getEntityManager().createNativeQuery("SELECT * FROM " + CLASS_NAME + " o "
-                    + " WHERE " + idQuery + " o.nombre='" + unidadMedida.getNombre() + "'", Unidadmedida.class).getSingleResult();
-            throw new MessageException("Ya existe otra " + CLASS_NAME + " con este nombre.");
-        } catch (NoResultException ex) {
-        }
-        //persistiendo......
         if (unidadMedida.getId() == null) {
-            create(unidadMedida);
+            dao.persist(unidadMedida);
         } else {
-            edit(unidadMedida);
+            dao.merge(unidadMedida);
         }
     }
 
@@ -274,4 +169,5 @@ public class UnidadmedidaJpaController implements ActionListener, MouseListener 
     private void setPanelFields(Unidadmedida unidadMedida) {
         abm.setTfNombre(unidadMedida.getNombre());
     }
+
 }

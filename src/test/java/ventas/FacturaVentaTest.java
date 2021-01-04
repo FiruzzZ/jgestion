@@ -7,7 +7,6 @@ package ventas;
 
 import java.util.List;
 import jgestion.entity.FacturaVenta;
-import jgestion.entity.FacturaVenta_;
 import jgestion.jpa.controller.FacturaVentaJpaController;
 import junit.framework.TestCase;
 import org.apache.logging.log4j.LogManager;

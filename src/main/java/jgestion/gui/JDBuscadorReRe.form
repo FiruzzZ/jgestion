@@ -286,7 +286,7 @@
         </Component>
         <Component class="javax.swing.JLabel" name="labelReRe">
           <Properties>
-            <Property name="text" type="java.lang.String" value="N&#xba; ReReRe"/>
+            <Property name="text" type="java.lang.String" value="N&#xba; Recibo"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="tfCuarto">

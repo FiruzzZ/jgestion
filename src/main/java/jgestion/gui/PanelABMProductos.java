@@ -88,6 +88,7 @@ public class PanelABMProductos extends javax.swing.JPanel {
         checkBienDeCambio = new javax.swing.JCheckBox();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
+        checkComisiona = new javax.swing.JCheckBox();
 
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
@@ -214,7 +215,7 @@ public class PanelABMProductos extends javax.swing.JPanel {
         dateUltimaCompra.setFocusable(false);
 
         checkBoxSucursalTodas.setText("Todas las Sucursales permitidas");
-        checkBoxSucursalTodas.setToolTipText("<html>\nEl Producto estará disponible para todas las Sucursales que el usuario tenga acceso\n</html>");
+        checkBoxSucursalTodas.setToolTipText("<html>\nEl Producto estará disponible para todas las Sucursales que el usuario tenga acceso.\n<br>Si un producto es de exclusiva venta/comercialización de una sucursal, desactivar esta opción y \n<br>seleccionar la sucursal\n</html>");
 
         bStockGral.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/view_detail_16x.png"))); // NOI18N
         bStockGral.setToolTipText("Ver stock gral. (Sucursales)");
@@ -225,15 +226,18 @@ public class PanelABMProductos extends javax.swing.JPanel {
 
         checkUpdatePrecioVenta.setSelected(true);
         checkUpdatePrecioVenta.setText("Actualizar Precio Venta según compras");
-        checkUpdatePrecioVenta.setToolTipText("<html>\nChequeando está opción, permite al sistema actualizar automáticamente el <b>Precio de Venta</b>\n<br>según el <b>Costo de Compra</b>.\n<br>Cada vez que se registre una compra del producto, el <b>Costo de Compra</b> se modifica y\n<br>así también lo hará el <b>Precio de Venta</b>.\n</html>");
+        checkUpdatePrecioVenta.setToolTipText("<html>\nEstá opción permite al sistema actualizar automáticamente el <b>Precio de Venta</b>\n<br>según el <b>Costo de Compra</b>.\n<br>Cada vez que se registre una compra del producto, el <b>Costo de Compra</b> se modifica y\n<br>así también lo hará el <b>Precio de Venta</b>.\n</html>");
 
         checkBienDeCambio.setSelected(true);
         checkBienDeCambio.setText("Bien de Cambio");
-        checkBienDeCambio.setToolTipText("<html>Son aquellos que puede ser <b>vendidos</b>.\n<br>Por los cuales estarán compuestos los comprobantes de Ingresos como <b>Facturas de Venta, Remitos y Nota de Crédito</b>.");
+        checkBienDeCambio.setToolTipText("<html>Son aquellos que pueden ser <b>vendidos/comercializables</b>.\n<br>Por los cuales estarán compuestos los comprobantes de Ingresos como <b>Facturas de Venta, Remitos y Nota de Crédito</b>.\n<br>Los productos que se compran para uso/consumo interno de la empresa no son bienes de cambio");
 
         jTextArea1.setColumns(20);
         jTextArea1.setRows(5);
         jScrollPane1.setViewportView(jTextArea1);
+
+        checkComisiona.setText("Comisiona");
+        checkComisiona.setToolTipText("<html>\nDetermina si el producto genera ganancias/comisión para el <b>vendedor</b>\n<br>Algunos productos tienen un margen de ganancias muy bajo, para estos casos desactivar esta opción.");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -253,7 +257,10 @@ public class PanelABMProductos extends javax.swing.JPanel {
                     .addComponent(jLabel18))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(checkBienDeCambio)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(checkBienDeCambio)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(checkComisiona))
                     .addComponent(dateUltimaCompra, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
@@ -356,7 +363,9 @@ public class PanelABMProductos extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(checkUpdatePrecioVenta)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(checkBienDeCambio)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(checkBienDeCambio)
+                    .addComponent(checkComisiona))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel13)
@@ -437,6 +446,7 @@ public class PanelABMProductos extends javax.swing.JPanel {
     private javax.swing.JComboBox cbSucursal;
     private javax.swing.JCheckBox checkBienDeCambio;
     private javax.swing.JCheckBox checkBoxSucursalTodas;
+    private javax.swing.JCheckBox checkComisiona;
     private javax.swing.JCheckBox checkUpdatePrecioVenta;
     private com.toedter.calendar.JDateChooser dateUltimaCompra;
     private javax.swing.JLabel jLabel1;
@@ -467,27 +477,6 @@ public class PanelABMProductos extends javax.swing.JPanel {
     private javax.swing.JTextField tfStockMax;
     private javax.swing.JTextField tfStockMinimo;
     // End of variables declaration//GEN-END:variables
-
-    public void resetFields() {
-        tfCodigo.setText("");
-        tfNombre.setText("");
-        tfStockActual.setText("0");
-        tfStockMax.setText("0");
-//        tfDeposito.setText("");
-        jTextArea1.setText(null);
-        tfStockActual.setText("0");
-        tfPrecio.setText("");
-        tfCostoCompra.setText("");
-        //los cb (comboBox) se dejan por conveniencia en su última selección)
-    }
-
-    public void setListeners(Object o) {
-        bBuscarFoto.addActionListener((ActionListener) o);
-        bQuitarFoto.addActionListener((ActionListener) o);
-        bMarcas.addActionListener((ActionListener) o);
-        tfPrecio.addKeyListener((KeyListener) o);
-        bStockGral.addActionListener((ActionListener) o);
-    }
 
     // <editor-fold defaultstate="collapsed" desc="SETTERS">
     public void setTaDescrip(String taDescrip) {
@@ -619,6 +608,15 @@ public class PanelABMProductos extends javax.swing.JPanel {
     public JCheckBox getCheckBienDeCambio() {
         return checkBienDeCambio;
     }
+
+    public JCheckBox getCheckComisiona() {
+        return checkComisiona;
+    }
+
+    public JCheckBox getCheckBoxSucursalTodas() {
+        return checkBoxSucursalTodas;
+    }
+    
     // </editor-fold>
 
     private void soloNumeros(KeyEvent evt) {

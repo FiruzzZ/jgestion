@@ -1,6 +1,7 @@
 package jgestion.entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
 
@@ -9,13 +10,7 @@ import javax.persistence.*;
  * @author Administrador
  */
 @Entity
-@Table(name = "lista_precios", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"nombre"})})
-@NamedQueries({
-    @NamedQuery(name = "ListaPrecios.findAll", query = "SELECT l FROM ListaPrecios l ORDER BY l.nombre"),
-    @NamedQuery(name = "ListaPrecios.findById", query = "SELECT l FROM ListaPrecios l WHERE l.id = :id"),
-    @NamedQuery(name = "ListaPrecios.findByNombre", query = "SELECT l FROM ListaPrecios l WHERE l.nombre = :nombre")
-})
+@Table(name = "lista_precios")
 public class ListaPrecios implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -25,7 +20,7 @@ public class ListaPrecios implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Basic(optional = false)
-    @Column(name = "nombre", nullable = false, length = 100)
+    @Column(name = "nombre", nullable = false, length = 100, unique = true)
     private String nombre;
     @Basic(optional = false)
     @Column(name = "margen", nullable = false, precision = 5, scale = 2)
@@ -40,13 +35,16 @@ public class ListaPrecios implements Serializable {
     private List<DetalleListaPrecios> detalleListaPreciosList;
 
     public ListaPrecios() {
+        detalleListaPreciosList = new ArrayList<>();
     }
 
     public ListaPrecios(Integer id) {
+        this();
         this.id = id;
     }
 
     public ListaPrecios(Integer id, String nombre, Double margen, boolean margenGeneral, boolean paraCatalogoWeb) {
+        this();
         this.id = id;
         this.nombre = nombre;
         this.margen = margen;

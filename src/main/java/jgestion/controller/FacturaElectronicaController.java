@@ -195,12 +195,11 @@ public class FacturaElectronicaController {
             if (cbte.getSucursal().isWebServices()) {
                 FacturaElectronica fee = FacturaElectronicaController.createFrom(cbte);
                 new FacturaElectronicaJpaController().persist(fee);
-//            FacturaElectronicaController.initSolicitudCAEs();
-                throw new MessageException("No se generó correctamente el registro de FE de este comprobante."
+                throw new MessageException("No se generó correctamente el registro de FE (factura electrónica) de este comprobante."
                         + "\nIntente obtener el CAE nuevamente.." + fee.getId());
             }
         }
-        if (fe.getCae() == null) {
+        if (fe == null || fe.getCae() == null) {
             throw new MessageException("el comprobante " + JGestionUtils.getNumeracion(cbte) + " aún no posee CAE");
         }
         HashMap<String, Object> parameters = new HashMap<>(30);

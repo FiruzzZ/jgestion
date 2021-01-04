@@ -159,7 +159,6 @@ public class JDFacturaVenta extends javax.swing.JDialog {
         jLabel30 = new javax.swing.JLabel();
         btnFacturar = new javax.swing.JButton();
         btnAnular = new javax.swing.JButton();
-        jCheckBox1 = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Facturación - Ventas");
@@ -809,20 +808,6 @@ public class JDFacturaVenta extends javax.swing.JDialog {
         btnAnular.setText("Anular");
         btnAnular.setName("facturar"); // NOI18N
 
-        jCheckBox1.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jCheckBox1.setMnemonic('o');
-        jCheckBox1.setText("Ocultar Datos facturación");
-        jCheckBox1.setFocusPainted(false);
-        jCheckBox1.setFocusable(false);
-        jCheckBox1.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
-        jCheckBox1.setMargin(new java.awt.Insets(1, 1, 1, 1));
-        jCheckBox1.setRequestFocusEnabled(false);
-        jCheckBox1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBox1ActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -841,18 +826,13 @@ public class JDFacturaVenta extends javax.swing.JDialog {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnAceptar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnCancelar))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jCheckBox1)))
+                        .addComponent(btnCancelar)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jCheckBox1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(panelDatosFacturacion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(panelProducto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -922,11 +902,6 @@ public class JDFacturaVenta extends javax.swing.JDialog {
         tfProductoDesc.setSelectionStart(0);
     }//GEN-LAST:event_tfProductoDescFocusGained
 
-    private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
-        panelDatosFacturacion.setVisible(!jCheckBox1.isSelected());
-        pack();
-    }//GEN-LAST:event_jCheckBox1ActionPerformed
-
     private void tfObservacionKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfObservacionKeyReleased
         controlDeCaracteres(tfObservacion);
     }//GEN-LAST:event_tfObservacionKeyReleased
@@ -994,7 +969,6 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
     private javax.swing.JComboBox cbUnidadDeNegocio;
     private javax.swing.JComboBox cbVendedor;
     private com.toedter.calendar.JDateChooser dcFechaFactura;
-    private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -1428,8 +1402,8 @@ private void tfProductoDescFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST
         labelCaja.setVisible(false);
         cbCaja.setVisible(false);
         //tienen tipo: A B C
-        labelLetra.setVisible(true);
-        cbFacturaTipo.setVisible(true);
+        labelLetra.setVisible(false);
+        cbFacturaTipo.setVisible(false);
         //Presup y Remito no se los puede vincular con un Remito
         labelRemito.setVisible(false);
         tfRemito.setVisible(false);

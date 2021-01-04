@@ -7,8 +7,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -20,13 +18,6 @@ import javax.persistence.UniqueConstraint;
 @Table(name = "rubro", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"nombre", "tipo"})
 })
-@NamedQueries({
-    @NamedQuery(name = "Rubro.findAll", query = "SELECT r FROM Rubro r"),
-    @NamedQuery(name = "Rubro.findById", query = "SELECT r FROM Rubro r WHERE r.id = :id"),
-    @NamedQuery(name = "Rubro.findByCodigo", query = "SELECT r FROM Rubro r WHERE r.codigo = :codigo"),
-    @NamedQuery(name = "Rubro.findByNombre", query = "SELECT r FROM Rubro r WHERE r.nombre = :nombre"),
-    @NamedQuery(name = "Rubro.findByTipo", query = "SELECT r FROM Rubro r WHERE r.tipo = :tipo ORDER BY r.nombre")
-})
 public class Rubro implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -35,7 +26,7 @@ public class Rubro implements Serializable {
     @Column(name = "idrubro", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column(name = "codigo", length = 50)
+    @Column(name = "codigo", length = 10)
     private String codigo;
     @Basic(optional = false)
     @Column(name = "nombre", nullable = false, length = 50)
@@ -89,18 +80,6 @@ public class Rubro implements Serializable {
         this.tipo = tipo;
     }
 
-//    public List<Cliente> getClienteList() {
-//        return clienteList;
-//    }
-//    public void setClienteList(List<Cliente> clienteList) {
-//        this.clienteList = clienteList;
-//    }
-//    public List<Proveedor> getProveedorList() {
-//        return proveedorList;
-//    }
-//    public void setProveedorList(List<Proveedor> proveedorList) {
-//        this.proveedorList = proveedorList;
-//    }
     @Override
     public int hashCode() {
         int hash = 0;
@@ -123,6 +102,7 @@ public class Rubro implements Serializable {
 
     @Override
     public String toString() {
-        return this.getNombre();
+        return "Rubro{" + "id=" + id + ", codigo=" + codigo + ", nombre=" + nombre + ", tipo=" + tipo + '}';
     }
+
 }

@@ -232,7 +232,7 @@ public class RemitoController implements ActionListener {
         try {
             Reportes r = new Reportes(Reportes.FOLDER_REPORTES + "JGestion_Remito.jasper", "Remito");
             r.addParameter("REMITO_ID", p.getId());
-            r.printReport(true);
+            r.viewReport();
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
             LogManager.getLogger();
@@ -278,7 +278,7 @@ public class RemitoController implements ActionListener {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 if (evt.getClickCount() >= 2) {
-                    selectedRemito = (Remito) buscador.getDtm().getValueAt(buscador.getjTable1().getSelectedRow(), 0);
+                    selectedRemito = (Remito) UTIL.getSelectedValueFromModel(buscador.getjTable1(), 0);
                     try {
                         if (toFacturar) {
                             if (selectedRemito.getFacturaVenta() != null) {

@@ -2,11 +2,8 @@ package jgestion.controller;
 
 import jgestion.entity.CuentaBancaria;
 import jgestion.controller.exceptions.DatabaseErrorException;
-import jgestion.controller.exceptions.IllegalOrphanException;
 import jgestion.controller.exceptions.MessageException;
-import jgestion.controller.exceptions.NonexistentEntityException;
 import jgestion.entity.Banco;
-import jgestion.entity.BancoSucursal;
 import jgestion.gui.JDABM;
 import jgestion.gui.JDContenedor;
 import jgestion.gui.PanelABMBancoSucursales;
@@ -15,21 +12,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.NoResultException;
-import javax.persistence.RollbackException;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.table.DefaultTableModel;
 import jgestion.jpa.controller.BancoJpaController;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.eclipse.persistence.exceptions.DatabaseException;
-import org.postgresql.util.PSQLException;
 import utilities.general.UTIL;
 
 /**
@@ -61,19 +50,11 @@ public class BancoController {
             public void keyReleased(KeyEvent e) {
                 if (contenedor.getTfFiltro().getText().trim().length() > 0) {
                     permitirFiltroVacio = true;
-                    try {
-                        armarQuery(contenedor.getTfFiltro().getText().trim());
-                    } catch (DatabaseErrorException ex) {
-                        contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                    }
+                    armarQuery(contenedor.getTfFiltro().getText().trim());
                 } else {
                     if (permitirFiltroVacio) {
                         permitirFiltroVacio = false;
-                        try {
-                            armarQuery(contenedor.getTfFiltro().getText().trim());
-                        } catch (DatabaseErrorException ex) {
-                            contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
-                        }
+                        armarQuery(contenedor.getTfFiltro().getText().trim());
                     }
                 }
             }
@@ -87,11 +68,7 @@ public class BancoController {
                     initABM(contenedor, false);
                     abm.setLocationRelativeTo(contenedor);
                     abm.setVisible(true);
-                    try {
-                        cargarContenedorTabla(null);
-                    } catch (DatabaseErrorException ex) {
-                        contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                    }
+                    cargarContenedorTabla(null);
                 } catch (MessageException ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 }
@@ -104,16 +81,12 @@ public class BancoController {
                     initABM(contenedor, true);
                     abm.setLocationRelativeTo(contenedor);
                     abm.setVisible(true);
-                    try {
-                        cargarContenedorTabla(null);
-                    } catch (DatabaseErrorException ex) {
-                        contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                    }
+                    cargarContenedorTabla(null);
                 } catch (MessageException ex) {
                     contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
                 } catch (Exception ex) {
-                    contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
                     LOG.error(ex);
+                    contenedor.showMessage(ex.getMessage(), CLASS_NAME, 0);
                 }
             }
         });
@@ -122,11 +95,7 @@ public class BancoController {
             public void actionPerformed(ActionEvent e) {
                 try {
                     jpaController.remove(jpaController.find(Integer.valueOf(UTIL.getSelectedValue(contenedor.getjTable1(), 0).toString())));
-                    try {
-                        cargarContenedorTabla(null);
-                    } catch (DatabaseErrorException ex) {
-                        contenedor.showMessage(ex.getMessage(), CLASS_NAME, 2);
-                    }
+                    cargarContenedorTabla(null);
                     contenedor.showMessage("Eliminado..", CLASS_NAME, 1);
                 } catch (Exception ex) {
                     LOG.error(ex, ex);
@@ -147,7 +116,7 @@ public class BancoController {
      *
      * @param filtro
      */
-    private void armarQuery(String filtro) throws DatabaseErrorException {
+    private void armarQuery(String filtro) {
         String query = null;
         if (filtro != null && filtro.length() > 0) {
             query = "SELECT * FROM " + CLASS_NAME + " o WHERE o.nombre ILIKE '" + filtro + "%' ORDER BY o.nombre";
@@ -155,7 +124,7 @@ public class BancoController {
         cargarContenedorTabla(query);
     }
 
-    private void cargarContenedorTabla(String query) throws DatabaseErrorException {
+    private void cargarContenedorTabla(String query) {
         if (contenedor != null) {
             DefaultTableModel dtm = contenedor.getDTM();
             UTIL.limpiarDtm(dtm);

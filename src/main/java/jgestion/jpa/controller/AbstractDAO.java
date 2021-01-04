@@ -176,11 +176,19 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
 
     @Override
     public void remove(T entity) {
-        if (!getEntityManager().getTransaction().isActive()) {
-            getEntityManager().getTransaction().begin();
+        EntityTransaction tx = null;
+        EntityManager em = getEntityManager();
+        try {
+            tx = em.getTransaction();
+            tx.begin();
+            getEntityManager().remove(getEntityManager().merge(entity));
+            tx.commit();
+            closeEntityManager();
+        } finally {
+            if (tx != null && tx.isActive() && tx.getRollbackOnly()) {
+                tx.rollback();
+            }
         }
-        getEntityManager().remove(getEntityManager().merge(entity));
-        getEntityManager().getTransaction().commit();
     }
 
     @Override
@@ -247,6 +255,9 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
             CriteriaQuery<T> cq = cb.createQuery(entityClass);
             cq.select(cq.from(entityClass));
             TypedQuery<T> q = getEntityManager().createQuery(cq);
+            if (forceRefresh) {
+                q.setHint(QueryHints.REFRESH, HintValues.TRUE);
+            }
             q.setMaxResults(max);
             q.setFirstResult(first);
             return q.getResultList();
@@ -287,6 +298,9 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
                 for (Map.Entry<String, Object> entry : parameters.entrySet()) {
                     q.setParameter(entry.getKey(), entry.getValue());
                 }
+            }
+            if (forceRefresh) {
+                q.setHint(QueryHints.REFRESH, HintValues.TRUE);
             }
             return q.getSingleResult();
         } catch (NoResultException e) {
@@ -409,12 +423,14 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
     }
 
     /**
-     * Execute a Java Persistence query language statement with a REFRESH hint!
+     * Execute a JPA query statement with a REFRESH hint!
      *
      * @param qlString
      * @return a list of the results
+     * @deprecated se va liminar acceso public -&gt; protected
      */
     @Override
+    @Deprecated
     public List<T> findAll(String qlString) {
         try {
             TypedQuery<T> typedQuery = getEntityManager().createQuery(qlString, entityClass);
@@ -515,6 +531,7 @@ public abstract class AbstractDAO<T, ID extends Serializable> implements Generic
 
     /**
      * can be override to allow pipeline with implementations
+     *
      * @param forceRefresh
      * @return
      */

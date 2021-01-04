@@ -614,7 +614,7 @@ public class CajaMovimientosController implements ActionListener {
         Reportes r = new Reportes("JGestion_ComprobanteMovimientosVarios.jasper", "Comprobante N° " + dcm.getId());
         r.addMembreteParameter();
         r.addParameter("ENTITY_ID", dcm.getId());
-        r.printReport(true);
+        r.viewReport();
     }
 
     /**
